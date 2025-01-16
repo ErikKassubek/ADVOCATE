@@ -15,7 +15,9 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/utils"
 	"errors"
+	"fmt"
 )
 
 const (
@@ -41,14 +43,30 @@ const (
  * Args:
  *   bug (Bug): The bug to create a trace for
  *   index (int): only used for rewrite select with partner, index of partner
+ *   rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
+ *   retwriteOnce (bool): skip double bugs
  * Returns:
  *   bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
  *   code: expected exit code
  *   error: An error if the trace could not be created
  */
-func RewriteTrace(bug bugs.Bug, index int) (rewriteNeeded bool, code int, err error) {
+func RewriteTrace(bug bugs.Bug, index int, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
 	timemeasurement.Start("rewrite")
 	defer timemeasurement.End("rewrite")
+
+	if rewriteOnce {
+		bugString := bug.GetBugString()
+		if _, ok := rewrittenBugs[bug.Type]; !ok {
+			rewrittenBugs[bug.Type] = make([]string, 0)
+		} else {
+			if utils.ContainsString((rewrittenBugs)[bug.Type], bugString) {
+				fmt.Println("Bug was already rewritten before")
+				fmt.Println("Skip rewrite")
+				return false, true, 0, nil
+			}
+		}
+		rewrittenBugs[bug.Type] = append(rewrittenBugs[bug.Type], bugString)
+	}
 
 	rewriteNeeded = false
 	code = exitCodeNone
@@ -142,5 +160,5 @@ func RewriteTrace(bug bugs.Bug, index int) (rewriteNeeded bool, code int, err er
 	if rewriteNeeded && err != nil {
 		println("Error rewriting trace")
 	}
-	return rewriteNeeded, code, err
+	return rewriteNeeded, false, code, err
 }

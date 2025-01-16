@@ -10,13 +10,19 @@
 
 package fuzzing
 
+import (
+	"fmt"
+	"sort"
+)
+
 func createMutations(numberMutations int, flipChance float64) {
 	for i := 0; i < numberMutations; i++ {
 		mut := getMutation(flipChance)
 
-		if isNewMutation(mut) {
+		id := getIdFromMut(mut)
+		if num, _ := allMutations[id]; num < maxRunPerMut {
 			mutationQueue = append(mutationQueue, mut)
-			allMutations = append(allMutations, mut)
+			allMutations[id]++
 		}
 	}
 }
@@ -32,15 +38,6 @@ func getMutation(flipChance float64) map[string][]fuzzingSelect {
 	}
 
 	return res
-}
-
-func isNewMutation(mut map[string][]fuzzingSelect) bool {
-	for _, mut2 := range allMutations {
-		if areMutEqual(mut, mut2) {
-			return false
-		}
-	}
-	return true
 }
 
 func areMutEqual(mut1, mut2 map[string][]fuzzingSelect) bool {
@@ -69,4 +66,33 @@ func areMutEqual(mut1, mut2 map[string][]fuzzingSelect) bool {
 	}
 
 	return true
+}
+
+/*
+ * Get a unique string id for a given mutation
+ * Args:
+ * 	mut map[string][]fuzzingSelect: mutation
+ * Returns:
+ * 	string: id
+ */
+func getIdFromMut(mut map[string][]fuzzingSelect) string {
+	keys := make([]string, 0, len(mut))
+	for key := range mut {
+		keys = append(keys, key)
+	}
+
+	// Sort the keys alphabetically
+	sort.Strings(keys)
+
+	id := ""
+
+	// Iterate over the sorted keys
+	for _, key := range keys {
+		id := key + "-"
+		for _, sel := range mut[key] {
+			id += fmt.Sprintf("%d", sel.chosenCase)
+		}
+	}
+
+	return id
 }

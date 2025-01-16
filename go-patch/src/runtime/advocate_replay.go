@@ -580,7 +580,7 @@ func SetLastTPre(tPre int) {
 
 func CheckLastTPreReplay(tPre int) {
 	// This does not seem to work
-	// TODO: maybe remove
+	// TODO (Erik): maybe remove
 	return
 	// if lastTPreReplay == tPre && tPre != 0 {
 	// 	stuckReplayExecutedSuc = true

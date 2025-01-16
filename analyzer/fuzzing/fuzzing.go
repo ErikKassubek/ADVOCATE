@@ -13,21 +13,21 @@ package fuzzing
 import (
 	"analyzer/toolchain"
 	"fmt"
+	"math"
 	"time"
-
-	"cuelang.org/go/pkg/math"
 )
 
 const (
 	maxNumberRuns = 20
 	maxTime       = 20 * time.Minute
+	maxRunPerMut  = 2
 )
 
 var (
 	numberFuzzingRuns = 0
 	mutationQueue     []map[string][]fuzzingSelect
-	// all created mutations for the program. Used to check if mutation has been created before
-	allMutations []map[string][]fuzzingSelect
+	// count how often a specific mutation has been in the queue
+	allMutations map[string]int
 )
 
 /*
@@ -47,7 +47,7 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 		// if the program has not been run yet, run it directly, otherwise run it with order from queue
 		if numberFuzzingRuns == 0 {
 			err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-				-1, -1, 0, true, false, false, false, false)
+				-1, -1, 0, false, true, false, false, false, false)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -56,9 +56,8 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 
 			writeMutationsToFile(testPath, order)
 
-			// TODO: run with order from queue
 			err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-				-1, -1, 0, true, false, false, false, false)
+				-1, -1, 0, true, true, false, false, false, false)
 			if err != nil {
 				fmt.Println(err.Error())
 			}
@@ -118,5 +117,5 @@ func getFlipProbability() float64 {
 	p := 0.99   // min prob that at least one case is flipped
 	pMin := 0.1 // min prob that a select is flipt
 
-	return max(pMin, 1-math.Pow(1-p, 1/numberSelects))
+	return max(pMin, 1-math.Pow(1-p, 1/float64(numberSelects)))
 }

@@ -30,7 +30,12 @@ var (
 	measureTime    bool
 	notExecuted    bool
 	createStats    bool
+	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string)
 )
+
+func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string)) {
+	runAnalyzer = funcAnalyzer
+}
 
 /*
  * Main function for the toolchain
@@ -44,6 +49,7 @@ var (
  * 	timeoutA (int): timeout for analysis
  * 	timeoutR (int): timeout for replay
  * 	numRerecorded (int): limit of number of rerecordings
+ * 	fuzzing (bool): true if the run is part of fuzzing
  * 	replayAt (bool): replay atomics
  * 	meaTime (bool): measure runtime
  * 	notExec (bool): find never executed operations
@@ -51,7 +57,7 @@ var (
  * 	keepTraces (bool): keep the traces after analysis
  */
 func Run(mode, advocate, file, execName, progName, test string,
-	timeoutA, timeoutR, numRerecorded int,
+	timeoutA, timeoutR, numRerecorded int, fuzzing,
 	replayAt, meaTime, notExec, stats, keepTraces bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
@@ -96,7 +102,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFile, progName, measureTime,
-			notExecuted, stats, timeoutAna, timeoutReplay,
+			notExecuted, stats, fuzzing, timeoutAna, timeoutReplay,
 			keepTraces)
 	case "explain":
 		if pathToAdvocate == "" {

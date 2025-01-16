@@ -26,13 +26,14 @@ import (
  *    fileName (string): path to the file containing the the test
  *    testName (string): name of the test
  *    replay (bool): true for replay, false for only recording
+ *    fuzzing (bool): true for fuzzing
  *    replayNumber (string): id of the trace to replay
  *    timeoutReplay (int): timeout for replay
  *    record (bool): true to rerecord the leaks
  * Returns:
  *    error
  */
-func headerInserterUnit(fileName string, testName string, replay bool, replayNumber string, timeoutReplay int, record bool) error {
+func headerInserterUnit(fileName, testName string, replay bool, fuzzing bool, replayNumber string, timeoutReplay int, record bool) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", fileName)
 	}
@@ -46,7 +47,7 @@ func headerInserterUnit(fileName string, testName string, replay bool, replayNum
 		return errors.New("Test Method not found in file")
 	}
 
-	return addHeaderUnit(fileName, testName, replay, replayNumber, timeoutReplay, record)
+	return addHeaderUnit(fileName, testName, replay, fuzzing, replayNumber, timeoutReplay, record)
 }
 
 /*
@@ -114,19 +115,24 @@ func testExists(fileName string, testName string) (bool, error) {
  *    fileName (string): path to the file
  *    testName (string): name of the test
  *    replay (bool): true for replay, false for only recording
- *    replayNumber (string): id of the trace to replay
+ *    fuzzing (bool): true for fuzzing
+ *    index (string): id of the trace to replay
  *    timeoutReplay (int): timeout for replay
  *    record (bool): true to rerecord the trace
  * Returns:
  *    error
  */
-func addHeaderUnit(fileName string, testName string, replay bool, replayNumber string, timeoutReplay int, record bool) error {
+func addHeaderUnit(fileName string, testName string, replay bool, fuzzing bool, index string, timeoutReplay int, record bool) error {
 	importAdded := false
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
+
+	if replay && fuzzing {
+		return fmt.Errorf("Cannot add header for replay and fuzzing at the same time")
+	}
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
@@ -153,20 +159,24 @@ func addHeaderUnit(fileName string, testName string, replay bool, replayNumber s
 		}
 
 		if strings.Contains(line, "func "+testName) {
-
-			if replay {
+			if replay { // replay
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplayTracing("%s", false, %d, %s)
   defer advocate.FinishReplayTracing()
-  // ======= Preamble End =======`, replayNumber, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, index, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplay("%s", false, %d, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayNumber, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, index, timeoutReplay, atomicReplayStr))
 				}
-			} else {
+			} else if fuzzing {
+				lines = append(lines, `	// ======= Preamble Start =======
+  advocate.InitFuzzing()
+  defer advocate.FinishTracing()
+  // ======= Preamble End =======`)
+			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()
   defer advocate.FinishTracing()

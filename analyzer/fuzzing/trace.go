@@ -16,6 +16,9 @@ import "analyzer/analysis"
  * Parse the current trace and record all relevant data
  */
 func parseTrace() {
+	// clear current order
+	allSelects = make(map[string][]fuzzingSelect)
+
 	for _, trace := range *analysis.GetTraces() {
 		for _, elem := range trace {
 			if elem.GetTPost() == 0 {

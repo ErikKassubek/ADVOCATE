@@ -38,14 +38,16 @@ const (
  *      also runs the tests once without any recoding/replay to get a base value
  *    notExecuted (bool): if true, check for never executed operations
  *    stats (bool): create a stats file
+ *    fuzzing (bool): true if part of fuzzing
  *    timeout (int): Set a timeout in seconds for the analysis
  *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete traces after analysis
  * Returns:
  *    error
  */
+// TODO: check timeout
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, stats bool, timeoutAna int, timeoutReplay int,
+	measureTime, notExecuted, stats, fuzzing bool, timeoutAna int, timeoutReplay int,
 	keepTraces bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -120,7 +122,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			}
 
 			// Execute full workflow
-			times, nrReplay, nrAnalyzer, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, directoryName)
+			times, nrReplay, nrAnalyzer, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, directoryName, fuzzing)
 
 			if measureTime {
 				updateTimeFiles(progName, testFunc, resultPath, times, nrReplay, nrAnalyzer)
@@ -150,7 +152,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	}
 
 	if testName != "" && !ranTest {
-		return fmt.Errorf("Could not find test function %s\n", testName)
+		return fmt.Errorf("could not find test function %s", testName)
 	}
 
 	// Check for untriggered selects
@@ -274,18 +276,19 @@ func findTestFunctions(file string) ([]string, error) {
  * Args:
  *    pathToAdvocate (string): path to advocate
  *    dir (string): path to the package to test
+ *    progName (string): name of the program
  *    testName (string): name of the test
  *    pkg (string): adjusted package path
  *    file (string): file with the test
  *    outputDir (string): write all outputs to this file
+ *    fuzzing (bool): true if part of fuzzing
  * Returns:
  *    map[string]time.Duration
  *    int: number of run replays
  *    int: number of analyzer runs
  *    error
  */
-func unitTestFullWorkflow(pathToAdvocate string, dir string,
-	testName string, pkg string, file string, outputDir string) (map[string]time.Duration, int, int, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir string, fuzzing bool) (map[string]time.Duration, int, int, error) {
 
 	resTimes := make(map[string]time.Duration)
 
@@ -345,7 +348,7 @@ func unitTestFullWorkflow(pathToAdvocate string, dir string,
 	fmt.Println("FileName: ", file)
 	fmt.Println("TestName: ", testName)
 
-	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, resTimes)
+	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, resTimes)
 	if err != nil {
 		fmt.Println("Failed record: ", err.Error())
 		return resTimes, 0, 0, err
@@ -385,7 +388,7 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 	}
 }
 
-func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, resTimes map[string]time.Duration) error {
+func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing bool, resTimes map[string]time.Duration) error {
 	// Remove header just in case
 	fmt.Println(fmt.Sprintf("Remove header for %s", file))
 	if err := headerRemoverUnit(file); err != nil {
@@ -395,7 +398,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 	// Add header
 	fmt.Println(fmt.Sprintf("Add header for %s: %s", file, testName))
-	if err := headerInserterUnit(file, testName, false, "0", timeoutReplay, false); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, "0", timeoutReplay, false); err != nil {
 		fmt.Printf("Error in adding header: %v\n", err)
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
@@ -521,7 +524,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 		}
 
 		fmt.Printf("Insert replay header or %s: %s for trace %s\n", file, testName, traceNum)
-		headerInserterUnit(file, testName, true, traceNum, int(timeoutRepl.Seconds()), record)
+		headerInserterUnit(file, testName, true, false, traceNum, int(timeoutRepl.Seconds()), record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 		fmt.Println("GOROOT = " + pathToGoRoot + " exported")

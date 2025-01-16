@@ -147,6 +147,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 	timeStart = time.Now()
 	// TODO (COMMAND): replace by direct call
+	runAnalyzer(analyzerOutput, false, false, "", "results_readable.log",
+		"results_machine.log", false, false, false, false, false, "rewritten_trace",
+		timeoutAna, "")
 	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
 	}

@@ -24,15 +24,9 @@ import (
  * Args:
  * 	progName (string): name of the prog/test used to create the fuzzing file.
  * 		for test it must have the form progName_testName
- * 	index (int): index of the fuzzing run
  */
-func InitFuzzing(progName string, index int) {
-	// is first round -> run normal Tracing
-	if index == 0 {
-		InitTracing()
-	}
-
-	fuzzingSelectPath := fmt.Sprintf("fuzzing_%s_%d.log", progName, index)
+func InitFuzzing() {
+	fuzzingSelectPath := "fuzzingData.log"
 	prefSel, err := readFile(fuzzingSelectPath)
 
 	// if file was not found ->

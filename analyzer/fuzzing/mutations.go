@@ -17,7 +17,7 @@ import (
 
 func createMutations(numberMutations int, flipChance float64) {
 	for i := 0; i < numberMutations; i++ {
-		mut := getMutation(flipChance)
+		mut := createMutation(flipChance)
 
 		id := getIdFromMut(mut)
 		if num, _ := allMutations[id]; num < maxRunPerMut {
@@ -27,7 +27,7 @@ func createMutations(numberMutations int, flipChance float64) {
 	}
 }
 
-func getMutation(flipChance float64) map[string][]fuzzingSelect {
+func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	res := make(map[string][]fuzzingSelect)
 
 	for key, listSel := range allSelects {
@@ -38,6 +38,16 @@ func getMutation(flipChance float64) map[string][]fuzzingSelect {
 	}
 
 	return res
+}
+
+func popMutation() map[string][]fuzzingSelect {
+	if len(mutationQueue) == 0 {
+		return nil
+	}
+
+	mut := make(map[string][]fuzzingSelect)
+	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
+	return mut
 }
 
 func areMutEqual(mut1, mut2 map[string][]fuzzingSelect) bool {

@@ -10,6 +10,8 @@
 
 package fuzzing
 
+import "log"
+
 /*
  * A run is considered interesting, if at least one of the following conditions is met
  * 	1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
@@ -19,6 +21,7 @@ package fuzzing
  */
 func isInteresting() bool {
 	// 1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
+	log.Println("PairInfoTrace: ", len(pairInfoTrace))
 	for keyTrace, _ := range pairInfoTrace {
 		if _, ok := pairInfoFile[keyTrace]; !ok {
 			return true

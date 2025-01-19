@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"analyzer/complete"
 	"errors"
 	"fmt"
 	"io"
@@ -38,7 +39,7 @@ const (
  *      also runs the tests once without any recoding/replay to get a base value
  *    notExecuted (bool): if true, check for never executed operations
  *    stats (bool): create a stats file
- *    fuzzing (bool): true if part of fuzzing
+ *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  *    timeout (int): Set a timeout in seconds for the analysis
  *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete traces after analysis
@@ -47,7 +48,7 @@ const (
  */
 // TODO: check timeout
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, stats, fuzzing bool, timeoutAna int, timeoutReplay int,
+	measureTime, notExecuted, stats bool, fuzzing int, timeoutAna int, timeoutReplay int,
 	keepTraces bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -158,8 +159,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	// Check for untriggered selects
 	if notExecuted && testName != "" {
 		fmt.Println("Check for untriggered selects and not executed progs")
-		// TODO (COMMAND): replace by direct call
-		err := runCommand(pathToAnalyzer, "check", "-resultTool", filepath.Join(dir, "advocateResult"), "-dir", dir)
+		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
 		if err != nil {
 			fmt.Println("Could not run check for untriggered select and not executed progs")
 		}
@@ -281,14 +281,14 @@ func findTestFunctions(file string) ([]string, error) {
  *    pkg (string): adjusted package path
  *    file (string): file with the test
  *    outputDir (string): write all outputs to this file
- *    fuzzing (bool): true if part of fuzzing
+ *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * Returns:
  *    map[string]time.Duration
  *    int: number of run replays
  *    int: number of analyzer runs
  *    error
  */
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir string, fuzzing bool) (map[string]time.Duration, int, int, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir string, fuzzing int) (map[string]time.Duration, int, int, error) {
 
 	resTimes := make(map[string]time.Duration)
 
@@ -354,7 +354,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir st
 		return resTimes, 0, 0, err
 	}
 
-	unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, resTimes, "-1")
+	unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, resTimes, "-1", fuzzing)
 
 	lenRewTraces := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, resTimes, false)
 
@@ -388,7 +388,7 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 	}
 }
 
-func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing bool, resTimes map[string]time.Duration) error {
+func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, resTimes map[string]time.Duration) error {
 	// Remove header just in case
 	fmt.Println(fmt.Sprintf("Remove header for %s", file))
 	if err := headerRemoverUnit(file); err != nil {
@@ -430,21 +430,24 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	return nil
 }
 
-func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, resTimes map[string]time.Duration, resultID string) {
+func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
+	resTimes map[string]time.Duration, resultID string, fuzzing int) {
 	// Apply analyzer
 	fmt.Println(fmt.Sprintf("Run the analyzer for %s/%s/%s", dir, pkg, traceName))
 
 	startTime := time.Now()
 	var err error
 	if resultID == "-1" {
-		// TODO (COMMAND): replace by direct call
-		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-timeout", strconv.Itoa(timeoutAna))
+		runAnalyzer(filepath.Join(dir, pkg, traceName), false, false, "", "results_readable.log",
+			"results_machine.log", false, false, false, false, false, "rewritten_trace",
+			timeoutAna, "", fuzzing)
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
-		// TODO (COMMAND): replace by direct call
-		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-timeout", strconv.Itoa(timeoutAna), "-outM", outM, "-outR", outR, "-outT", outT, "-ignoreRew", "results_machine.log")
+		runAnalyzer(filepath.Join(dir, pkg, traceName), false, false, "", outR,
+			outM, false, false, false, false, false, outT,
+			timeoutAna, "results_machine.log", fuzzing)
 	}
 	if err != nil {
 		fmt.Println("Analyzer failed", err)
@@ -524,7 +527,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 		}
 
 		fmt.Printf("Insert replay header or %s: %s for trace %s\n", file, testName, traceNum)
-		headerInserterUnit(file, testName, true, false, traceNum, int(timeoutRepl.Seconds()), record)
+		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 		fmt.Println("GOROOT = " + pathToGoRoot + " exported")
@@ -546,22 +549,22 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 	return len(rewrittenTraces)
 }
 
-func unitTestReanalyzeLeaks(pathToGoRoot, pathToPatchedGoRuntime, pathToAnalyzer, dir, pkg, file, testName, output string, resTimes map[string]time.Duration) (int, int) {
-	pathPkg := filepath.Join(dir, pkg)
-	rerecordedTraces, _ := filepath.Glob(filepath.Join(pathPkg, "advocateTraceReplay_*"))
-	fmt.Printf("\nFound %d rerecorded traces\n\n", len(rerecordedTraces))
+// func unitTestReanalyzeLeaks(pathToGoRoot, pathToPatchedGoRuntime, pathToAnalyzer, dir, pkg, file, testName, output string, resTimes map[string]time.Duration) (int, int) {
+// 	pathPkg := filepath.Join(dir, pkg)
+// 	rerecordedTraces, _ := filepath.Glob(filepath.Join(pathPkg, "advocateTraceReplay_*"))
+// 	fmt.Printf("\nFound %d rerecorded traces\n\n", len(rerecordedTraces))
 
-	for _, trace := range rerecordedTraces {
-		number := extractTraceNumber(trace)
-		traceName := filepath.Base(trace)
-		unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output, resTimes, number)
-	}
-	numberRerecord = 0
-	recorded := false // for now do not rerecord
-	nrRewTrace := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, resTimes, recorded)
+// 	for _, trace := range rerecordedTraces {
+// 		number := extractTraceNumber(trace)
+// 		traceName := filepath.Base(trace)
+// 		unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output, resTimes, number)
+// 	}
+// 	numberRerecord = 0
+// 	recorded := false // for now do not rerecord
+// 	nrRewTrace := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, resTimes, recorded)
 
-	return nrRewTrace, len(rerecordedTraces)
-}
+// 	return nrRewTrace, len(rerecordedTraces)
+// }
 
 func getRerecord(trace string) bool {
 	data, err := os.ReadFile(filepath.Join(trace, "rewrite_info.log"))

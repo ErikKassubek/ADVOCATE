@@ -10,17 +10,21 @@
 
 package fuzzing
 
-import "analyzer/analysis"
+import (
+	"analyzer/analysis"
+	"log"
+)
 
 /*
  * Parse the current trace and record all relevant data
  */
-func parseTrace() {
+func ParseTrace(trace map[int][]analysis.TraceElement) {
+	log.Println("Parse Trace: ", len(trace))
 	// clear current order
 	allSelects = make(map[string][]fuzzingSelect)
 
-	for _, trace := range *analysis.GetTraces() {
-		for _, elem := range trace {
+	for _, routine := range trace {
+		for _, elem := range routine {
 			if elem.GetTPost() == 0 {
 				continue
 			}
@@ -83,33 +87,32 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 		}
 
 		recv := elem.GetPartner()
-		if recv == nil {
-			panic("fuzzing parseChannelOp, send without partner: first run find partner")
-		}
-
-		sendPos := elem.GetPos()
-		recvPos := recv.GetPos()
 		chanID := elem.GetID()
-		key := sendPos + "-" + recvPos
 
-		// if receive is a select case
-		selIDRecv := -2
-		selRecv := recv.GetSelect()
-		if selRecv != nil {
-			selIDRecv = selRecv.GetChosenIndex()
-		}
+		if recv != nil {
+			sendPos := elem.GetPos()
+			recvPos := recv.GetPos()
+			key := sendPos + "-" + recvPos
 
-		if e, ok := pairInfoTrace[key]; ok {
-			e.com++
-			pairInfoTrace[key] = e
-		} else {
-			fp := fuzzingPair{
-				chanID:  chanID,
-				com:     1,
-				sendSel: selID,
-				recvSel: selIDRecv,
+			// if receive is a select case
+			selIDRecv := -2
+			selRecv := recv.GetSelect()
+			if selRecv != nil {
+				selIDRecv = selRecv.GetChosenIndex()
 			}
-			pairInfoTrace[key] = fp
+
+			if e, ok := pairInfoTrace[key]; ok {
+				e.com++
+				pairInfoTrace[key] = e
+			} else {
+				fp := fuzzingPair{
+					chanID:  chanID,
+					com:     1,
+					sendSel: selID,
+					recvSel: selIDRecv,
+				}
+				pairInfoTrace[key] = fp
+			}
 		}
 
 		channelNew := channelInfoTrace[chanID]

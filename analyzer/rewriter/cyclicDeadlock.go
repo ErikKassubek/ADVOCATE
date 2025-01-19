@@ -120,8 +120,8 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 
 	for routine := range routinesInCycle {
 		found := false
-		for i := len((*currentTrace)[routine]) - 1; i >= 0; i-- {
-			elem := (*currentTrace)[routine][i]
+		for i := len(currentTrace[routine]) - 1; i >= 0; i-- {
+			elem := currentTrace[routine][i]
 			switch elem := elem.(type) {
 			case *analysis.TraceElementMutex:
 				if (*elem).IsLock() {

@@ -12,6 +12,7 @@ package toolchain
 
 import (
 	"analyzer/explanation"
+	"analyzer/stats"
 	"fmt"
 	"log"
 	"os"
@@ -117,8 +118,7 @@ func removeTraces(path string) {
 }
 
 func updateStatsFiles(pathToAnalyzer string, progName string, testName string, dir string) {
-	// TODO (COMMAND): replace by direct call
-	err := runCommand(pathToAnalyzer, "stats", "-trace", dir, "-prog", progName, "-test", testName)
+	err := stats.CreateStats(dir, progName, testName)
 	if err != nil {
 		fmt.Println("Could not create statistics")
 	}

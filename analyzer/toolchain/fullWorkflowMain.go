@@ -12,6 +12,8 @@
 package toolchain
 
 import (
+	"analyzer/complete"
+	"analyzer/stats"
 	"fmt"
 	"log"
 	"os"
@@ -31,10 +33,12 @@ import (
  *    timeoutAna (int): timeout for the analyzer
  *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete the traces after analysis
+ *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * Returns:
  *    error
  */
-func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string, timeoutAna int, timeoutReplay int, keepTraces bool) error {
+func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
+	timeoutAna int, timeoutReplay int, keepTraces bool, fuzzing int) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
@@ -146,10 +150,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 	timeStart = time.Now()
-	// TODO (COMMAND): replace by direct call
 	runAnalyzer(analyzerOutput, false, false, "", "results_readable.log",
 		"results_machine.log", false, false, false, false, false, "rewritten_trace",
-		timeoutAna, "")
+		timeoutAna, "", fuzzing)
 	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
 	}
@@ -222,15 +225,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 	if notExecuted {
 		fmt.Println("Check for untriggered selects and not executed progs")
-		// TODO (COMMAND): replace by direct call
-		runCommand(pathToAnalyzer, "check", "-resultTool", filepath.Join(dir, "advocateResult"), "-dir", dir)
+		complete.Check(filepath.Join(dir, "advocateResult"), dir)
 	}
 
 	if createStats {
 		// create statistics
 		fmt.Println("Create statistics")
-		// TODO (COMMAND): replace by direct call
-		runCommand(pathToAnalyzer, "stats", "-resultTool", filepath.Join(dir, "advocateResult"), "-dir", dir, "-prog", programName)
+		stats.CreateStats(dir, programName, "")
 	}
 
 	return nil

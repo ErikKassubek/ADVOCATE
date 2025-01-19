@@ -105,8 +105,8 @@ func Sort() {
  * Returns:
  *   map[int][]traceElement: The traces
  */
-func GetTraces() *map[int][]TraceElement {
-	return &traces
+func GetTraces() map[int][]TraceElement {
+	return traces
 }
 
 /*

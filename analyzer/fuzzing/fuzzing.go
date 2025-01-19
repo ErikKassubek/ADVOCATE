@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"analyzer/toolchain"
 	"fmt"
+	"log"
 	"math"
 	"time"
 )
@@ -25,9 +26,9 @@ const (
 
 var (
 	numberFuzzingRuns = 0
-	mutationQueue     []map[string][]fuzzingSelect
+	mutationQueue     = make([]map[string][]fuzzingSelect, 0)
 	// count how often a specific mutation has been in the queue
-	allMutations map[string]int
+	allMutations = make(map[string]int)
 )
 
 /*
@@ -39,44 +40,55 @@ var (
 * 	testName (string): name of the test to run
  */
 func Fuzzing(advocate, testPath, progName, testName string) error {
+	log.Println("Start fuzzing")
 	startTime := time.Now()
 	var order map[string][]fuzzingSelect
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
-		// if the program has not been run yet, run it directly, otherwise run it with order from queue
-		if numberFuzzingRuns == 0 {
-			err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-				-1, -1, 0, false, true, false, false, false, false)
-			if err != nil {
-				fmt.Println(err.Error())
-			}
-		} else {
-			order, mutationQueue = mutationQueue[0], mutationQueue[1:]
+		log.Println("Run: ", numberFuzzingRuns)
+		fmt.Println("Run: ", numberFuzzingRuns)
 
-			writeMutationsToFile(testPath, order)
+		order = popMutation()
 
-			err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-				-1, -1, 0, true, true, false, false, false, false)
+		if numberFuzzingRuns != 0 {
+			err := writeMutationsToFile(testPath, order)
 			if err != nil {
-				fmt.Println(err.Error())
+				panic(err.Error())
 			}
 		}
 
-		// TODO: make sure that this works even if the trace has been rewritten by the analyzer
-		parseTrace()
+		err := toolchain.Run("test", advocate, testPath, "", progName, testName,
+			-1, -1, 0, numberFuzzingRuns, true, false, false, false, false)
+		if err != nil {
+			fmt.Println(err.Error())
+		}
 
+		// TODO: the function to get all the infos required for isInteresting and
+		// numberMutations is called in modeAnalyzer in the main.go file, which
+		// itself is run by the toolchain.Run function via function injection.
+		// At some point this should be refactored to make it less complicated
+
+		fmt.Println("Start isInteresting")
+		log.Println("Start isInteresting")
 		// add new mutations
 		if isInteresting() {
-			createMutations(numberMutations(), getFlipProbability())
+			fmt.Println("Create mutations")
+			numberMut := numberMutations()
+			flipProb := getFlipProbability()
+			log.Println("Mut: ", numberMut, flipProb)
+			createMutations(numberMut, flipProb)
+			fmt.Println("Number: ", numberMut)
+			fmt.Println("flipProp: ", flipProb)
+			fmt.Println("NumMut: ", len(mutationQueue))
 		}
-
-		// TODO: keep file data internal
 
 		numberFuzzingRuns++
 
+		storeFuzzingResults()
+
 		// cancel if max number of mutations have been reached
-		if maxNumberRuns > numberFuzzingRuns {
+		if numberFuzzingRuns > maxNumberRuns {
 			return fmt.Errorf("Maximum number of mutation runs (%d) have been reached", maxNumberRuns)
 		}
 

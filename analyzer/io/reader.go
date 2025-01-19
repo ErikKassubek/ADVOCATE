@@ -14,6 +14,7 @@ Package reader provides functions for reading and processing log files.
 package io
 
 import (
+	"analyzer/analysis"
 	"bufio"
 	"errors"
 	"fmt"
@@ -21,8 +22,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-
-	"analyzer/analysis"
 )
 
 /*

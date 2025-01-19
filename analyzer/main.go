@@ -142,7 +142,8 @@ func main() {
 	case "run":
 		modeAnalyzer(*pathTrace, *noPrint, *noRewrite, *scenarios, outReadable,
 			outMachine, *ignoreAtomics, *fifo, *ignoreCriticalSection,
-			*noWarning, *rewriteAll, newTrace, *timeoutAnalysis, *ignoreRewrite)
+			*noWarning, *rewriteAll, newTrace, *timeoutAnalysis, *ignoreRewrite,
+			-1)
 	case "fuzzing":
 		modeFuzzing(*pathToAdvocate, *programPath, *progName, *testName)
 	default:
@@ -163,7 +164,10 @@ func modeFuzzing(advocate, testPath, progName, testName string) {
 		return
 	}
 
-	fuzzing.Fuzzing(advocate, testPath, progName, testName)
+	err := fuzzing.Fuzzing(advocate, testPath, progName, testName)
+	if err != nil {
+		fmt.Println("Fuzzing Failed: ", err.Error())
+	}
 }
 
 func modeToolchain(mode, advocate, file, execName, progName, test string,
@@ -171,7 +175,7 @@ func modeToolchain(mode, advocate, file, execName, progName, test string,
 	replayAt, meaTime, notExec, stats, keepTraces bool) {
 	err := toolchain.Run(mode, advocate, file, execName, progName, test,
 		timeoutA, timeoutR, numRerecorded,
-		false, replayAt, meaTime, notExec, stats, keepTraces)
+		-1, replayAt, meaTime, notExec, stats, keepTraces)
 	if err != nil {
 		fmt.Println("Failed to run toolchain")
 		fmt.Println(err.Error())
@@ -240,7 +244,8 @@ func getFolderTrace(pathTrace string) string {
 func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 	scenarios string, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string) {
+	noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
+	fuzzingRun int) {
 	// printHeader()
 
 	if pathTrace == "" {
@@ -289,6 +294,8 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 			panic(err)
 		}
 
+		log.Println("Trace size: ", len(analysis.GetTraces()))
+
 		if !containsElems {
 			fmt.Println("Trace does not contain any elem")
 			fmt.Println("Skip analysis")
@@ -327,6 +334,12 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 	}
 
 	numberOfResults := results.PrintSummary(noWarning, noPrint)
+
+	// collect the required data to decide whether run is interesting
+	// and to create the mutations
+	if fuzzingRun >= 0 {
+		fuzzing.ParseTrace(analysis.GetTraces())
+	}
 
 	if !noRewrite {
 		numberRewrittenTrace := 0

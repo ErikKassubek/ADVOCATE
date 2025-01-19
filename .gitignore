@@ -1,6 +1,3 @@
-#trace files
-trace_*.log
-
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -20,3 +17,7 @@ trace_*.log
 # trace files
 examples/*/trace/
 examples/*/rewritten_trace/
+trace_*.log
+
+# vscode
+.vscode/

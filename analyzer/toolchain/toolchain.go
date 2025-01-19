@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"analyzer/analysis"
 	"fmt"
 	"os"
 	"strings"
@@ -30,10 +31,13 @@ var (
 	measureTime    bool
 	notExecuted    bool
 	createStats    bool
-	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string)
+	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int)
 )
 
-func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string)) {
+func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool,
+	noRewrite bool, scenarios string, outReadable string, outMachine string,
+	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool,
+	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int)) {
 	runAnalyzer = funcAnalyzer
 }
 
@@ -49,7 +53,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool, noRewrit
  * 	timeoutA (int): timeout for analysis
  * 	timeoutR (int): timeout for replay
  * 	numRerecorded (int): limit of number of rerecordings
- * 	fuzzing (bool): true if the run is part of fuzzing
+ * 	fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * 	replayAt (bool): replay atomics
  * 	meaTime (bool): measure runtime
  * 	notExec (bool): find never executed operations
@@ -57,7 +61,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool, noRewrit
  * 	keepTraces (bool): keep the traces after analysis
  */
 func Run(mode, advocate, file, execName, progName, test string,
-	timeoutA, timeoutR, numRerecorded int, fuzzing,
+	timeoutA, timeoutR, numRerecorded, fuzzing int,
 	replayAt, meaTime, notExec, stats, keepTraces bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
@@ -76,6 +80,9 @@ func Run(mode, advocate, file, execName, progName, test string,
 	notExecuted = notExec
 	createStats = stats
 
+	analysis.ClearTrace()
+	analysis.ClearData()
+
 	switch mode {
 	case "main":
 		if pathToAdvocate == "" {
@@ -90,7 +97,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 		if (stats || measureTime) && progName == "" {
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
-		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, timeoutAna, timeoutReplay, keepTraces)
+		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, timeoutAna, timeoutReplay, keepTraces, fuzzing)
 	case "test", "tests":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

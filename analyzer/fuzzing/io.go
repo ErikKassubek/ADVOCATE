@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"bufio"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -204,7 +205,9 @@ func writeMutationsToFile(pathToFolder string, mut map[string][]fuzzingSelect) e
 	defer file.Close() // Ensure the file is closed when we're done
 
 	// Write some content to the file
+	log.Println("Len mut: ", len(mut))
 	for id, selects := range mut {
+		log.Println("Len sel: ", len(selects))
 		content := fmt.Sprintf("%s;", id)
 
 		for i, sel := range selects {
@@ -221,4 +224,12 @@ func writeMutationsToFile(pathToFolder string, mut map[string][]fuzzingSelect) e
 	}
 
 	return nil
+}
+
+/*
+ * Store the results of previously found fuzzing runs.
+ * This file is mainly used to prevent replay of already found bugs
+ */
+func storeFuzzingResults() {
+
 }

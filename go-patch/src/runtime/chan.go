@@ -1031,7 +1031,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	res := false
 	recv := false
 	if !fuzzingEnabled {
-		res = chansend(c, elem, false, getcallerpc(), true)
+		res, recv = chanrecv(c, elem, false, true)
 	} else {
 		if fuzzingIndex != -1 { // not the default
 			startTime := currentTime()

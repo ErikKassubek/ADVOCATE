@@ -33,7 +33,7 @@ func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	for key, listSel := range allSelects {
 		res[key] = make([]fuzzingSelect, 0)
 		for _, sel := range listSel {
-			res[key] = append(res[key], sel.getCopyRandom(false, flipChance))
+			res[key] = append(res[key], sel.getCopyRandom(true, flipChance))
 		}
 	}
 

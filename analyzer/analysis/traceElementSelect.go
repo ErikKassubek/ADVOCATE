@@ -556,7 +556,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 		se.chosenCase.updateVectorClock()
 	}
 
-	if analysisCases["selectWithoutPartner"] {
+	if analysisCases["selectWithoutPartner"] || runFuzzing {
 		timemeasurement.Start("other")
 		// check for select case without partner
 		ids := make([]int, 0)

@@ -38,6 +38,7 @@ var (
 	numberOfRoutines = 0
 	fifo             bool
 	result           string
+	runFuzzing       bool
 )
 
 /*
@@ -268,12 +269,14 @@ func SetNumberOfRoutines(n int) {
 *   ignoreCriticalSections (bool): True to ignore critical sections when updating
 *   	vector clocks
 *   analysisCasesMap (map[string]bool): The analysis cases to run
+*   fuzzing (bool): true if run with fuzzing
  */
-func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool) string {
+func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) string {
 
 	log.Print("Analyze the trace")
 
 	fifo = assumeFifo
+	runFuzzing = fuzzing
 
 	analysisCases = analysisCasesMap
 	InitAnalysis(analysisCases)
@@ -365,7 +368,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 
 	}
 
-	if analysisCases["selectWithoutPartner"] {
+	if analysisCases["selectWithoutPartner"] || runFuzzing {
 		timemeasurement.Start("other")
 		rerunCheckForSelectCaseWithoutPartnerChannel()
 		CheckForSelectCaseWithoutPartner()

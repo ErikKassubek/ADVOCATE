@@ -78,7 +78,7 @@ func TestSelectSelect(t *testing.T) {
 		3: clock.NewVectorClockSet(3, map[int]int{1: 5, 2: 6, 3: 9}),
 	}
 
-	RunAnalysis(false, false, make(map[string]bool))
+	RunAnalysis(false, false, make(map[string]bool), false)
 
 	// remember that runAnalysis will increase the counter on [1][1] by 1
 	expectedVcs := map[int]clock.VectorClock{
@@ -149,7 +149,7 @@ func TestChanSelect(t *testing.T) {
 		3: clock.NewVectorClockSet(3, map[int]int{1: 5, 2: 6, 3: 9}),
 	}
 
-	RunAnalysis(false, false, make(map[string]bool))
+	RunAnalysis(false, false, make(map[string]bool), false)
 
 	// remember that runAnalysis will increase the counter on [1][1] by 1
 	expectedVcs := map[int]clock.VectorClock{
@@ -219,7 +219,7 @@ func TestSelectChan(t *testing.T) {
 		3: clock.NewVectorClockSet(3, map[int]int{1: 5, 2: 6, 3: 9}),
 	}
 
-	RunAnalysis(false, false, make(map[string]bool))
+	RunAnalysis(false, false, make(map[string]bool), false)
 
 	// remember that runAnalysis will increase the counter on [1][1] by 1
 	expectedVcs := map[int]clock.VectorClock{
@@ -274,7 +274,7 @@ func TestDefault(t *testing.T) {
 		3: clock.NewVectorClockSet(3, map[int]int{1: 5, 2: 6, 3: 9}),
 	}
 
-	RunAnalysis(false, false, make(map[string]bool))
+	RunAnalysis(false, false, make(map[string]bool), false)
 
 	// remember that runAnalysis will increase the counter on [1][1] by 1
 	expectedVcs := map[int]clock.VectorClock{

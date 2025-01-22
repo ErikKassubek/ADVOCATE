@@ -76,14 +76,24 @@ func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelec
 		return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: fs.chosenCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
 	}
 
-	// if def == false -> rand between 0 and fs.numberCases - 1
-	// otherwise rand between -1 and fs.numberCases - 1
-	shift := 0
-	if def && fs.containsDefault {
-		shift = 1
+	// if at most one case and no default (should not happen), or only default select the same case again
+	if (!def && fs.numberCases <= 1) || (def && fs.numberCases == 0) {
+		return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: fs.chosenCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
 	}
 
-	chosenCase := rand.Intn(fs.numberCases+shift) - shift
+	// if def == false -> rand between 0 and fs.numberCases - 1
+	// otherwise rand between -1 and fs.numberCases - 1
+	start := 0
+	if def && fs.containsDefault {
+		start = -1
+	}
+
+	chosenCase := rand.Intn(fs.numberCases-start-1) + start
+
+	// do not select the same number again
+	if chosenCase >= fs.chosenCase {
+		chosenCase++
+	}
 
 	return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: chosenCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
 }

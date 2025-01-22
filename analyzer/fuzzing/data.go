@@ -28,8 +28,9 @@ var (
 	pairInfoTrace    = make(map[string]fuzzingPair) // posSend-noPrintosRecv -> fuzzing pair
 	numberClose      = 0
 	// Info from the file/the previous runs
-	channelInfoFile = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
-	pairInfoFile    = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
+	channelInfoFile              = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
+	pairInfoFile                 = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
+	numberSelectCasesWithPartner = 0
 )
 
 /*

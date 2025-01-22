@@ -18,6 +18,8 @@ import (
 	"strings"
 )
 
+var numberSelectCasesWithPartner int
+
 /*
 * CheckForSelectCaseWithoutPartner checks for select cases without a valid
 * partner. Call when all elements have been processed.
@@ -77,6 +79,8 @@ func CheckForSelectCaseWithoutPartner() {
 		partnerResult := make([]results.ResultElem, 0)
 
 		if c.partnerFound {
+			numberSelectCasesWithPartner++
+
 			if c.exec {
 				continue
 			}
@@ -130,8 +134,10 @@ func CheckForSelectCaseWithoutPartner() {
 				continue
 			}
 
-			results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
-				"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
+			if analysisCases["selectWithoutPartner"] {
+				results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
+					"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
+			}
 			continue
 		}
 
@@ -176,9 +182,10 @@ func CheckForSelectCaseWithoutPartner() {
 			File:      file,
 			Line:      line,
 		}
-
-		results.Result(results.WARNING, results.ASelCaseWithoutPartner,
-			"select", []results.ResultElem{arg1}, "case", cases)
+		if analysisCases["selectWithoutPartner"] {
+			results.Result(results.WARNING, results.ASelCaseWithoutPartner,
+				"select", []results.ResultElem{arg1}, "case", cases)
+		}
 	}
 }
 
@@ -319,4 +326,11 @@ func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc clock.Vec
 			selectCases[i].partner = append(selectCases[i].partner, VectorClockTID3{cl, vc, 0})
 		}
 	}
+}
+
+/*
+ * Get number of cases with possible partner
+ */
+func GetNumberSelectCasesWithPartner() int {
+	return numberSelectCasesWithPartner
 }

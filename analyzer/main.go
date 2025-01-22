@@ -316,7 +316,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		}
 
 		timemeasurement.Start("analysis")
-		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases)
+		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0)
 		timemeasurement.End("analysis")
 
 		timemeasurement.Print()

@@ -41,6 +41,8 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 	}
 
 	sortSelects()
+
+	numberSelectCasesWithPartner = analysis.GetNumberSelectCasesWithPartner()
 }
 
 /*

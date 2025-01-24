@@ -53,8 +53,9 @@ func (wg *WaitGroup) Add(delta int) {
 	if delta > 0 {
 		skip = 2
 	}
-	wait, ch := runtime.WaitForReplay(runtime.OperationWaitgroupAddDone, skip)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationWaitgroupAddDone, skip, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 	// ADVOCATE-CHANGE-END
@@ -126,8 +127,9 @@ func (wg *WaitGroup) Done() {
 // Wait blocks until the WaitGroup counter is zero.
 func (wg *WaitGroup) Wait() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if wg.id == 0 {

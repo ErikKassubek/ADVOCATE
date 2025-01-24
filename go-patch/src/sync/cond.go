@@ -76,8 +76,9 @@ func (c *Cond) Wait() {
 		c.id = runtime.GetAdvocateObjectID()
 	}
 	// replay
-	wait, ch := runtime.WaitForReplay(runtime.OperationCondWait, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondWait, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 	//record
@@ -105,8 +106,9 @@ func (c *Cond) Signal() {
 		c.id = runtime.GetAdvocateObjectID()
 	}
 	// replay
-	wait, ch := runtime.WaitForReplay(runtime.OperationCondSignal, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondSignal, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 	// recording
@@ -127,8 +129,9 @@ func (c *Cond) Broadcast() {
 		c.id = runtime.GetAdvocateObjectID()
 	}
 	// replay
-	wait, ch := runtime.WaitForReplay(runtime.OperationCondBroadcast, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondBroadcast, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 	//recording

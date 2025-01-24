@@ -238,7 +238,7 @@ func DisableReplay() {
 
 	lock(&waitingOpsMutex)
 	for _, replCh := range waitingOps {
-		replCh.ch <- ReplayElement{Blocked: false}
+		replCh.chWait <- ReplayElement{Blocked: false}
 	}
 	unlock(&waitingOpsMutex)
 
@@ -297,6 +297,7 @@ func ReleaseWaits() {
 	const releaseOldestWaitLastMax int64 = 6
 	const releaseWaitMaxWait = 20
 	const releaseWaitMaxNoWait = 10
+	const acknowledgementMaxWaitSec = 5
 	releaseOldestWait := releaseOldestWaitLastMax
 
 	for {
@@ -326,7 +327,7 @@ func ReleaseWaits() {
 		key := replayElem.File + ":" + intToString(replayElem.Line)
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
-				var oldest = replayChan{nil, -1}
+				var oldest = replayChan{nil, nil, -1, false}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
 				for key, ch := range waitingOps {
@@ -337,10 +338,20 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
-					oldest.ch <- replayElem
+					oldest.chWait <- replayElem
+
 					if printDebug {
 						println("RelO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 					}
+
+					// wait for the acknowledgement
+					if oldest.wait {
+						select {
+						case <-oldest.chAck:
+						case <-after(sToNs(acknowledgementMaxWaitSec)):
+						}
+					}
+
 					lastTime = currentTime()
 					if releaseOldestWait > 1 {
 						releaseOldestWait--
@@ -387,12 +398,22 @@ func ReleaseWaits() {
 		}
 
 		lock(&waitingOpsMutex)
-		if replCh, ok := waitingOps[key]; ok {
+		if waitCh, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
-			replCh.ch <- replayElem
+			waitCh.chWait <- replayElem
+
 			if printDebug {
 				println("RelR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 			}
+
+			// wait for the acknowledgement
+			if waitCh.wait {
+				select {
+				case <-waitCh.chAck:
+				case <-after(sToNs(acknowledgementMaxWaitSec)):
+				}
+			}
+
 			lastTime = currentTime()
 			lastTimeWithoutOldest = currentTime()
 			releaseOldestWait = releaseOldestWaitLastMax
@@ -418,8 +439,10 @@ func ReleaseWaits() {
 }
 
 type replayChan struct {
-	ch      chan ReplayElement
+	chWait  chan ReplayElement
+	chAck   chan struct{}
 	counter int
+	wait    bool
 }
 
 // Map of all currently waiting operations
@@ -432,33 +455,36 @@ var counter = 0
  * Arguments:
  * 	op: the operation type that is about to be executed
  * 	skip: number of stack frames to skip
+ * 	waitForResponse bool: whether the wait should wait for a response after finished
  * Return:
  * 	bool: true if the operation should wait, false otherwise
  * 	chan ReplayElement: channel to wait on
+ * 	chan struct{}: chan to report back on when finished
  */
-func WaitForReplay(op Operation, skip int) (bool, chan ReplayElement) {
+func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
 	_, file, line, _ := Caller(skip)
 
-	return WaitForReplayPath(op, file, line)
+	return WaitForReplayPath(op, file, line, waitForResponse)
 }
 
 /*
  * Wait until the correct operation is about to be executed.
  * Arguments:
- * 		op: the operation type that is about to be executed
- * 		file: file in which the operation is executed
- * 		line: line number of the operation
+ * 	op: the operation type that is about to be executed
+ * 	file: file in which the operation is executed
+ * 	line: line number of the operation
+ * 	waitForResponse bool: whether the wait should wait for a response after finished
  * Return:
  * 	bool: true if the operation should wait, false otherwise
  * 	chan ReplayElement: channel to wait on
  */
-func WaitForReplayPath(op Operation, file string, line int) (bool, chan ReplayElement) {
+func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
 	if !replayEnabled {
-		return false, nil
+		return false, nil, nil
 	}
 
 	if AdvocateIgnoreReplay(op, file) {
-		return false, nil
+		return false, nil, nil
 	}
 
 	// routine := GetRoutineID()
@@ -469,15 +495,16 @@ func WaitForReplayPath(op Operation, file string, line int) (bool, chan ReplayEl
 		println("Wait: ", op.ToString(), file, line)
 	}
 
-	ch := make(chan ReplayElement, 0)
+	chWait := make(chan ReplayElement, 0)
+	chResp := make(chan struct{}, 1)
 	lock(&waitingOpsMutex)
 	if _, ok := waitingOps[key]; ok {
 		println("Override key: ", key)
 	}
-	waitingOps[key] = replayChan{ch, counter}
+	waitingOps[key] = replayChan{chWait, chResp, counter, waitForResponse}
 	unlock(&waitingOpsMutex)
 
-	return true, ch
+	return true, chWait, chResp
 }
 
 /*

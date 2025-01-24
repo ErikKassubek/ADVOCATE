@@ -69,8 +69,9 @@ const rwmutexMaxReaders = 1 << 30
 // documentation on the RWMutex type.
 func (rw *RWMutex) RLock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {
@@ -121,8 +122,9 @@ func (rw *RWMutex) RLock() {
 // in a particular use of mutexes.
 func (rw *RWMutex) TryRLock() bool {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {
@@ -190,8 +192,9 @@ func (rw *RWMutex) TryRLock() bool {
 // on entry to RUnlock.
 func (rw *RWMutex) RUnlock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			_ = runtime.AdvocateUnlockPre(rw.id, true, true)
@@ -238,8 +241,9 @@ func (rw *RWMutex) rUnlockSlow(r int32) {
 // Lock blocks until the lock is available.
 func (rw *RWMutex) Lock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {
@@ -294,8 +298,9 @@ func (rw *RWMutex) Lock() {
 // in a particular use of mutexes.
 func (rw *RWMutex) TryLock() bool {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexTryLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexTryLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {
@@ -374,8 +379,9 @@ func (rw *RWMutex) TryLock() bool {
 // arrange for another goroutine to RUnlock (Unlock) it.
 func (rw *RWMutex) Unlock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationRWMutexUnlock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexUnlock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 	// AdvocateUnlockPre is used to record the unlocking of a mutex.

@@ -68,8 +68,9 @@ func (o *Once) Do(f func()) {
 	// the o.done.Store must be delayed until after f returns.
 
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationOnce, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationOnce, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if o.id == 0 {

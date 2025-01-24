@@ -87,8 +87,9 @@ const (
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationMutexLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if m.id == 0 {
 			m.id = runtime.GetAdvocateObjectID()
@@ -136,8 +137,9 @@ func (m *Mutex) Lock() {
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {
@@ -301,8 +303,9 @@ func (m *Mutex) lockSlow(advocateIndex int) {
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
 	// ADVOCATE-CHANGE-START
-	wait, ch := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2)
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
 	if wait {
+		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {

@@ -596,7 +596,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// ADVOCATE-CHANGE-START
 	var replayElem ReplayElement
-	wait, ch := WaitForReplay(OperationSelect, 2)
+	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
 	if wait {
 		replayElem = <-ch
 	}

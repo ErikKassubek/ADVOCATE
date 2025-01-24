@@ -4920,7 +4920,7 @@ func newproc(fn *funcval) {
 	}
 	file, line := funcline(f, tracepc)
 
-	wait, ch := WaitForReplayPath(OperationSpawn, file, int(line))
+	wait, ch, _ := WaitForReplayPath(OperationSpawn, file, int(line), false)
 	if wait {
 		<-ch
 	}

@@ -271,6 +271,13 @@ func GetNumberOfRoutines() int {
 }
 
 /*
+ * Return whether timeouts happened during replay or mutation execution
+ */
+func TimeoutHappened() bool {
+	return timeoutHappened
+}
+
+/*
  * InitAdvocate enables the collection of the trace
  * Args:
  * 	size: size of the channel used to link the atomic recording to the main

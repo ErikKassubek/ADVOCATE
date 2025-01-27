@@ -21,7 +21,7 @@ import (
 func ParseTrace(trace map[int][]analysis.TraceElement) {
 	log.Println("Parse Trace: ", len(trace))
 	// clear current order
-	allSelects = make(map[string][]fuzzingSelect)
+	selectInfoTrace = make(map[string][]fuzzingSelect)
 
 	for _, routine := range trace {
 		for _, elem := range routine {
@@ -123,7 +123,7 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 }
 
 func parseSelectOp(e *analysis.TraceElementSelect) {
-	addFuzzingSelect(e.GetPos(), e.GetTPost(), e.GetChosenIndex(), len(e.GetCases()), e.GetContainsDefault())
+	addFuzzingSelect(e)
 
 	if e.GetChosenDefault() {
 		return

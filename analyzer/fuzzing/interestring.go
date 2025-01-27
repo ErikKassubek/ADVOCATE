@@ -10,26 +10,36 @@
 
 package fuzzing
 
-import "log"
+import (
+	"analyzer/analysis"
+	"analyzer/utils"
+	"math"
+)
+
+const maxRuntimeRecordingSec = 7 * 60 // 7 min
 
 /*
  * A run is considered interesting, if at least one of the following conditions is met
  * 	1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
- * 	2. An operation pair's execution counter changes significantly from previous order.
+ * 	2. An operation pair's execution counter changes significantly (by at least 50%) from previous avg over all runs.
  * 	3. A new channel operation is triggered, such as creating, closing or not closing a channel for the first time
  * 	4. A buffered channel gets a larger maximum fullness than in all previous executions (MaxChBufFull)
+ * 	5. A select case is executed for the first time
  */
-func isInteresting() bool {
+func isInterestingSelect() bool {
 	// 1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
-	log.Println("PairInfoTrace: ", len(pairInfoTrace))
-	for keyTrace, _ := range pairInfoTrace {
-		if _, ok := pairInfoFile[keyTrace]; !ok {
+	for keyTrace, pit := range pairInfoTrace {
+		pif, ok := pairInfoFile[keyTrace]
+		if !ok {
+			return true
+		}
+
+		// 2. An operation pair's execution counter changes significantly from previous order.
+		change := math.Abs((pit.com - pif.com) / pif.com)
+		if change > 0.5 {
 			return true
 		}
 	}
-
-	// 2. An operation pair's execution counter changes significantly from previous order.
-	// TODO: implement
 
 	for _, data := range channelInfoTrace {
 		fileData, ok := channelInfoFile[data.globalID]
@@ -54,5 +64,40 @@ func isInteresting() bool {
 		}
 	}
 
+	// 5. A select choses a case it has never been selected before
+	for id, data := range selectInfoTrace {
+		alreadyExecCase, ok := selectInfoFile[id]
+		if !ok { // select has never been seen before
+			return true
+		}
+
+		for _, sel := range data { // case has been executed for the first time
+			if !utils.ContainsInt(alreadyExecCase, sel.chosenCase) {
+				return true
+			}
+		}
+
+	}
+
 	return false
+}
+
+/*
+ * A run is interesting vor interleaving mutation, if during the run,
+ * the schedule chain was actually scheduled and no timeouts occurred and the
+ * whole recording did not extend a predefined maximal runtime
+ */
+func isInterestingInterleaving() bool {
+	// timeouts
+	if analysis.GetTimeoutHappened() {
+		return false
+	}
+
+	// exceeded maximal recording time
+	rt := analysis.GetRuntimeDurationInSec()
+	if rt > maxRuntimeRecordingSec {
+		return false
+	}
+
+	return true
 }

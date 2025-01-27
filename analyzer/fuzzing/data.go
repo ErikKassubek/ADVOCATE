@@ -10,7 +10,10 @@
 
 package fuzzing
 
-import "fmt"
+import (
+	"analyzer/utils"
+	"fmt"
+)
 
 type closeInfo string
 
@@ -18,18 +21,23 @@ const (
 	always    closeInfo = "a"
 	never     closeInfo = "n"
 	sometimes closeInfo = "s"
+
+	factorCaseWithPartner = 2
 )
 
 var (
 	numberOfPreviousRuns = 0
 	maxScore             = 0.0
 	// Info for the current trace
-	channelInfoTrace = make(map[int]fuzzingChannel) // localID -> fuzzingChannel
-	pairInfoTrace    = make(map[string]fuzzingPair) // posSend-noPrintosRecv -> fuzzing pair
+	channelInfoTrace = make(map[int]fuzzingChannel)     // localID -> fuzzingChannel
+	pairInfoTrace    = make(map[string]fuzzingPair)     // posSend-posRecv -> fuzzing pair
+	selectInfoTrace  = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
+	numberSelects    = 0
 	numberClose      = 0
 	// Info from the file/the previous runs
 	channelInfoFile              = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
 	pairInfoFile                 = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
+	selectInfoFile               = make(map[string][]int)          // globalID -> executed casi
 	numberSelectCasesWithPartner = 0
 )
 
@@ -59,7 +67,7 @@ type fuzzingChannel struct {
  *    chanID: local ID of the channel
  *    sendSel: id of the select case, if not part of select: -2
  *    recvSel: id of the select case, if not part of select: -2
- *    com: avg number of communication from all the run
+ *    com: number of communication in this run of avg of communications over all runs
  */
 type fuzzingPair struct {
 	sendID  string
@@ -94,4 +102,39 @@ func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
 		return sometimes
 	}
 	return file
+}
+
+func mergeTraceInfoIntoFileInfo() {
+	// channel info
+	for _, cit := range channelInfoTrace {
+		if cif, ok := channelInfoFile[cit.globalID]; !ok {
+			channelInfoFile[cit.globalID] = cit
+		} else {
+			channelInfoFile[cit.globalID] = fuzzingChannel{cit.globalID, 0,
+				mergeCloseInfo(cif.closeInfo, cit.closeInfo),
+				cit.qSize, max(cif.maxQCount, cit.maxQCount)}
+		}
+	}
+
+	// pair info
+	for id, pit := range pairInfoTrace {
+		if pif, ok := pairInfoFile[id]; !ok {
+			pairInfoFile[id] = pit
+		} else {
+			npr := float64(numberOfPreviousRuns)
+			pif.com = (npr*pif.com + pit.com) / (npr + 1)
+			pairInfoFile[id] = pif
+		}
+	}
+
+	// select info
+	for id, sits := range selectInfoTrace {
+		if _, ok := selectInfoFile[id]; !ok {
+			selectInfoFile[id] = make([]int, 0)
+		}
+
+		for _, sit := range sits {
+			selectInfoFile[id] = utils.AddIfNotContains(selectInfoFile[id], sit.chosenCase)
+		}
+	}
 }

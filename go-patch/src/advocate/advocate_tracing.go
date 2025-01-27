@@ -1,10 +1,11 @@
 package advocate
 
 import (
+	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
-	"runtime"
+	"std/runtime"
 	"strconv"
 	"sync"
 	"time"
@@ -14,6 +15,10 @@ var traceFileCounter = 0
 var tracePathRecorded = "advocateTrace"
 
 var hasFinished = false
+
+var timerStarted = false
+var startTime time.Time
+var duration time.Duration
 
 /*
  * Write the trace of the program to a file.
@@ -48,6 +53,10 @@ func FinishTracing() {
 
 	runtime.DisableTrace()
 
+	if timerStarted {
+		duration = time.Since(startTime)
+	}
+
 	writeToTraceFiles(tracePathRecorded)
 }
 
@@ -64,6 +73,8 @@ func writeToTraceFiles(tracePath string) {
 		wg.Add(1)
 		go writeToTraceFile(i, &wg, tracePath)
 	}
+
+	writeToTraceFileInfo(tracePath, numRout)
 
 	wg.Wait()
 }
@@ -104,6 +115,28 @@ func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
 			panic(err)
 		}
 	}
+}
+
+/*
+ * Write a trace info file
+ */
+func writeToTraceFileInfo(tracePath string, numberRoutines int) {
+	fileName := filepath.Join(tracePath, "trace_info.log")
+
+	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		panic(err)
+	}
+	defer file.Close()
+
+	file.WriteString(fmt.Sprintf("NumberRoutines:%d", numberRoutines))
+	file.WriteString(fmt.Sprintf("Timeout:%t", runtime.TimeoutHappened()))
+	if timerStarted {
+		file.WriteString(fmt.Sprintf("Runtime:%d", int(duration.Seconds())))
+	} else {
+		file.WriteString(fmt.Sprintf("Runtime:0", int(duration.Seconds())))
+	}
+
 }
 
 /*
@@ -168,6 +201,9 @@ func InitTracing() {
 		}
 		os.Exit(1)
 	}()
+
+	startTime = time.Now()
+	timerStarted = true
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()

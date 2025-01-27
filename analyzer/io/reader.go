@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -34,13 +35,13 @@ import (
  *   bool: True if the trace contains any elems
  *   error: An error if the trace could not be created
  */
-func CreateTraceFromFiles(filePath string, ignoreAtomics bool) (int, bool, error) {
+func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, error) {
 	numberRoutines := 0
 
-	println("Read trace from " + filePath)
+	println("Read trace from " + folderPath)
 
 	// traverse all files in the folder
-	files, err := os.ReadDir(filePath)
+	files, err := os.ReadDir(folderPath)
 	if err != nil {
 		return 0, false, err
 	}
@@ -55,13 +56,19 @@ func CreateTraceFromFiles(filePath string, ignoreAtomics bool) (int, bool, error
 			continue
 		}
 
+		filePath := filepath.Join(folderPath, file.Name())
+
+		if file.Name() == "trace_info.log" {
+			getTraceInfoFromFile(filePath)
+		}
+
 		routine, err := getRoutineFromFileName(file.Name())
 		if err != nil {
 			continue
 		}
 		numberRoutines = max(numberRoutines, routine)
 
-		containsElem, err := CreateTraceFromFile(filePath+"/"+file.Name(), routine, ignoreAtomics)
+		containsElem, err := CreateTraceFromFile(filePath, routine, ignoreAtomics)
 		if err != nil {
 			return 0, containsElems, err
 		}
@@ -73,6 +80,37 @@ func CreateTraceFromFiles(filePath string, ignoreAtomics bool) (int, bool, error
 	analysis.Sort()
 
 	return numberRoutines, containsElems, nil
+}
+
+func getTraceInfoFromFile(filePath string) error {
+	file, err := os.Open(filePath)
+	if err != nil {
+		log.Print("Error opening file: " + filePath)
+		return err
+	}
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		lineSplit := strings.Split(line, ":")
+		if len(lineSplit) != 2 {
+			continue
+		}
+
+		if lineSplit[0] == "Timeout" && lineSplit[1] == "true" {
+			analysis.SetTimeoutHappened(true)
+		}
+
+		if lineSplit[0] == "Runtime" {
+			rt, err := strconv.Atoi(lineSplit[1])
+			if err == nil {
+				analysis.SetRuntimeDurationSec(rt)
+			}
+		}
+	}
+
+	return nil
 }
 
 /*

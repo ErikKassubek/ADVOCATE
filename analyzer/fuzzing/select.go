@@ -11,15 +11,11 @@
 package fuzzing
 
 import (
+	"analyzer/analysis"
 	"fmt"
 	"sort"
 
 	"math/rand"
-)
-
-var (
-	allSelects    = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
-	numberSelects = 0
 )
 
 /*
@@ -28,6 +24,7 @@ var (
  *   chosenCase (int): id of the chosen case, -1 for default
  *   numberCases (int): number of cases not including default
  *   containsDefault (bool): true if contains default case, otherwise false
+ *   casiWithPos([]int): list of casi with
  */
 type fuzzingSelect struct {
 	id              string
@@ -35,25 +32,27 @@ type fuzzingSelect struct {
 	chosenCase      int
 	numberCases     int
 	containsDefault bool
+	casiWithPos     []int
 }
 
-func addFuzzingSelect(id string, t int, chosenCase int, numberCases int, containsDefault bool) {
+func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	fs := fuzzingSelect{
-		id:              id,
-		t:               t,
-		chosenCase:      chosenCase,
-		numberCases:     numberCases,
-		containsDefault: containsDefault,
+		id:              e.GetPos(),
+		t:               e.GetTPost(),
+		chosenCase:      e.GetChosenIndex(),
+		numberCases:     len(e.GetCases()),
+		containsDefault: e.GetContainsDefault(),
+		casiWithPos:     e.GetCasiWithPosPartner(),
 	}
 
-	allSelects[id] = append(allSelects[id], fs)
+	selectInfoTrace[fs.id] = append(selectInfoTrace[fs.id], fs)
 	numberSelects++
 }
 
 func sortSelects() {
-	for key := range allSelects {
-		sort.Slice(allSelects[key], func(i, j int) bool {
-			return allSelects[key][i].t < allSelects[key][j].t
+	for key := range selectInfoTrace {
+		sort.Slice(selectInfoTrace[key], func(i, j int) bool {
+			return selectInfoTrace[key][i].t < selectInfoTrace[key][j].t
 		})
 	}
 }
@@ -81,21 +80,73 @@ func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelec
 		return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: fs.chosenCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
 	}
 
-	// if def == false -> rand between 0 and fs.numberCases - 1
-	// otherwise rand between -1 and fs.numberCases - 1
+	prefCase := fs.chooseRandomCase(def)
+
+	return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: prefCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
+}
+
+/*
+ * Randomly select a case.
+ * The case is between 0 and fs.numberCases if def is false and between -1 and fs.numberCases otherwise
+ * fs.chosenCase is never chosen
+ * The values in fs.casiWithPos have a higher likelihood to be chosen by a
+ *   factor factorCaseWithPartner (defined in fuzzing/data.go)
+ */
+func (fs fuzzingSelect) chooseRandomCase(def bool) int {
+	// Determine the starting number based on includeZero
 	start := 0
-	if def && fs.containsDefault {
+	if def {
 		start = -1
 	}
 
-	chosenCase := rand.Intn(fs.numberCases-start-1) + start
+	// Create a weight map for the probabilities
+	weights := make(map[int]int)
 
-	// do not select the same number again
-	if chosenCase >= fs.chosenCase {
-		chosenCase++
+	// Assign weights to each number
+	for i := start; i <= fs.numberCases; i++ {
+		if i == fs.chosenCase {
+			weights[i] = 0 // Ensure chosen case is never selected
+		} else {
+			weights[i] = 1 // Default weight
+		}
 	}
 
-	return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: chosenCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
+	// Increase weights for numbers in fs.casiWithPos
+	for _, num := range fs.casiWithPos {
+		if num >= start && num <= fs.numberCases && num != fs.chosenCase {
+			weights[num] *= factorCaseWithPartner
+		}
+	}
+
+	// Generate a cumulative weight array
+	cumulativeWeights := []int{}
+	numbers := []int{} // Keep track of the corresponding numbers
+	totalWeight := 0
+
+	for i := start; i <= fs.numberCases; i++ {
+		if weight, exists := weights[i]; exists && weight > 0 {
+			totalWeight += weight
+			cumulativeWeights = append(cumulativeWeights, totalWeight)
+			numbers = append(numbers, i)
+		}
+	}
+
+	// Handle edge case where no valid number can be chosen
+	if totalWeight == 0 {
+		return 0
+	}
+
+	r := rand.Intn(totalWeight)
+
+	// Find the number corresponding to the random weight
+	for i, cw := range cumulativeWeights {
+		if r < cw {
+			return numbers[i]
+		}
+	}
+
+	// Fallback (should never reach here)
+	return 0
 }
 
 func (fs fuzzingSelect) isEqual(fs2 fuzzingSelect) bool {

@@ -79,6 +79,7 @@ func CheckForSelectCaseWithoutPartner() {
 		partnerResult := make([]results.ResultElem, 0)
 
 		if c.partnerFound {
+			c.sel.casesWithPosPartner = append(c.sel.casesWithPosPartner, c.casi)
 			numberSelectCasesWithPartner++
 
 			if c.exec {
@@ -182,6 +183,7 @@ func CheckForSelectCaseWithoutPartner() {
 			File:      file,
 			Line:      line,
 		}
+
 		if analysisCases["selectWithoutPartner"] {
 			results.Result(results.WARNING, results.ASelCaseWithoutPartner,
 				"select", []results.ResultElem{arg1}, "case", cases)
@@ -193,24 +195,22 @@ func CheckForSelectCaseWithoutPartner() {
 * CheckForSelectCaseWithoutPartnerSelect checks for select cases without a valid
 * partner. Call whenever a select is processed.
 * Args:
-*   se (*TraceElementSelect): The trace element
-*   ids ([]int): The ids of the channels
-*   bufferedInfo ([]bool): The buffer status of the channels
-*   sendInfo ([]bool): The send status of the channels
+*   se (*TraceElementSelect): The trace elemen
 *   vc (VectorClock): The vector clock
  */
-//  func CheckForSelectCaseWithoutPartnerSelect(routine int, selectID int, caseChanIds []int, bufferedInfo []bool,
-func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, caseChanIds []int, bufferedInfo []bool,
-	sendInfo []bool, vc clock.VectorClock) {
-	for i, id := range caseChanIds {
-		buffered := bufferedInfo[i]
-		send := sendInfo[i]
+func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc clock.VectorClock) {
+	for casi, c := range se.cases {
+
+		id := c.id
+
+		buffered := (c.qSize > 0)
+		send := (c.opC == SendOp)
 
 		found := false
 		executed := false
 		var partner = make([]VectorClockTID3, 0)
 
-		if i == se.chosenIndex && se.tPost != 0 {
+		if casi == se.chosenIndex && se.tPost != 0 {
 			// no need to check if the channel is the chosen case
 			executed = true
 			p := se.GetPartner()
@@ -253,7 +253,7 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, caseChanIds 
 		}
 
 		selectCases = append(selectCases,
-			allSelectCase{se, id, VectorClockTID{vc, se.GetTID(), se.routine}, send, buffered, found, partner, executed})
+			allSelectCase{se, id, VectorClockTID{vc, se.GetTID(), se.routine}, send, buffered, found, partner, executed, casi})
 
 	}
 }

@@ -58,6 +58,7 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 			}
 		}
 
+		// Run the test/mutation
 		err := toolchain.Run("test", advocate, testPath, "", progName, testName,
 			-1, -1, 0, numberFuzzingRuns, true, false, false, false, false)
 		if err != nil {
@@ -69,23 +70,17 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 		// itself is run by the toolchain.Run function via function injection.
 		// At some point this should be refactored to make it less complicated
 
-		fmt.Println("Start isInteresting")
-		log.Println("Start isInteresting")
-		// add new mutations
-		if isInteresting() {
+		// add new mutations based on GFuzz select
+		if isInterestingSelect() {
 			fmt.Println("Create mutations")
 			numberMut := numberMutations()
 			flipProb := getFlipProbability()
-			log.Println("Mut: ", numberMut, flipProb)
 			createMutations(numberMut, flipProb)
-			fmt.Println("Number: ", numberMut)
-			fmt.Println("flipProp: ", flipProb)
-			fmt.Println("NumMut: ", len(mutationQueue))
 		}
 
-		numberFuzzingRuns++
+		mergeTraceInfoIntoFileInfo()
 
-		storeFuzzingResults()
+		numberFuzzingRuns++
 
 		// cancel if max number of mutations have been reached
 		if numberFuzzingRuns > maxNumberRuns {

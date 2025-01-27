@@ -83,3 +83,35 @@ func GetErrorDiff(expected error, given error) error {
 
 	return nil
 }
+
+func AddIfNotContains(l []int, e int) []int {
+	if !ContainsInt(l, e) {
+		l = append(l, e)
+	}
+	return l
+}
+
+/*
+ * Given two lists of ints, return a list containing all the elements from both
+ * lists. The resulting list does not contain duplicated.
+ */
+func MergeIntLists(l1, l2 []int) []int {
+	uniqueMap := make(map[int]bool)
+	res := []int{}
+
+	for _, val := range l1 {
+		if !uniqueMap[val] {
+			uniqueMap[val] = true
+			res = append(res, val)
+		}
+	}
+
+	for _, val := range l2 {
+		if !uniqueMap[val] {
+			uniqueMap[val] = true
+			res = append(res, val)
+		}
+	}
+
+	return res
+}

@@ -39,6 +39,9 @@ var (
 	fifo             bool
 	result           string
 	runFuzzing       bool
+
+	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
+	durationInSeconds = -1 // the duration of the recording in seconds
 )
 
 /*
@@ -119,6 +122,22 @@ func GetTraces() map[int][]TraceElement {
  */
 func GetTraceFromId(id int) []TraceElement {
 	return traces[id]
+}
+
+func SetTimeoutHappened(timeout bool) {
+	timeoutHappened = timeout
+}
+
+func GetTimeoutHappened() bool {
+	return timeoutHappened
+}
+
+func SetRuntimeDurationSec(sec int) {
+	durationInSeconds = sec
+}
+
+func GetRuntimeDurationInSec() int {
+	return durationInSeconds
 }
 
 /*

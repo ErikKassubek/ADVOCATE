@@ -47,6 +47,7 @@ type allSelectCase struct {
 	partnerFound bool                // true: partner found, false: no partner found
 	partner      []VectorClockTID3   // the potential partner
 	exec         bool                // true: the case was executed, false: otherwise
+	casi         int                 // internal index for the case in the select
 }
 
 var (

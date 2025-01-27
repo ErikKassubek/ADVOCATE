@@ -169,6 +169,8 @@ var expectedExitCode int
 var lastTPreReplay int
 var stuckReplayExecutedSuc = false
 
+var timeoutHappened = false
+
 /*
  * Add a replay trace to the replay data.
  * Arguments:
@@ -327,6 +329,7 @@ func ReleaseWaits() {
 		key := replayElem.File + ":" + intToString(replayElem.Line)
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
+				timeoutHappened = true
 				var oldest = replayChan{nil, nil, -1, false}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
@@ -349,6 +352,7 @@ func ReleaseWaits() {
 						select {
 						case <-oldest.chAck:
 						case <-after(sToNs(acknowledgementMaxWaitSec)):
+							timeoutHappened = true
 						}
 					}
 

@@ -28,25 +28,28 @@ import (
  *   tpre (int): The timestamp at the start of the event
  *   tpost (int): The timestamp at the end of the event
  *   id (int): The id of the select statement
- *   cases ([]traceElementSelectCase): The cases of the select statement
+ *   cases ([]traceElementSelectCase): The cases of the select statement, ordered by casi starting from 0
  *   chosenIndex (int): The internal index of chosen case
  *   containsDefault (bool): Whether the select statement contains a default case
  *   chosenCase (traceElementSelectCase): The chosen case, nil if default case chosen
  *   chosenDefault (bool): if the default case was chosen
  *   pos (string): The position of the select statement in the code
+ *   posPartner ([]bool): For each case state, wether a possible partner exists
+ *   casesWithPosPartner ([]int): Casis of cases with possible partner based on HB
  */
 type TraceElementSelect struct {
-	routine         int
-	tPre            int
-	tPost           int
-	id              int
-	cases           []TraceElementChannel
-	chosenCase      TraceElementChannel
-	chosenIndex     int
-	containsDefault bool
-	chosenDefault   bool
-	pos             string
-	vc              clock.VectorClock
+	routine             int
+	tPre                int
+	tPost               int
+	id                  int
+	cases               []TraceElementChannel
+	chosenCase          TraceElementChannel
+	chosenIndex         int
+	containsDefault     bool
+	chosenDefault       bool
+	pos                 string
+	vc                  clock.VectorClock
+	casesWithPosPartner []int
 }
 
 /*
@@ -85,12 +88,13 @@ func AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := TraceElementSelect{
-		routine:     routine,
-		tPre:        tPreInt,
-		tPost:       tPostInt,
-		id:          idInt,
-		chosenIndex: chosenIndexInt,
-		pos:         pos,
+		routine:             routine,
+		tPre:                tPreInt,
+		tPost:               tPostInt,
+		id:                  idInt,
+		chosenIndex:         chosenIndexInt,
+		pos:                 pos,
+		casesWithPosPartner: make([]int, 0),
 	}
 
 	cs := strings.Split(cases, "~")
@@ -326,6 +330,10 @@ func (se *TraceElementSelect) GetObjType() string {
 	return "SS"
 }
 
+func (se *TraceElementSelect) GetCasiWithPosPartner() []int {
+	return se.casesWithPosPartner
+}
+
 // MARK: Setter
 
 /*
@@ -558,18 +566,8 @@ func (se *TraceElementSelect) updateVectorClock() {
 
 	if analysisCases["selectWithoutPartner"] || runFuzzing {
 		timemeasurement.Start("other")
-		// check for select case without partner
-		ids := make([]int, 0)
-		buffered := make([]bool, 0)
-		sendInfo := make([]bool, 0)
-		for _, c := range se.cases {
-			ids = append(ids, c.id)
-			buffered = append(buffered, c.qSize > 0)
-			sendInfo = append(sendInfo, c.opC == SendOp)
-		}
 
-		CheckForSelectCaseWithoutPartnerSelect(se, ids, buffered, sendInfo,
-			currentVCHb[se.routine])
+		CheckForSelectCaseWithoutPartnerSelect(se, currentVCHb[se.routine])
 		timemeasurement.End("other")
 	}
 

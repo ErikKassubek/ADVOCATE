@@ -138,3 +138,10 @@ func mergeTraceInfoIntoFileInfo() {
 		}
 	}
 }
+
+func clearData() {
+	// clear the trace data
+	channelInfoTrace = make(map[int]fuzzingChannel)
+	pairInfoTrace = make(map[string]fuzzingPair)
+	selectInfoTrace = make(map[string][]fuzzingSelect)
+}

@@ -11,6 +11,7 @@
 package fuzzing
 
 import (
+	"analyzer/analysis"
 	"analyzer/toolchain"
 	"fmt"
 	"log"
@@ -79,6 +80,11 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 		}
 
 		mergeTraceInfoIntoFileInfo()
+
+		// clean up
+		clearData()
+		analysis.ClearData()
+		analysis.ClearTrace()
 
 		numberFuzzingRuns++
 

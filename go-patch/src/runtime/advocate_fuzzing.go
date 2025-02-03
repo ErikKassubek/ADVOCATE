@@ -10,7 +10,7 @@
 
 package runtime
 
-const fuzzingSelectTimeoutSec int64 = 4
+const fuzzingSelectTimeoutSec int64 = 2
 
 var (
 	advocateFuzzingEnabled = false

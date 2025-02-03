@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
-	"std/runtime"
+	"runtime"
 	"strconv"
 	"sync"
 	"time"

@@ -411,7 +411,9 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 	if timeout > 0 {
 		go func() {
 			sleep(float64(timeout))
-			goready(gp, traceskip)
+			if readgstatus(gp) == _Gwaiting {
+				goready(gp, traceskip)
+			}
 		}()
 	}
 

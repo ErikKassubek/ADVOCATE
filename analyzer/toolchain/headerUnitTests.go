@@ -134,6 +134,11 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, i
 		return fmt.Errorf("Cannot add header for replay and fuzzing at the same time")
 	}
 
+	atomicReplayStr := "false"
+	if replayAtomic {
+		atomicReplayStr = "true"
+	}
+
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	currentLine := 0
@@ -151,11 +156,6 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, i
 			lines = append(lines, "\t\"advocate\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
-		}
-
-		atomicReplayStr := "false"
-		if replayAtomic {
-			atomicReplayStr = "true"
 		}
 
 		if strings.Contains(line, "func "+testName) {

@@ -39,8 +39,9 @@ var (
 * 	testPath (string): path to the folder containing the test
 * 	progName (string): name of the program
 * 	testName (string): name of the test to run
+* 	ignoreAtomic (bool): if true, ignore atomics for replay
  */
-func Fuzzing(advocate, testPath, progName, testName string) error {
+func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic bool) error {
 	log.Println("Start fuzzing")
 	startTime := time.Now()
 	var order map[string][]fuzzingSelect
@@ -61,7 +62,7 @@ func Fuzzing(advocate, testPath, progName, testName string) error {
 
 		// Run the test/mutation
 		err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-			-1, -1, 0, numberFuzzingRuns, true, false, false, false, false)
+			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, false, false, false, false)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

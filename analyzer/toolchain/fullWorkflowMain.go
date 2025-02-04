@@ -150,9 +150,10 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 	timeStart = time.Now()
-	runAnalyzer(analyzerOutput, false, false, "", "results_readable.log",
-		"results_machine.log", false, false, false, false, false, "rewritten_trace",
-		timeoutAna, "", fuzzing)
+	runAnalyzer(analyzerOutput, noPrintFlag, noRewriteFlag, analyisCasesFlag,
+		"results_readable.log", "results_machine.log",
+		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag,
+		"rewritten_trace", timeoutAna, ignoreRewriteFlag, fuzzing)
 	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
 	}

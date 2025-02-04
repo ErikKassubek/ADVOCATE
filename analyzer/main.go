@@ -36,45 +36,85 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
+var (
+	help bool
+
+	pathToAdvocate string
+
+	tracePath string
+	progPath  string
+
+	progName string
+	testName string
+	execName string
+
+	timeoutAnalysis int
+	timeoutReplay   int
+	recordTime      bool
+
+	resultFolder     string
+	resultFolderTool string
+	outM             string
+	outR             string
+	outT             string
+
+	fifo                  bool
+	ignoreCriticalSection bool
+	ignoreAtomics         bool
+	ignoreRewrite         string
+
+	rewriteAll bool
+
+	noRewrite  bool
+	noWarning  bool
+	noPrint    bool
+	keepTraces bool
+
+	notExec    bool
+	statistics bool
+
+	scenarios string
+)
+
 func main() {
-	help := flag.Bool("h", false, "Print help")
+	flag.BoolVar(&help, "h", false, "Print help")
 
-	pathToAdvocate := flag.String("advocate", "", "Path to advocate")
+	flag.StringVar(&pathToAdvocate, "advocate", "", "Path to advocate")
 
-	pathTrace := flag.String("trace", "", "Path to the trace folder to analyze or rewrite")
-	programPath := flag.String("dir", "", "Path to the program folder, for toolMain: path to main file, for toolTest: path to test folder")
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
+	flag.StringVar(&progPath, "dir", "", "Path to the program folder, for toolMain: path to main file, for toolTest: path to test folder")
 
-	progName := flag.String("prog", "", "Name of the program")
-	testName := flag.String("test", "", "Name of the test")
-	execName := flag.String("exec", "", "Name of the executable")
+	flag.StringVar(&progName, "prog", "", "Name of the program")
+	flag.StringVar(&testName, "test", "", "Name of the test")
+	flag.StringVar(&execName, "exec", "", "Name of the executable")
 
-	timeoutAnalysis := flag.Int("timeout", -1, "Set a timeout in seconds for the analysis")
-	timeoutReplay := flag.Int("timeoutReplay", -1, "Set a timeout in seconds for the replay")
-	recordTime := flag.Bool("time", true, "measure the runtime")
+	flag.IntVar(&timeoutAnalysis, "timeout", -1, "Set a timeout in seconds for the analysis")
+	flag.IntVar(&timeoutReplay, "timeoutReplay", -1, "Set a timeout in seconds for the replay")
+	flag.BoolVar(&recordTime, "time", true, "measure the runtime")
 
-	resultFolder := flag.String("out", "", "Path to where the result file should be saved.")
-	resultFolderTool := flag.String("resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
-	outM := flag.String("outM", "results_machine", "Name for the result machine file")
-	outR := flag.String("outR", "results_readable", "Name for the result readable file")
-	outT := flag.String("outT", "rewritten_trace", "Name for the rewritten traces")
+	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
+	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
+	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
+	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
+	flag.StringVar(&outT, "outT", "rewritten_trace", "Name for the rewritten traces")
 
-	fifo := flag.Bool("fifo", false, "Assume a FIFO ordering for buffered channels (default false)")
-	ignoreCriticalSection := flag.Bool("ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
-	ignoreAtomics := flag.Bool("ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-	ignoreRewrite := flag.String("ignoreRew", "", "Path to a result machine file. If a found bug is already in this file, it will not be rewritten")
+	flag.BoolVar(&fifo, "fifo", false, "Assume a FIFO ordering for buffered channels (default false)")
+	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
+	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
+	flag.StringVar(&ignoreRewrite, "ignoreRew", "", "Path to a result machine file. If a found bug is already in this file, it will not be rewritten")
 
-	rewriteAll := flag.Bool("rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
+	flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
 		"If not set, only the first occurence is rewritten")
 
-	noRewrite := flag.Bool("noRewrite", false, "Do not rewrite the trace file (default false)")
-	noWarning := flag.Bool("noWarning", false, "Do not print warnings (default false)")
-	noPrint := flag.Bool("noPrint", false, "Do not print the results to the terminal (default false). Automatically set -noRewrite to true")
-	keepTraces := flag.Bool("keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
+	flag.BoolVar(&noWarning, "noWarning", false, "Do not print warnings (default false)")
+	flag.BoolVar(&noPrint, "noPrint", false, "Do not print the results to the terminal (default false). Automatically set -noRewrite to true")
+	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
 
-	notExec := flag.Bool("notExec", false, "Find never executed operations, *notExec, *stats")
-	statistics := flag.Bool("stats", false, "Create statistics")
+	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
+	flag.BoolVar(&statistics, "stats", false, "Create statistics")
 
-	scenarios := flag.String("scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
+	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
 		"\ts: Send on closed channel\n"+
@@ -97,11 +137,11 @@ func main() {
 	if len(os.Args) >= 2 {
 		mode = os.Args[1]
 		flag.CommandLine.Parse(os.Args[2:])
-		if *help {
+		if help {
 			printHelpMode(mode)
 		}
 	} else {
-		if *help {
+		if help {
 			printHelp()
 			return
 		}
@@ -111,41 +151,51 @@ func main() {
 		return
 	}
 
-	if *resultFolder == "" {
-		*resultFolder = getFolderTrace(*pathTrace)
-		if (*resultFolder)[len(*resultFolder)-1] != os.PathSeparator {
-			*resultFolder += string(os.PathSeparator)
+	if resultFolder == "" {
+		resultFolder = getFolderTrace(tracePath)
+		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
+			resultFolder += string(os.PathSeparator)
 		}
 	}
 
-	outMachine := filepath.Join(*resultFolder, *outM) + ".log"
-	outReadable := filepath.Join(*resultFolder, *outR) + ".log"
-	newTrace := filepath.Join(*resultFolder, *outT)
-	if *ignoreRewrite != "" {
-		*ignoreRewrite = filepath.Join(*resultFolder, *ignoreRewrite)
+	outMachine := filepath.Join(resultFolder, outM) + ".log"
+	outReadable := filepath.Join(resultFolder, outR) + ".log"
+	newTrace := filepath.Join(resultFolder, outT)
+	if ignoreRewrite != "" {
+		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
+
+	analysisCases, err := parseAnalysisCases(scenarios)
+	if err != nil {
+		panic(err)
+	}
+
+	toolchain.SetFlags(noPrint, noRewrite, noWarning, analysisCases, ignoreAtomics,
+		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
 	switch mode {
 	case "toolMain", "toolmain":
-		modeToolchain("main", *pathToAdvocate, *programPath, *execName, *progName, *testName, *timeoutAnalysis, *timeoutReplay, 0, *ignoreAtomics, *recordTime, *notExec, *statistics, *keepTraces)
+		modeToolchain("main", 0)
 	case "toolTest", "tooltest":
-		modeToolchain("test", *pathToAdvocate, *programPath, "", *progName, *testName, *timeoutAnalysis, *timeoutReplay, 0, *ignoreAtomics, *recordTime, *notExec, *statistics, *keepTraces)
+		modeToolchain("test", 0)
 	case "stats":
-		modeStats(*pathTrace, *progName, *testName)
+		modeStats()
 	case "explain":
-		modeExplain(*pathTrace, !*rewriteAll)
+		modeExplain()
 	case "check":
-		modeCheck(resultFolderTool, programPath)
+		modeCheck()
 	case "run":
-		modeAnalyzer(*pathTrace, *noPrint, *noRewrite, *scenarios, outReadable,
-			outMachine, *ignoreAtomics, *fifo, *ignoreCriticalSection,
-			*noWarning, *rewriteAll, newTrace, *timeoutAnalysis, *ignoreRewrite,
+		// here the parameter need to stay, because the function is used in the
+		// toolchain package via function injection
+		modeAnalyzer(tracePath, noPrint, noRewrite, analysisCases, outReadable,
+			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
+			noWarning, rewriteAll, newTrace, timeoutAnalysis, ignoreRewrite,
 			-1)
 	case "fuzzing":
-		modeFuzzing(*pathToAdvocate, *programPath, *progName, *testName)
+		modeFuzzing()
 	default:
 		fmt.Printf("Unknown mode %s\n", os.Args[1])
 		fmt.Println("Select one mode from 'run', 'stats', 'explain' or 'check'")
@@ -153,7 +203,7 @@ func main() {
 	}
 }
 
-func modeFuzzing(advocate, testPath, progName, testName string) {
+func modeFuzzing() {
 	if progName == "" {
 		fmt.Println("Provide a name for the analyzed program. Set with -prog [name]")
 		return
@@ -164,27 +214,25 @@ func modeFuzzing(advocate, testPath, progName, testName string) {
 		return
 	}
 
-	err := fuzzing.Fuzzing(advocate, testPath, progName, testName)
+	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, true)
 	if err != nil {
 		fmt.Println("Fuzzing Failed: ", err.Error())
 	}
 }
 
-func modeToolchain(mode, advocate, file, execName, progName, test string,
-	timeoutA, timeoutR, numRerecorded int,
-	replayAt, meaTime, notExec, stats, keepTraces bool) {
-	err := toolchain.Run(mode, advocate, file, execName, progName, test,
-		timeoutA, timeoutR, numRerecorded,
-		-1, replayAt, meaTime, notExec, stats, keepTraces)
+func modeToolchain(mode string, numRerecorded int) {
+	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, testName,
+		timeoutAnalysis, timeoutReplay, numRerecorded,
+		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces)
 	if err != nil {
 		fmt.Println("Failed to run toolchain")
 		fmt.Println(err.Error())
 	}
 }
 
-func modeStats(pathFolder string, progName string, testName string) {
+func modeStats() {
 	// instead of the normal program, create statistics for the trace
-	if pathFolder == "" {
+	if tracePath == "" {
 		fmt.Println("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
 		return
 	}
@@ -198,34 +246,34 @@ func modeStats(pathFolder string, progName string, testName string) {
 		testName = progName
 	}
 
-	stats.CreateStats(pathFolder, progName, testName)
+	stats.CreateStats(tracePath, progName, testName)
 }
 
-func modeCheck(resultFolderTool, programPath *string) {
-	if *resultFolderTool == "" {
+func modeCheck() {
+	if resultFolderTool == "" {
 		fmt.Println("Please provide the path to the advocateResult folder created by the pipeline. Set with -resultTool [folder]")
 		return
 	}
 
-	if *programPath == "" {
+	if progPath == "" {
 		fmt.Println("Please provide the path to the program folder. Set with -dir [folder]")
 		return
 	}
 
-	err := complete.Check(*resultFolderTool, *programPath)
+	err := complete.Check(resultFolderTool, progPath)
 
 	if err != nil {
 		panic(err.Error())
 	}
 }
 
-func modeExplain(pathTrace string, ignoreDouble bool) {
-	if pathTrace == "" {
+func modeExplain() {
+	if tracePath == "" {
 		fmt.Println("Please provide a path to the trace files for the explanation. Set with -trace [file]")
 		return
 	}
 
-	err := explanation.CreateOverview(pathTrace, ignoreDouble)
+	err := explanation.CreateOverview(tracePath, !rewriteAll)
 	if err != nil {
 		log.Println("Error creating explanation: ", err.Error())
 	}
@@ -242,7 +290,7 @@ func getFolderTrace(pathTrace string) string {
 }
 
 func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
-	scenarios string, outReadable string, outMachine string,
+	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
 	fuzzingRun int) {
@@ -265,11 +313,6 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		}()
 	}
 
-	analysisCases, err := parseAnalysisCases(scenarios)
-	if err != nil {
-		panic(err)
-	}
-
 	// clean data in case of fuzzing
 	if analysis.DataUsed {
 		analysis.ClearData()
@@ -285,11 +328,10 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 	// done and separate routine to implement timeout
 	done := make(chan bool)
 	numberOfRoutines := 0
-	containsElems := false
 	go func() {
 		defer func() { done <- true }()
 
-		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+		numberOfRoutines, containsElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 		if err != nil {
 			panic(err)
 		}
@@ -369,19 +411,19 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 				println("Trace can not be rewritten.")
 				notNeededRewrites++
 				if double {
-					fmt.Printf("Bugreport info: %s_%d,double", rewriteNr, resultIndex+1)
+					fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
 				} else {
-					fmt.Printf("Bugreport info: %s_%d,fail", rewriteNr, resultIndex+1)
+					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 				}
 			} else if err != nil {
 				println("Failed to rewrite trace: ", err.Error())
 				failedRewrites++
 				analysis.SetTrace(originalTrace)
-				fmt.Printf("Bugreport info: %s_%d,fail", rewriteNr, resultIndex+1)
+				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			} else { // needed && err == nil
 				numberRewrittenTrace++
 				analysis.SetTrace(originalTrace)
-				fmt.Printf("Bugreport info: %s_%d,suc", rewriteNr, resultIndex+1)
+				fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 			}
 
 			print("\n\n")

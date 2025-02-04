@@ -31,11 +31,14 @@ var (
 	measureTime    bool
 	notExecuted    bool
 	createStats    bool
-	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, scenarios string, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int)
+	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int)
 )
 
+/*
+ * Function injection for modeAnalyzer
+ */
 func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool,
-	noRewrite bool, scenarios string, outReadable string, outMachine string,
+	noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool,
 	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int)) {
 	runAnalyzer = funcAnalyzer
@@ -62,7 +65,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool,
  */
 func Run(mode, advocate, file, execName, progName, test string,
 	timeoutA, timeoutR, numRerecorded, fuzzing int,
-	replayAt, meaTime, notExec, stats, keepTraces bool) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFile = strings.Replace(file, "~", home, -1)
@@ -75,7 +78,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 	timeoutR = timeoutReplay
 	numberRerecord = numRerecorded
 
-	replayAtomic = replayAt
+	replayAtomic = !ignoreAtomic
 	measureTime = meaTime
 	notExecuted = notExec
 	createStats = stats

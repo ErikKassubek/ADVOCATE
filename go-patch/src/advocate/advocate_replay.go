@@ -78,6 +78,7 @@ func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 
 	chanWithoutPartner := make(map[string]int)
 
+	foundTraceFiles := false
 	for _, file := range files {
 		// if the file is a directory, ignore it
 		if file.IsDir() {
@@ -92,7 +93,13 @@ func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 		if strings.HasSuffix(file.Name(), ".log") && file.Name() != "rewrite_info.log" {
 			routineID, trace := readTraceFile(tracePathRewritten+"/"+file.Name(), &chanWithoutPartner)
 			runtime.AddReplayTrace(uint64(routineID), trace)
+			foundTraceFiles = true
 		}
+	}
+
+	if !foundTraceFiles {
+		time.Sleep(20 * time.Second)
+		panic("Could not found trace files for replay")
 	}
 
 	if timeout > 0 {

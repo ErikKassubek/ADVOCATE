@@ -214,7 +214,7 @@ func modeFuzzing() {
 		return
 	}
 
-	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, true)
+	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, ignoreAtomics)
 	if err != nil {
 		fmt.Println("Fuzzing Failed: ", err.Error())
 	}
@@ -328,10 +328,13 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 	// done and separate routine to implement timeout
 	done := make(chan bool)
 	numberOfRoutines := 0
+	containsElems := false
+	var err error
 	go func() {
 		defer func() { done <- true }()
 
-		numberOfRoutines, containsElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+		fmt.Println("Create trace from files ", pathTrace, numberOfRoutines)
 		if err != nil {
 			panic(err)
 		}
@@ -404,6 +407,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		}
 
 		for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
+
 			needed, double, err := rewriteTrace(outMachine,
 				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
 
@@ -561,7 +565,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, false, nil
 	}
 
-	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(bug, 0, *rewrittenTrace, rewriteOnce)
+	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(bug, *rewrittenTrace, rewriteOnce)
 
 	if err != nil {
 		return rewriteNeeded, false, err

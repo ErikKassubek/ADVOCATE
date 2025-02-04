@@ -160,6 +160,14 @@ func addMainHeader(fileName string, replay bool, replayNumber string, replayTime
 	}
 	defer file.Close()
 
+	atomicReplayStr := "false"
+	if replayAtomic {
+		atomicReplayStr = "true"
+	}
+
+	// TODO: remove when implemented fuzzing for main
+	fuzzing := -1
+
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	importAdded := false
@@ -181,19 +189,24 @@ func addMainHeader(fileName string, replay bool, replayNumber string, replayTime
 		}
 
 		if strings.Contains(line, "func main() {") {
-			if replay {
+			if replay { // replay
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplayTracing("%s", false, %d, false)
+  advocate.InitReplayTracing("%s", false, %d, %s)
   defer advocate.FinishReplayTracing()
-  // ======= Preamble End =======`, replayNumber, timeoutReplay))
+  // ======= Preamble End =======`, replayNumber, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", false, %d, false)
+  advocate.InitReplay("%s", false, %d, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayNumber, timeoutReplay))
+  // ======= Preamble End =======`, replayNumber, timeoutReplay, atomicReplayStr))
 				}
-			} else {
+			} else if fuzzing > 0 {
+				lines = append(lines, `	// ======= Preamble Start =======
+  advocate.InitFuzzing()
+  defer advocate.FinishTracing()
+  // ======= Preamble End =======`)
+			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()
   defer advocate.FinishTracing()

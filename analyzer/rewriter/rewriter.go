@@ -42,7 +42,6 @@ const (
  * Create a new trace from the given bug
  * Args:
  *   bug (Bug): The bug to create a trace for
- *   index (int): only used for rewrite select with partner, index of partner
  *   rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
  *   retwriteOnce (bool): skip double bugs
  * Returns:
@@ -50,7 +49,7 @@ const (
  *   code: expected exit code
  *   error: An error if the trace could not be created
  */
-func RewriteTrace(bug bugs.Bug, index int, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
+func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
 	timemeasurement.Start("rewrite")
 	defer timemeasurement.End("rewrite")
 

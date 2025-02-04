@@ -56,6 +56,7 @@ func CopyFolder(source string, dest string) {
  *   numberRoutines (int): The number of routines in the trace
  */
 func WriteTrace(path string, numberRoutines int) error {
+
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
 		println(path + " already exists. Delete folder " + path)

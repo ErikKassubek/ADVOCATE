@@ -19,5 +19,8 @@ examples/*/trace/
 examples/*/rewritten_trace/
 trace_*.log
 
+# the examples folder
+examples/
+
 # vscode
 .vscode/

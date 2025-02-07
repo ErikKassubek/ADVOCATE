@@ -178,7 +178,7 @@ func (vc VectorClock) Copy() VectorClock {
 }
 
 /*
- * Check if the the arg cv2 is equal to the vc
+ * Check if the the arg vc2 is equal to the vc
  */
 func (vc VectorClock) IsEqual(vc2 VectorClock) bool {
 	if vc.size != vc2.size {

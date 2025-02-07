@@ -35,6 +35,7 @@ const (
 	PRecvOnClosed     ResultType = "P02"
 	PNegWG            ResultType = "P03"
 	PUnlockBeforeLock ResultType = "P04"
+	PCyclicDeadlock   ResultType = "P05"
 
 	// leaks
 	LWithoutBlock      = "L00"
@@ -145,6 +146,10 @@ func (b Bug) ToString() string {
 		typeStr = "Possible unlock of a not locked mutex:"
 		arg1Str = "unlocks: "
 		arg2Str = "locks: "
+	case PCyclicDeadlock:
+		typeStr = "Possible cyclic deadlock:"
+		arg1Str = "head: "
+		arg2Str = "tail: "
 
 	case LWithoutBlock:
 		typeStr = "Leak on routine without any blocking operation"
@@ -278,8 +283,8 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = PNegWG
 	case "P04":
 		bug.Type = PUnlockBeforeLock
-	// case "P05":
-	// 	bug.Type = CyclicDeadlock
+	case "P05":
+		bug.Type = PCyclicDeadlock
 	// case "P06":
 	// 	bug.Type = MixedDeadlock
 	case "L00":

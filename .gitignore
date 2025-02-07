@@ -17,10 +17,12 @@
 # trace files
 examples/*/trace/
 examples/*/rewritten_trace/
+examples/*/advocateResult/
+examples/*/advocateTrace/
 trace_*.log
 
 # the examples folder
-examples/
+#examples/
 
 # vscode
 .vscode/

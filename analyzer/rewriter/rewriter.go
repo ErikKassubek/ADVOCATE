@@ -98,9 +98,9 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 		err = rewriteGraph(bug, code)
 	// case bugs.MixedDeadlock:
 	// 	err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
-	// case bugs.CyclicDeadlock:
-	// 	rewriteNeeded = true
-	// err = rewriteCyclicDeadlock(bug)
+	case bugs.PCyclicDeadlock:
+		rewriteNeeded = true
+		err = rewriteCyclicDeadlock(bug)
 	case bugs.LWithoutBlock:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible.")
 	case bugs.LUnbufferedWith:

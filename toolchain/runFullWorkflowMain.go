@@ -146,7 +146,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 	timeStart = time.Now()
-	if err := runCommand(pathToAnalyzer, "run", "-t", analyzerOutput, "-T", strconv.Itoa(timeoutAna)); err != nil {
+	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
 	}
 	durationAnalysis = time.Since(timeStart)

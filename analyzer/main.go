@@ -465,22 +465,16 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		"concurrentRecv":       false,
 		"leak":                 false,
 		"selectWithoutPartner": false,
+		"unlockBeforeLock":     false,
 		"cyclicDeadlock":       false,
 		"mixedDeadlock":        false,
+		"resourceDeadlock":     false,
 	}
 
 	if cases == "" {
-		analysisCases["all"] = true
-		analysisCases["sendOnClosed"] = true
-		analysisCases["receiveOnClosed"] = true
-		analysisCases["doneBeforeAdd"] = true
-		analysisCases["closeOnClosed"] = true
-		analysisCases["concurrentRecv"] = true
-		analysisCases["leak"] = true
-		analysisCases["selectWithoutPartner"] = true
-		analysisCases["unlockBeforeLock"] = true
-		// analysisCases["cyclicDeadlock"] = true
-		// analysisCases["mixedDeadlock"] = true
+		for c := range analysisCases {
+			analysisCases[c] = true
+		}
 
 		return analysisCases, nil
 	}
@@ -503,8 +497,8 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 			analysisCases["selectWithoutPartner"] = true
 		case 'u':
 			analysisCases["unlockBeforeLock"] = true
-		// case 'c':
-		// 	analysisCases["cyclicDeadlock"] = true
+		case 'c':
+			analysisCases["cyclicDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true
 		default:

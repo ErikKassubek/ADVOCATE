@@ -428,12 +428,12 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, resTim
 	startTime := time.Now()
 	var err error
 	if resultID == "-1" {
-		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-T", strconv.Itoa(timeoutAna))
+		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-timeout", strconv.Itoa(timeoutAna))
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
-		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-T", strconv.Itoa(timeoutAna), "-outM", outM, "-outR", outR, "-outT", outT, "-ignoreRew", "results_machine.log")
+		err = runCommand(pathToAnalyzer, "run", "-trace", filepath.Join(dir, pkg, traceName), "-timeout", strconv.Itoa(timeoutAna), "-outM", outM, "-outR", outR, "-outT", outT, "-ignoreRew", "results_machine.log")
 	}
 	if err != nil {
 		fmt.Println("Analyzer failed", err)

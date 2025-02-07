@@ -209,6 +209,10 @@ func (mu *TraceElementMutex) GetOperation() OpMutex {
 	return mu.opM
 }
 
+func (mu TraceElementMutex) GetSuccess() bool {
+	return mu.suc
+}
+
 /*
  * Get if the element is a lock operation
  * Returns:

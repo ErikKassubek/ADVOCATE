@@ -26,7 +26,7 @@ import (
 func generateBugReports(folder string, advocateRoot string) {
 	// advocateTraceFolder := filepath.Join(folder, "advocateTrace")
 	analyzerPath := filepath.Join(advocateRoot, "analyzer", "analyzer")
-	runCommand(analyzerPath, "explain", "-t", folder)
+	runCommand(analyzerPath, "explain", "-trace", folder)
 }
 
 /*
@@ -96,7 +96,7 @@ func moveResults(packagePath, destination string) {
 }
 
 func updateStatsFiles(pathToAnalyzer string, progName string, testName string, dir string) {
-	err := runCommand(pathToAnalyzer, "stats", "-t", dir, "-N", progName, "-M", testName)
+	err := runCommand(pathToAnalyzer, "stats", "-trace", dir, "-N", progName, "-M", testName)
 	if err != nil {
 		fmt.Println("Could not create statistics")
 	}

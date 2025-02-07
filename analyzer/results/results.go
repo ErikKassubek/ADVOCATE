@@ -43,6 +43,7 @@ const (
 	PRecvOnClosed     ResultType = "P02"
 	PNegWG            ResultType = "P03"
 	PUnlockBeforeLock ResultType = "P04"
+	PCyclicDeadlock   ResultType = "P05"
 
 	// leaks
 	LWithoutBlock      = "L00"
@@ -72,6 +73,7 @@ var resultTypeMap = map[ResultType]string{
 	PRecvOnClosed:     "Possible receive on closed channel:",
 	PNegWG:            "Possible negative waitgroup counter:",
 	PUnlockBeforeLock: "Possible unlock of a not locked mutex:",
+	PCyclicDeadlock:   "Possible cyclic deadlock:",
 
 	LWithoutBlock:      "Leak on routine without any blocking operation",
 	LUnbufferedWith:    "Leak on unbuffered channel with possible partner:",

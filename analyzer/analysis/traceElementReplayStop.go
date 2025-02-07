@@ -30,7 +30,7 @@ type TraceElementReplay struct {
 }
 
 /*
- * Create a new atomic trace element
+ * Create an end of replay event
  * MARK: New
  * Args:
  *   t (string): The timestamp of the event

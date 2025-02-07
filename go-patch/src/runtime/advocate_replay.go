@@ -39,12 +39,13 @@ var ExitCodeNames = map[int]string{
 	31: "Receive on close",
 	32: "Negative WaitGroup counter",
 	33: "Unlock of unlocked mutex",
+	41: "Cyclic deadlock",
 }
 
 var hasReturnedExitCode = false
 var ignoreAtomicsReplay = true
 
-var printDebug = true
+var printDebug = false
 
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
@@ -312,13 +313,13 @@ func ReleaseWaits() {
 
 		if replayElem.Op == OperationReplayEnd {
 			println("Operation Replay End")
-			if !isExitCodeLeak(replayElem.Line) {
+			if isExitCodeConfOnEndElem(replayElem.Line) {
 				ExitReplayWithCode(replayElem.Line)
 			}
 
 			// wait long enough, that all operations that have been released but not
 			// finished executing can execute
-			sleep(1)
+			sleep(0.5)
 
 			DisableReplay()
 			// foundReplayElement(routine)
@@ -639,7 +640,7 @@ func SetLastTPre(tPre int) {
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
-		if isExitCodeLeak(code) && !stuckReplayExecutedSuc {
+		if isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
 			return
 		}
 		println("Exit Replay with code ", code, ExitCodeNames[code])
@@ -653,8 +654,17 @@ func ExitReplayWithCode(code int) {
 	}
 }
 
-func isExitCodeLeak(code int) bool {
-	return code >= 20 && code < 30
+/*
+ * For some exit codes, the replay is seen as confirmed, if the replay end
+ * element is reached. This function returns wether the exit code is
+ * such a code
+ * The codes are
+ *    20 - 29: Leak
+ *    40 - 49: Deadlocks
+ *
+ */
+func isExitCodeConfOnEndElem(code int) bool {
+	return (code >= 20 && code < 30) || (code >= 40 && code <= 49)
 }
 
 /*

@@ -11,6 +11,10 @@ package runtime
 func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file string, line int32) {
 	timer := GetNextTimeStep()
 
+	if AdvocateIgnore(file) {
+		return
+	}
+
 	elem := "G," + uint64ToString(timer) + "," + uint64ToString(newID) + "," + file + ":" + int32ToString(line)
 
 	callerRoutine.addToTrace(elem)

@@ -277,7 +277,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		unlock(&c.lock)
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 		// ADVOCATE-CHANGE-END
@@ -287,7 +286,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// ADVOCATE-CHANGE-START
 	if sg := c.recvq.dequeue(); sg != nil {
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
 		// ADVOCATE-CHANGE-END
@@ -300,7 +298,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if c.qcount < c.dataqsiz {
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
 		// ADVOCATE-CHANGE-END
@@ -322,7 +319,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if !block {
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
 		// ADVOCATE-CHANGE-END
@@ -377,7 +373,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 	// ADVOCATE-CHANGE-START
 	if !ignored && !c.advocateIgnore {
-		CheckLastTPreReplay(replayElem.TimePre)
 		AdvocateChanPost(advocateIndex, c.qcount)
 	}
 	// ADVOCATE-CHANGE-END
@@ -393,7 +388,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if closed {
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 		// ADVOCATE-CHANGE-END
@@ -402,7 +396,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		}
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 		// ADVOCATE-CHANGE-END
@@ -713,7 +706,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			}
 			// ADVOCATE-CHANGE-START
 			if !ignored && !c.advocateIgnore {
-				CheckLastTPreReplay(replayElem.TimePre)
 				AdvocateChanPostCausedByClose(advocateIndex)
 			}
 			// ADVOCATE-CHANGE-END
@@ -732,7 +724,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			recv(c, sg, ep, func() { unlock(&c.lock) }, 3)
 			// ADVOCATE-CHANGE-START
 			if !ignored && !c.advocateIgnore {
-				CheckLastTPreReplay(replayElem.TimePre)
 				AdvocateChanPost(advocateIndex, c.qcount)
 			}
 			// ADVOCATE-CHANGE-END
@@ -758,7 +749,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		unlock(&c.lock)
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
 		// ADVOCATE-CHANGE-END
@@ -769,7 +759,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		unlock(&c.lock)
 		// ADVOCATE-CHANGE-START
 		if !ignored && !c.advocateIgnore {
-			CheckLastTPreReplay(replayElem.TimePre)
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
 		// ADVOCATE-CHANGE-END
@@ -827,7 +816,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 	// ADVOCATE-CHANGE-START
 	if !success && !ignored && !c.advocateIgnore {
-		CheckLastTPreReplay(replayElem.TimePre)
 		AdvocateChanPostCausedByClose(advocateIndex)
 	}
 	// ADVOCATE-CHANGE-END
@@ -837,7 +825,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	releaseSudog(mysg)
 	// ADVOCATE-CHANGE-START
 	if !ignored && !c.advocateIgnore {
-		CheckLastTPreReplay(replayElem.TimePre)
 		AdvocateChanPost(advocateIndex, c.qcount)
 	}
 	// ADVOCATE-CHANGE-END
@@ -980,7 +967,6 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 		defer unlock(&c.numberSendMutex)
 	}
 	if c != nil && !c.advocateIgnore {
-		CheckLastTPreReplay(replayElem.TimePre)
 		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
 	}
 
@@ -1050,7 +1036,6 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 		defer unlock(&c.numberRecvMutex)
 	}
 	if c != nil && !c.advocateIgnore {
-		CheckLastTPreReplay(replayElem.TimePre)
 		AdvocateSelectPostOneNonDef(advocateIndex, res, c)
 	}
 	return res, recv

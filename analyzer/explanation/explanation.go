@@ -294,7 +294,8 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// create the file
-	file, err := os.Create(folderName + "/bug_" + index + ".md")
+	fileName := filepath.Join(folderName, strings.ToLower(description["crit"])) + "_" + index + ".md"
+	file, err := os.Create(fileName)
 	if err != nil {
 		return err
 	}

@@ -120,9 +120,19 @@ func block() {
 // a value was received.
 // ADVOCATE-CHANGE-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
-	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateFuzzingGetPreferredCase(2)
-	if fuzzingEnabled {
-		if ok, i, b := fuzzingSelect(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, fuzzingTimeout); ok {
+	var replayElem ReplayElement
+	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
+
+	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
+
+	if wait {
+		replayElem = <-ch
+
+		if ok, i, b := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.SelIndex, timeout); ok {
+			return i, b
+		}
+	} else if fuzzingEnabled {
+		if ok, i, b := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, timeout); ok {
 			return i, b
 		}
 	}
@@ -134,7 +144,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
  * Run the fuzzing for select. If successful, the first bool return is true, if it ran into timeout
  * the first bool is false
  */
-func fuzzingSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, fuzzingIndex int, fuzzingTimeout int64) (bool, int, bool) {
+func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool) {
 	// ADVOCATE-CHANGE-END
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
@@ -281,7 +291,7 @@ func fuzzingSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int
 
 		// ADVOCATE-CHANGE-START
 		// Only check for the preferred case
-		if casi != fuzzingIndex {
+		if casi != preferredIndex {
 			continue
 		}
 		// ADVOCATE-CHANGE-END
@@ -315,7 +325,7 @@ func fuzzingSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int
 	}
 
 	// ADVOCATE CHANGE-START
-	if !block && fuzzingIndex == -1 {
+	if !block && preferredIndex == -1 {
 		selunlock(scases, lockorder)
 		casi = -1
 		AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
@@ -350,7 +360,7 @@ func fuzzingSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int
 		nextp = &sg.waitlink
 
 		// only enqueu the preferred case
-		if casi != fuzzingIndex {
+		if casi != preferredIndex {
 			continue
 		}
 
@@ -368,7 +378,7 @@ func fuzzingSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	goparkWithTimeout(selparkcommit, nil, waitReasonSelect, traceBlockSelect, 1, fuzzingTimeout)
+	goparkWithTimeout(selparkcommit, nil, waitReasonSelect, traceBlockSelect, 1, preferredTimeout)
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -595,11 +605,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	}
 
 	// ADVOCATE-CHANGE-START
-	var replayElem ReplayElement
-	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
-	if wait {
-		replayElem = <-ch
-	}
+
 	// ADVOCATE-CHANGE-END
 
 	// NOTE: In order to maintain a lean stack size, the number of scases
@@ -705,16 +711,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		}
 	}
 	// ADVOCATE-CHANGE-START
-	// block if replay is enabled and the select is blocked
-	if wait && replayElem.Blocked {
-		cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
-		_ = (*[1 << 17]uint16)(unsafe.Pointer(order0))
-
-		ncases := nsends + nrecvs
-		scases := cas1[:ncases:ncases]
-		_ = AdvocateSelectPre(&scases, nsends, ncases, block, pollorder)
-		BlockForever()
-	}
 
 	// This block is called, if the code runs a select statement.
 	// AdvocateSelectPre records the state of the select case, meaning which
@@ -745,39 +741,14 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	var caseReleaseTime int64 = -1
 	var recvOK bool
 
-	// ADVOCATE-CHANGE-START
-	// if a default was selected in the trace, also select the default
-	if wait && replayEnabled && replayElem.Op == OperationSelectDefault {
-		selunlock(scases, lockorder)
-		casi = -1
-		CheckLastTPreReplay(replayElem.TimePre)
-		AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-		goto retc
-	}
-	// ADVOCATE-CHANGE-END
-
 	for _, casei := range pollorder {
 		casi = int(casei)
 		cas = &scases[casi]
 		c = cas.c
 
-		// ADVOCATE-CHANGE-START
-		// make sure, only the correct case is used
-		if wait && replayEnabled {
-			if casi != replayElem.SelIndex {
-				continue
-			}
-		}
-
 		if casi >= nsends {
-			// ADVOCATE-CHANGE-START
 			sg = c.sendq.dequeue()
-			if wait && replayEnabled && !c.advocateIgnore && sg != nil {
-				sg.replayEnabled = true
-				sg.pFile = replayElem.PFile
-				sg.pLine = replayElem.PLine
-			}
-			// ADVOCATE-CHANGE-END
+
 			if sg != nil {
 				goto recv
 			}
@@ -795,13 +766,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 				goto sclose
 			}
 			sg = c.recvq.dequeue()
-			// ADVOCATE-CHANGE-START
-			if wait && replayEnabled && !c.advocateIgnore && sg != nil {
-				sg.replayEnabled = true
-				sg.pFile = replayElem.PFile
-				sg.pLine = replayElem.PLine
-			}
-			// ADVOCATE-CHANGE-END
 			if sg != nil {
 				goto send
 			}
@@ -811,17 +775,11 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		}
 	}
 
-	// ADVOCATE-CHANGE-START
-	if !wait || !replayEnabled {
-		if !block {
-			selunlock(scases, lockorder)
-			casi = -1
-			CheckLastTPreReplay(replayElem.TimePre)
-			AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-			goto retc
-		}
+	if !block {
+		selunlock(scases, lockorder)
+		casi = -1
+		goto retc
 	}
-	// ADVOCATE-CHANGE-END
 
 	// pass 2 - enqueue on all chans
 	gp = getg()
@@ -847,28 +805,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		// Construct waiting list in lock order.
 		*nextp = sg
 		nextp = &sg.waitlink
-
-		// ADVOCATE-CHANGE-START
-		// make sure, only the correct case is enqueued
-		if wait && replayEnabled {
-			if casi != replayElem.SelIndex {
-				continue
-			}
-		}
-
-		if wait && replayEnabled && !c.advocateIgnore {
-			sg.replayEnabled = true
-			sg.pFile = replayElem.PFile
-			sg.pLine = replayElem.PLine
-		}
-
-		// make sure only the preferred fuzzing case is enqueued
-		if wait && replayEnabled {
-			if casi != replayElem.SelIndex {
-				continue
-			}
-		}
-		// ADVOCATE-CHANGE-END
 
 		if casi < nsends {
 			c.sendq.enqueue(sg)
@@ -975,7 +911,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// ADVOCATE-CHANGE-START
 	advocateRClose = !caseSuccess
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	selunlock(scases, lockorder)
@@ -1007,7 +942,6 @@ bufrecv:
 	}
 	c.qcount--
 	// ADVOCATE-CHANGE-START
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	selunlock(scases, lockorder)
@@ -1032,7 +966,6 @@ bufsend:
 	}
 	c.qcount++
 	// ADVOCATE-CHANGE-START
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	selunlock(scases, lockorder)
@@ -1046,7 +979,6 @@ recv:
 	}
 	recvOK = true
 	// ADVOCATE-CHANGE-START
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	goto retc
@@ -1054,7 +986,6 @@ recv:
 rclose:
 	// ADVOCATE-CHANGE-START
 	advocateRClose = true
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	// read at end of closed channel
@@ -1080,7 +1011,6 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 	// ADVOCATE-CHANGE-START
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
@@ -1101,7 +1031,6 @@ sclose:
 
 	// ADVOCATE-CHANGE-START
 	advocateRClose = true
-	CheckLastTPreReplay(replayElem.TimePre)
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 

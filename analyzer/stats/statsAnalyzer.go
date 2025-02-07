@@ -69,7 +69,9 @@ func statsAnalyzer(pathToResults string) (map[string]map[string]int, error) {
 			return err
 		}
 
-		if !info.IsDir() && strings.HasPrefix(info.Name(), "bug_") {
+		if !info.IsDir() && (strings.HasPrefix(info.Name(), "bug_") ||
+			strings.HasPrefix(info.Name(), "diagnostics_") ||
+			strings.HasPrefix(info.Name(), "leak_")) {
 			err := processBugFile(path, &res)
 			if err != nil {
 				fmt.Println(err)

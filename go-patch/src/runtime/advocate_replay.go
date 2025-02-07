@@ -44,7 +44,7 @@ var ExitCodeNames = map[int]string{
 var hasReturnedExitCode = false
 var ignoreAtomicsReplay = true
 
-var printDebug = false
+var printDebug = true
 
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
@@ -351,8 +351,18 @@ func ReleaseWaits() {
 					if oldest.wait {
 						select {
 						case <-oldest.chAck:
+							if printDebug {
+								println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
+							}
 						case <-after(sToNs(acknowledgementMaxWaitSec)):
+							if printDebug {
+								println("TOO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
+							}
 							timeoutHappened = true
+						}
+					} else {
+						if printDebug {
+							println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 						}
 					}
 
@@ -414,7 +424,17 @@ func ReleaseWaits() {
 			if waitCh.wait {
 				select {
 				case <-waitCh.chAck:
+					if printDebug {
+						println("AckR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
+					}
 				case <-after(sToNs(acknowledgementMaxWaitSec)):
+					if printDebug {
+						println("TOR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
+					}
+				}
+			} else {
+				if printDebug {
+					println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 				}
 			}
 
@@ -607,15 +627,6 @@ func SetExpectedExitCode(code int) {
 
 func SetLastTPre(tPre int) {
 	lastTPreReplay = tPre
-}
-
-func CheckLastTPreReplay(tPre int) {
-	// This does not seem to work
-	// TODO (Erik): maybe remove
-	return
-	// if lastTPreReplay == tPre && tPre != 0 {
-	// 	stuckReplayExecutedSuc = true
-	// }
 }
 
 /*

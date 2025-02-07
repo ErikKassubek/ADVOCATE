@@ -10,7 +10,7 @@
 
 package runtime
 
-const fuzzingSelectTimeoutSec int64 = 2
+const selectPreferredTimeout int64 = 2
 
 var (
 	advocateFuzzingEnabled = false
@@ -43,23 +43,23 @@ func isAdvocateFuzzingEnabled() bool {
  */
 func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 	if !advocateFuzzingEnabled {
-		return false, 0, fuzzingSelectTimeoutSec
+		return false, 0, selectPreferredTimeout
 	}
 
 	_, file, line, _ := Caller(skip)
 	if AdvocateIgnore(file) {
-		return false, 0, fuzzingSelectTimeoutSec
+		return false, 0, selectPreferredTimeout
 	}
 	key := file + ":" + intToString(line)
 
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]
 		if index >= len(val) {
-			return false, 0, fuzzingSelectTimeoutSec
+			return false, 0, selectPreferredTimeout
 		}
 		fuzzingSelectDataIndex[key]++
-		return true, val[index], fuzzingSelectTimeoutSec
+		return true, val[index], selectPreferredTimeout
 	}
 
-	return false, 0, fuzzingSelectTimeoutSec
+	return false, 0, selectPreferredTimeout
 }

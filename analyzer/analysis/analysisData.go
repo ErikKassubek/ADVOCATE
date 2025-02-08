@@ -106,6 +106,10 @@ var (
 
 	// set to true if the analyzer has been started, so that it can clean it before reusing it
 	DataUsed = false
+
+	// exit code info
+	exitCode int
+	exitPos  string
 )
 
 // InitAnalysis initializes the analysis cases
@@ -133,4 +137,6 @@ func ClearData() {
 	leakingChannels = make(map[int][]VectorClockTID2)
 	selectCases = make([]allSelectCase, 0)
 	allForks = make(map[int]*TraceElementFork)
+	exitCode = 0
+	exitPos = ""
 }

@@ -64,19 +64,20 @@ func isInterestingSelect() bool {
 		}
 	}
 
-	// 5. A select choses a case it has never been selected before
-	for id, data := range selectInfoTrace {
-		alreadyExecCase, ok := selectInfoFile[id]
-		if !ok { // select has never been seen before
-			return true
-		}
-
-		for _, sel := range data { // case has been executed for the first time
-			if !utils.ContainsInt(alreadyExecCase, sel.chosenCase) {
+	if useHBInfoFuzzing {
+		// 5. A select choses a case it has never been selected before
+		for id, data := range selectInfoTrace {
+			alreadyExecCase, ok := selectInfoFile[id]
+			if !ok { // select has never been seen before
 				return true
 			}
-		}
 
+			for _, sel := range data { // case has been executed for the first time
+				if !utils.ContainsInt(alreadyExecCase, sel.chosenCase) {
+					return true
+				}
+			}
+		}
 	}
 
 	return false

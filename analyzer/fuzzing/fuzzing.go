@@ -40,8 +40,14 @@ var (
 * 	progName (string): name of the program
 * 	testName (string): name of the test to run
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
+* 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
+* 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
  */
-func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic bool) error {
+func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
+	hBInfoFuzzing, fullAnalysis bool) error {
+	useHBInfoFuzzing = hBInfoFuzzing
+	runFullAnalysis = fullAnalysis
+
 	log.Println("Start fuzzing")
 	startTime := time.Now()
 	var order map[string][]fuzzingSelect

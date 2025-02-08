@@ -119,7 +119,7 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 }
 
 /*
- * Lock a found actual send on closed
+ * Sound actual send on closed
  * Args:
  *  routineID (int): id of the routine where the send happened
  *  id (int): id of the channel

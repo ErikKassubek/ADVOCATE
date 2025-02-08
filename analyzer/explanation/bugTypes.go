@@ -16,11 +16,15 @@ import (
 
 // type (bug / diagnostics)
 var bugCrit = map[string]string{
+	"A00": "Bug",
 	"A01": "Bug",
 	"A02": "Diagnostics",
 	"A03": "Bug",
-	"A04": "Diagnostics",
-	"A05": "Diagnostics",
+	"A04": "Bug",
+	"A05": "Bug",
+	"A06": "Bug",
+	"A07": "Diagnostics",
+	"A08": "Diagnostics",
 	"P01": "Bug",
 	"P02": "Diagnostic",
 	"P03": "Bug",
@@ -42,8 +46,12 @@ var bugNames = map[string]string{
 	"A01": "Actual Send on Closed Channel",
 	"A02": "Actual Receive on Closed Channel",
 	"A03": "Actual Close on Closed Channel",
-	"A04": "Concurrent Receive",
-	"A05": "Select Case without Partner",
+	"A04": "Actual close on nil channel",
+	"A05": "Actual Negative Wait Group",
+	"A06": "Actual unlock of not locked mutex",
+	"A07": "Concurrent Receive",
+	"A08": "Select Case without Partner",
+	"A00": "Unknown Panic",
 
 	"P01": "Possible Send on Closed Channel",
 	"P02": "Possible Receive on Closed Channel",
@@ -71,14 +79,21 @@ var bugExplanations = map[string]string{
 		"The occurrence of a send on closed leads to a panic.",
 	"A02": "During the execution of the program, a receive on a closed channel occurred.\n",
 	"A03": "During the execution of the program, a close on a close channel occurred.\n" +
-		"The occurrence of a close on a closed channel leads to a panic.",
-	"A04": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
+		"The occurrence of a close on a closed channel lead to a panic.",
+	"A04": "During the execution of the program, a close on a nil channel occurred.\n" +
+		"The occurrence of a close on a nil channel lead to a panic.",
+	"A05": "During the execution, a negative waitgroup counter occured.\n" +
+		"The occurrence of a negative wait group counter lead to a panic.",
+	"A06": "During the execution, a not locked mutex was unlocked.\n" +
+		"The occurrence of this lead to a panic.",
+	"A07": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	"A05": "During the execution of the program, a select was executed, where, based " +
+	"A08": "During the execution of the program, a select was executed, where, based " +
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
+	"A00": "During the execution of the program, a unknown panic occured",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
@@ -154,6 +169,20 @@ var bugExamples map[string]string = map[string]string{
 		"    close(c)          // <-------\n" +
 		"    close(c)          // <-------\n}",
 	"A04": "func main() {\n" +
+		"    c := make(chan int)\n" +
+		"    c = nil" +
+		"    close(c)          // <-------\n}",
+	"A05": "func main() {\n" +
+		"    var wg sync.WaitGroup\n\n" +
+		"    wg.Add(1)\n" +
+		"    wg.Done()\n" +
+		"    wg.Done()          // <-------\n}",
+	"A06": "func main() {\n" +
+		"    var m sync.Mutex\n\n" +
+		"    m.Lock()\n" +
+		"    wg.Unlock\n" +
+		"    wg.Unlock()          // <-------\n}",
+	"A07": "func main() {\n" +
 		"    c := make(chan int, 1)\n\n" +
 		"    go func() {\n" +
 		"        <-c             // <-------\n" +
@@ -163,7 +192,7 @@ var bugExamples map[string]string = map[string]string{
 		"    }()\n\n" +
 		"    c <- 1\n" +
 		"}",
-	"A05": "func main() {\n" +
+	"A08": "func main() {\n" +
 		"    c := make(chan int)\n" +
 		"    d := make(chan int)\n" +
 		"    go func() {\n" +
@@ -175,6 +204,9 @@ var bugExamples map[string]string = map[string]string{
 		"    case d <- 1:      // <-------\n" +
 		"        print(\"d\")\n" +
 		"    }\n",
+	"A00": "func main() {\n" +
+		"    panic('p')      // <-------\n" +
+		"}",
 	"P01": "func main() {\n" +
 		"    c := make(chan int)\n\n" +
 		"    go func() {\n" +
@@ -302,6 +334,10 @@ var rewriteType = map[string]string{
 	"A03": "Actual",
 	"A04": "Actual",
 	"A05": "Actual",
+	"A06": "Actual",
+	"A07": "Actual",
+	"A08": "Actual",
+	"A00": "Actual",
 	"P01": "Possible",
 	"P02": "Possible",
 	"P03": "Possible",

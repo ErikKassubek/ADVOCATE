@@ -91,24 +91,37 @@ func getTraceInfoFromFile(filePath string) error {
 
 	scanner := bufio.NewScanner(file)
 
+	exitCode := 0
+	exitPos := ""
+
 	for scanner.Scan() {
 		line := scanner.Text()
-		lineSplit := strings.Split(line, ":")
+		lineSplit := strings.Split(line, "!")
 		if len(lineSplit) != 2 {
 			continue
 		}
 
-		if lineSplit[0] == "Timeout" && lineSplit[1] == "true" {
-			analysis.SetTimeoutHappened(true)
-		}
-
-		if lineSplit[0] == "Runtime" {
+		switch lineSplit[0] {
+		case "Timeout":
+			if lineSplit[1] == "true" {
+				analysis.SetTimeoutHappened(true)
+			}
+		case "Runtime":
 			rt, err := strconv.Atoi(lineSplit[1])
 			if err == nil {
 				analysis.SetRuntimeDurationSec(rt)
 			}
+		case "ExitCode":
+			ec, err := strconv.Atoi(lineSplit[1])
+			if err != nil {
+				exitCode = ec
+			}
+		case "ExitPosition":
+			exitPos = lineSplit[1]
 		}
 	}
+
+	analysis.SetExitInfo(exitCode, exitPos)
 
 	return nil
 }

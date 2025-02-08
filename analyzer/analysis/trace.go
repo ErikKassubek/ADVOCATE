@@ -35,7 +35,6 @@ var (
 	currentIndex     = make(map[int]int)
 	numberOfRoutines = 0
 	fifo             bool
-	result           string
 	runFuzzing       bool
 
 	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
@@ -124,6 +123,11 @@ func GetTraceFromId(id int) []TraceElement {
 
 func SetTimeoutHappened(timeout bool) {
 	timeoutHappened = timeout
+}
+
+func SetExitInfo(code int, pos string) {
+	exitCode = code
+	exitPos = pos
 }
 
 func GetTimeoutHappened() bool {
@@ -308,6 +312,19 @@ func getNextElement() TraceElement {
 	increaseIndex(minRoutine)
 
 	return element
+}
+
+func getLastElemPerRout() []TraceElement {
+	res := make([]TraceElement, 0)
+	for _, trace := range traces {
+		if len(trace) == 0 {
+			continue
+		}
+
+		res = append(res, trace[len(traces)-1])
+	}
+
+	return res
 }
 
 func increaseIndex(routine int) {

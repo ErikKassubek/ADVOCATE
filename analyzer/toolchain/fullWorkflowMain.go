@@ -153,7 +153,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	runAnalyzer(analyzerOutput, noPrintFlag, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag,
-		"rewritten_trace", timeoutAna, ignoreRewriteFlag, fuzzing)
+		"rewritten_trace", timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
 	}

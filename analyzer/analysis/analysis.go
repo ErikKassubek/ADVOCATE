@@ -12,12 +12,15 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/results"
 	timemeasurement "analyzer/timeMeasurement"
 	"log"
+	"strconv"
+	"strings"
 )
 
 /*
-* Calculate vector clocks
+* Run the analysis
 * MARK: run analysis
 * Args:
 *   assume_fifo (bool): True to assume fifo ordering in buffered channels
@@ -25,9 +28,135 @@ import (
 *   	vector clocks
 *   analysisCasesMap (map[string]bool): The analysis cases to run
 *   fuzzing (bool): true if run with fuzzing
+*   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
-func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) string {
+func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
+	if onlyAPanicAndLeak {
+		runAnalysisOnExitCodes(true)
+		checkForLeakSimple()
+		return
+	}
 
+	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
+
+	runAnalysisOnExitCodes(false)
+}
+
+/*
+ * Check the exit codes for the recording for actual bugs
+ * If all true, check for all, else only check for the once, that are not detected by the full analysis
+ */
+func runAnalysisOnExitCodes(all bool) {
+	exit := strings.Split(exitPos, ":")
+	if len(exit) != 2 {
+		return
+	}
+
+	file := exit[0]
+	line, err := strconv.Atoi(exit[1])
+	if err != nil {
+		return
+	}
+
+	if exitCode == 3 { // close on nil
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "CC",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.ACloseOnNilChannel,
+			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	} else if exitCode == 4 { // negative wg counter
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "WD",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.ANegWG,
+			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	} else if exitCode == 5 { // unlock of not locked mutex
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "ML",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.AUnlockOfNotLockedMutex,
+			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	} else if exitCode == 6 { // unknown panic
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "XX",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.AUnknownPanic,
+			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	}
+
+	if all {
+		if exitCode == 1 { // send on closed
+			arg1 := results.TraceElementResult{ // send
+				RoutineID: 0,
+				ObjID:     0,
+				TPre:      0,
+				ObjType:   "CS",
+				File:      file,
+				Line:      line,
+			}
+			results.Result(results.CRITICAL, results.ASendOnClosed,
+				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		}
+	} else if exitCode == 2 { // close on closed
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "CC",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.ACloseOnClosed,
+			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	}
+}
+
+/*
+ * Check only for leaks
+ * Do not check for potential partners
+ * This is done by checking for each routine, if the last element is a blocking element
+ * and if its tPost is 0
+ */
+func checkForLeakSimple() {
+	elems := getLastElemPerRout()
+
+	for _, elem := range elems {
+		if elem.GetTPost() == 0 {
+			leak(elem)
+		}
+	}
+}
+
+/*
+* Run the full analysis
+* Args:
+*   assume_fifo (bool): True to assume fifo ordering in buffered channels
+*   ignoreCriticalSections (bool): True to ignore critical sections when updating
+*   	vector clocks
+*   analysisCasesMap (map[string]bool): The analysis cases to run
+*   fuzzing (bool): true if run with fuzzing
+ */
+func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
 	log.Print("Analyze the trace")
 
 	fifo = assumeFifo
@@ -98,38 +227,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 
 		// check for leak
 		if analysisCases["leak"] && elem.GetTPost() == 0 {
-			timemeasurement.Start("leak")
-
-			switch e := elem.(type) {
-			case *TraceElementChannel:
-				CheckForLeakChannelStuck(e, currentVCHb[e.routine])
-			case *TraceElementMutex:
-				CheckForLeakMutex(e)
-			case *TraceElementWait:
-				CheckForLeakWait(e)
-			case *TraceElementSelect:
-				cases := e.GetCases()
-				ids := make([]int, 0)
-				buffered := make([]bool, 0)
-				opTypes := make([]int, 0)
-				for _, c := range cases {
-					switch c.opC {
-					case SendOp:
-						ids = append(ids, c.GetID())
-						opTypes = append(opTypes, 0)
-						buffered = append(buffered, c.IsBuffered())
-					case RecvOp:
-						ids = append(ids, c.GetID())
-						opTypes = append(opTypes, 1)
-						buffered = append(buffered, c.IsBuffered())
-					}
-				}
-				CheckForLeakSelectStuck(e, ids, buffered, currentVCHb[e.routine], opTypes)
-			case *TraceElementCond:
-				CheckForLeakCond(e)
-			}
-
-			timemeasurement.End("leak")
+			leak(elem)
 		}
 
 	}
@@ -173,8 +271,41 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 	}
 
 	log.Print("Finished analyzing trace")
+}
 
-	return result
+func leak(elem TraceElement) {
+	timemeasurement.Start("leak")
+
+	switch e := elem.(type) {
+	case *TraceElementChannel:
+		CheckForLeakChannelStuck(e, currentVCHb[e.routine])
+	case *TraceElementMutex:
+		CheckForLeakMutex(e)
+	case *TraceElementWait:
+		CheckForLeakWait(e)
+	case *TraceElementSelect:
+		cases := e.GetCases()
+		ids := make([]int, 0)
+		buffered := make([]bool, 0)
+		opTypes := make([]int, 0)
+		for _, c := range cases {
+			switch c.opC {
+			case SendOp:
+				ids = append(ids, c.GetID())
+				opTypes = append(opTypes, 0)
+				buffered = append(buffered, c.IsBuffered())
+			case RecvOp:
+				ids = append(ids, c.GetID())
+				opTypes = append(opTypes, 1)
+				buffered = append(buffered, c.IsBuffered())
+			}
+		}
+		CheckForLeakSelectStuck(e, ids, buffered, currentVCHb[e.routine], opTypes)
+	case *TraceElementCond:
+		CheckForLeakCond(e)
+	}
+
+	timemeasurement.End("leak")
 }
 
 /*

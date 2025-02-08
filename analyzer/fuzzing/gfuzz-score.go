@@ -36,9 +36,6 @@ func calculateScore() float64 {
 
 	// number of communications per communication pair (countChOpPair)
 	for _, pair := range pairInfoTrace {
-		if pair.com == 0 {
-			println("com 0")
-		}
 		res += math.Log2(float64(pair.com))
 	}
 
@@ -53,8 +50,11 @@ func calculateScore() float64 {
 	for _, ch := range channelInfoFile {
 		bufFullSum += float64(ch.maxQCount)
 	}
+	res += fact1 * bufFullSum
 
-	res += fact2 * float64(numberSelectCasesWithPartner)
+	if useHBInfoFuzzing {
+		res += fact2 * float64(numberSelectCasesWithPartner)
+	}
 
 	return res
 }

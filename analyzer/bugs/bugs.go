@@ -24,11 +24,15 @@ const (
 	Empty ResultType = ""
 
 	// actual
-	ASendOnClosed          ResultType = "A01"
-	ARecvOnClosed          ResultType = "A02"
-	ACloseOnClosed         ResultType = "A03"
-	AConcurrentRecv        ResultType = "A04"
-	ASelCaseWithoutPartner ResultType = "A05"
+	AUnknownPanic           ResultType = "A00"
+	ASendOnClosed           ResultType = "A01"
+	ARecvOnClosed           ResultType = "A02"
+	ACloseOnClosed          ResultType = "A03"
+	ACloseOnNil             ResultType = "A04"
+	ANegWG                  ResultType = "A05"
+	AUnlockOfNotLockedMutex ResultType = "A06"
+	AConcurrentRecv         ResultType = "A07"
+	ASelCaseWithoutPartner  ResultType = "A08"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -109,6 +113,10 @@ func (b Bug) ToString() string {
 	arg1Str := ""
 	arg2Str := ""
 	switch b.Type {
+	case AUnknownPanic:
+		typeStr = "Found unknown panic"
+		arg1Str = "Panic: "
+		arg2Str = ""
 	case ASendOnClosed:
 		typeStr = "Found send on closed channel:"
 		arg1Str = "send: "
@@ -121,6 +129,10 @@ func (b Bug) ToString() string {
 		typeStr = "Found close on closed channel:"
 		arg1Str = "close: "
 		arg2Str = "close: "
+	case ACloseOnNil:
+		typeStr = "Found close on nil channel:"
+		arg1Str = "close: "
+		arg2Str = "close: "
 	case AConcurrentRecv:
 		typeStr = "Found concurrent Recv on same channel:"
 		arg1Str = "recv: "
@@ -129,6 +141,14 @@ func (b Bug) ToString() string {
 		typeStr = "Found select case without partner or nil case:"
 		arg1Str = "select: "
 		arg2Str = "case: "
+	case ANegWG:
+		typeStr = "Found actual negative wait group counter:"
+		arg1Str = "done: "
+		arg2Str = ""
+	case AUnlockOfNotLockedMutex:
+		typeStr = "Found unlock on not locked mutex:"
+		arg1Str = "unlock:"
+		arg2Str = ""
 
 	case PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
@@ -260,6 +280,9 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	actual := false
 
 	switch bugType {
+	case "A00":
+		bug.Type = AUnknownPanic
+		actual = true
 	case "A01":
 		bug.Type = ASendOnClosed
 		actual = true
@@ -270,9 +293,18 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = ACloseOnClosed
 		actual = true
 	case "A04":
-		bug.Type = AConcurrentRecv
+		bug.Type = ACloseOnNil
 		actual = true
 	case "A05":
+		bug.Type = ANegWG
+		actual = true
+	case "A06":
+		bug.Type = AUnlockOfNotLockedMutex
+		actual = true
+	case "A07":
+		bug.Type = AConcurrentRecv
+		actual = true
+	case "A08":
 		bug.Type = ASelCaseWithoutPartner
 		actual = true
 	case "P01":

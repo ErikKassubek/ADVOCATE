@@ -440,14 +440,14 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	if resultID == "-1" {
 		runAnalyzer(filepath.Join(dir, pkg, traceName), noPrintFlag, noRewriteFlag, analyisCasesFlag, "results_readable.log",
 			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag, "rewritten_trace",
-			timeoutAna, ignoreRewriteFlag, fuzzing)
+			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
 		runAnalyzer(filepath.Join(dir, pkg, traceName), noPrintFlag, noRewriteFlag, analyisCasesFlag, outR,
 			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag, outT,
-			timeoutAna, ignoreRewriteFlag, fuzzing)
+			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
 	if err != nil {
 		fmt.Println("Analyzer failed", err)

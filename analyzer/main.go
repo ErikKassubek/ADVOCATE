@@ -73,7 +73,10 @@ var (
 	notExec    bool
 	statistics bool
 
-	scenarios string
+	scenarios         string
+	onlyAPanicAndLeak bool
+
+	fuzzingMode int
 )
 
 func main() {
@@ -124,10 +127,14 @@ func main() {
 		"\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tp: Select case without partner\n"+
-		"\tu: Unlock of unlocked mutex\n",
+		"\tu: Unlock of unlocked mutex\n"+
+		"\tc: Cyclic deadlock\n",
 	)
-	// "\tc: Cyclic deadlock\n",
 	// "\tm: Mixed deadlock\n"
+
+	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
+
+	flag.IntVar(&fuzzingMode, "fuzzingMode", 0, "Mode for fuzzing. Mainly used to compare. For full analysis, do not set.")
 
 	go memorySupervisor() // panic if not enough ram
 
@@ -171,7 +178,7 @@ func main() {
 	}
 
 	toolchain.SetFlags(noPrint, noRewrite, noWarning, analysisCases, ignoreAtomics,
-		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite)
+		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -193,7 +200,7 @@ func main() {
 		modeAnalyzer(tracePath, noPrint, noRewrite, analysisCases, outReadable,
 			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
 			noWarning, rewriteAll, newTrace, timeoutAnalysis, ignoreRewrite,
-			-1)
+			-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
 	default:
@@ -214,7 +221,10 @@ func modeFuzzing() {
 		return
 	}
 
-	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, ignoreAtomics)
+	useHBInfoFuzzing := (fuzzingMode == 0 || fuzzingMode == 2)
+	fullAnalysis := (fuzzingMode == 0 || fuzzingMode == 1)
+
+	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, ignoreAtomics, useHBInfoFuzzing, fullAnalysis)
 	if err != nil {
 		fmt.Println("Fuzzing Failed: ", err.Error())
 	}
@@ -293,7 +303,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
-	fuzzingRun int) {
+	fuzzingRun int, onlyAPanicAndLeak bool) {
 	// printHeader()
 
 	if pathTrace == "" {
@@ -361,7 +371,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		}
 
 		timemeasurement.Start("analysis")
-		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0)
+		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 		timemeasurement.End("analysis")
 
 		timemeasurement.Print()
@@ -736,6 +746,11 @@ func printHelp() {
 	println("  -dir [folder]          Path to the program folder")
 	println("  -prog [name]           Name of the program")
 	println("  -test [name]           Name of the test (only if used on tests)")
+	println("  -fuzzingMode [mode]    Mode of fuzzing:")
+	println("                           0: full fuzzing, full analysis and replay")
+	println("                           1: no HB info in fuzzing, full analysis and replay")
+	println("                           2: full fuzzing, no analysis and replay, only actual bugs")
+	println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
 }
 
 func printHelpMode(mode string) {

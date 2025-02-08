@@ -20,10 +20,11 @@ var (
 	noWarningFlag             bool
 	rewriteAllFlag            bool
 	ignoreRewriteFlag         string
+	onlyAPanicAndLeakFlag     bool
 )
 
 func SetFlags(noPrint, noRewrite, noWarning bool, analyisCases map[string]bool, ignoreAtomics,
-	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string) {
+	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool) {
 
 	noPrintFlag = noPrint
 	noRewriteFlag = noRewrite
@@ -36,4 +37,5 @@ func SetFlags(noPrint, noRewrite, noWarning bool, analyisCases map[string]bool, 
 	ignoreCriticalSectionFlag = ignoreCriticalSection
 	rewriteAllFlag = rewriteAll
 	ignoreRewriteFlag = ignoreRewrite
+	onlyAPanicAndLeakFlag = onlyAPanicAndLeak
 }

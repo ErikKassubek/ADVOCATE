@@ -32,11 +32,15 @@ const (
 	Empty ResultType = ""
 
 	// actual
-	ASendOnClosed          ResultType = "A01"
-	ARecvOnClosed          ResultType = "A02"
-	ACloseOnClosed         ResultType = "A03"
-	AConcurrentRecv        ResultType = "A04"
-	ASelCaseWithoutPartner ResultType = "A05"
+	AUnknownPanic           ResultType = "A00"
+	ASendOnClosed           ResultType = "A01"
+	ARecvOnClosed           ResultType = "A02"
+	ACloseOnClosed          ResultType = "A03"
+	ACloseOnNilChannel      ResultType = "A04"
+	ANegWG                  ResultType = "A05"
+	AUnlockOfNotLockedMutex ResultType = "A06"
+	AConcurrentRecv         ResultType = "A07"
+	ASelCaseWithoutPartner  ResultType = "A08"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"

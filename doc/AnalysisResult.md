@@ -28,11 +28,15 @@ with
 ```
 The typeIDs have the following meaning:
 
+- A00: Unknown panic
 - A01: Send on closed channel
 - A02: Receive on closed channel
 - A03: Close on closed channel
-- A04: Concurrent recv
-- A05: Select case without partner
+- A04: Close on nil channel
+- A05: Negative wait group
+- A06: Unlock of not locked mutex
+- A07: Concurrent recv
+- A08: Select case without partner
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter
@@ -215,6 +219,90 @@ Found close on closed channel:
 	close: example.go:3@10
 ```
 
+### Close on nil
+A close on nil is an actual close on a nil channel (always leads to panic).
+The two args of this case are:
+
+- the close operation that leads to the panic
+
+An example for a close on closed is:
+```golang
+1 func main() {          // routine = 1
+2   c := make(chan int)  // objId = 2
+3   c = nil
+4   close(c)             // tPre = 12
+5 }
+```
+
+
+In the machine readable format, the close on closed has the following form:
+```
+A04,T:1:2:12:CC:example.go:4
+```
+
+In the human readable format, the close on closed has the following form:
+```
+Found close on nil channel:
+	close: example.go:4@12
+```
+
+### Negative wait group
+A negative wait group is an actual negative wait group counter.
+The one argument of this case is:
+
+- the done that resulted in the negative wg counter
+
+An example for a close on closed is:
+```golang
+1 func main() {          // routine = 1
+2   var wg sync.WaitGroup  // objId = 2
+3   wg.Add(1)              // tPre = 10
+4   wg.Done()              // tPre = 12
+5   wg.Done()              // tPre = 14
+6 }
+```
+
+
+In the machine readable format, the close on closed has the following form:
+```
+A05,T:1:2:14:WD:example.go:5
+```
+
+In the human readable format, the close on closed has the following form:
+```
+Found actual negative wait group counter:
+	done: example.go:5@14
+
+```
+
+### Unlock of not locked mutex
+A unlock on a not locked mutex was detected
+The argument in this case is
+
+- the unlock operation
+
+An example is
+```golang
+1 func main() {        // routine = 1
+2   var m sync.Mutex   // objId = 2
+3   m.Lock()           // tPre = 10
+4   m.Unlock()         // tPre = 12
+5   m.Unlock()         // tPre = 14
+}
+```
+In the machine readable format, the close on closed has the following form:
+```
+A06,T:1:2:14:MU:example.go:5
+```
+
+In the human readable format, the close on closed has the following form:
+```
+Found unlock on not locked mutex:
+	unlock: example.go:5@14
+
+```
+
+
 ### Concurrent recv
 A concurrent recv shows two receive operations on the same channel that are concurrent.:
 The two args of this case are:
@@ -241,7 +329,7 @@ An example for a concurrent recv is:
 
 The machine readable format of the concurrent recv has the following form:
 ```
-A04,T:3:2:20:CR:example.go:9,T:4:2:10:CR:example.go:5
+A07,T:3:2:20:CR:example.go:9,T:4:2:10:CR:example.go:5
 ```
 The human readable format of the concurrent recv has the following form:
 ```
@@ -282,8 +370,8 @@ The following example shows a select case without partner (d) and a nil case (e)
 
 The machine readable format of the select case without partner or nil case has the following form:
 ```
-A05,T:1:5:10:SS:example.go:8,S:3:CR      // select case without partner
-A05,T:1:5:10:SS:example.go:8,S:-1:CS     // nil case
+A08,T:1:5:10:SS:example.go:8,S:3:CR      // select case without partner
+A08,T:1:5:10:SS:example.go:8,S:-1:CS     // nil case
 ```
 
 The human readable format of the select case without partner or nil case has the following form:

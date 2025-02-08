@@ -70,12 +70,20 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 	rewriteNeeded = false
 	code = exitCodeNone
 	switch bug.Type {
+	case bugs.AUnknownPanic:
+		err = errors.New("Unknown panic occurred. No rewrite possible.")
 	case bugs.ASendOnClosed:
-		err = errors.New("Actual send on closed in trace. Therefore no rewrite is needed.")
+		err = errors.New("Actual send on closed. Therefore no rewrite is needed.")
 	case bugs.ARecvOnClosed:
 		err = errors.New("Actual receive on closed in trace. Therefore no rewrite is needed.")
 	case bugs.ACloseOnClosed:
-		err = errors.New("Only actual close on close can be detected. Therefor no rewrite is needed.")
+		err = errors.New("Actual close on close detected. Therefor no rewrite is needed.")
+	case bugs.ACloseOnNil:
+		err = errors.New("Actual close on nil detected. Therefor no rewrite is needed.")
+	case bugs.ANegWG:
+		err = errors.New("Actual negative wait group. Therefore no rewrite is needed.")
+	case bugs.AUnlockOfNotLockedMutex:
+		err = errors.New("Actual unlock of not locked mutex. Therefore no rewrite is needed.")
 	case bugs.AConcurrentRecv:
 		err = errors.New("Rewriting trace for concurrent receive is not possible")
 	case bugs.ASelCaseWithoutPartner:

@@ -39,6 +39,9 @@ var (
 	pairInfoFile                 = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
 	selectInfoFile               = make(map[string][]int)          // globalID -> executed casi
 	numberSelectCasesWithPartner = 0
+
+	useHBInfoFuzzing = true
+	runFullAnalysis  = true
 )
 
 /*

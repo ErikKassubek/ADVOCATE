@@ -53,9 +53,21 @@ const (
 	none
 )
 
+const (
+	exitCodeSendOnClosed          = 1
+	exitCodeCloseOnClosed         = 2
+	exitCodeCloseOnNilChannel     = 3
+	exitCodeNegWG                 = 4
+	exitCodeUnlockOfUnlockedMutex = 5
+	exitCodeUnknownPanic          = 6
+)
+
 var advocateTracingDisabled = true
 var advocatePanicWriteBlock chan struct{}
 var advocatePanicDone chan struct{}
+
+var advocateExitCode = 0
+var advocateExitCodePos = ""
 
 // var advocateTraceWritingDisabled = false
 
@@ -96,6 +108,42 @@ func getOperationObjectString(op Operation) string {
 func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
 	advocatePanicWriteBlock = apwb
 	advocatePanicDone = apd
+}
+
+func GetExitCode() (int, string) {
+	return advocateExitCode, advocateExitCodePos
+}
+
+func SetExitCodeFromPanicString(msg any) {
+	_, file, line, _ := Caller(2)
+
+	switch m := msg.(type) {
+	case plainError:
+		if m.Error() == "send on closed channel" {
+			advocateExitCode = exitCodeSendOnClosed
+		} else if m.Error() == "close of closed channel" {
+			advocateExitCode = exitCodeCloseOnClosed
+		} else if m.Error() == "close of nil channel" {
+			advocateExitCode = exitCodeCloseOnNilChannel
+		}
+	case string:
+		if m == "sync: negative WaitGroup counter" {
+			advocateExitCode = exitCodeNegWG
+		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
+			if m == "sync: RUnlock of unlocked RWMutex" ||
+				m == "sync: Unlock of unlocked RWMutex" ||
+				m == "sync: unlock of unlocked mutex" {
+				advocateExitCode = exitCodeUnlockOfUnlockedMutex
+			}
+		}
+	}
+
+	if advocateExitCode == 0 {
+		advocateExitCode = exitCodeUnknownPanic
+	}
+
+	advocateExitCodePos = file + ":" + intToString(line)
+
 }
 
 /*

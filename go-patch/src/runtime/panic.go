@@ -719,6 +719,7 @@ var panicnil = &godebugInc{name: "panicnil"}
 // The implementation of the predeclared function panic.
 func gopanic(e any) {
 	// ADVOCATE-CHANGE-START
+	SetExitCodeFromPanicString(e)
 	ExitReplayPanic(e)
 	// write the trace
 	if !advocateTracingDisabled {
@@ -1028,6 +1029,11 @@ func throw(s string) {
 		print("fatal error: ", s, "\n")
 	})
 
+	// ADVOCATE-CHANGE-START
+	SetExitCodeFromPanicString(s)
+	ExitReplayPanic(s)
+	// ADVOCATE-CHANGE-END
+
 	fatalthrow(throwTypeRuntime)
 }
 
@@ -1048,6 +1054,7 @@ func fatal(s string) {
 	})
 
 	// ADVOCATE-CHANGE-START
+	SetExitCodeFromPanicString(s)
 	ExitReplayPanic(s)
 	// ADVOCATE-CHANGE-END
 
@@ -1198,10 +1205,6 @@ func fatalthrow(t throwType) {
 	if gp.m.throwing == throwTypeNone {
 		gp.m.throwing = t
 	}
-
-	// ADVOCATE-CHANGE-START
-	ExitReplayPanic(t)
-	// ADVOCATE-CHANGE-END
 
 	// Switch to the system stack to avoid any stack growth, which may make
 	// things worse if the runtime is in a bad state.

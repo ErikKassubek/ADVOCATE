@@ -79,6 +79,13 @@ var (
 	fuzzingMode int
 )
 
+const (
+	HBFuzzHBAna = 0
+	FuzzHBAna   = 1
+	HBFuzzNoAna = 2
+	FuzzNoAna   = 3
+)
+
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
@@ -172,6 +179,11 @@ func main() {
 		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
 
+	// don't run any scenarios if fuzzing mode 2
+	if mode == "fuzzing" && fuzzingMode == HBFuzzNoAna {
+		scenarios = "-"
+	}
+
 	analysisCases, err := parseAnalysisCases(scenarios)
 	if err != nil {
 		panic(err)
@@ -221,8 +233,8 @@ func modeFuzzing() {
 		return
 	}
 
-	useHBInfoFuzzing := (fuzzingMode == 0 || fuzzingMode == 2)
-	fullAnalysis := (fuzzingMode == 0 || fuzzingMode == 1)
+	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
+	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
 	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, ignoreAtomics, useHBInfoFuzzing, fullAnalysis)
 	if err != nil {
@@ -479,6 +491,10 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		"cyclicDeadlock":       false,
 		"mixedDeadlock":        false,
 		"resourceDeadlock":     false,
+	}
+
+	if cases == "-" {
+		return analysisCases, nil
 	}
 
 	if cases == "" {

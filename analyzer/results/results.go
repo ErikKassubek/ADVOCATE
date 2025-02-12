@@ -67,11 +67,15 @@ const (
 )
 
 var resultTypeMap = map[ResultType]string{
-	ARecvOnClosed:          "Found receive on closed channel:",
-	ASendOnClosed:          "Found send on closed channel:",
-	ACloseOnClosed:         "Found close on closed channel:",
-	AConcurrentRecv:        "Found concurrent Recv on same channel:",
-	ASelCaseWithoutPartner: "Found select case without partner or nil case",
+	ASendOnClosed:           "Actual Send on Closed Channel:",
+	ARecvOnClosed:           "Actual Receive on Closed Channel:",
+	ACloseOnClosed:          "Actual Close on Closed Channel:",
+	AConcurrentRecv:         "Concurrent Receive:",
+	ASelCaseWithoutPartner:  "Select Case without Partner",
+	ACloseOnNilChannel:      "Actual close on nil channel",
+	ANegWG:                  "Actual negative Wait Group",
+	AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
+	AUnknownPanic:           "Unknown Panic",
 
 	PSendOnClosed:     "Possible send on closed channel:",
 	PRecvOnClosed:     "Possible receive on closed channel:",

@@ -81,7 +81,7 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 	case bugs.ACloseOnNil:
 		err = errors.New("Actual close on nil detected. Therefor no rewrite is needed.")
 	case bugs.ANegWG:
-		err = errors.New("Actual negative wait group. Therefore no rewrite is needed.")
+		err = errors.New("Actual negative Wait Group. Therefore no rewrite is needed.")
 	case bugs.AUnlockOfNotLockedMutex:
 		err = errors.New("Actual unlock of not locked mutex. Therefore no rewrite is needed.")
 	case bugs.AConcurrentRecv:

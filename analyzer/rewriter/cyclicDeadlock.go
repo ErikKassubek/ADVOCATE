@@ -138,8 +138,39 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 		}
 	}
 
+	prevLastTime := -1
+
+	for routine := range routinesInCycle {
+		found := false
+		for i := len(currentTrace[routine]) - 1; i >= 0; i-- {
+			elem := currentTrace[routine][i]
+			switch elem := elem.(type) {
+			case *analysis.TraceElementMutex:
+				if (*elem).IsLock() {
+					if (*elem).GetTSort() == lastTime {
+						continue
+					} else {
+						found = true
+					}
+					if prevLastTime == -1 || (*elem).GetTSort() > prevLastTime {
+						prevLastTime = (*elem).GetTSort()
+					}
+				}
+			}
+			if found {
+				break
+			}
+		}
+	}
+
+	if prevLastTime == -1 {
+		return errors.New("no previous lock operation")
+	}
+
 	// add start and end signal
-	analysis.AddTraceElementReplay(lastTime+1, exitCodeCyclic, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+	analysis.AddTraceElementReplay(prevLastTime+1, exitCodeCyclic, prevLastTime)
+
+	analysis.PrintTrace([]string{}, false)
 
 	return nil
 }

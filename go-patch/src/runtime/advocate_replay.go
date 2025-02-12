@@ -640,17 +640,22 @@ func SetLastTPre(tPre int) {
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
-		if isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
+		if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
 			return
 		}
 		println("Exit Replay with code ", code, ExitCodeNames[code])
 		hasReturnedExitCode = true
+	} else {
+		println("Exit code already returned")
 	}
 	if replayExitCode && ExitCodeNames[code] != "" {
 		if !advocateTracingDisabled { // do not exit if recording is enabled
 			return
 		}
+		println("Forcing exit with code ", code, ExitCodeNames[code])
 		exit(int32(code))
+	} else {
+		println("Exit code not set")
 	}
 }
 

@@ -29,6 +29,7 @@ var bugCrit = map[string]string{
 	"P02": "Diagnostic",
 	"P03": "Bug",
 	"P04": "Bug",
+	"P05": "Bug",
 	"L00": "Leak",
 	"L01": "Leak",
 	"L02": "Leak",
@@ -47,7 +48,7 @@ var bugNames = map[string]string{
 	"A02": "Actual Receive on Closed Channel",
 	"A03": "Actual Close on Closed Channel",
 	"A04": "Actual close on nil channel",
-	"A05": "Actual Negative Wait Group",
+	"A05": "Actual negative Wait Group",
 	"A06": "Actual unlock of not locked mutex",
 	"A07": "Concurrent Receive",
 	"A08": "Select Case without Partner",
@@ -57,14 +58,15 @@ var bugNames = map[string]string{
 	"P02": "Possible Receive on Closed Channel",
 	"P03": "Possible Negative WaitGroup cCounter",
 	"P04": "Possible unlock of not locked mutex",
+	"P05": "Possible cyclic deadlock",
 
 	"L00": "Leak on routine without blocking operation",
-	"L01": "Leak of unbuffered Channel with possible partner",
-	"L02": "Leak on unbuffered Channel without possible partner",
-	"L03": "Leak of buffered Channel with possible partner",
+	"L01": "Leak on unbuffered channel with possible partner",
+	"L02": "Leak on unbuffered channel without possible partner",
+	"L03": "Leak on buffered Channel with possible partner",
 	"L04": "Leak on buffered Channel without possible partner",
 	"L05": "Leak on nil channel",
-	"L06": "Leak of select with possible partner",
+	"L06": "Leak on select with possible partner",
 	"L07": "Leak on select without possible partner",
 	"L08": "Leak on sync.Mutex",
 	"L09": "Leak on sync.WaitGroup",
@@ -110,38 +112,42 @@ var bugExplanations = map[string]string{
 		"Although the unlock of a not locked mutex did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
 		"A unlock of a not locked mutex will result in a panic.",
+	"P05": "The analysis detected a possible cyclic deadlock.\n" +
+		"If this deadlock contains or influences the run of the main routine, this can " +
+		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
+		"resources.",
 	"L00": "The analyzer detected a leak on a routine without a blocking operations.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +
 		"This can be a desired behavior, but it can also be a signal for a not otherwise detected block.",
-	"L01": "The analyzer detected a leak of an unbuffered channel with a possible partner.\n" +
-		"A leak of an unbuffered channel is a situation, where a unbuffered channel is " +
+	"L01": "The analyzer detected a Leak on an unbuffered channel with a possible partner.\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the deadlock.",
-	"L02": "The analyzer detected a leak of an unbuffered channel without a possible partner.\n" +
-		"A leak of an unbuffered channel is a situation, where a unbuffered channel is " +
+	"L02": "The analyzer detected a Leak on an unbuffered channel without a possible partner.\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
-	"L03": "The analyzer detected a leak of a buffered channel with a possible partner.\n" +
-		"A leak of a buffered channel is a situation, where a buffered channel is " +
+	"L03": "The analyzer detected a Leak on a buffered channel with a possible partner.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L04": "The analyzer detected a leak of a buffered channel without a possible partner.\n" +
-		"A leak of a buffered channel is a situation, where a buffered channel is " +
+	"L04": "The analyzer detected a Leak on a buffered channel without a possible partner.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L05": "The analyzer detected a leak on a nil channel.\n" +
 		"A leak on a nil channel is a situation, where a nil channel is still blocking at the end of the program.\n" +
 		"A nil channel is a channel, which was never initialized or set to nil." +
 		"An operation on a nil channel will block indefinitely.",
-	"L06": "The analyzer detected a leak of a select with a possible partner.\n" +
-		"A leak of a select is a situation, where a select is still blocking at the end of the program.\n" +
+	"L06": "The analyzer detected a Leak on a select with a possible partner.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L07": "The analyzer detected a leak of a select without a possible partner.\n" +
-		"A leak of a select is a situation, where a select is still blocking at the end of the program.\n" +
+	"L07": "The analyzer detected a Leak on a select without a possible partner.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L08": "The analyzer detected a leak on a sync.Mutex.\n" +
 		"A leak on a sync.Mutex is a situation, where a sync.Mutex lock operations is still blocking at the end of the program.\n" +
@@ -242,6 +248,20 @@ var bugExamples map[string]string = map[string]string{
 		"    go func() {\n" +
 		"        m.Unlock()     // <-------\n" +
 		"    }()\n\n}",
+	"P05": "func main() {\n" +
+		"    var m sync.Mutex\n" +
+		"    var n sync.Mutex\n\n" +
+		"    go func() {\n" +
+		"        m.Lock()\n" +
+		"        n.Lock()\n     // <-------\n" +
+		"        n.Unlock()\n" +
+		"        m.Unlock()\n" +
+		"    }()\n\n" +
+		"    n.Lock()\n" +
+		"    m.Lock()\n        // <-------\n" +
+		"    m.Unlock()\n" +
+		"    n.Unlock()\n" +
+		"    }",
 	"L00": "func main() {\n" +
 		"    go func() {\n" +
 		"        time.Sleep(time.Second)          // <------- Is still running when main routine terminates\n" +
@@ -326,32 +346,6 @@ var bugExamples map[string]string = map[string]string{
 		"    var c sync.Cond\n\n" +
 		"    c.Wait()            // <------- Leak, no signal/broadcast\n" +
 		"}",
-}
-
-var rewriteType = map[string]string{
-	"A01": "Actual",
-	"A02": "Actual",
-	"A03": "Actual",
-	"A04": "Actual",
-	"A05": "Actual",
-	"A06": "Actual",
-	"A07": "Actual",
-	"A08": "Actual",
-	"A00": "Actual",
-	"P01": "Possible",
-	"P02": "Possible",
-	"P03": "Possible",
-	"P04": "Possible",
-	"L01": "LeakPos",
-	"L02": "Leak",
-	"L03": "LeakPos",
-	"L04": "Leak",
-	"L05": "Leak",
-	"L06": "LeakPos",
-	"L07": "Leak",
-	"L08": "LeakPos",
-	"L09": "LeakPos",
-	"L10": "LeakPos",
 }
 
 var exitCodeExplanation = map[string]string{

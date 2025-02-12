@@ -21,7 +21,7 @@ import (
 func getRewriteInfo(bugType string, codes map[string]string, index string) map[string]string {
 	res := make(map[string]string)
 
-	rewPos := rewriteType[bugType]
+	rewType := getRewriteType(bugType)
 
 	res["description"] = ""
 	res["exitCode"] = ""
@@ -30,18 +30,18 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 
 	var err error
 
-	if rewPos == "Actual" {
+	if rewType == "Actual" {
 		res["description"] += "The bug is an actual bug. Therefore no rewrite is possibel."
 		codes[fmt.Sprint(index)] = "fail"
-	} else if rewPos == "Possible" {
+	} else if rewType == "Possible" {
 		res["description"] += "The bug is a potential bug.\n"
 		res["description"] += "The analyzer has tries to rewrite the trace in such a way, "
 		res["description"] += "that the bug will be triggered when replaying the trace."
-	} else if rewPos == "LeakPos" {
+	} else if rewType == "LeakPos" {
 		res["description"] += "The analyzer found a leak in the recorded trace.\n"
 		res["description"] += "The analyzer found a way to resolve the leak, meaning the "
 		res["description"] += "leak should not reappear in the rewritten trace."
-	} else if rewPos == "Leak" {
+	} else if rewType == "Leak" {
 		res["description"] += "The analyzer found a leak in the recorded trace.\n"
 		res["description"] += "The analyzer could not find a way to resolve the leak. "
 		res["description"] += "No rewritten trace was created. This does not need to mean, "
@@ -57,6 +57,23 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 
 	return res
 
+}
+
+func getRewriteType(bugCode string) string {
+	switch bugCode[:1] {
+	case "A":
+		return "Actual"
+	case "P":
+		return "Possible"
+	case "L":
+		res := "Leak"
+		if bugCode == "L01" || bugCode == "L03" || bugCode == "L06" ||
+			bugCode == "L08" || bugCode == "L09" || bugCode == "L10" {
+			res += "Pos"
+		}
+		return res
+	}
+	return ""
 }
 
 func getOutputCodes(path string) map[string]string {

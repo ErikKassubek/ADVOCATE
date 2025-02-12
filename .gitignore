@@ -22,7 +22,7 @@ examples/*/advocateTrace/
 trace_*.log
 
 # the examples folder
-#examples/
+examples/
 
 # vscode
 .vscode/

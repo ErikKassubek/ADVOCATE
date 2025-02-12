@@ -114,39 +114,39 @@ func (b Bug) ToString() string {
 	arg2Str := ""
 	switch b.Type {
 	case AUnknownPanic:
-		typeStr = "Found unknown panic"
+		typeStr = "Unknown Panic:"
 		arg1Str = "Panic: "
 		arg2Str = ""
 	case ASendOnClosed:
-		typeStr = "Found send on closed channel:"
+		typeStr = "Actual Send on Closed Channel:"
 		arg1Str = "send: "
 		arg2Str = "close: "
 	case ARecvOnClosed:
-		typeStr = "Found receive on closed channel:"
+		typeStr = "Actual Receive on Closed Channel:"
 		arg1Str = "recv: "
 		arg2Str = "close: "
 	case ACloseOnClosed:
-		typeStr = "Found close on closed channel:"
+		typeStr = "Actual Close on Closed Channel:"
 		arg1Str = "close: "
 		arg2Str = "close: "
 	case ACloseOnNil:
-		typeStr = "Found close on nil channel:"
+		typeStr = "Actual close on nil channel:"
 		arg1Str = "close: "
 		arg2Str = "close: "
 	case AConcurrentRecv:
-		typeStr = "Found concurrent Recv on same channel:"
+		typeStr = "Concurrent Receive:"
 		arg1Str = "recv: "
 		arg2Str = "recv: "
 	case ASelCaseWithoutPartner:
-		typeStr = "Found select case without partner or nil case:"
+		typeStr = "Select Case without Partner:"
 		arg1Str = "select: "
 		arg2Str = "case: "
 	case ANegWG:
-		typeStr = "Found actual negative wait group counter:"
+		typeStr = "Actual negative Wait Group:"
 		arg1Str = "done: "
 		arg2Str = ""
 	case AUnlockOfNotLockedMutex:
-		typeStr = "Found unlock on not locked mutex:"
+		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
 		arg2Str = ""
 

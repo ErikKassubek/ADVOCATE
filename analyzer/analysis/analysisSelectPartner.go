@@ -86,27 +86,27 @@ func CheckForSelectCaseWithoutPartner() {
 				continue
 			}
 
-			file, line, tPre, err := infoFromTID(c.vcTID.TID)
-			if err != nil {
-				continue
-			}
+			// file, line, tPre, err := infoFromTID(c.vcTID.TID)
+			// if err != nil {
+			// 	continue
+			// }
 
-			sel := results.TraceElementResult{
-				RoutineID: c.vcTID.Routine,
-				ObjID:     c.sel.GetID(),
-				TPre:      tPre,
-				ObjType:   "SS",
-				File:      file,
-				Line:      line,
-			}
+			// sel := results.TraceElementResult{
+			// 	RoutineID: c.vcTID.Routine,
+			// 	ObjID:     c.sel.GetID(),
+			// 	TPre:      tPre,
+			// 	ObjType:   "SS",
+			// 	File:      file,
+			// 	Line:      line,
+			// }
 
-			ca := results.SelectCaseResult{
-				SelID:   c.sel.GetID(),
-				ObjID:   c.chanID,
-				ObjType: opjType,
-				Routine: c.vcTID.Routine,
-				Index:   cIndex,
-			}
+			// ca := results.SelectCaseResult{
+			// 	SelID:   c.sel.GetID(),
+			// 	ObjID:   c.chanID,
+			// 	ObjType: opjType,
+			// 	Routine: c.vcTID.Routine,
+			// 	Index:   cIndex,
+			// }
 
 			for _, p := range c.partner {
 				pos := strings.Split(p.Elem.GetPos(), ":")
@@ -131,14 +131,14 @@ func CheckForSelectCaseWithoutPartner() {
 				partnerResult = append(partnerResult, partner)
 			}
 
-			if len(partnerResult) == 0 {
-				continue
-			}
+			// if len(partnerResult) == 0 {
+			// 	continue
+			// }
 
-			if analysisCases["selectWithoutPartner"] {
-				results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
-					"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
-			}
+			// if analysisCases["selectWithoutPartner"] {
+			// 	results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
+			// 		"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
+			// }
 			continue
 		}
 

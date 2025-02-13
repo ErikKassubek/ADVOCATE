@@ -41,10 +41,6 @@ func statsAnalyzer(pathToResults string) (map[string]map[string]int, error) {
 		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
 		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
 		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
-	rerecorded := map[string]int{
-		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
-		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
-		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
 	unexpactedPanic := map[string]int{
 		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
 		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
@@ -54,7 +50,6 @@ func statsAnalyzer(pathToResults string) (map[string]map[string]int, error) {
 		"detected":         detected,
 		"replayWritten":    replayWriten,
 		"replaySuccessful": replaySuccessful,
-		"rerecorded":       rerecorded,
 		"unexpectedPanic":  unexpactedPanic,
 	}
 
@@ -159,10 +154,6 @@ func processBugFile(filePath string, info *map[string]map[string]int) error {
 
 	if bug.replaySuc {
 		(*info)["replaySuccessful"][bugType]++
-	}
-
-	if !strings.Contains(filepath.Base(filePath), "bug_0") {
-		(*info)["rerecorded"][bugType]++
 	}
 
 	return nil

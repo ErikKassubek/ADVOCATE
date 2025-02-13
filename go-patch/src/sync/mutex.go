@@ -344,7 +344,9 @@ func (m *Mutex) Unlock() {
 
 func (m *Mutex) unlockSlow(new int32) {
 	if (new+mutexLocked)&mutexLocked == 0 {
+		// ADVOCATE-CHANGE-START
 		fatal("sync: unlock of unlocked mutex")
+		// ADVOCATE-CHANGE-END
 	}
 	if new&mutexStarving == 0 {
 		old := new

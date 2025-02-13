@@ -28,20 +28,20 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 
 	files, err := collectGoFiles(progPath)
 	if err != nil {
-		println("Error in collecting files")
+		log.Println("Error in collecting files")
 		return nil, err
 	}
 
 	pkg, err := analyzeFiles(files)
 	if err != nil {
-		println("Error in analyzing files")
+		log.Println("Error in analyzing files")
 		return nil, err
 	}
 
 	// traverse all .go files in the directory recursively
 	err = filepath.Walk(progPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			println("Error in walking")
+			log.Println("Error in walking")
 			return err
 		}
 
@@ -52,7 +52,7 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 		if strings.HasSuffix(path, ".go") {
 			content, err := os.ReadFile(path)
 			if err != nil {
-				println("Error in reading file")
+				log.Println("Error in reading file")
 				return err
 			}
 
@@ -106,8 +106,6 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	for _, file := range files {
 		parsedFile, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
 		if err != nil {
-			// println("Error in parsing file")
-			// return nil, err
 			continue
 		}
 		astFiles = append(astFiles, parsedFile)
@@ -117,10 +115,6 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	pkg, _ := conf.Check("mypackage", fset, astFiles, &types.Info{
 		Uses: make(map[*ast.Ident]types.Object),
 	})
-	// if err != nil {
-	// 	println("Error in checking")
-	// 	return nil, err
-	// }
 
 	return pkg, nil
 }
@@ -145,10 +139,6 @@ func getElemsFromContent(path string, content string, pkg *types.Package) ([]int
 			break
 		}
 	}
-
-	// if syncPkg == nil {
-	// 	fmt.Println("Could not find sync package")
-	// }
 
 	v := &visitor{fset: fset, pkg: pkg, info: info, syncPkg: syncPkg,
 		selectCases: make(map[string]struct{}), elements: make([]int, 0)}

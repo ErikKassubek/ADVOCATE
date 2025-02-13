@@ -264,7 +264,6 @@ func InitResults(outReadable string, outMachine string) {
 * Print the summary of the analysis
 * Args:
 *   noWarning: if true, only critical errors will be shown
-*   noPrint: if true, no output will be printed to the terminal
 * Returns:
 *   int: number of bugs found
  */

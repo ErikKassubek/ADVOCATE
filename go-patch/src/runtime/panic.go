@@ -1029,11 +1029,6 @@ func throw(s string) {
 		print("fatal error: ", s, "\n")
 	})
 
-	// ADVOCATE-CHANGE-START
-	SetExitCodeFromPanicString(s)
-	ExitReplayPanic(s)
-	// ADVOCATE-CHANGE-END
-
 	fatalthrow(throwTypeRuntime)
 }
 
@@ -1052,11 +1047,6 @@ func fatal(s string) {
 	systemstack(func() {
 		print("fatal error: ", s, "\n")
 	})
-
-	// ADVOCATE-CHANGE-START
-	SetExitCodeFromPanicString(s)
-	ExitReplayPanic(s)
-	// ADVOCATE-CHANGE-END
 
 	fatalthrow(throwTypeUser)
 }

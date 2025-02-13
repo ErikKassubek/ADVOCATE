@@ -116,6 +116,7 @@ func GetExitCode() (int, string) {
 
 func SetExitCodeFromPanicString(msg any) {
 	_, file, line, _ := Caller(2)
+	advocateExitCodePos = file + ":" + intToString(line)
 
 	switch m := msg.(type) {
 	case plainError:
@@ -141,9 +142,6 @@ func SetExitCodeFromPanicString(msg any) {
 	if advocateExitCode == 0 {
 		advocateExitCode = exitCodeUnknownPanic
 	}
-
-	advocateExitCodePos = file + ":" + intToString(line)
-
 }
 
 /*

@@ -358,7 +358,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 		fmt.Println("Create trace from files ", pathTrace, numberOfRoutines)
 		if err != nil {
-			panic(err)
+			fmt.Println("Could not open trace: ", err.Error())
 		}
 
 		log.Println("Trace size: ", len(analysis.GetTraces()))

@@ -54,8 +54,7 @@ func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
-		log.Println("Run: ", numberFuzzingRuns)
-		fmt.Println("Run: ", numberFuzzingRuns)
+		log.Println("Run: ", numberFuzzingRuns+1)
 
 		order = popMutation()
 

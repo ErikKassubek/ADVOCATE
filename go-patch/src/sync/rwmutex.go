@@ -227,7 +227,9 @@ func (rw *RWMutex) RUnlock() {
 func (rw *RWMutex) rUnlockSlow(r int32) {
 	if r+1 == 0 || r+1 == -rwmutexMaxReaders {
 		race.Enable()
-		fatal("sync: RUnlock of unlocked RWMutex")
+		// ADVOCATE-CHANGE-START
+		panic("sync: RUnlock of unlocked RWMutex")
+		// ADVOCATE-CHANGE-END
 	}
 	// A writer is pending.
 	if rw.readerWait.Add(-1) == 0 {
@@ -404,7 +406,9 @@ func (rw *RWMutex) Unlock() {
 	r := rw.readerCount.Add(rwmutexMaxReaders)
 	if r >= rwmutexMaxReaders {
 		race.Enable()
-		fatal("sync: Unlock of unlocked RWMutex")
+		// ADVOCATE-CHANGE-START
+		panic("sync: Unlock of unlocked RWMutex")
+		// ADVOCATE-CHANGE-END
 	}
 	// Unblock blocked readers, if any.
 	for i := 0; i < int(r); i++ {

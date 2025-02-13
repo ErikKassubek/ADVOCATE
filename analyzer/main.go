@@ -232,7 +232,9 @@ func modeFuzzing() {
 	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
 	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
-	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName, ignoreAtomics, useHBInfoFuzzing, fullAnalysis)
+	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName,
+		ignoreAtomics, useHBInfoFuzzing, fullAnalysis, recordTime, notExec, statistics,
+		keepTraces)
 	if err != nil {
 		fmt.Println("Fuzzing Failed: ", err.Error())
 	}
@@ -842,6 +844,7 @@ func printHelpMode(mode string) {
 		println("  -dir [folder]          Path to the program folder")
 		println("  -prog [name]           Name of the program")
 		println("  -test [name]           Name of the test (only if used on tests)")
+		println("  additionally, most tags from toolTest or toolMain can be used")
 	default:
 		println("Mode: unknown")
 		printHelp()

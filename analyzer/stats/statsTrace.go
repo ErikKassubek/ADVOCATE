@@ -84,7 +84,7 @@ func statsTraces(dataPath string) (map[string]int, error) {
 			return err
 		}
 
-		if !info.IsDir() {
+		if !info.IsDir() && info.Name() != "trace_info.log" {
 			err = parseTraceFile(path, &res, &known)
 			if err != nil {
 				fmt.Println(err)

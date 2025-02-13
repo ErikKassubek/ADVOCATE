@@ -157,7 +157,7 @@ func checkForLeakSimple() {
 *   fuzzing (bool): true if run with fuzzing
  */
 func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
-	log.Print("Analyze the trace")
+	log.Print("Run full analysis on trace")
 
 	fifo = assumeFifo
 	runFuzzing = fuzzing

@@ -12,7 +12,6 @@ package fuzzing
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 )
@@ -28,9 +27,7 @@ func writeMutationsToFile(pathToFolder string, mut map[string][]fuzzingSelect) e
 	defer file.Close() // Ensure the file is closed when we're done
 
 	// Write some content to the file
-	log.Println("Len mut: ", len(mut))
 	for id, selects := range mut {
-		log.Println("Len sel: ", len(selects))
 		content := fmt.Sprintf("%s;", id)
 
 		for i, sel := range selects {

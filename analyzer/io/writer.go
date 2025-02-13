@@ -13,6 +13,7 @@ package io
 import (
 	"analyzer/analysis"
 	"io"
+	"log"
 	"os"
 	"sort"
 	"strconv"
@@ -59,13 +60,11 @@ func WriteTrace(path string, numberRoutines int) error {
 
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
-		println(path + " already exists. Delete folder " + path)
+		log.Println(path + " already exists. Delete folder " + path)
 		if err := os.RemoveAll(path); err != nil {
 			return err
 		}
 	}
-
-	println("Create new trace at " + path)
 
 	// create new folder
 	if err := os.Mkdir(path, 0755); err != nil {
@@ -78,7 +77,6 @@ func WriteTrace(path string, numberRoutines int) error {
 		wg.Add(1)
 		go func(i int) {
 			fileName := path + "trace_" + strconv.Itoa(i) + ".log"
-			// println("Create new file " + fileName + "...")
 			file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				panic(err)
@@ -112,7 +110,6 @@ func WriteTrace(path string, numberRoutines int) error {
 		}(i)
 	}
 	wg.Wait()
-	println("Trace written")
 	return nil
 }
 

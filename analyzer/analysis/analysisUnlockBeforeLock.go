@@ -52,9 +52,6 @@ func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
  * If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
  */
 func checkForUnlockBeforeLock() {
-
-	fmt.Println("Check for unlock before lock")
-	defer fmt.Println("Finished check for unlock before lock")
 	for id := range allUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
 		if sameRoutine(allLocks[id], allUnlocks[id]) {

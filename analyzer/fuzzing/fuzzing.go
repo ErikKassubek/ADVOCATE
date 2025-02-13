@@ -54,7 +54,7 @@ func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
-		log.Println("Run: ", numberFuzzingRuns+1)
+		log.Println("Fuzzing Run: ", numberFuzzingRuns+1)
 
 		order = popMutation()
 
@@ -79,10 +79,12 @@ func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
 
 		// add new mutations based on GFuzz select
 		if isInterestingSelect() {
-			fmt.Println("Create mutations")
 			numberMut := numberMutations()
 			flipProb := getFlipProbability()
-			createMutations(numberMut, flipProb)
+			numMutAdd := createMutations(numberMut, flipProb)
+			log.Printf("Add %d mutations to queue\n", numMutAdd)
+		} else {
+			log.Println("Add 0 mutations to queue")
 		}
 
 		mergeTraceInfoIntoFileInfo()

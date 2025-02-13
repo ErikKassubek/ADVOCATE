@@ -237,7 +237,6 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 		}
 	} else if level == CRITICAL {
 		if !stringInSlice(resultMachineShort, resultWithoutTime) {
-			println(resultReadable)
 			resultsCriticalReadable = append(resultsCriticalReadable, resultReadable)
 			resultCriticalMachine = append(resultCriticalMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
@@ -325,7 +324,6 @@ func PrintSummary(noWarning bool, noPrint bool) int {
 			}
 		}
 
-		println("RESULTINFO: ", len(resultInformationMachine))
 		for _, result := range resultInformationMachine {
 			resMachine += result
 		}

@@ -12,14 +12,12 @@ package fuzzing
 
 import (
 	"analyzer/analysis"
-	"log"
 )
 
 /*
  * Parse the current trace and record all relevant data
  */
 func ParseTrace(trace map[int][]analysis.TraceElement) {
-	log.Println("Parse Trace: ", len(trace))
 	// clear current order
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 

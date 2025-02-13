@@ -64,7 +64,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	if err := os.Chdir(dir); err != nil {
 		return fmt.Errorf("Failed to change directory: %v", dir)
 	}
-	fmt.Printf("In directory: %s\n", dir)
 
 	// runCommand("go", "mod", "tidy")
 
@@ -98,7 +97,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		packagePath := filepath.Dir(file)
 		testFunctions, err := findTestFunctions(file)
 		if err != nil {
-			log.Printf("Failed to find test functions in %s: %v", file, err)
+			log.Printf("Failed to find test functions in %s: %v\n", file, err)
 			continue
 		}
 
@@ -111,14 +110,14 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			attemptedTests++
 			packageName := filepath.Base(packagePath)
 			fileName := filepath.Base(file)
-			fmt.Printf("\nRunning full workflow for test: %s in package: %s in file: %s\n\n", testFunc, packageName, file)
+			log.Printf("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
 
 			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
 			directoryName := fmt.Sprintf("advocateResult/file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc)
 			directoryPath := filepath.Join(dir, directoryName)
 			if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
-				log.Printf("Failed to create directory %s: %v", directoryName, err)
+				log.Printf("Failed to create directory %s: %v\n", directoryName, err)
 				continue
 			}
 
@@ -158,7 +157,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 	// Check for untriggered selects
 	if notExecuted && testName != "" {
-		fmt.Println("Check for untriggered selects and not executed progs")
 		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
 		if err != nil {
 			fmt.Println("Could not run check for untriggered select and not executed progs")
@@ -167,11 +165,11 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 	// Output test summary
 	if testName == "" {
-		fmt.Println("Finished full workflow for all tests")
-		fmt.Printf("Attempted tests: %d\n", attemptedTests)
-		fmt.Printf("Skipped tests: %d\n", skippedTests)
+		log.Println("Finished full workflow for all tests")
+		log.Printf("Attempted tests: %d\n", attemptedTests)
+		log.Printf("Skipped tests: %d\n", skippedTests)
 	} else {
-		fmt.Printf("Finished full work flow for %s\n", testName)
+		log.Printf("Finished full work flow for %s\n", testName)
 	}
 
 	return nil
@@ -186,8 +184,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
  *     numberReplay (int): number of replay
  */
 func updateTimeFiles(progName string, testName string, folderName string, times map[string]time.Duration, numberReplay, numberAnalyzer int) {
-	// fmt.Println("Generate time file")
-
 	timeFilePath := filepath.Join(folderName, "times_"+progName+".csv")
 
 	newFile := false
@@ -198,7 +194,7 @@ func updateTimeFiles(progName string, testName string, folderName string, times 
 
 	file, err := os.OpenFile(timeFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println("Error opening or creating file:", err)
+		log.Println("Error opening or creating file:", err)
 		return
 	}
 	defer file.Close()
@@ -206,7 +202,7 @@ func updateTimeFiles(progName string, testName string, folderName string, times 
 	if newFile {
 		csvTitels := "TestName,ExecTime,ExecTimeWithTracing,AnalyzerTime,AnalysisTime,HBAnalysisTime,TimeToIdentifyLeaksPlusFindingPoentialPartners,TimeToIdentifyPanicBugs,ReplayTime,NumberAnalysis,NumberReplay\n"
 		if _, err := file.WriteString(csvTitels); err != nil {
-			fmt.Println("Could not write time: ", err)
+			log.Println("Could not write time: ", err)
 		}
 	}
 
@@ -219,7 +215,7 @@ func updateTimeFiles(progName string, testName string, folderName string, times 
 
 	// Write to the file
 	if _, err := file.WriteString(timeInfo); err != nil {
-		fmt.Println("Could not write time: ", err)
+		log.Println("Could not write time: ", err)
 	}
 }
 
@@ -341,27 +337,18 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir st
 	if err := os.Chdir(dir); err != nil {
 		return resTimes, 0, 0, fmt.Errorf("Failed to change directory: %v", err)
 	}
-	fmt.Printf("In directory: %s\n", dir)
 
 	unitTestRun(pkg, file, testName, resTimes)
 
-	fmt.Println("FileName: ", file)
-	fmt.Println("TestName: ", testName)
-
 	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, resTimes)
 	if err != nil {
-		fmt.Println("Failed record: ", err.Error())
+		log.Println("Failed record: ", err.Error())
 		return resTimes, 0, 0, err
 	}
 
 	unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, resTimes, "-1", fuzzing)
 
 	lenRewTraces := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, resTimes, false)
-
-	// la := 0
-	// lrt, la := unitTestReanalyzeLeaks(pathToGoRoot, pathToPatchedGoRuntime, pathToAnalyzer, dir, pkg, file, testName, output, resTimes)
-
-	// lenRewTraces += lrt
 
 	return resTimes, lenRewTraces, 0, nil
 }
@@ -372,14 +359,13 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 	if measureTime {
 		// Remove header just in case
 		if err := headerRemoverUnit(file); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 
 		os.Unsetenv("GOROOT")
-		fmt.Println("GOROOT removed")
 
 		timeStart := time.Now()
-		fmt.Println("Run T0")
+		log.Println("Run T0")
 		err := runCommand("go", "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
 		if err != nil {
 			log.Println("Test failed: ", err)
@@ -390,25 +376,22 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 
 func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, resTimes map[string]time.Duration) error {
 	// Remove header just in case
-	fmt.Println(fmt.Sprintf("Remove header for %s", file))
 	if err := headerRemoverUnit(file); err != nil {
 		fmt.Printf("Error in removing header: %v\n", err)
 		return fmt.Errorf("Failed to remove header: %v", err)
 	}
 
 	// Add header
-	fmt.Println(fmt.Sprintf("Add header for %s: %s", file, testName))
 	if err := headerInserterUnit(file, testName, false, fuzzing, "0", timeoutReplay, false); err != nil {
-		fmt.Printf("Error in adding header: %v\n", err)
+		log.Printf("Error in adding header: %v\n", err)
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
 	// Run the test
-	fmt.Println("\nRun Recording")
+	log.Println("Run Recording")
 
 	// Set GOROOT
 	os.Setenv("GOROOT", pathToGoRoot)
-	fmt.Println("GOROOT = " + pathToGoRoot + " exported")
 
 	timeStart := time.Now()
 	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
@@ -421,10 +404,8 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	resTimes["record"] = time.Since(timeStart)
 
 	os.Unsetenv("GOROOT")
-	fmt.Println("GOROOT removed")
 
 	// Remove header after the test
-	fmt.Println(fmt.Sprintf("Remove header for %s", file))
 	headerRemoverUnit(file)
 
 	return nil
@@ -433,7 +414,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	resTimes map[string]time.Duration, resultID string, fuzzing int) {
 	// Apply analyzer
-	fmt.Println(fmt.Sprintf("Run the analyzer for %s/%s/%s", dir, pkg, traceName))
+	log.Println(fmt.Sprintf("Run the analyzer for %s/%s/%s", dir, pkg, traceName))
 
 	startTime := time.Now()
 	var err error
@@ -450,18 +431,17 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
 	if err != nil {
-		fmt.Println("Analyzer failed", err)
 		log.Println("Analyzer failed", err)
 	}
 	resTimes["analyzer"] += time.Since(startTime)
 
 	fileOuputRead, err := os.OpenFile(output, os.O_RDONLY, 0644)
 	if err != nil {
-		fmt.Println("Could not open file: ", err)
+		log.Println("Could not open file: ", err)
 	}
 	outFileContent, err := io.ReadAll(fileOuputRead)
 	if err != nil {
-		fmt.Println("Could not read file: ", err)
+		log.Println("Could not read file: ", err)
 	}
 	lines := strings.Split(string(outFileContent), "\n")
 
@@ -488,19 +468,18 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 		resTimes["hb"] = 0
 	}
 
-	fmt.Println("Finished Analyzer")
+	log.Println("Finished Analyzer")
 }
 
 func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName string, resTimes map[string]time.Duration, rerecorded bool) int {
 	pathPkg := filepath.Join(dir, pkg)
 	var rewrittenTraces = make([]string, 0)
-	fmt.Println("rerecorded: ", rerecorded)
 	if rerecorded {
 		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewritten_trace_*_*"))
 	} else {
 		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewritten_trace_*"))
 	}
-	fmt.Printf("Found %d rewritten traces\n", len(rewrittenTraces))
+	log.Printf("Found %d rewritten traces\n", len(rewrittenTraces))
 
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
@@ -526,23 +505,19 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 			}
 		}
 
-		fmt.Printf("Insert replay header or %s: %s for trace %s\n", file, testName, traceNum)
 		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
-		fmt.Println("GOROOT = " + pathToGoRoot + " exported")
 
-		fmt.Printf("\nRun replay %d/%d\n", i+1, len(rewrittenTraces))
+		log.Printf("Run replay %d/%d\n", i+1, len(rewrittenTraces))
 		startTime := time.Now()
 		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", "15m", "-run="+testName, "./"+pkg)
 		resTimes["replay"] += time.Since(startTime)
-		fmt.Println("Add replay time: ", resTimes["replay"])
+		log.Printf("Finished replay %d/%d\n", i+1, len(rewrittenTraces))
 
 		os.Unsetenv("GOROOT")
-		fmt.Println("GOROOT removed")
 
 		// Remove reorder header
-		fmt.Printf("Remove header for %s\n", file)
 		headerRemoverUnit(file)
 	}
 

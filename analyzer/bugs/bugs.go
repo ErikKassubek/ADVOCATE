@@ -54,7 +54,7 @@ const (
 	LWaitGroup         = "L09"
 	LCond              = "L10"
 
-	SNotExecutedWithPartner = "S00"
+	// SNotExecutedWithPartner = "S00"
 )
 
 type BugElementSelectCase struct {
@@ -215,10 +215,10 @@ func (b Bug) ToString() string {
 		typeStr = "Leak on conditional variable:"
 		arg1Str = "cond: "
 		arg2Str = ""
-	case SNotExecutedWithPartner:
-		typeStr = "Not executed select with potential partner"
-		arg1Str = "select: "
-		arg2Str = "partner: "
+	// case SNotExecutedWithPartner:
+	// 	typeStr = "Not executed select with potential partner"
+	// 	arg1Str = "select: "
+	// 	arg2Str = "partner: "
 
 	default:
 		panic("Unknown bug type in toString: " + string(b.Type))
@@ -347,9 +347,9 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	case "L10":
 		bug.Type = LCond
 		containsArg2 = false
-	case "S00":
-		bug.Type = SNotExecutedWithPartner
-		containsArg2 = true
+	// case "S00":
+	// 	bug.Type = SNotExecutedWithPartner
+	// 	containsArg2 = true
 	default:
 		return actual, bug, errors.New("Unknown bug type in process bug: " + bugStr)
 	}

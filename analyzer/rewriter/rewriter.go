@@ -157,10 +157,9 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 		rewriteNeeded = true
 		code = exitCodeLeakCond
 		err = rewriteCondLeak(bug)
-	case bugs.SNotExecutedWithPartner:
-		rewriteNeeded = false
-		code = exitCodeNone
-		err = errors.New("Rewrite for select not exec with partner not available")
+	// case bugs.SNotExecutedWithPartner:
+	// 	rewriteNeeded = false
+	// 	err = errors.New("Rewrite for select not exec with partner not available")
 	default:
 		err = errors.New("For the given bug type no trace rewriting is implemented")
 	}

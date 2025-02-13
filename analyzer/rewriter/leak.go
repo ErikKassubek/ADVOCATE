@@ -403,9 +403,6 @@ func rewriteBufChanLeak(bug bugs.Bug) error {
 
 	bug.TraceElement1[0].SetTSort(possiblePartner.GetTSort() + 1)
 
-	println("stuck: ", bug.TraceElement1[0].ToString())
-	println("partn: ", bug.TraceElement2[0].ToString())
-
 	if possiblePartner.GetTSort() < stuck.GetTSort() {
 		analysis.AddTraceElementReplay(stuck.GetTSort()+1, exitCodeLeakBuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
 	} else {

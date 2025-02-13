@@ -61,7 +61,7 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 
 	actual, bug, err := bugs.ProcessBug(bugStr)
 	if err != nil {
-		println("Error processing bug")
+		println("Error processing bug: ", bugStr)
 		println(err.Error())
 		return false, bug, err
 	}

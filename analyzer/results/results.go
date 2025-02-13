@@ -63,7 +63,7 @@ const (
 	LCond              = "L10"
 
 	// not executed select
-	SNotExecutedWithPartner = "S00"
+	// SNotExecutedWithPartner = "S00"
 )
 
 var resultTypeMap = map[ResultType]string{
@@ -95,7 +95,7 @@ var resultTypeMap = map[ResultType]string{
 	LWaitGroup:         "Leak on wait group:",
 	LCond:              "Leak on conditional variable:",
 
-	SNotExecutedWithPartner: "Not executed select with potential partner",
+	// SNotExecutedWithPartner: "Not executed select with potential partner",
 }
 
 var outputReadableFile string

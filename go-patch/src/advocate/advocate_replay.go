@@ -52,8 +52,6 @@ var tracePathRewritten = "rewritten_trace_"
  */
 func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 	// use first as default
-
-	println("Init Replay for index ", index)
 	runtime.SetExitCode(exitCode)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
@@ -170,10 +168,8 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			op = runtime.OperationReplayEnd
 			line, _ = strconv.Atoi(fields[2]) // misuse the line for the exit code
 			runtime.SetExpectedExitCode(line)
-			println("Set expected exit code ", line)
 			lastTPre, _ := strconv.Atoi(fields[3]) // missuse pLie for the tPreLast
 			runtime.SetLastTPre(lastTPre)
-			println("Set last tPre: ", lastTPre)
 		case "G":
 			op = runtime.OperationSpawn
 			// time, _ = strconv.Atoi(fields[1])
@@ -331,9 +327,6 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 				op = runtime.OperationAtomicCompareAndSwap
 			}
 			pos := strings.Split(fields[4], ":")
-			if len(pos) != 2 {
-				println(elem)
-			}
 			if len(pos) < 2 {
 				runtime.SetReplayAtomic(false)
 				file = ""

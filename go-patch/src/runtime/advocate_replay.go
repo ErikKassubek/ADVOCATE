@@ -222,7 +222,6 @@ func EnableReplay() {
 	go ReleaseWaits()
 
 	replayEnabled = true
-	println("Replay enabled")
 }
 
 /*
@@ -244,8 +243,6 @@ func DisableReplay() {
 		replCh.chWait <- ReplayElement{Blocked: false}
 	}
 	unlock(&waitingOpsMutex)
-
-	println("Replay disabled")
 }
 
 /*
@@ -254,8 +251,6 @@ func DisableReplay() {
  * the program to terminate before the trace is finished.
  */
 func WaitForReplayFinish(exit bool) {
-	println("Wait for replay finish")
-
 	if !IsReplayEnabled() {
 		for {
 			lock(&replayDoneLock)
@@ -279,7 +274,6 @@ func WaitForReplayFinish(exit bool) {
 		sleep(1)
 	}
 
-	println("StuckReplayExecutedSuc: ", stuckReplayExecutedSuc)
 	if stuckReplayExecutedSuc {
 		ExitReplayWithCode(expectedExitCode)
 	}
@@ -312,7 +306,6 @@ func ReleaseWaits() {
 		}
 
 		if replayElem.Op == OperationReplayEnd {
-			println("Operation Replay End")
 			if isExitCodeConfOnEndElem(replayElem.Line) {
 				ExitReplayWithCode(replayElem.Line)
 			}

@@ -82,6 +82,12 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 
 	writeStatsFile(fileTracingPath, headerTracing, dataTracing)
 
+	actualCodes := []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08"}
+	numberOfActualBugs := 0
+	for _, code := range actualCodes {
+		numberOfActualBugs += statsAnalyzer["detected"][code]
+	}
+
 	leakCodes := []string{"L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"}
 
 	numberOfLeaks := 0
@@ -99,36 +105,26 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberOfLeaksResolvedViaReplay += statsAnalyzer["replaySuccessful"][code]
 	}
 
-	panicCodes := []string{"P01", "P03", "P04"}
+	posPanicCodes := []string{"P01", "P03", "P04"}
 
 	numberOfPanics := 0
-	for _, code := range panicCodes {
+	for _, code := range posPanicCodes {
 		numberOfPanics += statsAnalyzer["detected"][code]
 	}
 
 	numberOfPanicsVerifiedViaReplay := 0
-	for _, code := range panicCodes {
+	for _, code := range posPanicCodes {
 		numberOfPanicsVerifiedViaReplay += statsAnalyzer["replaySuccessful"][code]
 	}
 
-	numberOfLeaksDetectedWithRerecording := 0
-	for _, code := range leakCodes {
-		numberOfLeaksDetectedWithRerecording += statsAnalyzer["rerecorded"][code]
-	}
-
-	numberOfNumberOfPanicsDetectedWithRerecordingPanics := 0
-	for _, code := range panicCodes {
-		numberOfPanics += statsAnalyzer["rerecorded"][code]
-	}
-
 	NumberOfUnexpectedPanicsInReplay := 0
-	for _, code := range panicCodes {
+	for _, code := range posPanicCodes {
 		NumberOfUnexpectedPanicsInReplay += statsAnalyzer["unexpectedPanic"][code]
 	}
 
-	headerAnalysis := "TestName,NumberOfLeaks,NumberOfLeaksWithRewrite,NumberOfLeaksResolvedViaReplay,NumberOfPanics,NumberOfPanicsVerifiedViaReplay,NumberOfLeaksDetectedWithRerecording,NumberOfPanicsDetectedWithRerecording,NumberOfUnexpectedPanicsInReplay"
-	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfLeaks,
-		numberOfLeaksWithRewrite, numberOfLeaksResolvedViaReplay, numberOfPanics, numberOfPanicsVerifiedViaReplay, numberOfLeaksDetectedWithRerecording, numberOfNumberOfPanicsDetectedWithRerecordingPanics, NumberOfUnexpectedPanicsInReplay)
+	headerAnalysis := "TestName,NumberActualBug,NumberOfLeaks,NumberOfLeaksWithRewrite,NumberOfLeaksResolvedViaReplay,NumberOfPanics,NumberOfPanicsVerifiedViaReplay,NumberOfUnexpectedPanicsInReplay"
+	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugs, numberOfLeaks,
+		numberOfLeaksWithRewrite, numberOfLeaksResolvedViaReplay, numberOfPanics, numberOfPanicsVerifiedViaReplay, NumberOfUnexpectedPanicsInReplay)
 
 	writeStatsFile(fileAnalysisPath, headerAnalysis, dataAnalysis)
 
@@ -155,7 +151,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 
 	headers := make([]string, 0)
 	data := make([]string, 0)
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "rerecorded", "unexpectedPanic"} {
+	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
 			headers = append(headers, "NumberOf"+strings.ToUpper(string(mode[0]))+mode[1:]+code)
 			data = append(data, strconv.Itoa(statsAnalyzer[mode][code]))

@@ -200,18 +200,18 @@ func updateTimeFiles(progName string, testName string, folderName string, times 
 	defer file.Close()
 
 	if newFile {
-		csvTitels := "TestName,ExecTime,ExecTimeWithTracing,AnalyzerTime,AnalysisTime,HBAnalysisTime,TimeToIdentifyLeaksPlusFindingPoentialPartners,TimeToIdentifyPanicBugs,ReplayTime,NumberAnalysis,NumberReplay\n"
+		csvTitels := "TestName,ExecTime,ExecTimeWithTracing,AnalyzerTime,AnalysisTime,HBAnalysisTime,TimeToIdentifyLeaksPlusFindingPoentialPartners,TimeToIdentifyPanicBugs,ReplayTime,NumberReplay\n"
 		if _, err := file.WriteString(csvTitels); err != nil {
 			log.Println("Could not write time: ", err)
 		}
 	}
 
 	timeInfo := fmt.Sprintf(
-		"%s,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%d,%d\n", testName,
+		"%s,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%.5f,%d\n", testName,
 		times["run"].Seconds(), times["record"].Seconds(),
 		times["analyzer"].Seconds(), times["analysis"].Seconds(),
 		times["hb"].Seconds(), times["leak"].Seconds(), times["panic"].Seconds(), times["replay"].Seconds(),
-		numberAnalyzer, numberReplay)
+		numberAnalyzer)
 
 	// Write to the file
 	if _, err := file.WriteString(timeInfo); err != nil {

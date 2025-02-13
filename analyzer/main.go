@@ -98,7 +98,7 @@ func main() {
 
 	flag.IntVar(&timeoutAnalysis, "timeout", -1, "Set a timeout in seconds for the analysis")
 	flag.IntVar(&timeoutReplay, "timeoutReplay", -1, "Set a timeout in seconds for the replay")
-	flag.BoolVar(&recordTime, "time", true, "measure the runtime")
+	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
 	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
 	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")

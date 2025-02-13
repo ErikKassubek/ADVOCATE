@@ -59,9 +59,14 @@ The columns can be categories into the following sets:
   - Number of routines (empty/not empty)
   - Number of elements per type (e.g. channel, mutex)
   - Number of operations per type
+- Analysis info
+  - number detected for each bug type
+  - number replay created for each bug type
+  - number replay successful for each bug type
+  - number of unexpected panics in replay for each bug type
 
 
-The columns are
+The full list of columns is as follows:
 
 - `TestName`
 - `NumberOfEvents`
@@ -164,31 +169,6 @@ The columns are
 - `NumberOfReplaySuccessfulL08`
 - `NumberOfReplaySuccessfulL09`
 - `NumberOfReplaySuccessfulL10`
-- `NumberOfRerecordedA00`
-- `NumberOfRerecordedA01`
-- `NumberOfRerecordedA02`
-- `NumberOfRerecordedA03`
-- `NumberOfRerecordedA04`
-- `NumberOfRerecordedA05`
-- `NumberOfRerecordedA06`
-- `NumberOfRerecordedA07`
-- `NumberOfRerecordedA08`
-- `NumberOfRerecordedP01`
-- `NumberOfRerecordedP02`
-- `NumberOfRerecordedP03`
-- `NumberOfRerecordedP04`
-- `NumberOfRerecordedP05`
-- `NumberOfRerecordedL00`
-- `NumberOfRerecordedL01`
-- `NumberOfRerecordedL02`
-- `NumberOfRerecordedL03`
-- `NumberOfRerecordedL04`
-- `NumberOfRerecordedL05`
-- `NumberOfRerecordedL06`
-- `NumberOfRerecordedL07`
-- `NumberOfRerecordedL08`
-- `NumberOfRerecordedL09`
-- `NumberOfRerecordedL10`
 - `NumberOfUnexpectedPanicA00`
 - `NumberOfUnexpectedPanicA01`
 - `NumberOfUnexpectedPanicA02`

@@ -25,7 +25,6 @@ import (
  */
 func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 	// check if there is an earlier send, that could happen concurrently to close
-	// println("Check for possible send on closed channel ", analysisCases["sendOnClosed"], hasSend[id])
 	if analysisCases["sendOnClosed"] && hasSend[ch.id] {
 		timemeasurement.Start("panic")
 		defer timemeasurement.End("panic")

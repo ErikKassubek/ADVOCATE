@@ -11,24 +11,20 @@
 package toolchain
 
 var (
-	noPrintFlag               bool
 	noRewriteFlag             bool
 	analyisCasesFlag          map[string]bool
 	ignoreAtomicsFlag         bool
 	fifoFlag                  bool
 	ignoreCriticalSectionFlag bool
-	noWarningFlag             bool
 	rewriteAllFlag            bool
 	ignoreRewriteFlag         string
 	onlyAPanicAndLeakFlag     bool
 )
 
-func SetFlags(noPrint, noRewrite, noWarning bool, analyisCases map[string]bool, ignoreAtomics,
+func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool) {
 
-	noPrintFlag = noPrint
 	noRewriteFlag = noRewrite
-	noWarningFlag = noWarning
 
 	analyisCasesFlag = analyisCases
 

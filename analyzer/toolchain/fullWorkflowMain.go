@@ -57,7 +57,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if err := os.Chdir(dir); err != nil {
 		return fmt.Errorf("Failed to change directory: %v", err)
 	}
-	fmt.Printf("In directory: %s\n", dir)
 
 	os.RemoveAll("advocateResult")
 	if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
@@ -88,7 +87,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if err := os.Setenv("GOROOT", pathToGoRoot); err != nil {
 		return fmt.Errorf("Failed to set GOROOT: %v", err)
 	}
-	fmt.Println("GOROOT exported")
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
 
@@ -121,7 +119,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	// Add header
-	fmt.Printf("Add header to %s\n", pathToFile)
 	if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
@@ -150,9 +147,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 	timeStart = time.Now()
-	runAnalyzer(analyzerOutput, noPrintFlag, noRewriteFlag, analyisCasesFlag,
+	runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
-		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag,
+		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 		"rewritten_trace", timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
 		return fmt.Errorf("Error applying analyzer: %v", err)
@@ -225,7 +222,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	if notExecuted {
-		fmt.Println("Check for untriggered selects and not executed progs")
 		complete.Check(filepath.Join(dir, "advocateResult"), dir)
 	}
 

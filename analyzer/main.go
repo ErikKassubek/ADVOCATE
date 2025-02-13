@@ -66,8 +66,6 @@ var (
 	rewriteAll bool
 
 	noRewrite  bool
-	noWarning  bool
-	noPrint    bool
 	keepTraces bool
 
 	notExec    bool
@@ -117,8 +115,6 @@ func main() {
 		"If not set, only the first occurence is rewritten")
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
-	flag.BoolVar(&noWarning, "noWarning", false, "Do not print warnings (default false)")
-	flag.BoolVar(&noPrint, "noPrint", false, "Do not print the results to the terminal (default false). Automatically set -noRewrite to true")
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
 
 	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
@@ -189,7 +185,7 @@ func main() {
 		panic(err)
 	}
 
-	toolchain.SetFlags(noPrint, noRewrite, noWarning, analysisCases, ignoreAtomics,
+	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak)
 
 	// function injection to prevent circle import
@@ -209,9 +205,9 @@ func main() {
 	case "run":
 		// here the parameter need to stay, because the function is used in the
 		// toolchain package via function injection
-		modeAnalyzer(tracePath, noPrint, noRewrite, analysisCases, outReadable,
+		modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
 			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-			noWarning, rewriteAll, newTrace, timeoutAnalysis, ignoreRewrite,
+			rewriteAll, newTrace, timeoutAnalysis, ignoreRewrite,
 			-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
@@ -311,20 +307,16 @@ func getFolderTrace(pathTrace string) string {
 	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1]
 }
 
-func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
+func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
+	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
 	fuzzingRun int, onlyAPanicAndLeak bool) {
 	// printHeader()
 
 	if pathTrace == "" {
 		fmt.Println("Please provide a path to the trace files. Set with -trace [folder]")
 		return
-	}
-
-	if noPrint {
-		noRewrite = true
 	}
 
 	// set timeout
@@ -673,8 +665,6 @@ func printHelp() {
 	println("  -fifo                  Assume a FIFO ordering for buffered channels (default false)")
 	println("  -ignCritSec            Ignore happens before relations of critical sections (default false)")
 	println("  -noRewrite             Do not rewrite the trace file (default false)")
-	println("  -noWarning             Do not print warnings (default false)")
-	println("  -noPrint               Do not print the results to the terminal (default false). Automatically set -noRewrite to true")
 	println("  -keepTrace             Do not delete the trace files after analysis finished")
 	println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
 	println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
@@ -770,8 +760,6 @@ func printHelpMode(mode string) {
 		println("  -fifo                  Assume a FIFO ordering for buffered channels (default false)")
 		println("  -ignCritSec            Ignore happens before relations of critical sections (default false)")
 		println("  -noRewrite             Do not rewrite the trace file (default false)")
-		println("  -noWarning             Do not print warnings (default false)")
-		println("  -noPrint               Do not print the results to the terminal (default false). Automatically set -noRewrite to true")
 		println("  -keepTrace             Do not delete the trace files after analysis finished")
 		println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
 		println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")

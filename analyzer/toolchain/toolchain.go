@@ -31,15 +31,15 @@ var (
 	measureTime    bool
 	notExecuted    bool
 	createStats    bool
-	runAnalyzer    func(pathTrace string, noPrint bool, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
+	runAnalyzer    func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
 )
 
 /*
  * Function injection for modeAnalyzer
  */
-func InitFuncAnalyzer(funcAnalyzer func(pathTrace string, noPrint bool,
+func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 	noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string,
-	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, noWarning bool,
+	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)) {
 	runAnalyzer = funcAnalyzer
 }

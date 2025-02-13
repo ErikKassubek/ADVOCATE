@@ -419,15 +419,15 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	startTime := time.Now()
 	var err error
 	if resultID == "-1" {
-		runAnalyzer(filepath.Join(dir, pkg, traceName), noPrintFlag, noRewriteFlag, analyisCasesFlag, "results_readable.log",
-			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag, "rewritten_trace",
+		runAnalyzer(filepath.Join(dir, pkg, traceName), noRewriteFlag, analyisCasesFlag, "results_readable.log",
+			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, "rewritten_trace",
 			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
-		runAnalyzer(filepath.Join(dir, pkg, traceName), noPrintFlag, noRewriteFlag, analyisCasesFlag, outR,
-			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, noWarningFlag, rewriteAllFlag, outT,
+		runAnalyzer(filepath.Join(dir, pkg, traceName), noRewriteFlag, analyisCasesFlag, outR,
+			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, outT,
 			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
 	if err != nil {

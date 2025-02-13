@@ -13,7 +13,6 @@ package toolchain
 import (
 	"analyzer/explanation"
 	"analyzer/stats"
-	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -109,17 +108,35 @@ func removeTraces(path string) {
 		"fuzzingData.log",
 	}
 
-	for _, pattern := range pattersToMove {
-		files, _ := filepath.Glob(filepath.Join(path, pattern))
-		for _, trace := range files {
-			os.RemoveAll(trace)
+	files := make([]string, 0)
+	filepath.WalkDir(path, func(p string, _ os.DirEntry, err error) error {
+		if err != nil {
+			return err
 		}
+
+		// Use Glob to check if the file/directory matches the pattern
+		for _, pattern := range pattersToMove {
+			match, err := filepath.Match(pattern, filepath.Base(p))
+			if err != nil {
+				return err
+			}
+
+			if match {
+				files = append(files, p)
+			}
+		}
+
+		return nil
+	})
+
+	for _, trace := range files {
+		os.RemoveAll(trace)
 	}
 }
 
 func updateStatsFiles(pathToAnalyzer string, progName string, testName string, dir string) {
 	err := stats.CreateStats(dir, progName, testName)
 	if err != nil {
-		fmt.Println("Could not create statistics")
+		log.Println("Could not create statistics: ", err.Error())
 	}
 }

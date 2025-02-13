@@ -42,9 +42,13 @@ var (
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
 * 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
+* 	meaTime (bool): measure runtime
+* 	notExec (bool): find never executed operations
+* 	stats (bool): create statistics
+* 	keepTraces (bool): keep the traces after analysis
  */
 func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis bool) error {
+	hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces bool) error {
 	useHBInfoFuzzing = hBInfoFuzzing
 	runFullAnalysis = fullAnalysis
 
@@ -67,7 +71,7 @@ func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
 
 		// Run the test/mutation
 		err := toolchain.Run("test", advocate, testPath, "", progName, testName,
-			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, false, false, false, false)
+			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, stats, keepTraces)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

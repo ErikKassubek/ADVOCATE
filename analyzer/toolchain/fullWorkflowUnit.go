@@ -128,10 +128,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 				updateTimeFiles(progName, testFunc, resultPath, times, nrReplay, nrAnalyzer)
 			}
 
-			if !keepTraces {
-				removeTraces(packagePath)
-			}
-
 			// Move logs and results to the appropriate directory
 			moveResults(packagePath, directoryName)
 
@@ -145,6 +141,10 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			if stats {
 				updateStatsFiles(pathToAnalyzer, progName, testFunc, directoryPath)
 				// create statistics
+			}
+
+			if !keepTraces {
+				removeTraces(packagePath)
 			}
 		}
 

@@ -356,12 +356,9 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		defer func() { done <- true }()
 
 		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
-		fmt.Println("Create trace from files ", pathTrace, numberOfRoutines)
 		if err != nil {
 			fmt.Println("Could not open trace: ", err.Error())
 		}
-
-		log.Println("Trace size: ", len(analysis.GetTraces()))
 
 		if !containsElems {
 			fmt.Println("Trace does not contain any elem")
@@ -400,7 +397,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		<-done
 	}
 
-	numberOfResults := results.PrintSummary(noWarning, noPrint)
+	numberOfResults := results.PrintSummary(true, true)
 
 	// collect the required data to decide whether run is interesting
 	// and to create the mutations
@@ -412,7 +409,7 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 		numberRewrittenTrace := 0
 		failedRewrites := 0
 		notNeededRewrites := 0
-		println("\n\nStart rewriting trace file ", pathTrace)
+		log.Println("Start rewriting")
 		originalTrace := analysis.CopyCurrentTrace()
 
 		analysis.ClearData()
@@ -434,7 +431,6 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
 
 			if !needed {
-				println("Trace can not be rewritten.")
 				notNeededRewrites++
 				if double {
 					fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
@@ -442,31 +438,26 @@ func modeAnalyzer(pathTrace string, noPrint bool, noRewrite bool,
 					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 				}
 			} else if err != nil {
-				println("Failed to rewrite trace: ", err.Error())
+				log.Println("Failed to rewrite trace: ", err.Error())
 				failedRewrites++
-				analysis.SetTrace(originalTrace)
 				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			} else { // needed && err == nil
 				numberRewrittenTrace++
-				analysis.SetTrace(originalTrace)
 				fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 			}
-
-			print("\n\n")
+			analysis.SetTrace(originalTrace)
 		}
 
-		println("Finished Rewrite")
-		println("\n\n\tNumber Results: ", numberOfResults)
-		println("\tSuccessfully rewrites: ", numberRewrittenTrace)
-		println("\tNo need/not possible to rewrite: ", notNeededRewrites)
+		log.Println("Finished Rewrite")
+		log.Println("Number Results: ", numberOfResults)
+		log.Println("Successfully rewrites: ", numberRewrittenTrace)
+		log.Println("No need/not possible to rewrite: ", notNeededRewrites)
 		if failedRewrites > 0 {
-			println("\tFailed rewrites: ", failedRewrites)
+			log.Println("Failed rewrites: ", failedRewrites)
 		} else {
-			println("\tFailed rewrites: ", failedRewrites)
+			log.Println("Failed rewrites: ", failedRewrites)
 		}
 	}
-
-	print("\n\n\n")
 }
 
 /*
@@ -623,8 +614,6 @@ func memorySupervisor() {
 		if err != nil {
 			log.Fatalf("Error getting swap info: %v", err)
 		}
-
-		// fmt.Printf("Available RAM: %v MB, Available Swap: %v MB\n", v.Available/1024/1024, s.Free/1024/1024)
 
 		// Panic if available RAM or swap is below the threshold
 		if v.Available < thresholdRAM {

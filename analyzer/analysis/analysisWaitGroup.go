@@ -74,8 +74,6 @@ func checkForDoneBeforeAddDone(wa *TraceElementWait) {
  * If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
  */
 func checkForDoneBeforeAdd() {
-	fmt.Println("Check for done before add")
-	defer fmt.Println("Finished check for done before add")
 	for id := range wgAdd { // for all waitgroups
 
 		graph := buildResidualGraph(wgAdd[id], wgDone[id])

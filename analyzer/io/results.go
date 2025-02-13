@@ -13,8 +13,9 @@ package io
 import (
 	"analyzer/bugs"
 	"bufio"
+	"fmt"
+	"log"
 	"os"
-	"strconv"
 )
 
 /*
@@ -29,14 +30,12 @@ import (
  *   error: An error if the bug could not be processed
  */
 func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
-	println("Read analysis results from " + filePath + " for index " + strconv.Itoa(index))
-
 	bugStr := ""
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		println("Error opening file: " + filePath)
-		panic(err)
+		log.Println("Error opening file: " + filePath)
+		return false, bugs.Bug{}, err
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -50,27 +49,23 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 		i++
 
 		if err := scanner.Err(); err != nil {
-
 			println("Error reading file line.")
 			break
 		}
-
 	}
 
-	println("Analysis results read")
+	if bugStr == "" {
+		return false, bugs.Bug{}, fmt.Errorf("Empty bug string")
+	}
 
 	actual, bug, err := bugs.ProcessBug(bugStr)
 	if err != nil {
-		println("Error processing bug: ", bugStr)
-		println(err.Error())
+		log.Println("Error processing bug: ", bugStr)
+		log.Println(err.Error())
 		return false, bug, err
 	}
 
-	bug.Println()
-
 	if actual {
-		println("The bug is an actual bug.")
-		println("No rewrite needed.")
 		return true, bug, nil
 	}
 

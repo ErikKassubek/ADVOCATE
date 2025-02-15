@@ -62,10 +62,11 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	notExec (bool): find never executed operations
  * 	stats (bool): create statistics
  * 	keepTraces (bool): keep the traces after analysis
+ * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  */
 func Run(mode, advocate, file, execName, progName, test string,
 	timeoutA, timeoutR, numRerecorded, fuzzing int,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces bool) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFile = strings.Replace(file, "~", home, -1)
@@ -100,7 +101,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 		if (stats || measureTime) && progName == "" {
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
-		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, timeoutAna, timeoutReplay, keepTraces, fuzzing)
+		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, timeoutAna, timeoutReplay, keepTraces, fuzzing, firstRun)
 	case "test", "tests":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")
@@ -113,7 +114,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFile, progName, measureTime,
 			notExecuted, stats, fuzzing, timeoutAna, timeoutReplay,
-			keepTraces)
+			keepTraces, firstRun)
 	case "explain":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

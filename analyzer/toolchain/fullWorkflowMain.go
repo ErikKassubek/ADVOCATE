@@ -179,7 +179,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 
 		// build the program
-		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
 			log.Println("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
@@ -187,7 +186,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 
 		// run the program
-		fmt.Printf("./%s\n", executableName)
 		runCommand("./" + executableName)
 
 		fmt.Printf("Remove replay header from %s\n", pathToFile)

@@ -11,14 +11,12 @@
 package toolchain
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
 
 func runCommand(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
-	fmt.Println(cmd.String())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()

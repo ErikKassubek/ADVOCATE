@@ -45,7 +45,6 @@ var (
 	progPath  string
 
 	progName string
-	testName string
 	execName string
 
 	timeoutAnalysis int
@@ -75,6 +74,8 @@ var (
 	onlyAPanicAndLeak bool
 
 	fuzzingMode int
+
+	modeMain bool
 )
 
 const (
@@ -90,11 +91,10 @@ func main() {
 	flag.StringVar(&pathToAdvocate, "advocate", "", "Path to advocate")
 
 	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
-	flag.StringVar(&progPath, "dir", "", "Path to the program folder, for toolMain: path to main file, for toolTest: path to test folder")
+	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
 
 	flag.StringVar(&progName, "prog", "", "Name of the program")
-	flag.StringVar(&testName, "test", "", "Name of the test")
-	flag.StringVar(&execName, "exec", "", "Name of the executable")
+	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
 	flag.IntVar(&timeoutAnalysis, "timeout", -1, "Set a timeout in seconds for the analysis")
 	flag.IntVar(&timeoutReplay, "timeoutReplay", -1, "Set a timeout in seconds for the replay")
@@ -138,6 +138,8 @@ func main() {
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	flag.IntVar(&fuzzingMode, "fuzzingMode", 0, "Mode for fuzzing. Mainly used to compare. For full analysis, do not set.")
+
+	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
 	go memorySupervisor() // panic if not enough ram
 
@@ -192,10 +194,12 @@ func main() {
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
 	switch mode {
-	case "toolMain", "toolmain":
-		modeToolchain("main", 0)
-	case "toolTest", "tooltest":
-		modeToolchain("test", 0)
+	case "tool", "toolmain":
+		if modeMain {
+			modeToolchain("main", 0)
+		} else {
+			modeToolchain("test", 0)
+		}
 	case "stats":
 		modeStats()
 	case "explain":
@@ -224,15 +228,15 @@ func modeFuzzing() {
 		return
 	}
 
-	if testName == "" {
-		fmt.Println("Provide a name for the analyzed test. Set with -test [name]")
+	if !modeMain && execName == "" {
+		fmt.Println("Select a test to be analyzed. Set with -test [name]")
 		return
 	}
 
 	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
 	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
-	err := fuzzing.Fuzzing(pathToAdvocate, progPath, progName, testName,
+	err := fuzzing.Fuzzing(modeMain, pathToAdvocate, progPath, progName, execName,
 		ignoreAtomics, useHBInfoFuzzing, fullAnalysis, recordTime, notExec, statistics,
 		keepTraces)
 	if err != nil {
@@ -241,7 +245,7 @@ func modeFuzzing() {
 }
 
 func modeToolchain(mode string, numRerecorded int) {
-	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, testName,
+	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
 		timeoutAnalysis, timeoutReplay, numRerecorded,
 		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces)
 	if err != nil {
@@ -262,11 +266,11 @@ func modeStats() {
 		return
 	}
 
-	if testName == "" {
-		testName = progName
+	if execName == "" {
+		execName = progName
 	}
 
-	stats.CreateStats(tracePath, progName, testName)
+	stats.CreateStats(tracePath, progName, execName)
 }
 
 func modeCheck() {
@@ -276,7 +280,7 @@ func modeCheck() {
 	}
 
 	if progPath == "" {
-		fmt.Println("Please provide the path to the program folder. Set with -dir [folder]")
+		fmt.Println("Please provide the path to the program folder. Set with -path [folder]")
 		return
 	}
 
@@ -656,9 +660,8 @@ func printHelp() {
 	println("2. Create an explanation for a found bug")
 	println("3. Check if all concurrency elements of the program have been executed at least once")
 	println("4. Create statistics about a program")
-	println("5. Run the toolchain on tests")
-	println("6. Run the toolchain on a main function")
-	println("7. Create new runs for fuzzing\n\n")
+	println("5. Run the toolchain")
+	println("6. Create new runs for fuzzing\n\n")
 	println("1. Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
 	println("This mode is the default mode and analyzes a trace file and creates a reordered trace file based on the analysis results.")
 	println("Usage: ./analyzer run [options]")
@@ -696,22 +699,23 @@ func printHelp() {
 	println("This mode checks if all concurrency elements of the program have been executed at least once.")
 	println("It has the following options:")
 	println("  -resultTool [folder]   Path where the advocateResult folder created by the pipeline is located (required)")
-	println("  -dir [folder]          Path to the program folder (required)")
+	println("  -path [folder]          Path to the program folder (required)")
 	println("\n\n")
 	println("4. Create statistics about a program")
 	println("This creates some statistics about the program and the trace")
 	println("Usage: ./analyzer stats [options]")
-	// println("  -dir [folder] Path to the program folder (required)")
+	// println("  -path [folder] Path to the program folder (required)")
 	println("  -trace [file]          Path to the folder containing the results_machine file (required)")
 	println("  -prog [name]           Name of the program")
 	println("  -test [name]           Name of the test")
 	println("\n\n")
 	println("5. Run the toolchain on tests")
-	println("This runs the toolchain on a given main function")
-	println("Usage: ./analyzer toolTest [options]")
+	println("This runs the toolchain")
+	println("Usage: ./analyzer tool [options]")
+	println("  -main                  Run on the main function instead on tests")
 	println("  -advocate [path]       Path to advocate")
-	println("  -dir [path]            Path to the folder containing the program and tests")
-	println("  -test [name]           Name of the test to run. If not set, all tests are run")
+	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
+	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 	println("  -prog [name]           Name of the program (used for statistics)")
 	println("  -timeout [sec]         Timeout for the analysis")
 	println("  -timeoutRelay [sec]    Timeout for the replay")
@@ -721,28 +725,14 @@ func printHelp() {
 	println("  -stats                 Set to create statistics")
 	println("  -keepTrace             Do not delete the trace files after analysis finished")
 	println("\n\n")
-	println("6. Run the toolchain on a main function")
-	println("This runs the toolchain on a given main function")
-	println("Usage: ./analyzer toolMain [options]")
-	println("  -advocate [path]       Path to advocate")
-	println("  -dir [path]            Path to the file containing the main function")
-	println("  -exec [name]           Name of the executable")
-	println("  -prog [name]           Name of the program (used for statistics)")
-	println("  -timeout [sec]         Timeout for the analysis")
-	println("  -timeoutRelay [sec]    Timeout for the replay")
-	println("  -ignoreAtomics         Set to ignore atomics in replay")
-	println("  -recordTime            Set to record runtimes")
-	println("  -notExec               Set to determine never executed operations")
-	println("  -stats                 Set to create statistics")
-	println("  -keepTrace             Do not delete the trace files after analysis finished")
-	println("\n\n")
-	println("7. Create runs for fuzzing")
+	println("6. Create runs for fuzzing")
 	println("This creates and updates the information required for the fuzzing runs")
 	println("Usage: ./analyzer fuzzing [options]")
+	println("  -main                  Run on the main function instead on tests")
 	println("  -advocate [path]       Path to advocate")
-	println("  -dir [folder]          Path to the program folder")
+	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 	println("  -prog [name]           Name of the program")
-	println("  -test [name]           Name of the test (only if used on tests)")
+	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 	println("  -fuzzingMode [mode]    Mode of fuzzing:")
 	println("                           0: full fuzzing, full analysis and replay")
 	println("                           1: no HB info in fuzzing, full analysis and replay")
@@ -793,40 +783,25 @@ func printHelpMode(mode string) {
 		println("This mode checks if all concurrency elements of the program have been executed at least once.")
 		println("It has the following options:")
 		println("  -resultTool [folder]   Path where the advocateResult folder created by the pipeline is located (required)")
-		println("  -dir [folder]          Path to the program folder (required)")
+		println("  -path [folder]          Path to the program folder (required)")
 	case "stats":
 		println("Mode: stats")
 		println("Create statistics about a program")
 		println("This creates some statistics about the program and the trace")
 		println("Usage: ./analyzer stats [options]")
-		// println("  -dir [folder] Path to the program folder (required)")
+		// println("  -path [folder] Path to the program folder (required)")
 		println("  -trace [file]          Path to the folder containing the results_machine file (required)")
 		println("  -prog [name]           Name of the program")
-		println("  -test [name]           Name of the test")
-	case "toolTest", "tooltest":
-		println("Mode: toolTest")
-		println("Run the toolchain on tests")
-		println("This runs the toolchain on a given main function")
-		println("Usage: ./analyzer toolTest [options]")
+		println("  -exec [name]           Name of the test")
+	case "tool":
+		println("Mode: too")
+		println("Run the toolchain")
+		println("This runs the toolchain on tests or the main function")
+		println("Usage: ./analyzer tool [options]")
+		println("  -main                  Run on the main function instead on tests")
 		println("  -advocate [path]       Path to advocate")
-		println("  -dir [path]            Path to the folder containing the program and tests")
-		println("  -test [name]           Name of the test to run. If not set, all tests are run")
-		println("  -prog [name]           Name of the program (used for statistics)")
-		println("  -timeout [sec]         Timeout for the analysis")
-		println("  -timeoutRelay [sec]    Timeout for the replay")
-		println("  -ignoreAtomics         Set to ignore atomics in replay")
-		println("  -recordTime            Set to record runtimes")
-		println("  -notExec               Set to determine never executed operations")
-		println("  -stats                 Set to create statistics")
-		println("  -keepTrace             Do not delete the trace files after analysis finished")
-	case "toolMain", "toolmain":
-		println("Mode: toolMain")
-		println("Run the toolchain on a main function")
-		println("This runs the toolchain on a given main function")
-		println("Usage: ./analyzer toolMain [options]")
-		println("  -advocate [path]       Path to advocate")
-		println("  -dir [path]            Path to the file containing the main function")
-		println("  -exec [name]           Name of the executable")
+		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
+		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
 		println("  -timeout [sec]         Timeout for the analysis")
 		println("  -timeoutRelay [sec]    Timeout for the replay")
@@ -840,11 +815,16 @@ func printHelpMode(mode string) {
 		println("Create runs for fuzzing")
 		println("This creates and updates the information required for the fuzzing runs")
 		println("Usage: ./analyzer fuzzing [options]")
+		println("  -main                  Run on the main function instead on tests")
 		println("  -advocate [path]       Path to advocate")
-		println("  -dir [folder]          Path to the program folder")
+		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
-		println("  -test [name]           Name of the test (only if used on tests)")
-		println("  additionally, most tags from toolTest or toolMain can be used")
+		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+		println("  -fuzzingMode [mode]    Mode of fuzzing:")
+		println("                           0: full fuzzing, full analysis and replay")
+		println("                           1: no HB info in fuzzing, full analysis and replay")
+		println("                           2: full fuzzing, no analysis and replay, only actual bugs")
+		println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
 	default:
 		println("Mode: unknown")
 		printHelp()

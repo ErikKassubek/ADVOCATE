@@ -35,10 +35,11 @@ var (
 /*
 * Create the fuzzing data
 * Args:
+* 	modeMain (bool): if true, run fuzzing on main function, otherwise on test
 * 	advocate (string): path to advocate
-* 	testPath (string): path to the folder containing the test
+* 	progPath (string): path to the folder containing the prog/test
 * 	progName (string): name of the program
-* 	testName (string): name of the test to run
+* 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
 * 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
@@ -47,10 +48,12 @@ var (
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
  */
-func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
+func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
 	hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces bool) error {
 	useHBInfoFuzzing = hBInfoFuzzing
 	runFullAnalysis = fullAnalysis
+
+	progDir := getPath(progPath)
 
 	log.Println("Start fuzzing")
 	startTime := time.Now()
@@ -63,14 +66,19 @@ func Fuzzing(advocate, testPath, progName, testName string, ignoreAtomic,
 		order = popMutation()
 
 		if numberFuzzingRuns != 0 {
-			err := writeMutationsToFile(testPath, order)
+			err := writeMutationsToFile(progDir, order)
 			if err != nil {
 				panic(err.Error())
 			}
 		}
 
 		// Run the test/mutation
-		err := toolchain.Run("test", advocate, testPath, "", progName, testName,
+
+		mode := "test"
+		if modeMain {
+			mode = "main"
+		}
+		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
 			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, stats, keepTraces)
 		if err != nil {
 			fmt.Println(err.Error())

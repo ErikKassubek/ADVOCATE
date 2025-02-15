@@ -45,3 +45,16 @@ func writeMutationsToFile(pathToFolder string, mut map[string][]fuzzingSelect) e
 
 	return nil
 }
+
+func getPath(path string) string {
+	info, err := os.Stat(path)
+	if err != nil {
+		return path
+	}
+
+	if info.IsDir() {
+		return path
+	}
+
+	return filepath.Dir(path)
+}

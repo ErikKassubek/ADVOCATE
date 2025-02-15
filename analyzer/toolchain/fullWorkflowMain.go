@@ -66,9 +66,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 	}
 
-	fmt.Println("Run program and analysis...")
+	log.Println("Run program and analysis...")
 
-	output := filepath.Join(dir, "output.log")
+	output := "output.log"
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Errorf("Failed to open log file: %v", err)
@@ -205,7 +205,8 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		removeTraces(dir)
 	}
 
-	moveResults(dir, resultPath)
+	total := fuzzing != -1
+	collect(dir, resultPath, total)
 
 	// Generate Bug Reports
 	fmt.Println("Generate Bug Reports")
@@ -230,6 +231,10 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		// create statistics
 		fmt.Println("Create statistics")
 		stats.CreateStats(dir, programName, "")
+	}
+
+	if total {
+		removeLogs(resultPath)
 	}
 
 	return nil

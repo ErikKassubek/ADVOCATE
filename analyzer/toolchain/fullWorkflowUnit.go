@@ -116,20 +116,24 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
 			directoryName := fmt.Sprintf("advocateResult/file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc)
 			directoryPath := filepath.Join(dir, directoryName)
-			if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
-				log.Printf("Failed to create directory %s: %v\n", directoryName, err)
-				continue
+			if fuzzing < 1 {
+				log.Println("Create ", directoryName)
+				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
+					log.Printf("Failed to create directory %s: %v\n", directoryName, err)
+					continue
+				}
 			}
 
 			// Execute full workflow
-			times, nrReplay, nrAnalyzer, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, directoryName, fuzzing)
+			times, nrReplay, nrAnalyzer, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing)
 
 			if measureTime {
 				updateTimeFiles(progName, testFunc, resultPath, times, nrReplay, nrAnalyzer)
 			}
 
 			// Move logs and results to the appropriate directory
-			moveResults(packagePath, directoryName)
+			total := fuzzing != -1
+			collect(packagePath, directoryName, total)
 
 			if err != nil {
 				fmt.Printf("File %d with Test %d failed, check output.log for more information.\n", currentFile, attemptedTests)
@@ -145,6 +149,10 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 			if !keepTraces {
 				removeTraces(packagePath)
+			}
+
+			if total {
+				removeLogs(resultPath)
 			}
 		}
 
@@ -276,7 +284,6 @@ func FindTestFunctions(file string) ([]string, error) {
  *    testName (string): name of the test
  *    pkg (string): adjusted package path
  *    file (string): file with the test
- *    outputDir (string): write all outputs to this file
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * Returns:
  *    map[string]time.Duration
@@ -284,11 +291,11 @@ func FindTestFunctions(file string) ([]string, error) {
  *    int: number of analyzer runs
  *    error
  */
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file, outputDir string, fuzzing int) (map[string]time.Duration, int, int, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int) (map[string]time.Duration, int, int, error) {
 
 	resTimes := make(map[string]time.Duration)
 
-	output := filepath.Join(outputDir, "output.log")
+	output := "output.log"
 
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

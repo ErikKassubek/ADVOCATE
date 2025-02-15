@@ -14,6 +14,7 @@ import (
 	"analyzer/explanation"
 	"analyzer/stats"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -65,13 +66,14 @@ func generateBugReports(folder string) {
  * Args:
  *    packagePath (string): path to the package directory
  *    destination (string): path to the destination directory
+ *    total (bool): merge all already created logs into total log, for fuzzing
  */
-func moveResults(packagePath, destination string) {
+func collect(packagePath, destination string, total bool) {
 	filesToMove := []string{
 		"advocateTrace",
 		"results_machine.log",
 		"results_readable.log",
-		// "output.log",
+		"output.log",
 	}
 
 	pattersToMove := []string{
@@ -79,6 +81,45 @@ func moveResults(packagePath, destination string) {
 		"advocateTraceReplay_*",
 		"results_machine_*",
 		"results_readable_*",
+	}
+
+	logsToCollect := []string{
+		"results_machine.log",
+		"results_readable.log",
+		"output.log",
+	}
+
+	if total {
+		for _, file := range logsToCollect {
+			src := filepath.Join(packagePath, file)
+			dest := filepath.Join(destination, "total_"+file)
+
+			_, err := os.Stat(dest)
+			new := os.IsNotExist(err)
+
+			srcFile, err := os.Open(src)
+			if err != nil {
+				log.Println("Could not open src file ", src, ": ", err.Error())
+				continue
+			}
+			defer srcFile.Close()
+
+			destFile, err := os.OpenFile(dest, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+			if err != nil {
+				log.Println("Could not open dest file ", dest, ": ", err.Error())
+				continue
+			}
+			defer destFile.Close()
+
+			if !new {
+				_, err = destFile.WriteString("==================================\n")
+			}
+
+			_, err = io.Copy(destFile, srcFile)
+			if err != nil {
+				log.Println("Could not merge ", src, " int ", dest, ": ", err.Error())
+			}
+		}
 	}
 
 	for _, file := range filesToMove {
@@ -142,5 +183,17 @@ func updateStatsFiles(pathToAnalyzer string, progName string, testName string, d
 	err := stats.CreateStats(dir, progName, testName)
 	if err != nil {
 		log.Println("Could not create statistics: ", err.Error())
+	}
+}
+
+func removeLogs(path string) {
+	logsToRemove := []string{
+		"results_machine.log",
+		"results_readable.log",
+		"output.log",
+	}
+
+	for _, logFile := range logsToRemove {
+		_ = os.Remove(filepath.Join(path, logFile))
 	}
 }

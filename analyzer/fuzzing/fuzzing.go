@@ -93,8 +93,10 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 
 			log.Printf("Run fuzzing for %s->%s", testFile, testFunc)
 
+			firstRun := (i == 0 && j == 0)
+
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces, (i == 0 && j == 0))
+				hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces, firstRun)
 			if err != nil {
 				log.Println("Error in fuzzing: ")
 			}
@@ -144,6 +146,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			}
 		}
 
+		firstRun = firstRun && (numberFuzzingRuns == 0)
+
 		// Run the test/mutation
 
 		mode := "test"
@@ -189,6 +193,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			return fmt.Errorf(("Maximum runtime for fuzzing has been reached"))
 		}
 	}
+
+	log.Printf("Finish fuzzing after %d runs\n", numberFuzzingRuns)
 
 	return nil
 

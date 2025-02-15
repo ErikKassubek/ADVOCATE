@@ -17,7 +17,6 @@ import (
 	timemeasurement "analyzer/timeMeasurement"
 	"analyzer/utils"
 	"errors"
-	"fmt"
 )
 
 const (
@@ -59,8 +58,6 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 			rewrittenBugs[bug.Type] = make([]string, 0)
 		} else {
 			if utils.ContainsString((rewrittenBugs)[bug.Type], bugString) {
-				fmt.Println("Bug was already rewritten before")
-				fmt.Println("Skip rewrite")
 				return false, true, 0, nil
 			}
 		}

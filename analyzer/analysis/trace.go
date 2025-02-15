@@ -210,7 +210,7 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 		}
 	}
 
-	return nil, errors.New("Element " + bugArg + " does not exist")
+	return nil, fmt.Errorf("Element %s with tPre %d does not exist", bugArg, tPre)
 }
 
 /*

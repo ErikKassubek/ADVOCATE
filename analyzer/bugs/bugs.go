@@ -276,6 +276,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 
 	bugType := bugSplit[0]
 
+	containsArg1 := true
 	containsArg2 := true
 	actual := false
 
@@ -320,6 +321,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	// case "P06":
 	// 	bug.Type = MixedDeadlock
 	case "L00":
+		containsArg1 = false
 		bug.Type = LWithoutBlock
 	case "L01":
 		bug.Type = LUnbufferedWith
@@ -352,6 +354,10 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	// 	containsArg2 = true
 	default:
 		return actual, bug, errors.New("Unknown bug type in process bug: " + bugStr)
+	}
+
+	if !containsArg1 {
+		return actual, bug, nil
 	}
 
 	bugArg1 := bugSplit[1]

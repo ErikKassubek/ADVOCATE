@@ -130,10 +130,10 @@ func writeToTraceFileInfo(tracePath string, numberRoutines int) {
 	defer file.Close()
 
 	exitCode, exitPos := runtime.GetExitCode()
-	file.WriteString(fmt.Sprintf("ExitCode!%d", exitCode))
-	file.WriteString(fmt.Sprintf("ExitPosition!%s", exitPos))
-	file.WriteString(fmt.Sprintf("NumberRoutines!%d", numberRoutines))
-	file.WriteString(fmt.Sprintf("Timeout!%t", runtime.TimeoutHappened()))
+	file.WriteString(fmt.Sprintf("ExitCode!%d\n", exitCode))
+	file.WriteString(fmt.Sprintf("ExitPosition!%s\n", exitPos))
+	file.WriteString(fmt.Sprintf("NumberRoutines!%d\n", numberRoutines))
+	file.WriteString(fmt.Sprintf("Timeout!%t\n", runtime.TimeoutHappened()))
 	if timerStarted {
 		file.WriteString(fmt.Sprintf("Runtime!%d", int(duration.Seconds())))
 	} else {

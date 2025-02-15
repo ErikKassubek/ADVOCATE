@@ -43,13 +43,14 @@ const (
  *    timeout (int): Set a timeout in seconds for the analysis
  *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete traces after analysis
+ * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  * Returns:
  *    error
  */
 // TODO: check timeout
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	measureTime, notExecuted, stats bool, fuzzing int, timeoutAna int, timeoutReplay int,
-	keepTraces bool) error {
+	keepTraces, firstRun bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -65,15 +66,15 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		return fmt.Errorf("Failed to change directory: %v", dir)
 	}
 
-	// runCommand("go", "mod", "tidy")
-
-	os.RemoveAll("advocateResult")
-	if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-		return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+	if firstRun {
+		os.RemoveAll("advocateResult")
+		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
+			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		}
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, err := findTestFiles(dir)
+	testFiles, err := FindTestFiles(dir)
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
@@ -91,11 +92,10 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			fmt.Printf("Progress %s: %d/%d", progName, currentFile, totalFiles)
 			fmt.Printf("\nProcessing file: %s\n", file)
 			fmt.Println("=================================================\n\n")
-
 		}
 
 		packagePath := filepath.Dir(file)
-		testFunctions, err := findTestFunctions(file)
+		testFunctions, err := FindTestFunctions(file)
 		if err != nil {
 			log.Printf("Failed to find test functions in %s: %v\n", file, err)
 			continue
@@ -227,7 +227,7 @@ func updateTimeFiles(progName string, testName string, folderName string, times 
  *    []string: found files
  *    error
  */
-func findTestFiles(dir string) ([]string, error) {
+func FindTestFiles(dir string) ([]string, error) {
 	var testFiles []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -249,7 +249,7 @@ func findTestFiles(dir string) ([]string, error) {
  *    []string: functions
  *    error
  */
-func findTestFunctions(file string) ([]string, error) {
+func FindTestFunctions(file string) ([]string, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err

@@ -34,11 +34,12 @@ import (
  *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete the traces after analysis
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+ *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  * Returns:
  *    error
  */
 func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
-	timeoutAna int, timeoutReplay int, keepTraces bool, fuzzing int) error {
+	timeoutAna int, timeoutReplay int, keepTraces bool, fuzzing int, firstRun bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
@@ -58,9 +59,11 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		return fmt.Errorf("Failed to change directory: %v", err)
 	}
 
-	os.RemoveAll("advocateResult")
-	if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-		return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+	if firstRun {
+		os.RemoveAll("advocateResult")
+		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
+			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		}
 	}
 
 	fmt.Println("Run program and analysis...")

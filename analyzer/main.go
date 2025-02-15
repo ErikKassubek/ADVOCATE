@@ -228,11 +228,6 @@ func modeFuzzing() {
 		return
 	}
 
-	if !modeMain && execName == "" {
-		fmt.Println("Select a test to be analyzed. Set with -test [name]")
-		return
-	}
-
 	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
 	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
@@ -240,17 +235,17 @@ func modeFuzzing() {
 		ignoreAtomics, useHBInfoFuzzing, fullAnalysis, recordTime, notExec, statistics,
 		keepTraces)
 	if err != nil {
-		fmt.Println("Fuzzing Failed: ", err.Error())
+		log.Println("Fuzzing Failed: ", err.Error())
 	}
 }
 
 func modeToolchain(mode string, numRerecorded int) {
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
 		timeoutAnalysis, timeoutReplay, numRerecorded,
-		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces)
+		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
 	if err != nil {
-		fmt.Println("Failed to run toolchain")
-		fmt.Println(err.Error())
+		log.Println("Failed to run toolchain")
+		log.Println(err.Error())
 	}
 }
 
@@ -707,7 +702,7 @@ func printHelp() {
 	// println("  -path [folder] Path to the program folder (required)")
 	println("  -trace [file]          Path to the folder containing the results_machine file (required)")
 	println("  -prog [name]           Name of the program")
-	println("  -test [name]           Name of the test")
+	println("  -exec [name]           Name of the test")
 	println("\n\n")
 	println("5. Run the toolchain on tests")
 	println("This runs the toolchain")

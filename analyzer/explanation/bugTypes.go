@@ -432,7 +432,7 @@ var objectTypes = map[string]string{
 	"OE": "Once: Done Executed",
 	"ON": "Once: Done Not Executed (because the once was already executed)",
 	"GF": "Routine: Fork",
-	"GE": "Routine",
+	"GE": "Routine: End",
 }
 
 func init() {

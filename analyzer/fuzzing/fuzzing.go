@@ -79,7 +79,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 
 	// Process each test file
 	for i, testFile := range testFiles {
-		log.Printf("Progress %s: %d/%d\n", progName, i, totalFiles)
+		log.Printf("Progress %s: %d/%d\n", progName, i+1, totalFiles)
 		log.Printf("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)

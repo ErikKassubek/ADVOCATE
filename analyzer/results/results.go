@@ -258,6 +258,7 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 func InitResults(outReadable string, outMachine string) {
 	outputReadableFile = outReadable
 	outputMachineFile = outMachine
+	Reset()
 }
 
 /*
@@ -382,4 +383,14 @@ func stringInSlice(a string, list []string) bool {
 		}
 	}
 	return false
+}
+
+func Reset() {
+	resultsWarningReadable = make([]string, 0)
+	resultsCriticalReadable = make([]string, 0)
+	resultsWarningMachine = make([]string, 0)
+	resultCriticalMachine = make([]string, 0)
+	resultInformationMachine = make([]string, 0)
+
+	resultWithoutTime = make([]string, 0)
 }

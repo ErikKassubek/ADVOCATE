@@ -13,6 +13,7 @@ package toolchain
 import (
 	"analyzer/explanation"
 	"analyzer/stats"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -70,7 +71,7 @@ func moveResults(packagePath, destination string) {
 		"advocateTrace",
 		"results_machine.log",
 		"results_readable.log",
-		"output.log",
+		// "output.log",
 	}
 
 	pattersToMove := []string{
@@ -83,7 +84,10 @@ func moveResults(packagePath, destination string) {
 	for _, file := range filesToMove {
 		src := filepath.Join(packagePath, file)
 		dest := filepath.Join(destination, file)
-		_ = os.Rename(src, dest)
+		err := os.Rename(src, dest)
+		if err != nil {
+			panic(fmt.Sprintf("Could not rename file %s to %s: %s", src, dest, err.Error()))
+		}
 	}
 
 	for _, pattern := range pattersToMove {

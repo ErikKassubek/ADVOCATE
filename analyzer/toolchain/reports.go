@@ -12,11 +12,11 @@ package toolchain
 
 import (
 	"analyzer/explanation"
-	"fmt"
 	"io"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 /*
@@ -64,11 +64,12 @@ func generateBugReports(folder string, fuzzing int) {
 /*
  * Function to move results files from the package directory to the destination directory
  * Args:
+ *    progPath (string): path to the program
  *    packagePath (string): path to the package directory
  *    destination (string): path to the destination directory
  *    total (bool): merge all already created logs into total log, for fuzzing
  */
-func collect(packagePath, destination string, total bool) {
+func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{
 		"advocateTrace",
 		"results_machine.log",
@@ -79,8 +80,6 @@ func collect(packagePath, destination string, total bool) {
 	pattersToMove := []string{
 		"rewritten_trace*",
 		"advocateTraceReplay_*",
-		"results_machine_*",
-		"results_readable_*",
 	}
 
 	logsToCollect := []string{
@@ -91,7 +90,7 @@ func collect(packagePath, destination string, total bool) {
 
 	if total {
 		for _, file := range logsToCollect {
-			src := filepath.Join(packagePath, file)
+			src := filepath.Join(progPath, file)
 			dest := filepath.Join(destination, "total_"+file)
 
 			_, err := os.Stat(dest)
@@ -124,10 +123,14 @@ func collect(packagePath, destination string, total bool) {
 
 	for _, file := range filesToMove {
 		src := filepath.Join(packagePath, file)
+		if strings.HasSuffix(file, ".log") {
+			src = filepath.Join(progPath, file)
+		}
 		dest := filepath.Join(destination, file)
 		err := os.Rename(src, dest)
 		if err != nil {
-			panic(fmt.Sprintf("Could not rename file %s to %s: %s", src, dest, err.Error()))
+			log.Printf("Could not rename file %s to %s: %s\n", src, dest, err.Error())
+			continue
 		}
 	}
 

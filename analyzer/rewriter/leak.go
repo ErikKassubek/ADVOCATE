@@ -477,6 +477,10 @@ func rewriteWaitGroupLeak(bug bugs.Bug) error {
 
 	wait := bug.TraceElement1[0]
 
+	if len(bug.TraceElement2) == 0 {
+		return errors.New("No possible partner to move. Cannot rewrite trace.")
+	}
+
 	analysis.ShiftConcurrentOrAfterToAfter(wait)
 
 	analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakWG, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))

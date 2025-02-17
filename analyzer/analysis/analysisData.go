@@ -104,9 +104,6 @@ var (
 	// all positions of creations of routines
 	allForks = make(map[int]*TraceElementFork) // routineId -> fork
 
-	// set to true if the analyzer has been started, so that it can clean it before reusing it
-	DataUsed = false
-
 	// exit code info
 	exitCode int
 	exitPos  string

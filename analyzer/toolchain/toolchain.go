@@ -24,6 +24,7 @@ var (
 	programName    string
 	executableName string
 	testName       string
+	timeout        string
 	timeoutAna     int
 	timeoutReplay  int
 	numberRerecord int
@@ -53,6 +54,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	execName (string): name of the executable, only needed for mode main
  * 	progName (string): name of the program, used for stats
  * 	test (string): which test to run, if empty run all tests
+* 	timeout (int): timeout for running
  * 	timeoutA (int): timeout for analysis
  * 	timeoutR (int): timeout for replay
  * 	numRerecorded (int): limit of number of rerecordings
@@ -63,8 +65,8 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	stats (bool): create statistics
  * 	keepTraces (bool): keep the traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
- */
-func Run(mode, advocate, file, execName, progName, test string,
+*/
+func Run(mode, advocate, file, execName, progName, test string, timeoutRec,
 	timeoutA, timeoutR, numRerecorded, fuzzing int,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun bool) error {
 	home, _ := os.UserHomeDir()
@@ -75,6 +77,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 	programName = progName
 	testName = test
 
+	timeout = fmt.Sprintf("%ds", timeoutRec)
 	timeoutAna = timeoutA
 	timeoutR = timeoutReplay
 	numberRerecord = numRerecorded

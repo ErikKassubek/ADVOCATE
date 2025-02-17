@@ -175,9 +175,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 	timeStart = time.Now()
 	for _, trace := range rewrittenTraces {
-		rtraceNum := extractTraceNum(trace)
-		fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, rtraceNum)
-		if err := headerInserterMain(pathToFile, true, rtraceNum, int(timeoutRepl.Seconds()), false, fuzzing); err != nil {
+		traceNum := extractTraceNum(trace)
+		fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
+		if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing); err != nil {
 			return err
 		}
 

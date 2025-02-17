@@ -20,7 +20,28 @@ import (
 	"strings"
 )
 
-var foundBugs map[string]processedBug
+func getNewDataMap() map[string]int {
+	keys := []string{
+		"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07",
+		"A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02",
+		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"}
+
+	m := make(map[string]int)
+	for _, key := range keys {
+		m[key] = 0
+	}
+
+	return m
+}
+
+func getNewDataMapMap() map[string]map[string]int {
+	return map[string]map[string]int{
+		"detected":         getNewDataMap(),
+		"replayWritten":    getNewDataMap(),
+		"replaySuccessful": getNewDataMap(),
+		"unexpectedPanic":  getNewDataMap(),
+	}
+}
 
 /*
  * Parse the analyzer and replay output to collect the corresponding information
@@ -34,38 +55,11 @@ var foundBugs map[string]processedBug
  */
 func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
 	// reset foundBugs
-	foundBugs = make(map[string]processedBug)
+	foundBugs := make(map[string]processedBug)
 
-	keys := []string{
-		"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07",
-		"A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02",
-		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"}
+	resUnique := getNewDataMapMap()
 
-	numCop := 8
-
-	resMap := make([]map[string]int, numCop)
-
-	for i := 0; i < numCop; i++ {
-		m := make(map[string]int)
-		for _, key := range keys {
-			m[key] = 0
-		}
-		resMap[i] = m
-	}
-
-	resUnique := map[string]map[string]int{
-		"detected":         resMap[0],
-		"replayWritten":    resMap[1],
-		"replaySuccessful": resMap[2],
-		"unexpectedPanic":  resMap[3],
-	}
-
-	resTotal := map[string]map[string]int{
-		"detected":         resMap[4],
-		"replayWritten":    resMap[5],
-		"replaySuccessful": resMap[6],
-		"unexpectedPanic":  resMap[7],
-	}
+	resTotal := getNewDataMapMap()
 
 	bugs := filepath.Join(pathToResults, "bugs")
 	_, err := os.Stat(bugs)
@@ -86,7 +80,7 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 			if strings.HasPrefix(info.Name(), "bug_") ||
 				strings.HasPrefix(info.Name(), "diagnostics_") ||
 				strings.HasPrefix(info.Name(), "leak_") {
-				err := processBugFile(path, resTotal, resUnique)
+				err := processBugFile(path, foundBugs, resTotal, resUnique)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -95,7 +89,7 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 			if strings.HasPrefix(info.Name(), "bug_"+strconv.Itoa(fuzzing)+"_") ||
 				strings.HasPrefix(info.Name(), "diagnostics_"+strconv.Itoa(fuzzing)+"_") ||
 				strings.HasPrefix(info.Name(), "leak_"+strconv.Itoa(fuzzing)+"_") {
-				err := processBugFile(path, resTotal, resUnique)
+				err := processBugFile(path, foundBugs, resTotal, resUnique)
 				if err != nil {
 					fmt.Println(err)
 				}
@@ -144,7 +138,8 @@ func (pb *processedBug) getKey() string {
  * Returns:
  *     error
  */
-func processBugFile(filePath string, resTotal map[string]map[string]int, resUnique map[string]map[string]int) error {
+func processBugFile(filePath string, foundBugs map[string]processedBug,
+	resTotal map[string]map[string]int, resUnique map[string]map[string]int) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -191,7 +186,9 @@ func processBugFile(filePath string, resTotal map[string]map[string]int, resUniq
 
 			if num == 3 {
 				(resUnique)["unexpectedPanic"][bugType]++
-				(resTotal)["unexpectedPanic"][bugType]++
+				if resTotal != nil {
+					(resTotal)["unexpectedPanic"][bugType]++
+				}
 			}
 
 			if num >= 20 {
@@ -204,14 +201,16 @@ func processBugFile(filePath string, resTotal map[string]map[string]int, resUniq
 		return fmt.Errorf("Invalid bug file")
 	}
 
-	(resTotal)["detected"][bugType]++
+	if resTotal != nil {
+		(resTotal)["detected"][bugType]++
 
-	if bug.replayWritten {
-		(resTotal)["replayWritten"][bugType]++
-	}
+		if bug.replayWritten {
+			(resTotal)["replayWritten"][bugType]++
+		}
 
-	if bug.replaySuc {
-		(resTotal)["replaySuccessful"][bugType]++
+		if bug.replaySuc {
+			(resTotal)["replaySuccessful"][bugType]++
+		}
 	}
 
 	key := bug.getKey()

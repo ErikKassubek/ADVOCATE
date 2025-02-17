@@ -19,20 +19,47 @@ import (
 	"strings"
 )
 
+type testData struct {
+	name       string
+	numberRuns int
+	results    map[string]map[string]int
+}
+
+func (td *testData) toString() string {
+	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
+
+	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
+		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
+			res += fmt.Sprintf(",%d", td.results[mode][code])
+		}
+	}
+
+	return res
+}
+
 // TODO: for each test get the number of unique bugs
 func CreateStatsFuzzing(pathFolder, progName string) error {
 	// collect the info from the analyzer
 	resultPath := filepath.Join(pathFolder, "advocateResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
+
 	log.Println("Create fuzzing statistics at " + statsFuzzingPath)
 
-	headers := "TestName,NumberRuns"
+	headers := "TestName,NumberRuns\n"
 
-	data := ""
+	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
+		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
+			headers += fmt.Sprintf(",NumberOf%s%s", strings.ToUpper(string(mode[0]))+mode[1:]+code, code)
+		}
+	}
+
+	data := make(map[string]testData)
 
 	lastTestName := ""
 	counter := 0
+
+	// get the test names and number of fuzzing runs
 
 	analysisFile, err := os.Open(statsAnalyzerPath)
 	if err != nil {
@@ -57,13 +84,52 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 			counter++
 		} else {
 			if lastTestName != "" {
-				data += fmt.Sprintf("\n%s,%d", lastTestName, counter)
+				td := testData{name: lastTestName, numberRuns: counter}
+				data[lastTestName] = td
 			}
 			lastTestName = testName
 			counter = 1
 		}
 	}
 
+	if lastTestName != "" {
+		td := testData{name: lastTestName, numberRuns: counter}
+		data[lastTestName] = td
+	}
+
+	// get the number of unique bugs for this test
+	testDir, err := os.ReadDir(resultPath)
+	if err != nil {
+		return err
+	}
+
+	for _, test := range testDir {
+		if !test.IsDir() {
+			continue
+		}
+
+		testNameSplit := strings.Split(test.Name(), "-")
+		testName := testNameSplit[len(testNameSplit)-1]
+
+		bugDirPath := filepath.Join(resultPath, test.Name(), "bugs")
+		bugDir, err := os.ReadDir(bugDirPath)
+		if err != nil {
+			return err
+		}
+
+		foundBugs := make(map[string]processedBug)
+		res := getNewDataMapMap()
+
+		for _, bug := range bugDir {
+			processBugFile(filepath.Join(bugDirPath, bug.Name()), foundBugs, nil, res)
+		}
+
+		td := data[testName]
+		td.results = res
+		data[testName] = td
+	}
+
+	// write the data to the file
 	_, err = os.Stat(statsFuzzingPath)
 	fileExisted := (err == nil || !os.IsNotExist(err))
 
@@ -76,7 +142,10 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	if !fileExisted {
 		fuzzingFile.WriteString(headers)
 	}
-	fuzzingFile.WriteString(data)
+
+	for _, d := range data {
+		fuzzingFile.WriteString(d.toString() + "\n")
+	}
 
 	return nil
 }

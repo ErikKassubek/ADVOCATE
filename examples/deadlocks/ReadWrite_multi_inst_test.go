@@ -1,11 +1,16 @@
 package main
 
 import (
+	"advocate"
 	"sync"
 	"testing"
 )
 
 func TestReadWriteMultiInst(t *testing.T) {
+	// ======= Preamble Start =======
+  advocate.InitReplay("3", false, 20, true)
+  defer advocate.FinishReplay()
+  // ======= Preamble End =======
 	var x, y sync.RWMutex
 
 	go func() {

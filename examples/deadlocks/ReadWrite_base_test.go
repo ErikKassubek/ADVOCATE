@@ -15,10 +15,8 @@ func TestReadWriteBase(t *testing.T) {
 		x.Unlock()
 	}()
 
-	go func() {
-		y.Lock()
-		x.Lock()
-		x.Unlock()
-		y.Unlock()
-	}()
+	y.Lock()
+	x.Lock()
+	x.Unlock()
+	y.Unlock()
 }

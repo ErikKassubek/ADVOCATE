@@ -15,10 +15,8 @@ func TestReadWriteReadonly(t *testing.T) {
 		x.RUnlock()
 	}()
 
-	go func() {
-		y.RLock()
-		x.RLock()
-		x.RUnlock()
-		y.RUnlock()
-	}()
+	y.RLock()
+	x.RLock()
+	x.RUnlock()
+	y.RUnlock()
 }

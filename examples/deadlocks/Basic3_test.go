@@ -5,8 +5,8 @@ import (
 	"testing"
 )
 
-func TestBasic(t *testing.T) {
-	var x, y sync.Mutex
+func TestBasic3(t *testing.T) {
+	var x, y, z sync.Mutex
 
 	go func() {
 		x.Lock()
@@ -15,8 +15,16 @@ func TestBasic(t *testing.T) {
 		x.Unlock()
 	}()
 
-	y.Lock()
+	go func() {
+		y.Lock()
+		z.Lock()
+		z.Unlock()
+		y.Unlock()
+	}()
+
+	z.Lock()
 	x.Lock() // this SHOULD produce a deadlock
 	x.Unlock()
-	y.Unlock()
+	z.Unlock()
+
 }

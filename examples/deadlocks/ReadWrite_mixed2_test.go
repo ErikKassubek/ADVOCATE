@@ -15,10 +15,8 @@ func TestReadWriteMixed2(t *testing.T) {
 		x.RUnlock()
 	}()
 
-	go func() {
-		y.Lock()
-		x.Lock() // SHOULD create a deadlock
-		x.Unlock()
-		y.Unlock()
-	}()
+	y.Lock()
+	x.Lock() // SHOULD create a deadlock
+	x.Unlock()
+	y.Unlock()
 }

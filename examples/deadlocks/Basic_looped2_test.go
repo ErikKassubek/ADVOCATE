@@ -18,12 +18,10 @@ func TestBasicLooped2(t *testing.T) {
 		}
 	}()
 
-	go func() {
-		for i := 0; i < repeat; i++ {
-			y.Lock()
-			x.Lock()
-			x.Unlock()
-			y.Unlock()
-		}
-	}()
+	for i := 0; i < repeat; i++ {
+		y.Lock()
+		x.Lock()
+		x.Unlock()
+		y.Unlock()
+	}
 }

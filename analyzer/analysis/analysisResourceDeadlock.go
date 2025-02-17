@@ -55,6 +55,7 @@ type Dep struct {
 type Event struct {
 	thread_id    ThreadId
 	trace_id     string
+	obj_id       int
 	vector_clock clock.VectorClock
 }
 
@@ -75,6 +76,7 @@ type Lockset map[LockId]struct{}
 type State struct {
 	threads map[ThreadId]Thread // Recording lock dependencies in phase 1
 	cycles  []Cycle             // Computing cycles in phase 2
+	failed  bool                // Analysis failed (encountered unsupported lock action)
 }
 
 var currentState State
@@ -83,7 +85,7 @@ var currentState State
 
 // We show the event processing functions for acquire and release.
 
-func acquire(s *State, lockId LockId, event Event) {
+func acquire(s *State, read_lock bool, event Event) {
 	if _, exists := s.threads[event.thread_id]; !exists {
 		s.threads[event.thread_id] = Thread{
 			lockset:           make(Lockset),
@@ -91,6 +93,8 @@ func acquire(s *State, lockId LockId, event Event) {
 			readerCounter:     make(map[LockId]int),
 		}
 	}
+
+	lockId := LockId{event.obj_id, read_lock}
 
 	ls := s.threads[event.thread_id].lockset
 	if !ls.empty() {
@@ -104,7 +108,8 @@ func acquire(s *State, lockId LockId, event Event) {
 	s.threads[event.thread_id].lockset.add(lockId)
 }
 
-func release(s *State, lockId LockId, event Event) {
+func release(s *State, read_lock bool, event Event) {
+	lockId := LockId{event.obj_id, read_lock}
 	if lockId.isRead() {
 		lockId.removeReader(s.threads[event.thread_id])
 		for _, thread := range s.threads {
@@ -113,8 +118,14 @@ func release(s *State, lockId LockId, event Event) {
 			}
 			thread.lockset.remove(lockId)
 		}
+		s.threads[event.thread_id].lockset.remove(lockId)
+	} else {
+		if !s.threads[event.thread_id].lockset.remove(lockId) {
+			log.Println("ANALYSIS FAILED: Lock not found in lockset! Has probably been released in another thread!")
+			// TODO Change to no rewrite?
+			s.failed = true
+		}
 	}
-	s.threads[event.thread_id].lockset.remove(lockId)
 }
 
 // Insert a new lock dependency for a given thread and lock x.
@@ -195,6 +206,7 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 type Entry struct {
 	thread_id ThreadId
 	requests  []Event
+	lockset   Lockset
 }
 
 type Cycle []Entry
@@ -345,10 +357,11 @@ func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traverse
 							for i, d := range *chain_stack {
 								c[i].requests = d.requests
 								c[i].thread_id = d.thread_id
-
+								c[i].lockset = d.lockset.Clone()
 							}
 							c[len(*chain_stack)].requests = ld.requests
 							c[len(*chain_stack)].thread_id = ld.thread_id
+							c[len(*chain_stack)].lockset = ld.lockset.Clone()
 
 							// Check for infeasible deadlocks
 							if checkAndfilterConcurrentRequests(&c) {
@@ -380,41 +393,61 @@ func ResetState() {
 	currentState = State{
 		threads: make(map[ThreadId]Thread),
 		cycles:  nil,
+		failed:  false,
 	}
 }
 
 func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMustHappensBeforeVC clock.VectorClock) {
+	if currentState.failed {
+		return
+	}
+
 	event := Event{
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
+		obj_id:       element.GetID(),
 		vector_clock: currentMustHappensBeforeVC.Copy(),
 	}
 
 	switch element.opM {
 	case LockOp:
-		acquire(&currentState, LockId{element.GetID(), false}, event)
+		acquire(&currentState, false, event)
 	case TryLockOp:
-		// Currently suc seems to always be false on trylocks, we do not rly support them rightnow
+		// TODO: Currently suc seems to always be false on trylocks, we do not rly support them rightnow
+		log.Println("ANALYSIS FAILED: TryLocks not supported!")
+		currentState.failed = true
 		if element.suc {
-			acquire(&currentState, LockId{element.GetID(), false}, event)
+			acquire(&currentState, false, event)
 		}
 	case RLockOp:
-		acquire(&currentState, LockId{element.GetID(), true}, event)
+		acquire(&currentState, true, event)
 	case UnlockOp:
-		release(&currentState, LockId{element.GetID(), false}, event)
+		release(&currentState, false, event)
 	case RUnlockOp:
-		release(&currentState, LockId{element.GetID(), true}, event)
+		release(&currentState, true, event)
 	}
 }
 
 func CheckForResourceDeadlock() {
+	if currentState.failed {
+		log.Println("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
+		return
+	}
 	getCycles(&currentState)
+
+	log.Println("Found", len(currentState.cycles), "cycles")
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
 		log.Println("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
-			log.Println("Entry in routine", cycle[i].thread_id, ", amount of different lock requests that might block it:", len(cycle[i].requests))
+			log.Println("Entry in routine", cycle[i].thread_id, ":")
+			log.Println("\tLockset:", cycle[i].lockset)
+			log.Println("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
+			for i, r := range cycle[i].requests {
+				log.Println("\t\tLock request", i, ":", r)
+			}
+
 			var r = cycle[i].requests[0]
 
 			file, line, tPre, err := infoFromTID(r.trace_id)
@@ -425,14 +458,12 @@ func CheckForResourceDeadlock() {
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
 				RoutineID: int(r.thread_id),
-				ObjID:     0, //TODO in our current approach we loose the Object Id
+				ObjID:     r.obj_id,
 				TPre:      tPre,
 				ObjType:   "DC",
 				File:      file,
 				Line:      line,
 			})
-
-			log.Println("Lock request:", r.trace_id, "in routine", r.thread_id)
 		}
 
 		results.Result(results.CRITICAL, results.PCyclicDeadlock, "head", []results.ResultElem{cycleElements[0]}, "tail", cycleElements)
@@ -504,8 +535,12 @@ func (ls Lockset) add(x LockId) {
 	ls[x] = struct{}{}
 }
 
-func (ls Lockset) remove(x LockId) {
+func (ls Lockset) remove(x LockId) bool {
+	if _, contains := ls[x]; !contains {
+		return false
+	}
 	delete(ls, x)
+	return true
 }
 
 func (ls Lockset) Clone() Lockset {

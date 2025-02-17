@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"analyzer/analysis"
 	"analyzer/complete"
 	"analyzer/stats"
 	"errors"
@@ -24,10 +25,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-)
-
-const (
-	timeout = "10m"
 )
 
 /*
@@ -97,6 +94,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		}
 
 		for _, testFunc := range testFunctions {
+			analysis.ClearTrace()
+			analysis.ClearData()
+
 			if testName != "" && testName != testFunc {
 				continue
 			}
@@ -128,7 +128,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 			// Move logs and results to the appropriate directory
 			total := fuzzing != -1
-			collect(packagePath, directoryName, total)
+			collect(dir, packagePath, directoryPath, total)
 
 			if err != nil {
 				fmt.Printf("File %d with Test %d failed, check output.log for more information.\n", currentFile, attemptedTests)
@@ -146,6 +146,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			}
 
 			if !keepTraces {
+				removeTraces(dir)
 				removeTraces(packagePath)
 			}
 
@@ -371,7 +372,12 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 
 		timeStart := time.Now()
 		log.Println("Run T0")
-		err := runCommand("go", "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
+		var err error
+		if timeout != "-1s" {
+			err = runCommand("go", "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
+		} else {
+			err = runCommand("go", "test", "-v", "-count=1", "-run="+testName, "./"+pkg)
+		}
 		if err != nil {
 			log.Println("Test failed: ", err)
 		}
@@ -419,7 +425,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	resTimes map[string]time.Duration, resultID string, fuzzing int) {
 	// Apply analyzer
-	log.Println(fmt.Sprintf("Run the analyzer for %s/%s%s", dir, pkg, traceName))
+	log.Println(fmt.Sprintf("Run the analyzer for %s/%s/%s", dir, pkg, traceName))
 
 	startTime := time.Now()
 	var err error

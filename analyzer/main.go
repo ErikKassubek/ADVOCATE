@@ -47,6 +47,7 @@ var (
 	progName string
 	execName string
 
+	timeoutRec      int
 	timeoutAnalysis int
 	timeoutReplay   int
 	recordTime      bool
@@ -96,8 +97,9 @@ func main() {
 	flag.StringVar(&progName, "prog", "", "Name of the program")
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
-	flag.IntVar(&timeoutAnalysis, "timeout", -1, "Set a timeout in seconds for the analysis")
-	flag.IntVar(&timeoutReplay, "timeoutReplay", -1, "Set a timeout in seconds for the replay")
+	flag.IntVar(&timeoutRec, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s")
+	flag.IntVar(&timeoutAnalysis, "timeoutAna", -1, "Set a timeout in seconds for the analysis")
+	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
 	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
@@ -194,7 +196,7 @@ func main() {
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
 	switch mode {
-	case "tool", "toolmain":
+	case "tool":
 		if modeMain {
 			modeToolchain("main", 0)
 		} else {
@@ -241,7 +243,7 @@ func modeFuzzing() {
 
 func modeToolchain(mode string, numRerecorded int) {
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
-		timeoutAnalysis, timeoutReplay, numRerecorded,
+		timeoutRec, timeoutAnalysis, timeoutReplay, numRerecorded,
 		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
 	if err != nil {
 		log.Println("Failed to run toolchain")
@@ -249,7 +251,7 @@ func modeToolchain(mode string, numRerecorded int) {
 	}
 
 	if statistics {
-		err = stats.CreateStatsTotal(filepath.Dir(progPath), progName)
+		err = stats.CreateStatsTotal(progPath, progName)
 		if err != nil {
 			log.Println("Failed to create stats total: ", err.Error())
 		}
@@ -333,13 +335,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			<-time.After(time.Duration(timeout) * time.Second)
 			os.Exit(1)
 		}()
-	}
-
-	// clean data in case of fuzzing
-	if analysis.DataUsed {
-		analysis.ClearData()
-		analysis.ClearTrace()
-		analysis.DataUsed = true
 	}
 
 	// run the analysis and, if requested, create a reordered trace file
@@ -676,7 +671,9 @@ func printHelp() {
 	println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
 	println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 	println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
-	println("  -timeout [second]      Set a timeout in seconds for the analysis")
+	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
+	println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
+	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 	println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
 	println("                         If it is not set, all scenarios are run")
 	println("                         Options:")
@@ -719,8 +716,9 @@ func printHelp() {
 	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 	println("  -prog [name]           Name of the program (used for statistics)")
-	println("  -timeout [sec]         Timeout for the analysis")
-	println("  -timeoutRelay [sec]    Timeout for the replay")
+	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
+	println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
+	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 	println("  -ignoreAtomics         Set to ignore atomics in replay")
 	println("  -recordTime            Set to record runtimes")
 	println("  -notExec               Set to determine never executed operations")
@@ -758,7 +756,9 @@ func printHelpMode(mode string) {
 		println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
 		println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 		println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
-		println("  -timeout [second]      Set a timeout in seconds for the analysis")
+		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
+		println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
+		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 		println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
 		println("                         If it is not set, all scenarios are run")
 		println("                         Options:")
@@ -805,8 +805,9 @@ func printHelpMode(mode string) {
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
-		println("  -timeout [sec]         Timeout for the analysis")
-		println("  -timeoutRelay [sec]    Timeout for the replay")
+		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
+		println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
+		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")
 		println("  -recordTime            Set to record runtimes")
 		println("  -notExec               Set to determine never executed operations")

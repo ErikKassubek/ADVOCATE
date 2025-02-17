@@ -206,7 +206,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	total := fuzzing != -1
-	collect(dir, resultPath, total)
+	collect(dir, dir, resultPath, total)
 
 	// Generate Bug Reports
 	fmt.Println("Generate Bug Reports")

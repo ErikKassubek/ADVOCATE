@@ -28,10 +28,12 @@ import (
  *    replayNumber (string): id of the trace to replay
  *    replayTimeout (int): replay for timeout
  *    record (bool): if both replay and record are set, the replay is rerecorded
+ *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
  * Returns:
  *    error
  */
-func headerInserterMain(fileName string, replay bool, replayNumber string, replayTimeout int, record bool) error {
+func headerInserterMain(fileName string, replay bool, replayNumber string,
+	replayTimeout int, record bool, fuzzing int) error {
 	if fileName == "" {
 		return errors.New("Please provide a file  name")
 	}
@@ -40,7 +42,7 @@ func headerInserterMain(fileName string, replay bool, replayNumber string, repla
 		return fmt.Errorf("File %s does not exist", fileName)
 	}
 
-	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record)
+	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record, fuzzing)
 }
 
 /*
@@ -140,10 +142,11 @@ func mainMethodExists(fileName string) (bool, error) {
  *    replayNumber (int): id of the trace to replay
  *    replayTimeout (int): replay for timeout
  *    record (bool): if both replay and record are set, the replay is rerecorded
+ *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
  * Return:
  *    error
  */
-func addMainHeader(fileName string, replay bool, replayNumber string, replayTimeout int, record bool) error {
+func addMainHeader(fileName string, replay bool, replayNumber string, replayTimeout int, record bool, fuzzing int) error {
 	exists, err := mainMethodExists(fileName)
 	if err != nil {
 		return err

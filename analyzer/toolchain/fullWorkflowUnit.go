@@ -419,7 +419,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	resTimes map[string]time.Duration, resultID string, fuzzing int) {
 	// Apply analyzer
-	log.Println(fmt.Sprintf("Run the analyzer for %s/%s/%s", dir, pkg, traceName))
+	log.Println(fmt.Sprintf("Run the analyzer for %s/%s%s", dir, pkg, traceName))
 
 	startTime := time.Now()
 	var err error

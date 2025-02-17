@@ -19,6 +19,24 @@ import (
 	"strings"
 )
 
+type testData struct {
+	name       string
+	numberRuns int
+	results    map[string]map[string]int
+}
+
+func (td *testData) toString() string {
+	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
+
+	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
+		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
+			res += fmt.Sprintf(",%d", td.results[mode][code])
+		}
+	}
+
+	return res
+}
+
 /*
  * Create files with the required stats
  * Args:
@@ -75,9 +93,9 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+progName+".csv")
 	fileAllPath := filepath.Join(path, "statsAll_"+progName+".csv")
 
-	headerTracing := "TestName,NumberOfEvents,NumberOfGoroutines,NumberOfAtomicEvents," +
-		"NumberOfChannelEvents,NumberOfSelectEvents,NumberOfMutexEvents,NumberOfWaitgroupEvents," +
-		"NumberOfCondVariablesEvents,NumberOfOnceOperations"
+	headerTracing := "TestName,NoEvents,NoGoroutines,NoAtomicEvents," +
+		"NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents," +
+		"NoCondVariablesEvents,NoOnceOperations"
 	dataTracing := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName,
 		statsTraces["numberElements"], statsTraces["numberRoutines"],
 		statsTraces["numberAtomicOperations"], statsTraces["numberChannelOperations"],
@@ -134,26 +152,26 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberOfPanicsVerifiedViaReplayUnique += statsAnalyzerUnique["replaySuccessful"][code]
 	}
 
-	NumberOfUnexpectedPanicsInReplayTotal := 0
-	NumberOfUnexpectedPanicsInReplayUnique := 0
+	NoUnexpectedPanicsInReplayTotal := 0
+	NoUnexpectedPanicsInReplayUnique := 0
 	for _, code := range posPanicCodes {
-		NumberOfUnexpectedPanicsInReplayTotal += statsAnalyzerTotal["unexpectedPanic"][code]
-		NumberOfUnexpectedPanicsInReplayUnique += statsAnalyzerUnique["unexpectedPanic"][code]
+		NoUnexpectedPanicsInReplayTotal += statsAnalyzerTotal["unexpectedPanic"][code]
+		NoUnexpectedPanicsInReplayUnique += statsAnalyzerUnique["unexpectedPanic"][code]
 	}
 
-	headerAnalysis := "TestName,NumberActualBugTotal,NumberOfLeaksTotal,NumberOfLeaksWithRewriteTotal,NumberOfLeaksResolvedViaReplayTotal,NumberOfPanicsTotal,NumberOfPanicsVerifiedViaReplayTotal,NumberOfUnexpectedPanicsInReplayTotal,NumberActualBugUnique,NumberOfLeaksUnique,NumberOfLeaksWithRewriteUnique,NumberOfLeaksResolvedViaReplayUnique,NumberOfPanicsUnique,NumberOfPanicsVerifiedViaReplayUnique,NumberOfUnexpectedPanicsInReplayUnique"
+	headerAnalysis := "TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique"
 	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal,
-		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, NumberOfUnexpectedPanicsInReplayTotal, numberOfActualBugsUnique, numberOfLeaksUnique,
-		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, NumberOfUnexpectedPanicsInReplayUnique)
+		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, NoUnexpectedPanicsInReplayTotal, numberOfActualBugsUnique, numberOfLeaksUnique,
+		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, NoUnexpectedPanicsInReplayUnique)
 
 	writeStatsFile(fileAnalysisPath, headerAnalysis, dataAnalysis)
 
 	headerDetails := "TestName," +
-		"NumberOfEvents,NumberOfGoroutines,NumberOfNotEmptyGoroutines,NumberOfSpawnEvents,NumberOfRoutineEndEvents," +
-		"NumberOfAtomics,NumberOfAtomicEvents,NumberOfChannels,NumberOfBufferedChannels,NumberOfUnbufferedChannels," +
-		"NumberOfChannelEvents,NumberOfBufferedChannelEvents,NumberOfUnbufferedChannelEvents,NumberOfSelectEvents," +
-		"NumberOfSelectCases,NumberOfSelectNonDefaultEvents,NumberOfSelectDefaultEvents,NumberOfMutex,NumberOfMutexEvents," +
-		"NumberOfWaitgroup,NumberOfWaitgroupEvent,NumberOfCondVariables,NumberOfCondVariablesEvents,NumberOfOnce,NumberOfOnceOperations,"
+		"NoEvents,NoGoroutines,NoNotEmptyGoroutines,NoSpawnEvents,NoRoutineEndEvents," +
+		"NoAtomics,NoAtomicEvents,NoChannels,NoBufferedChannels,NoUnbufferedChannels," +
+		"NoChannelEvents,NoBufferedChannelEvents,NoUnbufferedChannelEvents,NoSelectEvents," +
+		"NoSelectCases,NoSelectNonDefaultEvents,NoSelectDefaultEvents,NoMutex,NoMutexEvents," +
+		"NoWaitgroup,NoWaitgroupEvent,NoCondVariables,NoCondVariablesEvents,NoOnce,NoOnceOperations,"
 	dataDetails := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 		testName, statsTraces["numberElements"],
 		statsTraces["numberRoutines"], statsTraces["numberNonEmptyRoutines"],
@@ -174,7 +192,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, count := range []string{"Total", "Unique"} {
 			for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
-				headers = append(headers, "NumberOf"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
+				headers = append(headers, "No"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))
 				} else {

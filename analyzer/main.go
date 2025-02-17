@@ -247,6 +247,13 @@ func modeToolchain(mode string, numRerecorded int) {
 		log.Println("Failed to run toolchain")
 		log.Println(err.Error())
 	}
+
+	if statistics {
+		err = stats.CreateStatsTotal(filepath.Dir(progPath), progName)
+		if err != nil {
+			log.Println("Failed to create stats total: ", err.Error())
+		}
+	}
 }
 
 func modeStats() {
@@ -359,7 +366,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			return
 		}
 
-		analysis.SetNumberOfRoutines(numberOfRoutines)
+		analysis.SetNoRoutines(numberOfRoutines)
 
 		if analysisCases["all"] {
 			fmt.Println("Start Analysis for all scenarios")

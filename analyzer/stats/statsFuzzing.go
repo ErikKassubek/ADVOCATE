@@ -19,24 +19,6 @@ import (
 	"strings"
 )
 
-type testData struct {
-	name       string
-	numberRuns int
-	results    map[string]map[string]int
-}
-
-func (td *testData) toString() string {
-	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
-
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
-			res += fmt.Sprintf(",%d", td.results[mode][code])
-		}
-	}
-
-	return res
-}
-
 // TODO: for each test get the number of unique bugs
 func CreateStatsFuzzing(pathFolder, progName string) error {
 	// collect the info from the analyzer
@@ -44,13 +26,13 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
 
-	log.Println("Create fuzzing statistics at " + statsFuzzingPath)
+	log.Println("Create fuzzing statistics")
 
-	headers := "TestName,NumberRuns"
+	headers := "TestName,NoRuns"
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
-			headers += fmt.Sprintf(",NumberOf%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
+			headers += fmt.Sprintf(",No%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
 		}
 	}
 	headers += "\n"
@@ -123,6 +105,18 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 
 		for _, bug := range bugDir {
 			processBugFile(filepath.Join(bugDirPath, bug.Name()), foundBugs, nil, res)
+		}
+
+		for _, bug := range foundBugs {
+			res["detected"][bug.bugType]++
+
+			if bug.replayWritten {
+				res["replayWritten"][bug.bugType]++
+			}
+
+			if bug.replaySuc {
+				res["replaySuccessful"][bug.bugType]++
+			}
 		}
 
 		td := data[testName]

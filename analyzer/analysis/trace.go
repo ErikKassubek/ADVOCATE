@@ -278,7 +278,7 @@ func ShortenRoutineIndex(routine int, index int, incl bool) {
  * Args:
  *   n (int): The number of routines
  */
-func SetNumberOfRoutines(n int) {
+func SetNoRoutines(n int) {
 	numberOfRoutines = n
 }
 

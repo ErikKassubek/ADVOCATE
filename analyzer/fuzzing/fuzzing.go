@@ -70,6 +70,10 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			if err != nil {
 				log.Println("Failed to create fuzzing stats: ", err.Error())
 			}
+			err = stats.CreateStatsTotal(getPath(progPath), progName)
+			if err != nil {
+				log.Println("Failed to create total stats: ", err.Error())
+			}
 		}
 
 		return err
@@ -117,6 +121,10 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		err := stats.CreateStatsFuzzing(getPath(progPath), progName)
 		if err != nil {
 			log.Println("Failed to create fuzzing stats: ", err.Error())
+		}
+		err = stats.CreateStatsTotal(getPath(progPath), progName)
+		if err != nil {
+			log.Println("Failed to create total stats: ", err.Error())
 		}
 	}
 

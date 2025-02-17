@@ -165,9 +165,6 @@ func addMainHeader(fileName string, replay bool, replayNumber string, replayTime
 		atomicReplayStr = "true"
 	}
 
-	// TODO: remove when implemented fuzzing for main
-	fuzzing := -1
-
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	importAdded := false

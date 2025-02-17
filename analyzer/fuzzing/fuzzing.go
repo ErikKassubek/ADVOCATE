@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"analyzer/analysis"
+	"analyzer/stats"
 	"analyzer/toolchain"
 	"fmt"
 	"log"
@@ -119,12 +120,12 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
-* 	stats (bool): create statistics
+* 	createStats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces, firstRun bool) error {
+	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun bool) error {
 	useHBInfoFuzzing = hBInfoFuzzing
 	runFullAnalysis = fullAnalysis
 
@@ -155,7 +156,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
-			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, stats, keepTraces, firstRun)
+			-1, -1, 0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -194,28 +195,16 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		}
 	}
 
+	if createStats {
+		err := stats.CreateStatsFuzzing(progDir, progName)
+		if err != nil {
+			log.Println("Failed to create fuzzing stats: ", err.Error())
+		}
+	}
+
 	log.Printf("Finish fuzzing after %d runs\n", numberFuzzingRuns)
 
 	return nil
-
-	// fuzzingFilePath := filepath.Join(pathFuzzing, fmt.Sprintf("fuzzingFile_%s.info", progName))
-	// readFile(fuzzingFilePath)
-
-	// io.CreateTraceFromFiles(pathTrace, true)
-	// parseTrace()
-
-	// // if the run was not interesting, there is nothing else to do
-	// if !isInteresting() {
-	// 	return lastID
-	// }
-
-	// numMut := numberMutations()
-	// muts := createMutations(numMut)
-
-	// updateFileData()
-	// writeFileInfo(fuzzingFilePath)
-
-	// return writeMutationsToFile(pathFuzzing, lastID, muts, progName)
 }
 
 /*

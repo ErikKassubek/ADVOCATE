@@ -13,6 +13,7 @@ package toolchain
 
 import (
 	"analyzer/complete"
+	"analyzer/stats"
 	"errors"
 	"fmt"
 	"io"
@@ -38,19 +39,15 @@ const (
  *    measureTime (bool): if true, measure the time for all steps. This
  *      also runs the tests once without any recoding/replay to get a base value
  *    notExecuted (bool): if true, check for never executed operations
- *    stats (bool): create a stats file
+ *    createStats (bool): create a stats file
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- *    timeout (int): Set a timeout in seconds for the analysis
- *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  * Returns:
  *    error
  */
-// TODO: check timeout
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, stats bool, fuzzing int, timeoutAna int, timeoutReplay int,
-	keepTraces, firstRun bool) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -58,8 +55,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	if dir == "" {
 		return errors.New("Directory is empty")
 	}
-
-	pathToAnalyzer := filepath.Join(pathToAdvocate, "analyzer/analyzer")
 
 	// Change to the directory
 	if err := os.Chdir(dir); err != nil {
@@ -140,11 +135,14 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 				skippedTests++
 			}
 
-			generateBugReports(directoryPath)
+			generateBugReports(directoryPath, fuzzing)
 
-			if stats {
-				updateStatsFiles(pathToAnalyzer, progName, testFunc, directoryPath)
+			if createStats {
 				// create statistics
+				err := stats.CreateStats(directoryPath, progName, testFunc, fuzzing)
+				if err != nil {
+					log.Println("Could not create statistics: ", err.Error())
+				}
 			}
 
 			if !keepTraces {

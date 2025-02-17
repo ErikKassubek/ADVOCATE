@@ -12,7 +12,6 @@ package toolchain
 
 import (
 	"analyzer/explanation"
-	"analyzer/stats"
 	"fmt"
 	"io"
 	"log"
@@ -24,9 +23,10 @@ import (
  * Generate the bug reports
  * Args:
  *    folderName string: path to folder containing the results
+ *    fuzzingRun int: number of fuzzing run, -1 for not fuzzing
  */
-func generateBugReports(folder string) {
-	err := explanation.CreateOverview(folder, true)
+func generateBugReports(folder string, fuzzing int) {
+	err := explanation.CreateOverview(folder, true, fuzzing)
 	if err != nil {
 		log.Println("Error creating explanation: ", err.Error())
 	}
@@ -176,13 +176,6 @@ func removeTraces(path string) {
 
 	for _, trace := range files {
 		os.RemoveAll(trace)
-	}
-}
-
-func updateStatsFiles(pathToAnalyzer string, progName string, testName string, dir string) {
-	err := stats.CreateStats(dir, progName, testName)
-	if err != nil {
-		log.Println("Could not create statistics: ", err.Error())
 	}
 }
 

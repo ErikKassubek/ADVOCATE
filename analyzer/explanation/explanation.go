@@ -47,7 +47,7 @@ import (
  * Returns:
  *    error: if an error occurred
  */
-func CreateOverview(path string, ignoreDouble bool) error {
+func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
 	log.Println("Create bug reports")
 
@@ -105,7 +105,7 @@ func CreateOverview(path string, ignoreDouble bool) error {
 			}
 
 			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
-				replay, progInfo)
+				replay, progInfo, fuzzing)
 		}
 	}
 
@@ -185,7 +185,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 
 func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
-	replay map[string]string, progInfo map[string]string) error {
+	replay map[string]string, progInfo map[string]string, fuzzing int) error {
 
 	res := ""
 
@@ -277,7 +277,12 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// create the file
-	fileName := filepath.Join(folderName, strings.ToLower(description["crit"])) + "_" + index + ".md"
+	fileName := ""
+	if fuzzing == -1 {
+		fileName = filepath.Join(folderName, strings.ToLower(description["crit"])) + "_" + index + ".md"
+	} else {
+		fileName = filepath.Join(folderName, fmt.Sprintf("%s_%d_%s.md", strings.ToLower(description["crit"]), fuzzing, index))
+	}
 	file, err := os.Create(fileName)
 	if err != nil {
 		return err

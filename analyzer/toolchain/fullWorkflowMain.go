@@ -210,7 +210,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 	// Generate Bug Reports
 	fmt.Println("Generate Bug Reports")
-	generateBugReports(resultPath)
+	generateBugReports(resultPath, fuzzing)
 
 	resTimes := map[string]time.Duration{
 		"run":      durationRun,
@@ -230,7 +230,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if createStats {
 		// create statistics
 		fmt.Println("Create statistics")
-		stats.CreateStats(dir, programName, "")
+		stats.CreateStats(dir, programName, "", fuzzing)
 	}
 
 	if total {

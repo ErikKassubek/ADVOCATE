@@ -265,7 +265,7 @@ func modeStats() {
 		execName = progName
 	}
 
-	stats.CreateStats(tracePath, progName, execName)
+	stats.CreateStats(tracePath, progName, execName, -1)
 }
 
 func modeCheck() {
@@ -292,7 +292,7 @@ func modeExplain() {
 		return
 	}
 
-	err := explanation.CreateOverview(tracePath, !rewriteAll)
+	err := explanation.CreateOverview(tracePath, !rewriteAll, -1)
 	if err != nil {
 		log.Println("Error creating explanation: ", err.Error())
 	}

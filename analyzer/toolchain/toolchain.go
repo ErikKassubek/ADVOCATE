@@ -113,8 +113,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFile, progName, measureTime,
-			notExecuted, stats, fuzzing, timeoutAna, timeoutReplay,
-			keepTraces, firstRun)
+			notExecuted, stats, fuzzing, keepTraces, firstRun)
 	case "explain":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")
@@ -122,7 +121,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 		if pathToFile == "" {
 			fmt.Println("Path to test folder required for mode main")
 		}
-		generateBugReports(pathToFile)
+		generateBugReports(pathToFile, fuzzing)
 	default:
 		return fmt.Errorf("Choose one mode from 'main' or 'test' or 'explain'")
 	}

@@ -20,43 +20,57 @@ import (
 	"strings"
 )
 
+var foundBugs map[string]processedBug
+
 /*
  * Parse the analyzer and replay output to collect the corresponding information
  * Args:
  *     pathToResults (string): path to the advocateResult folder
+ *     fuzzing (int): number of fuzzing run, -1 for not fuzzing
  * Returns:
- *     map[string]int: map with information
+ *     map[string]int: map with total information
+ *     map[string]int: map with unique information
  *     error
  */
-func statsAnalyzer(pathToResults string) (map[string]map[string]int, error) {
-	detected := map[string]int{
-		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
-		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
-		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
-	replayWriten := map[string]int{
-		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
-		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
-		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
-	replaySuccessful := map[string]int{
-		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
-		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
-		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
-	unexpactedPanic := map[string]int{
-		"A00": 0, "A01": 0, "A02": 0, "A03": 0, "A04": 0, "A05": 0, "A06": 0, "A07": 0,
-		"A08": 0, "P01": 0, "P02": 0, "P03": 0, "P04": 0, "P05": 0, "L00": 0, "L01": 0, "L02": 0,
-		"L03": 0, "L04": 0, "L05": 0, "L06": 0, "L07": 0, "L08": 0, "L09": 0, "L10": 0}
+func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
+	// reset foundBugs
+	foundBugs = make(map[string]processedBug)
 
-	res := map[string]map[string]int{
-		"detected":         detected,
-		"replayWritten":    replayWriten,
-		"replaySuccessful": replaySuccessful,
-		"unexpectedPanic":  unexpactedPanic,
+	keys := []string{
+		"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07",
+		"A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02",
+		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"}
+
+	numCop := 8
+
+	resMap := make([]map[string]int, numCop)
+
+	for i := 0; i < numCop; i++ {
+		m := make(map[string]int)
+		for _, key := range keys {
+			m[key] = 0
+		}
+		resMap[i] = m
+	}
+
+	resUnique := map[string]map[string]int{
+		"detected":         resMap[0],
+		"replayWritten":    resMap[1],
+		"replaySuccessful": resMap[2],
+		"unexpectedPanic":  resMap[3],
+	}
+
+	resTotal := map[string]map[string]int{
+		"detected":         resMap[4],
+		"replayWritten":    resMap[5],
+		"replaySuccessful": resMap[6],
+		"unexpectedPanic":  resMap[7],
 	}
 
 	bugs := filepath.Join(pathToResults, "bugs")
 	_, err := os.Stat(bugs)
 	if os.IsNotExist(err) {
-		return res, nil
+		return resUnique, nil, nil
 	}
 
 	err = filepath.Walk(bugs, func(path string, info os.FileInfo, err error) error {
@@ -64,37 +78,73 @@ func statsAnalyzer(pathToResults string) (map[string]map[string]int, error) {
 			return err
 		}
 
-		if !info.IsDir() && (strings.HasPrefix(info.Name(), "bug_") ||
-			strings.HasPrefix(info.Name(), "diagnostics_") ||
-			strings.HasPrefix(info.Name(), "leak_")) {
-			err := processBugFile(path, &res)
-			if err != nil {
-				fmt.Println(err)
+		if info.IsDir() {
+			return nil
+		}
+
+		if fuzzing == -1 {
+			if strings.HasPrefix(info.Name(), "bug_") ||
+				strings.HasPrefix(info.Name(), "diagnostics_") ||
+				strings.HasPrefix(info.Name(), "leak_") {
+				err := processBugFile(path, resTotal, resUnique)
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+		} else {
+			if strings.HasPrefix(info.Name(), "bug_"+strconv.Itoa(fuzzing)+"_") ||
+				strings.HasPrefix(info.Name(), "diagnostics_"+strconv.Itoa(fuzzing)+"_") ||
+				strings.HasPrefix(info.Name(), "leak_"+strconv.Itoa(fuzzing)+"_") {
+				err := processBugFile(path, resTotal, resUnique)
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+		}
+
+		for _, bug := range foundBugs {
+			resUnique["detected"][bug.bugType]++
+
+			if bug.replayWritten {
+				resUnique["replayWritten"][bug.bugType]++
+			}
+
+			if bug.replaySuc {
+				resUnique["replaySuccessful"][bug.bugType]++
 			}
 		}
 
 		return nil
 	})
 
-	return res, err
+	return resTotal, resUnique, err
 }
 
 type processedBug struct {
-	paths         string
-	detectedBug   string
+	paths         []string
+	bugType       string
 	replayWritten bool
 	replaySuc     bool
+}
+
+func (pb *processedBug) getKey() string {
+	res := pb.bugType
+	for _, path := range pb.paths {
+		res += path
+	}
+	return res
 }
 
 /*
  * Parse a bug file to get the information
  * Args:
  *     filePath (string): path to the bug file
- *     info (*map[string]map[string]int): map to store the info in
+ *     resTotal (map[string]map[string]int): total results
+ *     resUnique (map[string]map[string]int): unique results
  * Returns:
  *     error
  */
-func processBugFile(filePath string, info *map[string]map[string]int) error {
+func processBugFile(filePath string, resTotal map[string]map[string]int, resUnique map[string]map[string]int) error {
 	file, err := os.Open(filePath)
 	if err != nil {
 		return err
@@ -104,6 +154,7 @@ func processBugFile(filePath string, info *map[string]map[string]int) error {
 	bugType := ""
 
 	bug := processedBug{}
+	bug.paths = make([]string, 0)
 
 	// read the file
 	scanner := bufio.NewScanner(file)
@@ -123,7 +174,9 @@ func processBugFile(filePath string, info *map[string]map[string]int) error {
 			if bugType == "" {
 				return fmt.Errorf("unknown error type %s", line)
 			}
-			bug.detectedBug = bugType
+			bug.bugType = bugType
+		} else if strings.HasPrefix(line, "-> ") { // get paths
+			bug.paths = append(bug.paths, strings.TrimPrefix(line, "-> "))
 		} else if strings.Contains(line, "The analyzer found a way to resolve the leak") {
 			bug.replayWritten = true
 		} else if strings.Contains(line, "The analyzer has tries to rewrite the trace in such a way") {
@@ -137,7 +190,8 @@ func processBugFile(filePath string, info *map[string]map[string]int) error {
 			}
 
 			if num == 3 {
-				(*info)["unexpectedPanic"][bugType]++
+				(resUnique)["unexpectedPanic"][bugType]++
+				(resTotal)["unexpectedPanic"][bugType]++
 			}
 
 			if num >= 20 {
@@ -146,14 +200,31 @@ func processBugFile(filePath string, info *map[string]map[string]int) error {
 		}
 	}
 
-	(*info)["detected"][bugType]++
+	if bug.bugType == "" {
+		return fmt.Errorf("Invalid bug file")
+	}
+
+	(resTotal)["detected"][bugType]++
 
 	if bug.replayWritten {
-		(*info)["replayWritten"][bugType]++
+		(resTotal)["replayWritten"][bugType]++
 	}
 
 	if bug.replaySuc {
-		(*info)["replaySuccessful"][bugType]++
+		(resTotal)["replaySuccessful"][bugType]++
+	}
+
+	key := bug.getKey()
+	if b, ok := foundBugs[key]; ok {
+		if bug.replaySuc {
+			b.replaySuc = true
+		}
+		if bug.replayWritten {
+			b.replayWritten = true
+		}
+		foundBugs[key] = b
+	} else {
+		foundBugs[key] = bug
 	}
 
 	return nil

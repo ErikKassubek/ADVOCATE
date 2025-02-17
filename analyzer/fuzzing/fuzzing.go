@@ -50,7 +50,7 @@ var (
 * 	keepTraces (bool): keep the traces after analysis
  */
 func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces bool) error {
+	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces bool) error {
 
 	log.Println("Start fuzzing")
 
@@ -62,8 +62,17 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			log.Println("Run fuzzing on test ", name)
 		}
 
-		return runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces, true)
+		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
+			hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, true)
+
+		if createStats {
+			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
+			if err != nil {
+				log.Println("Failed to create fuzzing stats: ", err.Error())
+			}
+		}
+
+		return err
 	}
 
 	log.Println("Run fuzzing on all tests")
@@ -97,10 +106,17 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, fullAnalysis, meaTime, notExec, stats, keepTraces, firstRun)
+				hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun)
 			if err != nil {
 				log.Println("Error in fuzzing: ")
 			}
+		}
+	}
+
+	if createStats {
+		err := stats.CreateStatsFuzzing(getPath(progPath), progName)
+		if err != nil {
+			log.Println("Failed to create fuzzing stats: ", err.Error())
 		}
 	}
 
@@ -192,13 +208,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 		if time.Since(startTime) > maxTime {
 			return fmt.Errorf(("Maximum runtime for fuzzing has been reached"))
-		}
-	}
-
-	if createStats {
-		err := stats.CreateStatsFuzzing(progDir, progName)
-		if err != nil {
-			log.Println("Failed to create fuzzing stats: ", err.Error())
 		}
 	}
 

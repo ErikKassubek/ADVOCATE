@@ -20,7 +20,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"strconv"
 	"time"
 )
 
@@ -30,8 +29,6 @@ import (
  *    pathToAdvocate (string): path to the ADVOCATE folder
  *    pathToFile (string): path to the file containing the main function
  *    executableName (string): name of the executable
- *    timeoutAna (int): timeout for the analyzer
- *    timeoutReplay (int): timeout for replay
  *    keepTraces (bool): do not delete the traces after analysis
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
@@ -39,7 +36,7 @@ import (
  *    error
  */
 func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
-	timeoutAna int, timeoutReplay int, keepTraces bool, fuzzing int, firstRun bool) error {
+	keepTraces bool, fuzzing int, firstRun bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
@@ -153,9 +150,17 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		"rewritten_trace", timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
-	if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", strconv.Itoa(timeoutAna)); err != nil {
-		return fmt.Errorf("Error applying analyzer: %v", err)
+		"rewritten_trace", timeoutAnalysis, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+
+	if timeoutAnalysis != -1 {
+		timeoutString := fmt.Sprintf("%ds", timeoutAnalysis)
+		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", timeoutString); err != nil {
+			return fmt.Errorf("Error applying analyzer: %v", err)
+		}
+	} else {
+		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput); err != nil {
+			return fmt.Errorf("Error applying analyzer: %v", err)
+		}
 	}
 	durationAnalysis = time.Since(timeStart)
 

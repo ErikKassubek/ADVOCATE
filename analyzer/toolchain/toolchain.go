@@ -19,20 +19,7 @@ import (
 )
 
 var (
-	pathToAdvocate string
-	pathToFile     string
-	programName    string
-	executableName string
-	testName       string
-	timeout        string
-	timeoutAna     int
-	timeoutReplay  int
-	numberRerecord int
-	replayAtomic   bool
-	measureTime    bool
-	notExecuted    bool
-	createStats    bool
-	runAnalyzer    func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
+	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
 )
 
 /*
@@ -54,9 +41,6 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	execName (string): name of the executable, only needed for mode main
  * 	progName (string): name of the program, used for stats
  * 	test (string): which test to run, if empty run all tests
-* 	timeout (int): timeout for running
- * 	timeoutA (int): timeout for analysis
- * 	timeoutR (int): timeout for replay
  * 	numRerecorded (int): limit of number of rerecordings
  * 	fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * 	replayAt (bool): replay atomics
@@ -65,9 +49,9 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	stats (bool): create statistics
  * 	keepTraces (bool): keep the traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
-*/
-func Run(mode, advocate, file, execName, progName, test string, timeoutRec,
-	timeoutA, timeoutR, numRerecorded, fuzzing int,
+ */
+func Run(mode, advocate, file, execName, progName, test string,
+	numRerecorded, fuzzing int,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
@@ -77,9 +61,6 @@ func Run(mode, advocate, file, execName, progName, test string, timeoutRec,
 	programName = progName
 	testName = test
 
-	timeout = fmt.Sprintf("%ds", timeoutRec)
-	timeoutAna = timeoutA
-	timeoutR = timeoutReplay
 	numberRerecord = numRerecorded
 
 	replayAtomic = !ignoreAtomic
@@ -104,7 +85,7 @@ func Run(mode, advocate, file, execName, progName, test string, timeoutRec,
 		if (stats || measureTime) && progName == "" {
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
-		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, timeoutAna, timeoutReplay, keepTraces, fuzzing, firstRun)
+		return runWorkflowMain(pathToAdvocate, pathToFile, executableName, keepTraces, fuzzing, firstRun)
 	case "test", "tests":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

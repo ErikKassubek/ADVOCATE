@@ -11,6 +11,20 @@
 package toolchain
 
 var (
+	pathToAdvocate   string
+	pathToFile       string
+	programName      string
+	executableName   string
+	testName         string
+	timeoutRecording int
+	timeoutAnalysis  int
+	timeoutReplay    int
+	numberRerecord   int
+	replayAtomic     bool
+	measureTime      bool
+	notExecuted      bool
+	createStats      bool
+
 	noRewriteFlag             bool
 	analyisCasesFlag          map[string]bool
 	ignoreAtomicsFlag         bool
@@ -22,7 +36,8 @@ var (
 )
 
 func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
-	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool) {
+	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool,
+	timeoutRec, timeoutAna, timeoutRepl int) {
 
 	noRewriteFlag = noRewrite
 
@@ -34,4 +49,8 @@ func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	rewriteAllFlag = rewriteAll
 	ignoreRewriteFlag = ignoreRewrite
 	onlyAPanicAndLeakFlag = onlyAPanicAndLeak
+
+	timeoutRecording = timeoutRec
+	timeoutAnalysis = timeoutAna
+	timeoutReplay = timeoutRepl
 }

@@ -12,6 +12,7 @@ package bugs
 
 import (
 	"analyzer/analysis"
+	"analyzer/utils"
 	"errors"
 	"sort"
 	"strconv"
@@ -221,7 +222,8 @@ func (b Bug) ToString() string {
 	// 	arg2Str = "partner: "
 
 	default:
-		panic("Unknown bug type in toString: " + string(b.Type))
+		utils.LogError("Unknown bug type in toString: " + string(b.Type))
+		return ""
 	}
 
 	res := typeStr + "\n\t" + arg1Str

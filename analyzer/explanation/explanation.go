@@ -11,9 +11,9 @@
 package explanation
 
 import (
+	"analyzer/utils"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"slices"
@@ -49,18 +49,18 @@ import (
  */
 func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
-	log.Println("Create bug reports")
+	utils.LogInfo("Create bug reports")
 
 	replayCodes := getOutputCodes(path)
 
 	progInfo, err := readProgInfo(path)
 	if err != nil {
-		log.Println("Error reading prog info: ", err)
+		utils.LogError("Error reading prog info: ", err)
 	}
 
 	hl, err := strconv.Atoi(progInfo["headerLine"])
 	if err != nil {
-		log.Println("Cound not read header line: ", err)
+		utils.LogError("Cound not read header line: ", err)
 	}
 
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
@@ -94,7 +94,7 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 			// get the code of the bug elements
 			code, err := getBugPositions(bugPos, progInfo)
 			if err != nil {
-				log.Println("Error getting bug positions: ", err)
+				utils.LogError("Error getting bug positions: ", err)
 			}
 
 			// get the replay info

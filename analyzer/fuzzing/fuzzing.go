@@ -13,8 +13,8 @@ package fuzzing
 import (
 	"analyzer/stats"
 	"analyzer/toolchain"
+	"analyzer/utils"
 	"fmt"
-	"log"
 	"math"
 	"time"
 )
@@ -51,14 +51,14 @@ var (
 func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
 	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces bool) error {
 
-	log.Println("Start fuzzing")
+	utils.LogInfo("Start fuzzing")
 
 	// run either fuzzing on main or fuzzing on one test
 	if modeMain || name != "" {
 		if modeMain {
-			log.Println("Run fuzzing on main function")
+			utils.LogError("Run fuzzing on main function")
 		} else {
-			log.Println("Run fuzzing on test ", name)
+			utils.LogError("Run fuzzing on test ", name)
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
@@ -67,18 +67,18 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
 			if err != nil {
-				log.Println("Failed to create fuzzing stats: ", err.Error())
+				utils.LogError("Failed to create fuzzing stats: ", err.Error())
 			}
 			err = stats.CreateStatsTotal(getPath(progPath), progName)
 			if err != nil {
-				log.Println("Failed to create total stats: ", err.Error())
+				utils.LogError("Failed to create total stats: ", err.Error())
 			}
 		}
 
 		return err
 	}
 
-	log.Println("Run fuzzing on all tests")
+	utils.LogInfo("Run fuzzing on all tests")
 
 	// run fuzzing on all tests
 	testFiles, err := toolchain.FindTestFiles(progPath)
@@ -88,30 +88,30 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 
 	totalFiles := len(testFiles)
 
-	log.Printf("Found %d test files", totalFiles)
+	utils.LogInfof("Found %d test files", totalFiles)
 
 	// Process each test file
 	for i, testFile := range testFiles {
-		log.Printf("Progress %s: %d/%d\n", progName, i+1, totalFiles)
-		log.Printf("Processing file: %s\n", testFile)
+		utils.LogInfof("Progress %s: %d/%d\n", progName, i+1, totalFiles)
+		utils.LogInfof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
 		if err != nil || len(testFunctions) == 0 {
-			log.Println("Could not find test functions in ", testFile)
+			utils.LogError("Could not find test functions in ", testFile)
 			continue
 		}
 
 		for j, testFunc := range testFunctions {
 			resetFuzzing()
 
-			log.Printf("Run fuzzing for %s->%s", testFile, testFunc)
+			utils.LogInfof("Run fuzzing for %s->%s", testFile, testFunc)
 
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
 				hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun)
 			if err != nil {
-				log.Println("Error in fuzzing: ")
+				utils.LogError("Error in fuzzing: ", err.Error())
 			}
 		}
 	}
@@ -119,11 +119,11 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 	if createStats {
 		err := stats.CreateStatsFuzzing(getPath(progPath), progName)
 		if err != nil {
-			log.Println("Failed to create fuzzing stats: ", err.Error())
+			utils.LogError("Failed to create fuzzing stats: ", err.Error())
 		}
 		err = stats.CreateStatsTotal(getPath(progPath), progName)
 		if err != nil {
-			log.Println("Failed to create total stats: ", err.Error())
+			utils.LogError("Failed to create total stats: ", err.Error())
 		}
 	}
 
@@ -159,14 +159,14 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
-		log.Println("Fuzzing Run: ", numberFuzzingRuns+1)
+		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 
 		order = popMutation()
 
 		if numberFuzzingRuns != 0 {
 			err := writeMutationsToFile(progDir, order)
 			if err != nil {
-				panic(err.Error())
+				return err
 			}
 		}
 
@@ -194,9 +194,9 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			numberMut := numberMutations()
 			flipProb := getFlipProbability()
 			numMutAdd := createMutations(numberMut, flipProb)
-			log.Printf("Add %d mutations to queue\n", numMutAdd)
+			utils.LogInfof("Add %d mutations to queue\n", numMutAdd)
 		} else {
-			log.Println("Add 0 mutations to queue")
+			utils.LogInfo("Add 0 mutations to queue")
 		}
 
 		mergeTraceInfoIntoFileInfo()
@@ -218,7 +218,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		}
 	}
 
-	log.Printf("Finish fuzzing after %d runs\n", numberFuzzingRuns)
+	utils.LogInfof("Finish fuzzing after %d runs\n", numberFuzzingRuns)
 
 	return nil
 }

@@ -11,13 +11,13 @@
 package complete
 
 import (
+	"analyzer/utils"
 	"fmt"
 	"go/ast"
 	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,20 +28,20 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 
 	files, err := collectGoFiles(progPath)
 	if err != nil {
-		log.Println("Error in collecting files")
+		utils.LogError("Error in collecting files")
 		return nil, err
 	}
 
 	pkg, err := analyzeFiles(files)
 	if err != nil {
-		log.Println("Error in analyzing files")
+		utils.LogError("Error in analyzing files")
 		return nil, err
 	}
 
 	// traverse all .go files in the directory recursively
 	err = filepath.Walk(progPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Println("Error in walking")
+			utils.LogError("Error in walking")
 			return err
 		}
 
@@ -52,7 +52,7 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 		if strings.HasSuffix(path, ".go") {
 			content, err := os.ReadFile(path)
 			if err != nil {
-				log.Println("Error in reading file")
+				utils.LogError("Error in reading file")
 				return err
 			}
 
@@ -77,7 +77,7 @@ func collectGoFiles(dir string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Printf("Error when collecting %q: %v\n", path, err)
+			utils.LogErrorf("Error when collecting %q: %v\n", path, err)
 			return err
 		}
 		if info == nil {

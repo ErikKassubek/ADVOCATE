@@ -14,7 +14,7 @@ package analysis
 import (
 	"analyzer/clock"
 	timemeasurement "analyzer/timeMeasurement"
-	"log"
+	"analyzer/utils"
 	"strconv"
 )
 
@@ -137,7 +137,6 @@ func Send(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 	if bufferedVCsSize[ch.id] <= count {
 		holdSend = append(holdSend, holdObj{ch, vc, fifo})
 		return
-		// panic("BufferedVCsCount is bigger than the buffer qSize for chan " + strconv.Itoa(id) + " with count " + strconv.Itoa(count) + " and qSize " + strconv.Itoa(qSize) + "\n\tand tID " + tID)
 	}
 
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
@@ -148,7 +147,7 @@ func Send(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 	}
 
 	if count > ch.qSize || bufferedVCs[ch.id][count].occupied {
-		log.Print("Write to occupied buffer position or to big count")
+		utils.LogError("Write to occupied buffer position or to big count")
 	}
 
 	v := bufferedVCs[ch.id][count].vc
@@ -243,7 +242,7 @@ func Recv(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 		}
 		if !found {
 			err := "Read operation on wrong buffer position - ID: " + strconv.Itoa(ch.id) + ", OID: " + strconv.Itoa(ch.oID) + ", SIZE: " + strconv.Itoa(ch.qSize)
-			log.Print(err)
+			utils.LogError(err)
 		}
 	}
 	v := bufferedVCs[ch.id][0].vc

@@ -14,8 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	timemeasurement "analyzer/timeMeasurement"
-
-	"log"
+	"analyzer/utils"
 )
 
 /*
@@ -47,7 +46,7 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 
 			file1, line1, tPre1, err := infoFromTID(ch.GetTID())
 			if err != nil {
-				log.Print(err.Error())
+				utils.LogError(err.Error())
 				return
 			}
 

@@ -12,9 +12,9 @@ package io
 
 import (
 	"analyzer/bugs"
+	"analyzer/utils"
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 )
 
@@ -34,7 +34,7 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Println("Error opening file: " + filePath)
+		utils.LogError("Error opening file: " + filePath)
 		return false, bugs.Bug{}, err
 	}
 
@@ -60,8 +60,8 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 
 	actual, bug, err := bugs.ProcessBug(bugStr)
 	if err != nil {
-		log.Println("Error processing bug: ", bugStr)
-		log.Println(err.Error())
+		utils.LogError("Error processing bug: ", bugStr)
+		utils.LogError(err.Error())
 		return false, bug, err
 	}
 

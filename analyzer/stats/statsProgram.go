@@ -11,9 +11,9 @@
 package stats
 
 import (
+	"analyzer/utils"
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -24,11 +24,11 @@ func CreateStatsTotal(pathFolder, progName string) error {
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsTotalPath := filepath.Join(resultPath, "statsProgram_"+progName+".csv")
 
-	log.Println("Create program statistics")
+	utils.LogInfo("Create program statistics")
 
 	progData, err := statsProgram(pathFolder)
 	if err != nil {
-		log.Println("Could not collect program info")
+		utils.LogError("Could not collect program info: ", err.Error())
 	}
 
 	// get the number of tests and traces from statsAnalysis

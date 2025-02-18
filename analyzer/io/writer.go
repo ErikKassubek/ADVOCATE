@@ -12,43 +12,12 @@ package io
 
 import (
 	"analyzer/analysis"
-	"io"
-	"log"
+	"analyzer/utils"
 	"os"
 	"sort"
 	"strconv"
 	"sync"
 )
-
-/*
- * Copy a file from source to dest
- * Args:
- *   source (string): The path to the source file
- *   dest (string): The path to the destination file
- */
-func CopyFolder(source string, dest string) {
-	sourceFile, err := os.Open(source)
-	if err != nil {
-		panic(err)
-	}
-	defer sourceFile.Close()
-
-	destFile, err := os.Create(dest)
-	if err != nil {
-		panic(err)
-	}
-	defer destFile.Close()
-
-	_, err = io.Copy(destFile, sourceFile)
-	if err != nil {
-		panic(err)
-	}
-
-	err = destFile.Sync()
-	if err != nil {
-		panic(err)
-	}
-}
 
 /*
  * Write the trace to a file
@@ -60,7 +29,7 @@ func WriteTrace(path string, numberRoutines int) error {
 
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
-		log.Println(path + " already exists. Delete folder " + path)
+		utils.LogInfo(path + " already exists. Delete folder " + path)
 		if err := os.RemoveAll(path); err != nil {
 			return err
 		}
@@ -79,7 +48,7 @@ func WriteTrace(path string, numberRoutines int) error {
 			fileName := path + "trace_" + strconv.Itoa(i) + ".log"
 			file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				panic(err)
+				utils.LogError("Error in writing trace to file. Could not open file: ", err.Error())
 			}
 			defer file.Close()
 
@@ -95,16 +64,16 @@ func WriteTrace(path string, numberRoutines int) error {
 			for index, element := range trace {
 				elementString := element.ToString()
 				if _, err := file.WriteString(elementString); err != nil {
-					panic(err)
+					utils.LogError("Error in writing trace to file. Could not write string: ", err.Error())
 				}
 				if index < len(trace)-1 {
 					if _, err := file.WriteString("\n"); err != nil {
-						panic(err)
+						utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
 					}
 				}
 			}
 			if _, err := file.WriteString("\n"); err != nil {
-				panic(err)
+				utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
 			}
 			wg.Done()
 		}(i)

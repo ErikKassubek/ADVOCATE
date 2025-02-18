@@ -16,7 +16,6 @@ import (
 	"analyzer/utils"
 	"errors"
 	"fmt"
-	"log"
 )
 
 /*
@@ -101,7 +100,7 @@ func checkForDoneBeforeAdd() {
 			for _, dones := range graph["s"] {
 				doneVcTID, err := getDoneElemFromTID(id, dones)
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 				} else {
 					donesNegWg = append(donesNegWg, doneVcTID)
 				}
@@ -134,7 +133,7 @@ func checkForDoneBeforeAdd() {
 				}
 				file, line, tPre, err := infoFromTID(done.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -154,7 +153,7 @@ func checkForDoneBeforeAdd() {
 				}
 				file, line, tPre, err := infoFromTID(add.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					continue
 				}
 

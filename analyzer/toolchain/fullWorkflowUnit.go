@@ -373,8 +373,9 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 		timeStart := time.Now()
 		log.Println("Run T0")
 		var err error
-		if timeout != "-1s" {
-			err = runCommand("go", "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
+		if timeoutRecording != -1 {
+			timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
+			err = runCommand("go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, "./"+pkg)
 		} else {
 			err = runCommand("go", "test", "-v", "-count=1", "-run="+testName, "./"+pkg)
 		}
@@ -404,8 +405,10 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	// Set GOROOT
 	os.Setenv("GOROOT", pathToGoRoot)
 
+	timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
+
 	timeStart := time.Now()
-	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeout, "-count=1", "-run="+testName, "./"+pkg)
+	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, "./"+pkg)
 	if err != nil {
 		log.Println(err)
 		// log.Println("Test failed, removing header and exiting")
@@ -432,14 +435,14 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	if resultID == "-1" {
 		runAnalyzer(filepath.Join(dir, pkg, traceName), noRewriteFlag, analyisCasesFlag, "results_readable.log",
 			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, "rewritten_trace",
-			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+			timeoutAnalysis, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
 		runAnalyzer(filepath.Join(dir, pkg, traceName), noRewriteFlag, analyisCasesFlag, outR,
 			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, outT,
-			timeoutAna, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+			timeoutAnalysis, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
 	if err != nil {
 		log.Println("Analyzer failed", err)
@@ -494,11 +497,12 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
-		timeoutRepl = 10 * resTimes["record"]
-		timeoutRepl = min(timeoutRepl, time.Duration(10)*time.Minute)
+		timeoutRepl = 500 * resTimes["record"]
+		timeoutRepl = min(timeoutRepl, 15*time.Minute)
 	} else {
 		timeoutRepl = time.Duration(timeoutReplay) * time.Second
 	}
+	timeoutReplString := fmt.Sprintf("%ds", int(timeoutRepl.Seconds()))
 
 	rerecordCounter := 0
 	for i, trace := range rewrittenTraces {
@@ -522,7 +526,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 		log.Printf("Run replay %d/%d\n", i+1, len(rewrittenTraces))
 		startTime := time.Now()
-		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", "15m", "-run="+testName, "./"+pkg)
+		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, "./"+pkg)
 		resTimes["replay"] += time.Since(startTime)
 		log.Printf("Finished replay %d/%d\n", i+1, len(rewrittenTraces))
 

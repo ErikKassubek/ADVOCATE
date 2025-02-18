@@ -47,10 +47,10 @@ var (
 	progName string
 	execName string
 
-	timeoutRec      int
-	timeoutAnalysis int
-	timeoutReplay   int
-	recordTime      bool
+	timeoutRecording int
+	timeoutAnalysis  int
+	timeoutReplay    int
+	recordTime       bool
 
 	resultFolder     string
 	resultFolderTool string
@@ -97,9 +97,9 @@ func main() {
 	flag.StringVar(&progName, "prog", "", "Name of the program")
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
-	flag.IntVar(&timeoutRec, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s")
+	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
 	flag.IntVar(&timeoutAnalysis, "timeoutAna", -1, "Set a timeout in seconds for the analysis")
-	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay")
+	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
 	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
@@ -190,7 +190,8 @@ func main() {
 	}
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
-		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak)
+		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak,
+		timeoutRecording, timeoutAnalysis, timeoutReplay)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -243,8 +244,7 @@ func modeFuzzing() {
 
 func modeToolchain(mode string, numRerecorded int) {
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
-		timeoutRec, timeoutAnalysis, timeoutReplay, numRerecorded,
-		-1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
+		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
 	if err != nil {
 		log.Println("Failed to run toolchain")
 		log.Println(err.Error())

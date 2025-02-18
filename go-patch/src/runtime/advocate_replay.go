@@ -316,6 +316,26 @@ func ReleaseWaits() {
 
 			DisableReplay()
 			// foundReplayElement(routine)
+			sleep(0.1)
+
+			// Check if a deadlock has been reached
+			if replayElem.Line == ExitCodeCyclic {
+				stuckRoutines := checkForStuckRoutines(1.0, 1000)
+
+				stuckMutexCounter := 0
+				for id, reason := range stuckRoutines {
+					println("Routine", id, "seems to be stuck. Reason:", waitReasonStrings[reason])
+					if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
+						stuckMutexCounter++
+					}
+				}
+
+				println("Number of routines stuck on mutex:", stuckMutexCounter)
+
+				if stuckMutexCounter > 0 {
+					exit(ExitCodeCyclic)
+				}
+			}
 			return
 		}
 
@@ -454,6 +474,32 @@ func ReleaseWaits() {
 			return
 		}
 	}
+}
+
+/*
+- Returns all routines for which the wait reason has not changed within checkStuckTime seconds.
+*/
+func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
+	stuckRoutines := make(map[uint64]waitReason)
+
+	lock(&AdvocateRoutinesLock)
+	for id, routine := range AdvocateRoutines {
+		stuckRoutines[id] = routine.G.waitreason
+	}
+	unlock(&AdvocateRoutinesLock)
+
+	// Repeatedly check if wait reason has changed
+	for i := 0; i < checkStuckIterations; i++ {
+		sleep(checkStuckTime / float64(checkStuckIterations))
+		lock(&AdvocateRoutinesLock)
+		for id, routine := range AdvocateRoutines {
+			if _, ok := stuckRoutines[id]; ok && routine.G.waitreason != stuckRoutines[id] {
+				delete(stuckRoutines, id)
+			}
+		}
+		unlock(&AdvocateRoutinesLock)
+	}
+	return stuckRoutines
 }
 
 type replayChan struct {

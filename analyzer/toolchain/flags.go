@@ -53,4 +53,5 @@ func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	timeoutRecording = timeoutRec
 	timeoutAnalysis = timeoutAna
 	timeoutReplay = timeoutRepl
+
 }

@@ -15,7 +15,6 @@ import (
 	"analyzer/utils"
 	"errors"
 	"fmt"
-	"log"
 	"sort"
 	"strconv"
 	"strings"
@@ -57,7 +56,7 @@ func AddElementToTrace(element TraceElement) error {
 }
 
 func ClearTrace() {
-	log.Println("Clear Trace")
+	utils.LogInfo("Clear Trace")
 	traces = make(map[int][]TraceElement)
 	currentIndex = make(map[int]int)
 }

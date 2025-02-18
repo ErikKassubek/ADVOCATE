@@ -14,7 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	timemeasurement "analyzer/timeMeasurement"
-	"log"
+	"analyzer/utils"
 )
 
 /*
@@ -36,13 +36,13 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 
 				file1, line1, tPre1, err := infoFromTID(mrs[ch.id].Elem.GetTID()) // send
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
 				file2, line2, tPre2, err := infoFromTID(ch.GetTID()) // close
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -80,13 +80,13 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 
 				file1, line1, tPre1, err := infoFromTID(mrr[ch.id].Elem.GetTID()) // recv
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
 				file2, line2, tPre2, err := infoFromTID(ch.GetTID()) // close
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -140,13 +140,13 @@ func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool
 
 	file1, line1, tPre1, err := infoFromTID(posSend)
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
 	file2, line2, tPre2, err := infoFromTID(posClose)
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
@@ -198,13 +198,13 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 
 	file1, line1, tPre1, err := infoFromTID(ch.GetTID())
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
 	file2, line2, tPre2, err := infoFromTID(posClose)
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
@@ -252,13 +252,13 @@ func checkForClosedOnClosed(ch *TraceElementChannel) {
 
 		file1, line1, tPre1, err := infoFromTID(oldClose.GetTID())
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			return
 		}
 
 		file2, line2, tPre2, err := infoFromTID(oldClose.GetTID())
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			return
 		}
 

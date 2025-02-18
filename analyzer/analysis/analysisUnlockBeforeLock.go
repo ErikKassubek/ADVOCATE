@@ -16,7 +16,6 @@ import (
 	"analyzer/utils"
 	"errors"
 	"fmt"
-	"log"
 )
 
 /*
@@ -80,7 +79,7 @@ func checkForUnlockBeforeLock() {
 			for _, u := range graph["s"] {
 				unlockTId, err := getUnlockElemFromTID(id, u)
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 				} else {
 					unlocks = append(unlocks, unlockTId)
 				}
@@ -111,7 +110,7 @@ func checkForUnlockBeforeLock() {
 				}
 				file, line, tPre, err := infoFromTID(u.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					continue
 				}
 
@@ -131,7 +130,7 @@ func checkForUnlockBeforeLock() {
 				}
 				file, line, tPre, err := infoFromTID(l.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					continue
 				}
 

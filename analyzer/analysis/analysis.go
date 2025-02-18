@@ -14,7 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	timemeasurement "analyzer/timeMeasurement"
-	"log"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
@@ -157,7 +157,7 @@ func checkForLeakSimple() {
 *   fuzzing (bool): true if run with fuzzing
  */
 func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
-	log.Print("Run full analysis on trace")
+	utils.LogInfo("Run full analysis on trace")
 
 	fifo = assumeFifo
 	runFuzzing = fuzzing
@@ -270,7 +270,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		timemeasurement.End("panic")
 	}
 
-	log.Print("Finished analyzing trace")
+	utils.LogInfo("Finished analyzing trace")
 }
 
 func leak(elem TraceElement) {

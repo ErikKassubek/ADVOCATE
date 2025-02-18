@@ -166,7 +166,12 @@ func main() {
 	}
 
 	if resultFolder == "" {
-		resultFolder = getFolderTrace(tracePath)
+		resultFolder, err := getFolderTrace(tracePath)
+		if err != nil {
+			fmt.Errorf("Could not get folder trace: ", err)
+			return
+		}
+
 		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
 			resultFolder += string(os.PathSeparator)
 		}
@@ -186,7 +191,8 @@ func main() {
 
 	analysisCases, err := parseAnalysisCases(scenarios)
 	if err != nil {
-		panic(err)
+		utils.LogError("Could not read analysis cases: ", err)
+		return
 	}
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
@@ -219,15 +225,22 @@ func main() {
 	case "fuzzing":
 		modeFuzzing()
 	default:
-		fmt.Printf("Unknown mode %s\n", os.Args[1])
-		fmt.Println("Select one mode from 'run', 'stats', 'explain' or 'check'")
+		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
+		utils.LogError("Select one mode from 'run', 'stats', 'explain' or 'check'")
 		printHelp()
+	}
+
+	numberErr := utils.GetNumberErr()
+	if numberErr == 0 {
+		utils.LogInfo("Finished with 0 errors")
+	} else {
+		utils.LogErrorf("Finished with %d errors", numberErr)
 	}
 }
 
 func modeFuzzing() {
 	if progName == "" {
-		fmt.Println("Provide a name for the analyzed program. Set with -prog [name]")
+		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
 		return
 	}
 
@@ -238,7 +251,7 @@ func modeFuzzing() {
 		ignoreAtomics, useHBInfoFuzzing, fullAnalysis, recordTime, notExec, statistics,
 		keepTraces)
 	if err != nil {
-		log.Println("Fuzzing Failed: ", err.Error())
+		utils.LogError("Fuzzing Failed: ", err.Error())
 	}
 }
 
@@ -246,14 +259,13 @@ func modeToolchain(mode string, numRerecorded int) {
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
 		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
 	if err != nil {
-		log.Println("Failed to run toolchain")
-		log.Println(err.Error())
+		utils.LogError("Failed to run toolchain: ", err.Error())
 	}
 
 	if statistics {
 		err = stats.CreateStatsTotal(progPath, progName)
 		if err != nil {
-			log.Println("Failed to create stats total: ", err.Error())
+			utils.LogError("Failed to create stats total: ", err.Error())
 		}
 	}
 }
@@ -261,12 +273,12 @@ func modeToolchain(mode string, numRerecorded int) {
 func modeStats() {
 	// instead of the normal program, create statistics for the trace
 	if tracePath == "" {
-		fmt.Println("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
+		utils.LogError("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
 		return
 	}
 
 	if progName == "" {
-		fmt.Println("Provide a name for the analyzed program. Set with -prog [name]")
+		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
 		return
 	}
 
@@ -291,30 +303,30 @@ func modeCheck() {
 	err := complete.Check(resultFolderTool, progPath)
 
 	if err != nil {
-		panic(err.Error())
+		utils.LogError("Error in running modeCheck: ", err)
 	}
 }
 
 func modeExplain() {
 	if tracePath == "" {
-		fmt.Println("Please provide a path to the trace files for the explanation. Set with -trace [file]")
+		utils.LogError("Please provide a path to the trace files for the explanation. Set with -trace [file]")
 		return
 	}
 
 	err := explanation.CreateOverview(tracePath, !rewriteAll, -1)
 	if err != nil {
-		log.Println("Error creating explanation: ", err.Error())
+		utils.LogError("Error creating explanation: ", err.Error())
 	}
 }
 
-func getFolderTrace(pathTrace string) string {
+func getFolderTrace(pathTrace string) (string, error) {
 	folderTrace, err := filepath.Abs(pathTrace)
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 
 	// remove last folder from path
-	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1]
+	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
 }
 
 func modeAnalyzer(pathTrace string, noRewrite bool,
@@ -392,7 +404,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		<-done
 	}
 
-	numberOfResults := results.PrintSummary(true, true)
+	numberOfResults, err := results.PrintSummary(true, true)
+	if err != nil {
+		utils.LogError("Error in printing summary: ", err.Error())
+	}
 
 	// collect the required data to decide whether run is interesting
 	// and to create the mutations
@@ -404,7 +419,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		numberRewrittenTrace := 0
 		failedRewrites := 0
 		notNeededRewrites := 0
-		log.Println("Start rewriting")
+		utils.LogInfo("Start rewriting")
 		originalTrace := analysis.CopyCurrentTrace()
 
 		analysis.ClearData()
@@ -433,7 +448,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 				}
 			} else if err != nil {
-				log.Println("Failed to rewrite trace: ", err.Error())
+				utils.LogError("Failed to rewrite trace: ", err.Error())
 				failedRewrites++
 				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			} else { // needed && err == nil
@@ -443,14 +458,14 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			analysis.SetTrace(originalTrace)
 		}
 
-		log.Println("Finished Rewrite")
-		log.Println("Number Results: ", numberOfResults)
-		log.Println("Successfully rewrites: ", numberRewrittenTrace)
-		log.Println("No need/not possible to rewrite: ", notNeededRewrites)
+		utils.LogInfo("Finished Rewrite")
+		utils.LogInfo("Number Results: ", numberOfResults)
+		utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
+		utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
 		if failedRewrites > 0 {
-			log.Println("Failed rewrites: ", failedRewrites)
+			utils.LogInfo("Failed rewrites: ", failedRewrites)
 		} else {
-			log.Println("Failed rewrites: ", failedRewrites)
+			utils.LogInfo("Failed rewrites: ", failedRewrites)
 		}
 	}
 }

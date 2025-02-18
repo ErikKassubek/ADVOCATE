@@ -131,7 +131,6 @@ func AddTraceElementSelect(routine int, tPre string,
 		if caseList[3] != "*" {
 			cID, err = strconv.Atoi(caseList[3])
 			if err != nil {
-				println("Error: " + caseList[3])
 				return errors.New("c_id is not an integer")
 			}
 		}
@@ -139,7 +138,7 @@ func AddTraceElementSelect(routine int, tPre string,
 		if caseList[4] == "R" {
 			cOpC = RecvOp
 		} else if caseList[4] == "C" {
-			panic("Close in select case list")
+			return errors.New("Close in select case list")
 		}
 
 		cCl, err := strconv.ParseBool(caseList[5])

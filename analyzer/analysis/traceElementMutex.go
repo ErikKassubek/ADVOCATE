@@ -17,8 +17,7 @@ import (
 
 	"analyzer/clock"
 	timemeasurement "analyzer/timeMeasurement"
-
-	"log"
+	"analyzer/utils"
 )
 
 // enum for opM
@@ -426,7 +425,7 @@ func (mu *TraceElementMutex) updateVectorClock() {
 		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()
-		log.Print(err)
+		utils.LogError(err)
 	}
 }
 

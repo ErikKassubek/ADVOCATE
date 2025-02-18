@@ -15,10 +15,10 @@ package io
 
 import (
 	"analyzer/analysis"
+	"analyzer/utils"
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -82,7 +82,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, err
 func getTraceInfoFromFile(filePath string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Print("Error opening file: " + filePath)
+		utils.LogError("Error opening file: " + filePath)
 		return err
 	}
 
@@ -136,7 +136,7 @@ func getTraceInfoFromFile(filePath string) error {
 func CreateTraceFromFile(filePath string, routine int, ignoreAtomics bool) (bool, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
-		log.Print("Error opening file: " + filePath)
+		utils.LogError("Error opening file: " + filePath)
 		return false, err
 	}
 
@@ -145,7 +145,10 @@ func CreateTraceFromFile(filePath string, routine int, ignoreAtomics bool) (bool
 	containsElem := false
 	for scanner.Scan() {
 		line := scanner.Text()
-		processElement(line, routine, ignoreAtomics)
+		err := processElement(line, routine, ignoreAtomics)
+		if err != nil {
+			utils.LogError("Error in processing trace element: ", err)
+		}
 		containsElem = true
 	}
 

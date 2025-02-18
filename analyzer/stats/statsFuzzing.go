@@ -11,9 +11,9 @@
 package stats
 
 import (
+	"analyzer/utils"
 	"bufio"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,7 +26,7 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
 
-	log.Println("Create fuzzing statistics")
+	utils.LogInfo("Create fuzzing statistics")
 
 	headers := "TestName,NoRuns"
 

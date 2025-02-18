@@ -13,7 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	"log"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
@@ -44,7 +44,7 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 		file, line, tPre, err := infoFromTID(ch.GetTID())
 		if err != nil {
-			log.Print("Error in infoFromTID")
+			utils.LogError("Error in infoFromTID: ", err.Error())
 			return
 		}
 
@@ -72,12 +72,12 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 					file1, line1, tPre1, err := infoFromTID(ch.GetTID())
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)\n", ch.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", ch.GetTID())
 						return
 					}
 					file2, line2, tPre2, err := infoFromTID(mrr[ch.id].Elem.GetTID())
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)\n", mrr[ch.id].Elem.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", mrr[ch.id].Elem.GetTID())
 						return
 					}
 
@@ -105,12 +105,12 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 					file1, line1, tPre1, err1 := infoFromTID(ch.GetTID())
 					if err1 != nil {
-						log.Printf("Error in infoFromTID(%s)\n", ch.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", ch.GetTID())
 						return
 					}
 					file2, line2, tPre2, err2 := infoFromTID(mrs[ch.id].Elem.GetTID())
 					if err2 != nil {
-						log.Printf("Error in infoFromTID(%s)\n", mrs[ch.id].Elem.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", mrs[ch.id].Elem.GetTID())
 						return
 					}
 
@@ -163,12 +163,12 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", vcTID2.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
 				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
 				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", vcTID.TID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.TID)
 					return res
 				}
 
@@ -221,12 +221,12 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", vcTID2.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
 				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
 				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", vcTID.TID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.TID)
 					return res
 				}
 
@@ -303,13 +303,13 @@ func checkForLeak() {
 			if found {
 				file1, line1, tPre1, err := infoFromTID(vcTID.tID)
 				if err != nil {
-					log.Printf("Error in infoFromTID(%s)\n", vcTID.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 					continue
 				}
 
 				file2, line2, tPre2, err := infoFromTID(partner.vcTID.TID)
 				if err != nil {
-					log.Printf("Error in infoFromTID(%s)\n", partner.vcTID.TID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", partner.vcTID.TID)
 					continue
 				}
 
@@ -350,7 +350,7 @@ func checkForLeak() {
 				if vcTID.sel {
 					file, line, tPre, err := infoFromTID(vcTID.tID)
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)\n", vcTID.tID)
+						utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 						continue
 					}
 
@@ -370,7 +370,7 @@ func checkForLeak() {
 
 					file, line, tPre, err := infoFromTID(vcTID.tID)
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)\n", vcTID.tID)
+						utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 						continue
 					}
 
@@ -414,7 +414,7 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 	if len(ids) == 0 {
 		file, line, _, err := infoFromTID(se.GetTID())
 		if err != nil {
-			log.Printf("Error in infoFromTID(%s)\n", se.GetTID())
+			utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 			return
 		}
 
@@ -434,12 +434,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 					if clock.GetHappensBefore(vc, mrr[id].Vc) == clock.Concurrent {
 						file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 						if err1 != nil {
-							log.Printf("Error in infoFromTID(%s)\n", se.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 							return
 						}
 						file2, line2, tPre2, err2 := infoFromTID(recv.Elem.GetTID()) // partner
 						if err2 != nil {
-							log.Printf("Error in infoFromTID(%s)\n", recv.Elem.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", recv.Elem.GetTID())
 							return
 						}
 
@@ -460,12 +460,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 					if clock.GetHappensBefore(vc, mrs[id].Vc) == clock.Concurrent {
 						file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 						if err1 != nil {
-							log.Printf("Error in infoFromTID(%s)\n", se.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 							return
 						}
 						file2, line2, tPre2, err2 := infoFromTID(send.Elem.GetTID()) // partner
 						if err2 != nil {
-							log.Printf("Error in infoFromTID(%s)\n", send.Elem.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", send.Elem.GetTID())
 							return
 						}
 
@@ -484,12 +484,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 			if cl, ok := closeData[id]; ok {
 				file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", se.GetTID())
+					utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 					return
 				}
 				file2, line2, tPre2, err2 := infoFromTID(cl.GetTID()) // partner
 				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)\n", cl.GetTID())
+					utils.LogErrorf("Error in infoFromTID(%s)\n", cl.GetTID())
 					return
 				}
 
@@ -523,13 +523,13 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 func CheckForLeakMutex(mu *TraceElementMutex) {
 	file1, line1, tPre1, err := infoFromTID(mu.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)\n", mu.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", mu.GetTID())
 		return
 	}
 
 	file2, line2, tPre2, err := infoFromTID(mostRecentAcquireTotal[mu.id].Elem.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)\n", mostRecentAcquireTotal[mu.id].Elem.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", mostRecentAcquireTotal[mu.id].Elem.GetTID())
 		return
 	}
 
@@ -585,7 +585,7 @@ func addMostRecentAcquireTotal(mu *TraceElementMutex, vc clock.VectorClock, op i
 func CheckForLeakWait(wa *TraceElementWait) {
 	file, line, tPre, err := infoFromTID(wa.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)\n", wa.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", wa.GetTID())
 		return
 	}
 
@@ -605,7 +605,7 @@ func CheckForLeakWait(wa *TraceElementWait) {
 func CheckForLeakCond(co *TraceElementCond) {
 	file, line, tPre, err := infoFromTID(co.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)\n", co.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", co.GetTID())
 		return
 	}
 

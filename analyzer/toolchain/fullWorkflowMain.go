@@ -14,8 +14,8 @@ package toolchain
 import (
 	"analyzer/complete"
 	"analyzer/stats"
+	"analyzer/utils"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -63,7 +63,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 	}
 
-	log.Println("Run program and analysis...")
+	utils.LogInfo("Run program and analysis...")
 
 	output := "output.log"
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -104,7 +104,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if measureTime {
 		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
-			log.Println("Error in building program, removing header and stopping workflow")
+			utils.LogError("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
 			return err
 		}
@@ -126,7 +126,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// build the program
 	fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 	if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
-		log.Println("Error in building program, removing header and stopping workflow")
+		utils.LogError("Error in building program, removing header and stopping workflow")
 		headerRemoverMain(pathToFile)
 		return err
 	}
@@ -188,7 +188,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 		// build the program
 		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
-			log.Println("Error in building program, removing header and stopping workflow")
+			utils.LogError("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
 			continue
 		}

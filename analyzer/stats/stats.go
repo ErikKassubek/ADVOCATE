@@ -11,8 +11,8 @@
 package stats
 
 import (
+	"analyzer/utils"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -52,7 +52,7 @@ func CreateStats(pathFolder, progName string, testName string, fuzzing int) erro
 	// 	return err
 	// }
 
-	log.Println("Create statistics")
+	utils.LogInfo("Create statistics")
 
 	statsTrace, err := statsTraces(pathFolder)
 	if err != nil {

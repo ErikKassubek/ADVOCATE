@@ -13,7 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	"log"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
@@ -165,13 +165,13 @@ func CheckForSelectCaseWithoutPartner() {
 
 		info := casesWithoutPartnerInfo[tID]
 		if len(info) != 2 {
-			log.Print("info should have 2 elements: ", info)
+			utils.LogError("info should have 2 elements: ", info)
 			continue
 		}
 
 		file, line, tPre, err := infoFromTID(tID)
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			continue
 		}
 

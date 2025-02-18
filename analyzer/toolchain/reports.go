@@ -12,8 +12,8 @@ package toolchain
 
 import (
 	"analyzer/explanation"
+	"analyzer/utils"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -28,7 +28,7 @@ import (
 func generateBugReports(folder string, fuzzing int) {
 	err := explanation.CreateOverview(folder, true, fuzzing)
 	if err != nil {
-		log.Println("Error creating explanation: ", err.Error())
+		utils.LogError("Error creating explanation: ", err.Error())
 	}
 }
 
@@ -98,14 +98,14 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 			srcFile, err := os.Open(src)
 			if err != nil {
-				log.Println("Could not open src file ", src, ": ", err.Error())
+				utils.LogError("Could not open src file ", src, ": ", err.Error())
 				continue
 			}
 			defer srcFile.Close()
 
 			destFile, err := os.OpenFile(dest, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				log.Println("Could not open dest file ", dest, ": ", err.Error())
+				utils.LogError("Could not open dest file ", dest, ": ", err.Error())
 				continue
 			}
 			defer destFile.Close()
@@ -116,7 +116,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 			_, err = io.Copy(destFile, srcFile)
 			if err != nil {
-				log.Println("Could not merge ", src, " int ", dest, ": ", err.Error())
+				utils.LogError("Could not merge ", src, " int ", dest, ": ", err.Error())
 			}
 		}
 	}
@@ -129,7 +129,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		dest := filepath.Join(destination, file)
 		err := os.Rename(src, dest)
 		if err != nil {
-			log.Printf("Could not rename file %s to %s: %s\n", src, dest, err.Error())
+			utils.LogErrorf("Could not rename file %s to %s: %s\n", src, dest, err.Error())
 			continue
 		}
 	}

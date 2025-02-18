@@ -12,11 +12,11 @@ package analysis
 
 import (
 	"errors"
-	"log"
 	"math"
 	"strconv"
 
 	"analyzer/clock"
+	"analyzer/utils"
 )
 
 // enum for opC
@@ -467,7 +467,8 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 	case CloseOp:
 		res += "C"
 	default:
-		panic("Unknown channel operation" + strconv.Itoa(int(ch.opC)))
+		utils.LogError("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
+		res = " "
 	}
 
 	res += sep + "f"
@@ -549,7 +550,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 			Close(ch, currentVCHb)
 		default:
 			err := "Unknown operation: " + ch.ToString()
-			log.Print(err)
+			utils.LogError(err)
 		}
 	} else { // buffered channel
 		switch ch.opC {
@@ -565,7 +566,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 			Close(ch, currentVCHb)
 		default:
 			err := "Unknown operation: " + ch.ToString()
-			log.Print(err)
+			utils.LogError(err)
 		}
 	}
 

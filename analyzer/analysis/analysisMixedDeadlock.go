@@ -12,7 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
-	"log"
+	"analyzer/utils"
 	"strconv"
 )
 
@@ -59,7 +59,7 @@ func lockSetRemoveLock(routine int, lock int) {
 	if _, ok := lockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
-		log.Print(errorMsg)
+		utils.LogError(errorMsg)
 		return
 	}
 	delete(lockSet[routine], lock)

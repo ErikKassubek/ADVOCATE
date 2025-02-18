@@ -12,8 +12,8 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/utils"
 	"errors"
-	"log"
 	"strconv"
 )
 
@@ -278,7 +278,7 @@ func (at *TraceElementAtomic) updateVectorClock() {
 		Swap(at, currentVCHb, true)
 	default:
 		err := "Unknown operation: " + at.ToString()
-		log.Print(err)
+		utils.LogError(err)
 	}
 }
 
@@ -297,7 +297,7 @@ func (at *TraceElementAtomic) updateVectorClockAlt() {
 		Swap(at, currentVCHb, false)
 	default:
 		err := "Unknown operation: " + at.ToString()
-		log.Print(err)
+		utils.LogError(err)
 	}
 }
 

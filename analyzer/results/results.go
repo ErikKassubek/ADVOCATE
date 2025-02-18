@@ -268,7 +268,7 @@ func InitResults(outReadable string, outMachine string) {
 * Returns:
 *   int: number of bugs found
  */
-func PrintSummary(noWarning bool, noPrint bool) int {
+func PrintSummary(noWarning bool, noPrint bool) (int, error) {
 	counter := 1
 	resMachine := ""
 	resReadable := "```\n==================== Summary ====================\n\n"
@@ -342,38 +342,38 @@ func PrintSummary(noWarning bool, noPrint bool) int {
 	// write output readable
 	if _, err := os.Stat(outputReadableFile); err == nil {
 		if err := os.Remove(outputReadableFile); err != nil {
-			panic(err)
+			return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 		}
 	}
 
 	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resReadable); err != nil {
-		panic(err)
+		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 	}
 
 	// write output machine
 	if _, err := os.Stat(outputMachineFile); err == nil {
 		if err := os.Remove(outputMachineFile); err != nil {
-			panic(err)
+			return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 		}
 	}
 
 	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resMachine); err != nil {
-		panic(err)
+		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
 	}
 
-	return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine)
+	return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), nil
 }
 
 func stringInSlice(a string, list []string) bool {

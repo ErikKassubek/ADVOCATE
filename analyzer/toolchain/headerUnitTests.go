@@ -143,6 +143,9 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, i
 	scanner := bufio.NewScanner(file)
 	currentLine := 0
 
+	fmt.Println("FileName: ", fileName)
+	fmt.Println("TestName: ", testName)
+
 	for scanner.Scan() {
 		currentLine++
 		line := scanner.Text()

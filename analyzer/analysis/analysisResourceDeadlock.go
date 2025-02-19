@@ -439,6 +439,8 @@ func CheckForResourceDeadlock() {
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
+		var request = cycle[len(cycle)-1].requests[0] // FIXME This can lead to weird behaivor if no concurrent request is found later...
+
 		log.Println("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
 			log.Println("Entry in routine", cycle[i].thread_id, ":")
@@ -448,17 +450,27 @@ func CheckForResourceDeadlock() {
 				log.Println("\t\tLock request", i, ":", r)
 			}
 
-			var r = cycle[i].requests[0]
+			for _, r := range cycle[i].requests {
+				if clock.GetHappensBefore(request.vector_clock, r.vector_clock) == clock.Concurrent {
+					request = r
+					break
+				}
+			}
 
-			file, line, tPre, err := infoFromTID(r.trace_id)
+			if request.thread_id != cycle[i].thread_id {
+				log.Println("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread_id, ". Ignoring circle!")
+				break
+			}
+
+			file, line, tPre, err := infoFromTID(request.trace_id)
 			if err != nil {
 				log.Print(err.Error())
-				continue
+				break
 			}
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: int(r.thread_id),
-				ObjID:     r.obj_id,
+				RoutineID: int(request.thread_id),
+				ObjID:     request.obj_id,
 				TPre:      tPre,
 				ObjType:   "DC",
 				File:      file,

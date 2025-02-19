@@ -335,13 +335,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		}()
 	}
 
-	// clean data in case of fuzzing
-	if analysis.DataUsed {
-		analysis.ClearData()
-		analysis.ClearTrace()
-		analysis.DataUsed = true
-	}
-
 	// run the analysis and, if requested, create a reordered trace file
 	// based on the analysis results
 
@@ -515,7 +508,7 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		case 'u':
 			analysisCases["unlockBeforeLock"] = true
 		case 'c':
-			analysisCases["cyclicDeadlock"] = true
+			analysisCases["resourceDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true
 		default:

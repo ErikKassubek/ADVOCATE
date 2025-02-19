@@ -4,6 +4,29 @@ If the `-stats` flag is set when running the `tool` or `fuzzing` mode, multiple 
 
 If the `-time` flag is set, a file with the runtimes will be created.
 
+## Error Codes
+
+- A01: Send on closed channel
+- A02: Receive on closed channel
+- A03: Close on closed channel
+- A04: Concurrent recv
+- A05: Select case without partner
+- P01: Possible send on closed channel
+- P02: Possible receive on closed channel
+- P03: Possible negative waitgroup counter
+- P04: Possible unlock of not locked mutex
+- L00: Leak on routine without blocking element
+- L01: Leak on unbuffered channel with possible partner
+- L02: Leak on unbuffered channel without possible partner
+- L03: Leak on buffered channel with possible partner
+- L04: Leak on buffered channel without possible partner
+- L05: Leak on nil channel
+- L06: Leak on select with possible partner
+- L07: Leak on select without possible partner
+- L08: Leak on mutex
+- L09: Leak on waitgroup
+- L10: Leak on cond
+
 
 ## Statistics
 To create the statistic files, set the `-stats` flag.\

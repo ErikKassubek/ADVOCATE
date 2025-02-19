@@ -52,7 +52,7 @@ var tracePathRewritten = "rewritten_trace_"
  */
 func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 	// use first as default
-	runtime.SetExitCode(exitCode)
+	runtime.SetForceExit(exitCode)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
 	if index == "0" {

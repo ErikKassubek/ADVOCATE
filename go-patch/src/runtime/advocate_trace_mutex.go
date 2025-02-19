@@ -210,7 +210,7 @@ func AdvocatePostTry(index int, suc bool) {
 	}
 	unlock(&lastRWOpLock)
 
-	split[3] = boolToString(suc)
+	split[5] = boolToString(suc)
 
 	elem = mergeString(split)
 

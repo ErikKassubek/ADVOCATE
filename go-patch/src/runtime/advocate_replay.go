@@ -163,7 +163,7 @@ var numberElementsInTrace int
 var traceElementPositions = make(map[string][]int) // file -> []line
 
 // exit code
-var replayExitCode bool
+var replayForceExit bool
 var expectedExitCode int
 
 // for leak, TimePre of stuck elem
@@ -325,6 +325,7 @@ func ReleaseWaits() {
 				stuckMutexCounter := 0
 				for id, reason := range stuckRoutines {
 					println("Routine", id, "seems to be stuck. Reason:", waitReasonStrings[reason])
+					// TODO invert to everything that could NOT be a deadlock
 					if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
 						stuckMutexCounter++
 					}
@@ -333,7 +334,8 @@ func ReleaseWaits() {
 				println("Number of routines stuck on mutex:", stuckMutexCounter)
 
 				if stuckMutexCounter > 0 {
-					exit(ExitCodeCyclic)
+					SetForceExit(true)
+					ExitReplayWithCode(replayElem.Line)
 				}
 			}
 			return
@@ -648,12 +650,12 @@ func foundReplayElement(routine int) {
 }
 
 /*
- * Set the replay code
+ * Set if to force exit on Replay Finish
  * Args:
- * 	code: the replay code
+ * 	force: force exit
  */
-func SetExitCode(code bool) {
-	replayExitCode = code
+func SetForceExit(force bool) {
+	replayForceExit = force
 }
 
 /*
@@ -679,15 +681,15 @@ func SetLastTPre(tPre int) {
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
-		if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
-			return
-		}
+		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
+		// 	return
+		// }
 		println("Exit Replay with code ", code, ExitCodeNames[code])
 		hasReturnedExitCode = true
 	} else {
 		println("Exit code already returned")
 	}
-	if replayExitCode && ExitCodeNames[code] != "" {
+	if replayForceExit && ExitCodeNames[code] != "" {
 		if !advocateTracingDisabled { // do not exit if recording is enabled
 			return
 		}
@@ -704,11 +706,10 @@ func ExitReplayWithCode(code int) {
  * such a code
  * The codes are
  *    20 - 29: Leak
- *    40 - 49: Deadlocks
  *
  */
 func isExitCodeConfOnEndElem(code int) bool {
-	return (code >= 20 && code < 30) || (code >= 40 && code <= 49)
+	return (code >= 20 && code < 30)
 }
 
 /*

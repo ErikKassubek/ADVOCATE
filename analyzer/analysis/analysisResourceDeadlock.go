@@ -413,9 +413,6 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 	case LockOp:
 		acquire(&currentState, false, event)
 	case TryLockOp:
-		// TODO: Currently suc seems to always be false on trylocks, we do not rly support them rightnow
-		log.Println("ANALYSIS FAILED: TryLocks not supported!")
-		currentState.failed = true
 		if element.suc {
 			acquire(&currentState, false, event)
 		}
@@ -433,6 +430,10 @@ func CheckForResourceDeadlock() {
 		log.Println("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
 	}
+	for i, t := range currentState.threads {
+		log.Println("Found", len(t.lock_dependencies), "dependencies in Thread", i)
+	}
+
 	getCycles(&currentState)
 
 	log.Println("Found", len(currentState.cycles), "cycles")

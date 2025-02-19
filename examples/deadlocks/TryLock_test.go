@@ -16,7 +16,10 @@ func TestTryLock(t *testing.T) {
 	}()
 
 	y.Lock()
-	println("TryLock succeeded:", x.TryLock())
-	x.Unlock()
+	var suc = x.TryLock()
+	println("TryLock succeeded:", suc)
+	if suc {
+		x.Unlock()
+	}
 	y.Unlock()
 }

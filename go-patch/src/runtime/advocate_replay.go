@@ -306,9 +306,6 @@ func ReleaseWaits() {
 		}
 
 		if replayElem.Op == OperationReplayEnd {
-			if isExitCodeConfOnEndElem(replayElem.Line) {
-				ExitReplayWithCode(replayElem.Line)
-			}
 
 			// wait long enough, that all operations that have been released but not
 			// finished executing can execute
@@ -337,6 +334,8 @@ func ReleaseWaits() {
 					SetForceExit(true)
 					ExitReplayWithCode(replayElem.Line)
 				}
+			} else if isExitCodeConfOnEndElem(replayElem.Line) {
+				ExitReplayWithCode(replayElem.Line)
 			}
 			return
 		}
@@ -709,7 +708,7 @@ func ExitReplayWithCode(code int) {
  *
  */
 func isExitCodeConfOnEndElem(code int) bool {
-	return (code >= 20 && code < 30)
+	return (code >= 20 && code < 30) || (code >= 40 && code < 50)
 }
 
 /*

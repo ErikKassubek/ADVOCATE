@@ -684,7 +684,7 @@ func ExitReplayWithCode(code int) {
 		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
 		// 	return
 		// }
-		println("Exit Replay with code ", code, ExitCodeNames[code])
+		println("\nExit Replay with code ", code, ExitCodeNames[code])
 		hasReturnedExitCode = true
 	} else {
 		println("Exit code already returned")

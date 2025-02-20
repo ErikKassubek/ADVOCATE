@@ -63,8 +63,6 @@ or
 ```
 script. This will create a go executable in the `bin` directory.
 
-Additionally the analyzer must be build. It can be found in the [analyzer](analyzer) folder.
-
 > [!IMPORTANT]
 > The program to analyze must use go 1.22(.3)
 > Make sure, that the program does not choose another version/toolchain. The output `/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate` or similar indicates a problem with the used version.
@@ -110,13 +108,13 @@ If the main function is analyzed, the following arg is also required:
 
 - `-exec [path]`: Name of the executable of the program when building with `go build` (For programs that cannot simply be build with `go build` only the tests can be analyzed).
 
-If tests are analyzed this can be used to specify a single test to be analyzed
+If tests are analyzed this can be used to specify a single test to be analyzed:
 
 - `-exec [testName]`
 
 If not set, all tests will be analyzed.
 
-To get additional information, the following tags can also be set
+To get additional information, the following tags can also be set:
 
 - `-recordTime`: measure the runtime for the different phases and create a time file
 - `-stats`: create multiple statistic files as described [here](doc/Statistics.md)\
@@ -124,7 +122,7 @@ To get additional information, the following tags can also be set
 
 If one of these are set, the `-prog [name]` tag must be set to indicate the name of the program.
 
-Additional tags can be set. For this, run `./analyzer tool -h`.
+There are additional tags. To get them, run `./analyzer tool -h`.
 
 While running, the analyzer will create a `advocateResult` folder. In it, it will create on
 folder for each of the analyzed tests. In this folder it will create a file

@@ -44,7 +44,7 @@ A more in detail explanation of how it works can be found [here](./doc/Analysis.
 ### Preparation
 Before Advocate can be used, it must first be build.
 
-First you need to build the [analyzer](analyzer)
+First you need to build the [analyzer](analyzer).
 It can be build using the standard
 ```shell
 go build

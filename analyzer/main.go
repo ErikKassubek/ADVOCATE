@@ -153,6 +153,7 @@ func main() {
 		flag.CommandLine.Parse(os.Args[2:])
 		if help {
 			printHelpMode(mode)
+			return
 		}
 	} else {
 		if help {

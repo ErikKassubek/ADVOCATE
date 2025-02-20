@@ -192,9 +192,9 @@ func writeFile(path string, index string, description map[string]string,
 	// write the bug type description
 	res += "# " + description["crit"] + ": " + description["name"] + "\n\n"
 	res += description["explanation"] + "\n\n"
-	res += "## Minimal Example\n"
-	res += "The following code is a minimal example to visualize the bug type. It is not the code where the bug was found.\n\n```go\n"
-	res += description["example"] + "\n```\n\n"
+	// res += "## Minimal Example\n"
+	// res += "The following code is a minimal example to visualize the bug type. It is not the code where the bug was found.\n\n```go\n"
+	// res += description["example"] + "\n```\n\n"
 
 	// write the positions of the bug
 	res += "## Test/Program\n"

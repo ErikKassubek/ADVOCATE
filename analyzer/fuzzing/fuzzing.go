@@ -19,6 +19,11 @@ import (
 	"time"
 )
 
+type mutation struct {
+	mutSel  map[string][]fuzzingSelect
+	mutFlow map[string]int
+}
+
 const (
 	maxNumberRuns = 20
 	maxTime       = 20 * time.Minute
@@ -27,7 +32,7 @@ const (
 
 var (
 	numberFuzzingRuns = 0
-	mutationQueue     = make([]map[string][]fuzzingSelect, 0)
+	mutationQueue     = make([]mutation, 0)
 	// count how often a specific mutation has been in the queue
 	allMutations = make(map[string]int)
 )
@@ -155,16 +160,14 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 	progDir := getPath(progPath)
 
 	startTime := time.Now()
-	var order map[string][]fuzzingSelect
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
 		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 
-		order = popMutation()
-
 		if numberFuzzingRuns != 0 {
-			err := writeMutationsToFile(progDir, order)
+			order := popMutation()
+			err := writeMutationToFile(progDir, order)
 			if err != nil {
 				return err
 			}
@@ -193,7 +196,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		if isInterestingSelect() {
 			numberMut := numberMutations()
 			flipProb := getFlipProbability()
-			numMutAdd := createMutations(numberMut, flipProb)
+			numMutAdd := createMutationsSelect(numberMut, flipProb)
 			utils.LogInfof("Add %d mutations to queue\n", numMutAdd)
 		} else {
 			utils.LogInfo("Add 0 mutations to queue")
@@ -238,7 +241,7 @@ func getFlipProbability() float64 {
 
 func resetFuzzing() {
 	numberFuzzingRuns = 0
-	mutationQueue = make([]map[string][]fuzzingSelect, 0)
+	mutationQueue = make([]mutation, 0)
 	// count how often a specific mutation has been in the queue
 	allMutations = make(map[string]int)
 }

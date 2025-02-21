@@ -11,14 +11,13 @@
 package toolchain
 
 import (
-	"analyzer/utils"
 	"os"
 	"os/exec"
 )
 
 func runCommand(name string, args ...string) error {
 	cmd := exec.Command(name, args...)
-	utils.LogInfo("Run command: ", cmd.String())
+	// utils.LogInfo("Run command: ", cmd.String())
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()

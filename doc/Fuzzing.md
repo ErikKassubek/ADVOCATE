@@ -1,24 +1,20 @@
-## Fuzzing
-The main fuzzing loop is implemented as follows.
+The main fuzzingloop is implemented as follows.
 
 The fuzzing contains a queue with all the mutations to run.
-When the program or test is run for the first time, it will be run in the normal recording mode of the toolchain. Otherwise it will pop a mutation from the queue and run this mutation. This is done by storing the relevant information in a file called `fuzzingData.log` and adding a different header to the program/test. This will run the mutation (see [Running a mutation](#running-a-mutation)) and record the trace for this mutation.
+When the program or test is run for the first time, it will be run in the normal recording mode of the toolchain. Otherwise it will pop a mutation from the queue and run this mutation. This is done by storing the relevant information in a file called`fuzzingData.log` and adding a specific header to the program/test. This will run the mutation (see [Running a mutation](#running-a-mutation)) and record the trace for this mutation.
 
-Then the analyzer will be applied to the recorded trace to find potential bugs. If replays are possible, they will be performed here as well.\
-Afterwards the fuzzing will parse the internal trace and calculate all values required to determine whether the run was interesting and if so, how many new mutations should be created (see [GFuzz](#gfuzz)).
+Then the analyzer will be applied to the recorded trace to find potential bugs. If replays are possible, they will be performed here as well.
 
-If the run was interesting, the new mutations are created. For this, a [flip probability](#flip-probability), meaning the probability that a select changes its preferred case is calculated.\
-For the selects that are flipped, a case, including the default, is selected randomly as the new preferred case, making sure that the new preferred case is not equal to the last preferred case.\
-Different to the original GFuzz implementation, which needs to run in to a bug to detect it and therefor may need to run the same mutation multiple times, advocate can also detect a bug if it does not occur directly. For this reason, the same mutation may only be run a limited number of times (maybe even just once). We therefore check if the created mutation has been added to the mutation queue before and if it has how often it has been added and only add the new mutation if the number of runs for the mutation does not exceed a set limit.
+Afterwards the fuzzing will parse the internal trace and calculate all values required to determine whether the run was interesting and if so, how many and which new mutations should be created.
+
+There are two ways to create new mutations. One is an improved version of [GFuzz](#GFuzz). The [other one](#Path\ expansion) specifically reorders operations in such a way, that it may result in previously not executed program parts being executed now. It mainly looks at Once, TryLock and Channel order.
+
+Each new mutation is either created by the improved GFuzz or by the path expansion, not by bot. These new mutations are then added to the queue to be executed later
 
 This loop is repeated until the mutation queue is empty. Additionally a maximum number of runs or a maximum time can be set.
 
 
 ## GFuzz
-- It should be possible to determine all  values needed to determine how interesting a run is from the trace
-- Replay should be adaptable, to prefer a specified select case
-- Checking if a select case is possible using the HB relation would only make sense until the program run first executes a select, where a different channel is used than in the last recording. After that, the HB relation is no longer valid and can therefore not be used to determine, if a select case has a possible partner.
-- Maybe the score calculation could include information from the HB relation. E.g., a run where many not executed select cases have a possible partner, could be more interesting.
 
 ### Determine whether the run was interesting
 - A run is interesting, if one of the following conditions is met. The underlying information need to be stored in a file for the following runs.
@@ -76,11 +72,8 @@ likelihood to be chosen (currently factor two, may be changed based on experimen
 results). The chosen case in the last run will never be chosen.
 The newly created mutations are then stored in a queue to be run.
 
-
 ### Flip Probability
 The flip probability is the probability that a single select in the fuzzingData will change its preferred case compared to the previous mutation. If its set to high, the mutation mechanism basically becomes completely random. If its to small, the program will result in the same mutation being created over and over again. For now the probability is calculated as $$P = max(0.1, 1 - (1 - 0.99)^{1/numSel})$$ where $numSel$ is the number of selects in the previous mutation. This is selected in such a way, that the probability of at least one of the selects to flip its preferred case is at least $99\%$, but the probability for each individual select to get flipped is at least $10\%$. This may be changed based on experimental results.
-
-
 
 ### Running a mutation
 The `fuzzingData.log` contains for each select a list the preferred cases.
@@ -136,7 +129,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 ```
 This part method will first start a go routine with a timer. If the timer has run out, it will wake up the routine regardless of whether it has found a partner. Then the normal park function is run. If the routine was woken up because the enqueued channel found a partner, the select continues as in the unmodified version. If it was woken up by the timeout, it will remove the enqueued channel operation, do some clean up and return from the modified select returning $ok = false$. In this case the unmodified select will be run as can be seen in the `selectgo` func above.
 
-## Improvement over original GFuzz
+### Improvement over original GFuzz
 The improvements over GFuzz are mainly in finding interesting runs faster and
 therefore needing to run fewer runs.
 The main improvement is, as always, that
@@ -234,3 +227,103 @@ behavior will be triggered. By choosing cases with possible partners with a high
 probability, they will be chosen more often, resulting in fewer runs being
 effected by timeout. This can reduce the number of runs needed to explore the
 possible paths.
+
+## Path expansion
+
+> [!WARNING]
+> This is not implemented yet
+
+A program is interesting an will result in a new mutation, if it contains one of the following
+
+- two `once.Do` on the same once that are concurrent
+- a not successful `mutex.TryLock` or `mutex.TryRLock` that is concurrent with any other mutex lock on the same mutex
+- two channel operations of the same type (both send or both receive) on the same channel
+
+We can give an example for each of these, showing how they may help in finding potential bugs. Assume that the function `potentialBug()` contains a bug we want to find:
+
+```go
+func TestOnce(t *testing.T) {
+	// If the Do 1 was executed during the first run, the code in the Do 2 function
+	// was never executed. This means, we cannot find the potential bug.
+	// By changing the oder of the two Do, we give the Do 2 the possibility
+	// to execute the program code containing the potential bug
+	var o sync.Once
+
+	go func() {
+		o.Do(func() {})  // Do 1
+	}
+
+	o.Do(potentialBug)   // Do 2
+}
+```
+
+
+```go
+func TestTryLock(t *testing.T) {
+	// If the Lock was executed befoer the TryLock and the TryLock tried to execute
+	// before the Unlock, the TryLock will fail, and we are not able to 
+	// analyze the code in the TryLock Block. By switching the order of the TryLock
+	// and Lock, we make it possible to find the potential bug
+	m := sync.Mutex{}
+
+	go func() {
+		res := m.TryLock()
+		if res {
+			potentialBug()
+			m.Unlock()
+		}
+	}
+
+	m.Lock()
+	// do something
+	m.Unlock
+}
+```
+
+
+```go
+func TestChannel(t *testing.T) {
+	// If the send 1 is executed before the send 2, the receive will get 
+	// a value of a = 1 and will therefore not execute the if block with
+	// the potential bug.
+	// By changing the order of the two send operations, we can get the 
+	// if block to be executed and are able to detect the potential bug.
+	c := make(chan int, 2)
+
+	go func() {
+		c <- 1   // send 1
+	}
+	
+	go func() {
+		c <- 2   // send 2
+	}
+
+	if a := <-c; a == 2 {
+		potentialBug()
+	}
+}
+```
+
+
+For each of the found instances a new mutation is created. 
+To simplify the implementation and prevent the program from getting stuck during the recording of the mutations, the reordering is not done with the implemented replay mechanics, but with timers. 
+
+To make sure, that (mostly) the same program is executed as before, the selects will chose there preferred case as implemented for the GFuzz mutations as the case that was executed in the program run the mutation is based on.
+
+The mutations that are created here always aim at changing the order of two operations. To do this, the first operation of the two is marked in the `fuzzingData.log` file with there code position and a counter, showing which execution of this operation is targeted. Meaning if the send we want to delay at position `file:line` was executed 5 times and we want to delay the 3rd execution of this operation, we add `file:line:3` in the file `fuzzingData.log` file. When running the mutation, the implementation of the corresponding operations will check, if the fuzzingData contains such an operation based on the code position. If so, it will create a counter, starting with 1. If this counter is equal to the counter value in the fuzzingData, it will delay the execution of the operation by 2 seconds. If not, it will just increase the counter value. 
+
+## fuzzingData
+The file `fuzzingData.log` contains the data for a mutation to be executed. It contains of two blocks, separated by a separator
+```log
+[BlockSelect]
+#
+[BlockFlow]
+```
+The `BlockSelect` contains one line for each select in the mutation. Each line has the form 
+```log
+file:line;chosenIndex1,chosenIndex2,...
+```
+The `BlockFlow` contains a line for each operation that is delayed. Each line has the form
+```
+file:line;counterToDelayAt
+```

@@ -13,6 +13,7 @@ package rewriter
 import (
 	"analyzer/analysis"
 	"analyzer/bugs"
+	"analyzer/utils"
 )
 
 /*
@@ -23,9 +24,9 @@ import (
  */
 func rewriteGraph(bug bugs.Bug, expectedErrorCode int) error {
 	if bug.Type == bugs.PNegWG {
-		println("Start rewriting trace for negative waitgroup counter...")
+		utils.LogInfo("Start rewriting trace for negative waitgroup counter...")
 	} else if bug.Type == bugs.PUnlockBeforeLock {
-		println("Start rewriting trace for unlock before lock...")
+		utils.LogInfo("Start rewriting trace for unlock before lock...")
 	}
 
 	minTime := -1

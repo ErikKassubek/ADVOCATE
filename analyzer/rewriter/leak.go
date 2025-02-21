@@ -14,6 +14,7 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/clock"
+	"analyzer/utils"
 	"errors"
 )
 
@@ -435,7 +436,7 @@ func rewriteBufChanLeak(bug bugs.Bug) error {
  *   error: An error if the trace could not be created
  */
 func rewriteMutexLeak(bug bugs.Bug) error {
-	println("Start rewriting trace for mutex leak...")
+	utils.LogInfo("Start rewriting trace for mutex leak...")
 
 	// get l and l'
 	lockOp := bug.TraceElement1[0].(*analysis.TraceElementMutex)
@@ -473,7 +474,7 @@ func rewriteMutexLeak(bug bugs.Bug) error {
  *   error: An error if the trace could not be created
  */
 func rewriteWaitGroupLeak(bug bugs.Bug) error {
-	println("Start rewriting trace for waitgroup leak...")
+	utils.LogInfo("Start rewriting trace for waitgroup leak...")
 
 	wait := bug.TraceElement1[0]
 
@@ -505,7 +506,7 @@ func rewriteWaitGroupLeak(bug bugs.Bug) error {
  *   error: An error if the trace could not be created
  */
 func rewriteCondLeak(bug bugs.Bug) error {
-	println("Start rewriting trace for cond leak...")
+	utils.LogInfo("Start rewriting trace for cond leak...")
 
 	couldRewrite := false
 

@@ -16,12 +16,14 @@ var (
 	advocateFuzzingEnabled = false
 	fuzzingSelectData      = make(map[string][]int)
 	fuzzingSelectDataIndex = make(map[string]int)
+	fuzzingFlowData        = make(map[string]int)
 )
 
-func InitFuzzing(selectData map[string][]int) {
+func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string]int) {
 	fuzzingSelectData = selectData
+	fuzzingFlowData = fuzzingFlow
 
-	for key, _ := range fuzzingSelectData {
+	for key := range fuzzingSelectData {
 		fuzzingSelectDataIndex[key] = 0
 	}
 

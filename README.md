@@ -99,10 +99,9 @@ to run tests, or with
 ```
 to analyze the main function.
 
-The following args are required:
+The following arg is required:
 
-- `-advocate [path]`: The global path to the ADVOCATE folder
-- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file.
+- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder 
 
 If the main function is analyzed, the following arg is also required:
 

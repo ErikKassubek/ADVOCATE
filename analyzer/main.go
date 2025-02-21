@@ -89,8 +89,6 @@ const (
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
-	flag.StringVar(&pathToAdvocate, "advocate", "", "Path to advocate")
-
 	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
 	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
 
@@ -166,10 +164,19 @@ func main() {
 		return
 	}
 
+	execPath, _ := os.Executable()
+	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
+
+	advocatePathSplit := strings.Split(pathToAdvocate, string(os.PathSeparator))
+	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
+		utils.LogError("Could not determine ADVOCATE folder. Keep the analyzer and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
+		return
+	}
+
 	if resultFolder == "" {
 		resultFolder, err := getFolderTrace(tracePath)
 		if err != nil {
-			fmt.Errorf("Could not get folder trace: ", err)
+			utils.LogError("Could not get folder trace: ", err)
 			return
 		}
 
@@ -728,7 +735,6 @@ func printHelp() {
 	println("This runs the toolchain")
 	println("Usage: ./analyzer tool [options]")
 	println("  -main                  Run on the main function instead on tests")
-	println("  -advocate [path]       Path to advocate")
 	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 	println("  -prog [name]           Name of the program (used for statistics)")
@@ -745,7 +751,6 @@ func printHelp() {
 	println("This creates and updates the information required for the fuzzing runs")
 	println("Usage: ./analyzer fuzzing [options]")
 	println("  -main                  Run on the main function instead on tests")
-	println("  -advocate [path]       Path to advocate")
 	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 	println("  -prog [name]           Name of the program")
 	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
@@ -817,7 +822,6 @@ func printHelpMode(mode string) {
 		println("This runs the toolchain on tests or the main function")
 		println("Usage: ./analyzer tool [options]")
 		println("  -main                  Run on the main function instead on tests")
-		println("  -advocate [path]       Path to advocate")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
@@ -835,7 +839,6 @@ func printHelpMode(mode string) {
 		println("This creates and updates the information required for the fuzzing runs")
 		println("Usage: ./analyzer fuzzing [options]")
 		println("  -main                  Run on the main function instead on tests")
-		println("  -advocate [path]       Path to advocate")
 		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")

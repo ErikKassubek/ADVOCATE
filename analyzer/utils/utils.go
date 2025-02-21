@@ -12,6 +12,7 @@ package utils
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -114,4 +115,21 @@ func MergeIntLists(l1, l2 []int) []int {
 	}
 
 	return res
+}
+
+func MakePathLocal(path string) string {
+	pathSep := string(os.PathSeparator)
+
+	// ./path
+	if strings.HasPrefix(path, "."+pathSep) {
+		return path
+	}
+
+	// /path
+	if strings.HasPrefix(path, pathSep) {
+		return "." + path
+	}
+
+	// path
+	return "." + pathSep + path
 }

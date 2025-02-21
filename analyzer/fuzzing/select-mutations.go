@@ -15,7 +15,7 @@ import (
 	"sort"
 )
 
-func createMutations(numberMutations int, flipChance float64) int {
+func createMutationsSelect(numberMutations int, flipChance float64) int {
 	numberMutAdded := 0
 
 	for i := 0; i < numberMutations; i++ {
@@ -23,7 +23,8 @@ func createMutations(numberMutations int, flipChance float64) int {
 
 		id := getIdFromMut(mut)
 		if num, _ := allMutations[id]; num < maxRunPerMut {
-			mutationQueue = append(mutationQueue, mut)
+			muta := mutation{mutSel: mut, mutFlow: make(map[string]int)}
+			mutationQueue = append(mutationQueue, muta)
 			allMutations[id]++
 			numberMutAdded++
 		}
@@ -45,12 +46,8 @@ func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	return res
 }
 
-func popMutation() map[string][]fuzzingSelect {
-	if len(mutationQueue) == 0 {
-		return nil
-	}
-
-	mut := make(map[string][]fuzzingSelect)
+func popMutation() mutation {
+	var mut mutation
 	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
 	return mut
 }

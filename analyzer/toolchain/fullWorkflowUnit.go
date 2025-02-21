@@ -393,6 +393,8 @@ func unitTestRun(pkg, file, testName string, resTimes map[string]time.Duration) 
 }
 
 func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, resTimes map[string]time.Duration) error {
+	isFuzzing := (fuzzing > 0)
+
 	// Remove header just in case
 	if err := headerRemoverUnit(file); err != nil {
 		fmt.Printf("Error in removing header: %v\n", err)
@@ -417,7 +419,11 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	pkgPath := utils.MakePathLocal(pkg)
 	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
-		utils.LogError("Failed to run recording: ", err)
+		if isFuzzing {
+			utils.LogError("Failed to run recording: ", err)
+		} else {
+			utils.LogError("Failed to run fuzzing recording: ", err)
+		}
 	}
 	resTimes["record"] = time.Since(timeStart)
 

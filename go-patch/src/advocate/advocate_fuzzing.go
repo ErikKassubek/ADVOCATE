@@ -27,15 +27,14 @@ import (
  */
 func InitFuzzing() {
 	fuzzingSelectPath := "fuzzingData.log"
-	prefSel, err := readFile(fuzzingSelectPath)
+	prefSel, prefFlow, err := readFile(fuzzingSelectPath)
 
-	// if file was not found ->
 	if err != nil {
-		println("Could not open file: ", fuzzingSelectPath)
-		return
+		println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
+		panic(err)
 	}
 
-	runtime.InitFuzzing(prefSel)
+	runtime.InitFuzzing(prefSel, prefFlow)
 	InitTracing()
 }
 
@@ -45,16 +44,20 @@ func InitFuzzing() {
  * 	pathSelect (string): path to the file containing the select
  * 		preferred cases
  * Returns:
- * 	map[string][]int: key: file:line of select, values: list of preferred cases
+ * 	map[string][]int: key: file:line of select, values: list of preferred cases in select
+* 	map[string]int: key: file:line of select, values: counter of operation to delay
  * 	error
- */
-func readFile(pathSelect string) (map[string][]int, error) {
-	res := make(map[string][]int)
+*/
+func readFile(pathSelect string) (map[string][]int, map[string]int, error) {
+	resSelect := make(map[string][]int)
+	resFlow := make(map[string]int)
 
 	file, err := os.Open(pathSelect)
 	if err != nil {
-		return res, err
+		return resSelect, resFlow, err
 	}
+
+	mode := 1
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
@@ -64,26 +67,39 @@ func readFile(pathSelect string) (map[string][]int, error) {
 			continue
 		}
 
-		elems := strings.Split(line, ";")
-		if len(elems) != 2 {
-			return res, fmt.Errorf("Incorrect line in fuzzing select file: %s", line)
-		}
-
-		ids := strings.Split(elems[1], ",")
-
-		if len(ids) == 0 {
+		if line == "#" {
+			mode = 2
 			continue
 		}
 
-		res[elems[0]] = make([]int, len(ids))
-		for i, id := range ids {
-			idInt, err := strconv.Atoi(id)
-			if err != nil {
-				return res, err
+		elems := strings.Split(line, ";")
+		if len(elems) != 2 {
+			return resSelect, resFlow, fmt.Errorf("Incorrect line in fuzzing select file: %s", line)
+		}
+
+		if mode == 1 {
+			ids := strings.Split(elems[1], ",")
+
+			if len(ids) == 0 {
+				continue
 			}
-			res[elems[0]][i] = idInt
+
+			resSelect[elems[0]] = make([]int, len(ids))
+			for i, id := range ids {
+				idInt, err := strconv.Atoi(id)
+				if err != nil {
+					return resSelect, resFlow, err
+				}
+				resSelect[elems[0]][i] = idInt
+			}
+		} else {
+			count, err := strconv.Atoi(elems[1])
+			if err != nil {
+				return resSelect, resFlow, err
+			}
+			resFlow[elems[0]] = count
 		}
 	}
 
-	return res, nil
+	return resSelect, resFlow, nil
 }

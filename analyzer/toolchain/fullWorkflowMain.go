@@ -110,9 +110,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 
 		// run the program
-		fmt.Printf("./%s\n", executableName)
 		timeStart := time.Now()
-		if err := runCommand("./" + executableName); err != nil {
+		execPath := utils.MakePathLocal(executableName)
+		if err := runCommand(execPath); err != nil {
 			headerRemoverMain(pathToFile)
 		}
 		durationRun = time.Since(timeStart)
@@ -132,9 +132,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	// run the program
-	fmt.Printf("./%s\n", executableName)
 	timeStart := time.Now()
-	if err := runCommand("./" + executableName); err != nil {
+	execPath := utils.MakePathLocal(executableName)
+	if err := runCommand(execPath); err != nil {
 		headerRemoverMain(pathToFile)
 	}
 	durationRecord = time.Since(timeStart)
@@ -194,7 +194,8 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 
 		// run the program
-		runCommand("./" + executableName)
+		execPath := utils.MakePathLocal(executableName)
+		runCommand(execPath)
 
 		fmt.Printf("Remove replay header from %s\n", pathToFile)
 		if err := headerRemoverMain(pathToFile); err != nil {

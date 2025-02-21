@@ -1,12 +1,12 @@
 ## Fuzzing
-The main fuzzing loop is implemented as follows.\
+The main fuzzing loop is implemented as follows.
+
 The fuzzing contains a queue with all the mutations to run.
-When the program or test is run for the first time, it will be run in the normal recording mode of the toolchain. Otherwise it will pop a mutation
-from the queue and run this mutation. This is done by storing the
-relevant information in a file called `fuzzingData.log` and adding a
-different header to the program/test. This will run the mutation (see [Running a mutation](#running-a-mutation)) and record the trace for this mutation.\
+When the program or test is run for the first time, it will be run in the normal recording mode of the toolchain. Otherwise it will pop a mutation from the queue and run this mutation. This is done by storing the relevant information in a file called `fuzzingData.log` and adding a different header to the program/test. This will run the mutation (see [Running a mutation](#running-a-mutation)) and record the trace for this mutation.
+
 Then the analyzer will be applied to the recorded trace to find potential bugs. If replays are possible, they will be performed here as well.\
-Afterwards the fuzzing will parse the internal trace and calculate all values required to determine whether the run was interesting and if so, how many new mutations should be created (see [GFuzz](#gfuzz)).\
+Afterwards the fuzzing will parse the internal trace and calculate all values required to determine whether the run was interesting and if so, how many new mutations should be created (see [GFuzz](#gfuzz)).
+
 If the run was interesting, the new mutations are created. For this, a [flip probability](#flip-probability), meaning the probability that a select changes its preferred case is calculated.\
 For the selects that are flipped, a case, including the default, is selected randomly as the new preferred case, making sure that the new preferred case is not equal to the last preferred case.\
 Different to the original GFuzz implementation, which needs to run in to a bug to detect it and therefor may need to run the same mutation multiple times, advocate can also detect a bug if it does not occur directly. For this reason, the same mutation may only be run a limited number of times (maybe even just once). We therefore check if the created mutation has been added to the mutation queue before and if it has how often it has been added and only add the new mutation if the number of runs for the mutation does not exceed a set limit.

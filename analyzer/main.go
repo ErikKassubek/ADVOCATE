@@ -430,7 +430,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		utils.LogInfo("Start rewriting")
 		originalTrace := analysis.CopyCurrentTrace()
 
-		analysis.ClearData()
+		// analysis.ClearData()
 
 		rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
 

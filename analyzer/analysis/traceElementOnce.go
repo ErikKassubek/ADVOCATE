@@ -172,6 +172,13 @@ func (on *TraceElementOnce) GetObjType() string {
 	return "ON"
 }
 
+/*
+ * Get whether the once do was executed (successful)
+ */
+func (on *TraceElementOnce) GetSuc() bool {
+	return on.suc
+}
+
 // MARK: Setter
 
 /*

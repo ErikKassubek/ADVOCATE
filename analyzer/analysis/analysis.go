@@ -214,6 +214,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			e.updateVectorClock()
 		case *TraceElementCond:
 			e.updateVectorClock()
+		case *TraceElementOnce:
+			e.updateVectorClock()
+			checkForConcurrentOnce(e)
 		case *TraceElementNew:
 			// do noting
 		}

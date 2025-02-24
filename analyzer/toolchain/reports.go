@@ -16,8 +16,11 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
+
+var movedTraces int = 0
 
 /*
  * Generate the bug reports
@@ -127,6 +130,12 @@ func collect(progPath, packagePath, destination string, total bool) {
 			src = filepath.Join(progPath, file)
 		}
 		dest := filepath.Join(destination, file)
+
+		if file == "advocateTrace" {
+			movedTraces += 1
+			dest += "_" + strconv.Itoa(movedTraces)
+		}
+
 		err := os.Rename(src, dest)
 		if err != nil {
 			utils.LogErrorf("Could not rename file %s to %s: %s\n", src, dest, err.Error())
@@ -150,7 +159,7 @@ func collect(progPath, packagePath, destination string, total bool) {
  */
 func removeTraces(path string) {
 	pattersToMove := []string{
-		"advocateTrace",
+		"advocateTrace_*",
 		"rewritten_trace*",
 		"advocateTraceReplay_*",
 		"fuzzingData.log",

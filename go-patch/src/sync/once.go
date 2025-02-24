@@ -90,6 +90,8 @@ func (o *Once) Do(f func()) {
 		// }
 	}
 
+	runtime.FuzzingFlowWait(2)
+
 	if o.id == 0 {
 		o.id = runtime.GetAdvocateObjectID()
 	}

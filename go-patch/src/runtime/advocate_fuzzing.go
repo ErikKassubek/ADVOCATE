@@ -10,13 +10,17 @@
 
 package runtime
 
-const selectPreferredTimeout int64 = 2
+const (
+	selectPreferredTimeoutSec int64   = 2
+	flowSleepTimeSec          float64 = 3
+)
 
 var (
 	advocateFuzzingEnabled = false
 	fuzzingSelectData      = make(map[string][]int)
 	fuzzingSelectDataIndex = make(map[string]int)
 	fuzzingFlowData        = make(map[string]int)
+	fuzzingFLowCounter     = make(map[string]int)
 )
 
 func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string]int) {
@@ -25,6 +29,10 @@ func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string]int) {
 
 	for key := range fuzzingSelectData {
 		fuzzingSelectDataIndex[key] = 0
+	}
+
+	for key := range fuzzingFlowData {
+		fuzzingFLowCounter[key] = 0
 	}
 
 	advocateFuzzingEnabled = true
@@ -45,23 +53,47 @@ func isAdvocateFuzzingEnabled() bool {
  */
 func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 	if !advocateFuzzingEnabled {
-		return false, 0, selectPreferredTimeout
+		return false, 0, selectPreferredTimeoutSec
 	}
 
 	_, file, line, _ := Caller(skip)
 	if AdvocateIgnore(file) {
-		return false, 0, selectPreferredTimeout
+		return false, 0, selectPreferredTimeoutSec
 	}
 	key := file + ":" + intToString(line)
 
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]
 		if index >= len(val) {
-			return false, 0, selectPreferredTimeout
+			return false, 0, selectPreferredTimeoutSec
 		}
 		fuzzingSelectDataIndex[key]++
-		return true, val[index], selectPreferredTimeout
+		return true, val[index], selectPreferredTimeoutSec
 	}
 
-	return false, 0, selectPreferredTimeout
+	return false, 0, selectPreferredTimeoutSec
+}
+
+// currently used in once.Do, chan.send, chan.recv, mutex.(Try)Lock, rwmutex.(Try)(R)Lock
+func FuzzingFlowWait(skip int) {
+	if !advocateFuzzingEnabled {
+		return
+	}
+
+	_, file, line, _ := Caller(skip)
+	if AdvocateIgnore(file) {
+		return
+	}
+
+	pos := file + ":" + intToString(line)
+
+	if count, ok := fuzzingFlowData[pos]; ok {
+		newCount := fuzzingFLowCounter[pos] + 1
+
+		if count == newCount {
+			sleep(flowSleepTimeSec)
+		}
+
+		fuzzingFLowCounter[pos] = newCount
+	}
 }

@@ -223,6 +223,8 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			}
 		}
 	}
+
+	FuzzingFlowWait(3)
 	// ADVOCATE-CHANGE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
@@ -632,6 +634,8 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			}
 		}
 	}
+
+	FuzzingFlowWait(2)
 	// ADVOCATE-CHANGE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.

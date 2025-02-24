@@ -50,6 +50,12 @@ type allSelectCase struct {
 	casi         int                 // internal index for the case in the select
 }
 
+type ConcurrentDoEntry struct {
+	Elem    *TraceElementOnce
+	Counter int
+}
+
+// TODO: clean up
 var (
 	// analysis cases to run
 	analysisCases = make(map[string]bool)
@@ -107,6 +113,14 @@ var (
 	// exit code info
 	exitCode int
 	exitPos  string
+
+	// for fuzzing flow
+	concurrentDo    = make([]ConcurrentDoEntry, 0) // list of not executed once that are concurrent to the executed one
+	concurrentChan  = make([]([]*TraceElementChannel), 0)
+	concurrentMutex = make([]([]*TraceElementMutex), 0)
+
+	executedOnce = make(map[int]*ConcurrentDoEntry) // id -> elem
+	onceCounter  = make(map[int]map[string]int)     // id -> pos -> counter
 )
 
 // InitAnalysis initializes the analysis cases
@@ -136,4 +150,9 @@ func ClearData() {
 	allForks = make(map[int]*TraceElementFork)
 	exitCode = 0
 	exitPos = ""
+	concurrentDo = make([]ConcurrentDoEntry, 0)
+	concurrentChan = make([]([]*TraceElementChannel), 0)
+	concurrentMutex = make([]([]*TraceElementMutex), 0)
+	executedOnce = make(map[int]*ConcurrentDoEntry)
+	onceCounter = make(map[int]map[string]int)
 }

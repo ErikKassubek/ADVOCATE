@@ -100,6 +100,8 @@ func (m *Mutex) Lock() {
 		}
 	}
 
+	runtime.FuzzingFlowWait(2)
+
 	// Mutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a mutex
 	// is directly in the lock function. If the id of the channel is the default
@@ -157,6 +159,9 @@ func (m *Mutex) TryLock() bool {
 		// 	return false
 		// }
 	}
+
+	runtime.FuzzingFlowWait(2)
+
 	// Mutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a mutex
 	// is directly in the lock function. If the id of the channel is the default

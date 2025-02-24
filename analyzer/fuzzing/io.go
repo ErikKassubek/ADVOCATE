@@ -48,7 +48,7 @@ func writeMutationToFile(pathToFolder string, mut mutation) error {
 		}
 	}
 
-	_, err = file.WriteString(sep)
+	_, err = file.WriteString(sep + "\n")
 
 	for pos, count := range mutFlow {
 		content := fmt.Sprintf("%s;%d\n", pos, count)

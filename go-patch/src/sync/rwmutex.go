@@ -82,6 +82,8 @@ func (rw *RWMutex) RLock() {
 		}
 	}
 
+	runtime.FuzzingFlowWait(2)
+
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
 	// is directly in the lock function. If the id of the channel is the default
@@ -142,6 +144,9 @@ func (rw *RWMutex) TryRLock() bool {
 		// 	return false
 		// }
 	}
+
+	runtime.FuzzingFlowWait(2)
+
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
 	// is directly in the lock function. If the id of the channel is the default
@@ -255,6 +260,9 @@ func (rw *RWMutex) Lock() {
 			runtime.BlockForever()
 		}
 	}
+
+	runtime.FuzzingFlowWait(2)
+
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
 	// is directly in the lock function. If the id of the channel is the default
@@ -319,6 +327,9 @@ func (rw *RWMutex) TryLock() bool {
 		// 	return false
 		// }
 	}
+
+	runtime.FuzzingFlowWait(2)
+
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
 	// is directly in the lock function. If the id of the channel is the default

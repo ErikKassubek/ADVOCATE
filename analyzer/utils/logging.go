@@ -31,6 +31,14 @@ func LogInfof(format string, v ...any) {
 	log.Printf(format, v...)
 }
 
+func LogImportant(v ...any) {
+	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
+}
+
+func LogImportantf(format string, v ...any) {
+	log.Printf(Yellow+format+Reset, v...)
+}
+
 func LogError(v ...any) {
 	log.Print(Red, fmt.Sprint(v...), Reset, "\n")
 	numberErr++

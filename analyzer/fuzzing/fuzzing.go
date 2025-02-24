@@ -197,10 +197,16 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			numberMut := numberMutations()
 			flipProb := getFlipProbability()
 			numMutAdd := createMutationsSelect(numberMut, flipProb)
-			utils.LogInfof("Add %d mutations to queue\n", numMutAdd)
+			utils.LogInfof("Add %d select mutations to queue", numMutAdd)
 		} else {
-			utils.LogInfo("Add 0 mutations to queue")
+			utils.LogInfo("Add 0 select mutations to queue")
 		}
+
+		// add new mutations based on flow path expansion
+		numMutAdd := createMutationsFlow()
+		utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+
+		utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
 
 		mergeTraceInfoIntoFileInfo()
 

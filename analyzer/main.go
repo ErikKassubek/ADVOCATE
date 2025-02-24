@@ -349,14 +349,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		return
 	}
 
-	// set timeout
-	if timeout > 0 {
-		go func() {
-			<-time.After(time.Duration(timeout) * time.Second)
-			os.Exit(1)
-		}()
-	}
-
 	// run the analysis and, if requested, create a reordered trace file
 	// based on the analysis results
 
@@ -407,6 +399,8 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			fmt.Print("Analysis finished\n\n")
 		case <-time.After(time.Duration(timeout) * time.Second):
 			fmt.Printf("Analysis ended by timeout after %d seconds\n\n", timeout)
+			utils.LogError("Analysis timed out")
+			os.Exit(1) // This kills the toolchain, however it is not possible to only kill the analyzer go routine
 		}
 	} else {
 		<-done

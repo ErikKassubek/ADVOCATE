@@ -61,6 +61,9 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
 			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
 		}
+
+		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
+		removeTraces(dir)
 	}
 
 	utils.LogInfo("Run program and analysis...")

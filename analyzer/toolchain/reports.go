@@ -149,7 +149,7 @@ func collect(progPath, packagePath, destination string, total bool) {
  * 	path (string): path to the folder containing the traces
  */
 func removeTraces(path string) {
-	pattersToMove := []string{
+	patterns := []string{
 		"advocateTrace",
 		"rewritten_trace*",
 		"advocateTraceReplay_*",
@@ -163,7 +163,7 @@ func removeTraces(path string) {
 		}
 
 		// Use Glob to check if the file/directory matches the pattern
-		for _, pattern := range pattersToMove {
+		for _, pattern := range patterns {
 			match, err := filepath.Match(pattern, filepath.Base(p))
 			if err != nil {
 				return err

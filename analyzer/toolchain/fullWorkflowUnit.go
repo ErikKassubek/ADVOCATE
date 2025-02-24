@@ -63,6 +63,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
 			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
 		}
+
+		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
+		removeTraces(dir)
 	}
 
 	// Find all _test.go files in the directory

@@ -13,7 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	"log"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
@@ -121,7 +121,7 @@ func release(s *State, read_lock bool, event Event) {
 		s.threads[event.thread_id].lockset.remove(lockId)
 	} else {
 		if !s.threads[event.thread_id].lockset.remove(lockId) {
-			log.Println("ANALYSIS FAILED: Lock not found in lockset! Has probably been released in another thread!")
+			utils.LogError("ANALYSIS FAILED: Lock not found in lockset! Has probably been released in another thread!")
 			// TODO Change to no rewrite?
 			s.failed = true
 		}
@@ -203,31 +203,6 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 // A cycle involves n threads and results from some n lock dependencies.
 // For each thread we record the requests that might block.
 
-type Entry struct {
-	thread_id ThreadId
-	requests  []Event
-	lockset   Lockset
-}
-
-type Cycle []Entry
-
-func report(s *State, c Cycle) {
-	s.cycles = append(s.cycles, c)
-
-}
-
-// After phase 1, the following function yields all cyclice lock depndencies.
-// TODO kinda unnecessary?
-func getCycles(s *State) []Cycle {
-	if s.cycles != nil {
-		return s.cycles
-	}
-	s.cycles = []Cycle{}
-	find_cycles(s)
-
-	return s.cycles
-}
-
 type LockDependency struct {
 	thread_id ThreadId
 	lock      LockId
@@ -235,8 +210,22 @@ type LockDependency struct {
 	requests  []Event
 }
 
+type Cycle []LockDependency
+
+func report(s *State, c Cycle) {
+	s.cycles = append(s.cycles, c)
+
+}
+
+// After phase 1, the following function yields all cyclice lock depndencies.
+
 // The implementation below follows the algorithm used in UNDEAD (https://github.com/UTSASRG/UnDead/blob/master/analyzer.hh)
-func find_cycles(s *State) {
+func getCycles(s *State) []Cycle {
+	if s.cycles != nil {
+		return s.cycles
+	}
+	s.cycles = []Cycle{}
+
 	thread_ids := make(map[ThreadId]struct{})
 	is_traversed := make(map[ThreadId]bool)
 	for tid := range s.threads {
@@ -260,6 +249,7 @@ func find_cycles(s *State) {
 		}
 	}
 
+	return s.cycles
 }
 
 // Check if adding dependency to chain will still be a chain.
@@ -353,15 +343,11 @@ func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traverse
 					ld := LockDependency{tid, l, l_ls_d.lockset, l_ls_d.requests}
 					if isChain(chain_stack, &ld) {
 						if isCycleChain(chain_stack, &ld) {
-							var c Cycle = make([]Entry, len(*chain_stack)+1)
+							var c Cycle = make([]LockDependency, len(*chain_stack)+1)
 							for i, d := range *chain_stack {
-								c[i].requests = d.requests
-								c[i].thread_id = d.thread_id
-								c[i].lockset = d.lockset.Clone()
+								c[i] = d.Clone()
 							}
-							c[len(*chain_stack)].requests = ld.requests
-							c[len(*chain_stack)].thread_id = ld.thread_id
-							c[len(*chain_stack)].lockset = ld.lockset.Clone()
+							c[len(*chain_stack)] = ld.Clone()
 
 							// Check for infeasible deadlocks
 							if checkAndfilterConcurrentRequests(&c) {
@@ -427,28 +413,28 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 
 func CheckForResourceDeadlock() {
 	if currentState.failed {
-		log.Println("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
+		utils.LogError("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
 	}
 	for i, t := range currentState.threads {
-		log.Println("Found", len(t.lock_dependencies), "dependencies in Thread", i)
+		debugLog("Found", len(t.lock_dependencies), "dependencies in Thread", i)
 	}
 
 	getCycles(&currentState)
 
-	log.Println("Found", len(currentState.cycles), "cycles")
+	debugLog("Found", len(currentState.cycles), "cycles")
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
 		var request = cycle[len(cycle)-1].requests[0] // FIXME This can lead to weird behaivor if no concurrent request is found later...
 
-		log.Println("Found cycle with the following entries:", cycle)
+		debugLog("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
-			log.Println("Entry in routine", cycle[i].thread_id, ":")
-			log.Println("\tLockset:", cycle[i].lockset)
-			log.Println("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
+			debugLog("Entry in routine", cycle[i].thread_id, ":")
+			debugLog("\tLockset:", cycle[i].lockset)
+			debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
 			for i, r := range cycle[i].requests {
-				log.Println("\t\tLock request", i, ":", r)
+				utils.LogInfo("\t\tLock request", i, ":", r)
 			}
 
 			for _, r := range cycle[i].requests {
@@ -459,13 +445,13 @@ func CheckForResourceDeadlock() {
 			}
 
 			if request.thread_id != cycle[i].thread_id {
-				log.Println("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread_id, ". Ignoring circle!")
+				utils.LogError("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread_id, ". Ignoring circle!")
 				break
 			}
 
 			file, line, tPre, err := infoFromTID(request.trace_id)
 			if err != nil {
-				log.Print(err.Error())
+				utils.LogError(err.Error())
 				break
 			}
 
@@ -489,8 +475,40 @@ func CheckForResourceDeadlock() {
 
 // Debug logging.
 
-func logAbortReason(reason string) {
-	log.Println("No Deadlock: ", reason)
+func debugLog(v ...any) {
+	utils.LogInfo(v...)
+}
+
+func logAbortReason(reason ...any) {
+	r := []any{"No Deadlock:"}
+	r = append(r, reason...)
+	utils.LogInfo(r...)
+}
+
+// Lock Depdendency methods.
+
+func (l LockDependency) Clone() LockDependency {
+	reqs := make([]Event, len(l.requests))
+	for i, r := range l.requests {
+		reqs[i] = r.Clone()
+	}
+	return LockDependency{
+		thread_id: l.thread_id,
+		lock:      l.lock,
+		lockset:   l.lockset.Clone(),
+		requests:  reqs,
+	}
+}
+
+// Event methods.
+
+func (e Event) Clone() Event {
+	return Event{
+		thread_id:    e.thread_id,
+		trace_id:     e.trace_id,
+		obj_id:       e.obj_id,
+		vector_clock: e.vector_clock.Copy(),
+	}
 }
 
 // Lock methods.

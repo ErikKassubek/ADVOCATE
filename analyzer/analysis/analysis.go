@@ -193,6 +193,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			} else {
 				e.updateVectorClock()
 			}
+			getConcurrentMutexForFuzzing(e)
 		case *TraceElementFork:
 			e.updateVectorClock()
 		case *TraceElementSelect:
@@ -216,7 +217,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			e.updateVectorClock()
 		case *TraceElementOnce:
 			e.updateVectorClock()
-			checkForConcurrentOnce(e)
+			getConcurrentOnceForFuzzing(e)
 		case *TraceElementNew:
 			// do noting
 		}

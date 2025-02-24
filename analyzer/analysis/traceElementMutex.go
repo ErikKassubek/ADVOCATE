@@ -251,6 +251,10 @@ func (mu *TraceElementMutex) GetObjType() string {
 	return "M"
 }
 
+func (mu *TraceElementMutex) IsSuc() bool {
+	return mu.suc
+}
+
 // MARK: Setter
 
 /*

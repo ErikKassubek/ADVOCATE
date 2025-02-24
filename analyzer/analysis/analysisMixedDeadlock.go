@@ -32,18 +32,18 @@ func lockSetAddLock(routine int, lock int, tID string, vc clock.VectorClock) {
 		mostRecentAcquire[routine] = make(map[int]VectorClockTID)
 	}
 
-	if _, ok := lockSet[routine][lock]; ok {
-		// TODO: TODO: add a result. Deadlock detection is currently disabled
-		// errorMsg := "Lock " + strconv.Itoa(lock) +
-		// 	" already in lockSet for routine " + strconv.Itoa(routine)
-		// results.Debug(errorMsg, results.ERROR)
+	// if _, ok := lockSet[routine][lock]; ok {
+	// TODO: TODO: add a result. Deadlock detection is currently disabled
+	// errorMsg := "Lock " + strconv.Itoa(lock) +
+	// 	" already in lockSet for routine " + strconv.Itoa(routine)
+	// results.Debug(errorMsg, results.ERROR)
 
-		// // this is a double locking
-		// found := "Double locking:\n"
-		// found += "\tlock1: " + posOld + "\n"
-		// found += "\tlock2: " + tID
-		// results.Result(found, results.CRITICAL)
-	}
+	// // this is a double locking
+	// found := "Double locking:\n"
+	// found += "\tlock1: " + posOld + "\n"
+	// found += "\tlock2: " + tID
+	// results.Result(found, results.CRITICAL)
+	// }
 
 	lockSet[routine][lock] = tID
 	mostRecentAcquire[routine][lock] = VectorClockTID{vc, tID, routine}

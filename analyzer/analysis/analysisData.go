@@ -50,9 +50,18 @@ type allSelectCase struct {
 	casi         int                 // internal index for the case in the select
 }
 
-type ConcurrentDoEntry struct {
-	Elem    *TraceElementOnce
+type ConcurrentEntryType int
+
+const (
+	CEChannel ConcurrentEntryType = iota
+	CEMutex
+	CEOnce
+)
+
+type ConcurrentEntry struct {
+	Elem    TraceElement
 	Counter int
+	Type    ConcurrentEntryType
 }
 
 // TODO: clean up
@@ -93,6 +102,7 @@ var (
 
 	// last acquire on mutex for each routine
 	lockSet                = make(map[int]map[int]string)         // routine -> id -> string
+	currentlyHoldLock      = make(map[int]*TraceElementMutex)     // routine -> lock op
 	mostRecentAcquire      = make(map[int]map[int]VectorClockTID) // routine -> id -> vcTID
 	mostRecentAcquireTotal = make(map[int]VectorClockTID3)        // id -> vcTID
 
@@ -115,12 +125,12 @@ var (
 	exitPos  string
 
 	// for fuzzing flow
-	concurrentDo    = make([]ConcurrentDoEntry, 0) // list of not executed once that are concurrent to the executed one
-	concurrentChan  = make([]([]*TraceElementChannel), 0)
-	concurrentMutex = make([]([]*TraceElementMutex), 0)
+	elemsToDelayFuzzing = make([]ConcurrentEntry, 0) // list of not executed once that are concurrent to the executed one
 
-	executedOnce = make(map[int]*ConcurrentDoEntry) // id -> elem
-	onceCounter  = make(map[int]map[string]int)     // id -> pos -> counter
+	executedOnce = make(map[int]*ConcurrentEntry) // id -> elem
+	onceCounter  = make(map[int]map[string]int)   // id -> pos -> counter
+
+	lockCounter = make(map[int]map[string]int) // id -> pos -> counter
 )
 
 // InitAnalysis initializes the analysis cases
@@ -150,9 +160,8 @@ func ClearData() {
 	allForks = make(map[int]*TraceElementFork)
 	exitCode = 0
 	exitPos = ""
-	concurrentDo = make([]ConcurrentDoEntry, 0)
-	concurrentChan = make([]([]*TraceElementChannel), 0)
-	concurrentMutex = make([]([]*TraceElementMutex), 0)
-	executedOnce = make(map[int]*ConcurrentDoEntry)
+	elemsToDelayFuzzing = make([]ConcurrentEntry, 0)
+	executedOnce = make(map[int]*ConcurrentEntry)
 	onceCounter = make(map[int]map[string]int)
+	lockCounter = make(map[int]map[string]int)
 }

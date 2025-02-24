@@ -87,7 +87,28 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 	}
 }
 
-func checkForConcurrentOnce(on *TraceElementOnce) {
+func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
+	// operation executed normally
+	if mu.IsSuc() {
+		return
+	}
+
+	// not executed try lock
+	// get currently hold lock because of witch the try lock failed
+
+	if val, ok := currentlyHoldLock[mu.id]; !ok || val == nil {
+		utils.LogError("Failed trylock even throw mutex is not locked: ", mu.ToString())
+	}
+
+	elem := currentlyHoldLock[mu.id]
+
+	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == clock.Concurrent {
+		elemsToDelayFuzzing = append(elemsToDelayFuzzing, ConcurrentEntry{Elem: elem, Counter: lockCounter[elem.id][elem.pos], Type: CEMutex})
+	}
+
+}
+
+func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
 	id := on.GetID()
 	vc := on.GetVC()
 	pos := on.GetPos()
@@ -98,18 +119,17 @@ func checkForConcurrentOnce(on *TraceElementOnce) {
 	onceCounter[id][pos] = onceCounter[id][pos] + 1
 
 	if on.GetSuc() {
-		executedOnce[id] = &ConcurrentDoEntry{Elem: on, Counter: onceCounter[id][pos]}
+		executedOnce[id] = &ConcurrentEntry{Elem: on, Counter: onceCounter[id][pos], Type: CEOnce}
 		return
 	}
 
 	if exec, ok := executedOnce[id]; ok {
 		if clock.GetHappensBefore(exec.Elem.GetVC(), vc) == clock.Concurrent {
-			concurrentDo = append(concurrentDo, *exec)
+			elemsToDelayFuzzing = append(elemsToDelayFuzzing, *exec)
 		}
 	}
-
 }
 
-func GetConcurrentInfoForFuzzing() (*[]ConcurrentDoEntry, *[]([]*TraceElementChannel), *[]([]*TraceElementMutex)) {
-	return &concurrentDo, &concurrentChan, &concurrentMutex
+func GetConcurrentInfoForFuzzing() *[]ConcurrentEntry {
+	return &elemsToDelayFuzzing
 }

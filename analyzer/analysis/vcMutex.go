@@ -55,11 +55,11 @@ func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock
 		timemeasurement.End("leak")
 	}
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
-		timemeasurement.End("other")
-	}
+	lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = mu
+	incLockCounter(mu)
 }
 
 /*
@@ -78,11 +78,10 @@ func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
 	relR[mu.id] = vc[mu.routine].Copy()
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetRemoveLock(mu.routine, mu.id)
-		timemeasurement.End("other")
-	}
+	lockSetRemoveLock(mu.routine, mu.id)
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = nil
 }
 
 /*
@@ -110,11 +109,11 @@ func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]cloc
 		timemeasurement.End("leak")
 	}
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
-		timemeasurement.End("other")
-	}
+	lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = mu
+	incLockCounter(mu)
 }
 
 /*
@@ -133,9 +132,18 @@ func RUnlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
 	relR[mu.id] = relR[mu.id].Sync(vc[mu.routine])
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetRemoveLock(mu.routine, mu.id)
-		timemeasurement.End("other")
+	lockSetRemoveLock(mu.routine, mu.id)
+	// for fuzzing
+	currentlyHoldLock[mu.id] = nil
+}
+
+func incLockCounter(mu *TraceElementMutex) {
+	id := mu.GetID()
+	pos := mu.GetPos()
+
+	if _, ok := lockCounter[id]; !ok {
+		lockCounter[id] = make(map[string]int)
 	}
+
+	lockCounter[id][pos] = lockCounter[id][pos] + 1
 }

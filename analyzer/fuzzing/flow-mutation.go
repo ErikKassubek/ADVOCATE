@@ -16,13 +16,14 @@ import (
 
 var alreadyDelayedElems = make(map[string][]int)
 
+// TODO: add channel mutations
 func createMutationsFlow() int {
 	numberMutAdded := 0
 
-	concurrentDo, _, _ := analysis.GetConcurrentInfoForFuzzing()
+	elemsToDelay := analysis.GetConcurrentInfoForFuzzing()
 
-	// add once mutations
-	for _, on := range *concurrentDo {
+	// add mutations
+	for _, on := range *elemsToDelay {
 		pos := on.Elem.GetPos()
 		if counts, ok := alreadyDelayedElems[pos]; ok {
 			found := false
@@ -49,9 +50,5 @@ func createMutationsFlow() int {
 		mutationQueue = append(mutationQueue, mut)
 		numberMutAdded++
 	}
-
-	// TODO: add mutex mutations
-
-	// TODO: add channel mutations
 	return numberMutAdded
 }

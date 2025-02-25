@@ -40,6 +40,8 @@ The typeIDs have the following meaning:
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter
+- P04: Possible unlock deadlock before lock
+- P05: Possible cyclic deadlock
 - L01: Leak on unbuffered channel with possible partner
 - L02: Leak on unbuffered channel without possible partner
 - L03: Leak on buffered channel with possible partner
@@ -51,8 +53,7 @@ The typeIDs have the following meaning:
 - L09: Leak on waitgroup
 - L10: Leak on cond
 
-<!--P04: Possible cyclic deadlock, disabled-->
-<!--P05: Possible mixed deadlock, disabled-->
+<!--P06: Possible mixed deadlock, disabled-->
 `[args]` shows the elements involved in the problem. There are either
 one or two, while the args them self can contain multiple trace elements or select cases.\
 The arg in args are separated by a semicolon (;).\

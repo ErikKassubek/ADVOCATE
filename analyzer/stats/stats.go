@@ -59,12 +59,17 @@ func CreateStats(pathFolder, progName string, testName string, fuzzing int) erro
 		return err
 	}
 
+	statsMisc, err := statsMisc(pathFolder, testName)
+	if err != nil {
+		return err
+	}
+
 	statsAnalyzerTotal, statsAnalyzerUnique, err := statsAnalyzer(pathFolder, fuzzing)
 	if err != nil {
 		return err
 	}
 
-	err = writeStatsToFile(filepath.Dir(pathFolder), progName, testName, statsTrace, statsAnalyzerTotal, statsAnalyzerUnique)
+	err = writeStatsToFile(filepath.Dir(pathFolder), progName, testName, statsTrace, statsMisc, statsAnalyzerTotal, statsAnalyzerUnique)
 	if err != nil {
 		return err
 	}
@@ -81,14 +86,16 @@ func CreateStats(pathFolder, progName string, testName string, fuzzing int) erro
 *     testName (string): name of the test
 *     statsProg (map[string]int): statistics about the program
 *     statsTraces (map[string]int): statistics about the trace
+*     statsMisc (map[string]int): miscellaneous statistics
 *     statsAnalyzerTotal (map[string]map[string]int): statistics about the total analysis and replay
 *     statsAnalyzerUnique (map[string]map[string]int): statistics about the unique analysis and replay
 * Returns:
 *     error
  */
-func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int,
+func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int, statsMisc map[string]int,
 	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
 
+	fileMiscPath := filepath.Join(path, "statsMisc_"+progName+".csv")
 	fileTracingPath := filepath.Join(path, "statsTrace_"+progName+".csv")
 	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+progName+".csv")
 	fileAllPath := filepath.Join(path, "statsAll_"+progName+".csv")
@@ -136,7 +143,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberOfLeaksResolvedViaReplayUnique += statsAnalyzerUnique["replaySuccessful"][code]
 	}
 
-	posPanicCodes := []string{"P01", "P03", "P04"}
+	posPanicCodes := []string{"P01", "P03", "P04", "P05"}
 
 	numberOfPanicsTotal := 0
 	numberOfPanicsUnique := 0
@@ -205,6 +212,21 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	dataDetails += strings.Join(data, ",")
 
 	writeStatsFile(fileAllPath, headerDetails, dataDetails)
+
+	miscData := make([]string, len(MiscStats))
+	for i, header := range MiscStats {
+		if header == TestName {
+			miscData[i] = testName
+			continue
+		}
+		if val, exists := statsMisc[header]; exists {
+			miscData[i] = strconv.Itoa(val)
+		} else {
+			miscData[i] = "0"
+		}
+	}
+
+	writeStatsFile(fileMiscPath, strings.Join(MiscStats, ","), strings.Join(miscData, ","))
 
 	return nil
 }

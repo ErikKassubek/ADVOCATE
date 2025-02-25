@@ -15,6 +15,7 @@ If the `-time` flag is set, a file with the runtimes will be created.
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter
 - P04: Possible unlock of not locked mutex
+- P05: Possible cyclic deadlock
 - L00: Leak on routine without blocking element
 - L01: Leak on unbuffered channel with possible partner
 - L02: Leak on unbuffered channel without possible partner

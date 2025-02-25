@@ -296,7 +296,7 @@ func isCycleChain(chain_stack *[]LockDependency, dependency *LockDependency) boo
 }
 
 // Check if there is one ore more chains of concurrent requests and filter out any requests that are not part of them
-func checkAndfilterConcurrentRequests(cycle *Cycle) bool {
+func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 	for i := range *cycle {
 		// Check if each request has a concurrent request in the element before and after
 		// All requests that have a previous request
@@ -351,7 +351,7 @@ func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traverse
 							c[len(*chain_stack)] = ld.Clone()
 
 							// Check for infeasible deadlocks
-							if checkAndfilterConcurrentRequests(&c) {
+							if checkAndFilterConcurrentRequests(&c) {
 								report(s, c)
 								continue
 							}

@@ -366,7 +366,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered a deadlock earlier in the trace than expected",
 	"11": "The replay got stuck during the execution.\n" +
 		"A waiting trace element was not executed for a long time.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -374,7 +375,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered an unexpected deadlock",
 	"12": "The replay got stuck during the execution.\n" +
 		"No trace element was executed for a long tim.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -382,7 +384,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced" +
+		"	 - The program encountered an unexpected deadlock",
 	"13": "The replay got stuck during the execution.\n" +
 		"The program tried to execute an operation, even though all elements in the trace have already been executed.\n" +
 		"This can be caused by a stuck replay.\n" +

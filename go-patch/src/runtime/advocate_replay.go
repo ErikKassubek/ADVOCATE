@@ -321,14 +321,14 @@ func ReleaseWaits() {
 
 				stuckMutexCounter := 0
 				for id, reason := range stuckRoutines {
-					println("Routine", id, "seems to be stuck. Reason:", waitReasonStrings[reason])
+					println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
 					// TODO invert to everything that could NOT be a deadlock
 					if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
 						stuckMutexCounter++
 					}
 				}
 
-				println("Number of routines stuck on mutex:", stuckMutexCounter)
+				println("Number of routines waiting on mutexes:", stuckMutexCounter)
 
 				if stuckMutexCounter > 0 {
 					SetForceExit(true)

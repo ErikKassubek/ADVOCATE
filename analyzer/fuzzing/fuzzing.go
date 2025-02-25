@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"analyzer/stats"
+	"analyzer/timer"
 	"analyzer/toolchain"
 	"analyzer/utils"
 	"fmt"
@@ -108,6 +109,8 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 
 		for j, testFunc := range testFunctions {
 			resetFuzzing()
+			timer.ResetTest()
+			timer.Start(timer.TotalTest)
 
 			utils.LogInfof("Run fuzzing for %s->%s", testFile, testFunc)
 
@@ -118,7 +121,12 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
+
+			timer.Stop(timer.TotalTest)
+
+			timer.UpdateTimeFileOverview(progName, testFunc)
 		}
+
 	}
 
 	if createStats {
@@ -212,8 +220,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 		// clean up
 		clearData()
-		// analysis.ClearData()
-		// analysis.ClearTrace()
+		timer.ResetFuzzing()
 
 		numberFuzzingRuns++
 

@@ -15,40 +15,21 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"analyzer/utils"
 )
 
-/*
- * Check if there are multiple concurrent receive operations on the same channel.
- * Such concurrent recv can lead to nondeterministic behaviour.
- * If such a situation is detected, it is logged.
- * Call this function on a recv.
- * Args:
- *  ch (*TraceElementChannel): The trace element
- *  routine (int): routine of the recv
- *  tID (int): tID of the recv operation
- *  vc (int): vector clock of the recv operation
- */
-// TODO: make this like the others
-func checkForConcurrentCom(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
-	timemeasurement.Start("other")
+func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
+	timer.Start(timer.FuzzingAna)
+	defer timer.Stop(timer.FuzzingAna)
 
-	checkForConcurrentRevc(ch, vc)
+	id := ch.id
+	routine := ch.routine
 
-	timemeasurement.End("other")
+	incFuzzingCounter(ch)
 
-	getConcurrentSendForFuzzing(ch)
-
-}
-
-func getConcurrentSendForFuzzing(ch *TraceElementChannel) {
-
-}
-
-func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
-	for r, elem := range lastRecvRoutine {
-		if r == ch.routine {
+	for r, elem := range lastSendRoutine {
+		if r == routine {
 			continue
 		}
 
@@ -56,16 +37,55 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 			continue
 		}
 
-		happensBefore := clock.GetHappensBefore(elem[ch.id].vc, vc[ch.routine])
+		happensBefore := clock.GetHappensBefore(elem[id].vc, vc[routine])
+		if happensBefore == clock.Concurrent {
+			elem2 := elem[id].elem
+			fuzzingFlowSend = append(fuzzingFlowSend, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
+		}
+	}
+
+	if ch.tPost != 0 {
+		if _, ok := lastSendRoutine[routine]; !ok {
+			lastSendRoutine[routine] = make(map[int]elemWithVc)
+		}
+
+		lastSendRoutine[routine][id] = elemWithVc{vc[routine].Copy(), ch}
+	}
+}
+
+func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
+	if analysisFuzzing {
+		timer.Start(timer.FuzzingAna)
+		defer timer.Stop(timer.FuzzingAna)
+	}
+	timer.Start(timer.AnaConcurrent)
+	defer timer.Stop(timer.AnaConcurrent)
+
+	id := ch.id
+	routine := ch.routine
+
+	incFuzzingCounter(ch)
+
+	for r, elem := range lastRecvRoutine {
+		if r == routine {
+			continue
+		}
+
+		if elem[id].vc.GetClock() == nil {
+			continue
+		}
+
+		happensBefore := clock.GetHappensBefore(elem[id].vc, vc[routine])
 		if happensBefore == clock.Concurrent {
 
-			file1, line1, tPre1, err := infoFromTID(ch.GetTID())
+			file1, line1, err := posFromPosString(ch.pos)
 			if err != nil {
 				utils.LogError(err.Error())
-				return
+				continue
 			}
+			tPre1 := ch.tPre
 
-			elem2 := lastRecvRoutine[r][ch.id].elem
+			elem2 := elem[id].elem
 			file2, line2, err := posFromPosString(elem2.GetPos())
 
 			if err != nil {
@@ -74,9 +94,11 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 
 			tPre2 := elem2.GetTPre()
 
+			fuzzingFlowRecv = append(fuzzingFlowRecv, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
+
 			arg1 := results.TraceElementResult{
-				RoutineID: ch.routine,
-				ObjID:     ch.id,
+				RoutineID: routine,
+				ObjID:     id,
 				TPre:      tPre1,
 				ObjType:   "CR",
 				File:      file1,
@@ -85,7 +107,7 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 
 			arg2 := results.TraceElementResult{
 				RoutineID: r,
-				ObjID:     ch.id,
+				ObjID:     id,
 				TPre:      tPre2,
 				ObjType:   "CR",
 				File:      file2,
@@ -98,15 +120,18 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 	}
 
 	if ch.tPost != 0 {
-		if _, ok := lastRecvRoutine[ch.routine]; !ok {
-			lastRecvRoutine[ch.routine] = make(map[int]elemWithVc)
+		if _, ok := lastRecvRoutine[routine]; !ok {
+			lastRecvRoutine[routine] = make(map[int]elemWithVc)
 		}
 
-		lastRecvRoutine[ch.routine][ch.id] = elemWithVc{vc[ch.routine].Copy(), ch}
+		lastRecvRoutine[routine][id] = elemWithVc{vc[routine].Copy(), ch}
 	}
 }
 
 func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
+	timer.Start(timer.FuzzingAna)
+	defer timer.Stop(timer.FuzzingAna)
+
 	// operation executed normally
 	if mu.IsSuc() {
 		return
@@ -122,23 +147,22 @@ func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
 	elem := currentlyHoldLock[mu.id]
 
 	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == clock.Concurrent {
-		fuzzingFlowMutex = append(fuzzingFlowMutex, ConcurrentEntry{Elem: elem, Counter: lockCounter[elem.id][elem.pos], Type: CEMutex})
+		fuzzingFlowMutex = append(fuzzingFlowMutex, ConcurrentEntry{Elem: elem, Counter: getFuzzingCounter(elem), Type: CEMutex})
 	}
 
 }
 
 func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
+	timer.Start(timer.FuzzingAna)
+	timer.Stop(timer.FuzzingAna)
+
 	id := on.GetID()
 	vc := on.GetVC()
-	pos := on.GetPos()
 
-	if _, ok := onceCounter[id]; !ok {
-		onceCounter[id] = make(map[string]int)
-	}
-	onceCounter[id][pos] = onceCounter[id][pos] + 1
+	incFuzzingCounter(on)
 
 	if on.GetSuc() {
-		executedOnce[id] = &ConcurrentEntry{Elem: on, Counter: onceCounter[id][pos], Type: CEOnce}
+		executedOnce[id] = &ConcurrentEntry{Elem: on, Counter: getFuzzingCounter(on), Type: CEOnce}
 		return
 	}
 
@@ -151,4 +175,29 @@ func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
 
 func GetConcurrentInfoForFuzzing() (*[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry) {
 	return &fuzzingFlowOnce, &fuzzingFlowMutex, &fuzzingFlowSend, &fuzzingFlowRecv
+}
+
+func getFuzzingCounter(te TraceElement) int {
+	id := te.GetID()
+	pos := te.GetPos()
+
+	if _, ok := fuzzingCounter[id]; !ok {
+		return 0
+	}
+
+	if val, ok := fuzzingCounter[id][pos]; ok {
+		return val
+	}
+	return 0
+}
+
+func incFuzzingCounter(te TraceElement) {
+	id := te.GetID()
+	pos := te.GetPos()
+
+	if _, ok := fuzzingCounter[id]; !ok {
+		fuzzingCounter[id] = make(map[string]int)
+	}
+
+	fuzzingCounter[id][pos] = fuzzingCounter[id][pos] + 1
 }

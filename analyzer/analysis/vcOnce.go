@@ -10,7 +10,10 @@
 
 package analysis
 
-import "analyzer/clock"
+import (
+	"analyzer/clock"
+	"analyzer/timer"
+)
 
 // vector clocks for the successful do
 var oSuc map[int]clock.VectorClock = make(map[int]clock.VectorClock)
@@ -34,6 +37,9 @@ func newOSuc(index int, nRout int) {
  *   vc (map[int]VectorClock): The current vector clocks
  */
 func DoSuc(on *TraceElementOnce, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newOSuc(on.id, vc[on.id].GetSize())
 	oSuc[on.id] = vc[on.routine].Copy()
 	vc[on.routine] = vc[on.routine].Inc(on.routine)
@@ -46,6 +52,9 @@ func DoSuc(on *TraceElementOnce, vc map[int]clock.VectorClock) {
  *   vc (map[int]VectorClock): The current vector clocks
  */
 func DoFail(on *TraceElementOnce, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newOSuc(on.id, vc[on.id].GetSize())
 	vc[on.routine] = vc[on.routine].Sync(oSuc[on.id])
 	vc[on.routine] = vc[on.routine].Inc(on.routine)

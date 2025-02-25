@@ -15,6 +15,7 @@ package io
 
 import (
 	"analyzer/analysis"
+	"analyzer/timer"
 	"analyzer/utils"
 	"bufio"
 	"errors"
@@ -36,6 +37,9 @@ import (
  *   error: An error if the trace could not be created
  */
 func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, error) {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	numberRoutines := 0
 	// traverse all files in the folder
 	files, err := os.ReadDir(folderPath)
@@ -65,7 +69,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, err
 		}
 		numberRoutines = max(numberRoutines, routine)
 
-		containsElem, err := CreateTraceFromFile(filePath, routine, ignoreAtomics)
+		containsElem, err := createTraceFromFile(filePath, routine, ignoreAtomics)
 		if err != nil {
 			return 0, containsElems, err
 		}
@@ -133,7 +137,7 @@ func getTraceInfoFromFile(filePath string) error {
  *   bool: true if the trace contains any values
  *	 error: An error if the trace could not be created
  */
-func CreateTraceFromFile(filePath string, routine int, ignoreAtomics bool) (bool, error) {
+func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (bool, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		utils.LogError("Error opening file: " + filePath)

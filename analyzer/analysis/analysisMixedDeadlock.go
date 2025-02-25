@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/timer"
 	"analyzer/utils"
 	"strconv"
 )
@@ -25,6 +26,11 @@ import (
  *   vc (VectorClock): The current vector clock
  */
 func lockSetAddLock(mu *TraceElementMutex, vc clock.VectorClock) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	routine := mu.GetRoutine()
 	id := mu.GetID()
 
@@ -59,6 +65,11 @@ func lockSetAddLock(mu *TraceElementMutex, vc clock.VectorClock) {
  *   lock (int): The id of the mutex
  */
 func lockSetRemoveLock(routine int, lock int) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	if _, ok := lockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
@@ -77,6 +88,9 @@ func lockSetRemoveLock(routine int, lock int) {
  *   tIDSend (string): The trace id of the channel recv
  */
 func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tIDRecv string) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	for m := range lockSet[routineSend] {
 		_, ok1 := mostRecentAcquire[routineRevc][m]
 		_, ok2 := mostRecentAcquire[routineSend][m]

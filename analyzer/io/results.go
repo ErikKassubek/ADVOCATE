@@ -12,6 +12,7 @@ package io
 
 import (
 	"analyzer/bugs"
+	"analyzer/timer"
 	"analyzer/utils"
 	"bufio"
 	"fmt"
@@ -30,6 +31,9 @@ import (
  *   error: An error if the bug could not be processed
  */
 func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	bugStr := ""
 
 	file, err := os.Open(filePath)

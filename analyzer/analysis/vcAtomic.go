@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/timer"
 )
 
 // vector clocks for last write times
@@ -36,6 +37,9 @@ func newLw(index int, nRout int) {
  *   vc (*map[int]VectorClock): The vector clocks
  */
 func Write(at *TraceElementAtomic, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newLw(at.id, vc[at.id].GetSize())
 	lw[at.id] = vc[at.routine].Copy()
 	vc[at.routine] = vc[at.routine].Inc(at.routine)
@@ -50,6 +54,9 @@ func Write(at *TraceElementAtomic, vc map[int]clock.VectorClock) {
  *   sync bool: sync reader with last writer
  */
 func Read(at *TraceElementAtomic, vc map[int]clock.VectorClock, sync bool) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newLw(at.id, vc[at.id].GetSize())
 	if sync {
 		vc[at.routine] = vc[at.routine].Sync(lw[at.id])
@@ -67,6 +74,9 @@ func Read(at *TraceElementAtomic, vc map[int]clock.VectorClock, sync bool) {
  *   sync bool: sync reader with last writer
  */
 func Swap(at *TraceElementAtomic, cv map[int]clock.VectorClock, sync bool) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	Read(at, cv, sync)
 	Write(at, cv)
 }

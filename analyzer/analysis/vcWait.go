@@ -13,7 +13,7 @@ package analysis
 
 import (
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 )
 
 // vector clock for each wait group
@@ -38,14 +38,17 @@ func newWg(index int, nRout int) {
  *   vc (map[int]VectorClock): The vector clocks
  */
 func Change(wa *TraceElementWait, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newWg(wa.id, vc[wa.id].GetSize())
 	lastChangeWG[wa.id] = lastChangeWG[wa.id].Sync(vc[wa.routine])
 	vc[wa.routine] = vc[wa.routine].Inc(wa.routine)
 
+	timer.Stop(timer.AnaHb)
+
 	if analysisCases["doneBeforeAdd"] {
-		timemeasurement.Start("panic")
 		checkForDoneBeforeAddChange(wa)
-		timemeasurement.End("panic")
 	}
 }
 
@@ -56,6 +59,9 @@ func Change(wa *TraceElementWait, vc map[int]clock.VectorClock) {
  *   vc (*map[int]VectorClock): The vector clocks
  */
 func Wait(wa *TraceElementWait, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	newWg(wa.id, vc[wa.id].GetSize())
 	if wa.tPost != 0 {
 		vc[wa.routine] = vc[wa.routine].Sync(lastChangeWG[wa.id])

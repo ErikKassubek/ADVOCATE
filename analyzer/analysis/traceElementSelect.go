@@ -12,7 +12,6 @@ package analysis
 
 import (
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
 	"errors"
 	"fmt"
 	"math"
@@ -564,10 +563,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 	}
 
 	if analysisCases["selectWithoutPartner"] || runFuzzing {
-		timemeasurement.Start("other")
-
 		CheckForSelectCaseWithoutPartnerSelect(se, currentVCHb[se.routine])
-		timemeasurement.End("other")
 	}
 
 	for _, c := range se.cases {
@@ -596,7 +592,6 @@ func (se *TraceElementSelect) updateVectorClock() {
 	}
 
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
 		for _, c := range se.cases {
 			CheckForLeakChannelRun(se.routine, c.id,
 				elemWithVc{
@@ -604,7 +599,6 @@ func (se *TraceElementSelect) updateVectorClock() {
 					elem: se},
 				int(c.opC), c.IsBuffered())
 		}
-		timemeasurement.End("leak")
 	}
 }
 

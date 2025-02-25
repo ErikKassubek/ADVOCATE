@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"strconv"
 	"strings"
@@ -147,6 +148,9 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
  *   buffered (bool): If the channel is buffered
  */
 func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType int, buffered bool) bool {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	res := false
 	if opType == 0 || opType == 2 { // send or close
 		for i, vcTID2 := range leakingChannels[objID] {
@@ -266,6 +270,9 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
  * operations without a possible partner.
  */
 func checkForLeak() {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	// channel
 	for _, vcTIDs := range leakingChannels {
 		buffered := false
@@ -416,6 +423,9 @@ func checkForLeak() {
  *   objId (int): The id of the select
  */
 func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc clock.VectorClock, opTypes []int) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	foundPartner := false
 
 	if len(ids) == 0 {
@@ -528,6 +538,9 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
  *   mu (*TraceElementMutex): The trace element
  */
 func CheckForLeakMutex(mu *TraceElementMutex) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	file1, line1, tPre1, err := infoFromTID(mu.GetTID())
 	if err != nil {
 		utils.LogErrorf("Error in infoFromTID(%s)\n", mu.GetTID())
@@ -580,7 +593,10 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
  *   op (int): The operation on the mutex
  */
 func addMostRecentAcquireTotal(mu *TraceElementMutex, vc clock.VectorClock, op int) {
-	mostRecentAcquireTotal[mu.id] = VectorClockTID3{Elem: mu, Vc: vc.Copy(), Val: op}
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
+	mostRecentAcquireTotal[mu.id] = ElemWithVcVal{Elem: mu, Vc: vc.Copy(), Val: op}
 }
 
 /*
@@ -590,6 +606,9 @@ func addMostRecentAcquireTotal(mu *TraceElementMutex, vc clock.VectorClock, op i
  *   wa (*TraceElementWait): The trace element
  */
 func CheckForLeakWait(wa *TraceElementWait) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	file, line, tPre, err := infoFromTID(wa.GetTID())
 	if err != nil {
 		utils.LogErrorf("Error in infoFromTID(%s)\n", wa.GetTID())
@@ -610,6 +629,9 @@ func CheckForLeakWait(wa *TraceElementWait) {
  *   co (*TraceElementCond): The trace element
  */
 func CheckForLeakCond(co *TraceElementCond) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	file, line, tPre, err := infoFromTID(co.GetTID())
 	if err != nil {
 		utils.LogErrorf("Error in infoFromTID(%s)\n", co.GetTID())
@@ -624,6 +646,9 @@ func CheckForLeakCond(co *TraceElementCond) {
 }
 
 func checkForStuckRoutine() {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	for routine, trace := range traces {
 		if len(trace) < 1 {
 			continue

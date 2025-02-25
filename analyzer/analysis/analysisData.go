@@ -31,7 +31,7 @@ type VectorClockTID2 struct {
 	selID    int
 }
 
-type VectorClockTID3 struct {
+type ElemWithVcVal struct {
 	Elem TraceElement
 	Vc   clock.VectorClock
 	Val  int
@@ -44,7 +44,7 @@ type allSelectCase struct {
 	send         bool                // true: send, false: receive
 	buffered     bool                // true: buffered, false: unbuffered
 	partnerFound bool                // true: partner found, false: no partner found
-	partner      []VectorClockTID3   // the potential partner
+	partner      []ElemWithVcVal     // the potential partner
 	exec         bool                // true: the case was executed, false: otherwise
 	casi         int                 // internal index for the case in the select
 }
@@ -52,9 +52,10 @@ type allSelectCase struct {
 type ConcurrentEntryType int
 
 const (
-	CEChannel ConcurrentEntryType = iota
+	CEOnce ConcurrentEntryType = iota
 	CEMutex
-	CEOnce
+	CESend
+	CERecv
 )
 
 type ConcurrentEntry struct {
@@ -66,21 +67,23 @@ type ConcurrentEntry struct {
 // TODO: clean up
 var (
 	// analysis cases to run
-	analysisCases = make(map[string]bool)
+	analysisCases   = make(map[string]bool)
+	analysisFuzzing = false
 
 	// vc of close on channel
 	closeData = make(map[int]*TraceElementChannel) // id -> vcTID3 val = ch.id
 
-	// last receive for each routine and each channel
+	// last send/receive for each routine and each channel
+	lastSendRoutine = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
 	lastRecvRoutine = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
 
 	// most recent send, used for detection of send on closed
-	hasSend        = make(map[int]bool)                    // id -> bool
-	mostRecentSend = make(map[int]map[int]VectorClockTID3) // routine -> id -> vcTID
+	hasSend        = make(map[int]bool)                  // id -> bool
+	mostRecentSend = make(map[int]map[int]ElemWithVcVal) // routine -> id -> vcTID
 
 	// most recent send, used for detection of received on closed
-	hasReceived       = make(map[int]bool)                    // id -> bool
-	mostRecentReceive = make(map[int]map[int]VectorClockTID3) // routine -> id -> vcTID3, val = objID
+	hasReceived       = make(map[int]bool)                  // id -> bool
+	mostRecentReceive = make(map[int]map[int]ElemWithVcVal) // routine -> id -> vcTID3, val = objID
 
 	// vector clock for each buffer place in vector clock
 	// the map key is the channel id. The slice is used for the buffer positions
@@ -103,7 +106,7 @@ var (
 	lockSet                = make(map[int]map[int]string)     // routine -> id -> string
 	currentlyHoldLock      = make(map[int]*TraceElementMutex) // routine -> lock op
 	mostRecentAcquire      = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
-	mostRecentAcquireTotal = make(map[int]VectorClockTID3)    // id -> vcTID
+	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)      // id -> vcTID
 
 	// vector clocks for last release times
 	relW = make(map[int]clock.VectorClock) // id -> vc
@@ -130,23 +133,24 @@ var (
 	fuzzingFlowRecv  = make([]ConcurrentEntry, 0)
 
 	executedOnce = make(map[int]*ConcurrentEntry) // id -> elem
-	onceCounter  = make(map[int]map[string]int)   // id -> pos -> counter
 
-	lockCounter = make(map[int]map[string]int) // id -> pos -> counter
+	fuzzingCounter = make(map[int]map[string]int) // id -> pos -> counter
 )
 
 // InitAnalysis initializes the analysis cases
-func InitAnalysis(analysisCasesMap map[string]bool) {
+func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
 	analysisCases = analysisCasesMap
+	analysisFuzzing = anaFuzzing
 }
 
 func ClearData() {
 	closeData = make(map[int]*TraceElementChannel)
+	lastSendRoutine = make(map[int]map[int]elemWithVc)
 	lastRecvRoutine = make(map[int]map[int]elemWithVc)
 	hasSend = make(map[int]bool)
-	mostRecentSend = make(map[int]map[int]VectorClockTID3)
+	mostRecentSend = make(map[int]map[int]ElemWithVcVal)
 	hasReceived = make(map[int]bool)
-	mostRecentReceive = make(map[int]map[int]VectorClockTID3)
+	mostRecentReceive = make(map[int]map[int]ElemWithVcVal)
 	bufferedVCs = make(map[int][]bufferedVC)
 	wgAdd = make(map[int][]TraceElement)
 	wgDone = make(map[int][]TraceElement)
@@ -154,7 +158,7 @@ func ClearData() {
 	allUnlocks = make(map[int][]TraceElement)
 	lockSet = make(map[int]map[int]string)
 	mostRecentAcquire = make(map[int]map[int]elemWithVc)
-	mostRecentAcquireTotal = make(map[int]VectorClockTID3)
+	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)
 	relW = make(map[int]clock.VectorClock)
 	relR = make(map[int]clock.VectorClock)
 	leakingChannels = make(map[int][]VectorClockTID2)
@@ -167,6 +171,5 @@ func ClearData() {
 	fuzzingFlowSend = make([]ConcurrentEntry, 0)
 	fuzzingFlowRecv = make([]ConcurrentEntry, 0)
 	executedOnce = make(map[int]*ConcurrentEntry)
-	onceCounter = make(map[int]map[string]int)
-	lockCounter = make(map[int]map[string]int)
+	fuzzingCounter = make(map[int]map[string]int)
 }

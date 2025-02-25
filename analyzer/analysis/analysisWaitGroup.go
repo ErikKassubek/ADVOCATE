@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -24,6 +25,9 @@ import (
  *    wa *TraceElementWait: the trace wait or done element
  */
 func checkForDoneBeforeAddChange(wa *TraceElementWait) {
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
+
 	if wa.delta > 0 {
 		checkForDoneBeforeAddAdd(wa)
 	} else if wa.delta < 0 {
@@ -73,8 +77,10 @@ func checkForDoneBeforeAddDone(wa *TraceElementWait) {
  * If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
  */
 func checkForDoneBeforeAdd() {
-	for id := range wgAdd { // for all waitgroups
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
 
+	for id := range wgAdd { // for all waitgroups
 		graph := buildResidualGraph(wgAdd[id], wgDone[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)

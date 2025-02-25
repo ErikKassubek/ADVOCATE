@@ -16,6 +16,7 @@ import (
 	"strconv"
 
 	"analyzer/clock"
+	"analyzer/timer"
 	"analyzer/utils"
 )
 
@@ -487,6 +488,9 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
  * MARK: Vector Clock
  */
 func (ch *TraceElementChannel) updateVectorClock() {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	ch.vc = currentVCHb[ch.routine].Copy()
 
 	if ch.partner == nil {

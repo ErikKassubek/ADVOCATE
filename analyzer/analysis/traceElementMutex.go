@@ -16,7 +16,6 @@ import (
 	"strconv"
 
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
 	"analyzer/utils"
 )
 
@@ -354,78 +353,54 @@ func (mu *TraceElementMutex) updateVectorClock() {
 	case LockOp:
 		Lock(mu, currentVCHb, currentVCWmhb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockLock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
-			timemeasurement.End("other")
 		}
 	case RLockOp:
 		RLock(mu, currentVCHb, currentVCWmhb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockLock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
-			timemeasurement.End("other")
 		}
 	case TryLockOp:
 		if mu.suc {
 			if analysisCases["unlockBeforeLock"] {
-				timemeasurement.Start("panic")
 				checkForUnlockBeforeLockLock(mu)
-				timemeasurement.End("panic")
 			}
 			Lock(mu, currentVCHb, currentVCWmhb)
 			if analysisCases["cyclicDeadlock"] {
-				timemeasurement.Start("other")
 				CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
-				timemeasurement.End("other")
 			}
 		}
 	case TryRLockOp:
 		if mu.suc {
 			RLock(mu, currentVCHb, currentVCWmhb)
 			if analysisCases["unlockBeforeLock"] {
-				timemeasurement.Start("panic")
 				checkForUnlockBeforeLockLock(mu)
-				timemeasurement.End("panic")
 			}
 			if analysisCases["cyclicDeadlock"] {
-				timemeasurement.Start("other")
 				CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
-				timemeasurement.End("other")
 			}
 		}
 	case UnlockOp:
 		Unlock(mu, currentVCHb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockUnlock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexUnLock(mu)
-			timemeasurement.End("other")
 		}
 	case RUnlockOp:
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockUnlock(mu)
-			timemeasurement.End("panic")
 		}
 		RUnlock(mu, currentVCHb)
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexUnLock(mu)
-			timemeasurement.End("other")
 		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()

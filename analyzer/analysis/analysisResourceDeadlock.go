@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"log"
 	"strconv"
 	"strings"
@@ -377,6 +378,9 @@ func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traverse
 // ////////////////////////////////
 // High level functions for integration with Advocate
 func ResetState() {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	currentState = State{
 		threads: make(map[ThreadId]Thread),
 		cycles:  nil,
@@ -384,6 +388,9 @@ func ResetState() {
 }
 
 func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMustHappensBeforeVC clock.VectorClock) {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	event := Event{
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
@@ -408,6 +415,9 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 }
 
 func CheckForResourceDeadlock() {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	getCycles(&currentState)
 
 	for _, cycle := range currentState.cycles {

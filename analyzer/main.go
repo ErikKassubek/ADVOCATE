@@ -29,7 +29,7 @@ import (
 	"analyzer/results"
 	"analyzer/rewriter"
 	"analyzer/stats"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"analyzer/toolchain"
 	"analyzer/utils"
 
@@ -164,6 +164,10 @@ func main() {
 		return
 	}
 
+	timer.Init(recordTime, progPath)
+	timer.Start(timer.Total)
+	defer timer.Stop(timer.Total)
+
 	execPath, _ := os.Executable()
 	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
 
@@ -244,6 +248,8 @@ func main() {
 	} else {
 		utils.LogErrorf("Finished with %d errors", numberErr)
 	}
+	timer.UpdateTimeFileOverview(progName, "*Total*")
+	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
 }
 
 func modeFuzzing() {
@@ -394,11 +400,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			}
 		}
 
-		timemeasurement.Start("analysis")
 		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
-		timemeasurement.End("analysis")
-
-		timemeasurement.Print()
 	}()
 
 	if timeout > 0 {
@@ -534,6 +536,7 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 			analysisCases["unlockBeforeLock"] = true
 		case 'c':
 			analysisCases["cyclicDeadlock"] = true
+			analysisCases["resourceDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true
 		default:
@@ -584,6 +587,8 @@ func addAlreadyProcessed(alreadyProcessed map[bugs.ResultType][]string, ignoreRe
  */
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
+	timer.Start(timer.Rewrite)
+	defer timer.Stop(timer.Rewrite)
 
 	actual, bug, err := io.ReadAnalysisResults(outMachine, resultIndex)
 	if err != nil {

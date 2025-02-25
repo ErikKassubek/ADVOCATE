@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -24,6 +25,9 @@ import (
  *    mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	if _, ok := allLocks[mu.id]; !ok {
 		allLocks[mu.id] = make([]TraceElement, 0)
 	}
@@ -37,6 +41,9 @@ func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
  *    mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	if _, ok := allLocks[mu.id]; !ok {
 		allUnlocks[mu.id] = make([]TraceElement, 0)
 	}
@@ -51,6 +58,9 @@ func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
  * If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
  */
 func checkForUnlockBeforeLock() {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	for id := range allUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
 		if sameRoutine(allLocks[id], allUnlocks[id]) {

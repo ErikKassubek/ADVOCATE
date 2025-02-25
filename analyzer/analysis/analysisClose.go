@@ -13,7 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"analyzer/utils"
 )
 
@@ -24,11 +24,11 @@ import (
  *   ch (*TraceElementChannel): The trace element
  */
 func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
+
 	// check if there is an earlier send, that could happen concurrently to close
 	if analysisCases["sendOnClosed"] && hasSend[ch.id] {
-		timemeasurement.Start("panic")
-		defer timemeasurement.End("panic")
-
 		for routine, mrs := range mostRecentSend {
 			happensBefore := clock.GetHappensBefore(mrs[ch.id].Vc, closeData[ch.id].vc)
 
@@ -71,9 +71,6 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 	}
 	// check if there is an earlier receive, that could happen concurrently to close
 	if analysisCases["receiveOnClosed"] && hasReceived[ch.id] {
-		timemeasurement.Start("other")
-		defer timemeasurement.End("other")
-
 		for routine, mrr := range mostRecentReceive {
 			happensBefore := clock.GetHappensBefore(closeData[ch.id].vc, mrr[ch.id].Vc)
 			if mrr[ch.id].Elem != nil && mrr[ch.id].Elem.GetTID() != "" && (happensBefore == clock.Concurrent || happensBefore == clock.Before) {
@@ -126,8 +123,8 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
  *  actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
  */
 func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
 	if _, ok := closeData[id]; !ok {
 		return
@@ -184,8 +181,8 @@ func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool
  *  ch (*TraceElementChannel): The trace element
  */
 func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
 	if _, ok := closeData[ch.id]; !ok {
 		return
@@ -242,8 +239,8 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
  *  ch (*TraceElementChannel): The trace element
  */
 func checkForClosedOnClosed(ch *TraceElementChannel) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
 	if oldClose, ok := closeData[ch.id]; ok {
 		if oldClose.GetTID() == "" || oldClose.GetTID() == "\n" || ch.GetTID() == "" || ch.GetTID() == "\n" {

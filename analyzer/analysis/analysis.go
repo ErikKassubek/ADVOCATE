@@ -13,7 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"analyzer/utils"
 	"strconv"
 	"strings"
@@ -31,6 +31,9 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
+	timer.Start(timer.Analysis)
+	defer timer.Stop(timer.Analysis)
+
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
 		checkForLeakSimple()
@@ -47,6 +50,9 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
  * If all true, check for all, else only check for the once, that are not detected by the full analysis
  */
 func runAnalysisOnExitCodes(all bool) {
+	timer.Start(timer.AnaExitCode)
+	defer timer.Stop(timer.AnaExitCode)
+
 	exit := strings.Split(exitPos, ":")
 	if len(exit) != 2 {
 		return
@@ -138,11 +144,14 @@ func runAnalysisOnExitCodes(all bool) {
  * and if its tPost is 0
  */
 func checkForLeakSimple() {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	elems := getLastElemPerRout()
 
 	for _, elem := range elems {
 		if elem.GetTPost() == 0 {
-			leak(elem)
+			checkLeak(elem)
 		}
 	}
 }
@@ -163,7 +172,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	runFuzzing = fuzzing
 
 	analysisCases = analysisCasesMap
-	InitAnalysis(analysisCases)
+	InitAnalysis(analysisCases, fuzzing)
 
 	if analysisCases["resourceDeadlock"] {
 		ResetState()
@@ -193,7 +202,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			} else {
 				e.updateVectorClock()
 			}
-			getConcurrentMutexForFuzzing(e)
+			if analysisFuzzing {
+				getConcurrentMutexForFuzzing(e)
+			}
 		case *TraceElementFork:
 			e.updateVectorClock()
 		case *TraceElementSelect:
@@ -217,7 +228,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			e.updateVectorClock()
 		case *TraceElementOnce:
 			e.updateVectorClock()
-			getConcurrentOnceForFuzzing(e)
+			if analysisFuzzing {
+				getConcurrentOnceForFuzzing(e)
+			}
 		case *TraceElementNew:
 			// do noting
 		}
@@ -231,54 +244,41 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 
 		// check for leak
 		if analysisCases["leak"] && elem.GetTPost() == 0 {
-			leak(elem)
+			checkLeak(elem)
 		}
 
 	}
 
 	if analysisCases["selectWithoutPartner"] || runFuzzing {
-		timemeasurement.Start("other")
 		rerunCheckForSelectCaseWithoutPartnerChannel()
 		CheckForSelectCaseWithoutPartner()
-		timemeasurement.End("other")
 	}
 
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
 		checkForLeak()
 		checkForStuckRoutine()
-		timemeasurement.End("leak")
 	}
 
 	if analysisCases["doneBeforeAdd"] {
-		timemeasurement.Start("panic")
 		checkForDoneBeforeAdd()
-		timemeasurement.End("panic")
 	}
 
 	if analysisCases["cyclicDeadlock"] {
-		timemeasurement.Start("other")
 		checkForCyclicDeadlock()
-		timemeasurement.End("other")
 	}
 
 	if analysisCases["resourceDeadlock"] {
-		timemeasurement.Start("other")
 		CheckForResourceDeadlock()
-		timemeasurement.End("other")
 	}
 
 	if analysisCases["unlockBeforeLock"] {
-		timemeasurement.Start("panic")
 		checkForUnlockBeforeLock()
-		timemeasurement.End("panic")
 	}
 
 	utils.LogInfo("Finished analyzing trace")
 }
 
-func leak(elem TraceElement) {
-	timemeasurement.Start("leak")
+func checkLeak(elem TraceElement) {
 
 	switch e := elem.(type) {
 	case *TraceElementChannel:
@@ -288,6 +288,7 @@ func leak(elem TraceElement) {
 	case *TraceElementWait:
 		CheckForLeakWait(e)
 	case *TraceElementSelect:
+		timer.Start(timer.AnaLeak)
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
@@ -304,26 +305,9 @@ func leak(elem TraceElement) {
 				buffered = append(buffered, c.IsBuffered())
 			}
 		}
+		timer.Stop(timer.AnaLeak)
 		CheckForLeakSelectStuck(e, ids, buffered, currentVCHb[e.routine], opTypes)
 	case *TraceElementCond:
 		CheckForLeakCond(e)
-	}
-
-	timemeasurement.End("leak")
-}
-
-/*
- * Rerun the CheckForSelectCaseWithoutPartnerChannel for all channel. This
- * is needed to find potential communication partners for not executed
- * select cases, if the select was executed after the channel
- */
-func rerunCheckForSelectCaseWithoutPartnerChannel() {
-	for _, trace := range traces {
-		for _, elem := range trace {
-			if e, ok := elem.(*TraceElementChannel); ok {
-				CheckForSelectCaseWithoutPartnerChannel(e, e.GetVC(),
-					e.Operation() == SendOp, e.IsBuffered())
-			}
-		}
 	}
 }

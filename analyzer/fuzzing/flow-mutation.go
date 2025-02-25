@@ -16,7 +16,7 @@ import (
 
 var alreadyDelayedElems = make(map[string][]int)
 
-// TODO: add channel mutations
+// TODO: maybe make all at the same time?
 func createMutationsFlow() int {
 	numberMutAdded := 0
 
@@ -26,8 +26,14 @@ func createMutationsFlow() int {
 	delay[0], delay[1], delay[2], delay[3] = analysis.GetConcurrentInfoForFuzzing()
 
 	// add mutations
+	mutFlow := make(map[string]int)
 	for i := 0; i < 4; i++ {
 		for _, on := range *delay[i] {
+			// limit number of mutations created by this
+			if numberMutAdded > maxFlowMut {
+				return numberMutAdded
+			}
+
 			pos := on.Elem.GetPos()
 			if counts, ok := alreadyDelayedElems[pos]; ok {
 				found := false
@@ -42,7 +48,8 @@ func createMutationsFlow() int {
 				}
 			}
 
-			mutFlow := make(map[string]int)
+			// if one mut per change, comment this in
+			// mutFlow = make(map[string]int)
 			mutFlow[pos] = on.Counter
 
 			if _, ok := alreadyDelayedElems[pos]; !ok {
@@ -50,10 +57,18 @@ func createMutationsFlow() int {
 			}
 			alreadyDelayedElems[pos] = append(alreadyDelayedElems[pos], on.Counter)
 
-			mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
-			mutationQueue = append(mutationQueue, mut)
-			numberMutAdded++
+			// if one mut per change, comment this in
+			// mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+			// mutationQueue = append(mutationQueue, mut)
+			// numberMutAdded++
 		}
+	}
+
+	// if one mut per change, comment this out
+	if len(mutFlow) != 0 {
+		mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+		mutationQueue = append(mutationQueue, mut)
+		numberMutAdded++
 	}
 
 	return numberMutAdded

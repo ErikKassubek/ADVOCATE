@@ -21,8 +21,6 @@ const (
 	always    closeInfo = "a"
 	never     closeInfo = "n"
 	sometimes closeInfo = "s"
-
-	factorCaseWithPartner = 2
 )
 
 var (

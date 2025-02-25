@@ -163,7 +163,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 			if !keepTraces {
 				removeTraces(dir)
-				removeTraces(packagePath)
 			}
 
 			if total {

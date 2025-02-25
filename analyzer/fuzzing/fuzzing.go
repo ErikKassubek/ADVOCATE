@@ -29,6 +29,9 @@ const (
 	maxNumberRuns = 20
 	maxTime       = 20 * time.Minute
 	maxRunPerMut  = 2
+
+	factorCaseWithPartner = 2
+	maxFlowMut            = 10
 )
 
 var (

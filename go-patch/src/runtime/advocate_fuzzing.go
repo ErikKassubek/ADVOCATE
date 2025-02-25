@@ -19,11 +19,12 @@ var (
 	advocateFuzzingEnabled = false
 	fuzzingSelectData      = make(map[string][]int)
 	fuzzingSelectDataIndex = make(map[string]int)
-	fuzzingFlowData        = make(map[string]int)
-	fuzzingFLowCounter     = make(map[string]int)
+	fuzzingFlowData        = make(map[string][]int)
+	fuzzingFlowCounter     = make(map[string]int)
+	fuzzingFlowDataCounter = make(map[string]int)
 )
 
-func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string]int) {
+func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string][]int) {
 	fuzzingSelectData = selectData
 	fuzzingFlowData = fuzzingFlow
 
@@ -32,7 +33,8 @@ func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string]int) {
 	}
 
 	for key := range fuzzingFlowData {
-		fuzzingFLowCounter[key] = 0
+		fuzzingFlowCounter[key] = 0
+		fuzzingFlowDataCounter[key] = 0
 	}
 
 	advocateFuzzingEnabled = true
@@ -87,13 +89,21 @@ func FuzzingFlowWait(skip int) {
 
 	pos := file + ":" + intToString(line)
 
-	if count, ok := fuzzingFlowData[pos]; ok {
-		newCount := fuzzingFLowCounter[pos] + 1
+	if countList, ok := fuzzingFlowData[pos]; ok {
+		dataCounter := fuzzingFlowDataCounter[pos]
+		if dataCounter >= len(countList) {
+			return
+		}
+
+		count := countList[dataCounter]
+
+		newCount := fuzzingFlowCounter[pos] + 1
 
 		if count == newCount {
+			fuzzingFlowDataCounter[pos] = fuzzingFlowDataCounter[pos] + 1
 			sleep(flowSleepTimeSec)
 		}
 
-		fuzzingFLowCounter[pos] = newCount
+		fuzzingFlowCounter[pos] = newCount
 	}
 }

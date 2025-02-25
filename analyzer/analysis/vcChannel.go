@@ -97,8 +97,8 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]clock.VectorC
 
 	if analysisCases["leak"] {
 		timemeasurement.Start("leak")
-		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), VectorClockTID{vc[sender.GetRoutine()].Copy(), sender.GetTID(), sender.GetRoutine()}, 0, false)
-		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), VectorClockTID{vc[recv.GetRoutine()].Copy(), recv.GetTID(), recv.GetRoutine()}, 1, false)
+		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), elemWithVc{vc[sender.GetRoutine()].Copy(), sender}, 0, false)
+		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), elemWithVc{vc[recv.GetRoutine()].Copy(), recv}, 1, false)
 		timemeasurement.End("leak")
 	}
 }
@@ -183,7 +183,7 @@ func Send(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 
 	if analysisCases["leak"] {
 		timemeasurement.Start("leak")
-		CheckForLeakChannelRun(ch.routine, ch.id, VectorClockTID{vc[ch.routine].Copy(), ch.GetTID(), ch.routine}, 0, true)
+		CheckForLeakChannelRun(ch.routine, ch.id, elemWithVc{vc[ch.routine].Copy(), ch}, 0, true)
 		timemeasurement.End("leak")
 	}
 
@@ -276,7 +276,7 @@ func Recv(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 	}
 	if analysisCases["leak"] {
 		timemeasurement.Start("leak")
-		CheckForLeakChannelRun(ch.routine, ch.id, VectorClockTID{vc[ch.routine].Copy(), ch.GetTID(), ch.routine}, 1, true)
+		CheckForLeakChannelRun(ch.routine, ch.id, elemWithVc{vc[ch.routine].Copy(), ch}, 1, true)
 		timemeasurement.End("leak")
 	}
 
@@ -334,7 +334,7 @@ func Close(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
 
 	if analysisCases["leak"] {
 		timemeasurement.Start("leak")
-		CheckForLeakChannelRun(ch.routine, ch.id, VectorClockTID{vc[ch.routine].Copy(), ch.GetTID(), ch.routine}, 2, true)
+		CheckForLeakChannelRun(ch.routine, ch.id, elemWithVc{vc[ch.routine].Copy(), ch}, 2, true)
 		timemeasurement.End("leak")
 	}
 }
@@ -381,7 +381,7 @@ func RecvC(ch *TraceElementChannel, vc map[int]clock.VectorClock, buffered bool)
 
 	if analysisCases["leak"] {
 		timemeasurement.Start("leak")
-		CheckForLeakChannelRun(ch.routine, ch.id, VectorClockTID{vc[ch.routine].Copy(), ch.GetTID(), ch.routine}, 1, buffered)
+		CheckForLeakChannelRun(ch.routine, ch.id, elemWithVc{vc[ch.routine].Copy(), ch}, 1, buffered)
 		timemeasurement.End("leak")
 	}
 }

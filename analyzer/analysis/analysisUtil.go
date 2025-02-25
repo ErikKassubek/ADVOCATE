@@ -74,3 +74,18 @@ func sameRoutine(elems ...[]TraceElement) bool {
 
 	return true
 }
+
+func posFromPosString(pos string) (string, int, error) {
+	posSplit := strings.Split(pos, ":")
+	if len(posSplit) != 2 {
+		return "", 0, fmt.Errorf("Invalid pos %s", pos)
+	}
+
+	line, err := strconv.Atoi(posSplit[1])
+	if err != nil {
+		return "", 0, fmt.Errorf("Invalid pos %s: %s", pos, err.Error())
+	}
+
+	return posSplit[0], line, nil
+
+}

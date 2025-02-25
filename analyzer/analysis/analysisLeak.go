@@ -143,11 +143,10 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
  *   routineID (int): The routine id
  *   objID (int): The channel id
  *   vc (VectorClock): The vector clock of the operation
- *   tID (string): The trace id
  *   opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
  *   buffered (bool): If the channel is buffered
  */
-func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opType int, buffered bool) bool {
+func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType int, buffered bool) bool {
 	res := false
 	if opType == 0 || opType == 2 { // send or close
 		for i, vcTID2 := range leakingChannels[objID] {
@@ -155,7 +154,7 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.vc, vcTID.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
 				var bugType results.ResultType = results.LUnbufferedWith
 				if buffered {
 					bugType = results.LBufferedWith
@@ -166,11 +165,14 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
-				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
-				if err2 != nil {
-					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.TID)
-					return res
+
+				elem2 := elemVc.elem
+				file2, line2, err := posFromPosString(elem2.GetPos())
+				if err != nil {
+					utils.LogError(err.Error())
+					continue
 				}
+				tPre2 := elem2.GetTPre()
 
 				objType := "C"
 				if opType == 0 {
@@ -212,7 +214,7 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.vc, vcTID.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
 
 				var bugType results.ResultType = results.LUnbufferedWith
 				if buffered {
@@ -224,11 +226,14 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
-				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
-				if err2 != nil {
-					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.TID)
-					return res
+
+				elem2 := elemVc.elem
+				file2, line2, err := posFromPosString(elem2.GetPos())
+				if err != nil {
+					utils.LogError(err.Error())
+					continue
 				}
+				tPre2 := elem2.GetTPre()
 
 				arg1 := results.TraceElementResult{
 					RoutineID: routineID, ObjID: objID, TPre: tPre1, ObjType: objType, File: file1, Line: line1}
@@ -280,7 +285,7 @@ func checkForLeak() {
 					continue
 				}
 
-				hb := clock.GetHappensBefore(c.vcTID.Vc, vcTID.vc)
+				hb := clock.GetHappensBefore(c.elem.vc, vcTID.vc)
 				if hb == clock.Concurrent {
 					found = true
 					if c.buffered {
@@ -307,11 +312,13 @@ func checkForLeak() {
 					continue
 				}
 
-				file2, line2, tPre2, err := infoFromTID(partner.vcTID.TID)
+				elem2 := partner.elem.elem
+				file2, line2, err := posFromPosString(elem2.GetPos())
 				if err != nil {
-					utils.LogErrorf("Error in infoFromTID(%s)\n", partner.vcTID.TID)
+					utils.LogError(err.Error())
 					continue
 				}
+				tPre2 := elem2.GetTPre()
 
 				if vcTID.sel {
 
@@ -319,7 +326,7 @@ func checkForLeak() {
 						RoutineID: vcTID.routine, ObjID: vcTID.id, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: partner.vcTID.Routine, ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					results.Result(results.CRITICAL, results.LSelectWith,
 						"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -340,7 +347,7 @@ func checkForLeak() {
 						RoutineID: vcTID.routine, ObjID: vcTID.id, TPre: tPre1, ObjType: obType, File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: partner.vcTID.Routine, ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					results.Result(results.CRITICAL, bugType,
 						"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})

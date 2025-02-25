@@ -14,10 +14,9 @@ import (
 	"analyzer/clock"
 )
 
-type VectorClockTID struct {
-	Vc      clock.VectorClock
-	TID     string
-	Routine int
+type elemWithVc struct {
+	vc   clock.VectorClock
+	elem TraceElement
 }
 
 type VectorClockTID2 struct {
@@ -41,7 +40,7 @@ type VectorClockTID3 struct {
 type allSelectCase struct {
 	sel          *TraceElementSelect // the select
 	chanID       int                 // channel id
-	vcTID        VectorClockTID      // vector clock and tID
+	elem         elemWithVc          // vector clock and tID
 	send         bool                // true: send, false: receive
 	buffered     bool                // true: buffered, false: unbuffered
 	partnerFound bool                // true: partner found, false: no partner found
@@ -73,7 +72,7 @@ var (
 	closeData = make(map[int]*TraceElementChannel) // id -> vcTID3 val = ch.id
 
 	// last receive for each routine and each channel
-	lastRecvRoutine = make(map[int]map[int]VectorClockTID) // routine -> id -> vcTID
+	lastRecvRoutine = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
 
 	// most recent send, used for detection of send on closed
 	hasSend        = make(map[int]bool)                    // id -> bool
@@ -101,10 +100,10 @@ var (
 	allUnlocks = make(map[int][]TraceElement) // id -> []TraceElement
 
 	// last acquire on mutex for each routine
-	lockSet                = make(map[int]map[int]string)         // routine -> id -> string
-	currentlyHoldLock      = make(map[int]*TraceElementMutex)     // routine -> lock op
-	mostRecentAcquire      = make(map[int]map[int]VectorClockTID) // routine -> id -> vcTID
-	mostRecentAcquireTotal = make(map[int]VectorClockTID3)        // id -> vcTID
+	lockSet                = make(map[int]map[int]string)     // routine -> id -> string
+	currentlyHoldLock      = make(map[int]*TraceElementMutex) // routine -> lock op
+	mostRecentAcquire      = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
+	mostRecentAcquireTotal = make(map[int]VectorClockTID3)    // id -> vcTID
 
 	// vector clocks for last release times
 	relW = make(map[int]clock.VectorClock) // id -> vc
@@ -143,7 +142,7 @@ func InitAnalysis(analysisCasesMap map[string]bool) {
 
 func ClearData() {
 	closeData = make(map[int]*TraceElementChannel)
-	lastRecvRoutine = make(map[int]map[int]VectorClockTID)
+	lastRecvRoutine = make(map[int]map[int]elemWithVc)
 	hasSend = make(map[int]bool)
 	mostRecentSend = make(map[int]map[int]VectorClockTID3)
 	hasReceived = make(map[int]bool)
@@ -154,7 +153,7 @@ func ClearData() {
 	allLocks = make(map[int][]TraceElement)
 	allUnlocks = make(map[int][]TraceElement)
 	lockSet = make(map[int]map[int]string)
-	mostRecentAcquire = make(map[int]map[int]VectorClockTID)
+	mostRecentAcquire = make(map[int]map[int]elemWithVc)
 	mostRecentAcquireTotal = make(map[int]VectorClockTID3)
 	relW = make(map[int]clock.VectorClock)
 	relR = make(map[int]clock.VectorClock)

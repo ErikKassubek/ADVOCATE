@@ -34,7 +34,7 @@ func CheckForSelectCaseWithoutPartner() {
 			// 	continue
 			// }
 
-			if c1.chanID != c2.chanID || c1.vcTID.TID == c2.vcTID.TID || c1.send == c2.send {
+			if c1.chanID != c2.chanID || c1.elem.elem.GetTID() == c2.elem.elem.GetTID() || c1.send == c2.send {
 				continue
 			}
 
@@ -42,7 +42,7 @@ func CheckForSelectCaseWithoutPartner() {
 				c1, c2 = c2, c1
 			}
 
-			hb := clock.GetHappensBefore(c1.vcTID.Vc, c2.vcTID.Vc)
+			hb := clock.GetHappensBefore(c1.elem.vc, c2.elem.vc)
 			found := false
 			if c1.buffered && (hb == clock.Concurrent || hb == clock.After) {
 				found = true
@@ -142,20 +142,23 @@ func CheckForSelectCaseWithoutPartner() {
 			continue
 		}
 
+		tid := c.elem.elem.GetTID()
+		routine := c.elem.elem.GetRoutine()
+
 		arg2 := results.SelectCaseResult{
 			SelID:   c.sel.GetID(),
 			ObjID:   c.chanID,
 			ObjType: opjType,
-			Routine: c.vcTID.Routine,
+			Routine: routine,
 			Index:   cIndex,
 		}
 
-		if _, ok := casesWithoutPartner[c.vcTID.TID]; !ok {
-			casesWithoutPartner[c.vcTID.TID] = make([]results.ResultElem, 0)
-			casesWithoutPartnerInfo[c.vcTID.TID] = []int{c.vcTID.Routine, c.sel.GetID()}
+		if _, ok := casesWithoutPartner[tid]; !ok {
+			casesWithoutPartner[tid] = make([]results.ResultElem, 0)
+			casesWithoutPartnerInfo[tid] = []int{routine, c.sel.GetID()}
 		}
 
-		casesWithoutPartner[c.vcTID.TID] = append(casesWithoutPartner[c.vcTID.TID], arg2)
+		casesWithoutPartner[tid] = append(casesWithoutPartner[tid], arg2)
 	}
 
 	for tID, cases := range casesWithoutPartner {
@@ -253,7 +256,7 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc clock.Vec
 		}
 
 		selectCases = append(selectCases,
-			allSelectCase{se, id, VectorClockTID{vc, se.GetTID(), se.routine}, send, buffered, found, partner, executed, casi})
+			allSelectCase{se, id, elemWithVc{vc, se}, send, buffered, found, partner, executed, casi})
 
 	}
 }
@@ -273,11 +276,11 @@ func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc clock.VectorClo
 	send bool, buffered bool) {
 
 	for i, c := range selectCases {
-		if c.partnerFound || c.chanID != ch.GetID() || c.send == send || c.vcTID.TID == ch.GetTID() {
+		if c.partnerFound || c.chanID != ch.GetID() || c.send == send || c.elem.elem.GetTID() == ch.GetTID() {
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.vcTID.Vc)
+		hb := clock.GetHappensBefore(vc, c.elem.vc)
 		found := false
 		if send {
 			if buffered && (hb == clock.Concurrent || hb == clock.Before) {
@@ -313,7 +316,7 @@ func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc clock.Vec
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.vcTID.Vc)
+		hb := clock.GetHappensBefore(vc, c.elem.vc)
 		found := false
 		if c.buffered && (hb == clock.Concurrent || hb == clock.After) {
 			found = true

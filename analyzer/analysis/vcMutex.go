@@ -55,7 +55,7 @@ func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock
 		timemeasurement.End("leak")
 	}
 
-	lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
+	lockSetAddLock(mu, wVc[mu.routine])
 
 	// for fuzzing
 	currentlyHoldLock[mu.id] = mu
@@ -109,7 +109,7 @@ func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]cloc
 		timemeasurement.End("leak")
 	}
 
-	lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
+	lockSetAddLock(mu, wVc[mu.routine])
 
 	// for fuzzing
 	currentlyHoldLock[mu.id] = mu

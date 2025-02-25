@@ -24,12 +24,15 @@ import (
  *   tId (string): The trace id of the mutex operation
  *   vc (VectorClock): The current vector clock
  */
-func lockSetAddLock(routine int, lock int, tID string, vc clock.VectorClock) {
+func lockSetAddLock(mu *TraceElementMutex, vc clock.VectorClock) {
+	routine := mu.GetRoutine()
+	id := mu.GetID()
+
 	if _, ok := lockSet[routine]; !ok {
 		lockSet[routine] = make(map[int]string)
 	}
 	if _, ok := mostRecentAcquire[routine]; !ok {
-		mostRecentAcquire[routine] = make(map[int]VectorClockTID)
+		mostRecentAcquire[routine] = make(map[int]elemWithVc)
 	}
 
 	// if _, ok := lockSet[routine][lock]; ok {
@@ -45,8 +48,8 @@ func lockSetAddLock(routine int, lock int, tID string, vc clock.VectorClock) {
 	// results.Result(found, results.CRITICAL)
 	// }
 
-	lockSet[routine][lock] = tID
-	mostRecentAcquire[routine][lock] = VectorClockTID{vc, tID, routine}
+	lockSet[routine][id] = mu.GetTID()
+	mostRecentAcquire[routine][id] = elemWithVc{vc, mu}
 }
 
 /*
@@ -77,7 +80,7 @@ func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tID
 	for m := range lockSet[routineSend] {
 		_, ok1 := mostRecentAcquire[routineRevc][m]
 		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].TID != mostRecentAcquire[routineRevc][m].TID {
+		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"
@@ -91,7 +94,7 @@ func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tID
 	for m := range lockSet[routineRevc] {
 		_, ok1 := mostRecentAcquire[routineRevc][m]
 		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].TID != mostRecentAcquire[routineRevc][m].TID {
+		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"

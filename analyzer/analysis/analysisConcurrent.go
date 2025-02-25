@@ -52,11 +52,11 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 			continue
 		}
 
-		if elem[ch.id].Vc.GetClock() == nil {
+		if elem[ch.id].vc.GetClock() == nil {
 			continue
 		}
 
-		happensBefore := clock.GetHappensBefore(elem[ch.id].Vc, vc[ch.routine])
+		happensBefore := clock.GetHappensBefore(elem[ch.id].vc, vc[ch.routine])
 		if happensBefore == clock.Concurrent {
 
 			file1, line1, tPre1, err := infoFromTID(ch.GetTID())
@@ -65,7 +65,14 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 				return
 			}
 
-			file2, line2, tPre2, err := infoFromTID(lastRecvRoutine[r][ch.id].TID)
+			elem2 := lastRecvRoutine[r][ch.id].elem
+			file2, line2, err := posFromPosString(elem2.GetPos())
+
+			if err != nil {
+				utils.LogErrorf("Error in posFromPosString: %s", err.Error())
+			}
+
+			tPre2 := elem2.GetTPre()
 
 			arg1 := results.TraceElementResult{
 				RoutineID: ch.routine,
@@ -92,10 +99,10 @@ func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 
 	if ch.tPost != 0 {
 		if _, ok := lastRecvRoutine[ch.routine]; !ok {
-			lastRecvRoutine[ch.routine] = make(map[int]VectorClockTID)
+			lastRecvRoutine[ch.routine] = make(map[int]elemWithVc)
 		}
 
-		lastRecvRoutine[ch.routine][ch.id] = VectorClockTID{vc[ch.routine].Copy(), ch.GetTID(), ch.routine}
+		lastRecvRoutine[ch.routine][ch.id] = elemWithVc{vc[ch.routine].Copy(), ch}
 	}
 }
 

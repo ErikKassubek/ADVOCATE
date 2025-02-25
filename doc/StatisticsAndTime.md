@@ -553,7 +553,7 @@ The columns are
 - `NoUnexpectedPanicL10`
 
 ## Times
-To create the time files, set the `-time` flag.\
+To create the time files, set the `-time` flag.
 
 This will create a `times_detail_nameOfProg.csv` and a `times_total_nameOfProf.csv` file in the `advocateResult` folder.
 The first line of the files contains the column names. All times are given in seconds.

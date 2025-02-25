@@ -31,10 +31,22 @@ import (
  *  vc (int): vector clock of the recv operation
  */
 // TODO: make this like the others
-func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
+func checkForConcurrentCom(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
 	timemeasurement.Start("other")
-	defer timemeasurement.End("other")
 
+	checkForConcurrentRevc(ch, vc)
+
+	timemeasurement.End("other")
+
+	getConcurrentSendForFuzzing(ch)
+
+}
+
+func getConcurrentSendForFuzzing(ch *TraceElementChannel) {
+
+}
+
+func checkForConcurrentRevc(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
 	for r, elem := range lastRecvRoutine {
 		if r == ch.routine {
 			continue
@@ -103,7 +115,7 @@ func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
 	elem := currentlyHoldLock[mu.id]
 
 	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == clock.Concurrent {
-		elemsToDelayFuzzing = append(elemsToDelayFuzzing, ConcurrentEntry{Elem: elem, Counter: lockCounter[elem.id][elem.pos], Type: CEMutex})
+		fuzzingFlowMutex = append(fuzzingFlowMutex, ConcurrentEntry{Elem: elem, Counter: lockCounter[elem.id][elem.pos], Type: CEMutex})
 	}
 
 }
@@ -125,11 +137,11 @@ func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
 
 	if exec, ok := executedOnce[id]; ok {
 		if clock.GetHappensBefore(exec.Elem.GetVC(), vc) == clock.Concurrent {
-			elemsToDelayFuzzing = append(elemsToDelayFuzzing, *exec)
+			fuzzingFlowOnce = append(fuzzingFlowOnce, *exec)
 		}
 	}
 }
 
-func GetConcurrentInfoForFuzzing() *[]ConcurrentEntry {
-	return &elemsToDelayFuzzing
+func GetConcurrentInfoForFuzzing() (*[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry) {
+	return &fuzzingFlowOnce, &fuzzingFlowMutex, &fuzzingFlowSend, &fuzzingFlowRecv
 }

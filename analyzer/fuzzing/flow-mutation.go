@@ -20,35 +20,41 @@ var alreadyDelayedElems = make(map[string][]int)
 func createMutationsFlow() int {
 	numberMutAdded := 0
 
-	elemsToDelay := analysis.GetConcurrentInfoForFuzzing()
+	delay := make([](*[]analysis.ConcurrentEntry), 4)
+
+	// once, mutex, send, recv
+	delay[0], delay[1], delay[2], delay[3] = analysis.GetConcurrentInfoForFuzzing()
 
 	// add mutations
-	for _, on := range *elemsToDelay {
-		pos := on.Elem.GetPos()
-		if counts, ok := alreadyDelayedElems[pos]; ok {
-			found := false
-			for _, count := range counts {
-				if count == on.Counter {
-					found = true
-					break
+	for i := 0; i < 4; i++ {
+		for _, on := range *delay[i] {
+			pos := on.Elem.GetPos()
+			if counts, ok := alreadyDelayedElems[pos]; ok {
+				found := false
+				for _, count := range counts {
+					if count == on.Counter {
+						found = true
+						break
+					}
+				}
+				if found {
+					continue
 				}
 			}
-			if found {
-				continue
+
+			mutFlow := make(map[string]int)
+			mutFlow[pos] = on.Counter
+
+			if _, ok := alreadyDelayedElems[pos]; !ok {
+				alreadyDelayedElems[pos] = make([]int, 0)
 			}
+			alreadyDelayedElems[pos] = append(alreadyDelayedElems[pos], on.Counter)
+
+			mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+			mutationQueue = append(mutationQueue, mut)
+			numberMutAdded++
 		}
-
-		mutFlow := make(map[string]int)
-		mutFlow[pos] = on.Counter
-
-		if _, ok := alreadyDelayedElems[pos]; !ok {
-			alreadyDelayedElems[pos] = make([]int, 0)
-		}
-		alreadyDelayedElems[pos] = append(alreadyDelayedElems[pos], on.Counter)
-
-		mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
-		mutationQueue = append(mutationQueue, mut)
-		numberMutAdded++
 	}
+
 	return numberMutAdded
 }

@@ -43,9 +43,9 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]clock.VectorC
 		timemeasurement.Start("other")
 		switch r := recv.(type) {
 		case *TraceElementChannel:
-			checkForConcurrentRecv(r, vc)
+			checkForConcurrentCom(r, vc)
 		case *TraceElementSelect:
-			checkForConcurrentRecv(&r.chosenCase, vc)
+			checkForConcurrentCom(&r.chosenCase, vc)
 		}
 		timemeasurement.Start("End")
 	}
@@ -208,7 +208,7 @@ func Recv(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 
 	if analysisCases["concurrentRecv"] {
 		timemeasurement.Start("other")
-		checkForConcurrentRecv(ch, vc)
+		checkForConcurrentCom(ch, vc)
 		timemeasurement.End("other")
 	}
 

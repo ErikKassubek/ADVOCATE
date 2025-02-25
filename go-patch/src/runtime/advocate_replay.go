@@ -317,7 +317,7 @@ func ReleaseWaits() {
 
 			// Check if a deadlock has been reached
 			if replayElem.Line == ExitCodeCyclic {
-				stuckRoutines := checkForStuckRoutines(1.0, 1000)
+				stuckRoutines := checkForStuckRoutines(1.0, 100)
 
 				stuckMutexCounter := 0
 				for id, reason := range stuckRoutines {

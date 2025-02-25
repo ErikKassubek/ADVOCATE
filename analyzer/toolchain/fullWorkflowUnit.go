@@ -66,6 +66,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
 		removeTraces(dir)
+		removeLogs(dir)
 	}
 
 	// Find all _test.go files in the directory

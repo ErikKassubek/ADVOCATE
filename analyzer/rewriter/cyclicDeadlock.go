@@ -14,6 +14,8 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	"errors"
+	"fmt"
+	"slices"
 )
 
 /*
@@ -63,23 +65,26 @@ import (
  */
 
 func rewriteCyclicDeadlock(bug bugs.Bug) error {
-	firstTime := -1
-	lastTime := -1
-
 	if len(bug.TraceElement2) == 0 {
 		return errors.New("No trace elements in bug")
 	}
 
-	for _, elem := range bug.TraceElement2 {
-		// get the first and last mutex operation in the cycle
-		time := elem.GetTPre()
-		if firstTime == -1 || time < firstTime {
-			firstTime = time
-		}
-		if lastTime == -1 || time > lastTime {
-			lastTime = time
+	if len(bug.TraceElement2) < 2 {
+		return errors.New("At least 2 trace elements are needed for a deadlock")
+	}
+
+	fmt.Println("Original trace:")
+	analysis.PrintTrace([]string{}, true)
+
+	lastTime := -1
+
+	for _, e := range bug.TraceElement2 {
+		if e.GetTSort() > lastTime {
+			lastTime = e.GetTSort()
 		}
 	}
+
+	fmt.Println("Last time:", lastTime)
 
 	// remove tail after lastTime
 	analysis.ShortenTrace(lastTime, true)
@@ -103,7 +108,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 			}
 
 			// shift the routine of elem1 so that elem 2 is before elem1
-			res := analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), elem2.GetTPre()-elem1.GetTPre()+1)
+			res := analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), elem2.GetTPre()-elem1.GetTPre()+2)
 
 			if res {
 				found = true
@@ -111,10 +116,12 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 		}
 
 		if !found {
+			fmt.Println("Needed", iter, "iterations")
 			break
 		}
 	}
 
+	// Remove trailing unlocks in relevant routines
 	currentTrace := analysis.GetTraces()
 	lastTime = -1
 
@@ -138,37 +145,17 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 		}
 	}
 
-	prevLastTime := -1
+	// Get the last lock in the cycle that will be sucessfull
+	slices.SortFunc(bug.TraceElement2, func(a, b analysis.TraceElement) int {
+		return a.GetTPre() - b.GetTPre()
+	})
 
-	for routine := range routinesInCycle {
-		found := false
-		for i := len(currentTrace[routine]) - 1; i >= 0; i-- {
-			elem := currentTrace[routine][i]
-			switch elem := elem.(type) {
-			case *analysis.TraceElementMutex:
-				if (*elem).IsLock() {
-					if (*elem).GetTSort() == lastTime {
-						continue
-					} else {
-						found = true
-					}
-					if prevLastTime == -1 || (*elem).GetTSort() > prevLastTime {
-						prevLastTime = (*elem).GetTSort()
-					}
-				}
-			}
-			if found {
-				break
-			}
-		}
-	}
+	lastSuccessfullLockTime := bug.TraceElement2[len(bug.TraceElement2)-2].GetTPre()
 
-	if prevLastTime == -1 {
-		return errors.New("no previous lock operation")
-	}
+	fmt.Println("Prev last time:", lastSuccessfullLockTime)
 
-	// add start and end signal
-	analysis.AddTraceElementReplay(prevLastTime+1, exitCodeCyclic, prevLastTime)
+	// add end signal at the point the replay should get stuck
+	analysis.AddTraceElementReplay(lastSuccessfullLockTime+1, exitCodeCyclic, lastSuccessfullLockTime)
 
 	analysis.PrintTrace([]string{}, false)
 

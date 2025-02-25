@@ -64,6 +64,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
 		removeTraces(dir)
+		removeLogs(dir)
 	}
 
 	utils.LogInfo("Run program and analysis...")

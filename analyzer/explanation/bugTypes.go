@@ -404,7 +404,7 @@ var exitCodeExplanation = map[string]string{
 		"The replay was therefore able to confirm, that the negative wait group can actually occur.",
 	"33": "The replay resulted in an expected lock of an unlocked mutex triggering a panic. The bug was triggered. " +
 		"The replay was therefore able to confirm, that the unlock of a not locked mutex can actually occur.",
-	// "41": "cyclic",
+	"41": "The replay reached the expected point and found stuck mutexes." + "The replay was therefore able to confirm that a deadlock can actually occur.",
 }
 
 var objectTypes = map[string]string{
@@ -433,6 +433,8 @@ var objectTypes = map[string]string{
 	"ON": "Once: Done Not Executed (because the once was already executed)",
 	"GF": "Routine: Fork",
 	"GE": "Routine: End",
+	"DH": "Mutex: Causing deadlock",
+	"DC": "Mutex: Part of deadlock",
 }
 
 func init() {

@@ -665,7 +665,8 @@ func SetTrace(trace map[int][]TraceElement) {
 func PrintTrace(types []string, clocks bool) {
 	elements := make([]struct {
 		string
-		int
+		time   int
+		thread int
 		clock.VectorClock
 	}, 0)
 	for _, tra := range traces {
@@ -674,23 +675,24 @@ func PrintTrace(types []string, clocks bool) {
 			if len(types) == 0 || utils.ContainsString(types, elemStr[0:1]) {
 				elements = append(elements, struct {
 					string
-					int
+					time   int
+					thread int
 					clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetVC()})
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC()})
 			}
 		}
 	}
 
 	// sort elements by timestamp
 	sort.Slice(elements, func(i, j int) bool {
-		return elements[i].int < elements[j].int
+		return elements[i].time < elements[j].time
 	})
 
 	for _, elem := range elements {
 		if clocks {
-			fmt.Println(elem.string, elem.VectorClock.ToString())
+			fmt.Println(elem.thread, elem.string, elem.VectorClock.ToString())
 		} else {
-			fmt.Println(elem.string)
+			fmt.Println(elem.thread, elem.string)
 		}
 	}
 }

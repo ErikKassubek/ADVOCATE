@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	"analyzer/utils"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -465,7 +466,10 @@ func CheckForResourceDeadlock() {
 			})
 		}
 
-		results.Result(results.CRITICAL, results.PCyclicDeadlock, "head", []results.ResultElem{cycleElements[0]}, "tail", cycleElements)
+		var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
+
+		stuckElement.ObjType = "DH"
+		results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
 
 	}
 }
@@ -476,13 +480,14 @@ func CheckForResourceDeadlock() {
 // Debug logging.
 
 func debugLog(v ...any) {
-	utils.LogInfo(v...)
+	fmt.Println(v...)
 }
 
 func logAbortReason(reason ...any) {
 	r := []any{"No Deadlock:"}
 	r = append(r, reason...)
 	utils.LogInfo(r...)
+	fmt.Println(r...)
 }
 
 // Lock Depdendency methods.

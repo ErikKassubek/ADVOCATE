@@ -158,8 +158,7 @@ func addMainHeader(fileName string, replay bool, replayNumber string, replayTime
 
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error:", err)
-		os.Exit(1)
+		return fmt.Errorf("Could not open main file to add header")
 	}
 	defer file.Close()
 

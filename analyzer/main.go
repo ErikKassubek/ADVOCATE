@@ -48,7 +48,6 @@ var (
 	execName string
 
 	timeoutRecording int
-	timeoutAnalysis  int
 	timeoutReplay    int
 	recordTime       bool
 
@@ -96,7 +95,6 @@ func main() {
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
 	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
-	flag.IntVar(&timeoutAnalysis, "timeoutAna", -1, "Set a timeout in seconds for the analysis")
 	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
@@ -209,7 +207,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak,
-		timeoutRecording, timeoutAnalysis, timeoutReplay)
+		timeoutRecording, timeoutReplay)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -232,7 +230,7 @@ func main() {
 		// toolchain package via function injection
 		modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
 			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-			rewriteAll, newTrace, timeoutAnalysis, ignoreRewrite,
+			rewriteAll, newTrace, ignoreRewrite,
 			-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
@@ -346,7 +344,7 @@ func getFolderTrace(pathTrace string) (string, error) {
 func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string,
+	rewriteAll bool, newTrace string, ignoreRewrite string,
 	fuzzingRun int, onlyAPanicAndLeak bool) {
 	// printHeader()
 
@@ -355,64 +353,38 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		return
 	}
 
-	// set timeout
-	if timeout > 0 {
-		go func() {
-			<-time.After(time.Duration(timeout) * time.Second)
-			os.Exit(1)
-		}()
-	}
-
 	// run the analysis and, if requested, create a reordered trace file
 	// based on the analysis results
 
 	results.InitResults(outReadable, outMachine)
 
-	// done and separate routine to implement timeout
-	done := make(chan bool)
-	numberOfRoutines := 0
-	containsElems := false
-	var err error
-	go func() {
-		defer func() { done <- true }()
+	numberOfRoutines, containsElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+	if err != nil {
+		fmt.Println("Could not open trace: ", err.Error())
+	}
 
-		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
-		if err != nil {
-			fmt.Println("Could not open trace: ", err.Error())
-		}
+	if !containsElems {
+		fmt.Println("Trace does not contain any elem")
+		fmt.Println("Skip analysis")
+		return
+	}
 
-		if !containsElems {
-			fmt.Println("Trace does not contain any elem")
-			fmt.Println("Skip analysis")
-			return
-		}
+	analysis.SetNoRoutines(numberOfRoutines)
 
-		analysis.SetNoRoutines(numberOfRoutines)
-
-		if analysisCases["all"] {
-			fmt.Println("Start Analysis for all scenarios")
-		} else {
-			fmt.Println("Start Analysis for the following scenarios:")
-			for key, value := range analysisCases {
-				if value {
-					fmt.Println("\t", key)
-				}
+	if analysisCases["all"] {
+		fmt.Println("Start Analysis for all scenarios")
+	} else {
+		fmt.Println("Start Analysis for the following scenarios:")
+		for key, value := range analysisCases {
+			if value {
+				fmt.Println("\t", key)
 			}
 		}
-
-		analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
-	}()
-
-	if timeout > 0 {
-		select {
-		case <-done:
-			fmt.Print("Analysis finished\n\n")
-		case <-time.After(time.Duration(timeout) * time.Second):
-			fmt.Printf("Analysis ended by timeout after %d seconds\n\n", timeout)
-		}
-	} else {
-		<-done
 	}
+
+	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
+
+	utils.LogInfo("Analysis finished\n\n")
 
 	numberOfResults, err := results.PrintSummary(true, true)
 	if err != nil {
@@ -700,7 +672,6 @@ func printHelp() {
 	println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 	println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
 	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-	println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
 	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 	println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
 	println("                         If it is not set, all scenarios are run")
@@ -744,7 +715,6 @@ func printHelp() {
 	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 	println("  -prog [name]           Name of the program (used for statistics)")
 	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-	println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
 	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 	println("  -ignoreAtomics         Set to ignore atomics in replay")
 	println("  -recordTime            Set to record runtimes")
@@ -783,7 +753,6 @@ func printHelpMode(mode string) {
 		println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 		println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
 		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-		println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
 		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 		println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
 		println("                         If it is not set, all scenarios are run")
@@ -831,7 +800,6 @@ func printHelpMode(mode string) {
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
 		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-		println("  -timeoutAna [second]      Set a timeout in seconds for the analysis")
 		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")
 		println("  -recordTime            Set to record runtimes")

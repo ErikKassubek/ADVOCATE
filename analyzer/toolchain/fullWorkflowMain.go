@@ -49,7 +49,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
-	pathToAnalyzer := filepath.Join(pathToAdvocate, "analyzer/analyzer")
 
 	// Change to the directory of the main file
 	dir := filepath.Dir(pathToFile)
@@ -147,18 +146,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		"rewritten_trace", timeoutAnalysis, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
-
-	if timeoutAnalysis != -1 {
-		timeoutString := fmt.Sprintf("%ds", timeoutAnalysis)
-		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", timeoutString); err != nil {
-			return fmt.Errorf("Error applying analyzer: %v", err)
-		}
-	} else {
-		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput); err != nil {
-			return fmt.Errorf("Error applying analyzer: %v", err)
-		}
-	}
+		"rewritten_trace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 
 	// Find rewritten_trace directories
 	rewrittenTraces, err := filepath.Glob(filepath.Join(dir, "rewritten_trace*"))

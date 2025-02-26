@@ -17,7 +17,6 @@ var (
 	executableName   string
 	testName         string
 	timeoutRecording int
-	timeoutAnalysis  int
 	timeoutReplay    int
 	numberRerecord   int
 	replayAtomic     bool
@@ -37,7 +36,7 @@ var (
 
 func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool,
-	timeoutRec, timeoutAna, timeoutRepl int) {
+	timeoutRec, timeoutRepl int) {
 
 	noRewriteFlag = noRewrite
 
@@ -51,7 +50,6 @@ func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	onlyAPanicAndLeakFlag = onlyAPanicAndLeak
 
 	timeoutRecording = timeoutRec
-	timeoutAnalysis = timeoutAna
 	timeoutReplay = timeoutRepl
 
 }

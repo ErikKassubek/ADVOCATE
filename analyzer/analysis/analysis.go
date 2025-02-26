@@ -274,8 +274,6 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	if analysisCases["unlockBeforeLock"] {
 		checkForUnlockBeforeLock()
 	}
-
-	utils.LogInfo("Finished analyzing trace")
 }
 
 func checkLeak(elem TraceElement) {

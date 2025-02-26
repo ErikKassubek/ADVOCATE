@@ -28,9 +28,11 @@ const (
 	ReplayDeadlockStuck           = "ReplayDeadlockStuck"
 	ReplayDeadlockNumStuckMutexes = "ReplayDeadlockNoStuckMutexes"
 	ReplayDeadlockReachedEnd      = "ReplayDeadlockReachedEnd"
+	NumIgnoreConcurrent           = "NoIgnoreConcurrent"
+	NumIgnoreConcurrentUnique     = "NoIgnoreConcurrentUnique"
 )
 
-var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibleUnique, NumGuardLock, NumGuardLockUnique, ReplayDeadlockStuck, ReplayDeadlockNumStuckMutexes, ReplayDeadlockReachedEnd}
+var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibleUnique, NumGuardLock, NumGuardLockUnique, ReplayDeadlockStuck, ReplayDeadlockNumStuckMutexes, NumIgnoreConcurrent, NumIgnoreConcurrentUnique, ReplayDeadlockReachedEnd}
 
 /*
  * Collect miscellaneous statistics about the run
@@ -78,6 +80,11 @@ func statsMisc(dataPath, testName string) (map[string]int, error) {
 			if strings.Contains(line, "Locksets are not disjoint (guard)") {
 				stats[NumGuardLock]++
 				stats[NumGuardLockUnique] = 1
+			}
+
+			if strings.Contains(line, "Ignoring an event because it is concurrent with an already stored event") {
+				stats[NumIgnoreConcurrent]++
+				stats[NumIgnoreConcurrentUnique] = 1
 			}
 
 			if strings.Contains(line, "Number of routines waiting on mutexes: ") {

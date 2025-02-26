@@ -100,7 +100,7 @@ func acquire(s *State, read_lock bool, event Event) {
 	ls := s.threads[event.thread_id].lockset
 	if !ls.empty() {
 		deps := s.threads[event.thread_id].lock_dependencies
-		deps[lockId] = insert(deps[lockId], ls, event)
+		deps[lockId] = insert2(deps[lockId], ls, event.Clone())
 	}
 
 	if lockId.isRead() {
@@ -151,19 +151,20 @@ func insert(dependencies []Dep, ls Lockset, event Event) []Dep {
 // if in between f and e no intra-thread synchronization took place.
 // This can be checked via helper function equalModuloTID.
 // Assumption: Vector clocks underapproximate the must happen-before relation.
-func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
+func insert2(dependencies []Dep, lockset Lockset, event Event) []Dep {
 	// Helper function.
 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
+	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
 	equalModuloTID := func(tid ThreadId, vc1 clock.VectorClock, vc2 clock.VectorClock) bool {
 		if vc1.GetSize() != vc2.GetSize() {
 			return false
 		}
 
 		for i := 1; i <= vc1.GetSize(); i++ {
-			if i == int(tid) {
-				continue
-			}
+			// if i == int(tid) {
+			// 	continue
+			// }
 
 			if vc1.GetClock()[i] != vc2.GetClock()[i] {
 				return false
@@ -173,29 +174,27 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 		return true
 	}
 
-	for i, v := range ds {
+	for i, v := range dependencies {
 		if v.lockset.equal(lockset) {
 			add_vc := true
 
-			for j, f := range ds[i].requests {
+			for _, f := range dependencies[i].requests {
 				if equalModuloTID(event.thread_id, event.vector_clock, f.vector_clock) {
-					ds[i].requests[j] = event
+					// dependencies[i].requests[j] = event // We want to keep the first request for a better replay
+					fmt.Println("Ignoring an event because it is concurrent with an already stored event")
 					add_vc = false
 				}
 
 			}
 
 			if add_vc {
-				ds[i].requests = append(ds[i].requests, event)
+				dependencies[i].requests = append(dependencies[i].requests, event)
 			}
 
-			// TODO
-			// We also might want to impose a limit on the size of "[]Dep
-			// A good strategy is to evict by "replacing".
-			return ds
+			return dependencies
 		}
 	}
-	return append(ds, Dep{lockset.Clone(), []Event{event}})
+	return append(dependencies, Dep{lockset.Clone(), []Event{event}})
 }
 
 // Algorithm phase 2
@@ -427,7 +426,7 @@ func CheckForResourceDeadlock() {
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
-		var request = cycle[len(cycle)-1].requests[0] // FIXME This can lead to weird behaivor if no concurrent request is found later...
+		var request = cycle[len(cycle)-1].requests[0] // Should be the earliest request
 
 		debugLog("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
@@ -435,7 +434,7 @@ func CheckForResourceDeadlock() {
 			debugLog("\tLockset:", cycle[i].lockset)
 			debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
 			for i, r := range cycle[i].requests {
-				utils.LogInfo("\t\tLock request", i, ":", r)
+				debugLog("\t\tLock request", i, ":", r)
 			}
 
 			for _, r := range cycle[i].requests {

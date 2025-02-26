@@ -28,6 +28,10 @@ func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]clock.Vecto
 
 	incFuzzingCounter(ch)
 
+	if ch.GetTPost() != 0 {
+		return
+	}
+
 	for r, elem := range lastSendRoutine {
 		if r == routine {
 			continue
@@ -94,7 +98,9 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 
 			tPre2 := elem2.GetTPre()
 
-			fuzzingFlowRecv = append(fuzzingFlowRecv, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
+			if ch.tPost == 0 {
+				fuzzingFlowRecv = append(fuzzingFlowRecv, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
+			}
 
 			arg1 := results.TraceElementResult{
 				RoutineID: routine,

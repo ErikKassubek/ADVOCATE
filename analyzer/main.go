@@ -471,7 +471,7 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		"leak":                 false,
 		"selectWithoutPartner": false,
 		"unlockBeforeLock":     false,
-		"cyclicDeadlock":       false,
+		"cyclicDeadlock":       false, // only for comparison with resource deadlock
 		"mixedDeadlock":        false,
 		"resourceDeadlock":     false,
 	}
@@ -484,6 +484,12 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		for c := range analysisCases {
 			analysisCases[c] = true
 		}
+
+		// remove to run old cyclic deadlock detection
+		analysisCases["cyclicDeadlock"] = false
+
+		// remove when implemented
+		analysisCases["mixedDeadlock"] = false
 
 		return analysisCases, nil
 	}
@@ -507,7 +513,8 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		case 'u':
 			analysisCases["unlockBeforeLock"] = true
 		case 'c':
-			analysisCases["cyclicDeadlock"] = true
+			// enable to run old cyclic deadlock detection
+			// analysisCases["cyclicDeadlock"] = true
 			analysisCases["resourceDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true

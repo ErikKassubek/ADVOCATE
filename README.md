@@ -5,6 +5,11 @@
 > [!WARNING]
 > This program currently only runs / is tested under Linux
 
+> [!IMPORTANT]
+> The program to analyze must use go 1.22
+> Make sure, that the program does not choose another version/toolchain. The output `/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate` or `package advocate is not in std ` or similar indicates a problem with the used version.
+> AdvocateGo currently does not work for programs requiring go 1.23
+
 ## What is AdvocateGo
 AdvocateGo is an analysis tool for Go programs.
 It detects concurrency bugs and gives  diagnostic insight.
@@ -63,11 +68,6 @@ or
 ```
 script. This will create a go executable in the `bin` directory.
 
-> [!IMPORTANT]
-> The program to analyze must use go 1.22(.3)
-> Make sure, that the program does not choose another version/toolchain. The output `/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate` or similar indicates a problem with the used version.
-> AdvocateGo currently does not work for programs requiring go 1.23
-
 
 ### Analysis
 
@@ -101,7 +101,7 @@ to analyze the main function.
 
 The following arg is required:
 
-- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder 
+- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder
 
 If the main function is analyzed, the following arg is also required:
 

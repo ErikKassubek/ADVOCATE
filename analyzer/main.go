@@ -11,6 +11,7 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"log"
@@ -256,6 +257,8 @@ func modeFuzzing() {
 		return
 	}
 
+	checkVersion()
+
 	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
 	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
@@ -268,6 +271,7 @@ func modeFuzzing() {
 }
 
 func modeToolchain(mode string, numRerecorded int) {
+	checkVersion()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
 		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
 	if err != nil {
@@ -430,7 +434,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 				}
 			} else if err != nil {
-				utils.LogError("Failed to rewrite trace: ", err.Error())
+				utils.LogInfo("Failed to rewrite trace: ", err.Error())
 				failedRewrites++
 				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			} else { // needed && err == nil
@@ -660,14 +664,44 @@ func printHeader() {
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
 	println("There are different modes of operation:")
-	println("1. Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
-	println("2. Create an explanation for a found bug")
-	println("3. Check if all concurrency elements of the program have been executed at least once")
-	println("4. Create statistics about a program")
-	println("5. Run the toolchain")
-	println("6. Create new runs for fuzzing\n\n")
-	println("1. Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
-	println("This mode is the default mode and analyzes a trace file and creates a reordered trace file based on the analysis results.")
+	println("1. Run the toolchain")
+	println("2. Fuzzing")
+	println("3. Analyze a trace file and create a reordered trace file based on the analysis results")
+	println("4. Create an explanation for a found bug")
+	println("5. Check if all concurrency elements of the program have been executed at least once")
+	println("6. Create statistics about a program")
+	println("\n\n")
+	println("1. Run the toolchain on tests")
+	println("This runs the toolchain")
+	println("Usage: ./analyzer tool [options]")
+	println("  -main                  Run on the main function instead on tests")
+	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
+	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+	println("  -prog [name]           Name of the program (used for statistics)")
+	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
+	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
+	println("  -ignoreAtomics         Set to ignore atomics in replay")
+	println("  -recordTime            Set to record runtimes")
+	println("  -notExec               Set to determine never executed operations")
+	println("  -stats                 Set to create statistics")
+	println("  -keepTrace             Do not delete the trace files after analysis finished")
+	println("\n\n")
+	println("2. Fuzzing")
+	println("This runs the fuzzing")
+	println("Usage: ./analyzer fuzzing [options]")
+	println("  -main                  Run on the main function instead on tests")
+	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
+	println("  -prog [name]           Name of the program")
+	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+	println("  -fuzzingMode [mode]    Mode of fuzzing:")
+	println("                           0: full fuzzing, full analysis and replay (default)")
+	println("                           1: no HB info in fuzzing, full analysis and replay")
+	println("                           2: full fuzzing, no analysis and replay, only actual bugs")
+	println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
+	println("Additionally, the tags from mode tool can be used")
+	println("\n\n")
+	println("3. Run")
+	println("Analyze a trace file and create a reordered trace file based on the analysis results")
 	println("Usage: ./analyzer run [options]")
 	println("It has the following options:")
 	println("  -trace [file]          Path to the trace folder to analyze or rewrite (required)")
@@ -693,54 +727,26 @@ func printHelp() {
 	// println("                             c: Cyclic deadlock")
 	// println("                             m: Mixed deadlock")
 	println("\n\n")
-	println("2. Create an explanation for a found bug")
+	println("4. Create an explanation for a found bug")
 	println("Usage: ./analyzer explain [options]")
 	println("This mode creates an explanation for a found bug in the trace file.")
 	println("It has the following options:")
 	println("  -trace [file]          Path to the folder containing the machine readable result file (required)")
 	println("\n\n")
-	println("3. Check if all concurrency elements of the program have been executed at least once")
+	println("5. Check if all concurrency elements of the program have been executed at least once")
 	println("Usage: ./analyzer check [options]")
 	println("This mode checks if all concurrency elements of the program have been executed at least once.")
 	println("It has the following options:")
 	println("  -resultTool [folder]   Path where the advocateResult folder created by the pipeline is located (required)")
 	println("  -path [folder]          Path to the program folder (required)")
 	println("\n\n")
-	println("4. Create statistics about a program")
+	println("6. Create statistics about a program")
 	println("This creates some statistics about the program and the trace")
 	println("Usage: ./analyzer stats [options]")
 	// println("  -path [folder] Path to the program folder (required)")
 	println("  -trace [file]          Path to the folder containing the results_machine file (required)")
 	println("  -prog [name]           Name of the program")
 	println("  -exec [name]           Name of the test")
-	println("\n\n")
-	println("5. Run the toolchain on tests")
-	println("This runs the toolchain")
-	println("Usage: ./analyzer tool [options]")
-	println("  -main                  Run on the main function instead on tests")
-	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
-	println("  -prog [name]           Name of the program (used for statistics)")
-	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
-	println("  -ignoreAtomics         Set to ignore atomics in replay")
-	println("  -recordTime            Set to record runtimes")
-	println("  -notExec               Set to determine never executed operations")
-	println("  -stats                 Set to create statistics")
-	println("  -keepTrace             Do not delete the trace files after analysis finished")
-	println("\n\n")
-	println("6. Create runs for fuzzing")
-	println("This creates and updates the information required for the fuzzing runs")
-	println("Usage: ./analyzer fuzzing [options]")
-	println("  -main                  Run on the main function instead on tests")
-	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-	println("  -prog [name]           Name of the program")
-	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
-	println("  -fuzzingMode [mode]    Mode of fuzzing:")
-	println("                           0: full fuzzing, full analysis and replay")
-	println("                           1: no HB info in fuzzing, full analysis and replay")
-	println("                           2: full fuzzing, no analysis and replay, only actual bugs")
-	println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
 }
 
 func printHelpMode(mode string) {
@@ -823,12 +829,73 @@ func printHelpMode(mode string) {
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
-		println("                           0: full fuzzing, full analysis and replay")
+		println("                           0: full fuzzing, full analysis and replay (default)")
 		println("                           1: no HB info in fuzzing, full analysis and replay")
 		println("                           2: full fuzzing, no analysis and replay, only actual bugs")
 		println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
+		println("Additionally, the tags from mode tool can be used")
 	default:
 		println("Mode: unknown")
 		printHelp()
 	}
+}
+
+func checkVersion() {
+	var goModPath string
+
+	if progPath == "" {
+		return
+	}
+
+	// Search for go.mod
+	err := filepath.WalkDir(progPath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == "go.mod" {
+			goModPath = path
+			return filepath.SkipAll // Stop searching after finding the first one
+		}
+		return nil
+	})
+
+	if goModPath == "" {
+		utils.LogError("Could not find go.mod")
+		return
+	}
+
+	// Open and read go.mod
+	file, err := os.Open(goModPath)
+	if err != nil {
+		utils.LogError("Could not find go.mod")
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "go ") {
+			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
+
+			versionSplit := strings.Split(version, ".")
+
+			if len(versionSplit) < 2 {
+				utils.LogError("Invalid go version")
+			}
+
+			if versionSplit[0] != "1" || versionSplit[1] != "22" {
+				errString := "ADVOCATE is implemented for go version 1.22. "
+				errString += fmt.Sprintf("Found version %s.", version)
+				errString += "This may result in the analysis not working correctly."
+				errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
+				utils.LogError(errString)
+				time.Sleep(5 * time.Second)
+			}
+
+			return
+		}
+	}
+
+	utils.LogError("Could not determine go version")
 }

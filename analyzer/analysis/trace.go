@@ -56,7 +56,6 @@ func AddElementToTrace(element TraceElement) error {
 }
 
 func ClearTrace() {
-	utils.LogInfo("Clear Trace")
 	traces = make(map[int][]TraceElement)
 	currentIndex = make(map[int]int)
 }

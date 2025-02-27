@@ -95,12 +95,13 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		}
 
 		for _, testFunc := range testFunctions {
-			analysis.ClearTrace()
-			analysis.ClearData()
-
 			if testName != "" && testName != testFunc {
 				continue
 			}
+
+			utils.LogImportant("Clear 2")
+			analysis.ClearTrace()
+			analysis.ClearData()
 
 			if !isFuzzing {
 				timer.ResetTest()

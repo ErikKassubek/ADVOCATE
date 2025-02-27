@@ -6,8 +6,9 @@
 > This program currently only runs / is tested under Linux
 
 > [!IMPORTANT]
-> The program to analyze must use go 1.22
-> Make sure, that the program does not choose another version/toolchain. The output `/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate` or `package advocate is not in std ` or similar indicates a problem with the used version.
+> ADVOCATE is implemented for go version 1.22.
+> Make sure, that the program does not choose another version/toolchain and is compatible with go 1.22.
+> The output `/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate` or `package advocate is not in std ` or similar indicates a problem with the used version.
 > AdvocateGo currently does not work for programs requiring go 1.23
 
 ## What is AdvocateGo

@@ -886,7 +886,7 @@ func checkVersion() {
 
 			if versionSplit[0] != "1" || versionSplit[1] != "22" {
 				errString := "ADVOCATE is implemented for go version 1.22. "
-				errString += fmt.Sprintf("Found version %s.", version)
+				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += "This may result in the analysis not working correctly."
 				errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
 				utils.LogError(errString)

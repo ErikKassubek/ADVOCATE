@@ -99,7 +99,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 				continue
 			}
 
-			utils.LogImportant("Clear 2")
 			analysis.ClearTrace()
 			analysis.ClearData()
 

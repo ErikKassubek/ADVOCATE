@@ -493,6 +493,10 @@ func (ch *TraceElementChannel) updateVectorClock() {
 
 	ch.vc = currentVCHb[ch.routine].Copy()
 
+	if ch.tPost == 0 {
+		return
+	}
+
 	if ch.partner == nil {
 		ch.findPartner()
 	}
@@ -507,7 +511,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 		}
 	}
 
-	if ch.IsBuffered() && ch.tPost != 0 {
+	if ch.IsBuffered() {
 		if ch.opC == SendOp {
 			maxOpID[ch.id] = ch.oID
 		} else if ch.opC == RecvOp {
@@ -516,9 +520,23 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				return
 			}
 		}
-	}
 
-	if !ch.IsBuffered() { // unbuffered channel
+		switch ch.opC {
+		case SendOp:
+			Send(ch, currentVCHb, fifo)
+		case RecvOp:
+			if ch.cl { // recv on closed channel
+				RecvC(ch, currentVCHb, true)
+			} else {
+				Recv(ch, currentVCHb, fifo)
+			}
+		case CloseOp:
+			Close(ch, currentVCHb)
+		default:
+			err := "Unknown operation: " + ch.ToString()
+			utils.LogError(err)
+		}
+	} else { // unbuffered channel
 		switch ch.opC {
 		case SendOp:
 			if ch.partner != nil {
@@ -556,24 +574,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 			err := "Unknown operation: " + ch.ToString()
 			utils.LogError(err)
 		}
-	} else { // buffered channel
-		switch ch.opC {
-		case SendOp:
-			Send(ch, currentVCHb, fifo)
-		case RecvOp:
-			if ch.cl { // recv on closed channel
-				RecvC(ch, currentVCHb, true)
-			} else {
-				Recv(ch, currentVCHb, fifo)
-			}
-		case CloseOp:
-			Close(ch, currentVCHb)
-		default:
-			err := "Unknown operation: " + ch.ToString()
-			utils.LogError(err)
-		}
 	}
-
 }
 
 /*

@@ -388,7 +388,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	utils.LogInfo("Analysis finished\n\n")
+	utils.LogInfo("Analysis finished")
 
 	numberOfResults, err := results.PrintSummary(true, true)
 	if err != nil {

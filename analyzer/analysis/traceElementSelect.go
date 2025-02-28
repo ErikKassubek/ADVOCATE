@@ -562,7 +562,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 		se.chosenCase.updateVectorClock()
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerSelect(se, currentVCHb[se.routine])
 	}
 

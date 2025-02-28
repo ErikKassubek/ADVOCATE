@@ -65,9 +65,9 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 	// run either fuzzing on main or fuzzing on one test
 	if modeMain || name != "" {
 		if modeMain {
-			utils.LogError("Run fuzzing on main function")
+			utils.LogInfo("Run fuzzing on main function")
 		} else {
-			utils.LogError("Run fuzzing on test ", name)
+			utils.LogInfo("Run fuzzing on test ", name)
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
@@ -195,31 +195,26 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
 			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun)
 		if err != nil {
-			fmt.Println(err.Error())
-		}
-
-		// TODO: the function to get all the infos required for isInteresting and
-		// numberMutations is called in modeAnalyzer in the main.go file, which
-		// itself is run by the toolchain.Run function via function injection.
-		// At some point this should be refactored to make it less complicated
-
-		// add new mutations based on GFuzz select
-		if isInterestingSelect() {
-			numberMut := numberMutations()
-			flipProb := getFlipProbability()
-			numMutAdd := createMutationsSelect(numberMut, flipProb)
-			utils.LogInfof("Add %d select mutations to queue", numMutAdd)
+			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
-			utils.LogInfo("Add 0 select mutations to queue")
+			// add new mutations based on GFuzz select
+			if isInterestingSelect() {
+				numberMut := numberMutations()
+				flipProb := getFlipProbability()
+				numMutAdd := createMutationsSelect(numberMut, flipProb)
+				utils.LogInfof("Add %d select mutations to queue", numMutAdd)
+			} else {
+				utils.LogInfo("Add 0 select mutations to queue")
+			}
+
+			// add new mutations based on flow path expansion
+			numMutAdd := createMutationsFlow()
+			utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+
+			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
+
+			mergeTraceInfoIntoFileInfo()
 		}
-
-		// add new mutations based on flow path expansion
-		numMutAdd := createMutationsFlow()
-		utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
-
-		utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
-
-		mergeTraceInfoIntoFileInfo()
 
 		// clean up
 		clearData()

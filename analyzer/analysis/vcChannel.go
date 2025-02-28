@@ -98,7 +98,7 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]clock.VectorC
 		checkForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine(), sender.GetTID(), recv.GetTID())
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerChannel(sender, vc[sender.GetRoutine()], true, false)
 		CheckForSelectCaseWithoutPartnerChannel(recv, vc[recv.GetRoutine()], false, false)
 	}
@@ -183,7 +183,7 @@ func Send(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 		}
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerChannel(ch, vc[ch.routine], true, true)
 	}
 
@@ -269,7 +269,7 @@ func Recv(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerChannel(ch, vc[ch.routine], true, true)
 	}
 
@@ -331,7 +331,7 @@ func Close(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
 		checkForCommunicationOnClosedChannel(ch)
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerClose(ch, vc[ch.routine])
 	}
 
@@ -369,7 +369,7 @@ func RecvC(ch *TraceElementChannel, vc map[int]clock.VectorClock, buffered bool)
 	vc[ch.routine] = vc[ch.routine].Inc(ch.routine)
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerChannel(ch, vc[ch.routine], false, buffered)
 	}
 

@@ -173,7 +173,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	utils.LogInfo("Run full analysis on trace")
 
 	fifo = assumeFifo
-	runFuzzing = fuzzing
+	modeIsFuzzing = fuzzing
 
 	analysisCases = analysisCasesMap
 	InitAnalysis(analysisCases, fuzzing)
@@ -253,7 +253,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		rerunCheckForSelectCaseWithoutPartnerChannel()
 		CheckForSelectCaseWithoutPartner()
 	}

@@ -133,7 +133,8 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			}
 
 			// Execute full workflow
-			nrReplay, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing)
+			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing)
+
 
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
 
@@ -147,17 +148,18 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			collect(dir, packagePath, directoryPath, total)
 
 			if err != nil {
-				fmt.Printf("File %d with Test %d failed, check output.log for more information.\n", currentFile, attemptedTests)
+				fmt.Printf("File %d with Test %d failed: %s. Check output.log for more information.\n", currentFile, attemptedTests, err.Error())
 				skippedTests++
 			}
 
-			generateBugReports(directoryPath, fuzzing)
-
-			if createStats {
-				// create statistics
-				err := stats.CreateStats(directoryPath, progName, testFunc, movedTraces, fuzzing)
-				if err != nil {
-					utils.LogError("Could not create statistics: ", err.Error())
+			if anaPassed {
+				generateBugReports(directoryPath, fuzzing)
+				if createStats {
+					// create statistics
+					err := stats.CreateStats(directoryPath, progName, testFunc, movedTraces, fuzzing)
+					if err != nil {
+						utils.LogError("Could not create statistics: ", err.Error())
+					}
 				}
 			}
 
@@ -260,16 +262,16 @@ func FindTestFunctions(file string) ([]string, error) {
  *    file (string): file with the test
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  * Returns:
- *    map[string]time.Duration
  *    int: number of run replays
+ *    bool: true if analysis passed without error
  *    error
  */
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int) (int, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int) (int, bool, error) {
 	output := "output.log"
 
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return 0, fmt.Errorf("Failed to open log file: %v", err)
+		return 0, false, fmt.Errorf("Failed to open log file: %v", err)
 	}
 	defer outFile.Close()
 
@@ -287,19 +289,19 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 
 	// Validate required inputs
 	if pathToAdvocate == "" {
-		return 0, errors.New("Path to advocate is empty")
+		return 0, false, errors.New("Path to advocate is empty")
 	}
 	if dir == "" {
-		return 0, errors.New("Directory is empty")
+		return 0, false, errors.New("Directory is empty")
 	}
 	if testName == "" {
-		return 0, errors.New("Test name is empty")
+		return 0, false, errors.New("Test name is empty")
 	}
 	// if pkg == "" {
 	// 	return 0, errors.New("Package is empty")
 	// }
 	if file == "" {
-		return 0, errors.New("Test file is empty")
+		return 0, false, errors.New("Test file is empty")
 	}
 
 	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
@@ -312,30 +314,36 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 
 	// Change to the directory
 	if err := os.Chdir(dir); err != nil {
-		return 0, fmt.Errorf("Failed to change directory: %v", err)
+		return 0, false, fmt.Errorf("Failed to change directory: %v", err)
 	}
 
 	pkg = strings.TrimPrefix(pkg, dir)
 
 	if measureTime && fuzzing < 1 {
-		unitTestRun(pkg, file, testName)
+		err := unitTestRun(pkg, file, testName)
+		if err != nil {
+			utils.LogError("Running T0 failed")
+		}
 	}
 
 	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing)
 	if err != nil {
-		utils.LogError("Failed record: ", err.Error())
-		return 0, err
+		utils.LogError("Recording failed")
 	}
 
-	unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, "-1", fuzzing)
+	err = unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, "-1", fuzzing)
+	if err != nil {
+		utils.LogError("Analysis failed")
+		return 0, false, err
+	}
 
 	numberReplay := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, false)
 
-	return numberReplay, nil
+	return numberReplay, true, nil
 }
 
 // run the tests without recording/replay
-func unitTestRun(pkg, file, testName string) {
+func unitTestRun(pkg, file, testName string) error {
 	timer.Start(timer.Run)
 	defer timer.Stop(timer.Run)
 
@@ -355,9 +363,7 @@ func unitTestRun(pkg, file, testName string) {
 	} else {
 		err = runCommand("go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
-	if err != nil {
-		utils.LogError("Test failed: ", err)
-	}
+	return err
 }
 
 func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int) error {
@@ -406,7 +412,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 // Apply analyzer
 func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
-	resultID string, fuzzing int) {
+	resultID string, fuzzing int) error {
 	tracePath := filepath.Join(dir, pkg, traceName)
 
 	utils.LogInfof("Run the analyzer for %s", tracePath)
@@ -424,10 +430,11 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 			outT, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
 	if err != nil {
-		utils.LogError("Analyzer failed: ", err)
+		return err
 	}
 
 	utils.LogInfo("Finished Analyzer")
+	return nil
 }
 
 func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName string, rerecorded bool) int {

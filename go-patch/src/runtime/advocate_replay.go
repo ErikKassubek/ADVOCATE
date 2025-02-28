@@ -271,7 +271,7 @@ func WaitForReplayFinish(exit bool) {
 
 		// wait long enough, that all operations that have been released in the displayReplay
 		// can record the pre
-		sleep(1)
+		sleep(0.5)
 	}
 
 	if stuckReplayExecutedSuc {

@@ -35,7 +35,7 @@ var (
 	currentIndex     = make(map[int]int)
 	numberOfRoutines = 0
 	fifo             bool
-	runFuzzing       bool
+	modeIsFuzzing       bool
 
 	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
 	durationInSeconds = -1 // the duration of the recording in seconds

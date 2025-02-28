@@ -25,11 +25,12 @@ import (
  * Collect stats about the traces
  * Args:
  *     dataPath (string): path to the result folder
+ *     traceId (int): name of trace folder is datapath_traceId
  * Returns:
  *     map[string]int: map with the stats
  *     error
  */
-func statsTraces(dataPath string) (map[string]int, error) {
+func statsTraces(dataPath string, traceId int) (map[string]int, error) {
 	res := map[string]int{
 		"numberElements": 0,
 
@@ -67,7 +68,7 @@ func statsTraces(dataPath string) (map[string]int, error) {
 		"numberOnceOperations": 0,
 	}
 
-	tracePath := filepath.Join(dataPath, "advocateTrace")
+	tracePath := filepath.Join(dataPath, fmt.Sprintf("advocateTrace_%d", traceId))
 
 	// do not count the same twice
 	known := map[string][]string{

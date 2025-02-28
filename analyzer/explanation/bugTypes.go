@@ -16,7 +16,8 @@ import (
 
 // type (bug / diagnostics)
 var bugCrit = map[string]string{
-	"A00": "Bug",
+	"R00": "Bug",
+	"R01": "Diagnostic",
 	"A01": "Bug",
 	"A02": "Diagnostics",
 	"A03": "Bug",
@@ -52,7 +53,6 @@ var bugNames = map[string]string{
 	"A06": "Actual unlock of not locked mutex",
 	"A07": "Concurrent Receive",
 	"A08": "Select Case without Partner",
-	"A00": "Unknown Panic",
 
 	"P01": "Possible Send on Closed Channel",
 	"P02": "Possible Receive on Closed Channel",
@@ -71,6 +71,9 @@ var bugNames = map[string]string{
 	"L08": "Leak on sync.Mutex",
 	"L09": "Leak on sync.WaitGroup",
 	"L10": "Leak on sync.Cond",
+
+	"R01": "Unknown Panic",
+	"R02": "Timeout",
 }
 
 var bugCodes = make(map[string]string) // inverse of bugNames, initialized in init
@@ -95,7 +98,8 @@ var bugExplanations = map[string]string{
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
-	"A00": "During the execution of the program, a unknown panic occured",
+	"R00": "During the execution of the program, a unknown panic occured",
+	"R01": "The execution of the program timed out",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
@@ -158,194 +162,6 @@ var bugExplanations = map[string]string{
 	"L10": "The analyzer detected a leak on a sync.Cond.\n" +
 		"A leak on a sync.Cond is a situation, where a sync.Cond wait is still blocking at the end of the program.\n" +
 		"A sync.Cond wait is blocking, because the condition is not met.",
-}
-
-// examples
-var bugExamples map[string]string = map[string]string{
-	"A01": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    c <- 1            // <-------\n}",
-	"A02": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    <-c               // <-------\n}",
-	"A03": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    close(c)          // <-------\n}",
-	"A04": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    c = nil" +
-		"    close(c)          // <-------\n}",
-	"A05": "func main() {\n" +
-		"    var wg sync.WaitGroup\n\n" +
-		"    wg.Add(1)\n" +
-		"    wg.Done()\n" +
-		"    wg.Done()          // <-------\n}",
-	"A06": "func main() {\n" +
-		"    var m sync.Mutex\n\n" +
-		"    m.Lock()\n" +
-		"    wg.Unlock\n" +
-		"    wg.Unlock()          // <-------\n}",
-	"A07": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        <-c             // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <-c             // <-------\n" +
-		"    }()\n\n" +
-		"    c <- 1\n" +
-		"}",
-	"A08": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    d := make(chan int)\n" +
-		"    go func() {\n" +
-		"        <-c\n" +
-		"    }()\n\n" +
-		"    select{\n" +
-		"    case c1 := <- c:\n" +
-		"        print(c1)\n" +
-		"    case d <- 1:      // <-------\n" +
-		"        print(\"d\")\n" +
-		"    }\n",
-	"A00": "func main() {\n" +
-		"    panic('p')      // <-------\n" +
-		"}",
-	"P01": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c\n" +
-		"    }()\n\n" +
-		"    close(c)            // <-------\n}",
-	"P02": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <-------\n" +
-		"    }()\n\n" +
-		"    close(c)            // <-------\n}",
-	"P03": "func main() {\n" +
-		"    var wg sync.WaitGroup\n\n" +
-		"    go func() {\n" +
-		"        wg.Add(1)       // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        wg.Done()       // <-------\n" +
-		"    }()\n\n" +
-		"    wg.Wait()\n}",
-	"P04": "func main() {\n" +
-		"    var m sync.Mutex\n\n" +
-		"    go func() {\n" +
-		"        m.Lock()       // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        m.Unlock()     // <-------\n" +
-		"    }()\n\n}",
-	"P05": "func main() {\n" +
-		"    var m sync.Mutex\n" +
-		"    var n sync.Mutex\n\n" +
-		"    go func() {\n" +
-		"        m.Lock()\n" +
-		"        n.Lock()\n     // <-------\n" +
-		"        n.Unlock()\n" +
-		"        m.Unlock()\n" +
-		"    }()\n\n" +
-		"    n.Lock()\n" +
-		"    m.Lock()\n        // <-------\n" +
-		"    m.Unlock()\n" +
-		"    n.Unlock()\n" +
-		"    }",
-	"L00": "func main() {\n" +
-		"    go func() {\n" +
-		"        time.Sleep(time.Second)          // <------- Is still running when main routine terminates\n" +
-		"    }()\n\n" +
-		"}",
-	"L01": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n" +
-		"}",
-	"L02": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak, no possible partner\n" +
-		"    }()\n" +
-		"}",
-	"L03": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n" +
-		"}",
-	"L04": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak, no possible partner\n" +
-		"    }()\n" +
-		"}",
-	"L05": "func main() {\n" +
-		"    var c chan int      // <------- Not initialized -> c = nil\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n",
-	"L06": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        select {        // <------- Leak\n" +
-		"        case c <- 1:    // <------- Possible partner\n" +
-		"        }\n" +
-		"    }()\n" +
-		"}",
-	"L07": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        select {        // <------- Leak, no possible partner\n" +
-		"        case c <- 1:\n" +
-		"        }\n" +
-		"    }()\n" +
-		"}",
-	"L08": "func main() {\n" +
-		"    var m sync.Mutex\n\n" +
-		"    go func() {\n" +
-		"        m.Lock()        // <------- Leak\n" +
-		"    }()\n\n" +
-		"    m.Lock()            // <------- Lock, no unlock\n" +
-		"}",
-	"L09": "func main() {\n" +
-		"    var wg sync.WaitGroup\n\n" +
-		"    wg.Add(1)           // <------- Add, no Done\n" +
-		"    wg.Wait()           // <------- Leak\n" +
-		"}",
-	"L10": "func main() {\n" +
-		"    var c sync.Cond\n\n" +
-		"    c.Wait()            // <------- Leak, no signal/broadcast\n" +
-		"}",
 }
 
 var exitCodeExplanation = map[string]string{
@@ -460,14 +276,12 @@ func getBugTypeDescription(bugType string) map[string]string {
 		"crit":        bugCrit[bugType],
 		"name":        bugNames[bugType],
 		"explanation": bugExplanations[bugType],
-		"example":     bugExamples[bugType],
 	}
 }
 
 func printBugTypeDescription(bugType string) {
 	fmt.Println(bugCrit[bugType] + ": " + bugNames[bugType] + "\n")
 	fmt.Println(bugExplanations[bugType] + "\n")
-	fmt.Println(bugExamples[bugType])
 }
 
 func getBugElementType(elemType string) string {

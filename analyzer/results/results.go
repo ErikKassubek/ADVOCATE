@@ -32,7 +32,6 @@ const (
 	Empty ResultType = ""
 
 	// actual
-	AUnknownPanic           ResultType = "A00"
 	ASendOnClosed           ResultType = "A01"
 	ARecvOnClosed           ResultType = "A02"
 	ACloseOnClosed          ResultType = "A03"
@@ -62,6 +61,10 @@ const (
 	LWaitGroup         = "L09"
 	LCond              = "L10"
 
+	// recording
+	RUnknownPanic ResultType = "R01"
+	RTimeout      ResultType = "R02"
+
 	// not executed select
 	// SNotExecutedWithPartner = "S00"
 )
@@ -75,7 +78,6 @@ var resultTypeMap = map[ResultType]string{
 	ACloseOnNilChannel:      "Actual close on nil channel",
 	ANegWG:                  "Actual negative Wait Group",
 	AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
-	AUnknownPanic:           "Unknown Panic",
 
 	PSendOnClosed:     "Possible send on closed channel:",
 	PRecvOnClosed:     "Possible receive on closed channel:",
@@ -94,6 +96,9 @@ var resultTypeMap = map[ResultType]string{
 	LMutex:             "Leak on mutex:",
 	LWaitGroup:         "Leak on wait group:",
 	LCond:              "Leak on conditional variable:",
+
+	RUnknownPanic: "Unknown Panic",
+	RTimeout:      "Timeout",
 
 	// SNotExecutedWithPartner: "Not executed select with potential partner",
 }

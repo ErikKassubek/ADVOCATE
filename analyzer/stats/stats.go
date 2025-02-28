@@ -29,7 +29,7 @@ func (td *testData) toString() string {
 	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
+		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
 			res += fmt.Sprintf(",%d", td.results[mode][code])
 		}
 	}
@@ -39,14 +39,8 @@ func (td *testData) toString() string {
 
 /*
  * Create files with the required stats
- * Args:
- *     pathToProgram (string): path to the program
- *     pathToTrace (string): path to the traces
- *     progName (string): name of the analyzed program
- *     testName (string): name of the test
- *     fuzzing (int): number of fuzzing run, -1 for not fuzzing
  */
-func CreateStats(pathFolder, progName string, testName string, fuzzing int) error {
+func CreateStats(pathFolder, progName string, testName string, traceId, fuzzing int) error {
 	// statsProg, err := statsProgram(pathToProgram)
 	// if err != nil {
 	// 	return err
@@ -54,7 +48,7 @@ func CreateStats(pathFolder, progName string, testName string, fuzzing int) erro
 
 	utils.LogInfo("Create statistics")
 
-	statsTrace, err := statsTraces(pathFolder)
+	statsTrace, err := statsTraces(pathFolder, traceId)
 	if err != nil {
 		return err
 	}
@@ -105,7 +99,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 
 	writeStatsFile(fileTracingPath, headerTracing, dataTracing)
 
-	actualCodes := []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08"}
+	actualCodes := []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08"}
 	numberOfActualBugsTotal := 0
 	numberOfActualBugsUnique := 0
 	for _, code := range actualCodes {
@@ -152,17 +146,23 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberOfPanicsVerifiedViaReplayUnique += statsAnalyzerUnique["replaySuccessful"][code]
 	}
 
-	NoUnexpectedPanicsInReplayTotal := 0
-	NoUnexpectedPanicsInReplayUnique := 0
+	numberUnexpectedPanicsInReplayTotal := 0
+	numberUnexpectedPanicsInReplayUnique := 0
 	for _, code := range posPanicCodes {
-		NoUnexpectedPanicsInReplayTotal += statsAnalyzerTotal["unexpectedPanic"][code]
-		NoUnexpectedPanicsInReplayUnique += statsAnalyzerUnique["unexpectedPanic"][code]
+		numberUnexpectedPanicsInReplayTotal += statsAnalyzerTotal["unexpectedPanic"][code]
+		numberUnexpectedPanicsInReplayUnique += statsAnalyzerUnique["unexpectedPanic"][code]
 	}
 
-	headerAnalysis := "TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique"
-	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal,
-		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, NoUnexpectedPanicsInReplayTotal, numberOfActualBugsUnique, numberOfLeaksUnique,
-		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, NoUnexpectedPanicsInReplayUnique)
+	probInRecCodes := []string{"R01", "R02"}
+	numberProbInRecord := 0
+	for _, code := range probInRecCodes {
+		numberProbInRecord += statsAnalyzerTotal["detected"][code]
+	}
+
+	headerAnalysis := "TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique"
+	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal,
+		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, numberUnexpectedPanicsInReplayTotal, numberProbInRecord, numberOfActualBugsUnique, numberOfLeaksUnique,
+		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, numberUnexpectedPanicsInReplayUnique)
 
 	writeStatsFile(fileAnalysisPath, headerAnalysis, dataAnalysis)
 
@@ -191,7 +191,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	data := make([]string, 0)
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, count := range []string{"Total", "Unique"} {
-			for _, code := range []string{"A00", "A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"} {
+			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
 				headers = append(headers, "No"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))

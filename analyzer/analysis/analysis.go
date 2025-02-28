@@ -64,7 +64,19 @@ func runAnalysisOnExitCodes(all bool) {
 		return
 	}
 
-	if exitCode == 3 { // close on nil
+	switch exitCode {
+	case 2: // close on closed
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "CC",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.ACloseOnClosed,
+			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	case 3: // close on nil
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -75,7 +87,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 4 { // negative wg counter
+	case 4: // negative wg counter
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -86,7 +98,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 5 { // unlock of not locked mutex
+	case 5: // unlock of not locked mutex
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -97,7 +109,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 6 { // unknown panic
+	case 6: // unknown panic
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -106,8 +118,11 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.AUnknownPanic,
+		results.Result(results.CRITICAL, results.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	case 7: // timeout
+		results.Result(results.CRITICAL, results.RTimeout,
+			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
@@ -123,17 +138,6 @@ func runAnalysisOnExitCodes(all bool) {
 			results.Result(results.CRITICAL, results.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
 		}
-	} else if exitCode == 2 { // close on closed
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, results.ACloseOnClosed,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	}
 }
 

@@ -210,7 +210,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if createStats {
 		// create statistics
 		fmt.Println("Create statistics")
-		stats.CreateStats(dir, programName, "", fuzzing)
+		stats.CreateStats(dir, programName, "", movedTraces, fuzzing)
 	}
 
 	if total {

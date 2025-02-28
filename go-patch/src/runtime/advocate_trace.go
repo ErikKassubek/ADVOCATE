@@ -60,6 +60,7 @@ const (
 	exitCodeNegWG                 = 4
 	exitCodeUnlockOfUnlockedMutex = 5
 	exitCodeUnknownPanic          = 6
+	exitCodeTimeOut               = 7
 )
 
 var advocateTracingDisabled = true
@@ -130,6 +131,8 @@ func SetExitCodeFromPanicString(msg any) {
 	case string:
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = exitCodeNegWG
+		}  else if hasPrefix(m, "test timed out") {
+			advocateExitCode = exitCodeTimeOut
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||
 				m == "sync: Unlock of unlocked RWMutex" ||

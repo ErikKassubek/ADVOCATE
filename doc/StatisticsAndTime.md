@@ -26,6 +26,8 @@ If the `-time` flag is set, a two files with the runtimes will be created.
 - L08: Leak on mutex
 - L09: Leak on waitgroup
 - L10: Leak on cond
+- R01: Unknown panic in recording
+- R02: Timeout in recording
 
 
 ## Statistics
@@ -43,12 +45,11 @@ While for all the other stat files, the data is collected on a per test base, th
 for the whole problem. Meaning if the same bug was found in multiple tests, it is just counted once here. For the replay we again
 use the best possible result for the bug. The fields are
 
-- `NoFile`
+- `NoFiles`
 - `NoLines`
 - `NoNonEmptyLines`
 - `NoTests`
-- `NoRuns` (only different from number of tests for fuzzing)
-- `NoDetectedA00`
+- `NoRuns`
 - `NoDetectedA01`
 - `NoDetectedA02`
 - `NoDetectedA03`
@@ -73,7 +74,8 @@ use the best possible result for the bug. The fields are
 - `NoDetectedL08`
 - `NoDetectedL09`
 - `NoDetectedL10`
-- `NoReplayWrittenA00`
+- `NoDetectedR01`
+- `NoDetectedR02`
 - `NoReplayWrittenA01`
 - `NoReplayWrittenA02`
 - `NoReplayWrittenA03`
@@ -98,7 +100,8 @@ use the best possible result for the bug. The fields are
 - `NoReplayWrittenL08`
 - `NoReplayWrittenL09`
 - `NoReplayWrittenL10`
-- `NoReplaySuccessfulA00`
+- `NoReplayWrittenR01`
+- `NoReplayWrittenR02`
 - `NoReplaySuccessfulA01`
 - `NoReplaySuccessfulA02`
 - `NoReplaySuccessfulA03`
@@ -123,7 +126,8 @@ use the best possible result for the bug. The fields are
 - `NoReplaySuccessfulL08`
 - `NoReplaySuccessfulL09`
 - `NoReplaySuccessfulL10`
-- `NoUnexpectedPanicA00`
+- `NoReplaySuccessfulR01`
+- `NoReplaySuccessfulR02`
 - `NoUnexpectedPanicA01`
 - `NoUnexpectedPanicA02`
 - `NoUnexpectedPanicA03`
@@ -148,6 +152,8 @@ use the best possible result for the bug. The fields are
 - `NoUnexpectedPanicL08`
 - `NoUnexpectedPanicL09`
 - `NoUnexpectedPanicL10`
+- `NoUnexpectedPanicR01`
+- `NoUnexpectedPanicR02`
 
 ### statsTrace
 This file contains statistics about the program traces. It contains one
@@ -183,6 +189,7 @@ The columns are
 - `NoPanicsTotal`: Total number of possible panic bugs
 - `NoPanicsVerifiedViaReplayTotal`: Total number of possible panic bugs confirmed with replay
 - `NoUnexpectedPanicsInReplayTotal`: Number of unexpected bugs in replay
+- `NoProbInRecordingTotal`: Number of panics or timeouts in recording
 - `NumberActualBugUnique`: Total number of actually occurring bugs
 - `NoLeaksUnique`: Total number of detected leaks
 - `NoLeaksWithRewriteUnique`: Total number of leaks where a rewrite was possible
@@ -241,7 +248,6 @@ The full list of columns is as follows:
 - `NoCondVariablesEvents`
 - `NoOnce`
 - `NoOnceOperations`
-- `NoTotalDetectedA00`
 - `NoTotalDetectedA01`
 - `NoTotalDetectedA02`
 - `NoTotalDetectedA03`
@@ -266,7 +272,8 @@ The full list of columns is as follows:
 - `NoTotalDetectedL08`
 - `NoTotalDetectedL09`
 - `NoTotalDetectedL10`
-- `NoUniqueDetectedA00`
+- `NoTotalDetectedR01`
+- `NoTotalDetectedR02`
 - `NoUniqueDetectedA01`
 - `NoUniqueDetectedA02`
 - `NoUniqueDetectedA03`
@@ -291,7 +298,8 @@ The full list of columns is as follows:
 - `NoUniqueDetectedL08`
 - `NoUniqueDetectedL09`
 - `NoUniqueDetectedL10`
-- `NoTotalReplayWrittenA00`
+- `NoUniqueDetectedR01`
+- `NoUniqueDetectedR02`
 - `NoTotalReplayWrittenA01`
 - `NoTotalReplayWrittenA02`
 - `NoTotalReplayWrittenA03`
@@ -316,7 +324,8 @@ The full list of columns is as follows:
 - `NoTotalReplayWrittenL08`
 - `NoTotalReplayWrittenL09`
 - `NoTotalReplayWrittenL10`
-- `NoUniqueReplayWrittenA00`
+- `NoTotalReplayWrittenR01`
+- `NoTotalReplayWrittenR02`
 - `NoUniqueReplayWrittenA01`
 - `NoUniqueReplayWrittenA02`
 - `NoUniqueReplayWrittenA03`
@@ -341,7 +350,8 @@ The full list of columns is as follows:
 - `NoUniqueReplayWrittenL08`
 - `NoUniqueReplayWrittenL09`
 - `NoUniqueReplayWrittenL10`
-- `NoTotalReplaySuccessfulA00`
+- `NoUniqueReplayWrittenR01`
+- `NoUniqueReplayWrittenR02`
 - `NoTotalReplaySuccessfulA01`
 - `NoTotalReplaySuccessfulA02`
 - `NoTotalReplaySuccessfulA03`
@@ -366,7 +376,8 @@ The full list of columns is as follows:
 - `NoTotalReplaySuccessfulL08`
 - `NoTotalReplaySuccessfulL09`
 - `NoTotalReplaySuccessfulL10`
-- `NoUniqueReplaySuccessfulA00`
+- `NoTotalReplaySuccessfulR01`
+- `NoTotalReplaySuccessfulR02`
 - `NoUniqueReplaySuccessfulA01`
 - `NoUniqueReplaySuccessfulA02`
 - `NoUniqueReplaySuccessfulA03`
@@ -391,7 +402,8 @@ The full list of columns is as follows:
 - `NoUniqueReplaySuccessfulL08`
 - `NoUniqueReplaySuccessfulL09`
 - `NoUniqueReplaySuccessfulL10`
-- `NoTotalUnexpectedPanicA00`
+- `NoUniqueReplaySuccessfulR01`
+- `NoUniqueReplaySuccessfulR02`
 - `NoTotalUnexpectedPanicA01`
 - `NoTotalUnexpectedPanicA02`
 - `NoTotalUnexpectedPanicA03`
@@ -416,7 +428,8 @@ The full list of columns is as follows:
 - `NoTotalUnexpectedPanicL08`
 - `NoTotalUnexpectedPanicL09`
 - `NoTotalUnexpectedPanicL10`
-- `NoUniqueUnexpectedPanicA00`
+- `NoTotalUnexpectedPanicR01`
+- `NoTotalUnexpectedPanicR02`
 - `NoUniqueUnexpectedPanicA01`
 - `NoUniqueUnexpectedPanicA02`
 - `NoUniqueUnexpectedPanicA03`
@@ -441,6 +454,8 @@ The full list of columns is as follows:
 - `NoUniqueUnexpectedPanicL08`
 - `NoUniqueUnexpectedPanicL09`
 - `NoUniqueUnexpectedPanicL10`
+- `NoUniqueUnexpectedPanicR01`
+- `NoUniqueUnexpectedPanicR02`
 
 # statsFuzzing
 This file contains information of the fuzzing for each test. This file is only created if the analysis is run in fuzzing mode.
@@ -451,7 +466,6 @@ The columns are
 
 - `TestName`
 - `NoRuns`
-- `NoDetectedA00`
 - `NoDetectedA01`
 - `NoDetectedA02`
 - `NoDetectedA03`
@@ -476,7 +490,8 @@ The columns are
 - `NoDetectedL08`
 - `NoDetectedL09`
 - `NoDetectedL10`
-- `NoReplayWrittenA00`
+- `NoDetectedR01`
+- `NoDetectedR02`
 - `NoReplayWrittenA01`
 - `NoReplayWrittenA02`
 - `NoReplayWrittenA03`
@@ -501,7 +516,8 @@ The columns are
 - `NoReplayWrittenL08`
 - `NoReplayWrittenL09`
 - `NoReplayWrittenL10`
-- `NoReplaySuccessfulA00`
+- `NoReplayWrittenR01`
+- `NoReplayWrittenR02`
 - `NoReplaySuccessfulA01`
 - `NoReplaySuccessfulA02`
 - `NoReplaySuccessfulA03`
@@ -526,7 +542,8 @@ The columns are
 - `NoReplaySuccessfulL08`
 - `NoReplaySuccessfulL09`
 - `NoReplaySuccessfulL10`
-- `NoUnexpectedPanicA00`
+- `NoReplaySuccessfulR01`
+- `NoReplaySuccessfulR02`
 - `NoUnexpectedPanicA01`
 - `NoUnexpectedPanicA02`
 - `NoUnexpectedPanicA03`
@@ -551,6 +568,8 @@ The columns are
 - `NoUnexpectedPanicL08`
 - `NoUnexpectedPanicL09`
 - `NoUnexpectedPanicL10`
+- `NoUnexpectedPanicR01`
+- `NoUnexpectedPanicR02`
 
 ## Times
 To create the time files, set the `-time` flag.

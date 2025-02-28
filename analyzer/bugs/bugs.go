@@ -25,7 +25,6 @@ const (
 	Empty ResultType = ""
 
 	// actual
-	AUnknownPanic           ResultType = "A00"
 	ASendOnClosed           ResultType = "A01"
 	ARecvOnClosed           ResultType = "A02"
 	ACloseOnClosed          ResultType = "A03"
@@ -54,6 +53,10 @@ const (
 	LMutex             = "L08"
 	LWaitGroup         = "L09"
 	LCond              = "L10"
+
+	// problems during recording
+	RUnknownPanic ResultType = "R01"
+	RTimeout      ResultType = "R02"
 
 	// SNotExecutedWithPartner = "S00"
 )
@@ -114,10 +117,11 @@ func (b Bug) ToString() string {
 	arg1Str := ""
 	arg2Str := ""
 	switch b.Type {
-	case AUnknownPanic:
+	case RUnknownPanic:
 		typeStr = "Unknown Panic:"
 		arg1Str = "Panic: "
-		arg2Str = ""
+	case RTimeout:
+		typeStr = "Timeout"
 	case ASendOnClosed:
 		typeStr = "Actual Send on Closed Channel:"
 		arg1Str = "send: "
@@ -145,12 +149,9 @@ func (b Bug) ToString() string {
 	case ANegWG:
 		typeStr = "Actual negative Wait Group:"
 		arg1Str = "done: "
-		arg2Str = ""
 	case AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
-		arg2Str = ""
-
 	case PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
 		arg1Str = "send: "
@@ -171,11 +172,9 @@ func (b Bug) ToString() string {
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
-
 	case LWithoutBlock:
 		typeStr = "Leak on routine without any blocking operation"
 		arg1Str = "fork: "
-		arg2Str = ""
 	case LUnbufferedWith:
 		typeStr = "Leak on unbuffered channel with possible partner:"
 		arg1Str = "channel: "
@@ -183,7 +182,6 @@ func (b Bug) ToString() string {
 	case LUnbufferedWithout:
 		typeStr = "Leak on unbuffered channel without possible partner:"
 		arg1Str = "channel: "
-		arg2Str = ""
 	case LBufferedWith:
 		typeStr = "Leak on buffered channel with possible partner:"
 		arg1Str = "channel: "
@@ -191,11 +189,9 @@ func (b Bug) ToString() string {
 	case LBufferedWithout:
 		typeStr = "Leak on buffered channel without possible partner:"
 		arg1Str = "channel: "
-		arg2Str = ""
 	case LNilChan:
 		typeStr = "Leak on nil channel:"
 		arg1Str = "channel: "
-		arg2Str = ""
 	case LSelectWith:
 		typeStr = "Leak on select with possible partner:"
 		arg1Str = "select: "
@@ -203,7 +199,6 @@ func (b Bug) ToString() string {
 	case LSelectWithout:
 		typeStr = "Leak on select without partner:"
 		arg1Str = "select: "
-		arg2Str = ""
 	case LMutex:
 		typeStr = "Leak on mutex:"
 		arg1Str = "mutex: "
@@ -211,11 +206,9 @@ func (b Bug) ToString() string {
 	case LWaitGroup:
 		typeStr = "Leak on wait group:"
 		arg1Str = "waitgroup: "
-		arg2Str = ""
 	case LCond:
 		typeStr = "Leak on conditional variable:"
 		arg1Str = "cond: "
-		arg2Str = ""
 	// case SNotExecutedWithPartner:
 	// 	typeStr = "Not executed select with potential partner"
 	// 	arg1Str = "select: "
@@ -283,8 +276,11 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	actual := false
 
 	switch bugType {
-	case "A00":
-		bug.Type = AUnknownPanic
+	case "R01":
+		bug.Type = RUnknownPanic
+		actual = true
+	case "R02":
+		bug.Type = RTimeout
 		actual = true
 	case "A01":
 		bug.Type = ASendOnClosed

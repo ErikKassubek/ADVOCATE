@@ -28,7 +28,6 @@ with
 ```
 The typeIDs have the following meaning:
 
-- A00: Unknown panic
 - A01: Send on closed channel
 - A02: Receive on closed channel
 - A03: Close on closed channel
@@ -50,6 +49,8 @@ The typeIDs have the following meaning:
 - L08: Leak on mutex
 - L09: Leak on waitgroup
 - L10: Leak on cond
+- R01: Unknown panic in recording
+- R02: Timeout in recording
 
 <!--P04: Possible cyclic deadlock, disabled-->
 <!--P05: Possible mixed deadlock, disabled-->

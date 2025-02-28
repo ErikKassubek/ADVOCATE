@@ -23,8 +23,6 @@ import (
 
 	"analyzer/analysis"
 	"analyzer/bugs"
-	"analyzer/complete"
-	"analyzer/explanation"
 	"analyzer/fuzzing"
 	"analyzer/io"
 	"analyzer/results"
@@ -220,12 +218,6 @@ func main() {
 		} else {
 			modeToolchain("test", 0)
 		}
-	case "stats":
-		modeStats()
-	case "explain":
-		modeExplain()
-	case "check":
-		modeCheck()
 	case "run":
 		// here the parameter need to stay, because the function is used in the
 		// toolchain package via function injection
@@ -286,54 +278,54 @@ func modeToolchain(mode string, numRerecorded int) {
 	}
 }
 
-func modeStats() {
-	// instead of the normal program, create statistics for the trace
-	if tracePath == "" {
-		utils.LogError("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
-		return
-	}
+// func modeStats() {
+// 	// instead of the normal program, create statistics for the trace
+// 	if tracePath == "" {
+// 		utils.LogError("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
+// 		return
+// 	}
 
-	if progName == "" {
-		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
-		return
-	}
+// 	if progName == "" {
+// 		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
+// 		return
+// 	}
 
-	if execName == "" {
-		execName = progName
-	}
+// 	if execName == "" {
+// 		execName = progName
+// 	}
 
-	stats.CreateStats(tracePath, progName, execName, -1)
-}
+// 	stats.CreateStats(tracePath, progName, execName, -1)
+// }
 
-func modeCheck() {
-	if resultFolderTool == "" {
-		fmt.Println("Please provide the path to the advocateResult folder created by the pipeline. Set with -resultTool [folder]")
-		return
-	}
+// func modeCheck() {
+// 	if resultFolderTool == "" {
+// 		fmt.Println("Please provide the path to the advocateResult folder created by the pipeline. Set with -resultTool [folder]")
+// 		return
+// 	}
 
-	if progPath == "" {
-		fmt.Println("Please provide the path to the program folder. Set with -path [folder]")
-		return
-	}
+// 	if progPath == "" {
+// 		fmt.Println("Please provide the path to the program folder. Set with -path [folder]")
+// 		return
+// 	}
 
-	err := complete.Check(resultFolderTool, progPath)
+// 	err := complete.Check(resultFolderTool, progPath)
 
-	if err != nil {
-		utils.LogError("Error in running modeCheck: ", err)
-	}
-}
+// 	if err != nil {
+// 		utils.LogError("Error in running modeCheck: ", err)
+// 	}
+// }
 
-func modeExplain() {
-	if tracePath == "" {
-		utils.LogError("Please provide a path to the trace files for the explanation. Set with -trace [file]")
-		return
-	}
+// func modeExplain() {
+// 	if tracePath == "" {
+// 		utils.LogError("Please provide a path to the trace files for the explanation. Set with -trace [file]")
+// 		return
+// 	}
 
-	err := explanation.CreateOverview(tracePath, !rewriteAll, -1)
-	if err != nil {
-		utils.LogError("Error creating explanation: ", err.Error())
-	}
-}
+// 	err := explanation.CreateOverview(tracePath, !rewriteAll, -1)
+// 	if err != nil {
+// 		utils.LogError("Error creating explanation: ", err.Error())
+// 	}
+// }
 
 func getFolderTrace(pathTrace string) (string, error) {
 	folderTrace, err := filepath.Abs(pathTrace)
@@ -724,29 +716,8 @@ func printHelp() {
 	println("                             b: Concurrent receive on channel")
 	println("                             l: Leaking routine")
 	println("                             u: Select case without partner")
-	// println("                             c: Cyclic deadlock")
+	println("                             c: Cyclic deadlock")
 	// println("                             m: Mixed deadlock")
-	println("\n\n")
-	println("4. Create an explanation for a found bug")
-	println("Usage: ./analyzer explain [options]")
-	println("This mode creates an explanation for a found bug in the trace file.")
-	println("It has the following options:")
-	println("  -trace [file]          Path to the folder containing the machine readable result file (required)")
-	println("\n\n")
-	println("5. Check if all concurrency elements of the program have been executed at least once")
-	println("Usage: ./analyzer check [options]")
-	println("This mode checks if all concurrency elements of the program have been executed at least once.")
-	println("It has the following options:")
-	println("  -resultTool [folder]   Path where the advocateResult folder created by the pipeline is located (required)")
-	println("  -path [folder]          Path to the program folder (required)")
-	println("\n\n")
-	println("6. Create statistics about a program")
-	println("This creates some statistics about the program and the trace")
-	println("Usage: ./analyzer stats [options]")
-	// println("  -path [folder] Path to the program folder (required)")
-	println("  -trace [file]          Path to the folder containing the results_machine file (required)")
-	println("  -prog [name]           Name of the program")
-	println("  -exec [name]           Name of the test")
 }
 
 func printHelpMode(mode string) {
@@ -777,32 +748,6 @@ func printHelpMode(mode string) {
 		println("                             b: Concurrent receive on channel")
 		println("                             l: Leaking routine")
 		println("                             u: Select case without partner")
-		// println("                             c: Cyclic deadlock")
-		// println("                             m: Mixed deadlock")
-	case "explain":
-		println("Mode: explain")
-		println("Create an explanation for a found bug")
-		println("Usage: ./analyzer explain [options]")
-		println("This mode creates an explanation for a found bug in the trace file.")
-		println("It has the following options:")
-		println("  -trace [file]          Path to the folder containing the machine readable result file (required)")
-	case "check":
-		println("Mode: check")
-		println("Check if all concurrency elements of the program have been executed at least once")
-		println("Usage: ./analyzer check [options]")
-		println("This mode checks if all concurrency elements of the program have been executed at least once.")
-		println("It has the following options:")
-		println("  -resultTool [folder]   Path where the advocateResult folder created by the pipeline is located (required)")
-		println("  -path [folder]          Path to the program folder (required)")
-	case "stats":
-		println("Mode: stats")
-		println("Create statistics about a program")
-		println("This creates some statistics about the program and the trace")
-		println("Usage: ./analyzer stats [options]")
-		// println("  -path [folder] Path to the program folder (required)")
-		println("  -trace [file]          Path to the folder containing the results_machine file (required)")
-		println("  -prog [name]           Name of the program")
-		println("  -exec [name]           Name of the test")
 	case "tool":
 		println("Mode: too")
 		println("Run the toolchain")

@@ -63,8 +63,6 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 	rewriteNeeded = false
 	code = exitCodeNone
 	switch bug.Type {
-	case bugs.AUnknownPanic:
-		err = errors.New("Unknown panic occurred. No rewrite possible.")
 	case bugs.ASendOnClosed:
 		err = errors.New("Actual send on closed. Therefore no rewrite is needed.")
 	case bugs.ARecvOnClosed:
@@ -150,9 +148,13 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 		rewriteNeeded = true
 		code = exitCodeLeakCond
 		err = rewriteCondLeak(bug)
-	// case bugs.SNotExecutedWithPartner:
-	// 	rewriteNeeded = false
-	// 	err = errors.New("Rewrite for select not exec with partner not available")
+		// case bugs.SNotExecutedWithPartner:
+		// 	rewriteNeeded = false
+		// 	err = errors.New("Rewrite for select not exec with partner not available")
+	case bugs.RUnknownPanic:
+		err = errors.New("Unknown panic. No rewrite possible.")
+	case bugs.RTimeout:
+		err = errors.New("Timeout. No rewrite possible.")
 	default:
 		err = errors.New("For the given bug type no trace rewriting is implemented")
 	}

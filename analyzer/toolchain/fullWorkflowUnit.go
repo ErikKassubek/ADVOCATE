@@ -155,7 +155,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 
 			if createStats {
 				// create statistics
-				err := stats.CreateStats(directoryPath, progName, testFunc, fuzzing)
+				err := stats.CreateStats(directoryPath, progName, testFunc, movedTraces, fuzzing)
 				if err != nil {
 					utils.LogError("Could not create statistics: ", err.Error())
 				}

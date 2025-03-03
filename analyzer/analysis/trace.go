@@ -35,7 +35,7 @@ var (
 	currentIndex     = make(map[int]int)
 	numberOfRoutines = 0
 	fifo             bool
-	modeIsFuzzing       bool
+	modeIsFuzzing    bool
 
 	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
 	durationInSeconds = -1 // the duration of the recording in seconds
@@ -687,9 +687,9 @@ func PrintTrace(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			fmt.Println(elem.string, elem.VectorClock.ToString())
+			utils.LogImportant(elem.string, elem.VectorClock.ToString())
 		} else {
-			fmt.Println(elem.string)
+			utils.LogImportant(elem.string)
 		}
 	}
 }

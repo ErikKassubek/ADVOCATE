@@ -172,4 +172,11 @@ func ClearData() {
 	fuzzingFlowRecv = make([]ConcurrentEntry, 0)
 	executedOnce = make(map[int]*ConcurrentEntry)
 	fuzzingCounter = make(map[int]map[string]int)
+
+	currentVCHb = make(map[int]clock.VectorClock)
+	currentVCWmhb = make(map[int]clock.VectorClock)
+	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel)
+
+	numberOfRoutines = 0
+	timeoutHappened = false
 }

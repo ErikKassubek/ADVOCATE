@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 )
@@ -34,7 +35,7 @@ const (
  *   tpost (int): The timestamp at the end of the event
  *   id (int): The id of the condition variable
  *   opC (opCond): The operation on the condition variable
- *   pos (string): The position of the condition variable operation in the code
+ *   file (string), line(int): The position of the condition variable operation in the code
  *   tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementCond struct {
@@ -43,7 +44,8 @@ type TraceElementCond struct {
 	tPost   int
 	id      int
 	opC     OpCond
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -83,13 +85,19 @@ func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN 
 		return errors.New("op is not a valid operation")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementCond{
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
 		id:      idInt,
 		opC:     op,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -151,12 +159,20 @@ func (co *TraceElementCond) GetTSort() int {
 }
 
 /*
- * Get the position of the operation
- * Returns:
- *   (string): The position of the operation
+* Get the position of the operation.
+* Returns:
+*   string: The position of the element
  */
 func (co *TraceElementCond) GetPos() string {
-	return co.pos
+	return fmt.Sprintf("%s:%d", co.file, co.line)
+}
+
+func (co *TraceElementCond) GetFile() string {
+	return co.file
+}
+
+func (co *TraceElementCond) GetLine() int {
+	return co.line
 }
 
 /*
@@ -165,7 +181,7 @@ func (co *TraceElementCond) GetPos() string {
  *   string: The tID of the element
  */
 func (co *TraceElementCond) GetTID() string {
-	return co.pos + "@" + strconv.Itoa(co.tPre)
+	return co.GetPos() + "@" + strconv.Itoa(co.tPre)
 }
 
 /*
@@ -321,7 +337,7 @@ func (co *TraceElementCond) ToString() string {
 	case BroadcastOp:
 		res += "B"
 	}
-	res += "," + co.pos
+	res += "," + co.GetPos()
 	return res
 }
 
@@ -357,7 +373,8 @@ func (co *TraceElementCond) Copy() TraceElement {
 		tPost:   co.tPost,
 		id:      co.id,
 		opC:     co.opC,
-		pos:     co.pos,
+		file:    co.file,
+		line:    co.line,
 		vc:      co.vc.Copy(),
 	}
 }

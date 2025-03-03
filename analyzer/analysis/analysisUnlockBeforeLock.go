@@ -76,8 +76,8 @@ func checkForUnlockBeforeLock() {
 
 		nrUnlock := len(allUnlocks)
 
-		locks := []TraceElement{}
-		unlocks := []TraceElement{}
+		locks := make([]TraceElement, 0)
+		unlocks := make([]TraceElement, 0)
 
 		if maxFlow < nrUnlock {
 			for _, l := range allLocks[id] {

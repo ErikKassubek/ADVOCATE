@@ -80,11 +80,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	ranTest := false
 	// Process each test file
 	for _, file := range testFiles {
-		if testName == "" {
-			fmt.Println("\n\n=================================================")
-			fmt.Printf("Progress %s: %d/%d", progName, currentFile, totalFiles)
-			fmt.Printf("\nProcessing file: %s\n", file)
-			fmt.Println("=================================================\n\n")
+		if testName == "" || isFuzzing {
+			utils.LogInfof("Progress %s: %d/%d", progName, currentFile, totalFiles)
+			utils.LogInfof("\nProcessing file: %s\n", file)
 		}
 
 		packagePath := filepath.Dir(file)
@@ -99,8 +97,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 				continue
 			}
 
-			analysis.ClearTrace()
-			analysis.ClearData()
+			analysis.Clear()
 
 			if !isFuzzing {
 				timer.ResetTest()
@@ -321,13 +318,20 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 	if measureTime && fuzzing < 1 {
 		err := unitTestRun(pkg, file, testName)
 		if err != nil {
-			utils.LogError("Running T0 failed")
+			if err != nil {
+				if checkForTimeout(output) {
+					utils.LogError("Running T0 timed out")
+
+				} else {
+					utils.LogError("Running T0 failed: ", err.Error())
+				}
+			}
 		}
 	}
 
 	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, output)
 	if err != nil {
-		utils.LogError("Recording failed")
+		utils.LogError("Recording failed: ", err.Error())
 	}
 
 	err = unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, "-1", fuzzing)
@@ -362,6 +366,7 @@ func unitTestRun(pkg, file, testName string) error {
 	} else {
 		err = runCommand("go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
+
 	return err
 }
 
@@ -373,13 +378,11 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 	// Remove header just in case
 	if err := headerRemoverUnit(file); err != nil {
-		utils.LogErrorf("Error in removing header: %v\n", err)
 		return fmt.Errorf("Failed to remove header: %v", err)
 	}
 
 	// Add header
 	if err := headerInserterUnit(file, testName, false, fuzzing, "0", timeoutReplay, false); err != nil {
-		utils.LogErrorf("Error in adding header: %v\n", err)
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -405,12 +408,16 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 		}
 	}
 
-	os.Unsetenv("GOROOT")
+	err = os.Unsetenv("GOROOT")
+
+	if err != nil {
+		utils.LogErrorf("Failed to unset GOROOT: ", err.Error())
+	}
 
 	// Remove header after the test
-	headerRemoverUnit(file)
+	err = headerRemoverUnit(file)
 
-	return nil
+	return err
 }
 
 // Apply analyzer

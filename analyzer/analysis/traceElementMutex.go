@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 
@@ -42,7 +43,7 @@ const (
  *   rw (bool): Whether the mutex is a read-noWarningrite mutex
  *   opM (opMutex): The operation on the mutex
  *   suc (bool): Whether the operation was successful (only for trylock else always true)
- *   pos (string): The position of the mutex operation in the code
+ *   file (string), line(int): The position of the mutex operation in the code
  */
 type TraceElementMutex struct {
 	routine int
@@ -52,7 +53,8 @@ type TraceElementMutex struct {
 	rw      bool
 	opM     OpMutex
 	suc     bool
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -115,6 +117,11 @@ func AddTraceElementMutex(routine int, tPre string,
 		return errors.New("suc is not a boolean")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementMutex{
 		routine: routine,
 		tPre:    tPreInt,
@@ -123,7 +130,8 @@ func AddTraceElementMutex(routine int, tPre string,
 		rw:      rwBool,
 		opM:     opMInt,
 		suc:     sucBool,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -186,7 +194,15 @@ func (mu *TraceElementMutex) GetTSort() int {
  *   string: The position of the element
  */
 func (mu *TraceElementMutex) GetPos() string {
-	return mu.pos
+	return fmt.Sprintf("%s:%d", mu.file, mu.line)
+}
+
+func (mu *TraceElementMutex) GetFile() string {
+	return mu.file
+}
+
+func (mu *TraceElementMutex) GetLine() int {
+	return mu.line
 }
 
 /*
@@ -195,7 +211,7 @@ func (mu *TraceElementMutex) GetPos() string {
  *   string: The tID of the element
  */
 func (mu *TraceElementMutex) GetTID() string {
-	return mu.pos + "@" + strconv.Itoa(mu.tPre)
+	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
 /*
@@ -338,7 +354,7 @@ func (mu *TraceElementMutex) ToString() string {
 	} else {
 		res += ",f"
 	}
-	res += "," + mu.pos
+	res += "," + mu.GetPos()
 	return res
 }
 
@@ -428,7 +444,8 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		rw:      mu.rw,
 		opM:     mu.opM,
 		suc:     mu.suc,
-		pos:     mu.pos,
+		file:    mu.file,
+		line:    mu.line,
 		vc:      mu.vc.Copy(),
 	}
 }

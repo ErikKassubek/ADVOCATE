@@ -89,8 +89,8 @@ func checkForDoneBeforeAdd() {
 		}
 		nrDone := len(wgDone[id])
 
-		addsNegWg := []TraceElement{}
-		donesNegWg := []TraceElement{}
+		addsNegWg := make([]TraceElement, 0)
+		donesNegWg := make([]TraceElement, 0)
 
 		if maxFlow < nrDone {
 			// sort the adds and dones, that do not have a partner is such a way,

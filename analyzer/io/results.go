@@ -11,6 +11,7 @@
 package io
 
 import (
+	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/timer"
 	"analyzer/utils"
@@ -66,6 +67,8 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 	if err != nil {
 		utils.LogError("Error processing bug: ", bugStr)
 		utils.LogError(err.Error())
+		analysis.PrintTrace([]string{}, false)
+		panic("a")
 		return false, bug, err
 	}
 

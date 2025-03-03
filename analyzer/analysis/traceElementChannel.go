@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 
@@ -45,7 +46,7 @@ var maxOpID = make(map[int]int)
 *   oId (int): The id of the other communication
 *   qSize (int): The size of the channel queue
 *   qCount (int): The number of elements in the queue after the operation
-*   pos (string): The position of the channel operation in the code
+*   file (string), line(int): The position of the channel operation in the code
 *   sel (*traceElementSelect): The select operation, if the channel operation
 *       is part of a select, otherwise nil
 *   partner (*TraceElementChannel): The partner of the channel operation
@@ -61,7 +62,8 @@ type TraceElementChannel struct {
 	oID     int
 	qSize   int
 	qCount  int
-	pos     string
+	file    string
+	line    int
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
 	vc      clock.VectorClock
@@ -136,6 +138,11 @@ func AddTraceElementChannel(routine int, tPre string,
 		return errors.New("qSize is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementChannel{
 		routine: routine,
 		tPre:    tPreInt,
@@ -146,7 +153,8 @@ func AddTraceElementChannel(routine int, tPre string,
 		oID:     oIDInt,
 		qSize:   qSizeInt,
 		qCount:  qCountInt,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	// check if partner was already processed, otherwise add to channelWithoutPartner
@@ -223,7 +231,15 @@ func (ch *TraceElementChannel) GetTSort() int {
  *   string: The position of the element
  */
 func (ch *TraceElementChannel) GetPos() string {
-	return ch.pos
+	return fmt.Sprintf("%s:%d", ch.file, ch.line)
+}
+
+func (ch *TraceElementChannel) GetFile() string {
+	return ch.file
+}
+
+func (ch *TraceElementChannel) GetLine() int {
+	return ch.line
 }
 
 /*
@@ -232,7 +248,7 @@ func (ch *TraceElementChannel) GetPos() string {
  *   string: The tID of the element
  */
 func (ch *TraceElementChannel) GetTID() string {
-	return ch.pos + "@" + strconv.Itoa(ch.tPre)
+	return ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
 }
 
 /*
@@ -478,7 +494,7 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 	res += sep + strconv.Itoa(ch.qSize)
 	res += sep + strconv.Itoa(ch.qCount)
 	if pos {
-		res += sep + ch.pos
+		res += sep + ch.GetPos()
 	}
 	return res
 }
@@ -642,7 +658,8 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		cl:      ch.cl,
 		oID:     ch.oID,
 		qSize:   ch.qSize,
-		pos:     ch.pos,
+		file:    ch.file,
+		line:    ch.line,
 		sel:     ch.sel,
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),

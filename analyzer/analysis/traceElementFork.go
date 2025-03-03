@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -23,13 +24,14 @@ import (
 *   routine (int): The routine id
 *   tpost (int): The timestamp at the end of the event
 *   id (int): The id of the new go statement
-*  pos (string): The position of the trace element in the file
+*   file (string), line(int): The position of the trace element in the file
  */
 type TraceElementFork struct {
 	routine int
 	tPost   int
 	id      int
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -53,11 +55,17 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 		return errors.New("id is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementFork{
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 	return AddElementToTrace(&elem)
 }
@@ -115,7 +123,15 @@ func (fo *TraceElementFork) GetTSort() int {
  *   string: The position of the element
  */
 func (fo *TraceElementFork) GetPos() string {
-	return fo.pos
+	return fmt.Sprintf("%s:%d", fo.file, fo.line)
+}
+
+func (fo *TraceElementFork) GetFile() string {
+	return fo.file
+}
+
+func (fo *TraceElementFork) GetLine() int {
+	return fo.line
 }
 
 /*
@@ -124,7 +140,7 @@ func (fo *TraceElementFork) GetPos() string {
  *   string: The tID of the element
  */
 func (fo *TraceElementFork) GetTID() string {
-	return fo.pos + "@" + strconv.Itoa(fo.tPost)
+	return fo.GetPos() + "@" + strconv.Itoa(fo.tPost)
 }
 
 /*
@@ -194,7 +210,7 @@ func (fo *TraceElementFork) SetTWithoutNotExecuted(tSort int) {
  */
 func (fo *TraceElementFork) ToString() string {
 	return "G" + "," + strconv.Itoa(fo.tPost) + "," + strconv.Itoa(fo.id) +
-		"," + fo.pos
+		"," + fo.GetPos()
 }
 
 /*
@@ -217,7 +233,8 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		routine: fo.routine,
 		tPost:   fo.tPost,
 		id:      fo.id,
-		pos:     fo.pos,
+		file:    fo.file,
+		line:    fo.line,
 		vc:      fo.vc.Copy(),
 	}
 }

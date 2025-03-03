@@ -36,7 +36,7 @@ const (
  *   id (int): The id of the underlying operation
  *   elemType (newOpType): The type of the created object
  *   num (int): Variable field for additional information
- *   pos (string): The position of the new
+ *   file (string), line (int): The position of the new
  * For now this is only creates the new for channel. This may be expanded later.
  */
 type TraceElementNew struct {
@@ -45,7 +45,8 @@ type TraceElementNew struct {
 	id       int
 	elemType newOpType
 	num      int
-	pos      string
+	file     string
+	line     int
 	vc       clock.VectorClock
 }
 
@@ -65,13 +66,19 @@ func AddTraceElementNew(routine int, tPost string, id string, elemType string, n
 		return errors.New("num is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementNew{
 		routine:  routine,
 		tPost:    tPostInt,
 		id:       idInt,
 		elemType: newOpType(elemType),
 		num:      numInt,
-		pos:      pos,
+		file:     file,
+		line:     line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -97,12 +104,25 @@ func (n *TraceElementNew) GetRoutine() int {
 	return n.routine
 }
 
+/*
+ * Get the position of the operation.
+ * Returns:
+ *   string: The position of the element
+ */
 func (n *TraceElementNew) GetPos() string {
-	return n.pos
+	return fmt.Sprintf("%s:%d", n.file, n.line)
+}
+
+func (n *TraceElementNew) GetFile() string {
+	return n.file
+}
+
+func (n *TraceElementNew) GetLine() int {
+	return n.line
 }
 
 func (n *TraceElementNew) GetTID() string {
-	return n.pos + "@" + strconv.Itoa(n.tPost)
+	return n.GetPos() + "@" + strconv.Itoa(n.tPost)
 }
 
 func (n *TraceElementNew) GetObjType() string {
@@ -133,7 +153,7 @@ func (n *TraceElementNew) GetNum() int {
 }
 
 func (n *TraceElementNew) ToString() string {
-	return fmt.Sprintf("N,%d,%d,%s,%d,%s", n.tPost, n.id, string(n.elemType), n.num, n.pos)
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", n.tPost, n.id, string(n.elemType), n.num, n.GetPos())
 }
 
 func (n *TraceElementNew) SetTPre(tSort int) {
@@ -167,7 +187,8 @@ func (n *TraceElementNew) Copy() TraceElement {
 		tPost:    n.tPost,
 		id:       n.id,
 		elemType: n.elemType,
-		pos:      n.pos,
+		file:     n.file,
+		line:     n.line,
 		vc:       n.vc.Copy(),
 	}
 }

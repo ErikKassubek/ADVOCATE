@@ -171,12 +171,6 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 				}
 
 				elem2 := elemVc.elem
-				file2, line2, err := posFromPosString(elem2.GetPos())
-				if err != nil {
-					utils.LogError(err.Error())
-					continue
-				}
-				tPre2 := elem2.GetTPre()
 
 				objType := "C"
 				if opType == 0 {
@@ -188,7 +182,7 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 				arg1 := results.TraceElementResult{
 					RoutineID: routineID, ObjID: objID, TPre: tPre1, ObjType: "CR", File: file1, Line: line1}
 				arg2 := results.TraceElementResult{
-					RoutineID: vcTID2.routine, ObjID: objID, TPre: tPre2, ObjType: objType, File: file2, Line: line2}
+					RoutineID: vcTID2.routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: objType, File: elem2.GetFile(), Line: elem2.GetLine()}
 
 				results.Result(results.CRITICAL, bugType,
 					"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -232,17 +226,11 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 				}
 
 				elem2 := elemVc.elem
-				file2, line2, err := posFromPosString(elem2.GetPos())
-				if err != nil {
-					utils.LogError(err.Error())
-					continue
-				}
-				tPre2 := elem2.GetTPre()
 
 				arg1 := results.TraceElementResult{
 					RoutineID: routineID, ObjID: objID, TPre: tPre1, ObjType: objType, File: file1, Line: line1}
 				arg2 := results.TraceElementResult{
-					RoutineID: vcTID2.routine, ObjID: objID, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
+					RoutineID: vcTID2.routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: "CR", File: elem2.GetFile(), Line: elem2.GetLine()}
 
 				results.Result(results.CRITICAL, bugType,
 					"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -320,11 +308,8 @@ func checkForLeak() {
 				}
 
 				elem2 := partner.elem.elem
-				file2, line2, err := posFromPosString(elem2.GetPos())
-				if err != nil {
-					utils.LogError(err.Error())
-					continue
-				}
+				file2 := elem2.GetFile()
+				line2 := elem2.GetLine()
 				tPre2 := elem2.GetTPre()
 
 				if vcTID.sel {

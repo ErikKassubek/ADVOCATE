@@ -82,21 +82,7 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 		happensBefore := clock.GetHappensBefore(elem[id].vc, vc[routine])
 		if happensBefore == clock.Concurrent {
 
-			file1, line1, err := posFromPosString(ch.pos)
-			if err != nil {
-				utils.LogError(err.Error())
-				continue
-			}
-			tPre1 := ch.tPre
-
 			elem2 := elem[id].elem
-			file2, line2, err := posFromPosString(elem2.GetPos())
-
-			if err != nil {
-				utils.LogErrorf("Error in posFromPosString: %s", err.Error())
-			}
-
-			tPre2 := elem2.GetTPre()
 
 			if ch.tPost == 0 {
 				fuzzingFlowRecv = append(fuzzingFlowRecv, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
@@ -105,19 +91,19 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorCloc
 			arg1 := results.TraceElementResult{
 				RoutineID: routine,
 				ObjID:     id,
-				TPre:      tPre1,
+				TPre:      ch.GetTPre(),
 				ObjType:   "CR",
-				File:      file1,
-				Line:      line1,
+				File:      ch.GetFile(),
+				Line:      ch.GetLine(),
 			}
 
 			arg2 := results.TraceElementResult{
 				RoutineID: r,
 				ObjID:     id,
-				TPre:      tPre2,
+				TPre:      elem2.GetTPre(),
 				ObjType:   "CR",
-				File:      file2,
-				Line:      line2,
+				File:      elem2.GetFile(),
+				Line:      elem2.GetLine(),
 			}
 
 			results.Result(results.WARNING, results.AConcurrentRecv,

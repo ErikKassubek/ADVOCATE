@@ -107,6 +107,14 @@ func (fo *TraceElementRoutineEnd) GetPos() string {
 	return ""
 }
 
+func (fo *TraceElementRoutineEnd) GetFile() string {
+	return ""
+}
+
+func (fo *TraceElementRoutineEnd) GetLine() int {
+	return 0
+}
+
 /*
  * Get the tID of the element.
  * Returns:

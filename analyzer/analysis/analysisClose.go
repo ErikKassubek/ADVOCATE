@@ -117,52 +117,43 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 /*
  * Sound actual send on closed
  * Args:
- *  routineID (int): id of the routine where the send happened
+ *  elem (TraceElement): the send/select elem
  *  id (int): id of the channel
- *  posSend (string): code location of the send
  *  actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
  */
-func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool) {
+func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
+
+	id := elem.GetID()
 
 	if _, ok := closeData[id]; !ok {
 		return
 	}
 
-	posClose := closeData[id].GetTID()
-	if posClose == "" || posSend == "" || posClose == "\n" || posSend == "\n" {
-		return
-	}
+	closeElem := closeData[id]
+	fileSend := elem.GetFile()
 
-	file1, line1, tPre1, err := infoFromTID(posSend)
-	if err != nil {
-		utils.LogError(err.Error())
-		return
-	}
-
-	file2, line2, tPre2, err := infoFromTID(posClose)
-	if err != nil {
-		utils.LogError(err.Error())
+	if fileSend == "" || fileSend == "\n" {
 		return
 	}
 
 	arg1 := results.TraceElementResult{ // send
-		RoutineID: routineID,
+		RoutineID: elem.GetRoutine(),
 		ObjID:     id,
-		TPre:      tPre1,
+		TPre:      elem.GetTPre(),
 		ObjType:   "CS",
-		File:      file1,
-		Line:      line1,
+		File:      fileSend,
+		Line:      elem.GetLine(),
 	}
 
 	arg2 := results.TraceElementResult{ // close
 		RoutineID: closeData[id].routine,
 		ObjID:     id,
-		TPre:      tPre2,
+		TPre:      closeElem.tPre,
 		ObjType:   "CC",
-		File:      file2,
-		Line:      line2,
+		File:      closeElem.GetFile(),
+		Line:      closeElem.GetLine(),
 	}
 
 	if actual {

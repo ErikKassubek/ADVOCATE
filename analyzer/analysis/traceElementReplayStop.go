@@ -102,6 +102,14 @@ func (at *TraceElementReplay) GetPos() string {
 	return ""
 }
 
+func (at *TraceElementReplay) GetFile() string {
+	return ""
+}
+
+func (at *TraceElementReplay) GetLine() int {
+	return 0
+}
+
 /*
  * Get the tID of the element.
  * Returns:

@@ -68,8 +68,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 	notExecuted = notExec
 	createStats = stats
 
-	analysis.ClearTrace()
-	analysis.ClearData()
+	analysis.Clear()
 
 	switch mode {
 	case "main":

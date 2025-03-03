@@ -313,3 +313,11 @@ func checkLeak(elem TraceElement) {
 		CheckForLeakCond(e)
 	}
 }
+
+/*
+ * Clear the data structures used for the analysis
+ */
+func Clear() {
+	ClearTrace()
+	ClearData()
+}

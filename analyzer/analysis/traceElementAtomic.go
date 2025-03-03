@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/utils"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -43,7 +44,8 @@ type TraceElementAtomic struct {
 	id      int
 	opA     opAtomic
 	vc      clock.VectorClock
-	pos     string
+	file    string
+	line    int
 }
 
 /*
@@ -84,12 +86,18 @@ func AddTraceElementAtomic(routine int, tpost string,
 		return errors.New("operation is not a valid operation")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementAtomic{
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
 		opA:     opAInt,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -148,7 +156,15 @@ func (at *TraceElementAtomic) GetTSort() int {
  *   string: The file of the element
  */
 func (at *TraceElementAtomic) GetPos() string {
-	return at.pos
+	return fmt.Sprintf("%s:%d", at.file, at.line)
+}
+
+func (at *TraceElementAtomic) GetFile() string {
+	return at.file
+}
+
+func (at *TraceElementAtomic) GetLine() int {
+	return at.line
 }
 
 /*
@@ -157,7 +173,7 @@ func (at *TraceElementAtomic) GetPos() string {
  *   string: The tID of the element
  */
 func (at *TraceElementAtomic) GetTID() string {
-	return at.pos + "@" + strconv.Itoa(at.tPost)
+	return at.GetPos() + "@" + strconv.Itoa(at.tPost)
 }
 
 /*
@@ -256,7 +272,7 @@ func (at *TraceElementAtomic) ToString() string {
 		res += "U"
 	}
 
-	res += "," + at.pos
+	res += "," + at.GetPos()
 
 	return res
 }

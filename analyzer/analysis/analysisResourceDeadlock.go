@@ -154,7 +154,7 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 				continue
 			}
 
-			if vc1.GetClock()[i] != vc2.GetClock()[i] {
+			if vc1.GetValue(i) != vc2.GetValue(i) {
 				return false
 			}
 		}

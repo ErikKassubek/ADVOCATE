@@ -106,6 +106,19 @@ func GetTraces() map[int][]TraceElement {
 }
 
 /*
+ * Return the number of TraceElement with cap and len
+ */
+func GetTraceSize() (int, int) {
+	capTot := 0
+	lenTot := 0
+	for _, elems := range traces {
+		capTot += cap(elems)
+		lenTot += len(elems)
+	}
+	return capTot, lenTot
+}
+
+/*
  * Get the trace of the given routine
  * Args:
  *   id (int): The id of the routine
@@ -682,9 +695,9 @@ func PrintTrace(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			utils.LogImportant(elem.string, elem.VectorClock.ToString())
+			utils.LogInfo(elem.string, elem.VectorClock.ToString())
 		} else {
-			utils.LogImportant(elem.string)
+			utils.LogInfo(elem.string)
 		}
 	}
 }

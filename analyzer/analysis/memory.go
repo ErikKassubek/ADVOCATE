@@ -32,8 +32,8 @@ func memorySupervisor(cancel chan struct{}) {
 		utils.LogErrorf("Error getting swap info: %v", err)
 	}
 
-	thresholdRAM := uint64(float64(v.Total) * 0.05)
-	thresholdSwap := uint64(200 * 1024 * 1024) // 200mb
+	thresholdRAM := uint64(float64(v.Total) * 0.02)
+	thresholdSwap := uint64(1000 * 1024 * 1024) // 1GB
 
 	startSwap := s.Used
 

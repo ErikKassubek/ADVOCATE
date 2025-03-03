@@ -30,9 +30,9 @@ const (
 func isCause(vc1 VectorClock, vc2 VectorClock) bool {
 	atLeastOneSmaller := false
 	for i := 1; i <= vc1.size; i++ {
-		if vc1.clock[i] > vc2.clock[i] {
+		if vc1.GetValue(i) > vc2.GetValue(i) {
 			return false
-		} else if vc1.clock[i] < vc2.clock[i] {
+		} else if vc1.GetValue(i) < vc2.GetValue(i) {
 			atLeastOneSmaller = true
 		}
 	}

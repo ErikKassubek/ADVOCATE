@@ -41,7 +41,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
 
-	cancel := make(chan struct{})
+	cancel := make(chan struct{}, 1)
 	defer func() { cancel <- struct{}{} }()
 
 	go memorySupervisor(cancel) // cancel analysis if not enough ram
@@ -182,8 +182,6 @@ func checkForLeakSimple() {
 *   memCanceled: if memCanceled == true: analysis was canceled by memory
  */
 func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
-	utils.LogInfo("Run full analysis on trace")
-
 	fifo = assumeFifo
 	modeIsFuzzing = fuzzing
 

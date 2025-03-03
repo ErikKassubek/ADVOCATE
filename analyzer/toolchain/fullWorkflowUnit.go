@@ -80,9 +80,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	ranTest := false
 	// Process each test file
 	for _, file := range testFiles {
-		if testName == "" || isFuzzing {
+		if testName == "" {
 			utils.LogInfof("Progress %s: %d/%d", progName, currentFile, totalFiles)
-			utils.LogInfof("\nProcessing file: %s\n", file)
+			utils.LogInfof("Processing file: %s\n", file)
 		}
 
 		packagePath := filepath.Dir(file)

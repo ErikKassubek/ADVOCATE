@@ -58,7 +58,7 @@ func AdvocateChanSendPre(id uint64, opID uint64, qSize uint, isNil bool) int {
 
 	elem := "C," + uint64ToString(timer) + ",0,"
 	if isNil {
-		elem += "*,S,f,0,0," + file + ":" + intToString(line)
+		elem += "*,S,f,0,0,0," + file + ":" + intToString(line)
 	} else {
 		elem += uint64ToString(id) + ",S,f," +
 			uint64ToString(opID) + "," + uint32ToString(uint32(qSize)) + ",0," +
@@ -104,7 +104,7 @@ func AdvocateChanRecvPre(id uint64, opID uint64, qSize uint, isNil bool) int {
 
 	elem := "C," + uint64ToString(timer) + ",0,"
 	if isNil {
-		elem += "*,R,f,0,0," + file + ":" + intToString(line)
+		elem += "*,R,f,0,0,0," + file + ":" + intToString(line)
 	} else {
 		elem += uint64ToString(id) + ",R,f," +
 			uint64ToString(opID) + "," + uint32ToString(uint32(qSize)) + ",0," +

@@ -157,7 +157,8 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply replay header and run tests for each trace
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
-		timeoutRepl = 100 * timer.GetTime(timer.Analysis)
+		timeoutRepl = 500 * timer.GetTime(timer.Recording)
+		timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
 	} else {
 		timeoutRepl = time.Duration(timeoutReplay) * time.Second
 	}

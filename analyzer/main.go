@@ -138,7 +138,7 @@ func main() {
 
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
-	go memorySupervisor() // panic if not enough ram
+	// go memorySupervisor() // panic if not enough ram
 
 	flag.Parse()
 

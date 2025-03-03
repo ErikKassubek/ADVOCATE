@@ -135,7 +135,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			// Execute full workflow
 			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing)
 
-
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
 
 			if !isFuzzing {
@@ -326,7 +325,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 		}
 	}
 
-	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing)
+	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, output)
 	if err != nil {
 		utils.LogError("Recording failed")
 	}
@@ -366,7 +365,7 @@ func unitTestRun(pkg, file, testName string) error {
 	return err
 }
 
-func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int) error {
+func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, output string) error {
 	timer.Start(timer.Recording)
 	defer timer.Stop(timer.Recording)
 
@@ -374,7 +373,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 	// Remove header just in case
 	if err := headerRemoverUnit(file); err != nil {
-		fmt.Printf("Error in removing header: %v\n", err)
+		utils.LogErrorf("Error in removing header: %v\n", err)
 		return fmt.Errorf("Failed to remove header: %v", err)
 	}
 
@@ -395,10 +394,14 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	pkgPath := utils.MakePathLocal(pkg)
 	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
+		timeoutStr := "unknown cause"
+		if checkForTimeout(output) {
+			timeoutStr = "Timeout"
+		}
 		if isFuzzing {
-			utils.LogError("Failed to run recording: ", err)
+			utils.LogErrorf("Failed to run recording (%s): %s", timeoutStr, err.Error())
 		} else {
-			utils.LogError("Failed to run fuzzing recording: ", err)
+			utils.LogErrorf("Failed to run fuzzing recording (%s): %s", timeoutStr, err.Error())
 		}
 	}
 
@@ -453,7 +456,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
 		timeoutRepl = 500 * timer.GetTime(timer.Recording)
-		timeoutRepl = min(timeoutRepl, 10*time.Minute)
+		timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
 	} else {
 		timeoutRepl = time.Duration(timeoutReplay) * time.Second
 	}

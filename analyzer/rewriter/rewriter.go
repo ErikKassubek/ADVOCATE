@@ -158,8 +158,5 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 	default:
 		err = errors.New("For the given bug type no trace rewriting is implemented")
 	}
-	if rewriteNeeded && err != nil {
-		println("Error rewriting trace")
-	}
 	return rewriteNeeded, false, code, err
 }

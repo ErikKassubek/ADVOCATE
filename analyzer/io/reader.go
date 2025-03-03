@@ -188,31 +188,55 @@ func processElement(element string, routine int, ignoreAtomics bool) error {
 		err = analysis.AddTraceElementAtomic(routine, fields[1], fields[2], fields[3], fields[4])
 	case "C":
 		if len(fields) != 10 {
-			fmt.Println(fields)
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 10", element, len(fields))
 		}
 		err = analysis.AddTraceElementChannel(routine, fields[1], fields[2],
 			fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9])
 	case "M":
+		if len(fields) != 8 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 8", element, len(fields))
+		}
 		err = analysis.AddTraceElementMutex(routine, fields[1], fields[2],
 			fields[3], fields[4], fields[5], fields[6], fields[7])
 	case "G":
+		if len(fields) != 4 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
+		}
 		err = analysis.AddTraceElementFork(routine, fields[1], fields[2], fields[3])
 	case "S":
+		if len(fields) != 7 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 7", element, len(fields))
+		}
 		err = analysis.AddTraceElementSelect(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5], fields[6])
 	case "W":
+		if len(fields) != 8 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 8", element, len(fields))
+		}
 		err = analysis.AddTraceElementWait(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5], fields[6], fields[7])
 	case "O":
+		if len(fields) != 6 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
+		}
 		err = analysis.AddTraceElementOnce(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "D":
+		if len(fields) != 6 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
+		}
 		err = analysis.AddTraceElementCond(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "N":
+		if len(fields) != 6 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
+		}
 		err = analysis.AddTraceElementNew(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "E":
+		if len(fields) != 2 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 2", element, len(fields))
+		}
 		err = analysis.AddTraceElementRoutineEnd(routine, fields[1])
 	default:
 		return errors.New("Unknown element type in: " + element)

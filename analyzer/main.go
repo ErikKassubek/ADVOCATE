@@ -14,12 +14,10 @@ import (
 	"bufio"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"analyzer/analysis"
 	"analyzer/bugs"
@@ -31,8 +29,6 @@ import (
 	"analyzer/timer"
 	"analyzer/toolchain"
 	"analyzer/utils"
-
-	"github.com/shirou/gopsutil/mem"
 )
 
 var (
@@ -137,8 +133,6 @@ func main() {
 	flag.IntVar(&fuzzingMode, "fuzzingMode", 0, "Mode for fuzzing. Mainly used to compare. For full analysis, do not set.")
 
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
-
-	// go memorySupervisor() // panic if not enough ram
 
 	flag.Parse()
 
@@ -341,12 +335,11 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	rewriteAll bool, newTrace string, ignoreRewrite string,
-	fuzzingRun int, onlyAPanicAndLeak bool) {
+	fuzzingRun int, onlyAPanicAndLeak bool) error {
 	// printHeader()
 
 	if pathTrace == "" {
-		fmt.Println("Please provide a path to the trace files. Set with -trace [folder]")
-		return
+		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
 	}
 
 	// run the analysis and, if requested, create a reordered trace file
@@ -360,9 +353,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	if !containsElems {
-		fmt.Println("Trace does not contain any elem")
-		fmt.Println("Skip analysis")
-		return
+		return fmt.Errorf("Trace does not contain any elem")
 	}
 
 	analysis.SetNoRoutines(numberOfRoutines)
@@ -380,7 +371,17 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	utils.LogInfo("Analysis finished")
+	if canceled, ram := analysis.WasCanceled(); canceled {
+		// analysis.LogSizes()
+		analysis.Clear()
+		if ram {
+			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
+		} else {
+			return fmt.Errorf("Analysis was canceled due to unknown panic")
+		}
+	} else {
+		utils.LogInfo("Analysis finished")
+	}
 
 	numberOfResults, err := results.PrintSummary(true, true)
 	if err != nil {
@@ -446,6 +447,8 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			utils.LogInfo("Failed rewrites: ", failedRewrites)
 		}
 	}
+
+	return nil
 }
 
 /*
@@ -486,6 +489,8 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 
 		// remove when implemented
 		analysisCases["mixedDeadlock"] = false
+
+		analysisCases["unlockBeforeLock"] = false
 
 		return analysisCases, nil
 	}
@@ -595,36 +600,6 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	}
 
 	return rewriteNeeded, false, nil
-}
-
-func memorySupervisor() {
-	thresholdRAM := uint64(1 * 1024 * 1024 * 1024) // 1GB
-	thresholdSwap := uint64(200 * 1024 * 1024)     // 200mb
-	for {
-		// Get the memory stats
-		v, err := mem.VirtualMemory()
-		if err != nil {
-			log.Fatalf("Error getting memory info: %v", err)
-		}
-
-		// Get the swap stats
-		s, err := mem.SwapMemory()
-		if err != nil {
-			log.Fatalf("Error getting swap info: %v", err)
-		}
-
-		// Panic if available RAM or swap is below the threshold
-		if v.Available < thresholdRAM {
-			log.Panicf("Available RAM is below threshold! Available: %v MB, Threshold: %v MB", v.Available/1024/1024, thresholdRAM/1024/1024)
-		}
-
-		if s.Free < thresholdSwap {
-			log.Panicf("Available Swap is below threshold! Available: %v MB, Threshold: %v MB", s.Free/1024/1024, thresholdSwap/1024/1024)
-		}
-
-		// Sleep for a while before checking again
-		time.Sleep(5 * time.Second)
-	}
 }
 
 func printHeader() {
@@ -833,9 +808,8 @@ func checkVersion() {
 				errString := "ADVOCATE is implemented for go version 1.22. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += "This may result in the analysis not working correctly."
-				errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
+				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
 				utils.LogError(errString)
-				time.Sleep(5 * time.Second)
 			}
 
 			return

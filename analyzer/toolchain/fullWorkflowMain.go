@@ -143,10 +143,14 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 
-	runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
+	err = runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 		"rewritten_trace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+
+	if err != nil {
+		return err
+	}
 
 	// Find rewritten_trace directories
 	rewrittenTraces, err := filepath.Glob(filepath.Join(dir, "rewritten_trace*"))

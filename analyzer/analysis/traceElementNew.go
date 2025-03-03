@@ -20,7 +20,7 @@ import (
 type newOpType string
 
 const (
-	atomic      newOpType = "A"
+	atomicVar   newOpType = "A"
 	channel     newOpType = "C"
 	conditional newOpType = "D"
 	mutex       newOpType = "M"
@@ -127,7 +127,7 @@ func (n *TraceElementNew) GetTID() string {
 
 func (n *TraceElementNew) GetObjType() string {
 	switch n.elemType {
-	case atomic:
+	case atomicVar:
 		return "NA"
 	case channel:
 		return "NC"

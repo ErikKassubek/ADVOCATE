@@ -526,17 +526,13 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	file1, line1, tPre1, err := infoFromTID(mu.GetTID())
-	if err != nil {
-		utils.LogErrorf("Error in infoFromTID(%s)\n", mu.GetTID())
+	if _, ok := mostRecentAcquireTotal[mu.id]; !ok {
 		return
 	}
 
-	file2, line2, tPre2, err := infoFromTID(mostRecentAcquireTotal[mu.id].Elem.GetTID())
-	if err != nil {
-		utils.LogErrorf("Error in infoFromTID(%s)\n", mostRecentAcquireTotal[mu.id].Elem.GetTID())
-		return
-	}
+	elem := mostRecentAcquireTotal[mu.id].Elem
+
+	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
 
 	objType1 := "M"
 	if mu.opM == LockOp { // lock
@@ -561,7 +557,7 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: mu.routine, ObjID: mu.id, TPre: tPre1, ObjType: objType1, File: file1, Line: line1}
+		RoutineID: mu.routine, ObjID: mu.id, TPre: mu.GetTPre(), ObjType: objType1, File: mu.GetFile(), Line: mu.GetLine()}
 
 	arg2 := results.TraceElementResult{
 		RoutineID: mostRecentAcquireTotal[mu.id].Elem.GetRoutine(), ObjID: mu.id, TPre: tPre2, ObjType: objType2, File: file2, Line: line2}

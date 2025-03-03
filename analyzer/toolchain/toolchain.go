@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
+	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool) error
 )
 
 /*
@@ -28,7 +28,7 @@ var (
 func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 	noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)) {
+	rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool) error) {
 	runAnalyzer = funcAnalyzer
 }
 

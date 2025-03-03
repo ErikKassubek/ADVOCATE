@@ -31,8 +31,20 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			wasCanceled.Store(true)
+			utils.LogError(r)
+		}
+	}()
+
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
+
+	cancel := make(chan struct{})
+	defer func() { cancel <- struct{}{} }()
+
+	go memorySupervisor(cancel) // cancel analysis if not enough ram
 
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
@@ -40,9 +52,8 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 		return
 	}
 
-	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
-
 	runAnalysisOnExitCodes(false)
+	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 }
 
 /*
@@ -168,6 +179,7 @@ func checkForLeakSimple() {
 *   	vector clocks
 *   analysisCasesMap (map[string]bool): The analysis cases to run
 *   fuzzing (bool): true if run with fuzzing
+*   memCanceled: if memCanceled == true: analysis was canceled by memory
  */
 func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
 	utils.LogInfo("Run full analysis on trace")
@@ -251,6 +263,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			checkLeak(elem)
 		}
 
+		if wasCanceledRam.Load() == true {
+			return
+		}
 	}
 
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
@@ -258,21 +273,41 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		CheckForSelectCaseWithoutPartner()
 	}
 
+	if wasCanceledRam.Load() == true {
+		return
+	}
+
 	if analysisCases["leak"] {
 		checkForLeak()
 		checkForStuckRoutine()
+	}
+
+	if wasCanceledRam.Load() == true {
+		return
 	}
 
 	if analysisCases["doneBeforeAdd"] {
 		checkForDoneBeforeAdd()
 	}
 
+	if wasCanceledRam.Load() == true {
+		return
+	}
+
 	if analysisCases["cyclicDeadlock"] {
 		checkForCyclicDeadlock()
 	}
 
+	if wasCanceledRam.Load() == true {
+		return
+	}
+
 	if analysisCases["resourceDeadlock"] {
 		CheckForResourceDeadlock()
+	}
+
+	if wasCanceledRam.Load() == true {
+		return
 	}
 
 	if analysisCases["unlockBeforeLock"] {
@@ -312,12 +347,4 @@ func checkLeak(elem TraceElement) {
 	case *TraceElementCond:
 		CheckForLeakCond(e)
 	}
-}
-
-/*
- * Clear the data structures used for the analysis
- */
-func Clear() {
-	ClearTrace()
-	ClearData()
 }

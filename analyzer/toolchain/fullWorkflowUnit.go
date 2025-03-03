@@ -82,13 +82,13 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	for _, file := range testFiles {
 		if testName == "" {
 			utils.LogInfof("Progress %s: %d/%d", progName, currentFile, totalFiles)
-			utils.LogInfof("Processing file: %s\n", file)
+			utils.LogInfof("Processing file: %s", file)
 		}
 
 		packagePath := filepath.Dir(file)
 		testFunctions, err := FindTestFunctions(file)
 		if err != nil {
-			utils.LogInfof("Could not find test functions in %s: %v\n", file, err)
+			utils.LogInfof("Could not find test functions in %s: %v", file, err)
 			continue
 		}
 
@@ -109,7 +109,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			attemptedTests++
 			packageName := filepath.Base(packagePath)
 			fileName := filepath.Base(file)
-			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
+			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s", testFunc, packageName, file)
 
 			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
 			if !strings.HasSuffix(adjustedPackagePath, string(filepath.Separator)) {
@@ -121,7 +121,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)
 				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
-					utils.LogErrorf("Failed to create directory %s: %v\n", directoryName, err)
+					utils.LogErrorf("Failed to create directory %s: %v", directoryName, err)
 					if !isFuzzing {
 						timer.Stop(timer.TotalTest)
 					}
@@ -144,7 +144,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			collect(dir, packagePath, directoryPath, total)
 
 			if err != nil {
-				fmt.Printf("File %d with Test %d failed: %s. Check output.log for more information.\n", currentFile, attemptedTests, err.Error())
+				utils.LogErrorf(err.Error())
 				skippedTests++
 			}
 
@@ -190,10 +190,10 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	// Output test summary
 	if testName == "" {
 		utils.LogInfo("Finished full workflow for all tests")
-		utils.LogInfof("Attempted tests: %d\n", attemptedTests)
-		utils.LogInfof("Skipped tests: %d\n", skippedTests)
+		utils.LogInfof("Attempted tests: %d", attemptedTests)
+		utils.LogInfof("Skipped tests: %d", skippedTests)
 	} else {
-		utils.LogInfof("Finished full work flow for %s\n", testName)
+		utils.LogInfof("Finished full work flow for %s", testName)
 	}
 
 	return nil
@@ -429,13 +429,13 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 
 	var err error
 	if resultID == "-1" {
-		runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, "results_readable.log",
+		err = runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, "results_readable.log",
 			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, "rewritten_trace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	} else {
 		outM := fmt.Sprintf("results_machine_%s", resultID)
 		outR := fmt.Sprintf("results_readable_%s", resultID)
 		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
-		runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
+		err = runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
 			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 			outT, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	}
@@ -458,7 +458,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 	} else {
 		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewritten_trace_*"))
 	}
-	utils.LogInfof("Found %d rewritten traces\n", len(rewrittenTraces))
+	utils.LogInfof("Found %d rewritten traces", len(rewrittenTraces))
 
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
@@ -489,10 +489,10 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 		os.Setenv("GOROOT", pathToGoRoot)
 
-		utils.LogInfof("Run replay %d/%d\n", i+1, len(rewrittenTraces))
+		utils.LogInfof("Run replay %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := utils.MakePathLocal(pkg)
 		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
-		utils.LogInfof("Finished replay %d/%d\n", i+1, len(rewrittenTraces))
+		utils.LogInfof("Finished replay %d/%d", i+1, len(rewrittenTraces))
 
 		os.Unsetenv("GOROOT")
 

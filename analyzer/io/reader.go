@@ -33,10 +33,10 @@ import (
  *   ignoreAtomics (bool): If atomic operations should be ignored
  * Returns:
  *   int: The number of routines
- *   bool: True if the trace contains any elems
+ *   int: The number of elements
  *   error: An error if the trace could not be created
  */
-func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, error) {
+func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -44,10 +44,10 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, err
 	// traverse all files in the folder
 	files, err := os.ReadDir(folderPath)
 	if err != nil {
-		return 0, false, err
+		return 0, 0, err
 	}
 
-	containsElems := false
+	elemCounter := 0
 	for _, file := range files {
 		if file.IsDir() {
 			continue
@@ -69,18 +69,16 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, bool, err
 		}
 		numberRoutines = max(numberRoutines, routine)
 
-		containsElem, err := createTraceFromFile(filePath, routine, ignoreAtomics)
+		numberElems, err := createTraceFromFile(filePath, routine, ignoreAtomics)
 		if err != nil {
-			return 0, containsElems, err
+			return 0, elemCounter, err
 		}
-		if containsElem {
-			containsElems = true
-		}
+		elemCounter += numberElems
 	}
 
 	analysis.Sort()
 
-	return numberRoutines, containsElems, nil
+	return numberRoutines, elemCounter, nil
 }
 
 func getTraceInfoFromFile(filePath string) error {
@@ -134,35 +132,31 @@ func getTraceInfoFromFile(filePath string) error {
  *   routine (int): The routine id
  *   ignoreAtomics (bool): If atomic operations should be ignored
  * Returns:
- *   bool: true if the trace contains any values
+ *   int: number of elements
  *	 error: An error if the trace could not be created
  */
-func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (bool, error) {
+func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		utils.LogError("Error opening file: " + filePath)
-		return false, err
+		return 0, err
 	}
 
 	scanner := bufio.NewScanner(file)
 
-	containsElem := false
+	counter := 0
 	for scanner.Scan() {
 		line := scanner.Text()
 		err := processElement(line, routine, ignoreAtomics)
 		if err != nil {
 			utils.LogError("Error in processing trace element: ", err)
 		}
-		containsElem = true
+		counter++
 	}
 
 	file.Close()
 
-	if err := scanner.Err(); err != nil {
-		return containsElem, err
-	}
-
-	return containsElem, nil
+	return counter, scanner.Err()
 }
 
 /*

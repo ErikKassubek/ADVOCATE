@@ -347,13 +347,15 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	results.InitResults(outReadable, outMachine)
 
-	numberOfRoutines, containsElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 	if err != nil {
 		fmt.Println("Could not open trace: ", err.Error())
 	}
 
-	if !containsElems {
+	if numberElems == 0 {
 		return fmt.Errorf("Trace does not contain any elem")
+	} else {
+		utils.LogInfof("Read trace with %d elements", numberElems)
 	}
 
 	analysis.SetNoRoutines(numberOfRoutines)

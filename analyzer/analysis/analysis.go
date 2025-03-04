@@ -311,7 +311,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	// }
 
 	if analysisCases["resourceDeadlock"] {
-		utils.LogInfo("Check for resource deadlock")
+		utils.LogInfo("Check for cyclic deadlock")
 		CheckForResourceDeadlock()
 		utils.LogInfo("Finish check for cyclic deadlock")
 	}

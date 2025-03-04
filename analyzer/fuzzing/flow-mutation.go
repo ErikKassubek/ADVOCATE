@@ -14,9 +14,12 @@ import (
 	"analyzer/analysis"
 )
 
+// if true, a new mutation run is created for each flow mutations,
+// if false, all flow mutations are collected into one mutations run
+const oneMutPerDelay = true
+
 var alreadyDelayedElems = make(map[string][]int)
 
-// TODO: maybe make all at the same time?
 func createMutationsFlow() int {
 	numberMutAdded := 0
 
@@ -48,8 +51,9 @@ func createMutationsFlow() int {
 				}
 			}
 
-			// if one mut per change, comment this in
-			// mutFlow = make(map[string]int)
+			if oneMutPerDelay {
+				mutFlow = make(map[string]int)
+			}
 			mutFlow[pos] = on.Counter
 
 			if _, ok := alreadyDelayedElems[pos]; !ok {
@@ -58,14 +62,15 @@ func createMutationsFlow() int {
 			alreadyDelayedElems[pos] = append(alreadyDelayedElems[pos], on.Counter)
 
 			// if one mut per change, comment this in
-			// mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
-			// mutationQueue = append(mutationQueue, mut)
-			// numberMutAdded++
+			if oneMutPerDelay {
+				mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+				mutationQueue = append(mutationQueue, mut)
+				numberMutAdded++
+			}
 		}
 	}
 
-	// if one mut per change, comment this out
-	if len(mutFlow) != 0 {
+	if oneMutPerDelay && len(mutFlow) != 0 {
 		mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
 		mutationQueue = append(mutationQueue, mut)
 		numberMutAdded++

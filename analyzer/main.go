@@ -359,14 +359,15 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysis.SetNoRoutines(numberOfRoutines)
 
 	if analysisCases["all"] {
-		fmt.Println("Start Analysis for all scenarios")
+		utils.LogInfo("Start Analysis for all scenarios")
 	} else {
-		fmt.Println("Start Analysis for the following scenarios:")
+		info := "Start Analysis for the following scenarios:\n"
 		for key, value := range analysisCases {
 			if value {
-				fmt.Println("\t", key)
+				info += ("\t" + key + "\n")
 			}
 		}
+		utils.LogInfo(info)
 	}
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
@@ -489,8 +490,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 
 		// remove when implemented
 		analysisCases["mixedDeadlock"] = false
-
-		analysisCases["unlockBeforeLock"] = false
 
 		return analysisCases, nil
 	}
@@ -809,7 +808,7 @@ func checkVersion() {
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += "This may result in the analysis not working correctly."
 				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
-				utils.LogError(errString)
+				utils.LogInfo(errString)
 			}
 
 			return

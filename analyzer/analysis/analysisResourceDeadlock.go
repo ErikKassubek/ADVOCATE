@@ -456,6 +456,7 @@ func CheckForResourceDeadlock() {
 // Debug logging.
 
 func logAbortReason(reason string) {
+	return
 	log.Println("No Deadlock: ", reason)
 }
 

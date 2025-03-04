@@ -115,8 +115,9 @@ func checkForDoneBeforeAdd() {
 			addsNegWgSorted := make([]TraceElement, 0)
 			donesNEgWgSorted := make([]TraceElement, 0)
 
-			for i := 0; i < len(addsNegWg); i++ {
-				for j := 0; j < len(donesNegWg); j++ {
+			for i := 0; i < len(addsNegWg); {
+				removed := false
+				for j := 0; j < len(donesNegWg); {
 					if clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == clock.Concurrent {
 						addsNegWgSorted = append(addsNegWgSorted, addsNegWg[i])
 						donesNEgWgSorted = append(donesNEgWgSorted, donesNegWg[j])
@@ -124,9 +125,14 @@ func checkForDoneBeforeAdd() {
 						addsNegWg = append(addsNegWg[:i], addsNegWg[i+1:]...)
 						donesNegWg = append(donesNegWg[:j], donesNegWg[j+1:]...)
 						// fix the index
-						i--
-						j = 0
+						removed = true
+						break
+					} else {
+						j++
 					}
+				}
+				if !removed {
+					i++
 				}
 			}
 

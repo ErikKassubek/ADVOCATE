@@ -200,6 +200,8 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	currentVCHb[1] = currentVCHb[1].Inc(1)
 	currentVCWmhb[1] = currentVCWmhb[1].Inc(1)
 
+	utils.LogInfo("Start HB analysis")
+
 	for elem := getNextElement(); elem != nil; elem = getNextElement() {
 		switch e := elem.(type) {
 		case *TraceElementAtomic:
@@ -266,6 +268,8 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		}
 	}
 
+	utils.LogInfo("Finished HB analysis")
+
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		rerunCheckForSelectCaseWithoutPartnerChannel()
 		CheckForSelectCaseWithoutPartner()
@@ -276,8 +280,10 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	}
 
 	if analysisCases["leak"] {
+		utils.LogInfo("Check for leak")
 		checkForLeak()
 		checkForStuckRoutine()
+		utils.LogInfo("Finish check for leak")
 	}
 
 	if wasCanceledRam.Load() == true {
@@ -285,7 +291,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	}
 
 	if analysisCases["doneBeforeAdd"] {
+		utils.LogInfo("Check for done before add")
 		checkForDoneBeforeAdd()
+		utils.LogInfo("Finish check for done before add")
 	}
 
 	if wasCanceledRam.Load() == true {
@@ -293,15 +301,19 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	}
 
 	if analysisCases["cyclicDeadlock"] {
+		utils.LogInfo("Check for cyclic deadlock")
 		checkForCyclicDeadlock()
+		utils.LogInfo("Finish check for cyclic deadlock")
 	}
 
-	if wasCanceledRam.Load() == true {
-		return
-	}
+	// if wasCanceledRam.Load() == true {
+	// 	return
+	// }
 
 	if analysisCases["resourceDeadlock"] {
+		utils.LogInfo("Check for resource deadlock")
 		CheckForResourceDeadlock()
+		utils.LogInfo("Finish check for cyclic deadlock")
 	}
 
 	if wasCanceledRam.Load() == true {
@@ -309,12 +321,13 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 	}
 
 	if analysisCases["unlockBeforeLock"] {
+		utils.LogInfo("Check for unlock before lock")
 		checkForUnlockBeforeLock()
+		utils.LogInfo("Finish check for unlock before lock")
 	}
 }
 
 func checkLeak(elem TraceElement) {
-
 	switch e := elem.(type) {
 	case *TraceElementChannel:
 		CheckForLeakChannelStuck(e, currentVCHb[e.routine])

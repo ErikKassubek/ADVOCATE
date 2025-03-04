@@ -187,9 +187,10 @@ func main() {
 		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
 
-	// don't run any scenarios if fuzzing mode 2
-	if mode == "fuzzing" && fuzzingMode == HBFuzzNoAna {
+	// don't run any HB Analysis if fuzzing mode 2 or 3
+	if mode == "fuzzing" && (fuzzingMode == HBFuzzNoAna || fuzzingMode == FuzzNoAna) {
 		scenarios = "-"
+		onlyAPanicAndLeak = true
 	}
 
 	analysisCases, err := parseAnalysisCases(scenarios)
@@ -249,7 +250,7 @@ func modeFuzzing() {
 	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
 	err := fuzzing.Fuzzing(modeMain, pathToAdvocate, progPath, progName, execName,
-		ignoreAtomics, useHBInfoFuzzing, fullAnalysis, recordTime, notExec, statistics,
+		ignoreAtomics, useHBInfoFuzzing, recordTime, notExec, statistics,
 		keepTraces)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())

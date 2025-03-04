@@ -51,14 +51,13 @@ var (
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
-* 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
  */
 func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces bool) error {
 
 	utils.LogInfo("Start fuzzing")
 
@@ -71,7 +70,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, true)
+			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
@@ -120,7 +119,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun)
+				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
@@ -156,7 +155,6 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
-* 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
 * 	createStats (bool): create statistics
@@ -164,9 +162,8 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun bool) error {
 	useHBInfoFuzzing = hBInfoFuzzing
-	runFullAnalysis = fullAnalysis
 
 	progDir := getPath(progPath)
 
@@ -208,8 +205,10 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			}
 
 			// add new mutations based on flow path expansion
-			numMutAdd := createMutationsFlow()
-			utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+			if useHBInfoFuzzing {
+				numMutAdd := createMutationsFlow()
+				utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+			}
 
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
 

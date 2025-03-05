@@ -329,7 +329,7 @@ func getLastElemPerRout() []TraceElement {
 			continue
 		}
 
-		res = append(res, trace[len(traces)-1])
+		res = append(res, trace[len(trace)-1])
 	}
 
 	return res

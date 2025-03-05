@@ -73,7 +73,6 @@ func memorySupervisor(cancel chan struct{}) {
 }
 
 func notEnoughSpace() {
-	utils.LogErrorf("Cancel analysis, not enough RAM")
 	wasCanceled.Store(true)
 	wasCanceledRam.Store(true)
 }

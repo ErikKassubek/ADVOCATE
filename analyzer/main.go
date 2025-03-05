@@ -228,11 +228,16 @@ func main() {
 		printHelp()
 	}
 
-	numberErr := utils.GetNumberErr()
+	numberErr, numberTimeout := utils.GetNumberErr()
 	if numberErr == 0 {
 		utils.LogInfo("Finished with 0 errors")
 	} else {
 		utils.LogErrorf("Finished with %d errors", numberErr)
+	}
+	if numberTimeout == 0 {
+		utils.LogInfo("No timeouts occur")
+	} else {
+		utils.LogErrorf("%d timeouts occurred", numberTimeout)
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
@@ -247,7 +252,7 @@ func modeFuzzing() {
 	checkVersion()
 
 	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
-	fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
+	// fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
 
 	err := fuzzing.Fuzzing(modeMain, pathToAdvocate, progPath, progName, execName,
 		ignoreAtomics, useHBInfoFuzzing, recordTime, notExec, statistics,
@@ -361,13 +366,15 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.SetNoRoutines(numberOfRoutines)
 
-	if analysisCases["all"] {
+	if onlyAPanicAndLeak {
+		utils.LogInfo("Start Analysis for actual panics and leaks")
+	} else if analysisCases["all"] {
 		utils.LogInfo("Start Analysis for all scenarios")
 	} else {
-		info := "Start Analysis for the following scenarios:\n"
+		info := "Start Analysis for the following scenarios: "
 		for key, value := range analysisCases {
 			if value {
-				info += ("\t" + key + "\n")
+				info += (key + ",")
 			}
 		}
 		utils.LogInfo(info)
@@ -381,7 +388,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		if ram {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		} else {
-			return fmt.Errorf("Analysis was canceled due to unknown panic")
+			return fmt.Errorf("Analysis was canceled due to unexpected panic")
 		}
 	} else {
 		utils.LogInfo("Analysis finished")

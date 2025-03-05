@@ -97,7 +97,7 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 		bugDirPath := filepath.Join(resultPath, test.Name(), "bugs")
 		bugDir, err := os.ReadDir(bugDirPath)
 		if err != nil {
-			return err
+			continue
 		}
 
 		foundBugs := make(map[string]processedBug)

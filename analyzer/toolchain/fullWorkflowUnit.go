@@ -320,10 +320,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 		if err != nil {
 			if err != nil {
 				if checkForTimeout(output) {
-					utils.LogError("Running T0 timed out")
-
-				} else {
-					utils.LogError("Running T0 failed: ", err.Error())
+					utils.LogTimeout("Running T0 timed out")
 				}
 			}
 		}
@@ -336,7 +333,6 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 
 	err = unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, "-1", fuzzing)
 	if err != nil {
-		utils.LogError("Analysis failed")
 		return 0, false, err
 	}
 
@@ -397,14 +393,14 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	pkgPath := utils.MakePathLocal(pkg)
 	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
-		timeoutStr := "unknown cause"
-		if checkForTimeout(output) {
-			timeoutStr = "Timeout"
-		}
 		if isFuzzing {
-			utils.LogErrorf("Failed to run recording (%s): %s", timeoutStr, err.Error())
+			if checkForTimeout(output) {
+				utils.LogTimeout("Recording timed out")
+			}
 		} else {
-			utils.LogErrorf("Failed to run fuzzing recording (%s): %s", timeoutStr, err.Error())
+			if checkForTimeout(output) {
+				utils.LogTimeout("Fuzzing recording timed out")
+			}
 		}
 	}
 

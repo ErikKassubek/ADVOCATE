@@ -15,8 +15,7 @@ import (
 	"analyzer/timer"
 )
 
-// vector clocks for the successful do
-var oSuc map[int]clock.VectorClock = make(map[int]clock.VectorClock)
+// TODO: do we need the oSuc
 
 /*
  * Create a new oSuc if needed

@@ -115,6 +115,9 @@ var (
 	relW = make(map[int]clock.VectorClock) // id -> vc
 	relR = make(map[int]clock.VectorClock) // id -> vc
 
+	// vector clocks for last write times
+	lw = make(map[int]clock.VectorClock)
+
 	// for leak check
 	leakingChannels = make(map[int][]VectorClockTID2) // id -> vcTID
 
@@ -124,6 +127,15 @@ var (
 
 	// all positions of creations of routines
 	allForks = make(map[int]*TraceElementFork) // routineId -> fork
+
+	// currently waiting cond var
+	currentlyWaiting = make(map[int][]int) // -> id -> []routine
+
+	// vector clocks for the successful do
+	oSuc = make(map[int]clock.VectorClock)
+
+	// vector clock for each wait group
+	lastChangeWG = make(map[int]clock.VectorClock)
 
 	// exit code info
 	exitCode int
@@ -138,6 +150,17 @@ var (
 	executedOnce = make(map[int]*ConcurrentEntry) // id -> elem
 
 	fuzzingCounter = make(map[int]map[string]int) // id -> pos -> counter
+
+	holdSend = make([]holdObj, 0)
+	holdRecv = make([]holdObj, 0)
+
+	numberSelectCasesWithPartner int
+
+	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
+	durationInSeconds = -1 // the duration of the recording in seconds
+
+	waitingReceive = make([]*TraceElementChannel, 0)
+	maxOpID        = make(map[int]int)
 )
 
 // InitAnalysis initializes the analysis cases

@@ -71,6 +71,8 @@ var (
 	fuzzingMode int
 
 	modeMain bool
+
+	noWarning bool
 )
 
 const (
@@ -112,6 +114,8 @@ func main() {
 
 	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
 	flag.BoolVar(&statistics, "stats", false, "Create statistics")
+
+	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
 
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
@@ -394,7 +398,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		utils.LogInfo("Analysis finished")
 	}
 
-	numberOfResults, err := results.PrintSummary(true, true)
+	numberOfResults, err := results.CreateResultFiles(noWarning, true)
 	if err != nil {
 		utils.LogError("Error in printing summary: ", err.Error())
 	}
@@ -430,6 +434,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			needed, double, err := rewriteTrace(outMachine,
 				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
 
+			if err != nil {
+				utils.LogError(err)
+			}
+
 			if !needed {
 				notNeededRewrites++
 				if double {
@@ -438,7 +446,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 				}
 			} else if err != nil {
-				utils.LogInfo("Failed to rewrite trace: ", err.Error())
 				failedRewrites++
 				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			} else { // needed && err == nil
@@ -637,6 +644,7 @@ func printHeader() {
 	fmt.Print(headerInfo)
 }
 
+// TODO: merge printHelp and printHelpMode
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
 	println("There are different modes of operation:")
@@ -661,6 +669,7 @@ func printHelp() {
 	println("  -notExec               Set to determine never executed operations")
 	println("  -stats                 Set to create statistics")
 	println("  -keepTrace             Do not delete the trace files after analysis finished")
+	println("  -noWarning             Only show critical bugs")
 	println("\n\n")
 	println("2. Fuzzing")
 	println("This runs the fuzzing")
@@ -669,6 +678,7 @@ func printHelp() {
 	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 	println("  -prog [name]           Name of the program")
 	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+	println("  -noWarning             Only show critical bugs")
 	println("  -fuzzingMode [mode]    Mode of fuzzing:")
 	println("                           0: full fuzzing, full analysis and replay (default)")
 	println("                           1: no HB info in fuzzing, full analysis and replay")
@@ -722,6 +732,7 @@ func printHelpMode(mode string) {
 		println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
 		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
 		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
+		println("  -noWarning             Only show critical bugs")
 		println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
 		println("                         If it is not set, all scenarios are run")
 		println("                         Options:")
@@ -757,6 +768,7 @@ func printHelpMode(mode string) {
 		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+		println("  -noWarning             Only show critical bugs")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
 		println("                           0: full fuzzing, full analysis and replay (default)")
 		println("                           1: no HB info in fuzzing, full analysis and replay")
@@ -816,9 +828,10 @@ func checkVersion() {
 			if versionSplit[0] != "1" || versionSplit[1] != "22" {
 				errString := "ADVOCATE is implemented for go version 1.22. "
 				errString += fmt.Sprintf("Found version %s. ", version)
-				errString += "This may result in the analysis not working correctly."
+				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
+				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."
 				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
-				utils.LogInfo(errString)
+				utils.LogImportant(errString)
 			}
 
 			return

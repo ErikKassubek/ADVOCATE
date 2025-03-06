@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/results"
 )
 
 /*
@@ -20,6 +21,7 @@ import (
 func Clear() {
 	ClearTrace()
 	ClearData()
+	results.Reset()
 }
 
 func ClearTrace() {
@@ -45,6 +47,8 @@ func ClearData() {
 	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)
 	relW = make(map[int]clock.VectorClock)
 	relR = make(map[int]clock.VectorClock)
+	lw = make(map[int]clock.VectorClock)
+	currentlyWaiting = make(map[int][]int)
 	leakingChannels = make(map[int][]VectorClockTID2)
 	selectCases = make([]allSelectCase, 0)
 	allForks = make(map[int]*TraceElementFork)
@@ -61,10 +65,23 @@ func ClearData() {
 	currentVCWmhb = make(map[int]clock.VectorClock)
 	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel)
 
-	numberOfRoutines = 0
-	timeoutHappened = false
+	oSuc = make(map[int]clock.VectorClock)
+
+	holdSend = make([]holdObj, 0)
+	holdRecv = make([]holdObj, 0)
 
 	currentState = State{}
+	currentNode = make(map[int][]*lockGraphNode)
+	lockGraphs = make(map[int]*lockGraphNode)           // routine -> lockGraphNode
+	nodesPerID = make(map[int]map[int][]*lockGraphNode) // id -> routine -> []*lockGraphNode
+
+	numberSelectCasesWithPartner = 0
+
+	waitingReceive = make([]*TraceElementChannel, 0)
+	maxOpID = make(map[int]int)
+
+	numberOfRoutines = 0
+	timeoutHappened = false
 
 	wasCanceled.Store(false)
 	wasCanceledRam.Store(false)

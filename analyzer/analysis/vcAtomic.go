@@ -15,9 +15,6 @@ import (
 	"analyzer/timer"
 )
 
-// vector clocks for last write times
-var lw map[int]clock.VectorClock = make(map[int]clock.VectorClock)
-
 /*
  * Create a new lw if needed
  * Args:

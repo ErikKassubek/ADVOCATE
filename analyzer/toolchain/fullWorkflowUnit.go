@@ -75,7 +75,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	totalFiles := len(testFiles)
 	attemptedTests, skippedTests, currentFile := 0, 0, 1
 
-	resultPath := filepath.Join(dir, "advocateResult")
+	// resultPath := filepath.Join(dir, "advocateResult")
 
 	ranTest := false
 	// Process each test file
@@ -164,7 +164,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			}
 
 			if total {
-				removeLogs(resultPath)
+				removeLogs(dir)
 			}
 
 			if !isFuzzing {

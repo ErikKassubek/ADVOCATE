@@ -151,6 +151,6 @@ func removeLogs(path string) {
 	}
 
 	for _, logFile := range logsToRemove {
-		_ = os.Remove(filepath.Join(path, logFile))
+		os.Remove(filepath.Join(path, logFile))
 	}
 }

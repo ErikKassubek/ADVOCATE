@@ -15,8 +15,6 @@ import (
 	"analyzer/timer"
 )
 
-var currentlyWaiting = make(map[int][]int) // -> id -> []routine
-
 /*
  * Update and calculate the vector clocks given a wait operation
  * Args:

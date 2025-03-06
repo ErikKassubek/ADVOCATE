@@ -219,7 +219,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	if total {
-		removeLogs(resultPath)
+		removeLogs(dir)
 	}
 
 	return nil

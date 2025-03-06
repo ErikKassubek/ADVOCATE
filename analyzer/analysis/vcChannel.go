@@ -115,9 +115,6 @@ type holdObj struct {
 	fifo bool
 }
 
-var holdSend = make([]holdObj, 0)
-var holdRecv = make([]holdObj, 0)
-
 /*
  * Update and calculate the vector clocks given a send on a buffered channel.
  * Args:
@@ -228,7 +225,7 @@ func Recv(ch *TraceElementChannel, vc map[int]clock.VectorClock, fifo bool) {
 	newBufferedVCs(ch.id, ch.qSize, vc[ch.routine].GetSize())
 
 	if bufferedVCsCount[ch.id] == 0 {
-		holdSend = append(holdSend, holdObj{ch, vc, fifo})
+		holdRecv = append(holdRecv, holdObj{ch, vc, fifo})
 		return
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}

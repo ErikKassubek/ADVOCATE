@@ -31,12 +31,12 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			wasCanceled.Store(true)
-			utils.LogError(r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		wasCanceled.Store(true)
+	// 		utils.LogError(r)
+	// 	}
+	// }()
 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)

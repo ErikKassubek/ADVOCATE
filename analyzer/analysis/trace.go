@@ -36,9 +36,6 @@ var (
 	numberOfRoutines = 0
 	fifo             bool
 	modeIsFuzzing    bool
-
-	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
-	durationInSeconds = -1 // the duration of the recording in seconds
 )
 
 /*
@@ -218,7 +215,7 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Element %s with tPre %d does not exist", bugArg, tPre)
+	return nil, fmt.Errorf("Element %s not in trace", bugArg)
 }
 
 /*

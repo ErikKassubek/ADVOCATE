@@ -30,9 +30,6 @@ const (
 	CloseOp
 )
 
-var waitingReceive = make([]*TraceElementChannel, 0)
-var maxOpID = make(map[int]int)
-
 /*
 * TraceElementChannel is a trace element for a channel
 * MARK: Struct

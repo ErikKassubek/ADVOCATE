@@ -19,8 +19,6 @@ import (
 	"strings"
 )
 
-var numberSelectCasesWithPartner int
-
 /*
 * CheckForSelectCaseWithoutPartner checks for select cases without a valid
 * partner. Call when all elements have been processed.

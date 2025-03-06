@@ -98,16 +98,22 @@ func checkForUnlockBeforeLock() {
 			locksSorted := make([]TraceElement, 0)
 			unlockSorted := make([]TraceElement, 0)
 
-			for i := 0; i < len(locks); i++ {
-				for j := 0; j < len(unlocks); j++ {
+			for i := 0; i < len(locks); {
+				removed := false
+				for j := 0; j < len(unlocks); {
 					if clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == clock.Concurrent {
 						locksSorted = append(locksSorted, locks[i])
 						unlockSorted = append(unlockSorted, unlocks[i])
 						locks = append(locks[:i], locks[i+1:]...)
 						unlocks = append(unlocks[:j], unlocks[j+1:]...)
-						i--
-						j = 0
+						removed = true
+						break
+					} else {
+						j++
 					}
+				}
+				if !removed {
+					i++
 				}
 			}
 

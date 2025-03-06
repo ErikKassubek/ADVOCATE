@@ -10,15 +10,11 @@
 
 package fuzzing
 
-import (
-	"analyzer/analysis"
-)
+import "analyzer/analysis"
 
 // if true, a new mutation run is created for each flow mutations,
 // if false, all flow mutations are collected into one mutations run
 const oneMutPerDelay = true
-
-var alreadyDelayedElems = make(map[string][]int)
 
 func createMutationsFlow() int {
 	numberMutAdded := 0

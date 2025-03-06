@@ -167,6 +167,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 	progDir := getPath(progPath)
 
+	clearDataFull()
+
 	startTime := time.Now()
 
 	// while there are available mutations, run them

@@ -16,9 +16,7 @@ import (
 	"analyzer/timer"
 )
 
-// vector clock for each wait group
-var lastChangeWG map[int]clock.VectorClock = make(map[int]clock.VectorClock)
-
+// TODO: do we need lastChangeWg
 /*
  * Create a new wg if needed
  * Args:

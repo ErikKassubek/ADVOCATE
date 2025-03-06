@@ -103,16 +103,17 @@ var resultTypeMap = map[ResultType]string{
 	// SNotExecutedWithPartner: "Not executed select with potential partner",
 }
 
-var outputReadableFile string
-var outputMachineFile string
-var foundBug = false
-var resultsWarningReadable []string
-var resultsCriticalReadable []string
-var resultsWarningMachine []string
-var resultCriticalMachine []string
-var resultInformationMachine []string
-
-var resultWithoutTime []string
+var (
+	outputReadableFile       string
+	outputMachineFile        string
+	foundBug                 = false
+	resultsWarningReadable   []string
+	resultsCriticalReadable  []string
+	resultsWarningMachine    []string
+	resultCriticalMachine    []string
+	resultInformationMachine []string
+	resultWithoutTime        []string
+)
 
 type ResultElem interface {
 	isInvalid() bool
@@ -263,7 +264,6 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 func InitResults(outReadable string, outMachine string) {
 	outputReadableFile = outReadable
 	outputMachineFile = outMachine
-	Reset()
 }
 
 /*
@@ -273,7 +273,7 @@ func InitResults(outReadable string, outMachine string) {
 * Returns:
 *   int: number of bugs found
  */
-func PrintSummary(noWarning bool, noPrint bool) (int, error) {
+func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
 	counter := 1
 	resMachine := ""
 	resReadable := "```\n==================== Summary ====================\n\n"
@@ -306,6 +306,7 @@ func PrintSummary(noWarning bool, noPrint bool) (int, error) {
 			resMachine += result
 		}
 	}
+
 	if !noWarning {
 		if len(resultsWarningReadable) > 0 {
 			found = true
@@ -347,38 +348,45 @@ func PrintSummary(noWarning bool, noPrint bool) (int, error) {
 	// write output readable
 	if _, err := os.Stat(outputReadableFile); err == nil {
 		if err := os.Remove(outputReadableFile); err != nil {
-			return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+			return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 		}
 	}
 
 	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+		return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resReadable); err != nil {
-		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+		return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 	}
 
 	// write output machine
 	if _, err := os.Stat(outputMachineFile); err == nil {
 		if err := os.Remove(outputMachineFile); err != nil {
-			return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+			return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 		}
 	}
 
 	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+		return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resMachine); err != nil {
-		return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), err
+		return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), err
 	}
 
-	return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine), nil
+	return getNumberRes(noWarning, len(resultCriticalMachine), len(resultsWarningMachine), len(resultInformationMachine)), nil
+}
+
+func getNumberRes(noWarning bool, crit, warn, info int) int {
+	if noWarning {
+		return crit
+	}
+	return crit + warn + info
 }
 
 func stringInSlice(a string, list []string) bool {
@@ -398,4 +406,9 @@ func Reset() {
 	resultInformationMachine = make([]string, 0)
 
 	resultWithoutTime = make([]string, 0)
+
+	outputMachineFile = ""
+	outputReadableFile = ""
+
+	foundBug = false
 }

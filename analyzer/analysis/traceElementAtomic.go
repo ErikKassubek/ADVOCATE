@@ -254,27 +254,24 @@ func (at *TraceElementAtomic) SetTWithoutNotExecuted(tSort int) {
  *   string: The simple string representation of the element
  */
 func (at *TraceElementAtomic) ToString() string {
-	res := "A," + strconv.Itoa(at.tPost) + "," +
-		strconv.Itoa(at.id) + ","
+	opString := ""
 
 	switch at.opA {
 	case LoadOp:
-		res += "L"
+		opString = "L"
 	case StoreOp:
-		res += "S"
+		opString = "S"
 	case AddOp:
-		res += "A"
+		opString = "A"
 	case SwapOp:
-		res += "W"
+		opString = "W"
 	case CompSwapOp:
-		res += "C"
+		opString = "C"
 	default:
-		res += "U"
+		opString = "U"
 	}
 
-	res += "," + at.GetPos()
-
-	return res
+	return fmt.Sprintf("A,%d,%d,%s,%s", at.tPost, at.id, opString, at.GetPos())
 }
 
 // MARK: Vector Clock

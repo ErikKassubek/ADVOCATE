@@ -220,7 +220,7 @@ var exitCodeExplanation = map[string]string{
 		"The replay was therefore able to confirm, that the negative wait group can actually occur.",
 	"33": "The replay resulted in an expected lock of an unlocked mutex triggering a panic. The bug was triggered. " +
 		"The replay was therefore able to confirm, that the unlock of a not locked mutex can actually occur.",
-	// "41": "cyclic",
+	"41": "The replay was able to create the cyclic deadlock scenario.",
 }
 
 var objectTypes = map[string]string{

@@ -184,9 +184,9 @@ func main() {
 		}
 	}
 
-	outMachine := filepath.Join(resultFolder, outM) + ".log"
-	outReadable := filepath.Join(resultFolder, outR) + ".log"
-	newTrace := filepath.Join(resultFolder, outT)
+	// outMachine := filepath.Join(resultFolder, outM) + ".log"
+	// outReadable := filepath.Join(resultFolder, outR) + ".log"
+	// newTrace := filepath.Join(resultFolder, outT)
 	if ignoreRewrite != "" {
 		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
@@ -211,19 +211,19 @@ func main() {
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
 	switch mode {
-	case "tool":
+	case "analysis":
 		if modeMain {
 			modeToolchain("main", 0)
 		} else {
 			modeToolchain("test", 0)
 		}
-	case "run":
-		// here the parameter need to stay, because the function is used in the
-		// toolchain package via function injection
-		modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
-			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-			rewriteAll, newTrace, ignoreRewrite,
-			-1, onlyAPanicAndLeak)
+	// case "analyze":
+	// 	// here the parameter need to stay, because the function is used in the
+	// 	// toolchain package via function injection
+	// 	modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
+	// 		outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
+	// 		rewriteAll, newTrace, ignoreRewrite,
+	// 		-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
 	default:
@@ -644,109 +644,22 @@ func printHeader() {
 	fmt.Print(headerInfo)
 }
 
-// TODO: merge printHelp and printHelpMode
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
 	println("There are different modes of operation:")
-	println("1. Run the toolchain")
+	println("1. Analysis")
 	println("2. Fuzzing")
-	println("3. Analyze a trace file and create a reordered trace file based on the analysis results")
-	println("4. Create an explanation for a found bug")
-	println("5. Check if all concurrency elements of the program have been executed at least once")
-	println("6. Create statistics about a program")
 	println("\n\n")
-	println("1. Run the toolchain on tests")
-	println("This runs the toolchain")
-	println("Usage: ./analyzer tool [options]")
-	println("  -main                  Run on the main function instead on tests")
-	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
-	println("  -prog [name]           Name of the program (used for statistics)")
-	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
-	println("  -ignoreAtomics         Set to ignore atomics in replay")
-	println("  -recordTime            Set to record runtimes")
-	println("  -notExec               Set to determine never executed operations")
-	println("  -stats                 Set to create statistics")
-	println("  -keepTrace             Do not delete the trace files after analysis finished")
-	println("  -noWarning             Only show critical bugs")
-	println("\n\n")
-	println("2. Fuzzing")
-	println("This runs the fuzzing")
-	println("Usage: ./analyzer fuzzing [options]")
-	println("  -main                  Run on the main function instead on tests")
-	println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-	println("  -prog [name]           Name of the program")
-	println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
-	println("  -noWarning             Only show critical bugs")
-	println("  -fuzzingMode [mode]    Mode of fuzzing:")
-	println("                           0: full fuzzing, full analysis and replay (default)")
-	println("                           1: no HB info in fuzzing, full analysis and replay")
-	println("                           2: full fuzzing, no analysis and replay, only actual bugs")
-	println("                           3: no HB info in fuzzing, no analysis and replay, only actual bugs")
-	println("Additionally, the tags from mode tool can be used")
-	println("\n\n")
-	println("3. Run")
-	println("Analyze a trace file and create a reordered trace file based on the analysis results")
-	println("Usage: ./analyzer run [options]")
-	println("It has the following options:")
-	println("  -trace [file]          Path to the trace folder to analyze or rewrite (required)")
-	println("  -fifo                  Assume a FIFO ordering for buffered channels (default false)")
-	println("  -ignCritSec            Ignore happens before relations of critical sections (default false)")
-	println("  -noRewrite             Do not rewrite the trace file (default false)")
-	println("  -keepTrace             Do not delete the trace files after analysis finished")
-	println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
-	println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-	println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
-	println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-	println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
-	println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
-	println("                         If it is not set, all scenarios are run")
-	println("                         Options:")
-	println("                             s: Send on closed channel")
-	println("                             r: Receive on closed channel")
-	println("                             w: Done before add on waitGroup")
-	println("                             n: Close of closed channel")
-	println("                             b: Concurrent receive on channel")
-	println("                             l: Leaking routine")
-	println("                             u: Select case without partner")
-	println("                             c: Cyclic deadlock")
-	// println("                             m: Mixed deadlock")
+	printHelpMode("analysis")
+	printHelpMode("fuzzing")
 }
 
 func printHelpMode(mode string) {
 	switch mode {
-	case "run":
-		println("Mode: run")
-		println("Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
-		println("This mode is the default mode and analyzes a trace file and creates a reordered trace file based on the analysis results.")
-		println("Usage: ./analyzer run [options]")
-		println("It has the following options:")
-		println("  -trace [file]          Path to the trace folder to analyze or rewrite (required)")
-		println("  -fifo                  Assume a FIFO ordering for buffered channels (default false)")
-		println("  -ignCritSec            Ignore happens before relations of critical sections (default false)")
-		println("  -noRewrite             Do not rewrite the trace file (default false)")
-		println("  -keepTrace             Do not delete the trace files after analysis finished")
-		println("  -out [folder]          Path to where the result file should be saved. (default parallel to -t)")
-		println("  -ignoreAtomics         Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-		println("  -rewriteAll            If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
-		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
-		println("  -noWarning             Only show critical bugs")
-		println("  -scen [cases]          Select which analysis scenario to run, e.g. -scen srd for the option s, r and d.")
-		println("                         If it is not set, all scenarios are run")
-		println("                         Options:")
-		println("                             s: Send on closed channel")
-		println("                             r: Receive on closed channel")
-		println("                             w: Done before add on waitGroup")
-		println("                             n: Close of closed channel")
-		println("                             b: Concurrent receive on channel")
-		println("                             l: Leaking routine")
-		println("                             u: Select case without partner")
-	case "tool":
-		println("Mode: too")
-		println("Run the toolchain")
-		println("This runs the toolchain on tests or the main function")
+	case "analysis":
+		println("Mode: analysis")
+		println("Analyze a test or tool chain")
+		println("This runs the analysis on tests or the main function")
 		println("Usage: ./analyzer tool [options]")
 		println("  -main                  Run on the main function instead on tests")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")

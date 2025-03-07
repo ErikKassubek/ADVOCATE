@@ -44,10 +44,10 @@ AdvocateGo tries to detect the following situations:
 - R02: Timeout in recording
 
 
-A more in detail explanation of how it works can be found [here](./doc/Analysis.md).
-## Usage
-![Flowchart of AdvocateGoProcess](doc/img/architecture.png "Architecture")
+A detailed description of the inner workings can be found int the [doc](doc) folder (currently in the process of being rewritten and therefore not complete)
 
+
+## Usage
 
 ### Preparation
 Before Advocate can be used, it must first be build.
@@ -76,15 +76,10 @@ script. This will create a go executable in the `bin` directory.
 
 The complete analysis is done with the [analyzer](analyzer).
 
-The analyzer has multiple modes. To get the full list of modes with all options run
-```shell
-./analyzer -h
-```
+ADVOCATE has two different modes.
 
-Here we are mainly interested in two of those modes.
-
-#### Mode: tool
-The tool mode is the main mode to analyzer tests or the main function of a
+#### Mode: analysis
+The analysis mode is the main mode to analyzer tests or the main function of a
 program.
 
 For the (specified) tests or the main function, it will run the program and
@@ -94,11 +89,11 @@ to confirm the bug.
 
 It can be run with
 ```shell
-./analyzer tool [args]
+./analyzer analysis [args]
 ```
 to run tests, or with
 ```shell
-./analyzer tool -main [args]
+./analyzer analysis -main [args]
 ```
 to analyze the main function.
 
@@ -119,12 +114,12 @@ If not set, all tests will be analyzed.
 To get additional information, the following tags can also be set:
 
 - `-recordTime`: measure the runtime for the different phases and create a time file
-- `-stats`: create multiple statistic files as described [here](doc/Statistics.md)\
+- `-stats`: create multiple statistic files as described [here](doc/statistics.md)\
 - `-notExec`: Find operations, that have never been executed
 
 If one of these are set, the `-prog [name]` tag must be set to indicate the name of the program.
 
-There are additional tags. To get them, run `./analyzer tool -h`.
+There are additional tags. To get them, run `./analyzer analysis -h`.
 
 While running, the analyzer will create a `advocateResult` folder. In it, it will create on
 folder for each of the analyzed tests. In this folder it will create a file
@@ -136,7 +131,7 @@ type and position of the bug and information about the replay (if performed).
 The created statistic and time files can also be found in the `advocateResult` folder
 
 #### Mode: fuzzing
-To run the fuzzing as described [here](doc/Fuzzing.md), the following commands can be used:
+To run the fuzzing as described [here](doc/fuzzing.md), the following commands can be used:
 
 ```shell
 ./analyzer fuzzing [args]

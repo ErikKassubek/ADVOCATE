@@ -469,31 +469,30 @@ func (ch *TraceElementChannel) ToString() string {
  *   string: The simple string representation of the element
  */
 func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
-	res := "C" + sep
-	res += strconv.Itoa(ch.tPre) + sep + strconv.Itoa(ch.tPost) + sep
-	res += strconv.Itoa(ch.id) + sep
-
+	op := ""
 	switch ch.opC {
 	case SendOp:
-		res += "S"
+		op = "S"
 	case RecvOp:
-		res += "R"
+		op = "R"
 	case CloseOp:
-		res += "C"
+		op = "C"
 	default:
 		utils.LogError("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
-		res = " "
+		op = "-"
 	}
 
-	res += sep + "f"
+	cl := "f"
+	if ch.cl {
+		cl = ""
+	}
 
-	res += sep + strconv.Itoa(ch.oID)
-	res += sep + strconv.Itoa(ch.qSize)
-	res += sep + strconv.Itoa(ch.qCount)
+	posStr := ""
 	if pos {
-		res += sep + ch.GetPos()
+		posStr = sep + ch.GetPos()
 	}
-	return res
+
+	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%d%d%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, ch.qSize, ch.qCount, posStr)
 }
 
 /*

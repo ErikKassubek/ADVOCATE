@@ -434,9 +434,9 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			needed, double, err := rewriteTrace(outMachine,
 				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
 
-			if err != nil {
-				utils.LogError(err)
-			}
+			// if err != nil {
+			// 	utils.LogError(err)
+			// }
 
 			if !needed {
 				notNeededRewrites++

@@ -27,7 +27,7 @@ type mutation struct {
 
 const (
 	maxNumberRuns = 20
-	maxTime       = 20 * time.Minute
+	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
 
 	factorCaseWithPartner = 2
@@ -225,11 +225,13 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 		// cancel if max number of mutations have been reached
 		if numberFuzzingRuns > maxNumberRuns {
-			return fmt.Errorf("Maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+			utils.LogInfof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+			return nil
 		}
 
 		if time.Since(startTime) > maxTime {
-			return fmt.Errorf(("Maximum runtime for fuzzing has been reached"))
+			utils.LogInfof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(maxTime.Minutes()))
+			return nil
 		}
 	}
 

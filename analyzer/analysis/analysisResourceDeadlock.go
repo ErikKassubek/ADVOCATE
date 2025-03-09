@@ -238,14 +238,14 @@ func getCycles(s *State) []Cycle {
 		if len(s.threads[thread_id].lock_dependencies) == 0 {
 			continue
 		}
-		visiting := thread_id
+
 		is_traversed[thread_id] = true
 		for lock, dependencies := range s.threads[thread_id].lock_dependencies {
 			for _, dependency := range dependencies {
 				chain_stack = append(chain_stack, LockDependency{thread_id, lock, dependency.lockset, dependency.requests}) // push
+				dfs(s, &chain_stack, is_traversed, thread_ids)
+				chain_stack = chain_stack[:len(chain_stack)-1] // pop
 			}
-			dfs(s, &chain_stack, visiting, is_traversed, thread_ids)
-			chain_stack = chain_stack[:len(chain_stack)-1] // pop
 		}
 	}
 
@@ -331,7 +331,7 @@ func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 	return true
 }
 
-func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traversed map[ThreadId]bool, thread_ids map[ThreadId]struct{}) {
+func dfs(s *State, chain_stack *[]LockDependency, is_traversed map[ThreadId]bool, thread_ids map[ThreadId]struct{}) {
 	for tid := range thread_ids {
 		if len(s.threads[tid].lock_dependencies) == 0 {
 			continue
@@ -358,7 +358,7 @@ func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traverse
 
 						is_traversed[tid] = true
 						*chain_stack = append(*chain_stack, ld) // push
-						dfs(s, chain_stack, visiting, is_traversed, thread_ids)
+						dfs(s, chain_stack, is_traversed, thread_ids)
 						*chain_stack = (*chain_stack)[:len(*chain_stack)-1] // pop
 						is_traversed[tid] = false
 					}

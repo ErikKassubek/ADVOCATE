@@ -423,8 +423,8 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, fuzzin
 
 	utils.LogInfof("Run the analyzer for %s", tracePath)
 
-	outM := filepath.Join(pkgPath, "results_machine")
-	outR := filepath.Join(pkgPath, "results_readable")
+	outM := filepath.Join(pkgPath, "results_machine.log")
+	outR := filepath.Join(pkgPath, "results_readable.log")
 	outT := filepath.Join(pkgPath, "rewritten_trace")
 	err := runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
 		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,

@@ -254,7 +254,9 @@ func writeFile(path string, index string, description map[string]string,
 		}
 	}
 
-	utils.LogResultf("Found %s. Replay %s.", description["name"], replay["replaySuc"])
+	if description["crit"] == "Bug" {
+		utils.LogResultf("Found %s. Replay %s.", description["name"], replay["replaySuc"])
+	}
 
 	// if in path, the folder "bugs" does not exist, create it
 	if _, err := os.Stat(path + "/bugs"); os.IsNotExist(err) {

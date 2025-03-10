@@ -16,7 +16,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 /*
@@ -79,7 +78,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	for _, file := range filesToMove {
 		src := filepath.Join(packagePath, file)
-		if strings.HasSuffix(file, ".log") {
+		if file == "output.log" {
 			src = filepath.Join(progPath, file)
 		}
 		dest := filepath.Join(destination, file)

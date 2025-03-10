@@ -15,6 +15,7 @@ import (
 	"analyzer/utils"
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -290,15 +291,16 @@ func SetNoRoutines(n int) {
 func getNextElement() TraceElement {
 	// find the local trace, where the element on which currentIndex points to
 	// has the smallest tpost
-	var minTSort = -1
-	var minRoutine = -1
+	minTSort := -1
+	minRoutine := -1
 	for routine, trace := range traces {
 		// no more elements in the routine trace
 		if currentIndex[routine] == -1 {
 			continue
 		}
 		// ignore non executed operations
-		if trace[currentIndex[routine]].GetTSort() == 0 {
+		tSort := trace[currentIndex[routine]].GetTSort()
+		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
 		if minTSort == -1 || trace[currentIndex[routine]].GetTSort() < minTSort {
@@ -333,6 +335,9 @@ func getLastElemPerRout() []TraceElement {
 }
 
 func increaseIndex(routine int) {
+	if currentIndex[routine] == -1 {
+		utils.LogError("Tried to increase index of -1 at routine ", routine)
+	}
 	currentIndex[routine]++
 	if currentIndex[routine] >= len(traces[routine]) {
 		currentIndex[routine] = -1

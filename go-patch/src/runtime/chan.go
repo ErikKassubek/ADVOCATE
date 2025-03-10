@@ -122,10 +122,8 @@ func makechan(t *chantype, size int) *hchan {
 
 	// ADVOCATE-CHANGE-START
 	// get and save a new id for the channel
-	id, notIgnored := AdvocateChanMake(size)
-	if notIgnored {
-		c.id = id
-	}
+	c.id = AdvocateChanMake(size)
+
 	// ADVOCATE-CHANGE-END
 
 	lockInit(&c.lock, lockRankHchan)
@@ -208,6 +206,10 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	// ADVOCATE-CHANGE-START
+	if c.id == 0 {
+		c.id = AdvocateChanMake(int(c.dataqsiz))
+	}
+
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
@@ -617,6 +619,12 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		gopark(nil, nil, waitReasonChanReceiveNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
+
+	// ADVOCATE-CHANGE-START
+	if c.id == 0 {
+		c.id = AdvocateChanMake(int(c.dataqsiz))
+	}
+	// ADVOCATE-CHANGE-END
 
 	// ADVOCATE-CHANGE-START
 	// wait until the replay has reached the current point

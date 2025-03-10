@@ -419,7 +419,8 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 // Apply analyzer
 func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 	resultID string, fuzzing int) error {
-	tracePath := filepath.Join(dir, pkg, traceName)
+	pkgPath := filepath.Join(dir, pkg)
+	tracePath := filepath.Join(pkgPath, traceName)
 
 	utils.LogInfof("Run the analyzer for %s", tracePath)
 
@@ -428,9 +429,9 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 		err = runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, "results_readable.log",
 			"results_machine.log", ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag, "rewritten_trace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 	} else {
-		outM := fmt.Sprintf("results_machine_%s", resultID)
-		outR := fmt.Sprintf("results_readable_%s", resultID)
-		outT := fmt.Sprintf("rewritten_trace_%s", resultID)
+		outM := filepath.Join(pkgPath, fmt.Sprintf("results_machine_%s", resultID))
+		outR := filepath.Join(pkgPath, fmt.Sprintf("results_readable_%s", resultID))
+		outT := filepath.Join(pkgPath, fmt.Sprintf("rewritten_trace_%s", resultID))
 		err = runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
 			outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 			outT, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
@@ -446,6 +447,8 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string,
 func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName string, rerecorded bool) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
+
+	utils.LogInfo("Start Replay")
 
 	pathPkg := filepath.Join(dir, pkg)
 	var rewrittenTraces = make([]string, 0)

@@ -409,61 +409,65 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		fuzzing.ParseTrace(analysis.GetTraces())
 	}
 
-	if !noRewrite {
-		numberRewrittenTrace := 0
-		failedRewrites := 0
-		notNeededRewrites := 0
-		utils.LogInfo("Start rewriting")
-		originalTrace := analysis.CopyCurrentTrace()
+	if noRewrite {
+		utils.LogInfo("Skip rewrite")
+		return nil
+	}
 
-		// analysis.ClearData()
+	numberRewrittenTrace := 0
+	failedRewrites := 0
+	notNeededRewrites := 0
+	utils.LogInfo("Start rewriting")
+	originalTrace := analysis.CopyCurrentTrace()
 
-		rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
+	// analysis.ClearData()
 
-		addAlreadyProcessed(rewrittenBugs, ignoreRewrite)
+	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
 
-		file := filepath.Base(pathTrace)
-		rewriteNr := "0"
-		spl := strings.Split(file, "_")
-		if len(spl) > 1 {
-			rewriteNr = spl[len(spl)-1]
-		}
+	addAlreadyProcessed(rewrittenBugs, ignoreRewrite)
 
-		for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
+	file := filepath.Base(pathTrace)
+	rewriteNr := "0"
+	spl := strings.Split(file, "_")
+	if len(spl) > 1 {
+		rewriteNr = spl[len(spl)-1]
+	}
 
-			needed, double, err := rewriteTrace(outMachine,
-				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
+	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
 
-			// if err != nil {
-			// 	utils.LogError(err)
-			// }
+		needed, double, err := rewriteTrace(outMachine,
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
 
-			if !needed {
-				notNeededRewrites++
-				if double {
-					fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
-				} else {
-					fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
-				}
-			} else if err != nil {
-				failedRewrites++
+		// if err != nil {
+		// 	utils.LogErrorf("%s_%d", rewriteNr, resultIndex+1)
+		// 	utils.LogError(err)
+		// }
+
+		if !needed {
+			notNeededRewrites++
+			if double {
+				fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
+			} else {
 				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
-			} else { // needed && err == nil
-				numberRewrittenTrace++
-				fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 			}
-			analysis.SetTrace(originalTrace)
+		} else if err != nil {
+			failedRewrites++
+			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
+		} else { // needed && err == nil
+			numberRewrittenTrace++
+			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
+		analysis.SetTrace(originalTrace)
+	}
 
-		utils.LogInfo("Finished Rewrite")
-		utils.LogInfo("Number Results: ", numberOfResults)
-		utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
-		utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
-		if failedRewrites > 0 {
-			utils.LogInfo("Failed rewrites: ", failedRewrites)
-		} else {
-			utils.LogInfo("Failed rewrites: ", failedRewrites)
-		}
+	utils.LogInfo("Finished Rewrite")
+	utils.LogInfo("Number Results: ", numberOfResults)
+	utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
+	utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
+	if failedRewrites > 0 {
+		utils.LogInfo("Failed rewrites: ", failedRewrites)
+	} else {
+		utils.LogInfo("Failed rewrites: ", failedRewrites)
 	}
 
 	return nil

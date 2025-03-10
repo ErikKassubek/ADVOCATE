@@ -15,8 +15,6 @@ import (
 	"analyzer/results"
 	"analyzer/timer"
 	"analyzer/utils"
-	"strconv"
-	"strings"
 )
 
 /*
@@ -31,12 +29,12 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
-	defer func() {
-		if r := recover(); r != nil {
-			wasCanceled.Store(true)
-			utils.LogError(r)
-		}
-	}()
+	// defer func() {
+	// 	if r := recover(); r != nil {
+	// 		wasCanceled.Store(true)
+	// 		utils.LogError(r)
+	// 	}
+	// }()
 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
@@ -64,13 +62,7 @@ func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
 
-	exit := strings.Split(exitPos, ":")
-	if len(exit) != 2 {
-		return
-	}
-
-	file := exit[0]
-	line, err := strconv.Atoi(exit[1])
+	file, line, err := posFromPosString(exitPos)
 	if err != nil {
 		return
 	}

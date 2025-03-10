@@ -484,7 +484,7 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 
 	cl := "f"
 	if ch.cl {
-		cl = ""
+		cl = "t"
 	}
 
 	posStr := ""
@@ -492,8 +492,10 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 		posStr = sep + ch.GetPos()
 	}
 
-	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%d%d%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, ch.qSize, ch.qCount, posStr)
+	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%s%d%s%d%s%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
 }
+
+var second = false
 
 /*
  * Update and calculate the vector clock of the element

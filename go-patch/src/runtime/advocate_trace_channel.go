@@ -14,17 +14,12 @@ var unbufferedChannelComRecvMutex mutex
  * 	id: id of the channel
  * 	qSize: size of the channel
  * Return:
- * 	(int): index for the channel
- * 	(bool): true if the channel is not internal
+ * 	(int): id for the channel
  */
-func AdvocateChanMake(qSize int) (uint64, bool) {
+func AdvocateChanMake(qSize int) uint64 {
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(2)
-
-	if AdvocateIgnore(file) {
-		return 0, false
-	}
 
 	id := GetAdvocateObjectID()
 
@@ -32,7 +27,7 @@ func AdvocateChanMake(qSize int) (uint64, bool) {
 
 	insertIntoTrace(elem)
 
-	return id, true
+	return id
 }
 
 // MARK: Pre
@@ -96,6 +91,10 @@ func isSuffix(s, suffix string) bool {
  */
 func AdvocateChanRecvPre(id uint64, opID uint64, qSize uint, isNil bool) int {
 	timer := GetNextTimeStep()
+
+	if !isNil && id == 0 {
+		panic("A")
+	}
 
 	_, file, line, _ := Caller(3)
 	if AdvocateIgnore(file) {

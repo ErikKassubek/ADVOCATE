@@ -37,8 +37,8 @@ import (
 // Lock dependencies are computed thread-local. We make use of the following structures.
 
 type Thread struct {
-	lockset           Lockset // The thread's current lockset.
-	lock_dependencies map[LockId][]Dep
+	lock_dependencies map[LockId][]Dependency
+	current_lockset   Lockset        // The thread's current lockset.
 	readerCounter     map[LockId]int // Store how many readers a readlock has
 }
 
@@ -46,17 +46,17 @@ type Thread struct {
 // type Deps map[Lock]map[Lockset][]Event
 // Hence, we introduce some intermediate structure.
 
-type Dep struct {
+type Dependency struct {
 	lockset  Lockset
-	requests []Event
+	requests []LockEvent
 }
 
 // Representation of vector clocks, events, threads, lock and lockset.
 
-type Event struct {
+type LockEvent struct {
 	thread_id    ThreadId
 	trace_id     string
-	obj_id       int
+	lock_id      int
 	vector_clock clock.VectorClock
 }
 
@@ -86,18 +86,18 @@ var currentState State
 
 // We show the event processing functions for acquire and release.
 
-func acquire(s *State, read_lock bool, event Event) {
+func acquire(s *State, read_lock bool, event LockEvent) {
 	if _, exists := s.threads[event.thread_id]; !exists {
 		s.threads[event.thread_id] = Thread{
-			lockset:           make(Lockset),
-			lock_dependencies: make(map[LockId][]Dep),
+			current_lockset:   make(Lockset),
+			lock_dependencies: make(map[LockId][]Dependency),
 			readerCounter:     make(map[LockId]int),
 		}
 	}
 
-	lockId := LockId{event.obj_id, read_lock}
+	lockId := LockId{event.lock_id, read_lock}
 
-	ls := s.threads[event.thread_id].lockset
+	ls := s.threads[event.thread_id].current_lockset
 	if !ls.empty() {
 		deps := s.threads[event.thread_id].lock_dependencies
 		deps[lockId] = insert2(deps[lockId], ls, event.Clone())
@@ -106,22 +106,22 @@ func acquire(s *State, read_lock bool, event Event) {
 	if lockId.isRead() {
 		lockId.addReader(s.threads[event.thread_id])
 	}
-	s.threads[event.thread_id].lockset.add(lockId)
+	s.threads[event.thread_id].current_lockset.add(lockId)
 }
 
-func release(s *State, read_lock bool, event Event) {
-	lockId := LockId{event.obj_id, read_lock}
+func release(s *State, read_lock bool, event LockEvent) {
+	lockId := LockId{event.lock_id, read_lock}
 	if lockId.isRead() {
 		lockId.removeReader(s.threads[event.thread_id])
 		for _, thread := range s.threads {
 			if lockId.hasReaders(thread) {
 				continue
 			}
-			thread.lockset.remove(lockId)
+			thread.current_lockset.remove(lockId)
 		}
-		s.threads[event.thread_id].lockset.remove(lockId)
+		s.threads[event.thread_id].current_lockset.remove(lockId)
 	} else {
-		if !s.threads[event.thread_id].lockset.remove(lockId) {
+		if !s.threads[event.thread_id].current_lockset.remove(lockId) {
 			utils.LogError("ANALYSIS FAILED: Lock not found in lockset! Has probably been released in another thread!")
 			// TODO Change to no rewrite?
 			s.failed = true
@@ -132,14 +132,14 @@ func release(s *State, read_lock bool, event Event) {
 // Insert a new lock dependency for a given thread and lock x.
 // We assume that event e acquired lock x.
 // We might have already an entry that shares the same lock and lockset!
-func insert(dependencies []Dep, ls Lockset, event Event) []Dep {
+func insert(dependencies []Dependency, ls Lockset, event LockEvent) []Dependency {
 	for i, v := range dependencies {
 		if v.lockset.equal(ls) {
 			dependencies[i].requests = append(dependencies[i].requests, event)
 			return dependencies
 		}
 	}
-	return append(dependencies, Dep{ls.Clone(), []Event{event}})
+	return append(dependencies, Dependency{ls.Clone(), []LockEvent{event}})
 }
 
 // The above insert function records all requests that share the same dependency (tid,l,ls).
@@ -151,7 +151,7 @@ func insert(dependencies []Dep, ls Lockset, event Event) []Dep {
 // if in between f and e no intra-thread synchronization took place.
 // This can be checked via helper function equalModuloTID.
 // Assumption: Vector clocks underapproximate the must happen-before relation.
-func insert2(dependencies []Dep, lockset Lockset, event Event) []Dep {
+func insert2(dependencies []Dependency, lockset Lockset, event LockEvent) []Dependency {
 	// Helper function.
 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
@@ -194,7 +194,7 @@ func insert2(dependencies []Dep, lockset Lockset, event Event) []Dep {
 			return dependencies
 		}
 	}
-	return append(dependencies, Dep{lockset.Clone(), []Event{event}})
+	return append(dependencies, Dependency{lockset.Clone(), []LockEvent{event}})
 }
 
 // Algorithm phase 2
@@ -204,10 +204,10 @@ func insert2(dependencies []Dep, lockset Lockset, event Event) []Dep {
 // For each thread we record the requests that might block.
 
 type LockDependency struct {
-	thread_id ThreadId
-	lock      LockId
-	lockset   Lockset
-	requests  []Event
+	thread   ThreadId
+	lock     LockId
+	lockset  Lockset
+	requests []LockEvent
 }
 
 type Cycle []LockDependency
@@ -299,7 +299,7 @@ func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 	for i := range *cycle {
 		// Check if each request has a concurrent request in the element before and after
 		// All requests that have a previous request
-		requests_with_prev := []Event{}
+		requests_with_prev := []LockEvent{}
 		for _, req := range (*cycle)[i].requests {
 			for _, prev_req := range (*cycle)[(len(*cycle)+i-1)%len(*cycle)].requests {
 				if clock.GetHappensBefore(req.vector_clock, prev_req.vector_clock) == clock.Concurrent {
@@ -309,7 +309,7 @@ func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 			}
 		}
 		// All requests that have a next request
-		requests_with_both := []Event{}
+		requests_with_both := []LockEvent{}
 		for _, req := range requests_with_prev {
 			for _, next_req := range (*cycle)[(i+1)%len(*cycle)].requests {
 				if clock.GetHappensBefore(req.vector_clock, next_req.vector_clock) == clock.Concurrent {
@@ -388,10 +388,10 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 		return
 	}
 
-	event := Event{
+	event := LockEvent{
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
-		obj_id:       element.GetID(),
+		lock_id:      element.GetID(),
 		vector_clock: currentMustHappensBeforeVC.Copy(),
 	}
 
@@ -430,7 +430,7 @@ func CheckForResourceDeadlock() {
 
 		debugLog("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
-			debugLog("Entry in routine", cycle[i].thread_id, ":")
+			debugLog("Entry in routine", cycle[i].thread, ":")
 			debugLog("\tLockset:", cycle[i].lockset)
 			debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
 			for i, r := range cycle[i].requests {
@@ -444,8 +444,8 @@ func CheckForResourceDeadlock() {
 				}
 			}
 
-			if request.thread_id != cycle[i].thread_id {
-				utils.LogError("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread_id, ". Ignoring circle!")
+			if request.thread_id != cycle[i].thread {
+				utils.LogError("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread, ". Ignoring circle!")
 				break
 			}
 
@@ -457,7 +457,7 @@ func CheckForResourceDeadlock() {
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
 				RoutineID: int(request.thread_id),
-				ObjID:     request.obj_id,
+				ObjID:     request.lock_id,
 				TPre:      tPre,
 				ObjType:   "DC",
 				File:      file,
@@ -466,8 +466,8 @@ func CheckForResourceDeadlock() {
 		}
 
 		var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
-
 		stuckElement.ObjType = "DH"
+
 		results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
 
 	}
@@ -492,25 +492,25 @@ func logAbortReason(reason ...any) {
 // Lock Depdendency methods.
 
 func (l LockDependency) Clone() LockDependency {
-	reqs := make([]Event, len(l.requests))
+	reqs := make([]LockEvent, len(l.requests))
 	for i, r := range l.requests {
 		reqs[i] = r.Clone()
 	}
 	return LockDependency{
-		thread_id: l.thread_id,
-		lock:      l.lock,
-		lockset:   l.lockset.Clone(),
-		requests:  reqs,
+		thread:   l.thread,
+		lock:     l.lock,
+		lockset:  l.lockset.Clone(),
+		requests: reqs,
 	}
 }
 
 // Event methods.
 
-func (e Event) Clone() Event {
-	return Event{
+func (e LockEvent) Clone() LockEvent {
+	return LockEvent{
 		thread_id:    e.thread_id,
 		trace_id:     e.trace_id,
-		obj_id:       e.obj_id,
+		lock_id:      e.lock_id,
 		vector_clock: e.vector_clock.Copy(),
 	}
 }

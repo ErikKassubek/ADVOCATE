@@ -186,10 +186,8 @@ func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
 	replay map[string]string, progInfo map[string]string, fuzzing int) error {
 
-	res := ""
-
 	// write the bug type description
-	res += "# " + description["crit"] + ": " + description["name"] + "\n\n"
+	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
 	res += description["explanation"] + "\n\n"
 
 	// write the positions of the bug
@@ -255,6 +253,8 @@ func writeFile(path string, index string, description map[string]string,
 			}
 		}
 	}
+
+	utils.LogResultf("Found %s. Replay %s.", description["name"], replay["replaySuc"])
 
 	// if in path, the folder "bugs" does not exist, create it
 	if _, err := os.Stat(path + "/bugs"); os.IsNotExist(err) {

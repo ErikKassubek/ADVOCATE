@@ -18,6 +18,7 @@ import (
 const (
 	Reset  = "\033[0m"
 	Red    = "\033[31m"
+	Green  = "\033[32m"
 	Yellow = "\033[33m"
 	Purple = "\033[35m"
 )
@@ -39,6 +40,14 @@ func LogImportant(v ...any) {
 
 func LogImportantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
+}
+
+func LogResult(v ...any) {
+	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
+}
+
+func LogResultf(format string, v ...any) {
+	log.Printf(Green+format+Reset, v...)
 }
 
 func LogTimeout(v ...any) {

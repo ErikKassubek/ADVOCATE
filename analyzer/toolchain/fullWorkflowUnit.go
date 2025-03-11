@@ -21,7 +21,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -38,12 +40,13 @@ import (
  *    createStats (bool): create a stats file
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  *    keepTraces (bool): do not delete traces after analysis
- * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ *    cont (bool): continue an already started run
  * Returns:
  *    error
  */
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun bool) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, cont bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -59,7 +62,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		return fmt.Errorf("Failed to change directory: %v", dir)
 	}
 
-	if firstRun {
+	if firstRun && !cont {
 		os.RemoveAll("advocateResult")
 		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
 			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
@@ -67,13 +70,17 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, err := FindTestFiles(dir)
+	testFiles, maxFileNum, totalFiles, err := FindTestFiles(dir, cont && testName == "")
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
 
-	totalFiles := len(testFiles)
-	attemptedTests, skippedTests, currentFile := 0, 0, 1
+	startFile := 0
+	if cont {
+		startFile = maxFileNum
+	}
+
+	attemptedTests, skippedTests, currentFile := 0, 0, startFile+1
 
 	// resultPath := filepath.Join(dir, "advocateResult")
 
@@ -109,7 +116,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			attemptedTests++
 			packageName := filepath.Base(packagePath)
 			fileName := filepath.Base(file)
-			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s", testFunc, packageName, file)
+			utils.LogInfof("Running full workflow for test %s in package %s in file %s", testFunc, packageName, file)
 
 			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
 			if !strings.HasSuffix(adjustedPackagePath, string(filepath.Separator)) {
@@ -203,22 +210,104 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
  * Function to find all _test.go files in the specified directory
  * Args:
  *    dir (string): folder to search in
+ *    cont (bool): only return test files not already in the advocateResult
  * Returns:
  *    []string: found files
+ *    int: min file num, only if cont, otherwise 0
+ *    int: total number of files
  *    error
  */
-func FindTestFiles(dir string) ([]string, error) {
+func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	var testFiles []string
-	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+
+	alreadyProcessed, maxFileNum := make(map[string]struct{}), 0
+	var err error
+
+	alreadyProcessed, maxFileNum, err = getFilesInResult(dir, cont)
+	if err != nil {
+		utils.LogError(err)
+		return testFiles, 0, 0, err
+	}
+
+	totalNumFiles := 0
+	err = filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if strings.HasSuffix(info.Name(), "_test.go") {
-			testFiles = append(testFiles, path)
+		name := info.Name()
+		if strings.HasSuffix(name, "_test.go") {
+			totalNumFiles++
+			if _, ok := alreadyProcessed[name]; !cont || !ok {
+				testFiles = append(testFiles, path)
+			}
 		}
 		return nil
 	})
-	return testFiles, err
+	if err != nil {
+		utils.LogError(err)
+	}
+	return testFiles, maxFileNum, totalNumFiles, err
+}
+
+func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
+	res := make(map[string]struct{})
+
+	path := filepath.Join(dir, "advocateResult")
+
+	patternPrefix := `file\([0-9]+\)-test\([0-9]+\)-`
+	patternFileNum := `^file\((\d+)\)-test\(\d+\)-.+$`
+	rePrefix := regexp.MustCompile(patternPrefix)
+	reNum := regexp.MustCompile(patternFileNum)
+
+	files, err := os.ReadDir(path)
+	if err != nil {
+		return res, 0, err
+	}
+
+	maxFileNum := -1
+	maxKey := ""
+	for _, file := range files {
+		if !file.IsDir() {
+			continue
+		}
+		name := file.Name()
+		nameClean := rePrefix.ReplaceAllString(name, "")
+		lastIndex := strings.LastIndex(nameClean, "-")
+		if lastIndex != -1 {
+			nameClean = nameClean[:lastIndex] // Keep everything before the last separator
+		}
+
+		numbers := reNum.FindStringSubmatch(name)
+
+		if len(numbers) > 1 {
+			numberInt, err := strconv.Atoi(numbers[1])
+			if err != nil {
+				return res, 0, err
+			}
+			if numberInt > maxFileNum {
+				maxKey = nameClean + ".go"
+				maxFileNum = numberInt
+			}
+		}
+
+		res[nameClean+".go"] = struct{}{}
+	}
+
+	// remove all folders created by the last file and remove the file name from the processed
+	if cont && maxFileNum != -1 {
+		for _, file := range files {
+			if !file.IsDir() || !strings.Contains(file.Name(), fmt.Sprintf("file(%d)", maxFileNum)) {
+				continue
+			}
+
+			_ = os.RemoveAll(filepath.Join(path, file.Name()))
+		}
+		utils.LogError()
+		delete(res, maxKey)
+		maxFileNum = maxFileNum - 1
+	}
+
+	return res, maxFileNum, nil
 }
 
 /*

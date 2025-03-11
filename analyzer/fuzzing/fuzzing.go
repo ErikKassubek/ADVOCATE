@@ -55,11 +55,16 @@ var (
 * 	notExec (bool): find never executed operations
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
+* 	cont (bool): continue partial fuzzing
  */
 func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, cont bool) error {
 
-	utils.LogInfo("Start fuzzing")
+	if cont {
+		utils.LogInfo("Continue fuzzing")
+	} else {
+		utils.LogInfo("Start fuzzing")
+	}
 
 	// run either fuzzing on main or fuzzing on one test
 	if modeMain || name != "" {
@@ -70,7 +75,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true)
+			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true, cont)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
@@ -89,23 +94,21 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 	utils.LogInfo("Run fuzzing on all tests")
 
 	// run fuzzing on all tests
-	testFiles, err := toolchain.FindTestFiles(progPath)
+	testFiles, maxFileNumber, totalFiles, err := toolchain.FindTestFiles(progPath, cont)
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
-
-	totalFiles := len(testFiles)
 
 	utils.LogInfof("Found %d test files", totalFiles)
 
 	// Process each test file
 	for i, testFile := range testFiles {
-		utils.LogInfof("Progress %s: %d/%d\n", progName, i+1, totalFiles)
+		utils.LogInfof("Progress %s: %d/%d\n", progName, i+maxFileNumber+1, totalFiles)
 		utils.LogInfof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
 		if err != nil || len(testFunctions) == 0 {
-			utils.LogError("Could not find test functions in ", testFile)
+			utils.LogInfo("Could not find test functions in ", testFile)
 			continue
 		}
 
@@ -119,7 +122,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun)
+				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
@@ -160,9 +163,10 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	createStats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+* 	cont (bool): continue with an already started run
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont bool) error {
 	useHBInfoFuzzing = hBInfoFuzzing
 
 	progDir := getPath(progPath)
@@ -192,7 +196,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
-			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun)
+			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

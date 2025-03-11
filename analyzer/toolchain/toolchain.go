@@ -49,10 +49,11 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	stats (bool): create statistics
  * 	keepTraces (bool): keep the traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ * 	cont (bool): continue an already started run
  */
 func Run(mode, advocate, file, execName, progName, test string,
 	numRerecorded, fuzzing int,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun bool) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun, cont bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFile = strings.Replace(file, "~", home, -1)
@@ -96,7 +97,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFile, progName, measureTime,
-			notExecuted, stats, fuzzing, keepTraces, firstRun)
+			notExecuted, stats, fuzzing, keepTraces, firstRun, cont)
 	case "explain":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

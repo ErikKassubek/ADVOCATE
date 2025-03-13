@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/memory"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -628,7 +629,7 @@ func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
  * Returns:
  *   map[int][]traceElement: The copy of the trace
  */
-func CopyCurrentTrace() map[int][]TraceElement {
+func CopyCurrentTrace() (map[int][]TraceElement, error) {
 	return CopyTrace(traces)
 }
 
@@ -639,12 +640,15 @@ func CopyCurrentTrace() map[int][]TraceElement {
  * Returns:
  *   map[int][]traceElement: The copy of the trace
  */
-func CopyTrace(original map[int][]TraceElement) map[int][]TraceElement {
+func CopyTrace(original map[int][]TraceElement) (map[int][]TraceElement, error) {
 	copyTrace := make(map[int][]TraceElement)
 	for routine, trace := range original {
 		copyTrace[routine] = copyTraceRoutine(trace)
+		if memory.WasCanceled() {
+			return copyTrace, fmt.Errorf("Not enough RAM")
+		}
 	}
-	return copyTrace
+	return copyTrace, nil
 }
 
 func copyTraceRoutine(trace []TraceElement) []TraceElement {
@@ -662,7 +666,7 @@ func copyTraceRoutine(trace []TraceElement) []TraceElement {
  */
 func SetTrace(trace map[int][]TraceElement) {
 	traces = make(map[int][]TraceElement)
-	traces = CopyTrace(trace)
+	traces, _ = CopyTrace(trace)
 }
 
 /*
@@ -702,4 +706,40 @@ func PrintTrace(types []string, clocks bool) {
 			utils.LogInfo(elem.string)
 		}
 	}
+}
+
+func LogSizes() {
+	utils.LogError("Trace: ", memory.GetSizeInMB(traces))
+	utils.LogError("CurrentIndex: ", memory.GetSizeInMB(currentIndex))
+
+	utils.LogError("closeData: ", memory.GetSizeInMB(closeData))
+	utils.LogError("lastSendRoutine: ", memory.GetSizeInMB(lastSendRoutine))
+	utils.LogError("lastRecvRoutine: ", memory.GetSizeInMB(lastRecvRoutine))
+	utils.LogError("hasSend: ", memory.GetSizeInMB(hasSend))
+	utils.LogError("mostRecentSend: ", memory.GetSizeInMB(mostRecentSend))
+	utils.LogError("hasReceived: ", memory.GetSizeInMB(hasReceived))
+	utils.LogError("mostRecentReceive: ", memory.GetSizeInMB(mostRecentReceive))
+	utils.LogError("bufferedVCs: ", memory.GetSizeInMB(bufferedVCs))
+	utils.LogError("wgAdd: ", memory.GetSizeInMB(wgAdd))
+	utils.LogError("wgDone: ", memory.GetSizeInMB(wgDone))
+	utils.LogError("allLocks: ", memory.GetSizeInMB(allLocks))
+	utils.LogError("allUnlocks: ", memory.GetSizeInMB(allUnlocks))
+	utils.LogError("lockSet: ", memory.GetSizeInMB(lockSet))
+	utils.LogError("mostRecentAcquire: ", memory.GetSizeInMB(mostRecentAcquire))
+	utils.LogError("mostRecentAcquireTotal: ", memory.GetSizeInMB(mostRecentAcquireTotal))
+	utils.LogError("relW: ", memory.GetSizeInMB(relW))
+	utils.LogError("relR: ", memory.GetSizeInMB(relR))
+	utils.LogError("leakingChannels: ", memory.GetSizeInMB(leakingChannels))
+	utils.LogError("selectCases: ", memory.GetSizeInMB(selectCases))
+	utils.LogError("allForks: ", memory.GetSizeInMB(allForks))
+	utils.LogError("fuzzingFlowOnce: ", memory.GetSizeInMB(fuzzingFlowOnce))
+	utils.LogError("fuzzingFlowMutex: ", memory.GetSizeInMB(fuzzingFlowMutex))
+	utils.LogError("fuzzingFlowSend: ", memory.GetSizeInMB(fuzzingFlowSend))
+	utils.LogError("fuzzingFlowRecv: ", memory.GetSizeInMB(fuzzingFlowRecv))
+	utils.LogError("executedOnce: ", memory.GetSizeInMB(executedOnce))
+	utils.LogError("fuzzingCounter: ", memory.GetSizeInMB(fuzzingCounter))
+	utils.LogError("currentVCHb: ", memory.GetSizeInMB(currentVCHb))
+	utils.LogError("currentVCWmhb: ", memory.GetSizeInMB(currentVCWmhb))
+	utils.LogError("channelWithoutPartner: ", memory.GetSizeInMB(channelWithoutPartner))
+	utils.LogError("currentState: ", memory.GetSizeInMB(currentState))
 }

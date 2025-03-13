@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/memory"
 	"analyzer/results"
 )
 
@@ -22,6 +23,7 @@ func Clear() {
 	ClearTrace()
 	ClearData()
 	results.Reset()
+	memory.Reset()
 }
 
 func ClearTrace() {
@@ -82,7 +84,4 @@ func ClearData() {
 
 	numberOfRoutines = 0
 	timeoutHappened = false
-
-	wasCanceled.Store(false)
-	wasCanceledRam.Store(false)
 }

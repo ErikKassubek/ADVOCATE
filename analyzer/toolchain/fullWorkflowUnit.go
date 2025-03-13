@@ -46,7 +46,7 @@ import (
  *    error
  */
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, cont bool) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -70,17 +70,12 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, maxFileNum, totalFiles, err := FindTestFiles(dir, cont && testName == "")
+	testFiles, _, totalFiles, err := FindTestFiles(dir, cont && testName == "")
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
 
-	startFile := 0
-	if cont {
-		startFile = maxFileNum
-	}
-
-	attemptedTests, skippedTests, currentFile := 0, 0, startFile+1
+	attemptedTests, skippedTests, currentFile := 0, 0, fileNumber
 
 	// resultPath := filepath.Join(dir, "advocateResult")
 
@@ -124,6 +119,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			}
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
 			directoryName := filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc))
+			if cont && fileNumber != 0 {
+				directoryName = filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
+			}
 			directoryPath := filepath.Join(dir, directoryName)
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)

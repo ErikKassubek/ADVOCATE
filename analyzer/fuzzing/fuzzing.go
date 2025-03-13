@@ -75,7 +75,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true, cont)
+			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
@@ -102,8 +102,14 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 	utils.LogInfof("Found %d test files", totalFiles)
 
 	// Process each test file
+	fileCounter := 0
+	if cont {
+		fileCounter = maxFileNumber
+	}
+
 	for i, testFile := range testFiles {
-		utils.LogInfof("Progress %s: %d/%d\n", progName, i+maxFileNumber+1, totalFiles)
+		fileCounter++
+		utils.LogInfof("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
 		utils.LogInfof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
@@ -122,7 +128,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont)
+				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
@@ -166,7 +172,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	cont (bool): continue with an already started run
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 	useHBInfoFuzzing = hBInfoFuzzing
 
 	progDir := getPath(progPath)
@@ -196,7 +202,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
-			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont)
+			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

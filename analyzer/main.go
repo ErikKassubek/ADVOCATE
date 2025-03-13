@@ -23,6 +23,7 @@ import (
 	"analyzer/bugs"
 	"analyzer/fuzzing"
 	"analyzer/io"
+	"analyzer/memory"
 	"analyzer/results"
 	"analyzer/rewriter"
 	"analyzer/stats"
@@ -73,6 +74,10 @@ var (
 	modeMain bool
 
 	noWarning bool
+
+	cont bool
+
+	noMemorySupervisor bool
 )
 
 const (
@@ -116,6 +121,10 @@ func main() {
 	flag.BoolVar(&statistics, "stats", false, "Create statistics")
 
 	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
+
+	flag.BoolVar(&cont, "cont", false, "Continue a partial analysis of tests")
+
+	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
@@ -182,6 +191,10 @@ func main() {
 		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
 			resultFolder += string(os.PathSeparator)
 		}
+	}
+
+	if !noMemorySupervisor {
+		go memory.MemorySupervisor() // cancel analysis if not enough ram
 	}
 
 	// outMachine := filepath.Join(resultFolder, outM) + ".log"
@@ -260,7 +273,7 @@ func modeFuzzing() {
 
 	err := fuzzing.Fuzzing(modeMain, pathToAdvocate, progPath, progName, execName,
 		ignoreAtomics, useHBInfoFuzzing, recordTime, notExec, statistics,
-		keepTraces)
+		keepTraces, cont)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())
 	}
@@ -269,7 +282,7 @@ func modeFuzzing() {
 func modeToolchain(mode string, numRerecorded int) {
 	checkVersion()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
-		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
+		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, cont, 0, 0)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}
@@ -365,7 +378,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	if numberElems == 0 {
 		return fmt.Errorf("Trace does not contain any elem")
 	} else {
-		utils.LogInfof("Read trace with %d elements", numberElems)
+		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 	}
 
 	analysis.SetNoRoutines(numberOfRoutines)
@@ -386,7 +399,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	if canceled, ram := analysis.WasCanceled(); canceled {
+	if canceled, ram := memory.CheckCanceled(); canceled {
 		// analysis.LogSizes()
 		analysis.Clear()
 		if ram {
@@ -418,9 +431,16 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	failedRewrites := 0
 	notNeededRewrites := 0
 	utils.LogInfo("Start rewriting")
-	originalTrace := analysis.CopyCurrentTrace()
+	originalTrace, err := analysis.CopyCurrentTrace()
 
-	// analysis.ClearData()
+	if err != nil {
+		utils.LogError("Failed to rewrite: ", err)
+		return nil
+	}
+
+	if memory.WasCanceled() {
+		utils.LogError("Could not run rewrite: Not enough RAM")
+	}
 
 	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
 
@@ -434,14 +454,8 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
-
 		needed, double, err := rewriteTrace(outMachine,
 			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
-
-		// if err != nil {
-		// 	utils.LogErrorf("%s_%d", rewriteNr, resultIndex+1)
-		// 	utils.LogError(err)
-		// }
 
 		if !needed {
 			notNeededRewrites++
@@ -458,9 +472,17 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 		analysis.SetTrace(originalTrace)
-	}
 
-	utils.LogInfo("Finished Rewrite")
+		if memory.WasCanceled() {
+			failedRewrites += max(0, numberOfResults-resultIndex-1)
+			break
+		}
+	}
+	if memory.WasCanceledRAM() {
+		utils.LogError("Rewrite Canceled: Not enough RAM")
+	} else {
+		utils.LogInfo("Finished Rewrite")
+	}
 	utils.LogInfo("Number Results: ", numberOfResults)
 	utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
 	utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
@@ -508,6 +530,9 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 
 		// remove to run old cyclic deadlock detection
 		analysisCases["cyclicDeadlock"] = false
+
+		// takes to long, only take out for tests
+		analysisCases["resourceDeadlock"] = false
 
 		// remove when implemented
 		analysisCases["mixedDeadlock"] = false

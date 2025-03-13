@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/memory"
 	"analyzer/results"
 	"analyzer/timer"
 	"analyzer/utils"
@@ -29,20 +30,15 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
-	// defer func() {
-	// 	if r := recover(); r != nil {
-	// 		wasCanceled.Store(true)
-	// 		utils.LogError(r)
-	// 	}
-	// }()
+	defer func() {
+		if r := recover(); r != nil {
+			memory.Cancel()
+			utils.LogError(r)
+		}
+	}()
 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
-
-	cancel := make(chan struct{}, 1)
-	defer func() { cancel <- struct{}{} }()
-
-	go memorySupervisor(cancel) // cancel analysis if not enough ram
 
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
@@ -255,7 +251,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			checkLeak(elem)
 		}
 
-		if wasCanceledRam.Load() == true {
+		if memory.WasCanceled() {
 			return
 		}
 	}
@@ -267,7 +263,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		CheckForSelectCaseWithoutPartner()
 	}
 
-	if wasCanceledRam.Load() == true {
+	if memory.WasCanceled() {
 		return
 	}
 
@@ -278,7 +274,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		utils.LogInfo("Finish check for leak")
 	}
 
-	if wasCanceledRam.Load() == true {
+	if memory.WasCanceled() {
 		return
 	}
 
@@ -288,7 +284,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		utils.LogInfo("Finish check for done before add")
 	}
 
-	if wasCanceledRam.Load() == true {
+	if memory.WasCanceled() {
 		return
 	}
 
@@ -298,7 +294,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		utils.LogInfo("Finish check for cyclic deadlock")
 	}
 
-	// if wasCanceledRam.Load() == true {
+	// if memory.WasCanceled() {
 	// 	return
 	// }
 
@@ -308,7 +304,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		utils.LogInfo("Finish check for cyclic deadlock")
 	}
 
-	if wasCanceledRam.Load() == true {
+	if memory.WasCanceled() {
 		return
 	}
 

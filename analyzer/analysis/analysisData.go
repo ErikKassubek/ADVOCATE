@@ -12,7 +12,6 @@ package analysis
 
 import (
 	"analyzer/clock"
-	"sync/atomic"
 )
 
 type elemWithVc struct {
@@ -66,9 +65,6 @@ type ConcurrentEntry struct {
 }
 
 var (
-	wasCanceled    atomic.Bool
-	wasCanceledRam atomic.Bool
-
 	// analysis cases to run
 	analysisCases   = make(map[string]bool)
 	analysisFuzzing = false

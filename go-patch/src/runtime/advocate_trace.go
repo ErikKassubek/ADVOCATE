@@ -52,6 +52,8 @@ const (
 	OperationAtomicAdd
 	OperationAtomicSwap
 	OperationAtomicCompareAndSwap
+	OperationAtomicAnd
+	OperationAtomicOr
 
 	OperationReplayEnd
 )
@@ -102,7 +104,7 @@ func getOperationObjectString(op Operation) string {
 		return "Select"
 	case OperationCondSignal, OperationCondBroadcast, OperationCondWait:
 		return "Cond"
-	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap:
+	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"

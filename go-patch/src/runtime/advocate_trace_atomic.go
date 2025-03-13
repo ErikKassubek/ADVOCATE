@@ -20,6 +20,8 @@ const (
 	AddOp      AtomicOp = "A"
 	SwapOp     AtomicOp = "W"
 	CompSwapOp AtomicOp = "C"
+	AndOp      AtomicOp = "N"
+	OrOp       AtomicOp = "O"
 )
 
 /*

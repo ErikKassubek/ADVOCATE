@@ -122,8 +122,7 @@ func release(s *State, read_lock bool, event LockEvent) {
 		s.threads[event.thread_id].current_lockset.remove(lockId)
 	} else {
 		if !s.threads[event.thread_id].current_lockset.remove(lockId) {
-			utils.LogError("ANALYSIS FAILED: Lock not found in lockset! Has probably been released in another thread!")
-			// TODO Change to no rewrite?
+			logAbortReason("Lock not found in lockset! Has probably been released in another thread, this is an unsupported case.")
 			s.failed = true
 		}
 	}

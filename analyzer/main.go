@@ -65,8 +65,9 @@ var (
 
 	rewriteAll bool
 
-	noRewrite  bool
-	keepTraces bool
+	noRewrite    bool
+	keepTraces   bool
+	skipExisting bool
 
 	notExec    bool
 	statistics bool
@@ -116,6 +117,7 @@ func main() {
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	flag.BoolVar(&skipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
 	flag.BoolVar(&statistics, "stats", false, "Create statistics")
@@ -265,7 +267,7 @@ func modeFuzzing() {
 
 func modeToolchain(mode string, numRerecorded int) {
 	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
-		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true)
+		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, skipExisting)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}

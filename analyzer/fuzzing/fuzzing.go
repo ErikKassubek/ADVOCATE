@@ -182,7 +182,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
-			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun)
+			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, false)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

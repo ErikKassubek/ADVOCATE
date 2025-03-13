@@ -40,11 +40,12 @@ import (
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  *    keepTraces (bool): do not delete traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ * 	skipExisting (bool): do not overwrite existing results, skip those tests
  * Returns:
  *    error
  */
 func runWorkflowUnit(pathToAdvocate, dir, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun bool) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, skipExisting bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -59,9 +60,11 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	}
 
 	if firstRun {
-		os.RemoveAll("advocateResult")
-		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		if !skipExisting {
+			os.RemoveAll("advocateResult")
+			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
+				return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+			}
 		}
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
@@ -109,7 +112,6 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			attemptedTests++
 			packageName := filepath.Base(packagePath)
 			fileName := filepath.Base(file)
-			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
 
 			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
 			if !strings.HasSuffix(adjustedPackagePath, string(filepath.Separator)) {
@@ -118,6 +120,14 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
 			directoryName := filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc))
 			directoryPath := filepath.Join(dir, directoryName)
+
+			// Skip this test if previous results exist and -skipExisting is active
+			if inf, err := os.Stat(directoryPath); skipExisting && err == nil && inf.IsDir() {
+				utils.LogInfof("Skipping %s, as results already exists and -skipExisting is active\n", directoryName)
+				continue
+			}
+
+			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)
 				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {

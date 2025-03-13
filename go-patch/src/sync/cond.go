@@ -5,9 +5,9 @@
 package sync
 
 import (
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	"runtime"
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	"sync/atomic"
 	"unsafe"
 )
@@ -16,24 +16,25 @@ import (
 // for goroutines waiting for or announcing the occurrence
 // of an event.
 //
-// Each Cond has an associated Locker L (often a *Mutex or *RWMutex),
+// Each Cond has an associated Locker L (often a [*Mutex] or [*RWMutex]),
 // which must be held when changing the condition and
-// when calling the Wait method.
+// when calling the [Cond.Wait] method.
 //
 // A Cond must not be copied after first use.
 //
-// In the terminology of the Go memory model, Cond arranges that
-// a call to Broadcast or Signal “synchronizes before” any Wait call
+// In the terminology of [the Go memory model], Cond arranges that
+// a call to [Cond.Broadcast] or [Cond.Signal] “synchronizes before” any Wait call
 // that it unblocks.
 //
 // For many simple use cases, users will be better off using channels than a
 // Cond (Broadcast corresponds to closing a channel, and Signal corresponds to
 // sending on a channel).
 //
-// For more on replacements for sync.Cond, see [Roberto Clapis's series on
+// For more on replacements for [sync.Cond], see [Roberto Clapis's series on
 // advanced concurrency patterns], as well as [Bryan Mills's talk on concurrency
 // patterns].
 //
+// [the Go memory model]: https://go.dev/ref/mem
 // [Roberto Clapis's series on advanced concurrency patterns]: https://blogtitle.github.io/categories/concurrency/
 // [Bryan Mills's talk on concurrency patterns]: https://drive.google.com/file/d/1nPdvhB0PutEJzdCq5ms6UI58dp50fcAN/view
 type Cond struct {
@@ -45,9 +46,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	id uint64
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -58,7 +59,7 @@ func NewCond(l Locker) *Cond {
 // Wait atomically unlocks c.L and suspends execution
 // of the calling goroutine. After later resuming execution,
 // Wait locks c.L before returning. Unlike in other systems,
-// Wait cannot return unless awoken by Broadcast or Signal.
+// Wait cannot return unless awoken by [Cond.Broadcast] or [Cond.Signal].
 //
 // Because c.L is not locked while Wait is waiting, the caller
 // typically cannot assume that the condition is true when
@@ -71,7 +72,7 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -84,7 +85,7 @@ func (c *Cond) Wait() {
 	//record
 	advocateIndex := runtime.AdvocateCondPre(c.id, 0)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -101,7 +102,7 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -114,7 +115,8 @@ func (c *Cond) Signal() {
 	// recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 1)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
+
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
 }
@@ -124,7 +126,7 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -137,7 +139,7 @@ func (c *Cond) Broadcast() {
 	//recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 2)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

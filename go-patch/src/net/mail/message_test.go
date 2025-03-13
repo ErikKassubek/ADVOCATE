@@ -9,6 +9,7 @@ import (
 	"io"
 	"mime"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -115,7 +116,7 @@ func headerEq(a, b Header) bool {
 		if !ok {
 			return false
 		}
-		if !reflect.DeepEqual(as, bs) {
+		if !slices.Equal(as, bs) {
 			return false
 		}
 	}
@@ -390,6 +391,10 @@ func TestAddressParsingError(t *testing.T) {
 		18: {" group: null@example.com; (asd", "misformatted parenthetical comment"},
 		19: {" group: ; (asd", "misformatted parenthetical comment"},
 		20: {`(John) Doe <jdoe@machine.example>`, "missing word in phrase:"},
+		21: {"<jdoe@[" + string([]byte{0xed, 0xa0, 0x80}) + "192.168.0.1]>", "invalid utf-8 in domain-literal"},
+		22: {"<jdoe@[[192.168.0.1]>", "bad character in domain-literal"},
+		23: {"<jdoe@[192.168.0.1>", "unclosed domain-literal"},
+		24: {"<jdoe@[256.0.0.1]>", "invalid IP address in domain-literal"},
 	}
 
 	for i, tc := range mustErrTestCases {
@@ -806,6 +811,20 @@ func TestAddressParsing(t *testing.T) {
 				},
 			},
 		},
+		// Domain-literal
+		{
+			`jdoe@[192.168.0.1]`,
+			[]*Address{{
+				Address: "jdoe@[192.168.0.1]",
+			}},
+		},
+		{
+			`John Doe <jdoe@[192.168.0.1]>`,
+			[]*Address{{
+				Name:    "John Doe",
+				Address: "jdoe@[192.168.0.1]",
+			}},
+		},
 	}
 	for _, test := range tests {
 		if len(test.exp) == 1 {
@@ -956,6 +975,20 @@ func TestAddressParser(t *testing.T) {
 				},
 			},
 		},
+		// Domain-literal
+		{
+			`jdoe@[192.168.0.1]`,
+			[]*Address{{
+				Address: "jdoe@[192.168.0.1]",
+			}},
+		},
+		{
+			`John Doe <jdoe@[192.168.0.1]>`,
+			[]*Address{{
+				Name:    "John Doe",
+				Address: "jdoe@[192.168.0.1]",
+			}},
+		},
 	}
 
 	ap := AddressParser{WordDecoder: &mime.WordDecoder{
@@ -1062,6 +1095,15 @@ func TestAddressString(t *testing.T) {
 			&Address{Name: string([]byte{0xed, 0xa0, 0x80}), Address: "invalid-utf8@example.net"},
 			"=?utf-8?q?=ED=A0=80?= <invalid-utf8@example.net>",
 		},
+		// Domain-literal
+		{
+			&Address{Address: "bob@[192.168.0.1]"},
+			"<bob@[192.168.0.1]>",
+		},
+		{
+			&Address{Name: "Bob", Address: "bob@[192.168.0.1]"},
+			`"Bob" <bob@[192.168.0.1]>`,
+		},
 	}
 	for _, test := range tests {
 		s := test.addr.String()
@@ -1115,6 +1157,7 @@ func TestAddressParsingAndFormatting(t *testing.T) {
 		`<"."@example.com>`,
 		`<".."@example.com>`,
 		`<"0:"@0>`,
+		`<Bob@[192.168.0.1]>`,
 	}
 
 	for _, test := range tests {

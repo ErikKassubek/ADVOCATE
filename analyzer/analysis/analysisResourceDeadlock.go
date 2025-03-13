@@ -214,7 +214,6 @@ type Cycle []LockDependency
 
 func report(s *State, c Cycle) {
 	s.cycles = append(s.cycles, c)
-
 }
 
 // After phase 1, the following function yields all cyclice lock depndencies.
@@ -226,24 +225,18 @@ func getCycles(s *State) []Cycle {
 	}
 	s.cycles = []Cycle{}
 
-	thread_ids := make(map[ThreadId]struct{})
-	is_traversed := make(map[ThreadId]bool)
+	traversed_thread := make(map[ThreadId]bool)
 	for tid := range s.threads {
-		thread_ids[tid] = struct{}{}
-		is_traversed[tid] = false
+		traversed_thread[tid] = false
 	}
 
 	var chain_stack []LockDependency
-	for thread_id := range thread_ids {
-		if len(s.threads[thread_id].lock_dependencies) == 0 {
-			continue
-		}
-
-		is_traversed[thread_id] = true
+	for thread_id := range traversed_thread {
+		traversed_thread[thread_id] = true
 		for lock, dependencies := range s.threads[thread_id].lock_dependencies {
 			for _, dependency := range dependencies {
 				chain_stack = append(chain_stack, LockDependency{thread_id, lock, dependency.lockset, dependency.requests}) // push
-				dfs(s, &chain_stack, is_traversed, thread_ids)
+				dfs(s, &chain_stack, traversed_thread)
 				chain_stack = chain_stack[:len(chain_stack)-1] // pop
 			}
 		}
@@ -252,8 +245,42 @@ func getCycles(s *State) []Cycle {
 	return s.cycles
 }
 
+func dfs(s *State, chain_stack *[]LockDependency, traversed_thread map[ThreadId]bool) {
+	for tid, is_traversed := range traversed_thread {
+		if is_traversed {
+			continue
+		}
+
+		for l, l_d := range s.threads[tid].lock_dependencies {
+			for _, l_ls_d := range l_d {
+				ld := LockDependency{tid, l, l_ls_d.lockset, l_ls_d.requests}
+				if isChain(chain_stack, ld) {
+					if isCycleChain(chain_stack, ld) {
+						var c Cycle = make([]LockDependency, len(*chain_stack)+1)
+						for i, d := range *chain_stack {
+							c[i] = d.Clone()
+						}
+						c[len(*chain_stack)] = ld
+
+						// Check for infeasible deadlocks
+						if checkAndFilterConcurrentRequests(&c) {
+							report(s, c)
+						}
+					} else {
+						traversed_thread[tid] = true
+						*chain_stack = append(*chain_stack, ld) // push
+						dfs(s, chain_stack, traversed_thread)
+						*chain_stack = (*chain_stack)[:len(*chain_stack)-1] // pop
+						traversed_thread[tid] = false
+					}
+				}
+			}
+		}
+	}
+}
+
 // Check if adding dependency to chain will still be a chain.
-func isChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
+func isChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 
 	for _, d := range *chain_stack {
 		// Exit early. No two deps can hold the same lock. - Except for read locks
@@ -284,7 +311,7 @@ func isChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
 
 // Check (LD-3) l_n in ls_1
 // Also (RW-LD-3)
-func isCycleChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
+func isCycleChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 	for l := range (*chain_stack)[0].lockset {
 		if l.equalsCouldBlock(dependency.lock) {
 			return true
@@ -329,48 +356,6 @@ func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 		}
 	}
 	return true
-}
-
-func dfs(s *State, chain_stack *[]LockDependency, is_traversed map[ThreadId]bool, thread_ids map[ThreadId]struct{}) {
-	for tid := range thread_ids {
-		if len(s.threads[tid].lock_dependencies) == 0 {
-			continue
-		}
-
-		if !is_traversed[tid] {
-			for l, l_d := range s.threads[tid].lock_dependencies {
-				for _, l_ls_d := range l_d {
-					ld := LockDependency{tid, l, l_ls_d.lockset, l_ls_d.requests}
-					if isChain(chain_stack, &ld) {
-						if isCycleChain(chain_stack, &ld) {
-							var c Cycle = make([]LockDependency, len(*chain_stack)+1)
-							for i, d := range *chain_stack {
-								c[i] = d.Clone()
-							}
-							c[len(*chain_stack)] = ld.Clone()
-
-							// Check for infeasible deadlocks
-							if checkAndFilterConcurrentRequests(&c) {
-								report(s, c)
-								continue
-							}
-						}
-
-						is_traversed[tid] = true
-						*chain_stack = append(*chain_stack, ld) // push
-						dfs(s, chain_stack, is_traversed, thread_ids)
-						*chain_stack = (*chain_stack)[:len(*chain_stack)-1] // pop
-						is_traversed[tid] = false
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
 }
 
 // ////////////////////////////////

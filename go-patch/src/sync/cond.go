@@ -5,11 +5,12 @@
 package sync
 
 import (
+	"sync/atomic"
+	"unsafe"
+
 	// ADVOCATE-START
 	"runtime"
 	// ADVOCATE-END
-	"sync/atomic"
-	"unsafe"
 )
 
 // Cond implements a condition variable, a rendezvous point
@@ -46,9 +47,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	id uint64
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -72,20 +73,22 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
+
 	// replay
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondWait, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
+
 	//record
 	advocateIndex := runtime.AdvocateCondPre(c.id, 0)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -102,20 +105,22 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
+
 	// replay
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondSignal, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
+
 	// recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 1)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
@@ -126,20 +131,22 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
+
 	// replay
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondBroadcast, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
+
 	//recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 2)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

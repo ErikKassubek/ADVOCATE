@@ -435,7 +435,7 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason w
 	mcall(park_m)
 }
 
-// ADVOCATE-START
+// ADVOCATE-CHANGE-START
 func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int, timeout int64) {
 	mp := acquirem()
 	gp := mp.curg
@@ -454,7 +454,6 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 	if reason != waitReasonSleep {
 		checkTimeouts() // timeouts may expire while two goroutines keep the scheduler busy
 	}
-
 	status := readgstatus(gp)
 	if status != _Grunning && status != _Gscanrunning {
 		throw("gopark: bad g status")
@@ -469,7 +468,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 	mcall(park_m)
 }
 
-// ADVOCATE-END
+// ADVOCATE-CHANGE-END
 
 // Puts the current goroutine into a waiting state and unlocks the lock.
 // The goroutine can be made runnable again by calling goready(gp).
@@ -4333,9 +4332,9 @@ func goexit1() {
 		racegoend()
 	}
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	AdvocatRoutineExit()
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	trace := traceAcquire()
 	if trace.ok() {
@@ -5057,9 +5056,9 @@ func malg(stacksize int32) *g {
 // The compiler turns a go statement into a call to this.
 func newproc(fn *funcval) {
 	gp := getg()
-	pc := getcallerpc()
+	pc := sys.GetCallerPC()
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	f := findfunc(pc)
 	tracepc := pc
 	if pc > f.entry() {
@@ -5071,15 +5070,17 @@ func newproc(fn *funcval) {
 	if wait {
 		<-ch
 	}
+	// ADVOCATE-END
 
 	systemstack(func() {
 		newg := newproc1(fn, gp, pc, false, waitReasonZero)
 
-		newg.goInfo = newAdvocateRoutine(newg)
-		if gp != nil && gp.goInfo != nil {
-			AdvocateSpawnCaller(gp.goInfo, newg.goInfo.id, file, line)
+		// ADVOCATE-START
+		newg.advocateRoutineInfo = newAdvocateRoutine(newg)
+		if gp != nil && gp.advocateRoutineInfo != nil {
+			AdvocateSpawnCaller(gp.advocateRoutineInfo, newg.advocateRoutineInfo.id, file, line)
 		}
-		// ADVOCATE-END
+		// ADVOCATE-CHANGE-END
 
 		pp := getg().m.p.ptr()
 		runqput(pp, newg, true)
@@ -5089,6 +5090,7 @@ func newproc(fn *funcval) {
 		}
 	})
 }
+
 // Create a new g in state _Grunnable (or _Gwaiting if parked is true), starting at fn.
 // callerpc is the address of the go statement that created this. The caller is responsible
 // for adding the new g to the scheduler. If parked is true, waitreason must be non-zero.

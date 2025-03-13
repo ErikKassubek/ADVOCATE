@@ -32,9 +32,9 @@ type WaitGroup struct {
 	state atomic.Uint64 // high 32 bits are counter, low 32 bits are waiter count.
 	sema  uint32
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	id uint64 // id for the waitgroup
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 }
 
 // Add adds delta, which may be negative, to the [WaitGroup] counter.
@@ -51,7 +51,7 @@ type WaitGroup struct {
 // new Add calls must happen after all previous Wait calls have returned.
 // See the WaitGroup example.
 func (wg *WaitGroup) Add(delta int) {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	skip := 3
 	if delta > 0 {
 		skip = 2
@@ -61,7 +61,7 @@ func (wg *WaitGroup) Add(delta int) {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
 		if delta < 0 {
@@ -75,7 +75,7 @@ func (wg *WaitGroup) Add(delta int) {
 	v := int32(state >> 32)
 	w := uint32(state)
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	// Waitgroups don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a wg
 	// is directly in it's functions. If the id of the wg is the default
@@ -90,7 +90,7 @@ func (wg *WaitGroup) Add(delta int) {
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
 	runtime.AdvocateWaitGroupAdd(wg.id, delta, v)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
 		// The first increment must be synchronized with Wait.
@@ -130,7 +130,7 @@ func (wg *WaitGroup) Done() {
 
 // Wait blocks until the [WaitGroup] counter is zero.
 func (wg *WaitGroup) Wait() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
@@ -157,7 +157,7 @@ func (wg *WaitGroup) Wait() {
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
 	advocateIndex := runtime.AdvocateWaitGroupWaitPre(wg.id)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
 		race.Disable()
@@ -172,9 +172,9 @@ func (wg *WaitGroup) Wait() {
 				race.Enable()
 				race.Acquire(unsafe.Pointer(wg))
 			}
-			// ADVOCATE-START
+			// ADVOCATE-CHANGE-START
 			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			//ADVOCATE-CHANGE-END
 			return
 		}
 		// Increment waiters count.
@@ -194,9 +194,9 @@ func (wg *WaitGroup) Wait() {
 				race.Enable()
 				race.Acquire(unsafe.Pointer(wg))
 			}
-			// ADVOCATE-START
+			// ADVOCATE-CHANGE-START
 			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			//ADVOCATE-CHANGE-END
 			return
 		}
 	}

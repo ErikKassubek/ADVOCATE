@@ -740,7 +740,7 @@ var panicnil = &godebugInc{name: "panicnil"}
 //
 //go:linkname gopanic
 func gopanic(e any) {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	SetExitCodeFromPanicString(e)
 	ExitReplayPanic(e)
 	// write the trace
@@ -748,7 +748,7 @@ func gopanic(e any) {
 		advocatePanicWriteBlock <- struct{}{}
 		<-advocatePanicDone
 	}
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	if e == nil {
 		if debug.panicnil.Load() != 1 {

@@ -36,9 +36,9 @@ type Mutex struct {
 
 	mu isync.Mutex
 
-	// ADVOCATE-START
-	id uint64
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-START
+	id uint64 // id for the mutex
+	// ADVOCATE-CHANGE-END
 }
 
 // A Locker represents an object that can be locked and unlocked.
@@ -51,7 +51,7 @@ type Locker interface {
 // If the lock is already in use, the calling goroutine
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
@@ -81,13 +81,13 @@ func (m *Mutex) Lock() {
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
 	advocateIndex := runtime.AdvocateMutexLockPre(m.id, false, false)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 
 	m.mu.Lock()
 
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	runtime.AdvocateMutexPost(advocateIndex)
-	//ADVOCATE-END
+	//ADVOCATE-CHANGE-END
 }
 
 // TryLock tries to lock m and reports whether it succeeded.
@@ -96,40 +96,43 @@ func (m *Mutex) Lock() {
 // and use of TryLock is often a sign of a deeper problem
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
-	// ADVOCATE-START
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
-	if wait {
-		defer func() { chAck <- struct{}{} }()
-		replayElem := <-ch
-		if replayElem.Blocked {
-			if m.id == 0 {
-				m.id = runtime.GetAdvocateObjectID()
+		// ADVOCATE-CHANGE-START
+		wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
+		if wait {
+			defer func() { chAck <- struct{}{} }()
+			replayElem := <-ch
+			if replayElem.Blocked {
+				if m.id == 0 {
+					m.id = runtime.GetAdvocateObjectID()
+				}
+				_ = runtime.AdvocateMutexLockTry(m.id, false, false)
+				runtime.BlockForever()
 			}
-			_ = runtime.AdvocateMutexLockTry(m.id, false, false)
-			runtime.BlockForever()
 		}
-	}
 
-	runtime.FuzzingFlowWait(2)
+		runtime.FuzzingFlowWait(2)
 
-	// Mutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a mutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	if m.id == 0 {
-		m.id = runtime.GetAdvocateObjectID()
-	}
+		// Mutexe don't need to be initialized in default go code. Because
+		// go does not have constructors, the only way to initialize a mutex
+		// is directly in the lock function. If the id of the channel is the default
+		// value, it is set to a new, unique object id
+		if m.id == 0 {
+			m.id = runtime.GetAdvocateObjectID()
+		}
 
-	// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocatePostTry to find the pre event.
-	advocateIndex := runtime.AdvocateMutexLockTry(m.id, false, false)
+		// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
+		// advocateIndex is used for AdvocatePostTry to find the pre event.
+		advocateIndex := runtime.AdvocateMutexLockTry(m.id, false, false)
+		// ADVOCATE-CHANGE-END
+
 
 	res := m.mu.TryLock()
 
+	// ADVOCATE-CHANGE-START
 	runtime.AdvocatePostTry(advocateIndex, res)
+	// ADVOCATE-CHANGE-END
 
 	return res
-	// ADVOCATE-END
 }
 
 // Unlock unlocks m.
@@ -139,7 +142,7 @@ func (m *Mutex) TryLock() bool {
 // It is allowed for one goroutine to lock a Mutex and then
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
-	// ADVOCATE-START
+	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
@@ -168,5 +171,5 @@ func (m *Mutex) Unlock() {
 
 	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex)
-	// ADVOCATE-END
+	// ADVOCATE-CHANGE-END
 }

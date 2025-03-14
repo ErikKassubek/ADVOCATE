@@ -64,7 +64,7 @@ import (
  * end()
  */
 
-func rewriteCyclicDeadlock(bug bugs.Bug) error {
+func rewriteCyclicDeadlock_old(bug bugs.Bug) error {
 	if len(bug.TraceElement2) == 0 {
 		return errors.New("No trace elements in bug")
 	}
@@ -160,4 +160,120 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 	analysis.PrintTrace([]string{}, false)
 
 	return nil
+}
+
+func rewriteCyclicDeadlock(bug bugs.Bug) error {
+	if len(bug.TraceElement2) == 0 {
+		return errors.New("No trace elements in bug")
+	}
+
+	if len(bug.TraceElement2) < 2 {
+		return errors.New("At least 2 trace elements are needed for a deadlock")
+	}
+
+	fmt.Println("Original trace:")
+	analysis.PrintTrace([]string{}, true)
+
+	lastTime := findLastTime(bug.TraceElement2)
+
+	fmt.Println("Last time:", lastTime)
+
+	// Find the largest time a lock needed to aquire
+	largestLockTime := -1
+	for _, e := range bug.TraceElement2 {
+		if e.GetTPost()-e.GetTPre() > largestLockTime {
+			largestLockTime = e.GetTPost() - e.GetTPre()
+		}
+	}
+
+	// remove tail after lastTime and the last lock
+	analysis.ShortenTrace(lastTime, true)
+	for _, elem := range bug.TraceElement2 {
+		analysis.ShortenRoutine(elem.GetRoutine(), elem.GetTSort()+1)
+	}
+
+	fmt.Println("Original permutation:", bug.TraceElement2)
+
+	for try := 0; try < len(bug.TraceElement2); try++ {
+		for i := 0; i < len(bug.TraceElement2); i++ {
+			elem1 := bug.TraceElement2[i]
+
+			analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), lastTime-elem1.GetTPre()+largestLockTime*i)
+		}
+
+		analysis.PrintTrace([]string{}, false)
+
+		if canReachFinalElement(bug.TraceElement2) {
+			break
+		}
+
+		if try == len(bug.TraceElement2)-1 {
+			return errors.New("Could not find a permutation that would work")
+		}
+
+		//  before trying again rotate
+		bug.TraceElement2 = append(bug.TraceElement2[1:], bug.TraceElement2[:1]...)
+		fmt.Println("Rotating to:", bug.TraceElement2)
+
+		// Next try will be even later
+		lastTime = findLastTime(bug.TraceElement2)
+	}
+
+	lastSuccessfullLock := bug.TraceElement2[len(bug.TraceElement2)-2]
+	analysis.AddTraceElementReplay(lastSuccessfullLock.GetTPre()+1, exitCodeCyclic, lastSuccessfullLock.GetTPre())
+
+	analysis.PrintTrace([]string{}, true)
+
+	return nil
+}
+
+func findLastTime(bugElements []analysis.TraceElement) int {
+	lastTime := -1
+
+	for _, e := range bugElements {
+		if lastTime == -1 || e.GetTSort() > lastTime {
+			lastTime = e.GetTSort()
+		}
+	}
+	return lastTime
+}
+
+func canReachFinalElement(bugElements []analysis.TraceElement) bool {
+	currentTrace := analysis.GetTraces()
+	fmt.Println("Final Lock is in", bugElements[len(bugElements)-1].GetRoutine())
+	for i := 0; i < len(bugElements)-1; i++ {
+		targetElem := bugElements[i]
+		fmt.Println("Checking for:", targetElem)
+		locked := 0
+		for j := 0; j < len(bugElements); j++ {
+			routine := bugElements[j].GetRoutine()
+
+			for i := len(currentTrace[routine]) - 2; i >= 0; i-- {
+				elem2 := currentTrace[routine][i]
+				if elem2.GetID() != targetElem.GetID() {
+					continue
+				}
+				fmt.Println("Found:", elem2)
+				found := false
+
+				switch elem2 := elem2.(type) {
+				case *analysis.TraceElementMutex:
+					if (*elem2).IsLock() {
+						locked++
+						if locked > 1 {
+							fmt.Println("Is Locked at wrong time in routine!", routine)
+							return false
+						}
+					} else {
+						found = true
+					}
+				}
+				if found {
+					break
+				}
+			}
+		}
+	}
+
+	return true
 }

@@ -22,4 +22,4 @@ The other fields are set as follows:
 
 
 ## Implementation
-The implementation of the atomics is done in the `src/sync/atomic` package. There the atomic operations are defined. To include the recording, the function definitions in the `doc.go` file and the implementations in `asm.s` have been renamed. The functions in `asm.s` alway point to the architecture specific assembly implementations of the atomic functions. Then new functions with the original names of the atomic functions have been implemented in `src/sync/atomic/advocate_atomic.go`. They first record the operations and then call the corresponding renamed function in `doc.go`.
+TODO: write implementation

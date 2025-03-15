@@ -302,7 +302,7 @@ func ReleaseWaits() {
 		routine, replayElem := getNextReplayElement()
 
 		if routine == -1 {
-			continue
+			break
 		}
 
 		if replayElem.Op == OperationReplayEnd {
@@ -324,7 +324,7 @@ func ReleaseWaits() {
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
 				timeoutHappened = true
-				var oldest = replayChan{nil, nil, -1, false}
+				var oldest = replayChan{nil, nil, -1, false, "", 0}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
 				for key, ch := range waitingOps {
@@ -335,7 +335,7 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
-					oldest.chWait <- replayElem
+					oldest.chWait <- ReplayElement{Blocked: false, Suc: true}
 
 					if printDebug {
 						println("RelO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
@@ -365,7 +365,7 @@ func ReleaseWaits() {
 						releaseOldestWait--
 					}
 
-					foundReplayElement(replayElem.Routine)
+					releasedElementOldest(oldest.file, oldest.line)
 
 					lock(&replayDoneLock)
 					replayDone++
@@ -379,7 +379,7 @@ func ReleaseWaits() {
 					unlock(&waitingOpsMutex)
 				}
 			}
-			if (hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait) && len(waitingOps) == 0) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
+			if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
 				DisableReplay()
 			}
 		}
@@ -406,18 +406,18 @@ func ReleaseWaits() {
 		}
 
 		lock(&waitingOpsMutex)
-		if waitCh, ok := waitingOps[key]; ok {
+		if waitOp, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
-			waitCh.chWait <- replayElem
+			waitOp.chWait <- replayElem
 
 			if printDebug {
 				println("RelR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 			}
 
 			// wait for the acknowledgement
-			if waitCh.wait {
+			if waitOp.wait {
 				select {
-				case <-waitCh.chAck:
+				case <-waitOp.chAck:
 					if printDebug {
 						println("AckR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
 					}
@@ -461,6 +461,8 @@ type replayChan struct {
 	chAck   chan struct{}
 	counter int
 	wait    bool
+	file    string
+	line    int
 }
 
 // Map of all currently waiting operations
@@ -514,15 +516,15 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	}
 
 	chWait := make(chan ReplayElement, 0)
-	chResp := make(chan struct{}, 1)
+	chAck := make(chan struct{}, 1)
 	lock(&waitingOpsMutex)
 	if _, ok := waitingOps[key]; ok {
 		println("Override key: ", key)
 	}
-	waitingOps[key] = replayChan{chWait, chResp, counter, waitForResponse}
+	waitingOps[key] = replayChan{chWait, chAck, counter, waitForResponse, file, line}
 	unlock(&waitingOpsMutex)
 
-	return true, chWait, chResp
+	return true, chWait, chAck
 }
 
 /*
@@ -561,6 +563,8 @@ func BlockForever() {
 	gopark(nil, nil, waitReasonZero, traceBlockForever, 1)
 }
 
+var alreadyExecutedAsOldest = make(map[string]int)
+
 /*
  * Get the next replay element.
  * Return:
@@ -590,7 +594,21 @@ func getNextReplayElement() (int, ReplayElement) {
 		return -1, ReplayElement{}
 	}
 
+	elem := replayData[uint64(routine)][0]
+
+	// if the elem was already executed as an oldest before, do not get again
+	elemKey := elem.File + ":" + intToString(elem.Line)
+	if val, ok := alreadyExecutedAsOldest[elemKey]; ok && val > 0 {
+		foundReplayElement(elem.Routine)
+		return getNextReplayElement()
+	}
+
 	return routine, replayData[uint64(routine)][0]
+}
+
+func releasedElementOldest(file string, line int) {
+	key := file + ":" + intToString(line)
+	alreadyExecutedAsOldest[key]++
 }
 
 func foundReplayElement(routine int) {
@@ -633,6 +651,7 @@ func SetLastTPre(tPre int) {
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
+		// TODO: is this correct?
 		if isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
 			return
 		}
@@ -685,7 +704,7 @@ func ExitReplayPanic(msg any) {
 				m == "sync: unlock of unlocked mutex" {
 				ExitReplayWithCode(ExitCodeUnlockBeforeLock)
 			}
-		} else if hasPrefix(m, "test timed out after") {
+		} else if hasPrefix(m, "test timed out after") || m == "Timeout" {
 			ExitReplayWithCode(ExitCodeTimeout)
 		}
 	}

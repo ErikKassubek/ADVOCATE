@@ -46,7 +46,9 @@ The second part registers a function that wants to execute in the replay mechani
 TODO: describe
 
 ## Register waiting operations
-![alt text](img/replayRegister.png)
+![Register Replay Wait](img/replayRegister.png)\
 TODO: describe
 
 ## Release of waiting operations
+![Release waiting operation](releaseWait.png)\
+TODO: describe

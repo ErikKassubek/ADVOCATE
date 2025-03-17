@@ -6,11 +6,12 @@ package sync
 
 import (
 	"internal/race"
-	// ADVOCATE-CHANGE-START
-	"runtime"
-	// ADVOCATE-CHANGE-END
 	"sync/atomic"
 	"unsafe"
+
+	// ADVOCATE-START
+	"runtime"
+	// ADVOCATE-END
 )
 
 // There is a modified copy of this file in runtime/rwmutex.go.
@@ -22,19 +23,23 @@ import (
 //
 // A RWMutex must not be copied after first use.
 //
-// If any goroutine calls Lock while the lock is already held by
-// one or more readers, concurrent calls to RLock will block until
+// If any goroutine calls [RWMutex.Lock] while the lock is already held by
+// one or more readers, concurrent calls to [RWMutex.RLock] will block until
 // the writer has acquired (and released) the lock, to ensure that
 // the lock eventually becomes available to the writer.
 // Note that this prohibits recursive read-locking.
+// A [RWMutex.RLock] cannot be upgraded into a [RWMutex.Lock],
+// nor can a [RWMutex.Lock] be downgraded into a [RWMutex.RLock].
 //
-// In the terminology of the Go memory model,
-// the n'th call to Unlock “synchronizes before” the m'th call to Lock
-// for any n < m, just as for Mutex.
+// In the terminology of [the Go memory model],
+// the n'th call to [RWMutex.Unlock] “synchronizes before” the m'th call to Lock
+// for any n < m, just as for [Mutex].
 // For any call to RLock, there exists an n such that
 // the n'th call to Unlock “synchronizes before” that call to RLock,
-// and the corresponding call to RUnlock “synchronizes before”
+// and the corresponding call to [RWMutex.RUnlock] “synchronizes before”
 // the n+1'th call to Lock.
+//
+// [the Go memory model]: https://go.dev/ref/mem
 type RWMutex struct {
 	w           Mutex        // held if there are pending writers
 	writerSem   uint32       // semaphore for writers to wait for completing readers
@@ -66,7 +71,7 @@ const rwmutexMaxReaders = 1 << 30
 //
 // It should not be used for recursive read locking; a blocked Lock
 // call excludes new readers from acquiring the lock. See the
-// documentation on the RWMutex type.
+// documentation on the [RWMutex] type.
 func (rw *RWMutex) RLock() {
 	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2, true)
@@ -101,7 +106,7 @@ func (rw *RWMutex) RLock() {
 	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
 	if rw.readerCount.Add(1) < 0 {
@@ -112,6 +117,7 @@ func (rw *RWMutex) RLock() {
 		race.Enable()
 		race.Acquire(unsafe.Pointer(&rw.readerSem))
 	}
+
 	//ADVOCATE-CHANGE-START
 	runtime.AdvocateMutexPost(advocateIndex)
 	// ADVOCATE-CHANGE-END
@@ -135,14 +141,6 @@ func (rw *RWMutex) TryRLock() bool {
 			_ = runtime.AdvocateMutexLockTry(rw.id, true, true)
 			runtime.BlockForever()
 		}
-		// if !replayElem.Suc {
-		// 	if rw.id == 0 {
-		// 		rw.id = runtime.GetAdvocateObjectID()
-		// 	}
-		// 	advocateIndex := runtime.AdvocateMutexLockTry(rw.id, true, true)
-		// 	runtime.AdvocatePostTry(advocateIndex, false)
-		// 	return false
-		// }
 	}
 
 	runtime.FuzzingFlowWait(2)
@@ -160,7 +158,7 @@ func (rw *RWMutex) TryRLock() bool {
 	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
 	for {
@@ -169,11 +167,13 @@ func (rw *RWMutex) TryRLock() bool {
 			if race.Enabled {
 				race.Enable()
 			}
+
 			// ADVOCATE-CHANGE-START
 			// If the mutex was not locked successfully, AdvocatePostTry is called
 			// to update the trace.
 			runtime.AdvocatePostTry(advocateIndex, false)
 			// ADVOCATE-CHANGE-END
+
 			return false
 		}
 		if rw.readerCount.CompareAndSwap(c, c+1) {
@@ -181,17 +181,19 @@ func (rw *RWMutex) TryRLock() bool {
 				race.Enable()
 				race.Acquire(unsafe.Pointer(&rw.readerSem))
 			}
+
 			// ADVOCATE-CHANGE-START
 			// If the mutex was locked successfully, AdvocatePostTry is called
 			// to update the trace.
 			runtime.AdvocatePostTry(advocateIndex, true)
 			// ADVOCATE-CHANGE-END
+
 			return true
 		}
 	}
 }
 
-// RUnlock undoes a single RLock call;
+// RUnlock undoes a single [RWMutex.RLock] call;
 // it does not affect other simultaneous readers.
 // It is a run-time error if rw is not locked for reading
 // on entry to RUnlock.
@@ -213,7 +215,7 @@ func (rw *RWMutex) RUnlock() {
 	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.ReleaseMerge(unsafe.Pointer(&rw.writerSem))
 		race.Disable()
 	}
@@ -224,6 +226,7 @@ func (rw *RWMutex) RUnlock() {
 	if race.Enabled {
 		race.Enable()
 	}
+
 	// ADVOCATE-CHANGE-START
 	runtime.AdvocateMutexPost(advocateIndex)
 	// ADVOCATE-CHANGE-END
@@ -232,9 +235,9 @@ func (rw *RWMutex) RUnlock() {
 func (rw *RWMutex) rUnlockSlow(r int32) {
 	if r+1 == 0 || r+1 == -rwmutexMaxReaders {
 		race.Enable()
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		panic("sync: RUnlock of unlocked RWMutex")
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 	}
 	// A writer is pending.
 	if rw.readerWait.Add(-1) == 0 {
@@ -280,7 +283,7 @@ func (rw *RWMutex) Lock() {
 	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
 	// First, resolve competition with other writers.
@@ -296,6 +299,7 @@ func (rw *RWMutex) Lock() {
 		race.Acquire(unsafe.Pointer(&rw.readerSem))
 		race.Acquire(unsafe.Pointer(&rw.writerSem))
 	}
+
 	// ADVOCATE-CHANGE-START
 	runtime.AdvocateMutexPost(advocateIndex)
 	// ADVOCATE-CHANGE-END
@@ -321,11 +325,6 @@ func (rw *RWMutex) TryLock() bool {
 			_ = runtime.AdvocateMutexLockTry(rw.id, true, false)
 			runtime.BlockForever()
 		}
-		// if !replayElem.Suc {
-		// 	advocateIndex := runtime.AdvocateMutexLockTry(rw.id, true, false)
-		// 	runtime.AdvocatePostTry(advocateIndex, false)
-		// 	return false
-		// }
 	}
 
 	runtime.FuzzingFlowWait(2)
@@ -343,7 +342,7 @@ func (rw *RWMutex) TryLock() bool {
 	// ADVOCATE-CHANGE-END
 
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
 	if !rw.w.TryLock() {
@@ -374,22 +373,20 @@ func (rw *RWMutex) TryLock() bool {
 		race.Acquire(unsafe.Pointer(&rw.readerSem))
 		race.Acquire(unsafe.Pointer(&rw.writerSem))
 	}
-
 	// ADVOCATE-CHANGE-START
-	// If the mutex was locked successfully, AdvocatePostTry is called
-	// to update the trace.
-	runtime.AdvocatePostTry(advocateIndex, true)
-	// ADVOCATE-CHANGE-END
-
+		// If the mutex was locked successfully, AdvocatePostTry is called
+		// to update the trace.
+		runtime.AdvocatePostTry(advocateIndex, true)
+		// ADVOCATE-CHANGE-END
 	return true
 }
 
 // Unlock unlocks rw for writing. It is a run-time error if rw is
 // not locked for writing on entry to Unlock.
 //
-// As with Mutexes, a locked RWMutex is not associated with a particular
-// goroutine. One goroutine may RLock (Lock) a RWMutex and then
-// arrange for another goroutine to RUnlock (Unlock) it.
+// As with Mutexes, a locked [RWMutex] is not associated with a particular
+// goroutine. One goroutine may [RWMutex.RLock] ([RWMutex.Lock]) a RWMutex and then
+// arrange for another goroutine to [RWMutex.RUnlock] ([RWMutex.Unlock]) it.
 func (rw *RWMutex) Unlock() {
 	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationRWMutexUnlock, 2, true)
@@ -404,22 +401,20 @@ func (rw *RWMutex) Unlock() {
 	advocateIndex := runtime.AdvocateUnlockPre(rw.id, true, false)
 	// ADVOCATE-CHANGE-END
 
+
 	if race.Enabled {
-		_ = rw.w.state
+		race.Read(unsafe.Pointer(&rw.w))
 		race.Release(unsafe.Pointer(&rw.readerSem))
 		race.Disable()
 	}
-	// ADVOCATE-CHANGE-START
-	runtime.AdvocateMutexPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
 
 	// Announce to readers there is no active writer.
 	r := rw.readerCount.Add(rwmutexMaxReaders)
 	if r >= rwmutexMaxReaders {
 		race.Enable()
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		panic("sync: Unlock of unlocked RWMutex")
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 	}
 	// Unblock blocked readers, if any.
 	for i := 0; i < int(r); i++ {
@@ -430,6 +425,10 @@ func (rw *RWMutex) Unlock() {
 	if race.Enabled {
 		race.Enable()
 	}
+
+	// ADVOCATE-CHANGE-START
+	runtime.AdvocateMutexPost(advocateIndex)
+	// ADVOCATE-CHANGE-END
 }
 
 // syscall_hasWaitingReaders reports whether any goroutine is waiting
@@ -445,8 +444,8 @@ func syscall_hasWaitingReaders(rw *RWMutex) bool {
 	return r < 0 && r+rwmutexMaxReaders > 0
 }
 
-// RLocker returns a Locker interface that implements
-// the Lock and Unlock methods by calling rw.RLock and rw.RUnlock.
+// RLocker returns a [Locker] interface that implements
+// the [Locker.Lock] and [Locker.Unlock] methods by calling rw.RLock and rw.RUnlock.
 func (rw *RWMutex) RLocker() Locker {
 	return (*rlocker)(rw)
 }

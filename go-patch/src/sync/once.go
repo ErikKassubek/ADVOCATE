@@ -5,20 +5,25 @@
 package sync
 
 import (
-	// ADVOCATE-CHANGE-START
-	"runtime"
-	// ADVOCATE-CHANGE-END
 	"sync/atomic"
+
+	// ADVOCATE-START
+	"runtime"
+	// ADVOCATE-END
 )
 
 // Once is an object that will perform exactly one action.
 //
 // A Once must not be copied after first use.
 //
-// In the terminology of the Go memory model,
+// In the terminology of [the Go memory model],
 // the return from f “synchronizes before”
 // the return from any call of once.Do(f).
+//
+// [the Go memory model]: https://go.dev/ref/mem
 type Once struct {
+	_ noCopy
+
 	// done indicates whether the action has been performed.
 	// It is first in the struct because it is used in the hot path.
 	// The hot path is inlined at every call site.
@@ -33,7 +38,7 @@ type Once struct {
 }
 
 // Do calls the function f if and only if Do is being called for the
-// first time for this instance of Once. In other words, given
+// first time for this instance of [Once]. In other words, given
 //
 //	var once Once
 //
@@ -79,15 +84,6 @@ func (o *Once) Do(f func()) {
 			_ = runtime.AdvocateOncePre(o.id)
 			runtime.BlockForever()
 		}
-
-		// if !replayElem.Suc {
-		// 	if o.id == 0 {
-		// 		o.id = runtime.GetAdvocateObjectID()
-		// 	}
-		// 	index := runtime.AdvocateOncePre(o.id)
-		// 	runtime.AdvocateOncePost(index, false)
-		// 	return
-		// }
 	}
 
 	runtime.FuzzingFlowWait(2)
@@ -101,28 +97,25 @@ func (o *Once) Do(f func()) {
 
 	if o.done.Load() == 0 {
 		// Outlined slow-path to allow inlining of the fast-path.
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		res = o.doSlow(f)
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 	}
-	// ADVOCATE-CHANGE-START
+
+	// ADVOCATE-START
 	runtime.AdvocateOncePost(index, res)
 	// ADVOCATE-CHANGE-END
 }
 
-// ADVOCATE-CHANGE-START
+// ADVOCATE-START
 func (o *Once) doSlow(f func()) bool {
-	// ADVOCATE-CHANGE-END
 	o.m.Lock()
 	defer o.m.Unlock()
 	if o.done.Load() == 0 {
 		defer o.done.Store(1)
 		f()
-		// ADVOCATE-CHANGE-START
 		return true
-		// ADVOCATE-CHANGE-END
 	}
-	// ADVOCATE-CHANGE-START
 	return false
-	// ADVOCATE-CHANGE-END
 }
+// ADVOCATE-END

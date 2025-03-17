@@ -13,7 +13,7 @@
 package runtime
 
 import (
-	"runtime/internal/atomic"
+	"internal/runtime/atomic"
 	"unsafe"
 )
 
@@ -303,7 +303,7 @@ func GetAdvocateObjectID() uint64 {
 	routine := currentGoRoutine()
 
 	if routine == nil {
-		getg().goInfo = newAdvocateRoutine(getg())
+		getg().advocateRoutineInfo = newAdvocateRoutine(getg())
 		routine = currentGoRoutine()
 	}
 
@@ -371,13 +371,13 @@ func contains(s, sub string) bool {
 	return false
 }
 
-/*
- * Slow down the execution of the program
- */
-func slowExecution() {
-	for i := 0; i < 1e8; i++ {
-		// do nothing
-	}
+
+func hasPrefix(s, prefix string) bool {
+	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
+}
+
+func hasSuffix(s, suffix string) bool {
+	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
 }
 
 // ADVOCATE-FILE-END

@@ -1,3 +1,16 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_cond.go
+// Brief: Functionality for the conditional variables
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
+
 package runtime
 
 /*
@@ -10,6 +23,10 @@ package runtime
  * 	index of the operation in the trace
  */
 func AdvocateCondPre(id uint64, op int) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 	_, file, line, _ := Caller(2)
 
@@ -41,6 +58,10 @@ func AdvocateCondPre(id uint64, op int) int {
  * 	index: index of the operation in the trace
  */
 func AdvocateCondPost(index int) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 	if index == -1 {
 		return

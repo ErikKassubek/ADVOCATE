@@ -1,4 +1,14 @@
-// ADVOCATE-FILE-START
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace.go
+// Brief: Functionality for the trace
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
 
 package runtime
 
@@ -42,6 +52,8 @@ const (
 	OperationAtomicAdd
 	OperationAtomicSwap
 	OperationAtomicCompareAndSwap
+	OperationAtomicAnd
+	OperationAtomicOr
 
 	OperationReplayEnd
 )
@@ -92,7 +104,7 @@ func getOperationObjectString(op Operation) string {
 		return "Select"
 	case OperationCondSignal, OperationCondBroadcast, OperationCondWait:
 		return "Cond"
-	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap:
+	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
@@ -131,7 +143,7 @@ func SetExitCodeFromPanicString(msg any) {
 	case string:
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = exitCodeNegWG
-		}  else if hasPrefix(m, "test timed out") {
+		} else if hasPrefix(m, "test timed out") {
 			advocateExitCode = exitCodeTimeOut
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||
@@ -171,10 +183,8 @@ func CurrentTraceToString() string {
  * Return:
  * 	string representation of the trace
  */
-func traceToString(trace *[]string, atomics *[]string) string {
+func traceToString(trace *[]string) string {
 	res := ""
-
-	println("TraceToString", len(*trace), len(*atomics), len(*trace)+len(*atomics))
 
 	// if atomic recording is disabled
 	for i, elem := range *trace {
@@ -199,7 +209,6 @@ func getTpre(elem string) int {
  * 	index of the element in the trace
  */
 func insertIntoTrace(elem string) int {
-
 	return currentGoRoutine().addToTrace(elem)
 }
 
@@ -223,7 +232,7 @@ func TraceToStringByID(id uint64) (string, bool) {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
 	if routine, ok := AdvocateRoutines[id]; ok {
-		return traceToString(&routine.Trace, &routine.Atomics), true
+		return traceToString(&routine.Trace), true
 	}
 	return "", false
 }
@@ -295,7 +304,7 @@ func AllTracesToString() string {
 		if routine == nil {
 			panic("Trace is nil")
 		}
-		res += traceToString(&routine.Trace, &routine.Atomics) + "\n"
+		res += traceToString(&routine.Trace) + "\n"
 
 	}
 	return res
@@ -351,22 +360,6 @@ func DisableTrace() {
 func GetAdvocateDisabled() bool {
 	return advocateTracingDisabled
 }
-
-// /*
-//  * BockTrace blocks the trace collection
-//  * Resume using UnblockTrace
-//  */
-// func BlockTrace() {
-// 	advocateTraceWritingDisabled = true
-// }
-
-// /*
-//  * UnblockTrace resumes the trace collection
-//  * Block using BlockTrace
-//  */
-// func UnblockTrace() {
-// 	advocateTraceWritingDisabled = false
-// }
 
 /*
  * DeleteTrace removes all trace elements from the trace

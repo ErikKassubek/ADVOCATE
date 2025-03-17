@@ -1,3 +1,16 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_once.go
+// Brief: Functionality for once
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
+
 package runtime
 
 /*
@@ -8,6 +21,10 @@ package runtime
  * 	index of the operation in the trace
  */
 func AdvocateOncePre(id uint64) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(2)
@@ -29,6 +46,10 @@ func AdvocateOncePre(id uint64) int {
  * 	suc: true if the do on the once was called for the first time, false otherwise
  */
 func AdvocateOncePost(index int, suc bool) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	if index == -1 {

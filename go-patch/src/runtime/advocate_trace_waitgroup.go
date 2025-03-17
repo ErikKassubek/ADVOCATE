@@ -1,3 +1,15 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_waitgroup.go
+// Brief: Functionality for wait groups
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
 package runtime
 
 /*
@@ -11,6 +23,10 @@ package runtime
  * 	index of the operation in the trace
  */
 func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	var file string
@@ -43,6 +59,10 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
  * 	index of the operation in the trace
  */
 func AdvocateWaitGroupWaitPre(id uint64) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(2)
@@ -59,11 +79,15 @@ func AdvocateWaitGroupWaitPre(id uint64) int {
 
 /*
  * AdvocateWaitGroupWaitPost adds the end counter to an operation of the trace
- * MARKL: Wait Post
+ * MARK: Wait Post
  * Args:
  * 	index: index of the operation in the trace
  */
 func AdvocateWaitGroupPost(index int) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	// internal elements are not in the trace

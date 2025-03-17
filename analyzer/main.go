@@ -675,7 +675,7 @@ func printHeader() {
 
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
-	println("There are different modes of operation:")
+	println("There are two different modes of operation:")
 	println("1. Analysis")
 	println("2. Fuzzing")
 	println("\n\n")
@@ -689,7 +689,7 @@ func printHelpMode(mode string) {
 		println("Mode: analysis")
 		println("Analyze a test or tool chain")
 		println("This runs the analysis on tests or the main function")
-		println("Usage: ./analyzer tool [options]")
+		println("Usage: ./analyzer analysis [options]")
 		println("  -main                  Run on the main function instead on tests")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
@@ -768,7 +768,7 @@ func checkVersion() {
 			}
 
 			if versionSplit[0] != "1" || versionSplit[1] != "22" {
-				errString := "ADVOCATE is implemented for go version 1.22. "
+				errString := "ADVOCATE is implemented for go version 1.24. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
 				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."

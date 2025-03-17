@@ -6,23 +6,26 @@ package sync
 
 import (
 	"internal/race"
-	// ADVOCATE-CHANGE-START
-	"runtime"
-	// ADVOCATE-CHANGE-END
 	"sync/atomic"
 	"unsafe"
+
+	// ADVOCATE-START
+	"runtime"
+	// ADVOCATE-END
 )
 
 // A WaitGroup waits for a collection of goroutines to finish.
-// The main goroutine calls Add to set the number of
+// The main goroutine calls [WaitGroup.Add] to set the number of
 // goroutines to wait for. Then each of the goroutines
-// runs and calls Done when finished. At the same time,
-// Wait can be used to block until all goroutines have finished.
+// runs and calls [WaitGroup.Done] when finished. At the same time,
+// [WaitGroup.Wait] can be used to block until all goroutines have finished.
 //
 // A WaitGroup must not be copied after first use.
 //
-// In the terminology of the Go memory model, a call to Done
+// In the terminology of [the Go memory model], a call to [WaitGroup.Done]
 // “synchronizes before” the return of any Wait call that it unblocks.
+//
+// [the Go memory model]: https://go.dev/ref/mem
 type WaitGroup struct {
 	noCopy noCopy
 
@@ -34,8 +37,8 @@ type WaitGroup struct {
 	// ADVOCATE-CHANGE-END
 }
 
-// Add adds delta, which may be negative, to the WaitGroup counter.
-// If the counter becomes zero, all goroutines blocked on Wait are released.
+// Add adds delta, which may be negative, to the [WaitGroup] counter.
+// If the counter becomes zero, all goroutines blocked on [WaitGroup.Wait] are released.
 // If the counter goes negative, Add panics.
 //
 // Note that calls with a positive delta that occur when the counter is zero
@@ -119,12 +122,13 @@ func (wg *WaitGroup) Add(delta int) {
 	}
 }
 
-// Done decrements the WaitGroup counter by one.
+// Done decrements the [WaitGroup] counter by one.
 func (wg *WaitGroup) Done() {
+	// ADVOCATE-NOTE: is recorded in wg.Adds
 	wg.Add(-1)
 }
 
-// Wait blocks until the WaitGroup counter is zero.
+// Wait blocks until the [WaitGroup] counter is zero.
 func (wg *WaitGroup) Wait() {
 	// ADVOCATE-CHANGE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
@@ -139,13 +143,7 @@ func (wg *WaitGroup) Wait() {
 			runtime.BlockForever()
 		}
 	}
-	// ADVOCATE-CHANGE-END
 
-	if race.Enabled {
-		race.Disable()
-	}
-
-	// ADVOCATE-CHANGE-START
 	// Waitgroups don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a wg
 	// is directly in it's functions. If the id of the wg is the default
@@ -161,6 +159,9 @@ func (wg *WaitGroup) Wait() {
 	advocateIndex := runtime.AdvocateWaitGroupWaitPre(wg.id)
 	// ADVOCATE-CHANGE-END
 
+	if race.Enabled {
+		race.Disable()
+	}
 	for {
 		state := wg.state.Load()
 		v := int32(state >> 32)
@@ -185,7 +186,7 @@ func (wg *WaitGroup) Wait() {
 				// otherwise concurrent Waits will race with each other.
 				race.Write(unsafe.Pointer(&wg.sema))
 			}
-			runtime_Semacquire(&wg.sema)
+			runtime_SemacquireWaitGroup(&wg.sema)
 			if wg.state.Load() != 0 {
 				panic("sync: WaitGroup is reused before previous Wait has returned")
 			}

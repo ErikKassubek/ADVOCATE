@@ -484,6 +484,11 @@ var counter = 0
  * 	chan struct{}: chan to report back on when finished
  */
 func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
+	// without this the runtime build runs into an deadlock message, no idea why
+	if !replayEnabled {
+		return false, nil, nil
+	}
+
 	_, file, line, _ := Caller(skip)
 
 	return WaitForReplayPath(op, file, line, waitForResponse)

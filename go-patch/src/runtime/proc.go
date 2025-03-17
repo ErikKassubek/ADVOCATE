@@ -4922,15 +4922,18 @@ func newproc(fn *funcval) {
 	}
 	file, line := funcline(f, tracepc)
 
-	wait, ch, _ := WaitForReplayPath(OperationSpawn, file, int(line), false)
+	wait, ch, ack := WaitForReplayPath(OperationSpawn, file, int(line), true)
+	var elem ReplayElement
 	if wait {
-		<-ch
+		elem = <-ch
+		defer func() { ack <- struct{}{} }()
 	}
 
 	systemstack(func() {
 		newg := newproc1(fn, gp, pc)
 
 		newg.goInfo = newAdvocateRoutine(newg)
+		newg.goInfo.replayRoutine = elem.Routine
 		if gp != nil && gp.goInfo != nil {
 			AdvocateSpawnCaller(gp.goInfo, newg.goInfo.id, file, line)
 		}

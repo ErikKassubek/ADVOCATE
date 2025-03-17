@@ -320,11 +320,11 @@ func ReleaseWaits() {
 		}
 
 		// key := intToString(routine) + ":" + replayElem.File + ":" + intToString(replayElem.Line)
-		key := replayElem.File + ":" + intToString(replayElem.Line)
+		key := intToString(replayElem.Routine) + ":" + replayElem.File + ":" + intToString(replayElem.Line)
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
 				timeoutHappened = true
-				var oldest = replayChan{nil, nil, -1, false, "", 0}
+				var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
 				for key, ch := range waitingOps {
@@ -365,7 +365,8 @@ func ReleaseWaits() {
 						releaseOldestWait--
 					}
 
-					releasedElementOldest(oldest.file, oldest.line)
+					oldestKey := intToString(oldest.routine) + ":" + oldest.file + ":" + intToString(oldest.line)
+					releasedElementOldest(key)
 
 					lock(&replayDoneLock)
 					replayDone++
@@ -461,6 +462,7 @@ type replayChan struct {
 	chAck   chan struct{}
 	counter int
 	wait    bool
+	routine int
 	file    string
 	line    int
 }
@@ -507,9 +509,11 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil
 	}
 
+	routine := getg().goInfo.replayRoutine
+
 	// routine := GetRoutineID()
 	// key := uint64ToString(routine) + ":" + file + ":" + intToString(line)
-	key := file + ":" + intToString(line)
+	key := intToString(routine) + ":" + file + ":" + intToString(line)
 
 	if printDebug {
 		println("Wait: ", op.ToString(), file, line)
@@ -521,7 +525,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	if _, ok := waitingOps[key]; ok {
 		println("Override key: ", key)
 	}
-	waitingOps[key] = replayChan{chWait, chAck, counter, waitForResponse, file, line}
+	waitingOps[key] = replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
 	unlock(&waitingOpsMutex)
 
 	return true, chWait, chAck
@@ -606,8 +610,7 @@ func getNextReplayElement() (int, ReplayElement) {
 	return routine, replayData[uint64(routine)][0]
 }
 
-func releasedElementOldest(file string, line int) {
-	key := file + ":" + intToString(line)
+func releasedElementOldest(key string) {
 	alreadyExecutedAsOldest[key]++
 }
 

@@ -27,6 +27,8 @@ const (
 	AddOp
 	SwapOp
 	CompSwapOp
+	AndOp
+	OrOp
 )
 
 /*
@@ -82,6 +84,10 @@ func AddTraceElementAtomic(routine int, tpost string,
 		opAInt = SwapOp
 	case "C":
 		opAInt = CompSwapOp
+	case "N":
+		opAInt = AndOp
+	case "O":
+		opAInt = OrOp
 	default:
 		return errors.New("operation is not a valid operation")
 	}
@@ -285,7 +291,7 @@ func (at *TraceElementAtomic) updateVectorClock() {
 	switch at.opA {
 	case LoadOp:
 		Read(at, currentVCHb, true)
-	case StoreOp, AddOp:
+	case StoreOp, AddOp, AndOp, OrOp:
 		Write(at, currentVCHb)
 	case SwapOp, CompSwapOp:
 		Swap(at, currentVCHb, true)
@@ -304,7 +310,7 @@ func (at *TraceElementAtomic) updateVectorClockAlt() {
 	switch at.opA {
 	case LoadOp:
 		Read(at, currentVCHb, false)
-	case StoreOp, AddOp:
+	case StoreOp, AddOp, AndOp, OrOp:
 		Write(at, currentVCHb)
 	case SwapOp, CompSwapOp:
 		Swap(at, currentVCHb, false)

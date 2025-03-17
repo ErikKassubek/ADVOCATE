@@ -39,6 +39,10 @@ func AdvocateChanMake(qSize int) uint64 {
 
 	id := GetAdvocateObjectID()
 
+	if AdvocateIgnore(file) {
+		return id
+	}
+
 	elem := "N," + uint64ToString(timer) + "," + uint64ToString(id) + ",C," + intToString(qSize) + "," + file + ":" + intToString(line)
 
 	insertIntoTrace(elem)
@@ -82,7 +86,6 @@ func AdvocateChanSendPre(id uint64, opID uint64, qSize uint, isNil bool) int {
 
 	return insertIntoTrace(elem)
 }
-
 
 /*
  * AdvocateChanRecvPre adds a channel recv to the trace

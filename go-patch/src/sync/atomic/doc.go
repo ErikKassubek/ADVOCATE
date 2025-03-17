@@ -190,7 +190,7 @@ func LoadUintptrAdvocate(addr *uintptr) (val uintptr)
 
 // LoadPointer atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Load] instead.
-func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer)
+func LoadPointerAdvocate(addr *unsafe.Pointer) (val unsafe.Pointer)
 
 // StoreInt32 atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Int32.Store] instead.

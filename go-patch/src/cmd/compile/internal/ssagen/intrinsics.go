@@ -1208,6 +1208,7 @@ func initIntrinsics(cfg *intrinsicBuildConfig) {
 	alias("internal/runtime/sys", "OnesCount64", "math/bits", "OnesCount64", all...)
 
 	/******** sync/atomic ********/
+	// ADVOCATE-STARt
 
 	// Note: these are disabled by flag_race in findIntrinsic below.
 	alias("sync/atomic", "LoadInt32", "internal/runtime/atomic", "Load", all...)
@@ -1257,6 +1258,8 @@ func initIntrinsics(cfg *intrinsicBuildConfig) {
 	alias("sync/atomic", "OrInt64", "internal/runtime/atomic", "Or64", sys.ArchARM64, sys.ArchAMD64, sys.ArchLoong64)
 	alias("sync/atomic", "OrUint64", "internal/runtime/atomic", "Or64", sys.ArchARM64, sys.ArchAMD64, sys.ArchLoong64)
 	alias("sync/atomic", "OrUintptr", "internal/runtime/atomic", "Or64", sys.ArchARM64, sys.ArchAMD64, sys.ArchLoong64)
+
+	// ADVOCATE-END
 
 	/******** math/big ********/
 	alias("math/big", "mulWW", "math/bits", "Mul64", p8...)
@@ -1563,7 +1566,10 @@ func findIntrinsic(sym *types.Sym) intrinsicBuilder {
 	if sym.Pkg == ir.Pkgs.Runtime {
 		pkg = "runtime"
 	}
-	if base.Flag.Race && pkg == "sync/atomic" {
+	// ADVOCATE-START
+	// if base.Flag.Race && pkg == "sync/atomic" {
+	if pkg == "sync/atomic" {
+		// ADVOCATE-END
 		// The race detector needs to be able to intercept these calls.
 		// We can't intrinsify them.
 		return nil

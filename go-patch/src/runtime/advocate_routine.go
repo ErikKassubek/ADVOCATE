@@ -17,7 +17,7 @@ var AdvocateRoutinesLock = mutex{}
 
 var projectPath string
 
-var atomicRecordingDisabled = false
+// var atomicRecordingDisabled = false
 
 /*
  * AdvocateRoutine is a struct to store the trace of a routine
@@ -30,7 +30,7 @@ type AdvocateRoutine struct {
 	maxObjectId uint64
 	G           *g
 	Trace       []string
-	Atomics     []string
+	// Atomics     []string
 	// lock    *mutex
 }
 
@@ -43,9 +43,10 @@ type AdvocateRoutine struct {
  */
 func newAdvocateRoutine(g *g) *AdvocateRoutine {
 	routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), maxObjectId: 0,
-		G:       g,
-		Trace:   make([]string, 0),
-		Atomics: make([]string, 0)}
+		G:     g,
+		Trace: make([]string, 0),
+		// Atomics: make([]string, 0),
+	}
 
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
@@ -82,55 +83,55 @@ func (gi *AdvocateRoutine) addToTrace(elem string) int {
 	return len(gi.Trace) - 1
 }
 
-/*
- * Ignore the atomic operations. Use if not enough memory is available.
- */
-func IgnoreAtomicOperations() {
-	atomicRecordingDisabled = true
-	sum := 0
-	lock(&AdvocateRoutinesLock)
-	for _, routine := range AdvocateRoutines {
-		println("Delete ", len(routine.Atomics), " atomic operations")
-		sum += len(routine.Atomics)
-		routine.Atomics = nil
-	}
-	unlock(&AdvocateRoutinesLock)
-	println("Deleted ", sum, " atomic operations")
-	GC() // run the garbage collector
-}
+// /*
+//  * Ignore the atomic operations. Use if not enough memory is available.
+//  */
+// func IgnoreAtomicOperations() {
+// 	atomicRecordingDisabled = true
+// 	sum := 0
+// 	lock(&AdvocateRoutinesLock)
+// 	for _, routine := range AdvocateRoutines {
+// 		println("Delete ", len(routine.Atomics), " atomic operations")
+// 		sum += len(routine.Atomics)
+// 		routine.Atomics = nil
+// 	}
+// 	unlock(&AdvocateRoutinesLock)
+// 	println("Deleted ", sum, " atomic operations")
+// 	GC() // run the garbage collector
+// }
 
-/*
- * Get if atomic operations are ignored
- */
-func GetIgnoreAtomicOperations() bool {
-	return atomicRecordingDisabled
-}
+// /*
+//  * Get if atomic operations are ignored
+//  */
+// func GetIgnoreAtomicOperations() bool {
+// 	return atomicRecordingDisabled
+// }
 
-/*
- * Add an atomic operation to the trace of the current routine
- * Params:
- * 	elem: the element to add
- */
-func (gi *AdvocateRoutine) addAtomicToTrace(elem string) {
-	if advocateTracingDisabled {
-		return
-	}
+// /*
+//  * Add an atomic operation to the trace of the current routine
+//  * Params:
+//  * 	elem: the element to add
+//  */
+// func (gi *AdvocateRoutine) addAtomicToTrace(elem string) {
+// 	if advocateTracingDisabled {
+// 		return
+// 	}
 
-	if gi == nil {
-		return
-	}
+// 	if gi == nil {
+// 		return
+// 	}
 
-	// delete atomic operations if disabled
-	if atomicRecordingDisabled {
-		// if gi.Atomics != nil {
-		// 	println("Delete ", len(gi.Atomics), " atomic operations")
-		// }
-		// gi.Atomics = nil
-		return
-	}
+// 	// delete atomic operations if disabled
+// 	if atomicRecordingDisabled {
+// 		// if gi.Atomics != nil {
+// 		// 	println("Delete ", len(gi.Atomics), " atomic operations")
+// 		// }
+// 		// gi.Atomics = nil
+// 		return
+// 	}
 
-	gi.Atomics = append(gi.Atomics, elem)
-}
+// 	gi.Atomics = append(gi.Atomics, elem)
+// }
 
 func (gi *AdvocateRoutine) getElement(index int) string {
 	return gi.Trace[index]
@@ -183,11 +184,11 @@ func GetRoutineID() uint64 {
 	return currentGoRoutine().id
 }
 
-/*
- * DisableAtomicRecording disables the recording of atomic operations
- */
-func DisableAtomicRecording() {
-	atomicRecordingDisabled = true
-}
+// /*
+//  * DisableAtomicRecording disables the recording of atomic operations
+//  */
+// func DisableAtomicRecording() {
+// 	atomicRecordingDisabled = true
+// }
 
 // ADVOCATE-FILE-END

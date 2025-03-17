@@ -477,6 +477,8 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 	timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
 
+	runCommand(pathToPatchedGoRuntime, "version")
+
 	pkgPath := utils.MakePathLocal(pkg)
 	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {

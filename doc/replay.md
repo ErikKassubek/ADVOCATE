@@ -49,7 +49,7 @@ The manager will release the operations in the correct order.
 
 ### Flow
 #### Replay in operations
-![Replay in Operations](img/replayInOp.png)\
+<img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto>
 When a operation wants to execute, it will call the `WaitForReplay` function. The arguments of the function
 contain information about the waiting operation (type of operation and
 skip value for `runtime.Caller`) as well as information about wether the

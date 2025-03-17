@@ -514,7 +514,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil
 	}
 
-	routine := getg().goInfo.replayRoutine
+	routine := getg().advocateRoutineInfo.replayRoutine
 
 	// routine := GetRoutineID()
 	// key := uint64ToString(routine) + ":" + file + ":" + intToString(line)

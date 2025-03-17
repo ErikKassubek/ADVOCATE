@@ -767,7 +767,7 @@ func checkVersion() {
 				utils.LogError("Invalid go version")
 			}
 
-			if versionSplit[0] != "1" || versionSplit[1] != "22" {
+			if versionSplit[0] != "1" || versionSplit[1] != "24" {
 				errString := "ADVOCATE is implemented for go version 1.24. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])

@@ -27,7 +27,7 @@ was executed. It consists of the file and line number separated by a colon (:)
 
 ## Implementation
 The recording of the channel operations is done in the
-`go-patch/src/runtime/chan.go` file in the `chansend`, `chanrecv` and `closechan` function. Additionally the
+[go-patch/src/runtime/chan.go](../../go-patch/src/runtime/chan.go) file in the `chansend`, `chanrecv` and `closechan` function. Additionally the
 `hchan` struct in the same file is ammended by the following fields:
 
 - `id`: identifier for the channel
@@ -38,8 +38,8 @@ The recording of the channel operations is done in the
 queue, to determine, which send and receive operations are
 communication partners. Because of mutexes, that are already present in the original channel implementation,
 it is not possible to mix up these numbers.\
-For the send and receive operations three record functions are added. The first one (`AdvocateChanSendPre`/`AdvocateChanRecvPre`) at the beginning of the operation, which records [tpre], [id], [opC], [qSize] and [pos].\
+For the send and receive operations three record functions are added. The first one ([AdvocateChanSendPre](../../go-patch/src/runtime/advocate_trace_channel.go#L65)/[AdvocateChanRecvPre](../../go-patch/src/runtime/advocate_trace_channel.go#L101)) at the beginning of the operation, which records [tpre], [id], [opC], [qSize] and [pos].\
 The other two functions are called at the end of the
 operation, after the send or receive was fully executed.
-These functions record [tpost] (`AdvocateChanPost`).\
-As a close on a channel cannot block, it only needs one recording function. This function (`AdvocateChanClose`) records all needed values. For [tpre] and [tpost] the same value is set.
+These functions record [tpost] ([AdvocateChanPost](../../go-patch/src/runtime/advocate_trace_channel.go#L163)).\
+As a close on a channel cannot block, it only needs one recording function. This function ([AdvocateChanClose](../../go-patch/src/runtime/advocate_trace_channel.go#L137)) records all needed values. For [tpre] and [tpost] the same value is set.

@@ -43,7 +43,7 @@ func AdvocateChanMake(qSize int) uint64 {
 		return id
 	}
 
-	elem := "N," + uint64ToString(timer) + "," + uint64ToString(id) + ",C," + intToString(qSize) + "," + file + ":" + intToString(line)
+	elem := "N," + uint64ToString(timer) + "," + uint64ToString(id) + ",NC," + intToString(qSize) + "," + file + ":" + intToString(line)
 
 	insertIntoTrace(elem)
 

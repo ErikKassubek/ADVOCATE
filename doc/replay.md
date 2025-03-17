@@ -78,7 +78,7 @@ replay is not enable or if the operation is an internal operation and is
 therefore ignored, the function will just return. Otherwise it will
 create a wait channel `chWait` and and acknowledgement channel `chAck`.
 It will store those channels with a reference to the code location and routine
-id of the operation. The routine id is the id of the routine in the replay trace. It is set for the routine in the `newProc` function in `runtime/proc.go`. This allows us to separate operations in the same code position but in separate routines. Code at the same code position and in the same routine does not need
+id of the operation. The routine id is the id of the routine in the replay trace. It is set for the routine in the [newProc](../go-patch/src/runtime/proc.go#L5057) function in `runtime/proc.go`. This allows us to separate operations in the same code position but in separate routines. Code at the same code position and in the same routine does not need
 to be separated, since routines are executed sequentially. The function then
 returns the channel to the waiting operation.
 
@@ -215,4 +215,4 @@ While for most operations, we could add the code for the [replay](#replay-in-ope
 directly into the implementation of those operations, this was not
 possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
-For more information about this, see the [atomic recording documentation](./trace/atomics.md).
+For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).

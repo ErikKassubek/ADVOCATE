@@ -39,14 +39,4 @@ internally as a normal channel operation and is therefore recorded as such. A se
 only recorded, if the non-default case was chosen.
 
 ## Implementation
-The recording of the select statement is done in the `selectgo` function in the `go-patch/src/runtime/select.go` file. It contains two function calls. The first one is called shortly after the beginning of the `selectgo` functions to record the available cases and there internal order. The second function call is done when `selectgo` returns, to record
-the successful execution of the statement and the selected case.\
-Selects with only one case are automatically turned into a pure
-send or receive by the compiler. For this reason, these cases must
-not be additionally recorded.\
-Selects with exactly one non-default and one default case are als
-rewritten by the compiler. In this case it is necessary to record
-these cases, because the rewritten version does not use the `select`
-go function. For this reason, two additional recorder functions
-have been added to the `selectnbsend` and `selectnbrecv` functions
-in the `go-patch/src/runtime/chan.go` file.
+The implementation for the select has been split in the implementation for the [original select](../../go-patch/src/runtime/select.go#L629) and the [select with preferred case](../../go-patch/src/runtime/select.go#L151) (for more info see [here](../replay.md#select)). The entry point for select in the [selectgo](../../go-patch/src/runtime/select.go#L123) function now calls one of the two select versions. The recording is done in the two selects separately, since we need to no the lock order of the cases. TODO: continue

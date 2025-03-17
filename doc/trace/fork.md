@@ -25,15 +25,26 @@ where `G` identifies the element as an routine creation element.\
 the line number, where the trace of this new routine is saved in the trace.
 - [pos]: Position in the program, where the spawn was created.
 
-If we ignore all other internal elements regarding the counter, the element for
-the given example would be stored in the trace as
-```txt
-G,1,2,.../main.go:2
-```
-meaning, in routine 1 a new routine with id 2 was created at time 1. The path here is shortened for readability. The actual trace file contains the whole path.
 
 
 ## Implementation
-The element is recorded in the `newproc` function in the `go-patch/src/runtime/proc.go` file. Unfortunately it is not possible to record where in the program
-files the `go func` command is, because the compiler turns a `go` statement into a call of `newproc` which does contain the information where in the program
-file the `go` statement is located.
+The element is recorded in the [newproc](../../go-patch/src/runtime/proc.go#L5057) function in the `go-patch/src/runtime/proc.go` file. Unfortunately we cannot use the normal `runtime.Caller` function to determine the code position of
+the `go func` command, because the compiler turns a `go` statement into a call of `newproc`, which looses this information.\
+But we are still able to get the location using following construction:
+```go
+pc := sys.GetCallerPC()
+f := findfunc(pc)
+tracepc := pc
+if pc > f.entry() {
+    tracepc -= sys.PCQuantum
+}
+file, line := funcline(f, tracepc)
+```
+This code looks up function metadata for a PC. With this it is able to get the
+file and line information. The `PCQuantum` is the minimum value for a
+program counter (1 on x86, 4 on most other systems).
+
+The creation is then recorded in the old routine with [AdvocateSpawnCaller]((../../go-patch/src/runtime/advocate_routine.go#L23)).
+
+Here we also create the `advocateRoutineInfo` used to store the trace for the
+new routine using the [newAdvocateRoutine](../../go-patch/src/runtime/advocate_routine.go#L47) function.

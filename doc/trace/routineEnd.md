@@ -17,4 +17,4 @@ fields are
 - [t] $\in\mathbb N: This is the value of the global counter when the routine ended
 
 # Implementation
-The call to record the routine is set in `runtime/proc.go` inb the `goexit1` functions.
+The call to record the routine is set in runtime/proc.go in the [goexit1](../../go-patch/src/runtime/proc.go#L4327) function using the [AdvocateRoutineExit](/home/erik/Uni/Master/ADVOCATE/go-patch/src/runtime/advocate_trace_routine.go#L42) function.

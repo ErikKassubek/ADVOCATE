@@ -22,15 +22,17 @@ var projectPath string
 /*
  * AdvocateRoutine is a struct to store the trace of a routine
  * id: the id of the routine
+ * replayRoutine: routine id of the trace that is replayed. If not replay it is 0
+ * maxObjectId: the maximum id of elements in the trace
  * G: the g struct of the routine
  * Trace: the trace of the routine
  */
 type AdvocateRoutine struct {
-	id          uint64
-  replayRoutine int
-	maxObjectId uint64
-	G           *g
-	Trace       []string
+	id            uint64
+	replayRoutine int
+	maxObjectId   uint64
+	G             *g
+	Trace         []string
 	// Atomics     []string
 	// lock    *mutex
 }
@@ -43,7 +45,7 @@ type AdvocateRoutine struct {
  * 	the new advocate routine
  */
 func newAdvocateRoutine(g *g) *AdvocateRoutine {
-  routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), replayRoutine: 0, maxObjectId: 0,
+	routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), replayRoutine: 0, maxObjectId: 0,
 		G:     g,
 		Trace: make([]string, 0),
 	}

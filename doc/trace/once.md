@@ -25,4 +25,4 @@ fields are
 
 ## Implementation
 
-The recording of the operations is done in the `go-patch/src/sync/once.go` file in the `Do` (Add, Done) and `doSlow` functions. To save the id of the once, an additional field is added to the `Once` struct.
+The recording of the operations is done in the `go-patch/src/sync/once.go` file in the [Do](../../go-patch/src/sync/once.go#L60) function. The recording is done with the [AdvocateOncePre](../../go-patch/src/runtime/advocate_trace_once.go#23) and [AdvocateOncePost](../../go-patch/src/runtime/advocate_trace_once.go#48) functions.

@@ -31,5 +31,5 @@ The first function call is called before the Operation tries to executed
 and records the id ([id]) and called operation (opN), the position of the operation in the program ([pos]) and the counter at the beginning of the operation ([tpre]).\
 The second function call records the success of the operation. This includes
 the counter at the end of the operation ([tpost]).
-The implementation of those function calls can be found in
-`go-patch/src/runtime/advocate_trace.go` in the functions `AdvocateCondPre`, and `AdvocateCondPost`.
+The implementation of those function calls can be found the functions
+[AdvocateCondPre](../../go-patch/src/runtime/advocate_trace_cond.go#L25), and [AdvocateCondPost](../../go-patch/src/runtime/advocate_trace_cond.go#L60).

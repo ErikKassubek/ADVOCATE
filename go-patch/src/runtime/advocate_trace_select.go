@@ -33,7 +33,6 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		return -1
 	}
 
-
 	id := GetAdvocateObjectID()
 	caseElements := ""
 
@@ -206,7 +205,7 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 			c.id = AdvocateChanMake(int(c.dataqsiz))
 		}
 		caseElements = "C." + uint64ToString(timer) + ".0." + uint64ToString(c.id) +
-		"." + opChan + ".f.0." + uint32ToString(uint32(c.dataqsiz))
+			"." + opChan + ".f.0." + uint32ToString(uint32(c.dataqsiz))
 	} else {
 		caseElements = "C." + uint64ToString(timer) + ".0.*." + opChan + ".f.0.0"
 	}
@@ -217,7 +216,7 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	}
 
 	elem := "S," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-	caseElements + "~d,0," + file + ":" + intToString(line)
+		caseElements + "~d,0," + file + ":" + intToString(line)
 
 	return insertIntoTrace(elem)
 }

@@ -26,5 +26,4 @@ was executed. It consists of the file and line number separated by a colon (:)
 
 
 ## Implementation
-The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the `Add` (Add, Done) and `Wait` functions. To save the id of the wait group, an additional
-field is added to the `WaitGroup` struct.
+The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the [Add](../../go-patch/src/sync/waitgroup.go#L53) (Add, Done) and [Wait](../../go-patch/src/sync/waitgroup.go#L132) functions using the [AdvocateWaitGroupAdd](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L25), [AdvocateWaitGroupWaitPre](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L61) and [AdvocateWaitGroupWaitPost](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L86) functions.

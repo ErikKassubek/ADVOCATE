@@ -126,26 +126,29 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 
 	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
 
+	ai := -1
+
 	if wait {
 		replayElem = <-ch
-
-		if ok, i, b := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.SelIndex, timeout); ok {
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.SelIndex, timeout); ok {
+			ai = index
 			return i, b
 		}
 	} else if fuzzingEnabled {
-		if ok, i, b := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, timeout); ok {
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, timeout); ok {
+			ai = index
 			return i, b
 		}
 	}
 
-	return originalSelect(cas0, order0, pc0, nsends, nrecvs, block)
+	return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
 }
 
 /*
  * Run the fuzzing for select. If successful, the first bool return is true, if it ran into timeout
  * the first bool is false
  */
-func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool) {
+func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool, int) {
 	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
@@ -203,9 +206,9 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 
 		if cas.c.synctest {
-				if getg().syncGroup == nil {
-					panic(plainError("select on synctest channel from outside bubble"))
-				}
+			if getg().syncGroup == nil {
+				panic(plainError("select on synctest channel from outside bubble"))
+			}
 		} else {
 			allSynctest = false
 		}
@@ -213,7 +216,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		if cas.c.timer != nil {
 			cas.c.timer.maybeRunChan()
 		}
-
 
 		j := cheaprandn(uint32(norder + 1))
 		pollorder[norder] = pollorder[j]
@@ -456,7 +458,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	if cas == nil {
 		// ADVOCATE: routine wakeup because of time out
 		selunlock(scases, lockorder)
-		return false, casi, recvOK
+		return false, casi, recvOK, advocateIndex
 	}
 
 	c = cas.c
@@ -609,7 +611,7 @@ retc:
 	if caseReleaseTime > 0 {
 		blockevent(caseReleaseTime-t0, 1)
 	}
-	return true, casi, recvOK
+	return true, casi, recvOK, advocateIndex
 
 sclose:
 	// send on closed channel
@@ -624,7 +626,7 @@ sclose:
 	panic(plainError("send on closed channel"))
 }
 
-func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
+func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, advocateIndex int) (int, bool) {
 	// ADVOCATE-END
 	gp := getg()
 	if debugSelect {
@@ -762,7 +764,9 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
+	if advocateIndex == -1 {
+		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
+	}
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-CHANGE-END
 

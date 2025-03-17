@@ -162,6 +162,8 @@ var replayData = make(AdvocateReplayTraces, 0)
 var numberElementsInTrace int
 var traceElementPositions = make(map[string][]int) // file -> []line
 
+var replayIndex = make(map[uint64]int)
+
 // exit code
 var replayExitCode bool
 var expectedExitCode int
@@ -183,6 +185,7 @@ func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 		panic("Routine already exists")
 	}
 	replayData[routine] = trace
+	replayIndex[routine] = 0
 
 	numberElementsInTrace += len(trace)
 
@@ -342,7 +345,7 @@ func ReleaseWaits() {
 					}
 
 					// wait for the acknowledgement
-					if oldest.wait {
+					if oldest.waitAck {
 						select {
 						case <-oldest.chAck:
 							if printDebug {
@@ -386,7 +389,9 @@ func ReleaseWaits() {
 		}
 
 		if AdvocateIgnoreReplay(replayElem.Op, replayElem.File) {
+			lock(&replayLock)
 			foundReplayElement(routine)
+			unlock(&replayLock)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -416,7 +421,7 @@ func ReleaseWaits() {
 			}
 
 			// wait for the acknowledgement
-			if waitOp.wait {
+			if waitOp.waitAck {
 				select {
 				case <-waitOp.chAck:
 					if printDebug {
@@ -437,7 +442,9 @@ func ReleaseWaits() {
 			lastTimeWithoutOldest = currentTime()
 			releaseOldestWait = releaseOldestWaitLastMax
 
+			lock(&replayLock)
 			foundReplayElement(routine)
+			unlock(&replayLock)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -461,7 +468,7 @@ type replayChan struct {
 	chWait  chan ReplayElement
 	chAck   chan struct{}
 	counter int
-	wait    bool
+	waitAck bool
 	routine int
 	file    string
 	line    int
@@ -589,10 +596,10 @@ func getNextReplayElement() (int, ReplayElement) {
 	var minTime = -1
 
 	for id, trace := range replayData {
-		if len(trace) == 0 {
+		if replayIndex[id] >= len(trace) {
 			continue
 		}
-		elem := trace[0]
+		elem := trace[replayIndex[id]]
 		if minTime == -1 || elem.Time < minTime {
 			minTime = elem.Time
 			routine = int(id)
@@ -603,12 +610,13 @@ func getNextReplayElement() (int, ReplayElement) {
 		return -1, ReplayElement{}
 	}
 
-	elem := replayData[uint64(routine)][0]
+	elem := replayData[uint64(routine)][replayIndex[uint64(routine)]]
 
 	// if the elem was already executed as an oldest before, do not get again
-	elemKey := elem.File + ":" + intToString(elem.Line)
+	elemKey := intToString(elem.Routine) + ":" + elem.File + ":" + intToString(elem.Line)
 	if val, ok := alreadyExecutedAsOldest[elemKey]; ok && val > 0 {
 		foundReplayElement(elem.Routine)
+		alreadyExecutedAsOldest[elemKey]--
 		return getNextReplayElement()
 	}
 
@@ -620,11 +628,7 @@ func releasedElementOldest(key string) {
 }
 
 func foundReplayElement(routine int) {
-	lock(&replayLock)
-	defer unlock(&replayLock)
-
-	// remove the first element from the trace for the routine
-	replayData[uint64(routine)] = replayData[uint64(routine)][1:]
+	replayIndex[uint64(routine)]++
 }
 
 /*

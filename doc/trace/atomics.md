@@ -17,6 +17,8 @@ The other fields are set as follows:
 	- `A`: Add
 	- `W`: Swap
 	- `C`: CompareAndSwap
+	- `N`: And
+	- `O`: Or
 	- `U`: unknown (should not appear)
 - [pos]: The last field show the position in the code, where the atomic operation was executed
 

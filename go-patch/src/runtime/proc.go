@@ -5066,17 +5066,19 @@ func newproc(fn *funcval) {
 	}
 	file, line := funcline(f, tracepc)
 
-	wait, ch, _ := WaitForReplayPath(OperationSpawn, file, int(line), false)
+	wait, ch, ack := WaitForReplayPath(OperationSpawn, file, int(line), true)
+	var elem ReplayElement
 	if wait {
-		<-ch
+		elem = <-ch
+		defer func() { ack <- struct{}{} }()
 	}
 	// ADVOCATE-END
 
 	systemstack(func() {
 		newg := newproc1(fn, gp, pc, false, waitReasonZero)
 
-		// ADVOCATE-START
 		newg.advocateRoutineInfo = newAdvocateRoutine(newg)
+		newg.advocateRoutineInfo.replayRoutine = elem.Routine
 		if gp != nil && gp.advocateRoutineInfo != nil {
 			AdvocateSpawnCaller(gp.advocateRoutineInfo, newg.advocateRoutineInfo.id, file, line)
 		}

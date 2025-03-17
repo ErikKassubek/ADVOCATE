@@ -27,6 +27,7 @@ var projectPath string
  */
 type AdvocateRoutine struct {
 	id          uint64
+  replayRoutine int
 	maxObjectId uint64
 	G           *g
 	Trace       []string
@@ -42,10 +43,9 @@ type AdvocateRoutine struct {
  * 	the new advocate routine
  */
 func newAdvocateRoutine(g *g) *AdvocateRoutine {
-	routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), maxObjectId: 0,
+  routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), replayRoutine: 0, maxObjectId: 0,
 		G:     g,
 		Trace: make([]string, 0),
-		// Atomics: make([]string, 0),
 	}
 
 	lock(&AdvocateRoutinesLock)

@@ -14,8 +14,7 @@ a delta which not 1, we treat it,as if it would be delta separate adds.
 
 To see if this is possible we store for every $D$ all $A$ for which $A < D$.
 From this we build an bipartite st-graph as follows:
-![Done before add st-graph](./img/graphDoneBeforeAdd.png)
-
+![Done before add st-graph](../img/graphDoneBeforeAdd.png)
 For each Done $D$, there is an edge to the Add $A$ iff $A < D$.
 We now assume, that each edge has capacity 1 and use the Ford-Fulkerson
 algorithm to find the maximum flow in this graph. A done before add is possible,

@@ -65,7 +65,7 @@ func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
 }
 
 /*
- * AdvocateMutexLockTryPre adds a mutex trylock to the trace
+ * AdvocateMutexTryPre adds a mutex trylock to the trace
  * Args:
  * 	id: id of the mutex
  * 	rw: true if it is a rwmutex
@@ -73,7 +73,7 @@ func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateMutexLockTryPre(id uint64, rw bool, r bool) int {
+func AdvocateMutexTryPre(id uint64, rw bool, r bool) int {
 	if advocateTracingDisabled {
 		return -1
 	}
@@ -160,7 +160,7 @@ func AdvocateUnlockPre(id uint64, rw bool, r bool) int {
 
 /*
  * AdvocateMutexPost adds the end counter to an operation of the trace.
- * For try use AdvocatePostTry.
+ * For try use AdvocateMutexTryPost.
  * Also used for wait group
  * Args:
  * 	index: index of the operation in the trace
@@ -208,12 +208,12 @@ func AdvocateMutexPost(index int) {
 }
 
 /*
- * AdvocatePostTry adds the end counter to an try operation of the trace
+ * AdvocateMutexTryPost adds the end counter to an try operation of the trace
  * Args:
  * 	index: index of the operation in the trace
  * 	suc: true if the try was successful, false otherwise
  */
-func AdvocatePostTry(index int, suc bool) {
+func AdvocateMutexTryPost(index int, suc bool) {
 	if advocateTracingDisabled {
 		return
 	}

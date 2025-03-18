@@ -105,7 +105,7 @@ func (m *Mutex) TryLock() bool {
 				if m.id == 0 {
 					m.id = runtime.GetAdvocateObjectID()
 				}
-				_ = runtime.AdvocateMutexLockTry(m.id, false, false)
+				_ = runtime.AdvocateMutexTryPre(m.id, false, false)
 				runtime.BlockForever()
 			}
 		}
@@ -121,15 +121,15 @@ func (m *Mutex) TryLock() bool {
 		}
 
 		// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
-		// advocateIndex is used for AdvocatePostTry to find the pre event.
-		advocateIndex := runtime.AdvocateMutexLockTry(m.id, false, false)
+		// advocateIndex is used for AdvocateMutexTryPost to find the pre event.
+		advocateIndex := runtime.AdvocateMutexTryPre(m.id, false, false)
 		// ADVOCATE-END
 
 
 	res := m.mu.TryLock()
 
 	// ADVOCATE-START
-	runtime.AdvocatePostTry(advocateIndex, res)
+	runtime.AdvocateMutexTryPost(advocateIndex, res)
 	// ADVOCATE-END
 
 	return res

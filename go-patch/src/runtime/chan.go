@@ -53,11 +53,11 @@ type hchan struct {
 	// with stack shrinking.
 	lock mutex
 
-	// ADVOCATE-START
-	id              uint32 // id of the channel
-	numberSend      uint32 // number of completed send operations
-	numberRecv      uint32 // number of completed recv operations
+	// ADVOCATE-CHANGE-START
+	id              uint64 // id of the channel
+	numberSend      uint64 // number of completed send operations
 	numberSendMutex mutex  // mutex for numberSend
+	numberRecv      uint64 // number of completed recv operations
 	numberRecvMutex mutex  // mutex for numberRecv
 	advocateIgnore  bool   // if true, the channel is ignored by tracing and replay
 	// ADVOCATE-END

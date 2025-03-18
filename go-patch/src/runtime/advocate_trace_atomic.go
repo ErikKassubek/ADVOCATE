@@ -35,7 +35,7 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 	index := pointerAddressAsString(addr, true)
 
 	opStr := "U"
-	switch {
+	switch op {
 	case OperationAtomicLoad:
 		opStr = "L"
 	case OperationAtomicStore:

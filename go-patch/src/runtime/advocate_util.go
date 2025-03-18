@@ -71,7 +71,7 @@ func pointerAddressAsUint32[T any](ptr *T, size bool) uint32 {
 	return stringToUint32(pointerAddressAsString(ptr, size))
 }
 
-func pointerAddressAsUint64[T any](ptr *T, size bool) uint32 {
+func pointerAddressAsUint64[T any](ptr *T, size bool) uint64 {
 	return stringToUint64(pointerAddressAsString(ptr, size))
 }
 
@@ -168,6 +168,10 @@ func stringToInt(s string) int {
 
 func stringToUint32(s string) uint32 {
 	return uint32(stringToInt(s))
+}
+
+func stringToUint64(s string) uint64 {
+	return uint64(stringToInt(s))
 }
 
 // MARK: BOOL -> STR

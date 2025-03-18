@@ -153,7 +153,7 @@ func getTpre(elem string) int {
  * Return:
  * 	index of the element in the trace
  */
-func insertIntoTrace(elem traceElem) int {
+func insertIntoTrace(elem string) int {
 	return currentGoRoutine().addToTrace(elem)
 }
 

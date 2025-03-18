@@ -12,6 +12,17 @@
 
 package runtime
 
+type AdvocateTraceWaitGroup struct {
+	tPre uint64
+	tPost uint64
+	id uint64
+	op Operation
+	delta int
+	val int32
+	file string
+	line int
+}
+
 /*
  * AdvocateWaitGroupAdd adds a waitgroup add or done to the trace
  * MARK: Add
@@ -41,13 +52,18 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 		return -1
 	}
 
-	elem := "W," + uint64ToString(timer) + "," + uint64ToString(timer) + "," +
-		uint64ToString(id) + ",A," +
-		intToString(delta) + "," + int32ToString(val) + "," + file + ":" +
-		intToString(line)
+	elem := AdvocateTraceWaitGroup {
+		tPre: timer,
+		tPost: timer,
+		id: id,
+		op: OperationWaitgroupAddDone,
+		delta: delta,
+		val: val,
+		file: file,
+		line: line,
+	}
 
 	return insertIntoTrace(elem)
-
 }
 
 /*
@@ -71,8 +87,13 @@ func AdvocateWaitGroupWaitPre(id uint64) int {
 		return -1
 	}
 
-	elem := "W," + uint64ToString(timer) + ",0," + uint64ToString(id) +
-		",W,0,0," + file + ":" + intToString(line)
+	elem := AdvocateTraceWaitGroup {
+		tPre: timer,
+		id: id,
+		op: OperationWaitgroupWait,
+		file: file,
+		line: line,
+	}
 
 	return insertIntoTrace(elem)
 }
@@ -101,10 +122,23 @@ func AdvocateWaitGroupPost(index int) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
-	split := splitStringAtCommas(elem, []int{2, 3})
-	split[1] = uint64ToString(timer)
-	elem = mergeString(split)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceWaitGroup)
+
+	elem.tPost = timer
 
 	currentGoRoutine().updateElement(index, elem)
+}
+
+
+func (elem AdvocateTraceWaitGroup) toString() string {
+	opStr := "A"
+	if elem.op == OperationWaitgroupWait {
+		opStr = "W"
+	}
+
+	return buildTraceElemString("W", elem.tPre, elem.tPost, elem.id, opStr, elem.delta, elem.val, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceWaitGroup) getOperation() Operation {
+	return elem.op
 }

@@ -90,7 +90,7 @@ func AddTraceElementMutex(routine int, tPre string,
 	}
 
 	rwBool := false
-	if rw == "R" {
+	if rw == "t" {
 		rwBool = true
 	}
 

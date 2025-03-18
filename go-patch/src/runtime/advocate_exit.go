@@ -2,7 +2,7 @@
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace.go
+// File: advocate_exit.go
 // Brief: Functionality for the exit codes
 //
 // Author: Erik Kassubek

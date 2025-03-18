@@ -144,7 +144,6 @@ func (c *hchan) SetAdvocateIgnore() {
 	c.advocateIgnore = true
 }
 
-
 // chanbuf(c, i) is pointer to the i'th slot in the buffer.
 //
 // chanbuf should be an internal detail,
@@ -196,13 +195,13 @@ func chansend1(c *hchan, elem unsafe.Pointer) {
  * been closed.  it is easiest to loop and re-run
  * the operation; we'll see that it's now closed.
  */
- // ADVOCATE-START
+// ADVOCATE-START
 // set ignored to true, if it is used in a one case + default select. In this case, it is recorded and replayed in the select
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored bool) bool {
 	// ADVOCATE-END
 	if c == nil {
 		if !ignored {
-		_ = AdvocateChanPre(0, OperationChannelSend, c.numberSend, c.dataqsiz, true)
+			_ = AdvocateChanPre(0, OperationChannelSend, c.numberSend, c.dataqsiz, true)
 		}
 		if !block {
 			return false
@@ -318,11 +317,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 	if c.qcount < c.dataqsiz {
 		// Space is available in the channel buffer. Enqueue the element to send.
-		// ADVOCATE-START
-		if !ignored && !c.advocateIgnore {
-			AdvocateChanPost(advocateIndex, c.qcount)
-		}
-		// ADVOCATE-END
 		qp := chanbuf(c, c.sendx)
 		if raceenabled {
 			racenotify(c, c.sendx, nil)
@@ -333,6 +327,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			c.sendx = 0
 		}
 		c.qcount++
+		// ADVOCATE-START
+		if !ignored && !c.advocateIgnore {
+			AdvocateChanPost(advocateIndex, c.qcount)
+		}
+		// ADVOCATE-END
 		unlock(&c.lock)
 		return true
 	}

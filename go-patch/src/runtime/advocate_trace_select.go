@@ -13,14 +13,14 @@
 package runtime
 
 type AdvocateTraceSelect struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	cases []AdvocateTraceChannel
+	tPre     uint64
+	tPost    uint64
+	id       uint64
+	cases    []AdvocateTraceChannel
 	selIndex int
-	hasDef bool
-	file string
-	line int
+	hasDef   bool
+	file     string
+	line     int
 }
 
 /*
@@ -61,24 +61,26 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		cas := (*cases)[casi]
 		c := cas.c
 
+		println(casi, nsends, c.id)
+
 		chanOp := OperationChannelRecv
 		if casi < nsends {
 			chanOp = OperationChannelSend
 		}
 
 		if c == nil { // ignore nil cases
-			caseElementMap[casi] = AdvocateTraceChannel {
-				tPre: timer,
-				op: chanOp,
+			caseElementMap[casi] = AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
 				isNil: true,
 			}
 		} else {
 			i++
 
-			caseElementMap[casi] = AdvocateTraceChannel {
-				tPre: timer,
-				op: chanOp,
-				id: c.id,
+			caseElementMap[casi] = AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
+				id:    c.id,
 				qSize: c.dataqsiz,
 			}
 		}
@@ -93,9 +95,9 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 			if i < nsends {
 				chanOp = OperationChannelSend
 			}
-			caseElements = append(caseElements, AdvocateTraceChannel {
-				tPre: timer,
-				op: chanOp,
+			caseElements = append(caseElements, AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
 				isNil: true,
 			})
 		}
@@ -106,21 +108,19 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		if i < nsends {
 			chanOp = OperationChannelSend
 		}
-		caseElements = append(caseElements, AdvocateTraceChannel {
-			tPre: timer,
-			op: chanOp,
+		caseElements = append(caseElements, AdvocateTraceChannel{
+			tPre:  timer,
+			op:    chanOp,
 			isNil: true,
 		})
 	}
 
-
-
-	elem := AdvocateTraceSelect {
-		tPre: timer,
-		id: id,
+	elem := AdvocateTraceSelect{
+		tPre:  timer,
+		id:    id,
 		cases: caseElements,
-		file: file,
-		line: line,
+		file:  file,
+		line:  line,
 	}
 
 	if !block {
@@ -207,16 +207,16 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 		if c.id == 0 {
 			c.id = AdvocateChanMake(int(c.dataqsiz))
 		}
-		caseElem = AdvocateTraceChannel {
-			tPre: timer,
-			id: c.id,
-			op: opChan,
+		caseElem = AdvocateTraceChannel{
+			tPre:  timer,
+			id:    c.id,
+			op:    opChan,
 			qSize: c.dataqsiz,
 		}
 	} else {
-		caseElem = AdvocateTraceChannel {
+		caseElem = AdvocateTraceChannel{
 			tPre: timer,
-			op: opChan,
+			op:   opChan,
 		}
 	}
 
@@ -228,13 +228,13 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	cases := make([]AdvocateTraceChannel, 1)
 	cases[0] = caseElem
 
-	elem := AdvocateTraceSelect {
-		tPre: timer,
-		id: id,
-		cases: cases,
+	elem := AdvocateTraceSelect{
+		tPre:   timer,
+		id:     id,
+		cases:  cases,
 		hasDef: true,
-		file: file,
-		line: line,
+		file:   file,
+		line:   line,
 	}
 
 	return insertIntoTrace(elem)
@@ -284,7 +284,7 @@ func (elem AdvocateTraceSelect) toString() string {
 	p1 := buildTraceElemString("S", elem.tPre, elem.tPost, elem.id)
 	p2 := buildTraceElemString(elem.selIndex, posToString(elem.file, elem.line))
 	cases := ""
-	for i, c := range elem.cases{
+	for i, c := range elem.cases {
 		if i != 0 {
 			cases += "~"
 		}

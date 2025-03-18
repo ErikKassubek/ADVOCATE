@@ -63,4 +63,8 @@ skip value used to determine the position of the function call (in the example 2
 is increased by one. While the functions in [advocate_atomic.go](../../go-patch/src/sync/atomic/advocate_atomic.go) are meant to be used directly by the user,
 the function in the [advocate_atomic_type.go](../../go-patch/src/sync/atomic/advocate_atomic_type.go) file are used for the implementation on the
 atomic types defined in [types.go](../../go-patch/src/sync/atomic/types.go).
-This additional function call in makes it necessary to change the skip value.
+This additional function call makes it necessary to change the skip value.
+
+To get this to work, we need to [disable the sync/atomic aliases](../../go-patch/src/cmd/compile/internal/ssagen/intrinsics.go#L1571) in the
+[SSA](https://go.dev/src/cmd/compile/internal/ssa/README) (Static Single Assignment) implementation. Additionally, we needed to add the atomic functions
+using Uintptr to the [blockedLinknames](../../go-patch/src/cmd/link/internal/loader/loader.go#L2335) map in the link loader, since they otherwise break the linkname system.

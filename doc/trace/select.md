@@ -39,4 +39,10 @@ internally as a normal channel operation and is therefore recorded as such. A se
 only recorded, if the non-default case was chosen.
 
 ## Implementation
-The implementation for the select has been split in the implementation for the [original select](../../go-patch/src/runtime/select.go#L629) and the [select with preferred case](../../go-patch/src/runtime/select.go#L151) (for more info see [here](../replay.md#select)). The entry point for select in the [selectgo](../../go-patch/src/runtime/select.go#L123) function now calls one of the two select versions. The recording is done in the two selects separately, since we need to no the lock order of the cases. TODO: continue
+There are two different select implementations. One is for selects with exactly one case and a default case ([send case](../../go-patch/src/runtime/chan.go#L990) and [recv case](../../go-patch/src/runtime/chan.go#L1057)). The other one is for [all other selects](../../go-patch/src/runtime/select.go#L123).
+
+The implementation for the select with more than one non-default case has been split in the implementation for the [original select](../../go-patch/src/runtime/select.go#L629) and the [select with preferred case](../../go-patch/src/runtime/select.go#L151) (for more info see [here](../replay.md#select)). The entry point for select in the [selectgo](../../go-patch/src/runtime/select.go#L123) function now calls one of the two select versions. The recording is done in the two selects separately, since we need to know the lock order of the cases, but in terms of recording, the two versions are basically identical.
+
+We implement a [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L187) and a [Post](../../go-patch/src/runtime/advocate_trace_select.go#L231) function for the select case with exactly one non default case and separate [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L25) and [Post](../../go-patch/src/runtime/advocate_trace_select.go#L122) functions for all other selects.
+
+The case with only one select case is the simple one. Here the Pre function records the involved channel and wether the case is a send or receive. The post function simple adds the information about wether the default or the non-default case was chosen.

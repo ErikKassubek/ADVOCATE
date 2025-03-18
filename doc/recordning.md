@@ -34,12 +34,12 @@ To routine locally record the trace, we add an new variable `advocateRoutineInfo
 This struct is automatically created for each routine.
 This variable (defined [here](../go-patch/src/runtime/advocate_routine.go#L28)), stores the routine id,
 the maximum id of any element used in this routine and the
-Trace as list of strings. They are set [when the routine is started](../go-patch/src/runtime/proc.go#L5080).
+Trace as list of elements. They are set [when the routine is started](../go-patch/src/runtime/proc.go#L5080).
 
 For each struct representing one of the recorded operations (except for fork and atomic operations), we add a field `id`, to store the `id` for this element. When a recorded function
 is executed, we first check if this id was already set. If it was not, we set a new id. We want to minimize the number of
 global counters we need to use. We therefor construct the new
-id as $routine.id\cdot100000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine. For atomics, we use the memory position of the value as id.
+id as $routine.id\cdot1000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine. For atomics, we use the memory position of the value as id.
 
 For each recorded operation a Pre and sometimes a Post function is implemented (multiple operations on the same type may share a Post function). The Pre function is called when the operation
 is started, but before it executes. The Post function is called after it finished executing.

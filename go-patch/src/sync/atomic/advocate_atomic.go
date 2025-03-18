@@ -23,7 +23,7 @@ func SwapInt32(addr *int32, new int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.SwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, 2)
 	return SwapInt32Advocate(addr, new)
 }
 
@@ -36,7 +36,7 @@ func SwapInt64(addr *int64, new int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.SwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, 2)
 	return SwapInt64Advocate(addr, new)
 }
 
@@ -48,7 +48,7 @@ func SwapUint32(addr *uint32, new uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.SwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, 2)
 	return SwapUint32Advocate(addr, new)
 }
 
@@ -61,7 +61,7 @@ func SwapUint64(addr *uint64, new uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.SwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, 2)
 	return SwapUint64Advocate(addr, new)
 }
 
@@ -73,7 +73,7 @@ func SwapUintptr(addr *uintptr, new uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.SwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, 2)
 	return SwapUintptrAdvocate(addr, new)
 }
 
@@ -91,7 +91,7 @@ func CompareAndSwapInt32(addr *int32, old, new int32) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.CompSwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, 2)
 	return CompareAndSwapInt32Advocate(addr, old, new)
 }
 
@@ -104,7 +104,7 @@ func CompareAndSwapInt64(addr *int64, old, new int64) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.CompSwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, 2)
 	return CompareAndSwapInt64Advocate(addr, old, new)
 }
 
@@ -116,7 +116,7 @@ func CompareAndSwapUint32(addr *uint32, old, new uint32) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.CompSwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, 2)
 	return CompareAndSwapUint32Advocate(addr, old, new)
 }
 
@@ -129,7 +129,7 @@ func CompareAndSwapUint64(addr *uint64, old, new uint64) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.CompSwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, 2)
 	return CompareAndSwapUint64Advocate(addr, old, new)
 }
 
@@ -141,7 +141,7 @@ func CompareAndSwapUintptr(addr *uintptr, old, new uintptr) (swapped bool) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.CompSwapOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, 2)
 	return CompareAndSwapUintptrAdvocate(addr, old, new)
 }
 
@@ -159,7 +159,7 @@ func AddInt32(addr *int32, delta int32) (new int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AddOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, 2)
 	return AddInt32Advocate(addr, delta)
 }
 
@@ -173,7 +173,7 @@ func AddUint32(addr *uint32, delta uint32) (new uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AddOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, 2)
 	return AddUint32Advocate(addr, delta)
 }
 
@@ -186,7 +186,7 @@ func AddInt64(addr *int64, delta int64) (new int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AddOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, 2)
 	return AddInt64Advocate(addr, delta)
 }
 
@@ -201,7 +201,7 @@ func AddUint64(addr *uint64, delta uint64) (new uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AddOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, 2)
 	return AddUint64Advocate(addr, delta)
 }
 
@@ -213,7 +213,7 @@ func AddUintptr(addr *uintptr, delta uintptr) (new uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AddOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, 2)
 	return AddUintptrAdvocate(addr, delta)
 }
 
@@ -225,7 +225,7 @@ func LoadInt32(addr *int32) (val int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadInt32Advocate(addr)
 }
 
@@ -238,7 +238,7 @@ func LoadInt64(addr *int64) (val int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadInt64Advocate(addr)
 }
 
@@ -250,7 +250,7 @@ func LoadUint32(addr *uint32) (val uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadUint32Advocate(addr)
 }
 
@@ -263,7 +263,7 @@ func LoadUint64(addr *uint64) (val uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadUint64Advocate(addr)
 }
 
@@ -275,7 +275,7 @@ func LoadUintptr(addr *uintptr) (val uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadUintptrAdvocate(addr)
 }
 
@@ -287,7 +287,7 @@ func LoadPointer(addr *unsafe.Pointer) (val unsafe.Pointer) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.LoadOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, 2)
 	return LoadPointerAdvocate(addr)
 }
 
@@ -299,7 +299,7 @@ func StoreInt32(addr *int32, val int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 	StoreInt32Advocate(addr, val)
 }
 
@@ -312,7 +312,7 @@ func StoreInt64(addr *int64, val int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 	StoreInt64Advocate(addr, val)
 }
 
@@ -324,7 +324,7 @@ func StoreUint32(addr *uint32, val uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 	StoreUint32Advocate(addr, val)
 }
 
@@ -337,7 +337,7 @@ func StoreUint64(addr *uint64, val uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 	StoreUint64Advocate(addr, val)
 }
 
@@ -349,7 +349,7 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 	StoreUintptrAdvocate(addr, val)
 }
 
@@ -361,7 +361,7 @@ func StoreUintptr(addr *uintptr, val uintptr) {
 // 		defer func() { chAck <- struct{}{} }()
 // 		<-chWait
 // 	}
-// 	runtime.AdvocateAtomic(addr, runtime.StoreOp, 2)
+// 	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, 2)
 // 	StorePointerAdvocate(addr, val)
 // }
 
@@ -371,7 +371,7 @@ func AndInt64(addr *int64, mask int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AndOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, 2)
 	return AndInt64Advocate(addr, mask)
 }
 
@@ -381,7 +381,7 @@ func AndUint64(addr *uint64, mask uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AndOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, 2)
 	return AndUint64Advocate(addr, mask)
 }
 
@@ -391,7 +391,7 @@ func AndInt32(addr *int32, mask int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AndOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, 2)
 	return AndInt32Advocate(addr, mask)
 }
 
@@ -401,7 +401,7 @@ func AndUint32(addr *uint32, mask uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AndOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, 2)
 	return AndUint32Advocate(addr, mask)
 }
 
@@ -411,8 +411,8 @@ func AndUintptr(addr *uintptr, mask uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.AndOp, 2)
-	return AddUintptrAdvocate(addr, mask)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, 2)
+	return AndUintptrAdvocate(addr, mask)
 }
 
 func OrInt64(addr *int64, mask int64) (old int64) {
@@ -421,7 +421,7 @@ func OrInt64(addr *int64, mask int64) (old int64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OrOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, 2)
 	return OrInt64Advocate(addr, mask)
 }
 
@@ -431,7 +431,7 @@ func OrUint64(addr *uint64, mask uint64) (old uint64) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OrOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, 2)
 	return OrUint64Advocate(addr, mask)
 }
 
@@ -441,7 +441,7 @@ func OrInt32(addr *int32, mask int32) (old int32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OrOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, 2)
 	return OrInt32Advocate(addr, mask)
 }
 
@@ -451,7 +451,7 @@ func OrUint32(addr *uint32, mask uint32) (old uint32) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OrOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, 2)
 	return OrUint32Advocate(addr, mask)
 }
 
@@ -461,6 +461,6 @@ func OrUintptr(addr *uintptr, mask uintptr) (old uintptr) {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OrOp, 2)
+	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, 2)
 	return OrUintptrAdvocate(addr, mask)
 }

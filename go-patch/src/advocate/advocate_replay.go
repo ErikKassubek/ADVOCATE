@@ -251,7 +251,7 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			}
 
 		case "O":
-			op = runtime.OperationOnce
+			op = runtime.OperationOnceDo
 			// time, _ = strconv.Atoi(fields[1]) // read tpre to prevent false order
 			if time == 0 {
 				blocked = true

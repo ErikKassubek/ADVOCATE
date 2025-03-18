@@ -119,7 +119,7 @@ func block() {
 // ordinal position of its respective select{recv,send,default} call.
 // Also, if the chosen scase was a receive operation, it reports whether
 // a value was received.
-// ADVOCATE-CHANGE-START
+// ADVOCATE-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
 	var replayElem ReplayElement
 	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
@@ -277,7 +277,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// This block is called, if the code runs a select statement.
 	// AdvocateSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
@@ -285,7 +285,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// is never executed.
 	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
 	advocateRClose := false // case was chosen, because channel was closed
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	// lock all the channels involved in the select
 	sellock(scases, lockorder)
@@ -312,12 +312,12 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		cas = &scases[casi]
 		c = cas.c
 
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		// Only check for the preferred case
 		if casi != preferredIndex {
 			continue
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 
 		if casi >= nsends {
 			sg = c.sendq.dequeue()
@@ -354,7 +354,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 		goto retc
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	// pass 2 - enqueue on all chans
 	if gp.waiting != nil {
@@ -497,10 +497,10 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = !caseSuccess
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -529,9 +529,9 @@ bufrecv:
 		c.recvx = 0
 	}
 	c.qcount--
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -553,9 +553,9 @@ bufsend:
 		c.sendx = 0
 	}
 	c.qcount++
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -566,16 +566,16 @@ recv:
 		print("syncrecv: cas0=", cas0, " c=", c, "\n")
 	}
 	recvOK = true
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	goto retc
 
 rclose:
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	// read at end of closed channel
 	selunlock(scases, lockorder)
 	recvOK = false
@@ -598,9 +598,9 @@ send:
 	if asanenabled {
 		asanread(cas.elem, c.elemtype.Size_)
 	}
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
@@ -618,10 +618,10 @@ sclose:
 
 	selunlock(scases, lockorder)
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	panic(plainError("send on closed channel"))
 }
@@ -768,7 +768,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
 	}
 	advocateRClose := false // case was chosen, because channel was closed
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	var (
 		sg     *sudog
@@ -959,10 +959,10 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		}
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = !caseSuccess
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -993,9 +993,9 @@ bufrecv:
 	}
 	c.qcount--
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -1019,9 +1019,9 @@ bufsend:
 	}
 	c.qcount++
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
 	goto retc
@@ -1034,19 +1034,19 @@ recv:
 	}
 	recvOK = true
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	goto retc
 
 rclose:
 	// read at end of closed channel
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
 	recvOK = false
@@ -1070,9 +1070,9 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
@@ -1088,10 +1088,10 @@ retc:
 
 sclose:
 	// send on closed channel
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
 	panic(plainError("send on closed channel"))

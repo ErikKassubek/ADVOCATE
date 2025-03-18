@@ -6,7 +6,7 @@ package atomic
 
 import "unsafe"
 
-// ADVOCATE-CHANGE-START
+// ADVOCATE-START
 
 // A Bool is an atomic boolean value.
 // The zero value is false.
@@ -241,4 +241,4 @@ func (*noCopy) Unlock() {}
 // and will not work if copied to any other package.
 type align64 struct{}
 
-// ADVOCATE-CHANGE-END
+// ADVOCATE-END

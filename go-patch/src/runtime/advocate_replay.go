@@ -92,8 +92,8 @@ func (ro Operation) ToString() string {
 		return "OperationRWMutexRUnlock"
 	case OperationRWMutexTryRLock:
 		return "OperationRWMutexTryRLock"
-	case OperationOnce:
-		return "OperationOnce"
+	case OperationOnceDo:
+		return "OperationOnceDo"
 	case OperationWaitgroupAddDone:
 		return "OperationWaitgroupAddDone"
 	case OperationWaitgroupWait:

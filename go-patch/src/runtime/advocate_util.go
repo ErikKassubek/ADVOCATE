@@ -54,17 +54,25 @@ func pointerAddressAsString[T any](ptr *T, size bool) string {
 		return str
 	}
 
-	const desiredLength = 11
+	const desiredLength = 9
 
 	// Get the length of the input string
 	strLen := len(str)
 
 	if strLen >= desiredLength {
-		// If the string has 11 or more letters, return the last 11
+		// If the string has 9 or more letters, return the last 9
 		return str[strLen-desiredLength:]
 	}
 
 	return str
+}
+
+func pointerAddressAsUint32[T any](ptr *T, size bool) uint32 {
+	return stringToUint32(pointerAddressAsString(ptr, size))
+}
+
+func pointerAddressAsUint64[T any](ptr *T, size bool) uint32 {
+	return stringToUint64(pointerAddressAsString(ptr, size))
 }
 
 /*
@@ -101,7 +109,6 @@ func int32ToString(n int32) string {
 		return string(rune(n + '0'))
 	} else {
 		return int32ToString(n/10) + string(rune(n%10+'0'))
-
 	}
 }
 
@@ -157,6 +164,10 @@ func stringToInt(s string) int {
 		}
 	}
 	return result * sign
+}
+
+func stringToUint32(s string) uint32 {
+	return uint32(stringToInt(s))
 }
 
 // MARK: BOOL -> STR
@@ -308,10 +319,10 @@ func GetAdvocateObjectID() uint64 {
 	}
 
 	routine.maxObjectId++
-	if routine.maxObjectId > 99999999999 {
-		panic("Overflow Error: Tow many objects in one routine. Max: 99999999999")
+	if routine.maxObjectId > 999999999 {
+		panic("Overflow Error: Tow many objects in one routine. Max: 999999999")
 	}
-	id := routine.id*100000000000 + routine.maxObjectId
+	id := routine.id*1000000000 + routine.maxObjectId
 	return id
 }
 

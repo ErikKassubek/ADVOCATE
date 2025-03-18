@@ -47,9 +47,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	id uint64
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -73,7 +73,7 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -88,7 +88,7 @@ func (c *Cond) Wait() {
 	//record
 	advocateIndex := runtime.AdvocateCondPre(c.id, 0)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -105,7 +105,7 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -120,7 +120,7 @@ func (c *Cond) Signal() {
 	// recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 1)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
@@ -131,7 +131,7 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = runtime.GetAdvocateObjectID()
 	}
@@ -146,7 +146,7 @@ func (c *Cond) Broadcast() {
 	//recording
 	advocateIndex := runtime.AdvocateCondPre(c.id, 2)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

@@ -36,9 +36,9 @@ type Mutex struct {
 
 	mu isync.Mutex
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	id uint64 // id for the mutex
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // A Locker represents an object that can be locked and unlocked.
@@ -51,7 +51,7 @@ type Locker interface {
 // If the lock is already in use, the calling goroutine
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
@@ -81,13 +81,13 @@ func (m *Mutex) Lock() {
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
 	advocateIndex := runtime.AdvocateMutexLockPre(m.id, false, false)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	m.mu.Lock()
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex)
-	//ADVOCATE-CHANGE-END
+	//ADVOCATE-END
 }
 
 // TryLock tries to lock m and reports whether it succeeded.
@@ -96,7 +96,7 @@ func (m *Mutex) Lock() {
 // and use of TryLock is often a sign of a deeper problem
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
 		if wait {
 			defer func() { chAck <- struct{}{} }()
@@ -123,14 +123,14 @@ func (m *Mutex) TryLock() bool {
 		// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
 		// advocateIndex is used for AdvocatePostTry to find the pre event.
 		advocateIndex := runtime.AdvocateMutexLockTry(m.id, false, false)
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 
 
 	res := m.mu.TryLock()
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	runtime.AdvocatePostTry(advocateIndex, res)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	return res
 }
@@ -142,7 +142,7 @@ func (m *Mutex) TryLock() bool {
 // It is allowed for one goroutine to lock a Mutex and then
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
@@ -171,5 +171,5 @@ func (m *Mutex) Unlock() {
 
 	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }

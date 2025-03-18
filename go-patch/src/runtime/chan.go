@@ -53,14 +53,14 @@ type hchan struct {
 	// with stack shrinking.
 	lock mutex
 
-	// ADVOCATE-CHANGE-START
-	id              uint64 // id of the channel
-	numberSend      uint64 // number of completed send operations
+	// ADVOCATE-START
+	id              uint32 // id of the channel
+	numberSend      uint32 // number of completed send operations
+	numberRecv      uint32 // number of completed recv operations
 	numberSendMutex mutex  // mutex for numberSend
-	numberRecv      uint64 // number of completed recv operations
 	numberRecvMutex mutex  // mutex for numberRecv
 	advocateIgnore  bool   // if true, the channel is ignored by tracing and replay
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 type waitq struct {
@@ -126,10 +126,10 @@ func makechan(t *chantype, size int) *hchan {
 		c.synctest = true
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// get and save a new id for the channel
 	c.id = AdvocateChanMake(size)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	lockInit(&c.lock, lockRankHchan)
 
@@ -139,7 +139,7 @@ func makechan(t *chantype, size int) *hchan {
 	return c
 }
 
-// ADVOCATE-CHANGE-START
+// ADVOCATE-START
 func (c *hchan) SetAdvocateIgnore() {
 	c.advocateIgnore = true
 }
@@ -196,11 +196,12 @@ func chansend1(c *hchan, elem unsafe.Pointer) {
  * been closed.  it is easiest to loop and re-run
  * the operation; we'll see that it's now closed.
  */
- // ADVOCATE-CHANGE-START
+ // ADVOCATE-START
 // set ignored to true, if it is used in a one case + default select. In this case, it is recorded and replayed in the select
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored bool) bool {
 	// ADVOCATE-END
 	if c == nil {
+		_ = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
 		if !block {
 			return false
 		}
@@ -220,7 +221,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		panic(plainError("send on synctest channel from outside bubble"))
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = AdvocateChanMake(int(c.dataqsiz))
 	}
@@ -242,7 +243,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	FuzzingFlowWait(3)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
 	//
@@ -271,7 +272,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 	lock(&c.lock)
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// this block is called if a send is made on a channel
 	// it increases the number of sends on the channel, which is used to
 	// identify the communication partner in the advocate analysis
@@ -290,10 +291,10 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		unlock(&c.numberSendMutex)
 		advocateIndex = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	if c.closed != 0 {
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
@@ -308,18 +309,18 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		send(c, sg, ep, func() { unlock(&c.lock) }, 3)
 		return true
 	}
 
 	if c.qcount < c.dataqsiz {
 		// Space is available in the channel buffer. Enqueue the element to send.
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		qp := chanbuf(c, c.sendx)
 		if raceenabled {
 			racenotify(c, c.sendx, nil)
@@ -335,11 +336,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	if !block {
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		unlock(&c.lock)
 		return false
 	}
@@ -359,12 +360,12 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	mysg.isSelect = false
 	mysg.c = c
 	gp.waiting = mysg
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// save partner file and line in sudog
 	if replayEnabled && !ignored && !c.advocateIgnore {
 		// mysg.replayEnabled = true
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	gp.param = nil
 	c.sendq.enqueue(mysg)
 	// Signal to anyone trying to shrink our stack that we're about
@@ -387,11 +388,11 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if mysg != gp.waiting {
 		throw("G waiting list is corrupted")
 	}
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if !ignored && !c.advocateIgnore {
 		AdvocateChanPost(advocateIndex, c.qcount)
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 	gp.waiting = nil
 	gp.activeStackChans = false
 	closed := !mysg.success
@@ -402,7 +403,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	mysg.c = nil
 	releaseSudog(mysg)
 	if closed {
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
@@ -522,7 +523,7 @@ func closechan(c *hchan) {
 		panic(plainError("close of nil channel"))
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
@@ -533,7 +534,7 @@ func closechan(c *hchan) {
 		}
 		AdvocateChanClose(c.id, c.dataqsiz, c.qcount)
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	lock(&c.lock)
 	if c.closed != 0 {
@@ -656,7 +657,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		if !ignored {
 			advocateIndex = AdvocateChanRecvPre(0, 0, 0, true)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		if !block {
 			if !ignored {
 				AdvocateChanPost(advocateIndex, c.qcount)
@@ -675,7 +676,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		c.timer.maybeRunChan()
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if c.id == 0 {
 		c.id = AdvocateChanMake(int(c.dataqsiz))
 	}
@@ -697,7 +698,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 
 	FuzzingFlowWait(2)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	// Fast path: check for failed non-blocking operation without acquiring the lock.
 	if !block && empty(c) {
@@ -739,7 +740,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 	lock(&c.lock)
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// this block is called if a receive is made on a channel.
 	// It increases the number of receives on the channel, which is used to
 	// identify the communication partner in the advocate analysis.
@@ -758,18 +759,18 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		unlock(&c.numberRecvMutex)
 		advocateIndex = AdvocateChanRecvPre(c.id, c.numberRecv, c.dataqsiz, false)
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	if c.closed != 0 {
 		if c.qcount == 0 {
 			if raceenabled {
 				raceacquire(c.raceaddr())
 			}
-			// ADVOCATE-CHANGE-START
+			// ADVOCATE-START
 			if !ignored && !c.advocateIgnore {
 				AdvocateChanPostCausedByClose(advocateIndex)
 			}
-			// ADVOCATE-CHANGE-END
+			// ADVOCATE-END
 			unlock(&c.lock)
 			if ep != nil {
 				typedmemclr(c.elemtype, ep)
@@ -785,11 +786,11 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			// and add sender's value to the tail of the queue (both map to
 			// the same buffer slot because the queue is full).
 			recv(c, sg, ep, func() { unlock(&c.lock) }, 3)
-			// ADVOCATE-CHANGE-START
+			// ADVOCATE-START
 			if !ignored && !c.advocateIgnore {
 				AdvocateChanPost(advocateIndex, c.qcount)
 			}
-			// ADVOCATE-CHANGE-END
+			// ADVOCATE-END
 			return true, true
 		}
 	}
@@ -809,21 +810,21 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			c.recvx = 0
 		}
 		c.qcount--
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		unlock(&c.lock)
 		return true, true
 	}
 
 	if !block {
-		// ADVOCATE-CHANGE-START
+		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c.qcount)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 		unlock(&c.lock)
 		return false, false
 	}
@@ -875,7 +876,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 	success := mysg.success
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	if !ignored && !c.advocateIgnore {
 		if success {
 			AdvocateChanPost(advocateIndex, c.qcount)
@@ -883,7 +884,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
 	}
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	gp.param = nil
 	mysg.c = nil
@@ -988,7 +989,7 @@ func chanparkcommit(gp *g, chanLock unsafe.Pointer) bool {
 //		... bar
 //	}
 func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	var replayElem ReplayElement
 	if c != nil && !c.advocateIgnore {
 		wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
@@ -1035,7 +1036,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	}
 
 	return res
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // compiler implements
@@ -1055,7 +1056,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 //		... bar
 //	}
 func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	// see selectnbsend
 	var replayElem ReplayElement
 	if c != nil && !c.advocateIgnore {
@@ -1104,7 +1105,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	}
 	return res, recv
 
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 //go:linkname reflect_chansend reflect.chansend0

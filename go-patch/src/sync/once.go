@@ -34,7 +34,7 @@ type Once struct {
 
 	// ADVOCATE-CHANGE-BEGIN
 	id uint64 // id of the once
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // Do calls the function f if and only if Do is being called for the
@@ -72,8 +72,8 @@ func (o *Once) Do(f func()) {
 	// This is why the slow path falls back to a mutex, and why
 	// the o.done.Store must be delayed until after f returns.
 
-	// ADVOCATE-CHANGE-START
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationOnce, 2, true)
+	// ADVOCATE-START
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationOnceDo, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
@@ -93,7 +93,7 @@ func (o *Once) Do(f func()) {
 	}
 	index := runtime.AdvocateOncePre(o.id)
 	res := false
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	if o.done.Load() == 0 {
 		// Outlined slow-path to allow inlining of the fast-path.
@@ -104,7 +104,7 @@ func (o *Once) Do(f func()) {
 
 	// ADVOCATE-START
 	runtime.AdvocateOncePost(index, res)
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 }
 
 // ADVOCATE-START

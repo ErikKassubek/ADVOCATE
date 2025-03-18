@@ -85,55 +85,6 @@ func (gi *AdvocateRoutine) addToTrace(elem string) int {
 	return len(gi.Trace) - 1
 }
 
-// /*
-//  * Ignore the atomic operations. Use if not enough memory is available.
-//  */
-// func IgnoreAtomicOperations() {
-// 	atomicRecordingDisabled = true
-// 	sum := 0
-// 	lock(&AdvocateRoutinesLock)
-// 	for _, routine := range AdvocateRoutines {
-// 		println("Delete ", len(routine.Atomics), " atomic operations")
-// 		sum += len(routine.Atomics)
-// 		routine.Atomics = nil
-// 	}
-// 	unlock(&AdvocateRoutinesLock)
-// 	println("Deleted ", sum, " atomic operations")
-// 	GC() // run the garbage collector
-// }
-
-// /*
-//  * Get if atomic operations are ignored
-//  */
-// func GetIgnoreAtomicOperations() bool {
-// 	return atomicRecordingDisabled
-// }
-
-// /*
-//  * Add an atomic operation to the trace of the current routine
-//  * Params:
-//  * 	elem: the element to add
-//  */
-// func (gi *AdvocateRoutine) addAtomicToTrace(elem string) {
-// 	if advocateTracingDisabled {
-// 		return
-// 	}
-
-// 	if gi == nil {
-// 		return
-// 	}
-
-// 	// delete atomic operations if disabled
-// 	if atomicRecordingDisabled {
-// 		// if gi.Atomics != nil {
-// 		// 	println("Delete ", len(gi.Atomics), " atomic operations")
-// 		// }
-// 		// gi.Atomics = nil
-// 		return
-// 	}
-
-// 	gi.Atomics = append(gi.Atomics, elem)
-// }
 
 func (gi *AdvocateRoutine) getElement(index int) string {
 	return gi.Trace[index]

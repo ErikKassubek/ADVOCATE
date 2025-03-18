@@ -435,7 +435,7 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason w
 	mcall(park_m)
 }
 
-// ADVOCATE-CHANGE-START
+// ADVOCATE-START
 func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int, timeout int64) {
 	mp := acquirem()
 	gp := mp.curg
@@ -468,7 +468,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 	mcall(park_m)
 }
 
-// ADVOCATE-CHANGE-END
+// ADVOCATE-END
 
 // Puts the current goroutine into a waiting state and unlocks the lock.
 // The goroutine can be made runnable again by calling goready(gp).
@@ -4332,9 +4332,9 @@ func goexit1() {
 		racegoend()
 	}
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	AdvocatRoutineExit()
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
 
 	trace := traceAcquire()
 	if trace.ok() {
@@ -5058,7 +5058,7 @@ func newproc(fn *funcval) {
 	gp := getg()
 	pc := sys.GetCallerPC()
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	f := findfunc(pc)
 	tracepc := pc
 	if pc > f.entry() {
@@ -5082,7 +5082,7 @@ func newproc(fn *funcval) {
 		if gp != nil && gp.advocateRoutineInfo != nil {
 			AdvocateSpawnCaller(gp.advocateRoutineInfo, newg.advocateRoutineInfo.id, file, line)
 		}
-		// ADVOCATE-CHANGE-END
+		// ADVOCATE-END
 
 		pp := getg().m.p.ptr()
 		runqput(pp, newg, true)

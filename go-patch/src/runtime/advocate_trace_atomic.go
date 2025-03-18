@@ -14,22 +14,12 @@ package runtime
 
 type AtomicOp string
 
-const (
-	LoadOp     AtomicOp = "L"
-	StoreOp    AtomicOp = "S"
-	AddOp      AtomicOp = "A"
-	SwapOp     AtomicOp = "W"
-	CompSwapOp AtomicOp = "C"
-	AndOp      AtomicOp = "N"
-	OrOp       AtomicOp = "O"
-)
-
 /*
  * Add an atomic operation to the trace
  * Args:
  * 	index: index of the atomic event in advocateAtomicMap
  */
-func AdvocateAtomic[T any](addr *T, op AtomicOp, skip int) {
+func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 	if advocateTracingDisabled {
 		return
 	}
@@ -44,6 +34,24 @@ func AdvocateAtomic[T any](addr *T, op AtomicOp, skip int) {
 
 	index := pointerAddressAsString(addr, true)
 
-	elem := "A," + uint64ToString(timer) + "," + index + "," + string(op) + "," + file + ":" + intToString(line)
+	opStr := "U"
+	switch {
+	case OperationAtomicLoad:
+		opStr = "L"
+	case OperationAtomicStore:
+		opStr = "S"
+	case OperationAtomicAdd:
+		opStr = "A"
+	case OperationAtomicSwap:
+		opStr = "W"
+	case OperationAtomicCompareAndSwap:
+		opStr = "C"
+	case OperationAtomicAnd:
+		opStr = "M"
+	case OperationAtomicOr:
+		opStr = "O"
+	}
+
+	elem := "A," + uint64ToString(timer) + "," + index + "," + opStr + "," + file + ":" + intToString(line)
 	insertIntoTrace(elem)
 }

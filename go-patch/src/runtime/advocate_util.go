@@ -190,105 +190,59 @@ func boolToString(b bool) string {
 	return "f"
 }
 
-// MARK: STR manipulation
-
-/*
- * Split a string at a separator
- * Args:
- * 	s: string to split
- * 	sep: separator
- * 	indices: at witch separators to split the string, must be sorted, 1 based
- * 		if nil split at all separators
- * Return:
- * 	split string
- */
-func splitStringAtSeparator(s string, sep rune, indices []int) []string {
-	var start int
-	result := make([]string, 0)
-
-	if indices == nil {
-		for i, r := range s {
-			if r == sep {
-				result = append(result, s[start:i])
-				start = i + 1
-			}
-		}
-	} else {
-		count := 0
-		for _, index := range indices {
-			for i, r := range s[start:] {
-				if r == sep {
-					count++
-					if count == index {
-						result = append(result, s[start:start+i])
-						start += i + 1
-						break
-					}
-				}
-			}
-		}
-	}
-	result = append(result, s[start:])
-	return result
-}
-
-/*
- * Split a string at comma
- * Args:
- * 	s: string to split
- * 	indices: at witch commas to split the string, must be sorted, 1 based,
- * 		if nil split at all commas
- * Return:
- * 	splitted string
- */
-func splitStringAtCommas(s string, indices []int) []string {
-	return splitStringAtSeparator(s, ',', indices)
-}
-
-/*
- * Merge a string slice to a string separated by comma
- * Args:
- * 	s: slice of strings to merge
- * Return:
- * 	merged string, separated by commas
- */
-func mergeString(s []string) string {
-	return mergeStringSep(s, ",")
-}
-
-/*
- * Merge a string slice to a string
- * Args:
- * 	s: slice of strings to merge
- * 	sep: separator
- * Return:
- * 	merged string, separated by commas
- */
-func mergeStringSep(s []string, sep string) string {
-	var result string
-	for i, elem := range s {
+// String
+func buildTraceElemString(values ...any) string {
+	res := ""
+	for i, v := range values {
 		if i != 0 {
-			result += sep
+			res += ","
 		}
-		result += elem
+
+		res += convToString(v)
 	}
-	return result
+	return res
 }
 
-/*
- * Split a string by the seperator
- */
-func splitString(line string, sep string) []string {
-	var result []string
-	start := 0
-	for i := 0; i < len(line); i++ {
-		if line[i] == sep[0] {
-			result = append(result, line[start:i])
-			start = i + 1
+func buildTraceElemStringSep(sep string, values ...any) string {
+	res := ""
+	for i, v := range values {
+		if i != 0 {
+			res += sep
 		}
+
+		res += convToString(v)
 	}
-	result = append(result, line[start:])
-	return result
+	return res
+}
+
+func convToString(val any) string {
+	switch v := val.(type) {
+	case string:
+		return v
+	case int:
+		return intToString(v)
+	case uint:
+		return uint64ToString(uint64(v))
+	case int32:
+		return int32ToString(v)
+	case int64:
+		return int64ToString(v)
+	case uint32:
+		return uint32ToString(v)
+	case uint64:
+		return uint64ToString(v)
+	case bool:
+		if v {
+			return "t"
+		}
+		return "f"
+	}
+	panic("unknown type")
+	return ""
+}
+
+func posToString(file string, line int) string {
+	return file + ":" + intToString(line)
 }
 
 // MARK: ADVOCATE

@@ -12,6 +12,17 @@
 
 package runtime
 
+type AdvocateTraceSpawn struct {
+	tPost uint64
+	newID uint64
+	file string
+	line int
+}
+
+type AdvocateTraceRoutineExit struct {
+	tPost uint64
+}
+
 /*
  * AdvocateSpawnCaller adds a routine spawn to the trace
  * Args:
@@ -31,7 +42,12 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 		return
 	}
 
-	elem := "G," + uint64ToString(timer) + "," + uint64ToString(newID) + "," + file + ":" + int32ToString(line)
+	elem := AdvocateTraceSpawn {
+		tPost: timer,
+		newID: newID,
+		file: file,
+		line: int(line),
+	}
 
 	callerRoutine.addToTrace(elem)
 }
@@ -45,6 +61,24 @@ func AdvocatRoutineExit() {
 	}
 
 	timer := GetNextTimeStep()
-	elem := "E," + uint64ToString(timer)
+	elem := AdvocateTraceRoutineExit {
+		tPost: timer,
+	}
 	insertIntoTrace(elem)
+}
+
+func (elem AdvocateTraceSpawn) toString() string {
+	return buildTraceElemString("G", elem.tPost, elem.newID, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceRoutineExit) toString() string {
+	return buildTraceElemString("E", elem.tPost)
+}
+
+func (elem AdvocateTraceSpawn) getOperation() Operation {
+	return OperationSpawn
+}
+
+func (elem AdvocateTraceRoutineExit) getOperation() Operation {
+	return OperationRoutineExit
 }

@@ -13,8 +13,8 @@ the execution of the lock or unlock function
 - [tpost] $\in \mathbb N$: This is the value of the global counter when the mutex has finished its operation. For lock operations this can be either if the lock was successfully acquired or if the routines continues its execution without
 acquiring the lock in case of a trylock.
 - [id] $\in \mathbb N$: This is the unique id identifying this mutex
-- [rw]: This field records, whether the mutex is an rw mutex ([rw] = `R`) or not
-([rw] = `-`)
+- [rw]: This field records, whether the mutex is an rw mutex ([rw] = `t`) or not
+([rw] = `f`)
 - [opM]: This field shows the operation of the element. Those can be
   - [opM] = `L`: Lock
   - [opM] = `R`: RLock

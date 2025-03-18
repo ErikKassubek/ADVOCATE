@@ -12,6 +12,16 @@
 
 package runtime
 
+type AdvocateTraceNewElem struct {
+	tPost uint64
+	id uint64
+	elemType string
+	num int
+	file string
+	line int
+	op Operation
+}
+
 
 // MARK: Make
 /*
@@ -37,10 +47,24 @@ func AdvocateChanMake(qSize int) uint64 {
 		return id
 	}
 
-	elem := "N," + uint64ToString(timer) + "," + uint64ToString(id) + ",NC," + intToString(qSize) + "," + file + ":" + intToString(line)
+	elem := AdvocateTraceNewElem {
+		tPost: timer,
+		id: id,
+		elemType: "NC",
+		num: qSize,
+		file: file,
+		line: line,
+	}
 
 	insertIntoTrace(elem)
 
 	return id
 }
 
+func (elem AdvocateTraceNewElem) toString() string {
+	return buildTraceElemString("N", elem.tPost, elem.id, elem.elemType, elem.num, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceNewElem) getOperation() Operation {
+	return OperationNone
+}

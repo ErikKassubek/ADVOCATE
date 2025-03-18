@@ -99,10 +99,10 @@ func getOperationObjectString(op Operation) string {
 	return "Unknown"
 }
 
-// type traceElem interface {
-// 	toString() string
-// 	getOperation() Operation
-// }
+type traceElem interface {
+	toString() string
+	getOperation() Operation
+}
 
 /*
  * Return a string representation of the trace
@@ -115,7 +115,7 @@ func CurrentTraceToString() string {
 		if i != 0 {
 			res += "\n"
 		}
-		res += elem
+		res += elem.toString()
 	}
 
 	return res
@@ -128,7 +128,7 @@ func CurrentTraceToString() string {
  * Return:
  * 	string representation of the trace
  */
-func traceToString(trace *[]string) string {
+func traceToString(trace *[]traceElem) string {
 	res := ""
 
 	// if atomic recording is disabled
@@ -136,14 +136,9 @@ func traceToString(trace *[]string) string {
 		if i != 0 {
 			res += "\n"
 		}
-		res += elem
+		res += elem.toString()
 	}
 	return res
-}
-
-func getTpre(elem string) int {
-	split := splitStringAtCommas(elem, []int{1, 2})
-	return stringToInt(split[1])
 }
 
 /*
@@ -153,7 +148,7 @@ func getTpre(elem string) int {
  * Return:
  * 	index of the element in the trace
  */
-func insertIntoTrace(elem string) int {
+func insertIntoTrace(elem traceElem) int {
 	return currentGoRoutine().addToTrace(elem)
 }
 
@@ -214,12 +209,11 @@ func TraceToStringByIDChannel(id int, c chan<- string) {
 		unlock(&AdvocateRoutinesLock)
 		res := ""
 
-		// if atomic recording is disabled
 		for i, elem := range routine.Trace {
 			if i != 0 {
 				res += "\n"
 			}
-			res += elem
+			res += elem.toString()
 
 			if i%1000 == 0 {
 				c <- res

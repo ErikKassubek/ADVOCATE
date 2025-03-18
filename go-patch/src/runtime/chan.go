@@ -201,7 +201,9 @@ func chansend1(c *hchan, elem unsafe.Pointer) {
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored bool) bool {
 	// ADVOCATE-END
 	if c == nil {
-		_ = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
+		if !ignored {
+		_ = AdvocateChanPre(0, OperationChannelSend, c.numberSend, c.dataqsiz, true)
+		}
 		if !block {
 			return false
 		}
@@ -236,7 +238,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 				lock(&c.numberSendMutex)
 				c.numberSend++
 				unlock(&c.numberSendMutex)
-				_ = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
+				_ = AdvocateChanPre(c.id, OperationChannelSend, c.numberSend, c.dataqsiz, false)
 				BlockForever()
 			}
 		}
@@ -289,7 +291,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		lock(&c.numberSendMutex)
 		c.numberSend++
 		unlock(&c.numberSendMutex)
-		advocateIndex = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
+		advocateIndex = AdvocateChanPre(c.id, OperationChannelSend, c.numberSend, c.dataqsiz, false)
 	}
 	// ADVOCATE-END
 
@@ -655,7 +657,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	if c == nil {
 		var advocateIndex int
 		if !ignored {
-			advocateIndex = AdvocateChanRecvPre(0, 0, 0, true)
+			advocateIndex = AdvocateChanPre(0, OperationChannelRecv, 0, 0, true)
 		}
 		// ADVOCATE-END
 		if !block {
@@ -691,7 +693,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 				lock(&c.numberRecvMutex)
 				c.numberRecv++
 				unlock(&c.numberRecvMutex)
-				_ = AdvocateChanRecvPre(c.id, c.numberRecv, c.dataqsiz, false)
+				_ = AdvocateChanPre(c.id, OperationChannelRecv, c.numberRecv, c.dataqsiz, false)
 				BlockForever()
 			}
 		}
@@ -757,7 +759,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		lock(&c.numberRecvMutex)
 		c.numberRecv++
 		unlock(&c.numberRecvMutex)
-		advocateIndex = AdvocateChanRecvPre(c.id, c.numberRecv, c.dataqsiz, false)
+		advocateIndex = AdvocateChanPre(c.id, OperationChannelRecv, c.numberRecv, c.dataqsiz, false)
 	}
 	// ADVOCATE-END
 
@@ -999,7 +1001,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 				lock(&c.numberSendMutex)
 				c.numberSend++
 				unlock(&c.numberSendMutex)
-				_ = AdvocateChanSendPre(c.id, c.numberSend, c.dataqsiz, false)
+				_ = AdvocateChanPre(c.id, OperationChannelSend, c.numberSend, c.dataqsiz, false)
 				BlockForever()
 			}
 		}

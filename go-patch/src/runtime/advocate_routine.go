@@ -32,7 +32,7 @@ type AdvocateRoutine struct {
 	replayRoutine int
 	maxObjectId   uint64
 	G             *g
-	Trace         []string
+	Trace         []traceElem
 	// Atomics     []string
 	// lock    *mutex
 }
@@ -47,7 +47,7 @@ type AdvocateRoutine struct {
 func newAdvocateRoutine(g *g) *AdvocateRoutine {
 	routine := &AdvocateRoutine{id: GetAdvocateRoutineID(), replayRoutine: 0, maxObjectId: 0,
 		G:     g,
-		Trace: make([]string, 0),
+		Trace: make([]traceElem, 0),
 	}
 
 	lock(&AdvocateRoutinesLock)
@@ -69,7 +69,7 @@ func newAdvocateRoutine(g *g) *AdvocateRoutine {
  * Return:
  * 	the index of the element in the trace
  */
-func (gi *AdvocateRoutine) addToTrace(elem string) int {
+func (gi *AdvocateRoutine) addToTrace(elem traceElem) int {
 	// do nothing if tracer disabled
 	// TODO ADVOCATE Remove when checked in all pre and post func
 	if advocateTracingDisabled {
@@ -86,7 +86,7 @@ func (gi *AdvocateRoutine) addToTrace(elem string) int {
 }
 
 
-func (gi *AdvocateRoutine) getElement(index int) string {
+func (gi *AdvocateRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
 }
 
@@ -96,7 +96,7 @@ func (gi *AdvocateRoutine) getElement(index int) string {
  * 	index: the index of the element to update
  * 	elem: the new element
  */
-func (gi *AdvocateRoutine) updateElement(index int, elem string) {
+func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
 	if advocateTracingDisabled {
 		return
 	}

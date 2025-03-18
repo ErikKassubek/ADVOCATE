@@ -13,13 +13,23 @@
 
 package runtime
 
+type AdvocateTraceMutex struct {
+	tPre uint64
+	tPost uint64
+	id uint64
+	op Operation
+	suc bool
+	file string
+	line int
+}
+
 // MARK: Pre
 
 var lastRWOp = make(map[uint64]uint64) // routine -> tPost
 var lastRWOpLock mutex
 
 /*
- * AdvocateMutexLockPre adds a mutex lock to the trace
+ * AdvocateMutexPre adds a mutex lock to the trace
  * Args:
  * 	id: id of the mutex
  *  rw: true if it is a rwmutex
@@ -27,30 +37,12 @@ var lastRWOpLock mutex
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
+func AdvocateMutexPre(id uint64, op Operation) int {
 	if advocateTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
-
-	var op string
-	var rwStr string
-	if !rw { // Mutex
-		rwStr = "-"
-		if !r { // Lock
-			op = "L"
-		} else { // rLock, invalid case
-			panic("Tried to RLock a non-RW Mutex")
-		}
-	} else { // RWMutex
-		rwStr = "R"
-		if !r { // Lock
-			op = "L"
-		} else { // RLock
-			op = "R"
-		}
-	}
 
 	_, file, line, _ := Caller(2)
 
@@ -58,100 +50,14 @@ func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
 		return -1
 	}
 
-	elem := "M," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		rwStr + "," + op + ",t," + file + ":" + uint64ToString(uint64(line))
-
-	return insertIntoTrace(elem)
-}
-
-/*
- * AdvocateMutexTryPre adds a mutex trylock to the trace
- * Args:
- * 	id: id of the mutex
- * 	rw: true if it is a rwmutex
- * 	r: true if it is a rlock operation
- * Return:
- * 	index of the operation in the trace
- */
-func AdvocateMutexTryPre(id uint64, rw bool, r bool) int {
-	if advocateTracingDisabled {
-		return -1
+	elem := AdvocateTraceMutex {
+		tPre: timer,
+		id: id,
+		op: op,
+		suc: true,
+		file: file,
+		line: line,
 	}
-
-	timer := GetNextTimeStep()
-
-	var op string
-	var rwStr string
-	if !rw { // Mutex
-		rwStr = "-"
-		if !r { // Lock
-			op = "T"
-		} else { // rLock, invalid case
-			panic("Tried to TryRLock a non-RW Mutex")
-		}
-	} else { // RWMutex
-		rwStr = "R"
-		if !r { // Lock
-			op = "T"
-		} else { // RLock
-			op = "Y"
-		}
-	}
-
-	_, file, line, _ := Caller(2)
-
-	if AdvocateIgnore(file) {
-		return -1
-	}
-
-	elem := "M," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		rwStr + "," + op + ",f," + file + ":" + uint64ToString(uint64(line))
-
-	return insertIntoTrace(elem)
-}
-
-/*
- * AdvocateUnlockPre adds a mutex unlock to the trace
- * Args:
- * 	id: id of the mutex
- * 	rw: true if it is a runlock
- * 	r: true if it is a rlock operation
- * Return:
- * 	index of the operation in the trace
- */
-func AdvocateUnlockPre(id uint64, rw bool, r bool) int {
-	if advocateTracingDisabled {
-		return -1
-	}
-
-	timer := GetNextTimeStep()
-
-	var op string
-	var rwStr string
-	if !rw { // Mutex
-		rwStr = "-"
-		if !r { // Lock
-			op = "U"
-		} else { // rLock, invalid case
-			panic("Tried to RUnlock a non-RW Mutex")
-		}
-	} else { // RWMutex
-		rwStr = "R"
-		if !r { // Lock
-			op = "U"
-		} else { // RLock
-			op = "N"
-		}
-	}
-
-	_, file, line, _ := Caller(2)
-
-	if AdvocateIgnore(file) {
-		return -1
-	}
-
-	elem := "M," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		rwStr + "," + op + ",t," + file + ":" + uint64ToString(uint64(line))
 
 	return insertIntoTrace(elem)
 }
@@ -164,9 +70,9 @@ func AdvocateUnlockPre(id uint64, rw bool, r bool) int {
  * Also used for wait group
  * Args:
  * 	index: index of the operation in the trace
- * 	c: number of the send
+ * 	suc: wether the lock was successfull for try, otherwise true
  */
-func AdvocateMutexPost(index int) {
+func AdvocateMutexPost(index int, suc bool) {
 	if advocateTracingDisabled {
 		return
 	}
@@ -184,68 +90,75 @@ func AdvocateMutexPost(index int) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5, 6, 7})
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceMutex)
 	routine := currentGoRoutine().id
 
 	lock(&lastRWOpLock)
-	if split[3] == "R" && lastRWOp[routine] != 0 {
-		split[1] = uint64ToString(lastRWOp[routine] - 1)
+	if elem.isRw() && lastRWOp[routine] != 0 {
+		elem.tPost = lastRWOp[routine] - 1
 		lastRWOp[routine] = 0
 	} else {
-		split[1] = uint64ToString(timer)
+		elem.tPost = timer
 	}
 
-	path := splitStringAtSeparator(split[6], ':', nil)
-	if hasSuffix(path[0], "sync/rwmutex.go") {
+	if hasSuffix(elem.file, "sync/rwmutex.go") {
 		lastRWOp[routine] = timer
 	}
 	unlock(&lastRWOpLock)
 
-	elem = mergeString(split)
+	elem.suc = suc
 
 	currentGoRoutine().updateElement(index, elem)
 }
 
-/*
- * AdvocateMutexTryPost adds the end counter to an try operation of the trace
- * Args:
- * 	index: index of the operation in the trace
- * 	suc: true if the try was successful, false otherwise
- */
-func AdvocateMutexTryPost(index int, suc bool) {
-	if advocateTracingDisabled {
-		return
+func (elem AdvocateTraceMutex) isRw() bool {
+	if elem.op == OperationMutexLock || elem.op == OperationMutexUnlock || elem.op == OperationMutexTryLock {
+		return false
+	}
+	return true
+}
+
+func (elem AdvocateTraceMutex) toString() string {
+	opStr, rw := elem.opRwToString()
+
+	return buildTraceElemString("M", elem.tPre, elem.tPost, elem.id, rw, opStr, elem.suc, posToString(elem.file, elem.line))
+}
+
+
+
+func (elem AdvocateTraceMutex) opRwToString() (string, string) {
+	opStr := ""
+	rw := "f"
+	switch elem.op {
+	case OperationMutexLock:
+		opStr = "L"
+	case OperationMutexUnlock:
+		opStr = "U"
+	case OperationMutexTryLock:
+		opStr = "T"
+	case OperationRWMutexLock:
+		opStr = "L"
+		rw = "t"
+	case OperationRWMutexUnlock:
+		opStr = "U"
+		rw = "t"
+	case OperationRWMutexTryLock:
+		opStr = "T"
+		rw = "t"
+	case OperationRWMutexRLock:
+		opStr = "R"
+		rw = "t"
+	case OperationRWMutexRUnlock:
+		opStr = "N"
+		rw = "t"
+	case OperationRWMutexTryRLock:
+		opStr = "Y"
+		rw = "t"
 	}
 
-	timer := GetNextTimeStep()
+	return opStr, rw
+}
 
-	// internal elements are not in the trace
-	if index == -1 {
-		return
-	}
-
-	elem := currentGoRoutine().getElement(index)
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5, 6, 7})
-	routine := currentGoRoutine().id
-
-	lock(&lastRWOpLock)
-	if split[3] == "R" && lastRWOp[routine] != 0 {
-		split[1] = uint64ToString(lastRWOp[routine] - 1)
-		lastRWOp[routine] = 0
-	} else {
-		split[1] = uint64ToString(timer)
-	}
-
-	path := splitStringAtSeparator(split[6], ':', nil)
-	if hasSuffix(path[0], "sync/rwmutex.go") {
-		lastRWOp[routine] = timer
-	}
-	unlock(&lastRWOpLock)
-
-	split[3] = boolToString(suc)
-
-	elem = mergeString(split)
-
-	currentGoRoutine().updateElement(index, elem)
+func (elem AdvocateTraceMutex) getOperation() Operation {
+	return elem.op
 }

@@ -82,7 +82,7 @@ func (rw *RWMutex) RLock() {
 			if rw.id == 0 {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
-			_ = runtime.AdvocateMutexLockPre(rw.id, true, true)
+			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRLock)
 			runtime.BlockForever()
 		}
 	}
@@ -97,12 +97,12 @@ func (rw *RWMutex) RLock() {
 		rw.id = runtime.GetAdvocateObjectID()
 	}
 
-	// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
+	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexLockPre(rw.id, true, true)
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRLock)
 	// ADVOCATE-END
 
 	if race.Enabled {
@@ -119,7 +119,7 @@ func (rw *RWMutex) RLock() {
 	}
 
 	//ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex)
+	runtime.AdvocateMutexPost(advocateIndex, true)
 	// ADVOCATE-END
 }
 
@@ -138,7 +138,7 @@ func (rw *RWMutex) TryRLock() bool {
 			if rw.id == 0 {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
-			_ = runtime.AdvocateMutexTryPre(rw.id, true, true)
+			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryRLock)
 			runtime.BlockForever()
 		}
 	}
@@ -152,9 +152,9 @@ func (rw *RWMutex) TryRLock() bool {
 	if rw.id == 0 {
 		rw.id = runtime.GetAdvocateObjectID()
 	}
-	// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocateMutexTryPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexTryPre(rw.id, true, true)
+	// AdvocateMutexPre records, that a routine tries to lock a mutex.
+	// advocateIndex is used for AdvocateMutexPost to find the pre event.
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryRLock)
 	// ADVOCATE-END
 
 	if race.Enabled {
@@ -169,9 +169,9 @@ func (rw *RWMutex) TryRLock() bool {
 			}
 
 			// ADVOCATE-START
-			// If the mutex was not locked successfully, AdvocateMutexTryPost is called
+			// If the mutex was not locked successfully, AdvocateMutexPost is called
 			// to update the trace.
-			runtime.AdvocateMutexTryPost(advocateIndex, false)
+			runtime.AdvocateMutexPost(advocateIndex, false)
 			// ADVOCATE-END
 
 			return false
@@ -183,9 +183,9 @@ func (rw *RWMutex) TryRLock() bool {
 			}
 
 			// ADVOCATE-START
-			// If the mutex was locked successfully, AdvocateMutexTryPost is called
+			// If the mutex was locked successfully, AdvocateMutexPost is called
 			// to update the trace.
-			runtime.AdvocateMutexTryPost(advocateIndex, true)
+			runtime.AdvocateMutexPost(advocateIndex, true)
 			// ADVOCATE-END
 
 			return true
@@ -204,14 +204,14 @@ func (rw *RWMutex) RUnlock() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			_ = runtime.AdvocateUnlockPre(rw.id, true, true)
+			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRUnlock)
 			runtime.BlockForever()
 		}
 	}
 
-	// AdvocateUnlockPre is used to record the unlocking of a mutex.
+	// AdvocateMutexPre is used to record the unlocking of a mutex.
 	// AdvocatePost records the successful unlocking of a mutex.
-	advocateIndex := runtime.AdvocateUnlockPre(rw.id, true, true)
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRUnlock)
 	// ADVOCATE-END
 
 	if race.Enabled {
@@ -228,7 +228,7 @@ func (rw *RWMutex) RUnlock() {
 	}
 
 	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex)
+	runtime.AdvocateMutexPost(advocateIndex, true)
 	// ADVOCATE-END
 }
 
@@ -259,7 +259,7 @@ func (rw *RWMutex) Lock() {
 			if rw.id == 0 {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
-			_ = runtime.AdvocateMutexLockPre(rw.id, true, false)
+			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexLock)
 			runtime.BlockForever()
 		}
 	}
@@ -274,12 +274,12 @@ func (rw *RWMutex) Lock() {
 		rw.id = runtime.GetAdvocateObjectID()
 	}
 
-	// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
+	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexLockPre(rw.id, true, false)
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexLock)
 	// ADVOCATE-END
 
 	if race.Enabled {
@@ -301,7 +301,7 @@ func (rw *RWMutex) Lock() {
 	}
 
 	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex)
+	runtime.AdvocateMutexPost(advocateIndex, true)
 	// ADVOCATE-END
 }
 
@@ -320,9 +320,9 @@ func (rw *RWMutex) TryLock() bool {
 			if rw.id == 0 {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
-			// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
-			// advocateIndex is used for AdvocateMutexTryPost to find the pre event.
-			_ = runtime.AdvocateMutexTryPre(rw.id, true, false)
+			// AdvocateMutexPre records, that a routine tries to lock a mutex.
+			// advocateIndex is used for AdvocateMutexPost to find the pre event.
+			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
@@ -336,9 +336,9 @@ func (rw *RWMutex) TryLock() bool {
 	if rw.id == 0 {
 		rw.id = runtime.GetAdvocateObjectID()
 	}
-	// AdvocateMutexLockPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocateMutexTryPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexTryPre(rw.id, true, false)
+	// AdvocateMutexPre records, that a routine tries to lock a mutex.
+	// advocateIndex is used for AdvocateMutexPost to find the pre event.
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryLock)
 	// ADVOCATE-END
 
 	if race.Enabled {
@@ -350,9 +350,9 @@ func (rw *RWMutex) TryLock() bool {
 			race.Enable()
 		}
 		// ADVOCATE-START
-		// If the mutex was not locked successfully, AdvocateMutexTryPost is called
+		// If the mutex was not locked successfully, AdvocateMutexPost is called
 		// to update the trace.
-		runtime.AdvocateMutexTryPost(advocateIndex, false)
+		runtime.AdvocateMutexPost(advocateIndex, false)
 		// ADVOCATE-END
 		return false
 	}
@@ -362,9 +362,9 @@ func (rw *RWMutex) TryLock() bool {
 			race.Enable()
 		}
 		// ADVOCATE-START
-		// If the mutex was not locked successfully, AdvocateMutexTryPost is called
+		// If the mutex was not locked successfully, AdvocateMutexPost is called
 		// to update the trace.
-		runtime.AdvocateMutexTryPost(advocateIndex, false)
+		runtime.AdvocateMutexPost(advocateIndex, false)
 		// ADVOCATE-END
 		return false
 	}
@@ -374,9 +374,9 @@ func (rw *RWMutex) TryLock() bool {
 		race.Acquire(unsafe.Pointer(&rw.writerSem))
 	}
 	// ADVOCATE-START
-		// If the mutex was locked successfully, AdvocateMutexTryPost is called
+		// If the mutex was locked successfully, AdvocateMutexPost is called
 		// to update the trace.
-		runtime.AdvocateMutexTryPost(advocateIndex, true)
+		runtime.AdvocateMutexPost(advocateIndex, true)
 		// ADVOCATE-END
 	return true
 }
@@ -394,11 +394,11 @@ func (rw *RWMutex) Unlock() {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
-	// AdvocateUnlockPre is used to record the unlocking of a mutex.
+	// AdvocateMutexPre is used to record the unlocking of a mutex.
 	// AdvocatePost records the successful unlocking of a mutex.
 	// For non rw mutexe, the unlock cannot fail. Therefore it is not
 	// strictly necessary to record the post for the unlocking of a mutex.
-	advocateIndex := runtime.AdvocateUnlockPre(rw.id, true, false)
+	advocateIndex := runtime.AdvocateMutexPre(rw.id, runtime.OperationMutexUnlock)
 	// ADVOCATE-END
 
 
@@ -427,7 +427,7 @@ func (rw *RWMutex) Unlock() {
 	}
 
 	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex)
+	runtime.AdvocateMutexPost(advocateIndex, true)
 	// ADVOCATE-END
 }
 

@@ -12,7 +12,15 @@
 
 package runtime
 
-type AtomicOp string
+type AdvocateTraceAtomic struct {
+	timer uint64
+	index string
+	op Operation
+	file string
+	line int
+}
+
+
 
 /*
  * Add an atomic operation to the trace
@@ -34,8 +42,20 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 
 	index := pointerAddressAsString(addr, true)
 
+	elem := AdvocateTraceAtomic {
+		timer: timer,
+		index: index,
+		op: op,
+		file: file,
+		line: line,
+	}
+
+	insertIntoTrace(elem)
+}
+
+func (elem AdvocateTraceAtomic) toString() string {
 	opStr := "U"
-	switch op {
+	switch elem.op {
 	case OperationAtomicLoad:
 		opStr = "L"
 	case OperationAtomicStore:
@@ -52,6 +72,9 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 		opStr = "O"
 	}
 
-	elem := "A," + uint64ToString(timer) + "," + index + "," + opStr + "," + file + ":" + intToString(line)
-	insertIntoTrace(elem)
+	return buildTraceElemString("A", elem.timer, elem.index, opStr, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceAtomic) getOperation() Operation {
+	return elem.op
 }

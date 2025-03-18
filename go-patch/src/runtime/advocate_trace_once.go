@@ -13,6 +13,15 @@
 
 package runtime
 
+type AdvocateTraceOnce struct {
+	tPre uint64
+	tPost uint64
+	id uint64
+	suc bool
+	file string
+	line int
+}
+
 /*
  * AdvocateOncePre adds a once to the trace
  * Args:
@@ -33,8 +42,12 @@ func AdvocateOncePre(id uint64) int {
 		return -1
 	}
 
-	elem := "O," + uint64ToString(timer) + ",0," + uint64ToString(id) + ",f," +
-		file + ":" + intToString(line)
+	elem := AdvocateTraceOnce {
+		tPre: timer,
+		id: id,
+		file: file,
+		line: line,
+	}
 
 	return insertIntoTrace(elem)
 }
@@ -55,14 +68,18 @@ func AdvocateOncePost(index int, suc bool) {
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutine().getElement(index)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceOnce)
 
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5})
-	split[1] = uint64ToString(timer)
-	if suc {
-		split[3] = "t"
-	}
-	elem = mergeString(split)
+	elem.tPost = timer
+	elem.suc = suc
 
 	currentGoRoutine().updateElement(index, elem)
+}
+
+func (elem AdvocateTraceOnce) toString() string {
+	return buildTraceElemString("O", elem.tPre, elem.tPost, elem.id, elem.suc, posToString(elem.file, elem.line))
+}
+
+func (elen AdvocateTraceOnce) getOperation() Operation {
+	return OperationOnceDo
 }

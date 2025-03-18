@@ -47,7 +47,7 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 	case OperationAtomicCompareAndSwap:
 		opStr = "C"
 	case OperationAtomicAnd:
-		opStr = "M"
+		opStr = "N"
 	case OperationAtomicOr:
 		opStr = "O"
 	}

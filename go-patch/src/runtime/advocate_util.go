@@ -221,6 +221,8 @@ func convToString(val any) string {
 		return v
 	case int:
 		return intToString(v)
+	case uint:
+		return uint64ToString(uint64(v))
 	case int32:
 		return int32ToString(v)
 	case int64:
@@ -235,6 +237,7 @@ func convToString(val any) string {
 		}
 		return "f"
 	}
+	panic("unknown type")
 	return ""
 }
 

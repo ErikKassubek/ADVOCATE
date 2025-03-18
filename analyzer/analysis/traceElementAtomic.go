@@ -89,7 +89,7 @@ func AddTraceElementAtomic(routine int, tpost string,
 	case "O":
 		opAInt = OrOp
 	default:
-		return errors.New("operation is not a valid operation")
+		return fmt.Errorf("Atomic operation '%s' is not a valid operation", operation)
 	}
 
 	file, line, err := posFromPosString(pos)

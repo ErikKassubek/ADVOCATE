@@ -208,6 +208,8 @@ func (elem AdvocateTraceChannel) toString() string {
 		idStr = uint64ToString(elem.id)
 	}
 
+	println("Size: ", elem.qCount, elem.qCount)
+
 	return buildTraceElemString("C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount, posToString(elem.file, elem.line))
 }
 

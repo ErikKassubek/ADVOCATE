@@ -67,7 +67,7 @@ func (elem AdvocateTraceAtomic) toString() string {
 	case OperationAtomicCompareAndSwap:
 		opStr = "C"
 	case OperationAtomicAnd:
-		opStr = "M"
+		opStr = "N"
 	case OperationAtomicOr:
 		opStr = "O"
 	}

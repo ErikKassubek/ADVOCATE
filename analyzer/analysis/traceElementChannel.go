@@ -127,12 +127,12 @@ func AddTraceElementChannel(routine int, tPre string,
 
 	qSizeInt, err := strconv.Atoi(qSize)
 	if err != nil {
-		return errors.New("qSize is not an integer")
+		return fmt.Errorf("qSize '%s' is not an integer", qSize)
 	}
 
 	qCountInt, err := strconv.Atoi(qCount)
 	if err != nil {
-		return errors.New("qSize is not an integer")
+		return fmt.Errorf("qCount '%s' is not an integer", qCount)
 	}
 
 	file, line, err := posFromPosString(pos)

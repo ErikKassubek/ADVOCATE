@@ -48,20 +48,20 @@ We implement a [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L187) a
 The case with only one select case is the simple one. Here the Pre function records the involved channel and wether the case is a send or receive. The post function simple adds the information about wether the default or the non-default case was chosen. Since they basically have the form
 ```go
 if selectnbsend(c, v) {
-		... foo
-	} else {
-		... bar
-	}
+	... foo
+} else {
+	... bar
+}
 ```
 
 and
 
 ```go
-	if selected, ok = selectnbrecv(&v, c); selected {
-		... foo
-	} else {
-		... bar
-	}
+if selected, ok = selectnbrecv(&v, c); selected {
+	... foo
+} else {
+	... bar
+}
 ```
 we can easily add the recording function into the implementation and record all relevant information.
 
@@ -72,9 +72,9 @@ Additionally, the select has the slice `lockOrder`. It contains the indixes of t
 implementation will always iterate over the cases in the order given by the lock order, meaning as
 ```go
 for _, casei := range lockorder {
-		casi := int(casei)
-		cas := (*cases)[casi]
-		c := cas.c
+	casi := int(casei)
+	cas := (*cases)[casi]
+	c := cas.c
 ```
 where cas is the representation of the case, and c is the channel involved in the case.
 Since the number of sending cases is given as `nsend`, we can determine for a case wether

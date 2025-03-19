@@ -30,7 +30,19 @@ We record the following types and operations:
 Additionally, the replay can add in additional [markers](trace/replay.md).
 
 ## Trace Recording
-To routine locally record the trace, we add an new variable `advocateRoutineInfo` into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
+To run the recording, we need to add the following header to the main function
+or the test that is analyzed:
+
+```go
+// ======= Preamble Start =======
+  advocate.InitTracing()
+  defer advocate.FinishTracing()
+// ======= Preamble End =======
+```
+
+When the toolchain is used, this is done automatically.
+
+To routines locally record the trace, we add an new variable `advocateRoutineInfo` into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
 This struct is automatically created for each routine.
 This variable (defined [here](../go-patch/src/runtime/advocate_routine.go#L28)), stores the routine id,
 the maximum id of any element used in this routine and the

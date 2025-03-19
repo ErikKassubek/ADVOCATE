@@ -44,7 +44,7 @@ This code looks up function metadata for a PC. With this it is able to get the
 file and line information. The `PCQuantum` is the minimum value for a
 program counter (1 on x86, 4 on most other systems).
 
-The creation is then recorded in the old routine with [AdvocateSpawnCaller]((../../go-patch/src/runtime/advocate_routine.go#L23)).
+The creation is then recorded in the old routine with [AdvocateSpawnCaller](../../go-patch/src/runtime/advocate_trace_routine.go#L34).
 
 Here we also create the `advocateRoutineInfo` used to store the trace for the
 new routine using the [newAdvocateRoutine](../../go-patch/src/runtime/advocate_routine.go#L47) function.

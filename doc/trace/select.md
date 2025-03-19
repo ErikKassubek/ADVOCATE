@@ -45,4 +45,78 @@ The implementation for the select with more than one non-default case has been s
 
 We implement a [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L187) and a [Post](../../go-patch/src/runtime/advocate_trace_select.go#L231) function for the select case with exactly one non default case and separate [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L25) and [Post](../../go-patch/src/runtime/advocate_trace_select.go#L122) functions for all other selects.
 
-The case with only one select case is the simple one. Here the Pre function records the involved channel and wether the case is a send or receive. The post function simple adds the information about wether the default or the non-default case was chosen.
+The case with only one select case is the simple one. Here the Pre function records the involved channel and wether the case is a send or receive. The post function simple adds the information about wether the default or the non-default case was chosen. Since they basically have the form
+```go
+if selectnbsend(c, v) {
+		... foo
+	} else {
+		... bar
+	}
+```
+
+and
+
+```go
+	if selected, ok = selectnbrecv(&v, c); selected {
+		... foo
+	} else {
+		... bar
+	}
+```
+we can easily add the recording function into the implementation and record all relevant information.
+
+For selects with more than one non-default case, the implementation is more complicated: The main problem lies in connecting the internal representation of the cases to the actual cases.
+The internal representation works as follows. First, the select representation a slice of scases `cases`. From them, we can get the information about the channel involved in each select case.
+In this slice, the cases are ordered in the following way: first all sends, then all receives.
+Additionally, the select has the slice `lockOrder`. It contains the indixes of the cases in `cases` with a non nil channel in a pseudo random but consistent order. When iterating over the cases, the select
+implementation will always iterate over the cases in the order given by the lock order, meaning as
+```go
+for _, casei := range lockorder {
+		casi := int(casei)
+		cas := (*cases)[casi]
+		c := cas.c
+```
+where cas is the representation of the case, and c is the channel involved in the case.
+Since the number of sending cases is given as `nsend`, we can determine for a case wether
+it is a send or a receive by checking
+```go
+chanOp := OperationChannelRecv
+if casi < nsends {
+	chanOp = OperationChannelSend
+}
+```
+To now record the involved channels in the [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L36)
+function, we create a map `caseElementMap` from the `casi` to an `AdvocateTraceChannel`, which is our
+internal representation for a channel event, and therefore for on of the select cases.
+We now iterate over the lockorder as shown above, and store the id of the
+involved channel and the send/recv information in the `AdvocateTraceChannel`.
+We then iterate over the `casi` from 0 to the total number if cases (`ncases`). We
+then check if a case with this `casi` is in `caseElementMap`.
+If yes, we add the `AdvocateTraceChannel` to a slice `caseElements`.
+If not, we know that it was a case with a nil channel. We than add
+a corresponding `AdvocateTraceChannel` about this nil channel to `caseElements`.
+
+We now have a slice containing the information about each case in the select,
+sorted by the `casi`. This is also the same order in which we write
+the select channels in the final trace.\
+Additionally, we use the Pre function to get the tPre, the select id,
+whether it has a default case and the select position in the code.
+
+For the [Post](../../go-patch/src/runtime/advocate_trace_select.go#L127)
+function we now get the `selIndex`. This index is either `-1`, if the default
+case has been chosen or equal to the `casi` of the selected case.
+
+We now set the tPost and the selIndex value of the select to the correct values.
+
+If a non default case has been selected, we additionally need to update
+the representation of the chosen case:\
+Since our list of select cases is now sorted by the `casi`, the chosen
+case is the case in `caseElements[selIndex]`. We can therefore
+set the tPost value of this channel element to the current time,
+set the `oId` for the chosen case, and update the `numberSend` or `numberRecv`
+value for the involved channel.
+
+We now have all required information an can therefore build the corresponding
+trace element.
+
+

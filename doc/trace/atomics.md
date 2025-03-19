@@ -33,7 +33,7 @@ The main signatures for the functions are defined in [sync/atomic/doc.go](../../
 the [doc](../../go-patch/src/sync/atomic/doc.go) and [asm](../../go-patch/src/sync/atomic/asm.s) files to [oldName]Advocate. The same is also done in the
 [doc_32](../../go-patch/src/sync/atomic/doc_32.go) and [doc_64](../../go-patch/src/sync/atomic/doc_64.go) files. We add two new files [advocate_atomic.go](../../go-patch/src/sync/atomic/advocate_atomic.go) and [advocate_atomic_type.go](../../go-patch/src/sync/atomic/advocate_atomic_type.go). In them, we now implement a function for each of the
 atomic functions with the original function name. Those functions
-contain the code for the replay and the recording and then a call
+contain the code for the replay and the [recording](../../go-patch/src/runtime/advocate_trace_atomic.go) and then a call
 to the renamed original function for the operations. For example, the
 SwapInt32 function is now implemented as
 ```go

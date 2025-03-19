@@ -61,8 +61,6 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		cas := (*cases)[casi]
 		c := cas.c
 
-		println(casi, nsends, c.id)
-
 		chanOp := OperationChannelRecv
 		if casi < nsends {
 			chanOp = OperationChannelSend
@@ -87,7 +85,7 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		maxCasi = max(maxCasi, casi)
 	}
 
-	for i := 0; i <= maxCasi; i++ {
+	for i := 0; i < ncases; i++ {
 		if _, ok := caseElementMap[i]; ok {
 			caseElements = append(caseElements, caseElementMap[i])
 		} else {
@@ -101,18 +99,6 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 				isNil: true,
 			})
 		}
-	}
-
-	for i := maxCasi + 1; i < ncases; i++ {
-		chanOp := OperationChannelRecv
-		if i < nsends {
-			chanOp = OperationChannelSend
-		}
-		caseElements = append(caseElements, AdvocateTraceChannel{
-			tPre:  timer,
-			op:    chanOp,
-			isNil: true,
-		})
 	}
 
 	elem := AdvocateTraceSelect{
@@ -136,10 +122,9 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
  * 	index: index of the operation in the trace
  * 	c: channel of the chosen case
  * 	selIndex: index of the chosen case in the select
- * 	lockOrder: order of the locks
  * 	rClosed: true if the channel was closed at another routine
  */
-func AdvocateSelectPost(index int, c *hchan, selIndex int, lockOrder []uint16, rClosed bool) {
+func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	if advocateTracingDisabled {
 		return
 	}
@@ -164,8 +149,10 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, lockOrder []uint16, r
 
 		// set oId
 		if chosenCase.op == OperationChannelSend {
+			chosenCase.oId = c.numberSend
 			c.numberSend++
 		} else {
+			chosenCase.oId = c.numberRecv
 			c.numberRecv++
 		}
 		chosenCase.qCount = uint(c.numberSend - c.numberRecv)

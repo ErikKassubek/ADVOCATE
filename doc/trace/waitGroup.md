@@ -26,4 +26,4 @@ was executed. It consists of the file and line number separated by a colon (:)
 
 
 ## Implementation
-The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the [Add](../../go-patch/src/sync/waitgroup.go#L53) (Add, Done) and [Wait](../../go-patch/src/sync/waitgroup.go#L132) functions using the [AdvocateWaitGroupAdd](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L25), [AdvocateWaitGroupWaitPre](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L61) and [AdvocateWaitGroupWaitPost](../../go-patch/src/runtime/advocate_trace_waitgroup.go#L86) functions.
+The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the [Add](../../go-patch/src/sync/waitgroup.go#L36) (Add, Done), [Wait](../../go-patch/src/sync/waitgroup.go#L76) and [Post] (../../go-patch/src/sync/waitgroup.go#L106) functions. We differentiate between add and done by checking the delta value (done -1, add > 0).

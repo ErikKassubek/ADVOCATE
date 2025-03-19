@@ -41,5 +41,4 @@ The second function call records the success of the operation. This includes
 the counter at the end of the operation ([tpost]), the information that the
 operation finished ([exec]) and the success of try lock operations ([suc]).\
 The implementation of those function calls can be found in
-`go-patch/src/runtime/advocate_trace.go` in the functions [AdvocateMutexLockPre](../../go-patch/src/runtime/advocate_trace_mutex.go#L30),
-[AdvocateMutexLockTryPre](go-patch/src/runtime/advocate_trace_mutex.go#L76), [AdvocateUnlockPre](go-patch/src/runtime/advocate_trace_mutex.go#L122), [AdvocatePost](go-patch/src/runtime/advocate_trace_mutex.go#L169) and [AdvocatePostTry]((go-patch/src/runtime/advocate_trace_mutex.go#L216)).
+`go-patch/src/runtime/advocate_trace.go` in the functions [AdvocateMutexPre](../../go-patch/src/runtime/advocate_trace_mutex.go#L40) and [AdvocateMutexPost](../../go-patch/src/runtime/advocate_trace_mutex.go#L75) 

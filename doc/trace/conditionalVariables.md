@@ -32,4 +32,4 @@ and records the id ([id]) and called operation (opN), the position of the operat
 The second function call records the success of the operation. This includes
 the counter at the end of the operation ([tpost]).
 The implementation of those function calls can be found the functions
-[AdvocateCondPre](../../go-patch/src/runtime/advocate_trace_cond.go#L25), and [AdvocateCondPost](../../go-patch/src/runtime/advocate_trace_cond.go#L60).
+[AdvocateCondPre](../../go-patch/src/runtime/advocate_trace_cond.go#L34), and [AdvocateCondPost](../../go-patch/src/runtime/advocate_trace_cond.go#L63).

@@ -38,8 +38,6 @@ The recording of the channel operations is done in the
 queue, to determine, which send and receive operations are
 communication partners. Because of mutexes, that are already present in the original channel implementation,
 it is not possible to mix up these numbers.\
-For the send and receive operations three record functions are added. The first one ([AdvocateChanSendPre](../../go-patch/src/runtime/advocate_trace_channel.go#L65)/[AdvocateChanRecvPre](../../go-patch/src/runtime/advocate_trace_channel.go#L101)) at the beginning of the operation, which records [tpre], [id], [opC], [qSize] and [pos].\
-The other two functions are called at the end of the
-operation, after the send or receive was fully executed.
-These functions record [tpost] ([AdvocateChanPost](../../go-patch/src/runtime/advocate_trace_channel.go#L163)).\
-As a close on a channel cannot block, it only needs one recording function. This function ([AdvocateChanClose](../../go-patch/src/runtime/advocate_trace_channel.go#L137)) records all needed values. For [tpre] and [tpost] the same value is set.
+For the send and receive operations two record functions are implemented. The first one ([AdvocateChanSendPre](../../go-patch/src/runtime/advocate_trace_channel.go#L48)) is called before the send or receive is executed. It records [tpre], [id], [opC], [qSize] and [pos].\
+The other function ([AdvocateChanPost](../../go-patch/src/runtime/advocate_trace_channel.go#L119)) record [tpost] abnd [qCount].\
+As a close on a channel cannot block, it only needs one recording function. This function ([AdvocateChanClose](../../go-patch/src/runtime/advocate_trace_channel.go#L84)) records all needed values. For [tpre] and [tpost] the same value is set.

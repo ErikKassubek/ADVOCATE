@@ -351,7 +351,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	if !block && preferredIndex == -1 {
 		selunlock(scases, lockorder)
 		casi = -1
-		AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+		AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 		goto retc
 	}
 	// ADVOCATE-END
@@ -499,7 +499,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 
 	// ADVOCATE-START
 	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
@@ -530,7 +530,7 @@ bufrecv:
 	}
 	c.qcount--
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
@@ -554,7 +554,7 @@ bufsend:
 	}
 	c.qcount++
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	selunlock(scases, lockorder)
 	goto retc
@@ -567,14 +567,14 @@ recv:
 	}
 	recvOK = true
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	goto retc
 
 rclose:
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	// read at end of closed channel
 	selunlock(scases, lockorder)
@@ -599,7 +599,7 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
@@ -620,7 +620,7 @@ sclose:
 
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	panic(plainError("send on closed channel"))
@@ -961,7 +961,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// ADVOCATE-START
 	advocateRClose = !caseSuccess
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -994,7 +994,7 @@ bufrecv:
 	c.qcount--
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1020,7 +1020,7 @@ bufsend:
 	c.qcount++
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1035,7 +1035,7 @@ recv:
 	recvOK = true
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	goto retc
@@ -1045,7 +1045,7 @@ rclose:
 
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)
@@ -1071,7 +1071,7 @@ send:
 	}
 
 	// ADVOCATE-START
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
@@ -1090,7 +1090,7 @@ sclose:
 	// send on closed channel
 	// ADVOCATE-START
 	advocateRClose = true
-	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
+	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
 	selunlock(scases, lockorder)

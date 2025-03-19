@@ -54,7 +54,6 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 
 	elem := AdvocateTraceWaitGroup {
 		tPre: timer,
-		tPost: timer,
 		id: id,
 		op: OperationWaitgroupAddDone,
 		delta: delta,
@@ -67,14 +66,14 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 }
 
 /*
- * AdvocateWaitGroupWaitPre adds a waitgroup wait to the trace
+ * AdvocateWaitGroupWait adds a waitgroup wait to the trace
  * MARK: Wait Pre
  * Args:
  * 	id: id of the waitgroup
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateWaitGroupWaitPre(id uint64) int {
+func AdvocateWaitGroupWait(id uint64) int {
 	if advocateTracingDisabled {
 		return -1
 	}

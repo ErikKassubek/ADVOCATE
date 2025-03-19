@@ -89,7 +89,7 @@ func (wg *WaitGroup) Add(delta int) {
 	// do not block the program. Therefore it is not possible, that it is
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
-	runtime.AdvocateWaitGroupAdd(wg.id, delta, v)
+	index := runtime.AdvocateWaitGroupAdd(wg.id, delta, v)
 	// ADVOCATE-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
@@ -105,6 +105,9 @@ func (wg *WaitGroup) Add(delta int) {
 		panic("sync: WaitGroup misuse: Add called concurrently with Wait")
 	}
 	if v > 0 || w == 0 {
+		// ADVOCATE-START
+		runtime.AdvocateWaitGroupPost(index)
+		// ADVOCATE-END
 		return
 	}
 	// This goroutine has set counter to 0 when waiters > 0.
@@ -120,6 +123,9 @@ func (wg *WaitGroup) Add(delta int) {
 	for ; w != 0; w-- {
 		runtime_Semrelease(&wg.sema, false, 0)
 	}
+	// ADVOCATE-START
+	runtime.AdvocateWaitGroupPost(index)
+	// ADVOCATE-END
 }
 
 // Done decrements the [WaitGroup] counter by one.
@@ -139,7 +145,7 @@ func (wg *WaitGroup) Wait() {
 			if wg.id == 0 {
 				wg.id = runtime.GetAdvocateObjectID()
 			}
-			_ = runtime.AdvocateWaitGroupWaitPre(wg.id)
+			_ = runtime.AdvocateWaitGroupWait(wg.id)
 			runtime.BlockForever()
 		}
 	}
@@ -156,7 +162,7 @@ func (wg *WaitGroup) Wait() {
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	advocateIndex := runtime.AdvocateWaitGroupWaitPre(wg.id)
+	advocateIndex := runtime.AdvocateWaitGroupWait(wg.id)
 	// ADVOCATE-END
 
 	if race.Enabled {

@@ -19,7 +19,7 @@ can be rewritten, it will create a [rewritten trace](replay.md) for each of thos
 It will then replay each of those rewritten traces, monitoring if the replay succeeded or not. The results of those replay will be saved in files.
 At the end, the toolchain will collect all created traces and result files
 and, based on them, will create report files for each bug that detail the
-type and position of bug as well as the replay result, and multiple [statistics](stats/statistics.md)
+type and position of bug as well as the replay result, and multiple [statistics](statistics.md)
 about the program and analysis.
 ![Analysis](img/analysis.png)
 

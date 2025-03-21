@@ -13,7 +13,6 @@
 package runtime
 
 import (
-	"internal/runtime/atomic"
 	"unsafe"
 )
 
@@ -237,60 +236,11 @@ func convToString(val any) string {
 		}
 		return "f"
 	}
-	panic("unknown type")
 	return ""
 }
 
 func posToString(file string, line int) string {
 	return file + ":" + intToString(line)
-}
-
-// MARK: ADVOCATE
-
-var advocateCurrentRoutineID atomic.Uint64
-var advocateGlobalCounter atomic.Uint64
-
-/*
- * GetAdvocateRoutineID returns a new id for a routine
- * Return:
- * 	new id
- */
-func GetAdvocateRoutineID() uint64 {
-	id := advocateCurrentRoutineID.Add(1)
-	if id > 184467440 {
-		panic("Overflow Error: Two many routines. Max: 184467440")
-	}
-	return id
-}
-
-/*
- * GetAdvocateObjectID returns a new id for a mutex, channel or waitgroup
- * Return:
- * 	new id
- */
-func GetAdvocateObjectID() uint64 {
-	routine := currentGoRoutine()
-
-	if routine == nil {
-		getg().advocateRoutineInfo = newAdvocateRoutine(getg())
-		routine = currentGoRoutine()
-	}
-
-	routine.maxObjectId++
-	if routine.maxObjectId > 999999999 {
-		panic("Overflow Error: Tow many objects in one routine. Max: 999999999")
-	}
-	id := routine.id*1000000000 + routine.maxObjectId
-	return id
-}
-
-/*
- * GetAdvocateCounter will update the timer and return the new value
- * Return:
- * 	new time value
- */
-func GetNextTimeStep() uint64 {
-	return advocateGlobalCounter.Add(2)
 }
 
 /*
@@ -340,13 +290,29 @@ func contains(s, sub string) bool {
 	return false
 }
 
-
 func hasPrefix(s, prefix string) bool {
 	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
 }
 
 func hasSuffix(s, suffix string) bool {
 	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+}
+
+func split(s string, sep rune) []string {
+	var res []string
+	var current string
+
+	for _, char := range s{
+		if char == sep {
+			res = append(res, current)
+			current = ""
+		} else {
+			current += string(char)
+		}
+	}
+
+	res = append(res, current)
+	return res
 }
 
 // ADVOCATE-FILE-END

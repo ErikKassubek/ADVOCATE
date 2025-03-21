@@ -27,10 +27,10 @@ const (
 )
 
 const (
-  const releaseOldestWaitLastMax int64 = 6
-	const releaseWaitMaxWait = 20
-	const releaseWaitMaxNoWait = 10
-	const acknowledgementMaxWaitSec = 5
+	releaseOldestWaitLastMax  int64 = 6
+	releaseWaitMaxWait              = 20
+	releaseWaitMaxNoWait            = 10
+	acknowledgementMaxWaitSec       = 5
 )
 
 var ExitCodeNames = map[int]string{
@@ -157,44 +157,45 @@ type ReplayElement struct {
 }
 
 func (elem *ReplayElement) key() string {
-  return buildKey(elem.routine, elem.file, elem.line)
+	return buildKey(elem.Routine, elem.File, elem.Line)
 }
 
 func buildKey(routine int, file string, line int) string {
-  return intToString(routine) + ":" + file + ":" + intToString(line)
+	return intToString(routine) + ":" + file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
 type AdvocateReplayTraces map[uint64]AdvocateReplayTrace // routine -> trace
 
 var (
-  replayEnabled bool // replay is on
-  replayLock mutex
-  replayDone int
-  replayDoneLock mutex
+	replayEnabled  bool // replay is on
+	replayLock     mutex
+	replayDone     int
+	replayDoneLock mutex
 
-  // read trace
-  replayData = make(AdvocateReplayTraces, 0)
-  numberElementsInTrace int
-  traceElementPositions = make(map[string][]int) // file -> []line
+	// read trace
+	replayData            = make(AdvocateReplayTraces, 0)
+	numberElementsInTrace int
+	traceElementPositions = make(map[string][]int) // file -> []line
 
-  replayIndex = make(map[uint64]int)
+	replayIndex = make(map[uint64]int)
 
-  // exit code
-  replayExitCode bool
-  expectedExitCode int
+	// exit code
+	replayExitCode   bool
+	expectedExitCode int
 
-  // for leak, TimePre of stuck elem
-  lastTPreReplay int
-  stuckReplayExecutedSuc = false
+	// for leak, TimePre of stuck elem
+	lastTPreReplay         int
+	stuckReplayExecutedSuc = false
 
-  timeoutHappened = false
+	timeoutHappened = false
 
-  // for replay timeout
-	lastKey string
-	lastTime int64
+	// for replay timeout
+	lastKey               string
+	lastTime              int64
 	lastTimeWithoutOldest int64
-	releaseOldestWait = releaseOldestWaitLastMax
+	releaseOldestWait     = releaseOldestWaitLastMax
+)
 
 /*
  * Add a replay trace to the replay data.
@@ -314,8 +315,8 @@ func IsReplayEnabled() bool {
 func ReleaseWaits() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
-	
-  for {
+
+	for {
 		counter++
 		routine, replayElem := getNextReplayElement()
 
@@ -352,12 +353,11 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
-          releaseElement(oldest, ReplayElement{Blocked: false, Suc: true})
+					releaseElement(oldest, replayElemFromKey(oldestKey), false)
 
-          if releaseOldestWait > 1 {
+					if releaseOldestWait > 1 {
 						releaseOldestWait--
 					}
-
 
 					lock(&replayDoneLock)
 					replayDone++
@@ -400,8 +400,8 @@ func ReleaseWaits() {
 		lock(&waitingOpsMutex)
 		if waitOp, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
-  
-      releaseElement(waitOp, replayElem)
+
+			releaseElement(waitOp, replayElem, true)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -418,6 +418,17 @@ func ReleaseWaits() {
 		if !replayEnabled {
 			return
 		}
+	}
+}
+
+func replayElemFromKey(key string) ReplayElement {
+	keySplit := split(key, ':')
+	return ReplayElement{
+		Routine: stringToInt(keySplit[0]),
+		File: keySplit[1],
+		Line: stringToInt(keySplit[2]),
+		Suc: true,
+		Blocked: false,
 	}
 }
 
@@ -490,9 +501,10 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	chWait := make(chan ReplayElement, 1)
 	chAck := make(chan struct{}, 1)
 
-  replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
+	replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
 
-  _, nextElem := getNextReplayElement()
+	// _, nextElem := getNextReplayElement()
+	// TODO (ADVOCATE): check if we can direclty release it without needing to add it tot the map
 
 	lock(&waitingOpsMutex)
 	if _, ok := waitingOps[key]; ok {
@@ -504,32 +516,32 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	return true, chWait, chAck
 }
 
-/* 
+/*
  * Release a waiting operation and, if required, wait for the acknowledgement
  * Args:
  *  elem (replayChan): the element to be released
  *  elemReplay (ReplayElement): the corresponding replay element
 *  next (bool): true if the next element in the trace was released, false if the oldest has been released
- */
+*/
 func releaseElement(elem replayChan, elemReplay ReplayElement, next bool) {
-  elem.chWait <- elemReplay
+	elem.chWait <- elemReplay
 
-  if elem.waitAck {
-    select {
-    case <-elem.chAckelemReplay.Routine:
-    case <-after(sToNs(acknowledgementMaxWaitSec)):
-      timeoutHappened = true
-    }
-  }
+	if elem.waitAck {
+		select {
+		case <-elem.chAck:
+		case <-after(sToNs(acknowledgementMaxWaitSec)):
+			timeoutHappened = true
+		}
+	}
 
-  lastTime = currentTime()
-  if next {
-    lastTimeWithoutOldest = currentTime()
+	lastTime = currentTime()
+	if next {
+		lastTimeWithoutOldest = currentTime()
 		releaseOldestWait = releaseOldestWaitLastMax
-    foundReplayElement(elemReplay.Routine)
-  } else {
-		releasedElementOldest(oldest.key())
-  }
+		foundReplayElement(elemReplay.Routine)
+	} else {
+		releasedElementOldest(elemReplay.key())
+	}
 }
 
 /*
@@ -617,8 +629,8 @@ func releasedElementOldest(key string) {
 }
 
 func foundReplayElement(routine int) {
-  lock(&replayLock)
-  defer unlock(&replayLock)
+	lock(&replayLock)
+	defer unlock(&replayLock)
 	replayIndex[uint64(routine)]++
 }
 
@@ -645,9 +657,9 @@ func SetLastTPre(tPre int) {
 }
 
 /*
-  - Exit the program with the given code.
-  - Args:
-  - code: the exit code
+- Exit the program with the given code.
+- Args:
+- code: the exit code
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {

@@ -26,6 +26,13 @@ const (
 	ExitCodeCyclic           = 41
 )
 
+const (
+  const releaseOldestWaitLastMax int64 = 6
+	const releaseWaitMaxWait = 20
+	const releaseWaitMaxNoWait = 10
+	const acknowledgementMaxWaitSec = 5
+)
+
 var ExitCodeNames = map[int]string{
 	0:  "The replay terminated without confirming the predicted bug",
 	3:  "The program panicked unexpectedly",
@@ -149,30 +156,45 @@ type ReplayElement struct {
 	SelIndex int
 }
 
+func (elem *ReplayElement) key() string {
+  return buildKey(elem.routine, elem.file, elem.line)
+}
+
+func buildKey(routine int, file string, line int) string {
+  return intToString(routine) + ":" + file + ":" + intToString(line)
+}
+
 type AdvocateReplayTrace []ReplayElement
 type AdvocateReplayTraces map[uint64]AdvocateReplayTrace // routine -> trace
 
-var replayEnabled bool // replay is on
-var replayLock mutex
-var replayDone int
-var replayDoneLock mutex
+var (
+  replayEnabled bool // replay is on
+  replayLock mutex
+  replayDone int
+  replayDoneLock mutex
 
-// read trace
-var replayData = make(AdvocateReplayTraces, 0)
-var numberElementsInTrace int
-var traceElementPositions = make(map[string][]int) // file -> []line
+  // read trace
+  replayData = make(AdvocateReplayTraces, 0)
+  numberElementsInTrace int
+  traceElementPositions = make(map[string][]int) // file -> []line
 
-var replayIndex = make(map[uint64]int)
+  replayIndex = make(map[uint64]int)
 
-// exit code
-var replayExitCode bool
-var expectedExitCode int
+  // exit code
+  replayExitCode bool
+  expectedExitCode int
 
-// for leak, TimePre of stuck elem
-var lastTPreReplay int
-var stuckReplayExecutedSuc = false
+  // for leak, TimePre of stuck elem
+  lastTPreReplay int
+  stuckReplayExecutedSuc = false
 
-var timeoutHappened = false
+  timeoutHappened = false
+
+  // for replay timeout
+	lastKey string
+	lastTime int64
+	lastTimeWithoutOldest int64
+	releaseOldestWait = releaseOldestWaitLastMax
 
 /*
  * Add a replay trace to the replay data.
@@ -290,17 +312,10 @@ func IsReplayEnabled() bool {
  * Function to run in the background and to release the waiting operations
  */
 func ReleaseWaits() {
-	lastKey := ""
-	lastTime := currentTime()
-	lastTimeWithoutOldest := currentTime()
-
-	const releaseOldestWaitLastMax int64 = 6
-	const releaseWaitMaxWait = 20
-	const releaseWaitMaxNoWait = 10
-	const acknowledgementMaxWaitSec = 5
-	releaseOldestWait := releaseOldestWaitLastMax
-
-	for {
+	lastTime = currentTime()
+	lastTimeWithoutOldest = currentTime()
+	
+  for {
 		counter++
 		routine, replayElem := getNextReplayElement()
 
@@ -322,8 +337,7 @@ func ReleaseWaits() {
 			return
 		}
 
-		// key := intToString(routine) + ":" + replayElem.File + ":" + intToString(replayElem.Line)
-		key := intToString(replayElem.Routine) + ":" + replayElem.File + ":" + intToString(replayElem.Line)
+		key := replayElem.key()
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
 				timeoutHappened = true
@@ -338,38 +352,12 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
-					oldest.chWait <- ReplayElement{Blocked: false, Suc: true}
+          releaseElement(oldest, ReplayElement{Blocked: false, Suc: true})
 
-					if printDebug {
-						println("RelO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-					}
-
-					// wait for the acknowledgement
-					if oldest.waitAck {
-						select {
-						case <-oldest.chAck:
-							if printDebug {
-								println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-							}
-						case <-after(sToNs(acknowledgementMaxWaitSec)):
-							if printDebug {
-								println("TOO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-							}
-							timeoutHappened = true
-						}
-					} else {
-						if printDebug {
-							println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-						}
-					}
-
-					lastTime = currentTime()
-					if releaseOldestWait > 1 {
+          if releaseOldestWait > 1 {
 						releaseOldestWait--
 					}
 
-					oldestKey := intToString(oldest.routine) + ":" + oldest.file + ":" + intToString(oldest.line)
-					releasedElementOldest(key)
 
 					lock(&replayDoneLock)
 					replayDone++
@@ -389,9 +377,7 @@ func ReleaseWaits() {
 		}
 
 		if AdvocateIgnoreReplay(replayElem.Op, replayElem.File) {
-			lock(&replayLock)
 			foundReplayElement(routine)
-			unlock(&replayLock)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -414,37 +400,8 @@ func ReleaseWaits() {
 		lock(&waitingOpsMutex)
 		if waitOp, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
-			waitOp.chWait <- replayElem
-
-			if printDebug {
-				println("RelR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-			}
-
-			// wait for the acknowledgement
-			if waitOp.waitAck {
-				select {
-				case <-waitOp.chAck:
-					if printDebug {
-						println("AckR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-					}
-				case <-after(sToNs(acknowledgementMaxWaitSec)):
-					if printDebug {
-						println("TOR: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-					}
-				}
-			} else {
-				if printDebug {
-					println("AckO: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
-				}
-			}
-
-			lastTime = currentTime()
-			lastTimeWithoutOldest = currentTime()
-			releaseOldestWait = releaseOldestWaitLastMax
-
-			lock(&replayLock)
-			foundReplayElement(routine)
-			unlock(&replayLock)
+  
+      releaseElement(waitOp, replayElem)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -524,23 +481,55 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	routine := getg().advocateRoutineInfo.replayRoutine
 
 	// routine := GetRoutineID()
-	// key := uint64ToString(routine) + ":" + file + ":" + intToString(line)
-	key := intToString(routine) + ":" + file + ":" + intToString(line)
+	key := buildKey(routine, file, line)
 
 	if printDebug {
 		println("Wait: ", op.ToString(), file, line)
 	}
 
-	chWait := make(chan ReplayElement, 0)
+	chWait := make(chan ReplayElement, 1)
 	chAck := make(chan struct{}, 1)
+
+  replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
+
+  _, nextElem := getNextReplayElement()
+
 	lock(&waitingOpsMutex)
 	if _, ok := waitingOps[key]; ok {
 		println("Override key: ", key)
 	}
-	waitingOps[key] = replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
+	waitingOps[key] = replayElem
 	unlock(&waitingOpsMutex)
 
 	return true, chWait, chAck
+}
+
+/* 
+ * Release a waiting operation and, if required, wait for the acknowledgement
+ * Args:
+ *  elem (replayChan): the element to be released
+ *  elemReplay (ReplayElement): the corresponding replay element
+*  next (bool): true if the next element in the trace was released, false if the oldest has been released
+ */
+func releaseElement(elem replayChan, elemReplay ReplayElement, next bool) {
+  elem.chWait <- elemReplay
+
+  if elem.waitAck {
+    select {
+    case <-elem.chAckelemReplay.Routine:
+    case <-after(sToNs(acknowledgementMaxWaitSec)):
+      timeoutHappened = true
+    }
+  }
+
+  lastTime = currentTime()
+  if next {
+    lastTimeWithoutOldest = currentTime()
+		releaseOldestWait = releaseOldestWaitLastMax
+    foundReplayElement(elemReplay.Routine)
+  } else {
+		releasedElementOldest(oldest.key())
+  }
 }
 
 /*
@@ -613,7 +602,7 @@ func getNextReplayElement() (int, ReplayElement) {
 	elem := replayData[uint64(routine)][replayIndex[uint64(routine)]]
 
 	// if the elem was already executed as an oldest before, do not get again
-	elemKey := intToString(elem.Routine) + ":" + elem.File + ":" + intToString(elem.Line)
+	elemKey := elem.key()
 	if val, ok := alreadyExecutedAsOldest[elemKey]; ok && val > 0 {
 		foundReplayElement(elem.Routine)
 		alreadyExecutedAsOldest[elemKey]--
@@ -628,6 +617,8 @@ func releasedElementOldest(key string) {
 }
 
 func foundReplayElement(routine int) {
+  lock(&replayLock)
+  defer unlock(&replayLock)
 	replayIndex[uint64(routine)]++
 }
 
@@ -652,9 +643,6 @@ func SetExpectedExitCode(code int) {
 func SetLastTPre(tPre int) {
 	lastTPreReplay = tPre
 }
-
-/*
-  - Set the time of the
 
 /*
   - Exit the program with the given code.

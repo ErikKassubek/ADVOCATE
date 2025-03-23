@@ -13,14 +13,12 @@
 package runtime
 
 type AdvocateTraceAtomic struct {
-	timer uint64
+	timer int64
 	index string
-	op Operation
-	file string
-	line int
+	op    Operation
+	file  string
+	line  int
 }
-
-
 
 /*
  * Add an atomic operation to the trace
@@ -42,12 +40,12 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 
 	index := pointerAddressAsString(addr, true)
 
-	elem := AdvocateTraceAtomic {
+	elem := AdvocateTraceAtomic{
 		timer: timer,
 		index: index,
-		op: op,
-		file: file,
-		line: line,
+		op:    op,
+		file:  file,
+		line:  line,
 	}
 
 	insertIntoTrace(elem)

@@ -13,14 +13,14 @@
 package runtime
 
 type AdvocateTraceWaitGroup struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	op Operation
+	tPre  int64
+	tPost int64
+	id    uint64
+	op    Operation
 	delta int
-	val int32
-	file string
-	line int
+	val   int32
+	file  string
+	line  int
 }
 
 /*
@@ -52,14 +52,14 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 		return -1
 	}
 
-	elem := AdvocateTraceWaitGroup {
-		tPre: timer,
-		id: id,
-		op: OperationWaitgroupAddDone,
+	elem := AdvocateTraceWaitGroup{
+		tPre:  timer,
+		id:    id,
+		op:    OperationWaitgroupAddDone,
 		delta: delta,
-		val: val,
-		file: file,
-		line: line,
+		val:   val,
+		file:  file,
+		line:  line,
 	}
 
 	return insertIntoTrace(elem)
@@ -86,10 +86,10 @@ func AdvocateWaitGroupWait(id uint64) int {
 		return -1
 	}
 
-	elem := AdvocateTraceWaitGroup {
+	elem := AdvocateTraceWaitGroup{
 		tPre: timer,
-		id: id,
-		op: OperationWaitgroupWait,
+		id:   id,
+		op:   OperationWaitgroupWait,
 		file: file,
 		line: line,
 	}
@@ -127,7 +127,6 @@ func AdvocateWaitGroupPost(index int) {
 
 	currentGoRoutine().updateElement(index, elem)
 }
-
 
 func (elem AdvocateTraceWaitGroup) toString() string {
 	opStr := "A"

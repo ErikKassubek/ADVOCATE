@@ -25,6 +25,127 @@ When using the toolchain to run replays, this header is automatically added.
 ## Implementation
 The following is a description of the implementation of the trace replay.
 
+First we will give an [overview](#overview) over the replay mechanism. Then
+we will give an [detailed explanation](#detail) of the implementation.
+<!-- At the end we will illustrate the mechanism on an [example](#example). -->
+
+### Overview
+
+The replay is implemented as an wait and release mechanism.
+
+When an operation wants to execute, it checks if it is the next operation
+in the trace. If it is, it will execute. If not, it will wait until it is the
+operations turn.
+
+There are two main parts in this mechanism, the operation and the replay
+manager. The operations wants to execute, and if it is not the next element
+to be executed, it will wait. The replay manager runs in the background to
+release all waiting operations.
+
+The replay in the operation works as follows:
+
+```
+If the operations is an ignored (internal) operation,
+execute directly.
+See (R0)
+
+Get the next element in the trace.
+See (R1)
+
+If current operations matches next event,
+then executed and send a direct acknowledgement
+to the manager.
+See (R2).
+
+Otherwise, suspend operation and store signal
+to wake-up (suspended) operation in map.
+See (R3).
+
+When wake-up signal is triggered, execute.
+See (R4).
+
+After execution, send an acknowledgement
+to the manager.
+See (R5)
+
+func operation(op) {
+	if ignored(op) {  // (R0)
+		execute(op)
+		return
+	}
+
+	evt = headEvt()  // (R1)
+	if match(op, evt) {  // (R2)
+		execute(op)
+		ackDir()  // (R5)
+	} else {
+		sig = suspend(op)  // (R3)
+    waitMap[op] = sig
+		if sig.ok {  // (R4)
+			execute(op)
+			ack()  // (R5)
+		}
+	}
+}
+```
+
+The replay manager runs in a background routine and is implemented as followed
+(here we ignore the timeout mechanism. For details on this, see the [detailed](#detail) explanation):
+
+```
+Check if an operation has been directly
+acknowledged (ackDir). If this is the
+case, advance the trace to the next
+element.
+See (R1)
+
+Get the next element in the trace.
+See (R2)
+
+If the next operation corresponds to an
+already waiting operation in a map, send the
+signal to release it and remove the operation
+from the waitMap.
+See (R3)
+
+If it is not a channel, wait for the operation
+to fully execute (wait for ack).
+See (R4)
+
+Advance to the next operation in the trace.
+See (R5)
+
+func replayManager() {
+	while(replayInProgress()) {
+		if hasRecvAckDir() {  // (R1)
+			nextEvt()
+		}
+
+		evt = headEvt()  // (R2)
+		if sig, ok := waitMap[evt]; ok {  // (R3)
+			release(sig)
+			delete waitMap[evt]
+
+			if !isChannel(evt) {  // (R4)
+				waitAck()
+			}
+
+			nextEvt()  // (R5)
+		}
+	}
+}
+```
+
+To determine if an trace event corresponds with an operation, we
+use the routine number in the replay trace and the file name and line number
+of the operation in the case. We can directly connect the spawn events
+in the trace with the executed operations by there file name and line number,
+as well as the order in which they execute. When we release a routine spawn,
+we store the corresponding trace number in this routine. We can now use this
+operation, the position information and the order to uniquely identify each operation.
+
+### Detail
+
 The code for the replay is mainly in [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
 
 [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read. The internal representation of the replay consists of a `map[int][]ReplayElement` `replayData`. For each of the routines, we store a slice
@@ -47,17 +168,33 @@ To prevent the replay from getting stuck, the manager is able to release operati
 The Order enforcements consists of the operation and the replay manager. First, we have the code in operations itself, that blocks the execution of the operation, until its released by the replay manager.\
 The manager will release the operations in the correct order.
 
-### Flow
-#### Replay in operations
+#### Flow
+##### Replay in operations
 <img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto>
 When a operation wants to execute, it will call the `WaitForReplay` function. The arguments of the function
 contain information about the waiting operation (type of operation and
 skip value for `runtime.Caller`) as well as information about wether the
-operation will send an acknowledgement (`wAck`) or not. The function returns a
-`wait` boolean and to channels `ch` and `ack`. The `wait` value tells the
-operation wether it needs to wait. It if false, e.g if the replay is disabled
-or if the operation is ignored (we ignore all internal operations). If `wait = false`, the operation will just continue to execute normally. Otherwise,
-it will start to read on the the `ch` channel. When the manager clears the
+operation will send an acknowledgement (`wAck`) or not. The function
+creates a wait channel `chWait` and and acknowledgement channel `cka`, each with
+buffer size 1.\
+The function than checks, if the operation is part of the replay.
+If it is not, either because replay is disabled or because the operation is
+an ignored (internal) operation, the function will return and inform the
+operation, that it can immediately execution.
+If this is not the case, the function checks, if the calling function is the
+next element in the trace. If this is the case, it will directly send the
+`replayElement` from the trace over the `chWait` channel, to
+directly release the operation. The `replayElement` also contains information
+whether the manager expects an acknowledgement (`wAck`).
+Otherwise it will store those channels with a reference to the code location and routine
+id of the operation in a map `waitingOps`. The routine id is the id of the
+routine in the replay trace. It is set for the routine in the [newProc](../go-patch/src/runtime/proc.go#L5057) function in `runtime/proc.go`. This allows us to separate
+operations in the same code position but in separate routines. Code at the
+same code position and in the same routine does not need
+to be separated, since routines are executed sequentially. The function then
+returns the channels to the waiting operation.
+
+The operation will then start to read on the the `ch` channel. When the manager clears the
 operation to run, it will send a message over this channel. This
 message, contains information about wether the operation blocked and wether
 it was successful. If it should block (tPost = 0), it will block the operation
@@ -68,24 +205,20 @@ operation will send an empty message as soon as the operation is finished
 next operation.
 
 
-#### Replay Manager
+##### Replay Manager
 ![Replay Manager](img/replayManager.png)\
 The replay manager releases the operations in the correct order.
 
-When an
-operations wants to execute, it calls the `WaitForReplay` functions. If the
-replay is not enable or if the operation is an internal operation and is
-therefore ignored, the function will just return. Otherwise it will
-create a wait channel `chWait` and and acknowledgement channel `chAck`.
-It will store those channels with a reference to the code location and routine
-id of the operation. The routine id is the id of the routine in the replay trace. It is set for the routine in the [newProc](../go-patch/src/runtime/proc.go#L5057) function in `runtime/proc.go`. This allows us to separate operations in the same code position but in separate routines. Code at the same code position and in the same routine does not need
-to be separated, since routines are executed sequentially. The function then
-returns the channel to the waiting operation.
-
 To release the operations, a separate routine `ReleaseWait` is run in the
 background.\
-The main loop of this manager is as follows:
-First, the manager gets the next element that should be executed (see [here](#getnextreplayelement)). If no element is left, the replay is disabled.
+This routing loops as long as the replay is active.
+The main loop of this manager is as follows:\
+First the manager checks, if an operation has executed directly
+without it being added to the `waitOps` map first. If this is the case,
+it will, if required, check if the operation has already send its acknowledgement.
+If not, it will wait for it. If the acknowledgement has arrived, it will
+advance to the next element in the trace.\
+Then, the manager gets the next element that should be executed (see [here](#getnextreplayelement)). If no element is left, the replay is disabled.
 The same is true if the next element in the trace is the `replayEnd` element.
 If the bug is confirmed by reaching a certain point in the code (e.g leak or
 resource deadlock), this will confirm the replay. If the element is an
@@ -112,7 +245,7 @@ any guidance (all waiting operations are released). If the replay is already
 far enough, this may still result in the program running in the expected bug.
 For more information see the bottom left corner of the flow diagram.
 
-#### getNextReplayElement
+##### getNextReplayElement
 The trace is stored in a map. Each entry contains the elements for one routine as a sorted list. Additionally, we have a map `replayIndex` with the same key. The values of this map contain for each routine the index of the first element in the trace list, that has not been executed yet. We now iterate over all routines that have elements that have not been executed yet. For each
 of those traces we check the first element that has not been
 executed yet and choose the one with the smallest time value
@@ -123,7 +256,7 @@ next element to be replayed, we skip it, since it already has been executed. We 
 next element to be replayed is not 0, we will advance the `replayIndex` for the routine, reduce the value of `alreadyExecutedAsOldest` of the element by 1 and call the `getNextReplayElement` function again, to get the next element to be executed.
 
 
-#### release
+##### release
 To release a waiting element, we send the element info over the corresponding
 channel, on which the operation is waiting. If an acknowledgement is expected,
 the release function will then read on the acknowledgement channel until
@@ -134,7 +267,7 @@ where an operation ties to send an acknowledgement after the timeout has been tr
 and therefore cannot send, we set the buffer size of all acknowledgement
 channels to 1. They can therefore also send if no one is receiving any more.
 
-#### foundReplayElement/releasedElementOldest
+##### foundReplayElement/releasedElementOldest
 If a replay has been released, the `replayIndex` value of the corresponding
 routine is advanced by one. If an oldest replay element was released without
 it being the next element, the `alreadyExecutedAsOldes` counter for this element
@@ -142,7 +275,7 @@ is increased by one.
 ![Release](img/release.png)
 
 
-### Select
+#### Select
 While most operations are fully determined by the order in which they are executed,
 this may not be the case for selects. Here we need to determine which case
 the replay should execute. For this an alternative implementation of the
@@ -210,9 +343,12 @@ case is the preferred one, we busy-wait with a for loop, each time trying to sen
 or receive, until the communication succeeds or a timer runs out. If the timer
 runs out first, we run the default case regardless.
 
-### Atomics
+#### Atomics
 While for most operations, we could add the code for the [replay](#replay-in-operations)
 directly into the implementation of those operations, this was not
 possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
+
+
+### Example

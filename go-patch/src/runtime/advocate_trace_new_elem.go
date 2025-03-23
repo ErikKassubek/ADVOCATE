@@ -13,15 +13,14 @@
 package runtime
 
 type AdvocateTraceNewElem struct {
-	tPost uint64
-	id uint64
+	tPost    int64
+	id       uint64
 	elemType string
-	num int
-	file string
-	line int
-	op Operation
+	num      int
+	file     string
+	line     int
+	op       Operation
 }
-
 
 // MARK: Make
 /*
@@ -47,13 +46,13 @@ func AdvocateChanMake(qSize int) uint64 {
 		return id
 	}
 
-	elem := AdvocateTraceNewElem {
-		tPost: timer,
-		id: id,
+	elem := AdvocateTraceNewElem{
+		tPost:    timer,
+		id:       id,
 		elemType: "NC",
-		num: qSize,
-		file: file,
-		line: line,
+		num:      qSize,
+		file:     file,
+		line:     line,
 	}
 
 	insertIntoTrace(elem)

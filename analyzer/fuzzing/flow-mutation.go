@@ -10,13 +10,16 @@
 
 package fuzzing
 
-import "analyzer/analysis"
+import (
+	"analyzer/analysis"
+	"analyzer/utils"
+)
 
 // if true, a new mutation run is created for each flow mutations,
 // if false, all flow mutations are collected into one mutations run
 const oneMutPerDelay = true
 
-func createMutationsFlow() int {
+func createMutationsFlow() {
 	numberMutAdded := 0
 
 	delay := make([](*[]analysis.ConcurrentEntry), 4)
@@ -30,7 +33,8 @@ func createMutationsFlow() int {
 		for _, on := range *delay[i] {
 			// limit number of mutations created by this
 			if numberMutAdded > maxFlowMut {
-				return numberMutAdded
+				utils.LogInfof("Add %d flow mutations to queue", numberMutAdded)
+				return
 			}
 
 			pos := on.Elem.GetPos()
@@ -72,5 +76,5 @@ func createMutationsFlow() int {
 		numberMutAdded++
 	}
 
-	return numberMutAdded
+	utils.LogInfof("Add %d flow mutations to queue", numberMutAdded)
 }

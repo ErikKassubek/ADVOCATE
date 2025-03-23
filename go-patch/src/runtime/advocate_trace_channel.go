@@ -12,25 +12,24 @@
 
 package runtime
 
-var unbufferedChannelComSend = make(map[uint64]uint64) // id -> tpost
-var unbufferedChannelComRecv = make(map[uint64]uint64) // id -> tpost
+var unbufferedChannelComSend = make(map[uint64]int64) // id -> tpost
+var unbufferedChannelComRecv = make(map[uint64]int64) // id -> tpost
 var unbufferedChannelComSendMutex mutex
 var unbufferedChannelComRecvMutex mutex
 
 type AdvocateTraceChannel struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	op Operation
-	cl bool
-	oId uint64
-	qSize uint
+	tPre   int64
+	tPost  int64
+	id     uint64
+	op     Operation
+	cl     bool
+	oId    uint64
+	qSize  uint
 	qCount uint
-	file string
-	line int
-	isNil bool
+	file   string
+	line   int
+	isNil  bool
 }
-
 
 // MARK: Pre
 
@@ -58,20 +57,20 @@ func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil boo
 		return -1
 	}
 
-	elem := AdvocateTraceChannel {
-		tPre: timer,
-		id: id,
-		op: op,
-		oId: opID,
+	elem := AdvocateTraceChannel{
+		tPre:  timer,
+		id:    id,
+		op:    op,
+		oId:   opID,
 		qSize: qSize,
-		file: file,
-		line: line,
+		file:  file,
+		line:  line,
 		isNil: isNil,
 	}
 
-
 	return insertIntoTrace(elem)
 }
+
 // MARK: Close
 
 /*
@@ -93,17 +92,16 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 		return -1
 	}
 
-	elem := AdvocateTraceChannel {
-		tPre: timer,
-		tPost: timer,
-		id: id,
-		op: OperationChannelClose,
-		qSize: qSize,
+	elem := AdvocateTraceChannel{
+		tPre:   timer,
+		tPost:  timer,
+		id:     id,
+		op:     OperationChannelClose,
+		qSize:  qSize,
 		qCount: qCount,
-		file: file,
-		line: line,
+		file:   file,
+		line:   line,
 	}
-
 
 	return insertIntoTrace(elem)
 }
@@ -164,7 +162,6 @@ func AdvocateChanPost(index int, qCount uint) {
 	}
 	elem.qCount = qCount
 
-
 	currentGoRoutine().updateElement(index, elem)
 }
 
@@ -204,7 +201,7 @@ func (elem AdvocateTraceChannel) toString() string {
 	}
 
 	idStr := "*"
-	if !elem.isNil{
+	if !elem.isNil {
 		idStr = uint64ToString(elem.id)
 	}
 
@@ -225,7 +222,7 @@ func (elem AdvocateTraceChannel) toStringForSelect() string {
 	}
 
 	idStr := "*"
-	if !elem.isNil{
+	if !elem.isNil {
 		idStr = uint64ToString(elem.id)
 	}
 

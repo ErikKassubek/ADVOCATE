@@ -317,6 +317,13 @@ func ReleaseWaits() {
 	lastTimeWithoutOldest = currentTime()
 
 	for {
+		// wait for acknowledgement of element that was directly
+		// released when it was called, because it was the next element
+		if waitForAck.waitForAck {
+			releaseElement(waitForAck.replayC, waitForAck.replayE, false, true)
+			waitForAck.waitForAck = false
+		}
+
 		counter++
 		routine, replayElem := getNextReplayElement()
 
@@ -353,7 +360,7 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
-					releaseElement(oldest, replayElemFromKey(oldestKey), false)
+					releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
 					if releaseOldestWait > 1 {
 						releaseOldestWait--
@@ -401,7 +408,7 @@ func ReleaseWaits() {
 		if waitOp, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
 
-			releaseElement(waitOp, replayElem, true)
+			releaseElement(waitOp, replayElem, true, true)
 
 			lock(&replayDoneLock)
 			replayDone++
@@ -425,9 +432,9 @@ func replayElemFromKey(key string) ReplayElement {
 	keySplit := split(key, ':')
 	return ReplayElement{
 		Routine: stringToInt(keySplit[0]),
-		File: keySplit[1],
-		Line: stringToInt(keySplit[2]),
-		Suc: true,
+		File:    keySplit[1],
+		Line:    stringToInt(keySplit[2]),
+		Suc:     true,
 		Blocked: false,
 	}
 }
@@ -442,10 +449,19 @@ type replayChan struct {
 	line    int
 }
 
+type released struct {
+	replayC    replayChan
+	replayE    ReplayElement
+	waitForAck bool
+}
+
 // Map of all currently waiting operations
 var waitingOps = make(map[string]replayChan)
 var waitingOpsMutex mutex
 var counter = 0
+
+// element
+var waitForAck released
 
 /*
  * Wait until the correct operation is about to be executed.
@@ -503,15 +519,26 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 
 	replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
 
-	// _, nextElem := getNextReplayElement()
-	// TODO (ADVOCATE): check if we can direclty release it without needing to add it tot the map
-
-	lock(&waitingOpsMutex)
-	if _, ok := waitingOps[key]; ok {
-		println("Override key: ", key)
+	_, nextElem := getNextReplayElement()
+	if key == nextElem.key() {
+		// if it is the next element, release directly and add elems to waitForAck
+		replayElem.chWait <- nextElem
+		if replayElem.waitAck {
+			waitForAck = released{
+				replayC:    replayElem,
+				replayE:    nextElem,
+				waitForAck: true,
+			}
+		}
+	} else {
+		// add to waiting list
+		lock(&waitingOpsMutex)
+		if _, ok := waitingOps[key]; ok {
+			println("Override key: ", key)
+		}
+		waitingOps[key] = replayElem
+		unlock(&waitingOpsMutex)
 	}
-	waitingOps[key] = replayElem
-	unlock(&waitingOpsMutex)
 
 	return true, chWait, chAck
 }
@@ -521,10 +548,13 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
  * Args:
  *  elem (replayChan): the element to be released
  *  elemReplay (ReplayElement): the corresponding replay element
-*  next (bool): true if the next element in the trace was released, false if the oldest has been released
-*/
-func releaseElement(elem replayChan, elemReplay ReplayElement, next bool) {
-	elem.chWait <- elemReplay
+ *  rel (bool): the waiting channel should be released
+ *  next (bool): true if the next element in the trace was released, false if the oldest has been released
+ */
+func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) {
+	if rel {
+		elem.chWait <- elemReplay
+	}
 
 	if elem.waitAck {
 		select {

@@ -10,16 +10,15 @@
 //
 // License: BSD-3-Clause
 
-
 package runtime
 
 type AdvocateTraceCond struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	op Operation
-	file string
-	line int
+	tPre  int64
+	tPost int64
+	id    uint64
+	op    Operation
+	file  string
+	line  int
 }
 
 /*
@@ -43,10 +42,10 @@ func AdvocateCondPre(id uint64, op Operation) int {
 		return -1
 	}
 
-	elem := AdvocateTraceCond {
+	elem := AdvocateTraceCond{
 		tPre: timer,
-		id: id,
-		op: op,
+		id:   id,
+		op:   op,
 		file: file,
 		line: line,
 	}

@@ -13,14 +13,14 @@
 package runtime
 
 type AdvocateTraceSpawn struct {
-	tPost uint64
+	tPost int64
 	newID uint64
-	file string
-	line int
+	file  string
+	line  int
 }
 
 type AdvocateTraceRoutineExit struct {
-	tPost uint64
+	tPost int64
 }
 
 /*
@@ -42,11 +42,11 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 		return
 	}
 
-	elem := AdvocateTraceSpawn {
+	elem := AdvocateTraceSpawn{
 		tPost: timer,
 		newID: newID,
-		file: file,
-		line: int(line),
+		file:  file,
+		line:  int(line),
 	}
 
 	callerRoutine.addToTrace(elem)
@@ -61,7 +61,7 @@ func AdvocatRoutineExit() {
 	}
 
 	timer := GetNextTimeStep()
-	elem := AdvocateTraceRoutineExit {
+	elem := AdvocateTraceRoutineExit{
 		tPost: timer,
 	}
 	insertIntoTrace(elem)

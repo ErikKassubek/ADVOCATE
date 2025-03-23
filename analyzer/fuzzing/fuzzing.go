@@ -26,6 +26,13 @@ type mutation struct {
 }
 
 const (
+	GFuzz     = "GFuzz"     // only GFuzz
+	GFuzzHB   = "GFuzzHB"   // GFuzz with use of hb info
+	GFuzzFlow = "GFuzzFlow" // GFuzz with use of hb info and flow mutation
+	Flow      = "Flow"      // only flow mutation
+	GoPie     = "GoPie"     // only goPie
+)
+const (
 	maxNumberRuns = 20
 	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
@@ -38,27 +45,42 @@ var (
 	numberFuzzingRuns = 0
 	mutationQueue     = make([]mutation, 0)
 	// count how often a specific mutation has been in the queue
-	allMutations = make(map[string]int)
+	allMutations     = make(map[string]int)
+	fuzzingMode      = ""
+	fuzzingModeGFuzz = false
+	fuzzingModeGoPie = false
+	fuzzingModeFlow  = false
 )
 
 /*
 * Create the fuzzing data
 * Args:
 * 	modeMain (bool): if true, run fuzzing on main function, otherwise on test
+* 	fm (bool): the mode used for fuzzing
 * 	advocate (string): path to advocate
 * 	progPath (string): path to the folder containing the prog/test
 * 	progName (string): name of the program
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
-* 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
 * 	cont (bool): continue partial fuzzing
  */
-func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, cont bool) error {
+func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
+	meaTime, notExec, createStats, keepTraces, cont bool) error {
+
+	modes := []string{GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow}
+	if !utils.ContainsString(modes, fm) {
+		return fmt.Errorf("Invalid fuzzing mode '%s'", fm)
+	}
+
+	fuzzingMode = fm
+	fuzzingModeGoPie = (fuzzingMode == GoPie)
+	fuzzingModeGFuzz = (fuzzingMode == GFuzz || fuzzingMode == GFuzzFlow || fuzzingMode == GFuzzHB)
+	fuzzingModeFlow = (fuzzingMode == Flow || fuzzingMode == GFuzzFlow)
+	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzFlow || fuzzingMode == Flow)
 
 	if cont {
 		utils.LogInfo("Continue fuzzing")
@@ -75,7 +97,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
+			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
@@ -128,7 +150,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
+				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
@@ -172,8 +194,7 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	cont (bool): continue with an already started run
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
-	useHBInfoFuzzing = hBInfoFuzzing
+	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
 	progDir := getPath(progPath)
 
@@ -206,20 +227,18 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
-			// add new mutations based on GFuzz select
-			if isInterestingSelect() {
-				numberMut := numberMutations()
-				flipProb := getFlipProbability()
-				numMutAdd := createMutationsSelect(numberMut, flipProb)
-				utils.LogInfof("Add %d select mutations to queue", numMutAdd)
-			} else {
-				utils.LogInfo("Add 0 select mutations to queue")
+			if fuzzingModeGFuzz {
+				createGFuzzMut()
 			}
 
 			// add new mutations based on flow path expansion
-			if useHBInfoFuzzing {
-				numMutAdd := createMutationsFlow()
-				utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+			if fuzzingModeFlow {
+				createMutationsFlow()
+			}
+
+			// add mutations based on GoPie
+			if fuzzingModeGoPie {
+				createGoPieMut()
 			}
 
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))

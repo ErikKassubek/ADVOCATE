@@ -10,22 +10,21 @@
 //
 // License: BSD-3-Clause
 
-
 package runtime
 
 type AdvocateTraceMutex struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	op Operation
-	suc bool
-	file string
-	line int
+	tPre  int64
+	tPost int64
+	id    uint64
+	op    Operation
+	suc   bool
+	file  string
+	line  int
 }
 
 // MARK: Pre
 
-var lastRWOp = make(map[uint64]uint64) // routine -> tPost
+var lastRWOp = make(map[uint64]int64) // routine -> tPost
 var lastRWOpLock mutex
 
 /*
@@ -50,11 +49,11 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 		return -1
 	}
 
-	elem := AdvocateTraceMutex {
+	elem := AdvocateTraceMutex{
 		tPre: timer,
-		id: id,
-		op: op,
-		suc: true,
+		id:   id,
+		op:   op,
+		suc:  true,
 		file: file,
 		line: line,
 	}
@@ -123,8 +122,6 @@ func (elem AdvocateTraceMutex) toString() string {
 
 	return buildTraceElemString("M", elem.tPre, elem.tPost, elem.id, rw, opStr, elem.suc, posToString(elem.file, elem.line))
 }
-
-
 
 func (elem AdvocateTraceMutex) opRwToString() (string, string) {
 	opStr := ""

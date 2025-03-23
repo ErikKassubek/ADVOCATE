@@ -13,7 +13,7 @@ package runtime
 import "internal/runtime/atomic"
 
 var advocateCurrentRoutineID atomic.Uint64
-var advocateGlobalCounter atomic.Uint64
+var advocateGlobalCounter atomic.Int64
 
 /*
  * GetAdvocateRoutineID returns a new id for a routine
@@ -54,6 +54,6 @@ func GetAdvocateObjectID() uint64 {
  * Return:
  * 	new time value
  */
-func GetNextTimeStep() uint64 {
-	return advocateGlobalCounter.Add(2)
+func GetNextTimeStep() int64 {
+	return nanotime()
 }

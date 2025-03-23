@@ -13,8 +13,8 @@
 package runtime
 
 type AdvocateTraceSelect struct {
-	tPre     uint64
-	tPost    uint64
+	tPre     int64
+	tPost    int64
 	id       uint64
 	cases    []AdvocateTraceChannel
 	selIndex int

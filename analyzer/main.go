@@ -69,7 +69,7 @@ var (
 	scenarios         string
 	onlyAPanicAndLeak bool
 
-	fuzzingMode int
+	fuzzingMode string
 
 	modeMain bool
 
@@ -143,7 +143,8 @@ func main() {
 
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
-	flag.IntVar(&fuzzingMode, "fuzzingMode", 0, "Mode for fuzzing. Mainly used to compare. For full analysis, do not set.")
+	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
+		"Mode for fuzzing. Possible values are:\n\tGoFuzz\n\tGoFuzzHB\n\tGoPie")
 
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
@@ -204,8 +205,8 @@ func main() {
 		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
 
-	// don't run any HB Analysis if fuzzing mode 2 or 3
-	if mode == "fuzzing" && (fuzzingMode == HBFuzzNoAna || fuzzingMode == FuzzNoAna) {
+	// don't run any HB Analysis for direct GFuzz and GoPie
+	if mode == "fuzzing" && (fuzzingMode == fuzzing.GFuzz || fuzzingMode == fuzzing.GoPie) {
 		scenarios = "-"
 		onlyAPanicAndLeak = true
 	}
@@ -268,11 +269,8 @@ func modeFuzzing() {
 
 	checkVersion()
 
-	useHBInfoFuzzing := (fuzzingMode == HBFuzzHBAna || fuzzingMode == HBFuzzNoAna)
-	// fullAnalysis := (fuzzingMode == HBFuzzHBAna || fuzzingMode == FuzzHBAna)
-
-	err := fuzzing.Fuzzing(modeMain, pathToAdvocate, progPath, progName, execName,
-		ignoreAtomics, useHBInfoFuzzing, recordTime, notExec, statistics,
+	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
+		ignoreAtomics, recordTime, notExec, statistics,
 		keepTraces, cont)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())
@@ -294,55 +292,6 @@ func modeToolchain(mode string, numRerecorded int) {
 		}
 	}
 }
-
-// func modeStats() {
-// 	// instead of the normal program, create statistics for the trace
-// 	if tracePath == "" {
-// 		utils.LogError("Provide the path to the folder containing the results_machine file. Set with -trace [path]")
-// 		return
-// 	}
-
-// 	if progName == "" {
-// 		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
-// 		return
-// 	}
-
-// 	if execName == "" {
-// 		execName = progName
-// 	}
-
-// 	stats.CreateStats(tracePath, progName, execName, -1)
-// }
-
-// func modeCheck() {
-// 	if resultFolderTool == "" {
-// 		fmt.Println("Please provide the path to the advocateResult folder created by the pipeline. Set with -resultTool [folder]")
-// 		return
-// 	}
-
-// 	if progPath == "" {
-// 		fmt.Println("Please provide the path to the program folder. Set with -path [folder]")
-// 		return
-// 	}
-
-// 	err := complete.Check(resultFolderTool, progPath)
-
-// 	if err != nil {
-// 		utils.LogError("Error in running modeCheck: ", err)
-// 	}
-// }
-
-// func modeExplain() {
-// 	if tracePath == "" {
-// 		utils.LogError("Please provide a path to the trace files for the explanation. Set with -trace [file]")
-// 		return
-// 	}
-
-// 	err := explanation.CreateOverview(tracePath, !rewriteAll, -1)
-// 	if err != nil {
-// 		utils.LogError("Error creating explanation: ", err.Error())
-// 	}
-// }
 
 func getFolderTrace(pathTrace string) (string, error) {
 	folderTrace, err := filepath.Abs(pathTrace)
@@ -419,7 +368,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	// collect the required data to decide whether run is interesting
 	// and to create the mutations
 	if fuzzingRun >= 0 {
-		fuzzing.ParseTrace(analysis.GetTraces())
+		fuzzing.ParseTrace(analysis.GetTraces(), fuzzingMode)
 	}
 
 	if noRewrite {

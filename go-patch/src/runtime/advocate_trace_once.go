@@ -10,16 +10,15 @@
 //
 // License: BSD-3-Clause
 
-
 package runtime
 
 type AdvocateTraceOnce struct {
-	tPre uint64
-	tPost uint64
-	id uint64
-	suc bool
-	file string
-	line int
+	tPre  int64
+	tPost int64
+	id    uint64
+	suc   bool
+	file  string
+	line  int
 }
 
 /*
@@ -42,9 +41,9 @@ func AdvocateOncePre(id uint64) int {
 		return -1
 	}
 
-	elem := AdvocateTraceOnce {
+	elem := AdvocateTraceOnce{
 		tPre: timer,
-		id: id,
+		id:   id,
 		file: file,
 		line: line,
 	}

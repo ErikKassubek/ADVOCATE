@@ -168,8 +168,6 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			op = runtime.OperationReplayEnd
 			line, _ = strconv.Atoi(fields[2]) // misuse the line for the exit code
 			runtime.SetExpectedExitCode(line)
-			lastTPre, _ := strconv.Atoi(fields[3]) // missuse pLie for the tPreLast
-			runtime.SetLastTPre(lastTPre)
 		case "G":
 			op = runtime.OperationSpawn
 			// time, _ = strconv.Atoi(fields[1])

@@ -39,6 +39,7 @@ const (
  *   tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementCond struct {
+	index   int
 	routine int
 	tPre    int
 	tPost   int
@@ -91,6 +92,7 @@ func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN 
 	}
 
 	elem := TraceElementCond{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -165,6 +167,10 @@ func (co *TraceElementCond) GetTSort() int {
  */
 func (co *TraceElementCond) GetPos() string {
 	return fmt.Sprintf("%s:%d", co.file, co.line)
+}
+
+func (co *TraceElementCond) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", co.routine, co.file, co.line)
 }
 
 func (co *TraceElementCond) GetFile() string {
@@ -251,7 +257,11 @@ func GetConcurrentWaitgroups(element TraceElement) map[string][]TraceElement {
 /*
  * Get the string representation of the object type
  */
-func (co *TraceElementCond) GetObjType() string {
+func (co *TraceElementCond) GetObjType(operation bool) string {
+	if !operation {
+		return "D"
+	}
+
 	switch co.opC {
 	case WaitCondOp:
 		return "DW"
@@ -261,6 +271,14 @@ func (co *TraceElementCond) GetObjType() string {
 		return "DS"
 	}
 	return "D"
+}
+
+func (co *TraceElementCond) IsEqual(elem TraceElement) bool {
+	return co.routine == elem.GetRoutine() && co.ToString() == elem.ToString()
+}
+
+func (co *TraceElementCond) GetTraceIndex() (int, int) {
+	return co.routine, co.index
 }
 
 // MARK: Setter
@@ -368,6 +386,7 @@ func (co *TraceElementCond) updateVectorClock() {
  */
 func (co *TraceElementCond) Copy() TraceElement {
 	return &TraceElementCond{
+		index:   co.index,
 		routine: co.routine,
 		tPre:    co.tPre,
 		tPost:   co.tPost,
@@ -377,4 +396,21 @@ func (co *TraceElementCond) Copy() TraceElement {
 		line:    co.line,
 		vc:      co.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (co *TraceElementCond) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+func (co *TraceElementCond) AddRel2(_ TraceElement) {
+	return
+}
+
+func (co *TraceElementCond) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+func (co *TraceElementCond) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

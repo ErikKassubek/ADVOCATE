@@ -24,8 +24,10 @@ const (
 )
 
 var (
-	numberOfPreviousRuns = 0
-	maxScore             = 0.0
+	numberOfPreviousRuns     = 0
+	numberOfWrittenGoPieMuts = 0
+	maxGFuzzScore            = 0.0
+	maxGoPieScore            = 0
 	// Info for the current trace
 	channelInfoTrace = make(map[int]fuzzingChannel)     // localID -> fuzzingChannel
 	pairInfoTrace    = make(map[string]fuzzingPair)     // posSend-posRecv -> fuzzing pair
@@ -153,7 +155,7 @@ func clearData() {
 
 func clearDataFull() {
 	numberOfPreviousRuns = 0
-	maxScore = 0.0
+	maxGFuzzScore = 0.0
 	// Info for the current trace
 	channelInfoTrace = make(map[int]fuzzingChannel)    // localID -> fuzzingChannel
 	pairInfoTrace = make(map[string]fuzzingPair)       // posSend-posRecv -> fuzzing pair

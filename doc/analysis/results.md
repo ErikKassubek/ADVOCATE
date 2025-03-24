@@ -93,8 +93,8 @@ Each arg contains the following elements separated by a colon (:)
     - OE: Done Executed
     - ON: Done Not Executed (because the once was already executed)
   - Routine:
-    - GF: Fork
-		- GE: End
+    - RF: Fork
+		- RE: End
 	- New:
 		- NA: new atomic variable (not used)
 		- NC: new channel

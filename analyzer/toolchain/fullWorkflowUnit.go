@@ -33,6 +33,7 @@ import (
  * Args:
  *    pathToAdvocate (string): pathToAdvocate
  *    dir (string): path to the folder containing the unit tests
+ *    pathToTest (string): path to the test file, should be set if exec is set
  *    progName (string): name of the analyzed program
  *    measureTime (bool): if true, measure the time for all steps. This
  *      also runs the tests once without any recoding/replay to get a base value
@@ -45,7 +46,7 @@ import (
  * Returns:
  *    error
  */
-func runWorkflowUnit(pathToAdvocate, dir, progName string,
+func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -95,7 +96,7 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 		}
 
 		for _, testFunc := range testFunctions {
-			if testName != "" && testName != testFunc {
+			if (pathToTest == "" || pathToTest == file) && testName != "" && testName != testFunc {
 				continue
 			}
 
@@ -514,7 +515,7 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, fuzzin
 
 	outM := filepath.Join(pkgPath, "results_machine.log")
 	outR := filepath.Join(pkgPath, "results_readable.log")
-	outT := filepath.Join(pkgPath, "rewritten_trace")
+	outT := filepath.Join(pkgPath, "rewrittenTrace")
 	err := runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
 		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 		outT, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
@@ -535,7 +536,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 	pathPkg := filepath.Join(dir, pkg)
 
-	rewrittenTraces, _ := filepath.Glob(filepath.Join(pathPkg, "rewritten_trace_*"))
+	rewrittenTraces, _ := filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
 
 	utils.LogInfof("Found %d rewritten traces", len(rewrittenTraces))
 

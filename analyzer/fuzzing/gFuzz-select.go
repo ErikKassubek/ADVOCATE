@@ -35,9 +35,10 @@ type fuzzingSelect struct {
 	casiWithPos     []int
 }
 
+// TODO: change to replay id including replay routine
 func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	fs := fuzzingSelect{
-		id:              e.GetPos(),
+		id:              e.GetReplayID(),
 		t:               e.GetTPost(),
 		chosenCase:      e.GetChosenIndex(),
 		numberCases:     len(e.GetCases()),

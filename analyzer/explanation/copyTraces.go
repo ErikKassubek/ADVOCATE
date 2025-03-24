@@ -28,9 +28,9 @@ func copyTrace(path string, index int) error {
 }
 
 func copyRewrite(path string, index int) error {
-	// copy the folder "path/rewritten_trace_index"
-	// to "path/bugs/bug_index/rewritten_trace"
-	err := copyDir(path+"rewritten_trace_"+fmt.Sprint(index), path+"/bugs/bug_"+fmt.Sprint(index)+"/rewritten_trace")
+	// copy the folder "path/rewrittenTrace_index"
+	// to "path/bugs/bug_index/rewrittenTrace"
+	err := copyDir(path+"rewrittenTrace_"+fmt.Sprint(index), path+"/bugs/bug_"+fmt.Sprint(index)+"/rewrittenTrace")
 	if err != nil {
 		return err
 	}

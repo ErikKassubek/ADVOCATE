@@ -36,6 +36,7 @@ const (
  * TraceElementMutex is a trace element for a mutex
  * MARK: Struct
  * Fields:
+ *   index (int): Index in the routine
  *   routine (int): The routine id
  *   tpre (int): The timestamp at the start of the event
  *   tpost (int): The timestamp at the end of the event
@@ -46,6 +47,7 @@ const (
  *   file (string), line(int): The position of the mutex operation in the code
  */
 type TraceElementMutex struct {
+	index   int
 	routine int
 	tPre    int
 	tPost   int
@@ -56,6 +58,8 @@ type TraceElementMutex struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	rel1    []TraceElement
+	rel2    []TraceElement
 }
 
 /*
@@ -123,6 +127,7 @@ func AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := TraceElementMutex{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -132,6 +137,8 @@ func AddTraceElementMutex(routine int, tPre string,
 		suc:     sucBool,
 		file:    file,
 		line:    line,
+		rel1:    make([]TraceElement, 2),
+		rel2:    make([]TraceElement, 0),
 	}
 
 	return AddElementToTrace(&elem)
@@ -197,6 +204,10 @@ func (mu *TraceElementMutex) GetPos() string {
 	return fmt.Sprintf("%s:%d", mu.file, mu.line)
 }
 
+func (mu *TraceElementMutex) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", mu.routine, mu.file, mu.line)
+}
+
 func (mu *TraceElementMutex) GetFile() string {
 	return mu.file
 }
@@ -248,7 +259,11 @@ func (mu *TraceElementMutex) GetVC() clock.VectorClock {
 /*
  * Get the string representation of the object type
  */
-func (mu *TraceElementMutex) GetObjType() string {
+func (mu *TraceElementMutex) GetObjType(operation bool) string {
+	if !operation {
+		return "M"
+	}
+
 	switch mu.opM {
 	case LockOp:
 		return "ML"
@@ -268,6 +283,14 @@ func (mu *TraceElementMutex) GetObjType() string {
 
 func (mu *TraceElementMutex) IsSuc() bool {
 	return mu.suc
+}
+
+func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
+	return mu.routine == elem.GetRoutine() && mu.ToString() == elem.ToString()
+}
+
+func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
+	return mu.routine, mu.index
 }
 
 // MARK: Setter
@@ -437,6 +460,7 @@ func (mu *TraceElementMutex) updateVectorClockAlt() {
  */
 func (mu *TraceElementMutex) Copy() TraceElement {
 	return &TraceElementMutex{
+		index:   mu.index,
 		routine: mu.routine,
 		tPre:    mu.tPre,
 		tPost:   mu.tPost,
@@ -448,4 +472,24 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		line:    mu.line,
 		vc:      mu.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
+	if pos < 0 || pos > 1 {
+		return
+	}
+	mu.rel1[pos] = elem
+}
+
+func (mu *TraceElementMutex) AddRel2(elem TraceElement) {
+	mu.rel2 = append(mu.rel2, elem)
+}
+
+func (mu *TraceElementMutex) GetRel1() []TraceElement {
+	return mu.rel1
+}
+
+func (mu *TraceElementMutex) GetRel2() []TraceElement {
+	return mu.rel2
 }

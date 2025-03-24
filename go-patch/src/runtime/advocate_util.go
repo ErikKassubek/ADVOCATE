@@ -302,7 +302,7 @@ func split(s string, sep rune) []string {
 	var res []string
 	var current string
 
-	for _, char := range s{
+	for _, char := range s {
 		if char == sep {
 			res = append(res, current)
 			current = ""

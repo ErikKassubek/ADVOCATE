@@ -659,7 +659,7 @@ func checkForStuckRoutine() {
 
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
-			ObjType: "GE", File: file, Line: line,
+			ObjType: "RE", File: file, Line: line,
 		}
 
 		results.Result(results.CRITICAL, results.LWithoutBlock,

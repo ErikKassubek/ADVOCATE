@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: gopie-mutation.go
+// File: goPie-mutation.go
 // Brief: Mutations for gopie
 //
 // Author: Erik Kassubek
@@ -23,11 +23,11 @@ func mutate(c chain, energy int) map[string]chain {
 		energy = 100
 	}
 
-	if c.len() == 0 {
-		// TODO: implement
-	}
-
 	set := make(map[string]chain)
+
+	if c.len() == 0 {
+		return set
+	}
 
 	set[c.toString()] = c
 
@@ -110,12 +110,33 @@ func flip(c chain) []chain {
 
 func substitute(c chain) []chain {
 	res := make([]chain, 0)
-	// TODO: implement
+
+	for i, elem := range c.elems {
+		for _, rel := range elem.GetRel1() {
+			if res != nil && !c.contains(rel) {
+				nc := c.copy()
+				nc.replace(i, rel)
+				res = append(res, nc)
+			}
+		}
+	}
+
 	return res
 }
 
 func augment(c chain) []chain {
 	res := make([]chain, 0)
-	// TODO: implement
+
+	rels := c.lastElem().GetRel2()
+	for _, rel := range rels {
+		if c.contains(rel) {
+			continue
+		}
+
+		nc := c.copy()
+		nc.add(rel)
+		res = append(res, nc)
+	}
+
 	return res
 }

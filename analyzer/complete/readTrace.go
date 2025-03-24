@@ -43,7 +43,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 
 			fileName := filepath.Base(path)
 
-			if info.IsDir() && fileName == "rewritten_trace" {
+			if info.IsDir() && fileName == "rewrittenTrace" {
 				return filepath.SkipDir
 			}
 

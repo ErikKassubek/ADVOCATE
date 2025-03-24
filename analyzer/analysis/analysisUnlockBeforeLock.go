@@ -134,7 +134,7 @@ func checkForUnlockBeforeLock() {
 					RoutineID: u.GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre,
-					ObjType:   u.GetObjType(),
+					ObjType:   u.GetObjType(true),
 					File:      file,
 					Line:      line,
 				})
@@ -154,7 +154,7 @@ func checkForUnlockBeforeLock() {
 					RoutineID: l.GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre,
-					ObjType:   l.GetObjType(),
+					ObjType:   l.GetObjType(true),
 					File:      file,
 					Line:      line,
 				})

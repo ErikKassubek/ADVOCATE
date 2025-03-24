@@ -157,10 +157,10 @@ type ReplayElement struct {
 }
 
 func (elem *ReplayElement) key() string {
-	return buildKey(elem.Routine, elem.File, elem.Line)
+	return buildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 
-func buildKey(routine int, file string, line int) string {
+func buildReplayKey(routine int, file string, line int) string {
 	return intToString(routine) + ":" + file + ":" + intToString(line)
 }
 
@@ -185,7 +185,6 @@ var (
 	expectedExitCode int
 
 	// for leak, TimePre of stuck elem
-	lastTPreReplay         int
 	stuckReplayExecutedSuc = false
 
 	timeoutHappened = false
@@ -508,7 +507,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	routine := getg().advocateRoutineInfo.replayRoutine
 
 	// routine := GetRoutineID()
-	key := buildKey(routine, file, line)
+	key := buildReplayKey(routine, file, line)
 
 	if printDebug {
 		println("Wait: ", op.ToString(), file, line)
@@ -680,10 +679,6 @@ func SetExitCode(code bool) {
  */
 func SetExpectedExitCode(code int) {
 	expectedExitCode = code
-}
-
-func SetLastTPre(tPre int) {
-	lastTPreReplay = tPre
 }
 
 /*

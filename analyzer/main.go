@@ -104,7 +104,7 @@ func main() {
 	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
 	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
 	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
-	flag.StringVar(&outT, "outT", "rewritten_trace", "Name for the rewritten traces")
+	flag.StringVar(&outT, "outT", "rewrittenTrace", "Name for the rewritten traces")
 
 	flag.BoolVar(&fifo, "fifo", false, "Assume a FIFO ordering for buffered channels (default false)")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
@@ -279,7 +279,7 @@ func modeFuzzing() {
 
 func modeToolchain(mode string, numRerecorded int) {
 	checkVersion()
-	err := toolchain.Run(mode, pathToAdvocate, progPath, execName, progName, execName,
+	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
 		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, cont, 0, 0)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
@@ -368,7 +368,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	// collect the required data to decide whether run is interesting
 	// and to create the mutations
 	if fuzzingRun >= 0 {
-		fuzzing.ParseTrace(analysis.GetTraces(), fuzzingMode)
+		fuzzing.ParseTrace(analysis.GetTraces())
 	}
 
 	if noRewrite {

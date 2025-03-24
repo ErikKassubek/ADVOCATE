@@ -24,12 +24,17 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 
 	for _, routine := range trace {
+		if fuzzingModeGoPie {
+			calculateRelRule1(routine)
+		}
 		for _, elem := range routine {
 			if elem.GetTPost() == 0 {
 				continue
 			}
 
 			switch e := elem.(type) {
+			case *analysis.TraceElementFork:
+				parseFork(e)
 			case *analysis.TraceElementNew:
 				parseNew(e)
 			case *analysis.TraceElementChannel:
@@ -42,9 +47,20 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 		}
 	}
 
+	if fuzzingModeGoPie {
+		calculateRelRule2()
+		calculateRelRule3And4()
+	}
+
 	sortSelects()
 
 	numberSelectCasesWithPartner = analysis.GetNumberSelectCasesWithPartner()
+}
+
+func parseFork(elem *analysis.TraceElementFork) {
+	if fuzzingModeGoPie {
+		addElemToChain(elem)
+	}
 }
 
 /*
@@ -54,7 +70,7 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
  */
 func parseNew(elem *analysis.TraceElementNew) {
 	// only process channels
-	if elem.GetObjType() != "NC" {
+	if elem.GetObjType(true) != "NC" {
 		return
 	}
 
@@ -81,7 +97,7 @@ func parseNew(elem *analysis.TraceElementNew) {
 func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 
 	if fuzzingModeGFuzz {
-		op := elem.GetObjType()
+		op := elem.GetObjType(true)
 
 		// close -> update channelInfoTrace
 		if op == "CC" {
@@ -128,7 +144,8 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 		}
 	}
 	if fuzzingModeGoPie {
-		AddElemToChain(elem)
+		calculateRelRule2AddElem(elem)
+		addElemToChain(elem)
 	}
 }
 
@@ -142,12 +159,14 @@ func parseSelectOp(elem *analysis.TraceElementSelect) {
 		parseChannelOp(elem.GetChosenCase(), elem.GetChosenIndex())
 	}
 	if fuzzingModeGoPie {
-		AddElemToChain(elem)
+		calculateRelRule2AddElem(elem)
+		addElemToChain(elem)
 	}
 }
 
 func parseMutexOp(elem *analysis.TraceElementMutex) {
 	if fuzzingModeGoPie {
-		AddElemToChain(elem)
+		calculateRelRule2AddElem(elem)
+		addElemToChain(elem)
 	}
 }

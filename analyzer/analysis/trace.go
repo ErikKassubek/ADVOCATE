@@ -38,6 +38,8 @@ var (
 	numberOfRoutines = 0
 	fifo             bool
 	modeIsFuzzing    bool
+
+	numberElemsInTrace = make(map[int]int) // routine -> number
 )
 
 /*
@@ -51,6 +53,7 @@ var (
 func AddElementToTrace(element TraceElement) error {
 	routine := element.GetRoutine()
 	traces[routine] = append(traces[routine], element)
+	numberElemsInTrace[routine]++
 	return nil
 }
 
@@ -81,7 +84,7 @@ func (a sortByTSort) Less(i, j int) bool {
  * Returns:
  *   ([]traceElement): The sorted trace
  */
-func sortTrace(trace []TraceElement) []TraceElement {
+func SortTrace(trace []TraceElement) []TraceElement {
 	sort.Sort(sortByTSort(trace))
 	return trace
 }
@@ -91,7 +94,7 @@ func sortTrace(trace []TraceElement) []TraceElement {
  */
 func Sort() {
 	for routine, trace := range traces {
-		traces[routine] = sortTrace(trace)
+		traces[routine] = SortTrace(trace)
 	}
 }
 
@@ -287,6 +290,10 @@ func ShortenRoutineIndex(routine int, index int, incl bool) {
  */
 func SetNoRoutines(n int) {
 	numberOfRoutines = n
+}
+
+func GetNoRoutines() int {
+	return numberOfRoutines
 }
 
 func getNextElement() TraceElement {
@@ -571,6 +578,19 @@ func GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
 		}
 	}
 	return concurrent
+}
+
+/*
+ * Remove all elements that have a later tPost that the given tPost
+ */
+func RemoveLater(tPost int) {
+	for routine, trace := range traces {
+		for i, elem := range trace {
+			if elem.GetTPost() > tPost {
+				traces[routine] = traces[routine][:i]
+			}
+		}
+	}
 }
 
 /*

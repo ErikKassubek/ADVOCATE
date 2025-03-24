@@ -15,7 +15,7 @@ import (
 	"sort"
 )
 
-func createMutationsSelect(numberMutations int, flipChance float64) int {
+func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 	numberMutAdded := 0
 
 	for i := 0; i < numberMutations; i++ {
@@ -27,7 +27,7 @@ func createMutationsSelect(numberMutations int, flipChance float64) int {
 		}
 
 		if num, _ := allMutations[id]; num < maxRunPerMut {
-			muta := mutation{mutSel: mut, mutFlow: make(map[string]int)}
+			muta := mutation{mutType: mutSelType, mutSel: mut}
 			mutationQueue = append(mutationQueue, muta)
 			allMutations[id]++
 			numberMutAdded++

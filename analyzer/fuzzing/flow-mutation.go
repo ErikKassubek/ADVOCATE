@@ -37,8 +37,8 @@ func createMutationsFlow() {
 				return
 			}
 
-			pos := on.Elem.GetPos()
-			if counts, ok := alreadyDelayedElems[pos]; ok {
+			id := on.Elem.GetReplayID()
+			if counts, ok := alreadyDelayedElems[id]; ok {
 				found := false
 				for _, count := range counts {
 					if count == on.Counter {
@@ -54,16 +54,16 @@ func createMutationsFlow() {
 			if oneMutPerDelay {
 				mutFlow = make(map[string]int)
 			}
-			mutFlow[pos] = on.Counter
+			mutFlow[id] = on.Counter
 
-			if _, ok := alreadyDelayedElems[pos]; !ok {
-				alreadyDelayedElems[pos] = make([]int, 0)
+			if _, ok := alreadyDelayedElems[id]; !ok {
+				alreadyDelayedElems[id] = make([]int, 0)
 			}
-			alreadyDelayedElems[pos] = append(alreadyDelayedElems[pos], on.Counter)
+			alreadyDelayedElems[id] = append(alreadyDelayedElems[id], on.Counter)
 
 			// if one mut per change, comment this in
 			if oneMutPerDelay {
-				mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+				mut := mutation{mutType: mutFlowType, mutSel: selectInfoTrace, mutFlow: mutFlow}
 				mutationQueue = append(mutationQueue, mut)
 				numberMutAdded++
 			}
@@ -71,7 +71,7 @@ func createMutationsFlow() {
 	}
 
 	if oneMutPerDelay && len(mutFlow) != 0 {
-		mut := mutation{mutSel: selectInfoTrace, mutFlow: mutFlow}
+		mut := mutation{mutType: mutFlowType, mutSel: selectInfoTrace, mutFlow: mutFlow}
 		mutationQueue = append(mutationQueue, mut)
 		numberMutAdded++
 	}

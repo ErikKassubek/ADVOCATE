@@ -95,7 +95,7 @@ func getOutputCodes(path string) map[string]string {
 	replayPos := make(map[string]bool)
 	replayCode := make(map[string]string)
 	bugrepPrefix := "Bugreport info: "
-	replayReadPrefix := "Reading trace from rewritten_trace_"
+	replayReadPrefix := "Reading trace from rewrittenTrace_"
 	exitCodePrefix := "Exit Replay with code"
 
 	lastReplayIndex := ""

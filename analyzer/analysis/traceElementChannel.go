@@ -34,6 +34,7 @@ const (
 * TraceElementChannel is a trace element for a channel
 * MARK: Struct
 * Fields:
+*   index (int): Index in the routine
 *   routine (int): The routine id
 *   tpre (int): The timestamp at the start of the event
 *   tpost (int): The timestamp at the end of the event
@@ -50,6 +51,7 @@ const (
 *   tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementChannel struct {
+	index   int
 	routine int
 	tPre    int
 	tPost   int
@@ -64,6 +66,8 @@ type TraceElementChannel struct {
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
 	vc      clock.VectorClock
+	rel1    []TraceElement
+	rel2    []TraceElement
 }
 
 /*
@@ -141,6 +145,7 @@ func AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := TraceElementChannel{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -152,6 +157,8 @@ func AddTraceElementChannel(routine int, tPre string,
 		qCount:  qCountInt,
 		file:    file,
 		line:    line,
+		rel1:    make([]TraceElement, 2),
+		rel2:    make([]TraceElement, 0),
 	}
 
 	// check if partner was already processed, otherwise add to channelWithoutPartner
@@ -231,6 +238,10 @@ func (ch *TraceElementChannel) GetPos() string {
 	return fmt.Sprintf("%s:%d", ch.file, ch.line)
 }
 
+func (ch *TraceElementChannel) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", ch.routine, ch.file, ch.line)
+}
+
 func (ch *TraceElementChannel) GetFile() string {
 	return ch.file
 }
@@ -296,7 +307,11 @@ func (ch *TraceElementChannel) GetTPost() int {
 /*
  * Get the string representation of the object type
  */
-func (ch *TraceElementChannel) GetObjType() string {
+func (ch *TraceElementChannel) GetObjType(operation bool) string {
+	if !operation {
+		return "C"
+	}
+
 	switch ch.opC {
 	case SendOp:
 		return "CS"
@@ -314,6 +329,14 @@ func (ch *TraceElementChannel) GetQCount() int {
 
 func (ch *TraceElementChannel) GetSelect() *TraceElementSelect {
 	return ch.sel
+}
+
+func (ch *TraceElementChannel) IsEqual(elem TraceElement) bool {
+	return ch.routine == elem.GetRoutine() && ch.ToString() == elem.ToString()
+}
+
+func (ch *TraceElementChannel) GetTraceIndex() (int, int) {
+	return ch.routine, ch.index
 }
 
 // MARK: Setter
@@ -648,6 +671,7 @@ func (ch *TraceElementChannel) findPartner() int {
  */
 func (ch *TraceElementChannel) Copy() TraceElement {
 	newCh := TraceElementChannel{
+		index:   ch.index,
 		routine: ch.routine,
 		tPre:    ch.tPre,
 		tPost:   ch.tPost,
@@ -663,4 +687,24 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		vc:      ch.vc.Copy(),
 	}
 	return &newCh
+}
+
+// MARK: GoPie
+func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
+	if pos < 0 || pos > 1 {
+		return
+	}
+	ch.rel1[pos] = elem
+}
+
+func (ch *TraceElementChannel) AddRel2(elem TraceElement) {
+	ch.rel2 = append(ch.rel2, elem)
+}
+
+func (ch *TraceElementChannel) GetRel1() []TraceElement {
+	return ch.rel1
+}
+
+func (ch *TraceElementChannel) GetRel2() []TraceElement {
+	return ch.rel2
 }

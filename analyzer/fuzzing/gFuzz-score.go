@@ -14,9 +14,9 @@ import "math"
 
 func numberMutations() int {
 	score := calculateScore()
-	maxScore = math.Max(score, maxScore)
+	maxGFuzzScore = math.Max(score, maxGFuzzScore)
 
-	return int(math.Ceil(5.0 * score / maxScore))
+	return int(math.Ceil(5.0 * score / maxGFuzzScore))
 }
 
 /*

@@ -31,6 +31,7 @@ import (
  *   file (string), line (int): The position of the mutex operation in the code
  */
 type TraceElementOnce struct {
+	index   int
 	routine int
 	tPre    int
 	tPost   int
@@ -80,6 +81,7 @@ func AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := TraceElementOnce{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -152,6 +154,10 @@ func (on *TraceElementOnce) GetPos() string {
 	return fmt.Sprintf("%s:%d", on.file, on.line)
 }
 
+func (on *TraceElementOnce) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", on.routine, on.file, on.line)
+}
+
 func (on *TraceElementOnce) GetFile() string {
 	return on.file
 }
@@ -181,7 +187,11 @@ func (on *TraceElementOnce) GetVC() clock.VectorClock {
 /*
  * Get the string representation of the object type
  */
-func (on *TraceElementOnce) GetObjType() string {
+func (on *TraceElementOnce) GetObjType(operation bool) string {
+	if !operation {
+		return "O"
+	}
+
 	if on.suc {
 		return "OE"
 	}
@@ -193,6 +203,14 @@ func (on *TraceElementOnce) GetObjType() string {
  */
 func (on *TraceElementOnce) GetSuc() bool {
 	return on.suc
+}
+
+func (on *TraceElementOnce) IsEqual(elem TraceElement) bool {
+	return on.routine == elem.GetRoutine() && on.ToString() == elem.ToString()
+}
+
+func (on *TraceElementOnce) GetTraceIndex() (int, int) {
+	return on.routine, on.index
 }
 
 // MARK: Setter
@@ -284,6 +302,7 @@ func (on *TraceElementOnce) updateVectorClock() {
  */
 func (on *TraceElementOnce) Copy() TraceElement {
 	return &TraceElementOnce{
+		index:   on.index,
 		routine: on.routine,
 		tPre:    on.tPre,
 		tPost:   on.tPost,
@@ -293,4 +312,21 @@ func (on *TraceElementOnce) Copy() TraceElement {
 		line:    on.line,
 		vc:      on.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (on *TraceElementOnce) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+func (on *TraceElementOnce) AddRel2(_ TraceElement) {
+	return
+}
+
+func (on *TraceElementOnce) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+func (on *TraceElementOnce) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

@@ -21,9 +21,12 @@ type TraceElement interface {
 	GetPos() string
 	GetFile() string
 	GetLine() int
-	GetObjType() string
+	GetReplayID() string
+	GetObjType(operation bool) string
 	GetTID() string
 	GetRoutine() int
+	IsEqual(elem TraceElement) bool
+	GetTraceIndex() (int, int)
 	SetTPre(tPre int)
 	SetTSort(tSort int)
 	SetTWithoutNotExecuted(tSort int)
@@ -32,4 +35,8 @@ type TraceElement interface {
 	updateVectorClock()
 	GetVC() clock.VectorClock
 	Copy() TraceElement
+	AddRel1(elem TraceElement, pos int)
+	AddRel2(elem TraceElement)
+	GetRel1() []TraceElement
+	GetRel2() []TraceElement
 }

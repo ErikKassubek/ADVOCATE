@@ -102,7 +102,7 @@ func rewriteUnbufChanLeakChanChan(bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
 		// add replay signals
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 
 	} else { // Case 4
 		if possiblePartnerPartner != nil {
@@ -122,7 +122,7 @@ func rewriteUnbufChanLeakChanChan(bug bugs.Bug) error {
 		// and T4' = [h in T4 | h >= e and h < f]
 
 		// add replay signal
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 	}
 
 	return nil
@@ -170,7 +170,7 @@ func rewriteUnbufChanLeakChanSel(bug bugs.Bug) error {
 		}
 
 		// add replay signal
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 
 	} else { // Case 4
 		if possiblePartnerPartner != nil {
@@ -195,7 +195,7 @@ func rewriteUnbufChanLeakChanSel(bug bugs.Bug) error {
 		}
 
 		// add replay signal
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 	}
 
 	return nil
@@ -253,7 +253,7 @@ func rewriteUnbufChanLeakSelChan(bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 		// add replay signals
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 
 	} else { // Case 3
 		analysis.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
@@ -267,7 +267,7 @@ func rewriteUnbufChanLeakSelChan(bug bugs.Bug) error {
 		}
 
 		// add replay signal
-		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 
 	}
 
@@ -331,7 +331,7 @@ func rewriteUnbufChanLeakSelSel(bug bugs.Bug) error {
 				}
 
 				// add replay signal
-				analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+				analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 				return nil
 			}
 
@@ -358,7 +358,7 @@ func rewriteUnbufChanLeakSelSel(bug bugs.Bug) error {
 			}
 
 			// add replay signals
-			analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+			analysis.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, exitCodeLeakUnbuf)
 
 			return nil
 		}
@@ -405,9 +405,9 @@ func rewriteBufChanLeak(bug bugs.Bug) error {
 	bug.TraceElement1[0].SetTSort(possiblePartner.GetTSort() + 1)
 
 	if possiblePartner.GetTSort() < stuck.GetTSort() {
-		analysis.AddTraceElementReplay(stuck.GetTSort()+1, exitCodeLeakBuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(stuck.GetTSort()+1, exitCodeLeakBuf)
 	} else {
-		analysis.AddTraceElementReplay(possiblePartner.GetTSort()+1, exitCodeLeakBuf, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(possiblePartner.GetTSort()+1, exitCodeLeakBuf)
 	}
 
 	return nil
@@ -458,7 +458,7 @@ func rewriteMutexLeak(bug bugs.Bug) error {
 	lockOp.SetT(lockOp.GetTPre())
 
 	// add the start and stop signal after l -> T_1' + T_2' + [X_s, l, X_e]
-	analysis.AddTraceElementReplay(lockOp.GetTPre()+1, exitCodeLeakMutex, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+	analysis.AddTraceElementReplay(lockOp.GetTPre()+1, exitCodeLeakMutex)
 
 	return nil
 }
@@ -484,7 +484,7 @@ func rewriteWaitGroupLeak(bug bugs.Bug) error {
 
 	analysis.ShiftConcurrentOrAfterToAfter(wait)
 
-	analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakWG, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+	analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakWG)
 
 	nrAdd, nrDone := analysis.GetNrAddDoneBeforeTime(wait.GetID(), wait.GetTSort())
 
@@ -533,9 +533,9 @@ func rewriteCondLeak(bug bugs.Bug) error {
 	wait.SetT(wait.GetTPre())
 
 	if len(bug.TraceElement2) == 0 {
-		analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakCond, bug.TraceElement1[0].GetTPre())
+		analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakCond)
 	} else {
-		analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakCond, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(wait.GetTPre()+1, exitCodeLeakCond)
 	}
 
 	if couldRewrite {

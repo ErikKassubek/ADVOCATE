@@ -21,18 +21,22 @@ import (
 * TraceElementFork is a trace element for a go statement
 * MARK: Struct
 * Fields:
+*   index (int): Index in the routine
 *   routine (int): The routine id
 *   tpost (int): The timestamp at the end of the event
 *   id (int): The id of the new go statement
 *   file (string), line(int): The position of the trace element in the file
  */
 type TraceElementFork struct {
+	index   int
 	routine int
 	tPost   int
 	id      int
 	file    string
 	line    int
 	vc      clock.VectorClock
+	rel1    []TraceElement
+	rel2    []TraceElement
 }
 
 /*
@@ -61,11 +65,14 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 	}
 
 	elem := TraceElementFork{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
 		file:    file,
 		line:    line,
+		rel1:    make([]TraceElement, 2),
+		rel2:    make([]TraceElement, 0),
 	}
 	return AddElementToTrace(&elem)
 }
@@ -126,6 +133,10 @@ func (fo *TraceElementFork) GetPos() string {
 	return fmt.Sprintf("%s:%d", fo.file, fo.line)
 }
 
+func (fo *TraceElementFork) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", fo.routine, fo.file, fo.line)
+}
+
 func (fo *TraceElementFork) GetFile() string {
 	return fo.file
 }
@@ -155,8 +166,19 @@ func (fo *TraceElementFork) GetVC() clock.VectorClock {
 /*
  * Get the string representation of the object type
  */
-func (fo *TraceElementFork) GetObjType() string {
-	return "GF"
+func (fo *TraceElementFork) GetObjType(operation bool) string {
+	if !operation {
+		return "R"
+	}
+	return "RF"
+}
+
+func (fo *TraceElementFork) IsEqual(elem TraceElement) bool {
+	return fo.routine == elem.GetRoutine() && fo.ToString() == elem.ToString()
+}
+
+func (fo *TraceElementFork) GetTraceIndex() (int, int) {
+	return fo.routine, fo.index
 }
 
 // MARK: Setter
@@ -230,6 +252,7 @@ func (fo *TraceElementFork) updateVectorClock() {
  */
 func (fo *TraceElementFork) Copy() TraceElement {
 	return &TraceElementFork{
+		index:   fo.index,
 		routine: fo.routine,
 		tPost:   fo.tPost,
 		id:      fo.id,
@@ -237,4 +260,24 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		line:    fo.line,
 		vc:      fo.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
+	if pos < 0 || pos > 1 {
+		return
+	}
+	fo.rel1[pos] = elem
+}
+
+func (fo *TraceElementFork) AddRel2(elem TraceElement) {
+	fo.rel2 = append(fo.rel2, elem)
+}
+
+func (fo *TraceElementFork) GetRel1() []TraceElement {
+	return fo.rel1
+}
+
+func (fo *TraceElementFork) GetRel2() []TraceElement {
+	return fo.rel2
 }

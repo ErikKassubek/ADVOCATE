@@ -240,7 +240,7 @@ func writeFile(path string, index string, description map[string]string,
 		res += "**Replaying " + replay["replaySuc"] + "**.\n\n"
 		if replayPossible {
 			// res += "The replayed trace can be found in: "
-			// res += "rewritten_trace_" + index + "\n\n"
+			// res += "rewrittenTrace_" + index + "\n\n"
 			if replay["replaySuc"] == "panicked" {
 				res += "It panicked with the following message:\n\n"
 				res += replay["exitCode"] + "\n\n"

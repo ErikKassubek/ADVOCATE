@@ -82,7 +82,7 @@ func rewriteClosedChannel(bug bugs.Bug, exitCode int) error {
 	analysis.AddElementToTrace(bug.TraceElement1[0])
 
 	// add a stop marker -> T1 ++ T2' ++ [c, a, X']
-	analysis.AddTraceElementReplay(t2+2, exitCode, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+	analysis.AddTraceElementReplay(t2+2, exitCode)
 
 	return nil
 }

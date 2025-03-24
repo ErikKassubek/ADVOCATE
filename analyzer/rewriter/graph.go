@@ -48,7 +48,7 @@ func rewriteGraph(bug bugs.Bug, expectedErrorCode int) error {
 
 	// add start and end
 	if !(minTime == -1 && maxTime == -1) {
-		analysis.AddTraceElementReplay(maxTime+1, expectedErrorCode, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		analysis.AddTraceElementReplay(maxTime+1, expectedErrorCode)
 	}
 
 	return nil

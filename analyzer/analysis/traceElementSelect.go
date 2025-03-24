@@ -23,6 +23,7 @@ import (
  * TraceElementSelect is a trace element for a select statement
  * MARK: Struct
  * Fields:
+ *   index (int): Index in the routine
  *   routine (int): The routine id
  *   tpre (int): The timestamp at the start of the event
  *   tpost (int): The timestamp at the end of the event
@@ -37,6 +38,7 @@ import (
  *   casesWithPosPartner ([]int): Casis of cases with possible partner based on HB
  */
 type TraceElementSelect struct {
+	index               int
 	routine             int
 	tPre                int
 	tPost               int
@@ -93,6 +95,7 @@ func AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := TraceElementSelect{
+		index:               numberElemsInTrace[routine],
 		routine:             routine,
 		tPre:                tPreInt,
 		tPost:               tPostInt,
@@ -274,6 +277,10 @@ func (se *TraceElementSelect) GetPos() string {
 	return fmt.Sprintf("%s:%d", se.file, se.line)
 }
 
+func (se *TraceElementSelect) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", se.routine, se.file, se.line)
+}
+
 func (se *TraceElementSelect) GetFile() string {
 	return se.file
 }
@@ -340,12 +347,24 @@ func (se *TraceElementSelect) GetPartner() *TraceElementChannel {
 /*
  * Get the string representation of the object type
  */
-func (se *TraceElementSelect) GetObjType() string {
+func (se *TraceElementSelect) GetObjType(operation bool) string {
+	if !operation {
+		return "S"
+	}
+
 	return "SS"
 }
 
 func (se *TraceElementSelect) GetCasiWithPosPartner() []int {
 	return se.casesWithPosPartner
+}
+
+func (se *TraceElementSelect) IsEqual(elem TraceElement) bool {
+	return se.routine == elem.GetRoutine() && se.ToString() == elem.ToString()
+}
+
+func (se *TraceElementSelect) GetTraceIndex() (int, int) {
+	return se.routine, se.index
 }
 
 // MARK: Setter
@@ -634,6 +653,7 @@ func (se *TraceElementSelect) Copy() TraceElement {
 	chosenCase := *se.chosenCase.Copy().(*TraceElementChannel)
 
 	return &TraceElementSelect{
+		index:           se.index,
 		routine:         se.routine,
 		tPre:            se.tPre,
 		tPost:           se.tPost,
@@ -647,4 +667,35 @@ func (se *TraceElementSelect) Copy() TraceElement {
 		line:            se.line,
 		vc:              se.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
+	if se.chosenIndex == -1 { // default
+		return
+	}
+	se.chosenCase.AddRel1(elem, pos)
+
+}
+
+func (se *TraceElementSelect) AddRel2(elem TraceElement) {
+	if se.chosenIndex == -1 { // default
+		return
+	}
+	se.chosenCase.AddRel2(elem)
+
+}
+
+func (se *TraceElementSelect) GetRel1() []TraceElement {
+	if se.chosenIndex == -1 { // default
+		return make([]TraceElement, 0)
+	}
+	return se.chosenCase.GetRel1()
+}
+
+func (se *TraceElementSelect) GetRel2() []TraceElement {
+	if se.chosenIndex == -1 { // default
+		return make([]TraceElement, 0)
+	}
+	return se.chosenCase.GetRel1()
 }

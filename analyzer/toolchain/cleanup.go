@@ -35,7 +35,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 
 	pattersToMove := []string{
-		"rewritten_trace*",
+		"rewrittenTrace*",
 		"advocateTraceReplay_*",
 	}
 
@@ -111,9 +111,10 @@ func collect(progPath, packagePath, destination string, total bool) {
 func removeTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
-		"rewritten_trace*",
+		"rewrittenTrace*",
 		"advocateTraceReplay_*",
 		"fuzzingData.log",
+		"fuzzingTrace_*",
 	}
 
 	files := make([]string, 0)
@@ -151,5 +152,30 @@ func removeLogs(path string) {
 
 	for _, logFile := range logsToRemove {
 		os.Remove(filepath.Join(path, logFile))
+	}
+}
+
+func RemoveFuzzingTrace(path string) {
+	files := make([]string, 0)
+	filepath.WalkDir(path, func(p string, _ os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		// Use Glob to check if the file/directory matches the pattern
+		match, err := filepath.Match("fuzzingTrace_*", filepath.Base(p))
+		if err != nil {
+			return err
+		}
+
+		if match {
+			files = append(files, p)
+		}
+
+		return nil
+	})
+
+	for _, trace := range files {
+		os.RemoveAll(trace)
 	}
 }

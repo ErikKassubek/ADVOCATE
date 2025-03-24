@@ -21,8 +21,10 @@ import (
 )
 
 type mutation struct {
+	mutType int
 	mutSel  map[string][]fuzzingSelect
 	mutFlow map[string]int
+	mutPie  string
 }
 
 const (
@@ -31,6 +33,10 @@ const (
 	GFuzzFlow = "GFuzzFlow" // GFuzz with use of hb info and flow mutation
 	Flow      = "Flow"      // only flow mutation
 	GoPie     = "GoPie"     // only goPie
+
+	mutSelType  = 0
+	mutPiType   = 1
+	mutFlowType = 2
 )
 const (
 	maxNumberRuns = 20
@@ -96,7 +102,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			utils.LogInfo("Run fuzzing on test ", name)
 		}
 
-		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
+		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
@@ -149,7 +155,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			firstRun := (i == 0 && j == 0)
 
-			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
+			err := runFuzzing(false, advocate, progPath, progName, testFile, testFunc, ignoreAtomic,
 				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
@@ -181,8 +187,8 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 * Args:
 * 	modeMain (bool): if true, run fuzzing on main function, otherwise on test
 * 	advocate (string): path to advocate
-* 	progPath (string): path to the folder containing the prog/test
 * 	progName (string): name of the program
+* 	testPath (string): path to the test file
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
@@ -193,7 +199,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
 * 	cont (bool): continue with an already started run
  */
-func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
+func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
 	progDir := getPath(progPath)
@@ -222,7 +228,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 		if modeMain {
 			mode = "main"
 		}
-		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
+		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
 			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
@@ -238,7 +244,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 
 			// add mutations based on GoPie
 			if fuzzingModeGoPie {
-				createGoPieMut()
+				createGoPieMut(progDir)
 			}
 
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
@@ -263,6 +269,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			return nil
 		}
 	}
+
+	toolchain.RemoveFuzzingTrace(progDir)
 
 	utils.LogInfof("Finish fuzzing after %d runs\n", numberFuzzingRuns)
 

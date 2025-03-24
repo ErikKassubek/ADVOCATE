@@ -35,12 +35,14 @@ const (
  * Struct to save an atomic event in the trace
  * MARK: Struct
  * Fields:
+ *   index (int): index in the routine
  *   routine (int): The routine id
  *   tpost (int): The timestamp of the event
  *   id (int): The id of the atomic variable
  *   operation (int, enum): The operation on the atomic variable
  */
 type TraceElementAtomic struct {
+	index   int
 	routine int
 	tPost   int
 	id      int
@@ -98,6 +100,7 @@ func AddTraceElementAtomic(routine int, tpost string,
 	}
 
 	elem := TraceElementAtomic{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
@@ -165,6 +168,10 @@ func (at *TraceElementAtomic) GetPos() string {
 	return fmt.Sprintf("%s:%d", at.file, at.line)
 }
 
+func (at *TraceElementAtomic) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", at.routine, at.file, at.line)
+}
+
 func (at *TraceElementAtomic) GetFile() string {
 	return at.file
 }
@@ -194,7 +201,11 @@ func (at *TraceElementAtomic) GetVC() clock.VectorClock {
 /*
  * Get the string representation of the object type
  */
-func (at *TraceElementAtomic) GetObjType() string {
+func (at *TraceElementAtomic) GetObjType(operation bool) string {
+	if !operation {
+		return "A"
+	}
+
 	switch at.opA {
 	case LoadOp:
 		return "AL"
@@ -209,6 +220,14 @@ func (at *TraceElementAtomic) GetObjType() string {
 	}
 
 	return "A"
+}
+
+func (at *TraceElementAtomic) IsEqual(elem TraceElement) bool {
+	return at.routine == elem.GetRoutine() && at.ToString() == elem.ToString()
+}
+
+func (at *TraceElementAtomic) GetTraceIndex() (int, int) {
+	return at.routine, at.index
 }
 
 // MARK: Setter
@@ -329,10 +348,28 @@ func (at *TraceElementAtomic) updateVectorClockAlt() {
  */
 func (at *TraceElementAtomic) Copy() TraceElement {
 	return &TraceElementAtomic{
+		index:   at.index,
 		routine: at.routine,
 		tPost:   at.tPost,
 		id:      at.id,
 		opA:     at.opA,
 		vc:      at.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (at *TraceElementAtomic) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+func (at *TraceElementAtomic) AddRel2(_ TraceElement) {
+	return
+}
+
+func (at *TraceElementAtomic) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+func (at *TraceElementAtomic) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

@@ -85,7 +85,6 @@ func (gi *AdvocateRoutine) addToTrace(elem traceElem) int {
 	return len(gi.Trace) - 1
 }
 
-
 func (gi *AdvocateRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
 }
@@ -131,10 +130,22 @@ func currentGoRoutine() *AdvocateRoutine {
  * 	id of the current routine, 0 if current routine is nil
  */
 func GetRoutineID() uint64 {
-	if currentGoRoutine() == nil {
+	currentRoutine := currentGoRoutine()
+	if currentRoutine == nil {
 		return 0
 	}
-	return currentGoRoutine().id
+	return currentRoutine.id
+}
+
+/*
+ * Get the replay routine of the current routine
+ */
+func GetReplayRoutineId() int {
+	currentRoutine := currentGoRoutine()
+	if currentRoutine == nil {
+		return 0
+	}
+	return currentRoutine.replayRoutine
 }
 
 // /*

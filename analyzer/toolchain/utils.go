@@ -19,7 +19,7 @@ import (
 
 // extractTraceNumber extracts the numeric part from a trace directory name
 func extractTraceNumber(trace string) string {
-	parts := strings.Split(trace, "rewritten_trace_")
+	parts := strings.Split(trace, "rewrittenTrace_")
 	if len(parts) > 1 {
 		return parts[1]
 	}

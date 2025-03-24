@@ -17,7 +17,7 @@ func createGFuzzMut() {
 	if isInterestingSelect() {
 		numberMut := numberMutations()
 		flipProb := getFlipProbability()
-		numMutAdd := createMutationsSelect(numberMut, flipProb)
+		numMutAdd := createMutationsGFuzz(numberMut, flipProb)
 		utils.LogInfof("Add %d select mutations to queue", numMutAdd)
 	} else {
 		utils.LogInfo("Add 0 select mutations to queue")

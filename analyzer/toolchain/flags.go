@@ -12,7 +12,7 @@ package toolchain
 
 var (
 	pathToAdvocate   string
-	pathToFile       string
+	pathToFileOrDir  string
 	programName      string
 	executableName   string
 	testName         string

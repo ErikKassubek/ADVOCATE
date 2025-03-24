@@ -31,6 +31,7 @@ const (
 * TraceElementWait is a trace element for a wait group statement
 * MARK: Struct
 * Fields:
+*   index (int): Index in the routine
 *   tpre (int): The timestamp at the start of the event
 *   tpost (int): The timestamp at the end of the event
 *   id (int): The id of the wait group
@@ -41,6 +42,7 @@ const (
 *   tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementWait struct {
+	index   int
 	routine int
 	tPre    int
 	tPost   int
@@ -66,9 +68,8 @@ type TraceElementWait struct {
  *   val (string): The value of the wait group
  *   pos (string): The position of the wait group in the code
  */
-func AddTraceElementWait(routine int, tpre string,
-	tpost string, id string, opW string, delta string, val string,
-	pos string) error {
+func AddTraceElementWait(routine int, tpre,
+	tpost, id, opW, delta, val, pos string) error {
 	tpre_int, err := strconv.Atoi(tpre)
 	if err != nil {
 		return errors.New("tpre is not an integer")
@@ -107,6 +108,7 @@ func AddTraceElementWait(routine int, tpre string,
 	}
 
 	elem := TraceElementWait{
+		index:   numberElemsInTrace[routine],
 		routine: routine,
 		tPre:    tpre_int,
 		tPost:   tpost_int,
@@ -181,6 +183,10 @@ func (wa *TraceElementWait) GetPos() string {
 	return fmt.Sprintf("%s:%d", wa.file, wa.line)
 }
 
+func (wa *TraceElementWait) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", wa.routine, wa.file, wa.line)
+}
+
 func (wa *TraceElementWait) GetFile() string {
 	return wa.file
 }
@@ -223,13 +229,25 @@ func (wa *TraceElementWait) GetVC() clock.VectorClock {
 /*
  * Get the string representation of the object type
  */
-func (wa *TraceElementWait) GetObjType() string {
+func (wa *TraceElementWait) GetObjType(operation bool) string {
+	if !operation {
+		return "W"
+	}
+
 	if wa.delta > 0 {
 		return "WA"
 	} else if wa.delta < 0 {
 		return "WD"
 	}
 	return "WW"
+}
+
+func (wa *TraceElementWait) IsEqual(elem TraceElement) bool {
+	return wa.routine == elem.GetRoutine() && wa.ToString() == elem.ToString()
+}
+
+func (wa *TraceElementWait) GetTraceIndex() (int, int) {
+	return wa.routine, wa.index
 }
 
 // MARK: Setter
@@ -326,6 +344,7 @@ func (wa *TraceElementWait) updateVectorClock() {
  */
 func (wa *TraceElementWait) Copy() TraceElement {
 	return &TraceElementWait{
+		index:   wa.index,
 		routine: wa.routine,
 		tPre:    wa.tPre,
 		tPost:   wa.tPost,
@@ -337,4 +356,21 @@ func (wa *TraceElementWait) Copy() TraceElement {
 		line:    wa.line,
 		vc:      wa.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (wa *TraceElementWait) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+func (wa *TraceElementWait) AddRel2(_ TraceElement) {
+	return
+}
+
+func (wa *TraceElementWait) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+func (wa *TraceElementWait) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

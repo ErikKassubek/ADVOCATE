@@ -31,6 +31,7 @@ const (
 /*
  * TraceElementNew is a trace element for the creation of an object / new
  * Fields:
+ *   index (int): Index in the routine
  *   routine (int): The routine id
  *   tPost (int): The timestamp of the new
  *   id (int): The id of the underlying operation
@@ -40,6 +41,7 @@ const (
  * For now this is only creates the new for channel. This may be expanded later.
  */
 type TraceElementNew struct {
+	index    int
 	routine  int
 	tPost    int
 	id       int
@@ -72,6 +74,7 @@ func AddTraceElementNew(routine int, tPost string, id string, elemType string, n
 	}
 
 	elem := TraceElementNew{
+		index:    numberElemsInTrace[routine],
 		routine:  routine,
 		tPost:    tPostInt,
 		id:       idInt,
@@ -113,6 +116,10 @@ func (n *TraceElementNew) GetPos() string {
 	return fmt.Sprintf("%s:%d", n.file, n.line)
 }
 
+func (n *TraceElementNew) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", n.routine, n.file, n.line)
+}
+
 func (n *TraceElementNew) GetFile() string {
 	return n.file
 }
@@ -125,7 +132,11 @@ func (n *TraceElementNew) GetTID() string {
 	return n.GetPos() + "@" + strconv.Itoa(n.tPost)
 }
 
-func (n *TraceElementNew) GetObjType() string {
+func (n *TraceElementNew) GetObjType(operation bool) string {
+	if !operation {
+		return "N"
+	}
+
 	switch n.elemType {
 	case atomicVar:
 		return "NA"
@@ -152,8 +163,16 @@ func (n *TraceElementNew) GetNum() int {
 	return n.num
 }
 
+func (n *TraceElementNew) GetTraceIndex() (int, int) {
+	return n.routine, n.index
+}
+
 func (n *TraceElementNew) ToString() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", n.tPost, n.id, string(n.elemType), n.num, n.GetPos())
+}
+
+func (n *TraceElementNew) IsEqual(elem TraceElement) bool {
+	return n.routine == elem.GetRoutine() && n.ToString() == elem.ToString()
 }
 
 func (n *TraceElementNew) SetTPre(tSort int) {
@@ -183,6 +202,7 @@ func (n *TraceElementNew) updateVectorClock() {
 
 func (n *TraceElementNew) Copy() TraceElement {
 	return &TraceElementNew{
+		index:    n.index,
 		routine:  n.routine,
 		tPost:    n.tPost,
 		id:       n.id,
@@ -191,4 +211,21 @@ func (n *TraceElementNew) Copy() TraceElement {
 		line:     n.line,
 		vc:       n.vc.Copy(),
 	}
+}
+
+// MARK: GoPie
+func (n *TraceElementNew) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+func (n *TraceElementNew) AddRel2(_ TraceElement) {
+	return
+}
+
+func (n *TraceElementNew) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+func (n *TraceElementNew) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

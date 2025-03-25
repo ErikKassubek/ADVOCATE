@@ -109,7 +109,6 @@ func rewriteCyclicDeadlock_old(bug bugs.Bug) error {
 
 			// shift the routine of elem1 so that elem 2 is before elem1
 			res := analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), elem2.GetTPre()-elem1.GetTPre()+2)
-
 			if res {
 				found = true
 			}
@@ -178,45 +177,49 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 
 	fmt.Println("Last time:", lastTime)
 
-	// Find the largest time a lock needed to aquire
-	largestLockTime := -1
-	for _, e := range bug.TraceElement2 {
-		if e.GetTPost()-e.GetTPre() > largestLockTime {
-			largestLockTime = e.GetTPost() - e.GetTPre()
-		}
-	}
-
 	// remove tail after lastTime and the last lock
 	analysis.ShortenTrace(lastTime, true)
 	for _, elem := range bug.TraceElement2 {
 		analysis.ShortenRoutine(elem.GetRoutine(), elem.GetTSort()+1)
 	}
 
-	fmt.Println("Original permutation:", bug.TraceElement2)
+	var locksetElements []analysis.TraceElement
+	currentTrace := analysis.GetTraces()
 
-	for try := 0; try < len(bug.TraceElement2); try++ {
-		for i := 0; i < len(bug.TraceElement2); i++ {
-			elem1 := bug.TraceElement2[i]
-
-			analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), lastTime-elem1.GetTPre()+largestLockTime*i)
-		}
-
-		analysis.PrintTrace([]string{}, false)
-
-		if canReachFinalElement(bug.TraceElement2) {
+	// Find the lockset elements and move their sections behind the unrelated parts of the trace
+	for i, elem := range bug.TraceElement2 {
+		// This is one is guranteed to be in the ls of elem
+		prevElement := bug.TraceElement2[(i+len(bug.TraceElement2)-1)%len(bug.TraceElement2)]
+		for j := len(currentTrace[elem.GetRoutine()]) - 1; j >= 0; j-- {
+			locksetElement := currentTrace[elem.GetRoutine()][j]
+			if locksetElement.GetID() != prevElement.GetID() {
+				continue
+			}
+			if !locksetElement.(*analysis.TraceElementMutex).IsLock() {
+				continue
+			}
+			locksetElements = append(locksetElements, locksetElement)
 			break
 		}
+	}
 
-		if try == len(bug.TraceElement2)-1 {
-			return errors.New("Could not find a permutation that would work")
-		}
-
-		//  before trying again rotate
-		bug.TraceElement2 = append(bug.TraceElement2[1:], bug.TraceElement2[:1]...)
-		fmt.Println("Rotating to:", bug.TraceElement2)
-
-		// Next try will be even later
+	for _, elem := range slices.Backward(locksetElements) {
+		analysis.ShiftRoutine(elem.GetRoutine(), elem.GetTPre(), lastTime-elem.GetTPre())
 		lastTime = findLastTime(bug.TraceElement2)
+	}
+
+	// Find the largest time a lock needed to aquire so we can space them accordingly
+	largestLockTime := 10
+	for _, e := range bug.TraceElement2 {
+		if e.GetTPost()-e.GetTPre() > largestLockTime {
+			largestLockTime = e.GetTPost() - e.GetTPre()
+		}
+	}
+
+	for i := 0; i < len(bug.TraceElement2); i++ {
+		elem1 := bug.TraceElement2[i]
+
+		analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), lastTime-elem1.GetTPre()+largestLockTime*i)
 	}
 
 	lastSuccessfullLock := bug.TraceElement2[len(bug.TraceElement2)-2]
@@ -236,44 +239,4 @@ func findLastTime(bugElements []analysis.TraceElement) int {
 		}
 	}
 	return lastTime
-}
-
-func canReachFinalElement(bugElements []analysis.TraceElement) bool {
-	currentTrace := analysis.GetTraces()
-	fmt.Println("Final Lock is in", bugElements[len(bugElements)-1].GetRoutine())
-	for i := 0; i < len(bugElements)-1; i++ {
-		targetElem := bugElements[i]
-		fmt.Println("Checking for:", targetElem)
-		locked := 0
-		for j := 0; j < len(bugElements); j++ {
-			routine := bugElements[j].GetRoutine()
-
-			for i := len(currentTrace[routine]) - 2; i >= 0; i-- {
-				elem2 := currentTrace[routine][i]
-				if elem2.GetID() != targetElem.GetID() {
-					continue
-				}
-				fmt.Println("Found:", elem2)
-				found := false
-
-				switch elem2 := elem2.(type) {
-				case *analysis.TraceElementMutex:
-					if (*elem2).IsLock() {
-						locked++
-						if locked > 1 {
-							fmt.Println("Is Locked at wrong time in routine!", routine)
-							return false
-						}
-					} else {
-						found = true
-					}
-				}
-				if found {
-					break
-				}
-			}
-		}
-	}
-
-	return true
 }

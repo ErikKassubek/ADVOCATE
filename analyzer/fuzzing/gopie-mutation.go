@@ -23,16 +23,16 @@ func mutate(c chain, energy int) map[string]chain {
 		energy = 100
 	}
 
-	set := make(map[string]chain)
+	res := make(map[string]chain)
 
 	if c.len() == 0 {
-		return set
+		return res
 	}
 
-	set[c.toString()] = c
+	res[c.toString()] = c
 
 	for {
-		for _, ch := range set {
+		for _, ch := range res {
 			tset := make(map[string]chain, 0)
 
 			// Rule 1 -> abridge
@@ -51,39 +51,36 @@ func mutate(c chain, energy int) map[string]chain {
 			}
 
 			// Rule 3 -> substitute
-			if ch.len() <= BOUND {
-				if rand.Int()%2 == 1 {
-					newChs := substitute(ch)
-					for _, newCh := range newChs {
-						tset[newCh.toString()] = newCh
-					}
+			if ch.len() <= BOUND && rand.Int()%2 == 1 {
+				newChs := substitute(ch)
+				for _, newCh := range newChs {
+					tset[newCh.toString()] = newCh
 				}
 			}
 
 			// Rule 4 -> augment
-			if ch.len() <= BOUND {
-				if rand.Int()%2 == 1 {
-					newChs := augment(c)
-					for _, newCh := range newChs {
-						tset[newCh.toString()] = newCh
-					}
+			if ch.len() <= BOUND && rand.Int()%2 == 1 {
+				newChs := augment(c)
+				for _, newCh := range newChs {
+					tset[newCh.toString()] = newCh
 				}
 			}
 
 			for k, v := range tset {
-				set[k] = v
+				res[k] = v
 			}
-		}
-		if len(set) > MUTATEBOUND {
-			break
-		}
 
-		if (rand.Int() % 200) < energy {
-			break
+			if len(res) > MUTATEBOUND {
+				break
+			}
+
+			if (rand.Int() % 200) < energy {
+				break
+			}
 		}
 	}
 
-	return set
+	return res
 }
 
 func abridge(c chain) (chain, chain) {

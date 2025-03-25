@@ -94,9 +94,9 @@ The replay manager runs in a background routine and is implemented as followed
 
 ```
 Check if an operation has been directly
-acknowledged (ackDir). If this is the
-case, advance the trace to the next
-element.
+executed (ackDir). If this is the
+case, and it is not a channel, wait for the operation
+to fully execute (wait for ack). Then advance the trace to the next element.
 See (R1)
 
 Get the next element in the trace.
@@ -117,7 +117,10 @@ See (R5)
 
 func replayManager() {
 	while(replayInProgress()) {
-		if hasRecvAckDir() {  // (R1)
+		if hasRelDirectly() {  // (R1)
+			if !isChannel(evt) {
+				waitAck()
+			}
 			nextEvt()
 		}
 
@@ -170,14 +173,16 @@ The manager will release the operations in the correct order.
 
 #### Flow
 ##### Replay in operations
-<img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto>
+<center><img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto></center>
+<center><img src="img/waitForReplay.png" alt="WaitForReplay" width="800px" height=auto></center>
+
 When a operation wants to execute, it will call the `WaitForReplay` function. The arguments of the function
 contain information about the waiting operation (type of operation and
 skip value for `runtime.Caller`) as well as information about wether the
 operation will send an acknowledgement (`wAck`) or not. The function
 creates a wait channel `chWait` and and acknowledgement channel `cka`, each with
 buffer size 1.\
-The function than checks, if the operation is part of the replay.
+The function then checks, if the operation is part of the replay.
 If it is not, either because replay is disabled or because the operation is
 an ignored (internal) operation, the function will return and inform the
 operation, that it can immediately execution.
@@ -206,7 +211,7 @@ next operation.
 
 
 ##### Replay Manager
-![Replay Manager](img/replayManager.png)\
+<center><img src="img/replayManager.png" alt="Replay Manager" width="1200px" height=auto></center>
 The replay manager releases the operations in the correct order.
 
 To release the operations, a separate routine `ReleaseWait` is run in the

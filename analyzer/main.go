@@ -144,7 +144,7 @@ func main() {
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGoFuzz\n\tGoFuzzHB\n\tGoPie")
+		"Mode for fuzzing. Possible values are:\n\tGoFuzz\n\tGoFuzzHB\n\tGFuzzFlow\n\tFlow\n\tGoPie")
 
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
@@ -280,7 +280,7 @@ func modeFuzzing() {
 func modeToolchain(mode string, numRerecorded int) {
 	checkVersion()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
-		numRerecorded, -1, ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, cont, 0, 0)
+		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, cont, 0, 0)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}

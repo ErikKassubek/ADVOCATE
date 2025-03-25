@@ -2,6 +2,10 @@
 
 Replay allows us to force the execution of a program to follow a given trace.
 
+Here we explain the exact replay used in the replay of rewritten traces and
+the GoPie fuzzing. For the explanation of the simplified replay used for
+flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
+
 ## Toolchain
 
 The replay is run, if the test of main function starts with the following header:
@@ -27,7 +31,7 @@ The following is a description of the implementation of the trace replay.
 
 First we will give an [overview](#overview) over the replay mechanism. Then
 we will give an [detailed explanation](#detail) of the implementation.
-<!-- At the end we will illustrate the mechanism on an [example](#example). -->
+<!-- At the end we will illustrate the mechanism with an [example](#example). -->
 
 ### Overview
 
@@ -355,5 +359,14 @@ possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
 
-
+<!--
 ### Example
+Let' assume, we have the following program
+
+```go
+```
+
+and the operations should be executed in the following order:
+
+```
+``` -->

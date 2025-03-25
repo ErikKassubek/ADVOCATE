@@ -10,16 +10,12 @@ as based on GoFuzz. Tho following primitive are of interest.
 
 One of those would e.g. be `once`. If we have two `Do` on the same `once` in the
 trace, were one of them was executed and the other was not, and both of them
-are concurrent based on the HB analysis, one could create a mutation, where
-the other once is preferred, either by creating a direct trace to replay or,
-which would probably much easier to implement, by creating a run, where the
-preciously executed `once.Do` is blocked from actually executing, such that
-the other once can be executed. This would allow us to explore the code in the
-body of the previously not executed `once.Do`.
+are concurrent based on the HB analysis, one can create a mutation to force
+this execution.
 
-Similar scenarios could be created e.g. for `try-locks`.
+Similar scenarios can be created e.g. for `try-locks`.
 
-Another situation we could try to capture, would be for code of the form
+Another situation we try to capture, would be for code of the form
 ```go
 c := make(chan int, 2)
 
@@ -43,6 +39,22 @@ that often, it should be possible to implement this without needing to create
 massive amounts of mutations, and we would be able to increase the number of
 paths we explore.
 
+## Implementations
+It would be possible to directly write a new trace, where the concurrent
+once, mutex, send and receive are reversed. But here we use a simple
+method to reduce the overhead. For each of the pairs of operations we
+wish to reorder, we store the operations, that in the recorded trace was first
+in a file.
+
+When an operation tries to execute an operations, it will first check if
+it is in this file. If this is the case, the execution of the operation
+is paused for a predefined number of second. After this timer has passed it
+will be released and the operation execution. This gives the other operation
+time to execution first, therefore reversing the order if the operations.
+This also implicitly contains a timeout. If the operation that should be
+execute first has not been executed, e.g. because the oder of the operations
+cannot be changed for some reason, the waiting operation will continue its
+execution, therefore continuing the program without the possibility of it getting stuck.
 
 ## Comparison to GoPie
 Lets look at the following example:

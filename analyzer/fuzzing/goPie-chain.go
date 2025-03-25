@@ -52,10 +52,18 @@ func addElemToChain(elem analysis.TraceElement) {
 }
 
 func (ch *chain) add(elem analysis.TraceElement) {
+	if elem == nil {
+		return
+	}
+
 	ch.elems = append(ch.elems, elem)
 }
 
 func (ch *chain) replace(index int, elem analysis.TraceElement) {
+	if elem == nil {
+		return
+	}
+
 	if index < 0 || index >= len(ch.elems) {
 		return
 	}
@@ -63,6 +71,10 @@ func (ch *chain) replace(index int, elem analysis.TraceElement) {
 }
 
 func (ch *chain) contains(elem analysis.TraceElement) bool {
+	if elem == nil {
+		return false
+	}
+
 	for _, c := range ch.elems {
 		if elem.IsEqual(c) {
 			return true
@@ -81,9 +93,6 @@ func (ch *chain) removeTail() {
 }
 
 func (ch *chain) lastElem() analysis.TraceElement {
-	if len(ch.elems) == 0 {
-		return nil
-	}
 	return ch.elems[len(ch.elems)-1]
 }
 
@@ -96,8 +105,8 @@ func (ch *chain) swap(i, j int) {
 func (ch *chain) copy() chain {
 	newElems := make([]analysis.TraceElement, len(ch.elems))
 
-	for _, elem := range ch.elems {
-		newElems = append(newElems, elem)
+	for i, elem := range ch.elems {
+		newElems[i] = elem
 	}
 
 	newChain := chain{

@@ -242,17 +242,21 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
+			utils.LogInfof("Create mutations")
 			if fuzzingModeGFuzz {
+				utils.LogInfof("Create GFuzz mutations")
 				createGFuzzMut()
 			}
 
 			// add new mutations based on flow path expansion
 			if fuzzingModeFlow {
+				utils.LogInfof("Create Flow mutations")
 				createMutationsFlow()
 			}
 
 			// add mutations based on GoPie
 			if fuzzingModeGoPie {
+				utils.LogInfof("Create GoPie mutations")
 				createGoPieMut(progDir)
 			}
 

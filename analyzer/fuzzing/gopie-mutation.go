@@ -10,7 +10,9 @@
 
 package fuzzing
 
-import "math/rand/v2"
+import (
+	"math/rand/v2"
+)
 
 const (
 	BOUND       = 3
@@ -69,14 +71,14 @@ func mutate(c chain, energy int) map[string]chain {
 			for k, v := range tset {
 				res[k] = v
 			}
+		}
 
-			if len(res) > MUTATEBOUND {
-				break
-			}
+		if len(res) > MUTATEBOUND {
+			break
+		}
 
-			if (rand.Int() % 200) < energy {
-				break
-			}
+		if (rand.Int() % 200) < energy {
+			break
 		}
 	}
 

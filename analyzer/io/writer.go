@@ -15,6 +15,7 @@ import (
 	"analyzer/timer"
 	"analyzer/utils"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"sync"
@@ -48,7 +49,7 @@ func WriteTrace(path string, numberRoutines int) error {
 	for i := 1; i <= numberRoutines; i++ {
 		wg.Add(1)
 		go func(i int) {
-			fileName := path + "trace_" + strconv.Itoa(i) + ".log"
+			fileName := filepath.Join(path, "trace_"+strconv.Itoa(i)+".log")
 			file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
 				utils.LogError("Error in writing trace to file. Could not open file: ", err.Error())

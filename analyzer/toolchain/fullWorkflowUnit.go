@@ -223,10 +223,12 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	alreadyProcessed, maxFileNum := make(map[string]struct{}), 0
 	var err error
 
-	alreadyProcessed, maxFileNum, err = getFilesInResult(dir, cont)
-	if err != nil {
-		utils.LogError(err)
-		return testFiles, 0, 0, err
+	if cont {
+		alreadyProcessed, maxFileNum, err = getFilesInResult(dir, cont)
+		if err != nil {
+			utils.LogError(err)
+			return testFiles, 0, 0, err
+		}
 	}
 
 	totalNumFiles := 0

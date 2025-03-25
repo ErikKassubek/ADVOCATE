@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"analyzer/analysis"
 	"analyzer/io"
+	"analyzer/utils"
 	"fmt"
 	"path/filepath"
 	"sort"
@@ -22,6 +23,8 @@ func createGoPieMut(pkgPath string) error {
 	energy := getEnergy()
 
 	mutations := make(map[string]chain)
+
+	utils.LogInfof("Trace contains %d scheduling chains", len(schedulingChains))
 
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)

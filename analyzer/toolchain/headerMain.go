@@ -29,11 +29,12 @@ import (
  *    replayTimeout (int): replay for timeout
  *    record (bool): if both replay and record are set, the replay is rerecorded
  *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
+ *   fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  * Returns:
  *    error
  */
 func headerInserterMain(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int) error {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {
 	if fileName == "" {
 		return errors.New("Please provide a file  name")
 	}
@@ -42,7 +43,7 @@ func headerInserterMain(fileName string, replay bool, replayNumber string,
 		return fmt.Errorf("File %s does not exist", fileName)
 	}
 
-	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record, fuzzing)
+	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record, fuzzing, fuzzingTrace)
 }
 
 /*
@@ -143,10 +144,12 @@ func mainMethodExists(fileName string) (bool, error) {
  *    replayTimeout (int): replay for timeout
  *    record (bool): if both replay and record are set, the replay is rerecorded
  *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
+ *   fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  * Return:
  *    error
  */
-func addMainHeader(fileName string, replay bool, replayNumber string, replayTimeout int, record bool, fuzzing int) error {
+func addMainHeader(fileName string, replay bool, replayNumber string,
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {
 	exists, err := mainMethodExists(fileName)
 	if err != nil {
 		return err
@@ -201,10 +204,10 @@ func addMainHeader(fileName string, replay bool, replayNumber string, replayTime
   // ======= Preamble End =======`, replayNumber, timeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
-				lines = append(lines, `	// ======= Preamble Start =======
-  advocate.InitFuzzing()
+				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
+  advocate.InitFuzzing("%s")
   defer advocate.FinishTracing()
-  // ======= Preamble End =======`)
+  // ======= Preamble End =======`, fuzzingTrace))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()

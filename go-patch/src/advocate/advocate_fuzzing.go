@@ -22,19 +22,26 @@ import (
 /*
  * Initialize fuzzing
  * Args:
- * 	progName (string): name of the prog/test used to create the fuzzing file.
- * 		for test it must have the form progName_testName
+ * 	tracePath (string): For fuzzing approaches that use trace, add the path to the
+ *    trace, otherwise set to ""
  */
-func InitFuzzing() {
-	fuzzingSelectPath := "fuzzingData.log"
-	prefSel, prefFlow, err := readFile(fuzzingSelectPath)
+func InitFuzzing(tracePath string) {
+	prefSel := make(map[string][]int)
+	prefFlow := make(map[string][]int)
 
-	if err != nil {
-		println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
-		panic(err)
+	if tracePath == "" {
+		fuzzingSelectPath := "fuzzingData.log"
+		var err error
+		prefSel, prefFlow, err = readFile(fuzzingSelectPath)
+		if err != nil {
+			println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
+			panic(err)
+		}
+		runtime.InitFuzzingDelay(prefSel, prefFlow)
+	} else {
+		tracePathRewritten = tracePath
+		startReplay(0, false)
 	}
-
-	runtime.InitFuzzing(prefSel, prefFlow)
 	InitTracing()
 }
 

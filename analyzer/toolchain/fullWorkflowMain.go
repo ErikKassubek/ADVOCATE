@@ -32,12 +32,13 @@ import (
  *    executableName (string): name of the executable
  *    keepTraces (bool): do not delete the traces after analysis
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+ *   fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  * Returns:
  *    error
  */
 func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
-	keepTraces bool, fuzzing int, firstRun bool) error {
+	keepTraces bool, fuzzing int, fuzzingTrace string, firstRun bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
@@ -96,7 +97,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	// build the program
-	if measureTime {
+	if measureTime && fuzzing > 1 {
 		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
 			utils.LogError("Error in building program, removing header and stopping workflow")
@@ -115,7 +116,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	// Add header
-	if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false, fuzzing); err != nil {
+	if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -171,7 +172,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	for _, trace := range rewrittenTraces {
 		traceNum := extractTraceNum(trace)
 		fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
-		if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing); err != nil {
+		if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing, fuzzingTrace); err != nil {
 			return err
 		}
 

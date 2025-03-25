@@ -24,7 +24,10 @@ var (
 	fuzzingFlowDataCounter = make(map[string]int)
 )
 
-func InitFuzzing(selectData map[string][]int, fuzzingFlow map[string][]int) {
+/*
+ * Init fuzzing based on simple delay of flow and select
+ */
+func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int) {
 	fuzzingSelectData = selectData
 	fuzzingFlowData = fuzzingFlow
 

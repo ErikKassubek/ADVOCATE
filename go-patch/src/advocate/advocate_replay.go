@@ -61,12 +61,16 @@ func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 		tracePathRewritten = tracePathRewritten + index
 	}
 
+	startReplay(timeout, atomic)
+}
+
+func startReplay(timeout int, atomic bool) {
+	println("Reading trace from " + tracePathRewritten)
+
 	// if trace folder does not exist, panic
 	if _, err := os.Stat(tracePathRewritten); os.IsNotExist(err) {
 		panic("Trace folder " + tracePathRewritten + " does not exist.")
 	}
-
-	println("Reading trace from " + tracePathRewritten)
 
 	// traverse all files in the trace folder
 	files, err := os.ReadDir(tracePathRewritten)

@@ -77,9 +77,13 @@ var (
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, cont bool) error {
 
+	if fm == "" {
+		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow")
+	}
+
 	modes := []string{GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow}
 	if !utils.ContainsString(modes, fm) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'", fm)
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 
 	fuzzingMode = fm
@@ -212,11 +216,16 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
 		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 
+		fuzzingPath := ""
 		if numberFuzzingRuns != 0 {
 			order := popMutation()
-			err := writeMutationToFile(progDir, order)
-			if err != nil {
-				return err
+			if order.mutType == mutPiType {
+				fuzzingPath = order.mutPie
+			} else {
+				err := writeMutationToFile(progDir, order)
+				if err != nil {
+					return err
+				}
 			}
 		}
 
@@ -229,7 +238,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
-			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
+			0, numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

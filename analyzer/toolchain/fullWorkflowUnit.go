@@ -40,6 +40,7 @@ import (
  *    notExecuted (bool): if true, check for never executed operations
  *    createStats (bool): create a stats file
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+ *    fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  *    keepTraces (bool): do not delete traces after analysis
  *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
  *    cont (bool): continue an already started run
@@ -47,7 +48,7 @@ import (
  *    error
  */
 func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -136,7 +137,7 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 			}
 
 			// Execute full workflow
-			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing)
+			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing, fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
 
@@ -350,7 +351,7 @@ func FindTestFunctions(file string) ([]string, error) {
  *    bool: true if analysis passed without error
  *    error
  */
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int) (int, bool, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int, fuzzingTrace string) (int, bool, error) {
 	output := "output.log"
 
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -414,7 +415,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 		}
 	}
 
-	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, output)
+	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, fuzzingTrace, output)
 	if err != nil {
 		utils.LogError("Recording failed: ", err.Error())
 	}
@@ -422,6 +423,10 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 	err = unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, fuzzing)
 	if err != nil {
 		return 0, false, err
+	}
+
+	if onlyAPanicAndLeakFlag {
+		return 0, true, nil
 	}
 
 	numberReplay := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName)
@@ -454,7 +459,7 @@ func unitTestRun(pkg, file, testName string) error {
 	return err
 }
 
-func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, output string) error {
+func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, fuzzingPath, output string) error {
 	timer.Start(timer.Recording)
 	defer timer.Stop(timer.Recording)
 
@@ -466,7 +471,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, "0", timeoutReplay, false); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, "0", timeoutReplay, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -565,7 +570,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 			}
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
+		headerInserterUnit(file, testName, true, -1, traceNum, "", int(timeoutRepl.Seconds()), record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 

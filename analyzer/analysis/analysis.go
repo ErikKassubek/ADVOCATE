@@ -12,11 +12,10 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/memory"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"analyzer/utils"
-	"strconv"
-	"strings"
 )
 
 /*
@@ -31,15 +30,24 @@ import (
 *   onlyAPanicAndLeak (bool): only test for actual panics and leaks
  */
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
+	defer func() {
+		if r := recover(); r != nil {
+			memory.Cancel()
+			utils.LogError(r)
+		}
+	}()
+
+	timer.Start(timer.Analysis)
+	defer timer.Stop(timer.Analysis)
+
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
 		checkForLeakSimple()
 		return
 	}
 
-	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
-
 	runAnalysisOnExitCodes(false)
+	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 }
 
 /*
@@ -47,18 +55,27 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
  * If all true, check for all, else only check for the once, that are not detected by the full analysis
  */
 func runAnalysisOnExitCodes(all bool) {
-	exit := strings.Split(exitPos, ":")
-	if len(exit) != 2 {
-		return
-	}
+	timer.Start(timer.AnaExitCode)
+	defer timer.Stop(timer.AnaExitCode)
 
-	file := exit[0]
-	line, err := strconv.Atoi(exit[1])
+	file, line, err := posFromPosString(exitPos)
 	if err != nil {
 		return
 	}
 
-	if exitCode == 3 { // close on nil
+	switch exitCode {
+	case 2: // close on closed
+		arg1 := results.TraceElementResult{
+			RoutineID: 0,
+			ObjID:     0,
+			TPre:      0,
+			ObjType:   "CC",
+			File:      file,
+			Line:      line,
+		}
+		results.Result(results.CRITICAL, results.ACloseOnClosed,
+			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	case 3: // close on nil
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -69,7 +86,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 4 { // negative wg counter
+	case 4: // negative wg counter
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -80,7 +97,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 5 { // unlock of not locked mutex
+	case 5: // unlock of not locked mutex
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -91,7 +108,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	} else if exitCode == 6 { // unknown panic
+	case 6: // unknown panic
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -100,8 +117,11 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.AUnknownPanic,
+		results.Result(results.CRITICAL, results.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
+	case 7: // timeout
+		results.Result(results.CRITICAL, results.RTimeout,
+			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
@@ -117,17 +137,6 @@ func runAnalysisOnExitCodes(all bool) {
 			results.Result(results.CRITICAL, results.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
 		}
-	} else if exitCode == 2 { // close on closed
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, results.ACloseOnClosed,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	}
 }
 
@@ -138,11 +147,14 @@ func runAnalysisOnExitCodes(all bool) {
  * and if its tPost is 0
  */
 func checkForLeakSimple() {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	elems := getLastElemPerRout()
 
 	for _, elem := range elems {
 		if elem.GetTPost() == 0 {
-			leak(elem)
+			checkLeak(elem)
 		}
 	}
 }
@@ -155,15 +167,14 @@ func checkForLeakSimple() {
 *   	vector clocks
 *   analysisCasesMap (map[string]bool): The analysis cases to run
 *   fuzzing (bool): true if run with fuzzing
+*   memCanceled: if memCanceled == true: analysis was canceled by memory
  */
 func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
-	utils.LogInfo("Run full analysis on trace")
-
 	fifo = assumeFifo
-	runFuzzing = fuzzing
+	modeIsFuzzing = fuzzing
 
 	analysisCases = analysisCasesMap
-	InitAnalysis(analysisCases)
+	InitAnalysis(analysisCases, fuzzing)
 
 	if analysisCases["resourceDeadlock"] {
 		ResetState()
@@ -176,6 +187,8 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 
 	currentVCHb[1] = currentVCHb[1].Inc(1)
 	currentVCWmhb[1] = currentVCWmhb[1].Inc(1)
+
+	utils.LogInfo("Start HB analysis")
 
 	for elem := getNextElement(); elem != nil; elem = getNextElement() {
 		switch e := elem.(type) {
@@ -192,6 +205,9 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 				e.updateVectorClockAlt()
 			} else {
 				e.updateVectorClock()
+			}
+			if analysisFuzzing {
+				getConcurrentMutexForFuzzing(e)
 			}
 		case *TraceElementFork:
 			e.updateVectorClock()
@@ -214,6 +230,11 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			e.updateVectorClock()
 		case *TraceElementCond:
 			e.updateVectorClock()
+		case *TraceElementOnce:
+			e.updateVectorClock()
+			if analysisFuzzing {
+				getConcurrentOnceForFuzzing(e)
+			}
 		case *TraceElementNew:
 			// do noting
 		}
@@ -227,55 +248,74 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 
 		// check for leak
 		if analysisCases["leak"] && elem.GetTPost() == 0 {
-			leak(elem)
+			checkLeak(elem)
 		}
 
+		if memory.WasCanceled() {
+			return
+		}
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
-		timemeasurement.Start("other")
+	utils.LogInfo("Finished HB analysis")
+
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		rerunCheckForSelectCaseWithoutPartnerChannel()
 		CheckForSelectCaseWithoutPartner()
-		timemeasurement.End("other")
+	}
+
+	if memory.WasCanceled() {
+		return
 	}
 
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
+		utils.LogInfo("Check for leak")
 		checkForLeak()
 		checkForStuckRoutine()
-		timemeasurement.End("leak")
+		utils.LogInfo("Finish check for leak")
+	}
+
+	if memory.WasCanceled() {
+		return
 	}
 
 	if analysisCases["doneBeforeAdd"] {
-		timemeasurement.Start("panic")
+		utils.LogInfo("Check for done before add")
 		checkForDoneBeforeAdd()
-		timemeasurement.End("panic")
+		utils.LogInfo("Finish check for done before add")
+	}
+
+	if memory.WasCanceled() {
+		return
 	}
 
 	if analysisCases["cyclicDeadlock"] {
-		timemeasurement.Start("other")
+		utils.LogInfo("Check for cyclic deadlock")
 		checkForCyclicDeadlock()
-		timemeasurement.End("other")
+		utils.LogInfo("Finish check for cyclic deadlock")
 	}
 
+	// if memory.WasCanceled() {
+	// 	return
+	// }
+
 	if analysisCases["resourceDeadlock"] {
-		timemeasurement.Start("other")
+		utils.LogInfo("Check for cyclic deadlock")
 		CheckForResourceDeadlock()
-		timemeasurement.End("other")
+		utils.LogInfo("Finish check for cyclic deadlock")
+	}
+
+	if memory.WasCanceled() {
+		return
 	}
 
 	if analysisCases["unlockBeforeLock"] {
-		timemeasurement.Start("panic")
+		utils.LogInfo("Check for unlock before lock")
 		checkForUnlockBeforeLock()
-		timemeasurement.End("panic")
+		utils.LogInfo("Finish check for unlock before lock")
 	}
-
-	utils.LogInfo("Finished analyzing trace")
 }
 
-func leak(elem TraceElement) {
-	timemeasurement.Start("leak")
-
+func checkLeak(elem TraceElement) {
 	switch e := elem.(type) {
 	case *TraceElementChannel:
 		CheckForLeakChannelStuck(e, currentVCHb[e.routine])
@@ -284,6 +324,7 @@ func leak(elem TraceElement) {
 	case *TraceElementWait:
 		CheckForLeakWait(e)
 	case *TraceElementSelect:
+		timer.Start(timer.AnaLeak)
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
@@ -300,26 +341,9 @@ func leak(elem TraceElement) {
 				buffered = append(buffered, c.IsBuffered())
 			}
 		}
+		timer.Stop(timer.AnaLeak)
 		CheckForLeakSelectStuck(e, ids, buffered, currentVCHb[e.routine], opTypes)
 	case *TraceElementCond:
 		CheckForLeakCond(e)
-	}
-
-	timemeasurement.End("leak")
-}
-
-/*
- * Rerun the CheckForSelectCaseWithoutPartnerChannel for all channel. This
- * is needed to find potential communication partners for not executed
- * select cases, if the select was executed after the channel
- */
-func rerunCheckForSelectCaseWithoutPartnerChannel() {
-	for _, trace := range traces {
-		for _, elem := range trace {
-			if e, ok := elem.(*TraceElementChannel); ok {
-				CheckForSelectCaseWithoutPartnerChannel(e, e.GetVC(),
-					e.Operation() == SendOp, e.IsBuffered())
-			}
-		}
 	}
 }

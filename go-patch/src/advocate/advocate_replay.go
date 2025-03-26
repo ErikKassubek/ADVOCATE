@@ -325,6 +325,10 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 				op = runtime.OperationAtomicSwap
 			case "C":
 				op = runtime.OperationAtomicCompareAndSwap
+			case "N":
+				op = runtime.OperationAtomicAnd
+			case "O":
+				op = runtime.OperationAtomicOr
 			}
 			pos := strings.Split(fields[4], ":")
 			if len(pos) < 2 {

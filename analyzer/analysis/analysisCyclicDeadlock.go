@@ -13,10 +13,12 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 	"log"
 	"strconv"
 )
+
+// TODO: can this be deleted
 
 /*
  * Struct to represent a node in a lock graph
@@ -130,8 +132,8 @@ var nodesPerID = make(map[int]map[int][]*lockGraphNode) // id -> routine -> []*l
  *   vc (VectorClock): The vector clock of the lock event
  */
 func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc clock.VectorClock) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
 
 	if mu.tPost == 0 {
 		return
@@ -168,8 +170,8 @@ func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc clock.VectorC
  *   mu (*TraceElementMutex): The trace element
  */
 func CyclicDeadlockMutexUnLock(mu *TraceElementMutex) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
 
 	if mu.tPost == 0 {
 		return
@@ -188,8 +190,8 @@ func CyclicDeadlockMutexUnLock(mu *TraceElementMutex) {
  * If there are cycles, log the results
  */
 func checkForCyclicDeadlock() {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
 
 	findOutsideConnections()
 	found, cycles := findCycles() // find all cycles in the lock graph

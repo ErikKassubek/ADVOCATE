@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -24,6 +25,9 @@ import (
  *    wa *TraceElementWait: the trace wait or done element
  */
 func checkForDoneBeforeAddChange(wa *TraceElementWait) {
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
+
 	if wa.delta > 0 {
 		checkForDoneBeforeAddAdd(wa)
 	} else if wa.delta < 0 {
@@ -73,8 +77,10 @@ func checkForDoneBeforeAddDone(wa *TraceElementWait) {
  * If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
  */
 func checkForDoneBeforeAdd() {
-	for id := range wgAdd { // for all waitgroups
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
 
+	for id := range wgAdd { // for all waitgroups
 		graph := buildResidualGraph(wgAdd[id], wgDone[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
@@ -83,8 +89,8 @@ func checkForDoneBeforeAdd() {
 		}
 		nrDone := len(wgDone[id])
 
-		addsNegWg := []TraceElement{}
-		donesNegWg := []TraceElement{}
+		addsNegWg := make([]TraceElement, 0)
+		donesNegWg := make([]TraceElement, 0)
 
 		if maxFlow < nrDone {
 			// sort the adds and dones, that do not have a partner is such a way,
@@ -109,8 +115,9 @@ func checkForDoneBeforeAdd() {
 			addsNegWgSorted := make([]TraceElement, 0)
 			donesNEgWgSorted := make([]TraceElement, 0)
 
-			for i := 0; i < len(addsNegWg); i++ {
-				for j := 0; j < len(donesNegWg); j++ {
+			for i := 0; i < len(addsNegWg); {
+				removed := false
+				for j := 0; j < len(donesNegWg); {
 					if clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == clock.Concurrent {
 						addsNegWgSorted = append(addsNegWgSorted, addsNegWg[i])
 						donesNEgWgSorted = append(donesNEgWgSorted, donesNegWg[j])
@@ -118,9 +125,14 @@ func checkForDoneBeforeAdd() {
 						addsNegWg = append(addsNegWg[:i], addsNegWg[i+1:]...)
 						donesNegWg = append(donesNegWg[:j], donesNegWg[j+1:]...)
 						// fix the index
-						i--
-						j = 0
+						removed = true
+						break
+					} else {
+						j++
 					}
+				}
+				if !removed {
+					i++
 				}
 			}
 

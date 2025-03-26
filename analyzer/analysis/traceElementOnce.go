@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 
@@ -27,7 +28,7 @@ import (
  *   tpost (int): The timestamp at the end of the event
  *   id (int): The id of the mutex
  *   suc (bool): Whether the operation was successful
- *   pos (string): The position of the mutex operation in the code
+ *   file (string), line (int): The position of the mutex operation in the code
  */
 type TraceElementOnce struct {
 	routine int
@@ -35,7 +36,8 @@ type TraceElementOnce struct {
 	tPost   int
 	id      int
 	suc     bool
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -72,13 +74,19 @@ func AddTraceElementOnce(routine int, tPre string,
 		return errors.New("suc is not a boolean")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementOnce{
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
 		id:      idInt,
 		suc:     sucBool,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -141,7 +149,15 @@ func (on *TraceElementOnce) GetTSort() int {
  *   string: The position of the element
  */
 func (on *TraceElementOnce) GetPos() string {
-	return on.pos
+	return fmt.Sprintf("%s:%d", on.file, on.line)
+}
+
+func (on *TraceElementOnce) GetFile() string {
+	return on.file
+}
+
+func (on *TraceElementOnce) GetLine() int {
+	return on.line
 }
 
 /*
@@ -150,7 +166,7 @@ func (on *TraceElementOnce) GetPos() string {
  *   string: The tID of the element
  */
 func (on *TraceElementOnce) GetTID() string {
-	return on.pos + "@" + strconv.Itoa(on.tPre)
+	return on.GetPos() + "@" + strconv.Itoa(on.tPre)
 }
 
 /*
@@ -170,6 +186,13 @@ func (on *TraceElementOnce) GetObjType() string {
 		return "OE"
 	}
 	return "ON"
+}
+
+/*
+ * Get whether the once do was executed (successful)
+ */
+func (on *TraceElementOnce) GetSuc() bool {
+	return on.suc
 }
 
 // MARK: Setter
@@ -235,7 +258,7 @@ func (on *TraceElementOnce) ToString() string {
 	} else {
 		res += "f"
 	}
-	res += "," + on.pos
+	res += "," + on.GetPos()
 	return res
 }
 
@@ -266,7 +289,8 @@ func (on *TraceElementOnce) Copy() TraceElement {
 		tPost:   on.tPost,
 		id:      on.id,
 		suc:     on.suc,
-		pos:     on.pos,
+		file:    on.file,
+		line:    on.line,
 		vc:      on.vc.Copy(),
 	}
 }

@@ -22,6 +22,10 @@ func createMutationsSelect(numberMutations int, flipChance float64) int {
 		mut := createMutation(flipChance)
 
 		id := getIdFromMut(mut)
+		if id == "" {
+			continue
+		}
+
 		if num, _ := allMutations[id]; num < maxRunPerMut {
 			muta := mutation{mutSel: mut, mutFlow: make(map[string]int)}
 			mutationQueue = append(mutationQueue, muta)

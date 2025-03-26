@@ -19,7 +19,7 @@ import (
 )
 
 var (
-	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)
+	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool) error
 )
 
 /*
@@ -28,7 +28,7 @@ var (
 func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 	noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	rewriteAll bool, newTrace string, timeout int, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool)) {
+	rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool) error) {
 	runAnalyzer = funcAnalyzer
 }
 
@@ -49,10 +49,11 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  * 	stats (bool): create statistics
  * 	keepTraces (bool): keep the traces after analysis
  * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ * 	cont (bool): continue an already started run
  */
 func Run(mode, advocate, file, execName, progName, test string,
 	numRerecorded, fuzzing int,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces, firstRun, skipExisting bool) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool, firstRun, cont bool, fileNumber, testNumber int) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFile = strings.Replace(file, "~", home, -1)
@@ -68,8 +69,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 	notExecuted = notExec
 	createStats = stats
 
-	analysis.ClearTrace()
-	analysis.ClearData()
+	analysis.Clear()
 
 	switch mode {
 	case "main":
@@ -97,7 +97,7 @@ func Run(mode, advocate, file, execName, progName, test string,
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFile, progName, measureTime,
-			notExecuted, stats, fuzzing, keepTraces, firstRun, skipExisting)
+			notExecuted, stats, fuzzing, keepTraces, firstRun, skipExisting, cont, fileNumber, testNumber)
 	case "explain":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

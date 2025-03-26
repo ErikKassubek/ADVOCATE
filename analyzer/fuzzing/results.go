@@ -10,8 +10,6 @@
 
 package fuzzing
 
-var foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
-
 func AddFoundBug(bugString string, suc bool) {
 	_, ok := foundBugs[bugString]
 	if !ok { // first time found

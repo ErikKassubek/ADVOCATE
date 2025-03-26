@@ -18,10 +18,13 @@ import (
 const (
 	Reset  = "\033[0m"
 	Red    = "\033[31m"
+	Green  = "\033[32m"
 	Yellow = "\033[33m"
+	Purple = "\033[35m"
 )
 
 var numberErr = 0
+var numberTimeout = 0
 
 func LogInfo(v ...any) {
 	log.Println(v...)
@@ -29,6 +32,32 @@ func LogInfo(v ...any) {
 
 func LogInfof(format string, v ...any) {
 	log.Printf(format, v...)
+}
+
+func LogImportant(v ...any) {
+	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
+}
+
+func LogImportantf(format string, v ...any) {
+	log.Printf(Yellow+format+Reset, v...)
+}
+
+func LogResult(v ...any) {
+	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
+}
+
+func LogResultf(format string, v ...any) {
+	log.Printf(Green+format+Reset, v...)
+}
+
+func LogTimeout(v ...any) {
+	log.Print(Purple, fmt.Sprint(v...), Reset, "\n")
+	numberTimeout++
+}
+
+func LogTimeoutf(format string, v ...any) {
+	log.Printf(Purple+format+Reset, v...)
+	numberTimeout++
 }
 
 func LogError(v ...any) {
@@ -41,6 +70,6 @@ func LogErrorf(format string, v ...any) {
 	numberErr++
 }
 
-func GetNumberErr() int {
-	return numberErr
+func GetNumberErr() (int, int) {
+	return numberErr, numberTimeout
 }

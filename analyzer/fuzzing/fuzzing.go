@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"analyzer/stats"
+	"analyzer/timer"
 	"analyzer/toolchain"
 	"analyzer/utils"
 	"fmt"
@@ -26,8 +27,11 @@ type mutation struct {
 
 const (
 	maxNumberRuns = 20
-	maxTime       = 20 * time.Minute
+	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
+
+	factorCaseWithPartner = 2
+	maxFlowMut            = 10
 )
 
 var (
@@ -47,27 +51,31 @@ var (
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
-* 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
+* 	cont (bool): continue partial fuzzing
  */
 func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, cont bool) error {
 
-	utils.LogInfo("Start fuzzing")
+	if cont {
+		utils.LogInfo("Continue fuzzing")
+	} else {
+		utils.LogInfo("Start fuzzing")
+	}
 
 	// run either fuzzing on main or fuzzing on one test
 	if modeMain || name != "" {
 		if modeMain {
-			utils.LogError("Run fuzzing on main function")
+			utils.LogInfo("Run fuzzing on main function")
 		} else {
-			utils.LogError("Run fuzzing on test ", name)
+			utils.LogInfo("Run fuzzing on test ", name)
 		}
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, name, ignoreAtomic,
-			hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, true)
+			hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
@@ -86,39 +94,50 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 	utils.LogInfo("Run fuzzing on all tests")
 
 	// run fuzzing on all tests
-	testFiles, err := toolchain.FindTestFiles(progPath)
+	testFiles, maxFileNumber, totalFiles, err := toolchain.FindTestFiles(progPath, cont)
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
 
-	totalFiles := len(testFiles)
-
 	utils.LogInfof("Found %d test files", totalFiles)
 
 	// Process each test file
+	fileCounter := 0
+	if cont {
+		fileCounter = maxFileNumber
+	}
+
 	for i, testFile := range testFiles {
-		utils.LogInfof("Progress %s: %d/%d\n", progName, i+1, totalFiles)
+		fileCounter++
+		utils.LogInfof("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
 		utils.LogInfof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
 		if err != nil || len(testFunctions) == 0 {
-			utils.LogError("Could not find test functions in ", testFile)
+			utils.LogInfo("Could not find test functions in ", testFile)
 			continue
 		}
 
 		for j, testFunc := range testFunctions {
 			resetFuzzing()
+			timer.ResetTest()
+			timer.Start(timer.TotalTest)
 
 			utils.LogInfof("Run fuzzing for %s->%s", testFile, testFunc)
 
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, advocate, progPath, progName, testFunc, ignoreAtomic,
-				hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun)
+				hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				utils.LogError("Error in fuzzing: ", err.Error())
 			}
+
+			timer.Stop(timer.TotalTest)
+
+			timer.UpdateTimeFileOverview(progName, testFunc)
 		}
+
 	}
 
 	if createStats {
@@ -145,19 +164,20 @@ func Fuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAto
 * 	name (string): If modeMain, name of the executable, else name of the test
 * 	ignoreAtomic (bool): if true, ignore atomics for replay
 * 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
-* 	fullAnalysis (bool): if true, run full analysis and replay, otherwise only detect actual bugs
 * 	meaTime (bool): measure runtime
 * 	notExec (bool): find never executed operations
 * 	createStats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+* 	cont (bool): continue with an already started run
  */
 func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignoreAtomic,
-	hBInfoFuzzing, fullAnalysis, meaTime, notExec, createStats, keepTraces, firstRun bool) error {
+	hBInfoFuzzing, meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 	useHBInfoFuzzing = hBInfoFuzzing
-	runFullAnalysis = fullAnalysis
 
 	progDir := getPath(progPath)
+
+	clearDataFull()
 
 	startTime := time.Now()
 
@@ -182,42 +202,46 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, name string, ignore
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, name, progName, name,
-			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, false)
+			0, numberFuzzingRuns, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
-			fmt.Println(err.Error())
-		}
-
-		// TODO: the function to get all the infos required for isInteresting and
-		// numberMutations is called in modeAnalyzer in the main.go file, which
-		// itself is run by the toolchain.Run function via function injection.
-		// At some point this should be refactored to make it less complicated
-
-		// add new mutations based on GFuzz select
-		if isInterestingSelect() {
-			numberMut := numberMutations()
-			flipProb := getFlipProbability()
-			numMutAdd := createMutationsSelect(numberMut, flipProb)
-			utils.LogInfof("Add %d mutations to queue\n", numMutAdd)
+			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
-			utils.LogInfo("Add 0 mutations to queue")
-		}
+			// add new mutations based on GFuzz select
+			if isInterestingSelect() {
+				numberMut := numberMutations()
+				flipProb := getFlipProbability()
+				numMutAdd := createMutationsSelect(numberMut, flipProb)
+				utils.LogInfof("Add %d select mutations to queue", numMutAdd)
+			} else {
+				utils.LogInfo("Add 0 select mutations to queue")
+			}
 
-		mergeTraceInfoIntoFileInfo()
+			// add new mutations based on flow path expansion
+			if useHBInfoFuzzing {
+				numMutAdd := createMutationsFlow()
+				utils.LogInfof("Add %d flow mutations to queue", numMutAdd)
+			}
+
+			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
+
+			mergeTraceInfoIntoFileInfo()
+		}
 
 		// clean up
 		clearData()
-		// analysis.ClearData()
-		// analysis.ClearTrace()
+		timer.ResetFuzzing()
 
 		numberFuzzingRuns++
 
 		// cancel if max number of mutations have been reached
 		if numberFuzzingRuns > maxNumberRuns {
-			return fmt.Errorf("Maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+			utils.LogInfof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+			return nil
 		}
 
 		if time.Since(startTime) > maxTime {
-			return fmt.Errorf(("Maximum runtime for fuzzing has been reached"))
+			utils.LogInfof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(maxTime.Minutes()))
+			return nil
 		}
 	}
 

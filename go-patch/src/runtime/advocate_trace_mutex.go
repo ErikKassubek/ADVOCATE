@@ -1,3 +1,16 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_mutex.go
+// Brief: Functionality for mutex
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
+
 package runtime
 
 // MARK: Pre
@@ -15,6 +28,10 @@ var lastRWOpLock mutex
  * 	index of the operation in the trace
  */
 func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	var op string
@@ -57,6 +74,10 @@ func AdvocateMutexLockPre(id uint64, rw bool, r bool) int {
  * 	index of the operation in the trace
  */
 func AdvocateMutexLockTry(id uint64, rw bool, r bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	var op string
@@ -99,6 +120,10 @@ func AdvocateMutexLockTry(id uint64, rw bool, r bool) int {
  * 	index of the operation in the trace
  */
 func AdvocateUnlockPre(id uint64, rw bool, r bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	var op string
@@ -142,6 +167,10 @@ func AdvocateUnlockPre(id uint64, rw bool, r bool) int {
  * 	c: number of the send
  */
 func AdvocateMutexPost(index int) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	// internal elements are not in the trace
@@ -168,7 +197,7 @@ func AdvocateMutexPost(index int) {
 	}
 
 	path := splitStringAtSeparator(split[6], ':', nil)
-	if isSuffix(path[0], "sync/rwmutex.go") {
+	if hasSuffix(path[0], "sync/rwmutex.go") {
 		lastRWOp[routine] = timer
 	}
 	unlock(&lastRWOpLock)
@@ -185,6 +214,10 @@ func AdvocateMutexPost(index int) {
  * 	suc: true if the try was successful, false otherwise
  */
 func AdvocatePostTry(index int, suc bool) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	// internal elements are not in the trace
@@ -205,7 +238,7 @@ func AdvocatePostTry(index int, suc bool) {
 	}
 
 	path := splitStringAtSeparator(split[6], ':', nil)
-	if isSuffix(path[0], "sync/rwmutex.go") {
+	if hasSuffix(path[0], "sync/rwmutex.go") {
 		lastRWOp[routine] = timer
 	}
 	unlock(&lastRWOpLock)
@@ -215,5 +248,4 @@ func AdvocatePostTry(index int, suc bool) {
 	elem = mergeString(split)
 
 	currentGoRoutine().updateElement(index, elem)
-
 }

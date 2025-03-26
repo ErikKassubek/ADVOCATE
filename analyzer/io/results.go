@@ -12,6 +12,7 @@ package io
 
 import (
 	"analyzer/bugs"
+	"analyzer/timer"
 	"analyzer/utils"
 	"bufio"
 	"fmt"
@@ -29,12 +30,15 @@ import (
  *   Bug: The bug that was selected
  *   error: An error if the bug could not be processed
  */
-func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
+func ReadAnalysisResults(resMachinePath string, index int) (bool, bugs.Bug, error) {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	bugStr := ""
 
-	file, err := os.Open(filePath)
+	file, err := os.Open(resMachinePath)
 	if err != nil {
-		utils.LogError("Error opening file: " + filePath)
+		utils.LogError("Error opening file: " + resMachinePath)
 		return false, bugs.Bug{}, err
 	}
 
@@ -60,8 +64,7 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 
 	actual, bug, err := bugs.ProcessBug(bugStr)
 	if err != nil {
-		utils.LogError("Error processing bug: ", bugStr)
-		utils.LogError(err.Error())
+		err = fmt.Errorf("Error processing bug %s: %w", bugStr, err)
 		return false, bug, err
 	}
 

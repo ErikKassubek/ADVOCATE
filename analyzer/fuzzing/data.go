@@ -21,8 +21,6 @@ const (
 	always    closeInfo = "a"
 	never     closeInfo = "n"
 	sometimes closeInfo = "s"
-
-	factorCaseWithPartner = 2
 )
 
 var (
@@ -40,8 +38,12 @@ var (
 	selectInfoFile               = make(map[string][]int)          // globalID -> executed casi
 	numberSelectCasesWithPartner = 0
 
+	alreadyDelayedElems = make(map[string][]int)
+
 	useHBInfoFuzzing = true
 	runFullAnalysis  = true
+
+	foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
 )
 
 /*
@@ -147,4 +149,24 @@ func clearData() {
 	channelInfoTrace = make(map[int]fuzzingChannel)
 	pairInfoTrace = make(map[string]fuzzingPair)
 	selectInfoTrace = make(map[string][]fuzzingSelect)
+}
+
+func clearDataFull() {
+	numberOfPreviousRuns = 0
+	maxScore = 0.0
+	// Info for the current trace
+	channelInfoTrace = make(map[int]fuzzingChannel)    // localID -> fuzzingChannel
+	pairInfoTrace = make(map[string]fuzzingPair)       // posSend-posRecv -> fuzzing pair
+	selectInfoTrace = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
+	numberSelects = 0
+	numberClose = 0
+	// Info from the file/the previous runs
+	channelInfoFile = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
+	pairInfoFile = make(map[string]fuzzingPair)       // posSend-noPrintosRecv -> fuzzing pair
+	selectInfoFile = make(map[string][]int)           // globalID -> executed casi
+	numberSelectCasesWithPartner = 0
+
+	alreadyDelayedElems = make(map[string][]int)
+
+	foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
 }

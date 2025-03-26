@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/utils"
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 )
@@ -36,7 +37,7 @@ const (
 *   opW (opW): The operation on the wait group
 *   delta (int): The delta of the wait group
 *   val (int): The value of the wait group
-*   pos (string): The position of the wait group in the code
+*   file (string), line(int): The position of the wait group in the code
 *   tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementWait struct {
@@ -47,7 +48,8 @@ type TraceElementWait struct {
 	opW     opW
 	delta   int
 	val     int
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -99,6 +101,11 @@ func AddTraceElementWait(routine int, tpre string,
 		return errors.New("val is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementWait{
 		routine: routine,
 		tPre:    tpre_int,
@@ -107,7 +114,8 @@ func AddTraceElementWait(routine int, tpre string,
 		opW:     opW_op,
 		delta:   delta_int,
 		val:     val_int,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -170,7 +178,15 @@ func (wa *TraceElementWait) GetTSort() int {
  *   string: The position of the element
  */
 func (wa *TraceElementWait) GetPos() string {
-	return wa.pos
+	return fmt.Sprintf("%s:%d", wa.file, wa.line)
+}
+
+func (wa *TraceElementWait) GetFile() string {
+	return wa.file
+}
+
+func (wa *TraceElementWait) GetLine() int {
+	return wa.line
 }
 
 /*
@@ -179,7 +195,7 @@ func (wa *TraceElementWait) GetPos() string {
  *   string: The tID of the element
  */
 func (wa *TraceElementWait) GetTID() string {
-	return wa.pos + "@" + strconv.Itoa(wa.tPre)
+	return wa.GetPos() + "@" + strconv.Itoa(wa.tPre)
 }
 
 /*
@@ -281,7 +297,7 @@ func (wa *TraceElementWait) ToString() string {
 	}
 
 	res += strconv.Itoa(wa.delta) + "," + strconv.Itoa(wa.val)
-	res += "," + wa.pos
+	res += "," + wa.GetPos()
 	return res
 }
 
@@ -317,7 +333,8 @@ func (wa *TraceElementWait) Copy() TraceElement {
 		opW:     wa.opW,
 		delta:   wa.delta,
 		val:     wa.val,
-		pos:     wa.pos,
+		file:    wa.file,
+		line:    wa.line,
 		vc:      wa.vc.Copy(),
 	}
 }

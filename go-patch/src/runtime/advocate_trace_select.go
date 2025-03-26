@@ -1,3 +1,15 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_select.go
+// Brief: Functionality for selects
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
 package runtime
 
 /*
@@ -11,17 +23,16 @@ package runtime
  * 	index of the operation in the trace
  */
 func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, lockorder []uint16) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	if cases == nil {
 		return -1
 	}
 
-	// TODO: (advocate): if cases in the select are nil, scase and lockOrder will
-	// have different lengths. This will cause a panic in the next for loop.
-	// We can use counter instead of i (only advance if ca.c != nil)
-	// But this will still make a problem in AdvocateSelectPost with the
-	// chosenIndex. We need to find a way to fix this.
 
 	id := GetAdvocateObjectID()
 	caseElements := ""
@@ -110,6 +121,10 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
  * 	rClosed: true if the channel was closed at another routine
  */
 func AdvocateSelectPost(index int, c *hchan, chosenIndex int, lockOrder []uint16, rClosed bool) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	if index == -1 {
@@ -171,6 +186,10 @@ func AdvocateSelectPost(index int, c *hchan, chosenIndex int, lockOrder []uint16
 * 	index of the operation in the trace
  */
 func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	id := GetAdvocateObjectID()
@@ -183,8 +202,11 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	caseElements := ""
 
 	if c != nil {
+		if c.id == 0 {
+			c.id = AdvocateChanMake(int(c.dataqsiz))
+		}
 		caseElements = "C." + uint64ToString(timer) + ".0." + uint64ToString(c.id) +
-			"." + opChan + ".f.0." + uint32ToString(uint32(c.dataqsiz))
+		"." + opChan + ".f.0." + uint32ToString(uint32(c.dataqsiz))
 	} else {
 		caseElements = "C." + uint64ToString(timer) + ".0.*." + opChan + ".f.0.0"
 	}
@@ -195,7 +217,7 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	}
 
 	elem := "S," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		caseElements + "~d,0," + file + ":" + intToString(line)
+	caseElements + "~d,0," + file + ":" + intToString(line)
 
 	return insertIntoTrace(elem)
 }
@@ -208,6 +230,10 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
  * 	res: true for channel, false for default
  */
 func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	if index == -1 {

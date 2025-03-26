@@ -10,7 +10,10 @@
 
 package analysis
 
-import "analyzer/clock"
+import (
+	"analyzer/clock"
+	"analyzer/timer"
+)
 
 /*
  * Update the vector clocks given a fork operation
@@ -21,6 +24,9 @@ import "analyzer/clock"
  *   vcMhb (map[int]VectorClock): The current mhb vector clocks
  */
 func Fork(fo *TraceElementFork, vcHb map[int]clock.VectorClock, vcMhb map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	oldRout := fo.routine
 	newRout := fo.id
 

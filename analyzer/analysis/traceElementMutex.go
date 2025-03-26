@@ -12,11 +12,11 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
 	"analyzer/utils"
 )
 
@@ -43,7 +43,7 @@ const (
  *   rw (bool): Whether the mutex is a read-noWarningrite mutex
  *   opM (opMutex): The operation on the mutex
  *   suc (bool): Whether the operation was successful (only for trylock else always true)
- *   pos (string): The position of the mutex operation in the code
+ *   file (string), line(int): The position of the mutex operation in the code
  */
 type TraceElementMutex struct {
 	routine int
@@ -53,7 +53,8 @@ type TraceElementMutex struct {
 	rw      bool
 	opM     OpMutex
 	suc     bool
-	pos     string
+	file    string
+	line    int
 	vc      clock.VectorClock
 }
 
@@ -116,6 +117,11 @@ func AddTraceElementMutex(routine int, tPre string,
 		return errors.New("suc is not a boolean")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementMutex{
 		routine: routine,
 		tPre:    tPreInt,
@@ -124,7 +130,8 @@ func AddTraceElementMutex(routine int, tPre string,
 		rw:      rwBool,
 		opM:     opMInt,
 		suc:     sucBool,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	return AddElementToTrace(&elem)
@@ -187,7 +194,15 @@ func (mu *TraceElementMutex) GetTSort() int {
  *   string: The position of the element
  */
 func (mu *TraceElementMutex) GetPos() string {
-	return mu.pos
+	return fmt.Sprintf("%s:%d", mu.file, mu.line)
+}
+
+func (mu *TraceElementMutex) GetFile() string {
+	return mu.file
+}
+
+func (mu *TraceElementMutex) GetLine() int {
+	return mu.line
 }
 
 /*
@@ -196,7 +211,7 @@ func (mu *TraceElementMutex) GetPos() string {
  *   string: The tID of the element
  */
 func (mu *TraceElementMutex) GetTID() string {
-	return mu.pos + "@" + strconv.Itoa(mu.tPre)
+	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
 /*
@@ -249,6 +264,10 @@ func (mu *TraceElementMutex) GetObjType() string {
 		return "MN"
 	}
 	return "M"
+}
+
+func (mu *TraceElementMutex) IsSuc() bool {
+	return mu.suc
 }
 
 // MARK: Setter
@@ -335,7 +354,7 @@ func (mu *TraceElementMutex) ToString() string {
 	} else {
 		res += ",f"
 	}
-	res += "," + mu.pos
+	res += "," + mu.GetPos()
 	return res
 }
 
@@ -350,78 +369,54 @@ func (mu *TraceElementMutex) updateVectorClock() {
 	case LockOp:
 		Lock(mu, currentVCHb, currentVCWmhb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockLock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
-			timemeasurement.End("other")
 		}
 	case RLockOp:
 		RLock(mu, currentVCHb, currentVCWmhb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockLock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
-			timemeasurement.End("other")
 		}
 	case TryLockOp:
 		if mu.suc {
 			if analysisCases["unlockBeforeLock"] {
-				timemeasurement.Start("panic")
 				checkForUnlockBeforeLockLock(mu)
-				timemeasurement.End("panic")
 			}
 			Lock(mu, currentVCHb, currentVCWmhb)
 			if analysisCases["cyclicDeadlock"] {
-				timemeasurement.Start("other")
 				CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
-				timemeasurement.End("other")
 			}
 		}
 	case TryRLockOp:
 		if mu.suc {
 			RLock(mu, currentVCHb, currentVCWmhb)
 			if analysisCases["unlockBeforeLock"] {
-				timemeasurement.Start("panic")
 				checkForUnlockBeforeLockLock(mu)
-				timemeasurement.End("panic")
 			}
 			if analysisCases["cyclicDeadlock"] {
-				timemeasurement.Start("other")
 				CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
-				timemeasurement.End("other")
 			}
 		}
 	case UnlockOp:
 		Unlock(mu, currentVCHb)
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockUnlock(mu)
-			timemeasurement.End("panic")
 		}
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexUnLock(mu)
-			timemeasurement.End("other")
 		}
 	case RUnlockOp:
 		if analysisCases["unlockBeforeLock"] {
-			timemeasurement.Start("panic")
 			checkForUnlockBeforeLockUnlock(mu)
-			timemeasurement.End("panic")
 		}
 		RUnlock(mu, currentVCHb)
 		if analysisCases["cyclicDeadlock"] {
-			timemeasurement.Start("other")
 			CyclicDeadlockMutexUnLock(mu)
-			timemeasurement.End("other")
 		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()
@@ -449,7 +444,8 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		rw:      mu.rw,
 		opM:     mu.opM,
 		suc:     mu.suc,
-		pos:     mu.pos,
+		file:    mu.file,
+		line:    mu.line,
 		vc:      mu.vc.Copy(),
 	}
 }

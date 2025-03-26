@@ -42,7 +42,7 @@ func Check(resultFolderPath string, progPath string) error {
 	notInTrace := areAllProgElemInTrace(progElems, traceElems)
 	notSelectedSelectCase := getNotSelectedSelectCases()
 
-	err = printResultsToFiles(notInTrace, notSelectedSelectCase, resultFolderPath)
+	err = printNotExecutedToFiles(notInTrace, notSelectedSelectCase, resultFolderPath)
 
 	return err
 }
@@ -82,7 +82,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
  * 	elements: the elements that were not executed
  * 	selects: the select cases that were not selected
  */
-func printResultsToFiles(elements map[string][]int, selects map[string]map[int][]int,
+func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[int][]int,
 	path string) error {
 
 	path = fmt.Sprintf("%s/AdvocateNotExecuted", path)

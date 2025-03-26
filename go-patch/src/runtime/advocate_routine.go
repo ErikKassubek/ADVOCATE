@@ -68,16 +68,10 @@ func newAdvocateRoutine(g *g) *AdvocateRoutine {
  */
 func (gi *AdvocateRoutine) addToTrace(elem string) int {
 	// do nothing if tracer disabled
+	// TODO ADVOCATE Remove when checked in all pre and post func
 	if advocateTracingDisabled {
 		return -1
 	}
-
-	// do nothing while trace writing disabled
-	// this is used to avoid writing to the trace, while the trace is written
-	// to the file in case of a too high memory usage
-	// for advocateTraceWritingDisabled {
-	// 	slowExecution()
-	// }
 
 	// never needed in actual code, without it the compiler tests fail
 	if gi == nil {
@@ -174,7 +168,7 @@ func (gi *AdvocateRoutine) updateElement(index int, elem string) {
  * 	the current routine
  */
 func currentGoRoutine() *AdvocateRoutine {
-	return getg().goInfo
+	return getg().advocateRoutineInfo
 }
 
 /*

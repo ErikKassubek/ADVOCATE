@@ -40,10 +40,6 @@ func NewVectorClock(size int) VectorClock {
 		size = 0
 	}
 	c := make(map[int]int)
-	for i := 1; i <= size; i++ {
-		c[i] = 0
-	}
-
 	return VectorClock{
 		size:  size,
 		clock: c,
@@ -57,25 +53,24 @@ func NewVectorClock(size int) VectorClock {
  *   cl (map[int]int): The vector clock
  */
 func NewVectorClockSet(size int, cl map[int]int) VectorClock {
-	clock := NewVectorClock(size)
+	vc := NewVectorClock(size)
 
 	if cl == nil {
-		return clock
+		return vc
 	}
 
 	if size < 0 {
 		size = 0
 	}
 
-	for i := 1; i <= size; i++ {
-		if _, ok := cl[i]; !ok {
-			clock.clock[i] = 0
-		} else {
-			clock.clock[i] = cl[i]
+	for rout, val := range cl {
+		if rout > size {
+			continue
 		}
+		vc.clock[rout] = val
 	}
 
-	return clock
+	return vc
 }
 
 /*
@@ -85,6 +80,13 @@ func NewVectorClockSet(size int, cl map[int]int) VectorClock {
  */
 func (vc VectorClock) GetSize() int {
 	return vc.size
+}
+
+func (vc VectorClock) GetValue(index int) int {
+	if val, ok := vc.clock[index]; ok {
+		return val
+	}
+	return 0
 }
 
 /*
@@ -104,7 +106,7 @@ func (vc VectorClock) GetClock() map[int]int {
 func (vc VectorClock) ToString() string {
 	str := "["
 	for i := 1; i <= vc.size; i++ {
-		str += fmt.Sprint(vc.clock[i])
+		str += fmt.Sprint(vc.GetValue(i))
 		if i <= vc.size-1 {
 			str += ", "
 		}
@@ -154,14 +156,14 @@ func (vc VectorClock) Sync(rec VectorClock) VectorClock {
 		return vc.Copy()
 	}
 
-	copy := rec.Copy()
+	newVc := rec.Copy()
 	for i := 1; i <= vc.size; i++ {
-		if vc.clock[i] > copy.clock[i] {
-			copy.clock[i] = vc.clock[i]
+		if vc.GetValue(i) > newVc.GetValue(i) {
+			newVc.clock[i] = vc.GetValue(i)
 		}
 	}
 
-	return copy
+	return newVc
 }
 
 /*
@@ -171,8 +173,8 @@ func (vc VectorClock) Sync(rec VectorClock) VectorClock {
  */
 func (vc VectorClock) Copy() VectorClock {
 	newVc := NewVectorClock(vc.size)
-	for i := 1; i <= vc.size; i++ {
-		newVc.clock[i] = vc.clock[i]
+	for rout, val := range vc.clock {
+		newVc.clock[rout] = val
 	}
 	return newVc
 }
@@ -186,7 +188,7 @@ func (vc VectorClock) IsEqual(vc2 VectorClock) bool {
 	}
 
 	for i := 1; i <= vc.size; i++ {
-		if vc.clock[i] != vc2.clock[i] {
+		if vc.GetValue(i) != vc2.GetValue(i) {
 			return false
 		}
 	}

@@ -12,6 +12,7 @@ package io
 
 import (
 	"analyzer/analysis"
+	"analyzer/timer"
 	"analyzer/utils"
 	"os"
 	"sort"
@@ -26,6 +27,8 @@ import (
  *   numberRoutines (int): The number of routines in the trace
  */
 func WriteTrace(path string, numberRoutines int) error {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
 
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
@@ -93,6 +96,9 @@ func WriteTrace(path string, numberRoutines int) error {
  *   error: The error that occurred
  */
 func WriteRewriteInfoFile(path string, bugType string, exitCode int, resultIndex int) error {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	fileName := path + "rewrite_info.log"
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

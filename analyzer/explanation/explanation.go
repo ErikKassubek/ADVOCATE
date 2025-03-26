@@ -28,7 +28,6 @@ import (
 
 // It creates one file. This file has the following element:
 // - The type of bug found
-// - maybe an minimal example for the bug type
 // - The test/program, where the bug was found
 // - if possible, the command to run the program
 // - if possible, the command to replay the bug
@@ -187,14 +186,9 @@ func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
 	replay map[string]string, progInfo map[string]string, fuzzing int) error {
 
-	res := ""
-
 	// write the bug type description
-	res += "# " + description["crit"] + ": " + description["name"] + "\n\n"
+	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
 	res += description["explanation"] + "\n\n"
-	// res += "## Minimal Example\n"
-	// res += "The following code is a minimal example to visualize the bug type. It is not the code where the bug was found.\n\n```go\n"
-	// res += description["example"] + "\n```\n\n"
 
 	// write the positions of the bug
 	res += "## Test/Program\n"
@@ -258,6 +252,10 @@ func writeFile(path string, index string, description map[string]string,
 				res += replay["exitCodeExplanation"] + "\n\n"
 			}
 		}
+	}
+
+	if description["crit"] == "Bug" {
+		utils.LogResultf("Found %s. Replay %s.", description["name"], replay["replaySuc"])
 	}
 
 	// if in path, the folder "bugs" does not exist, create it

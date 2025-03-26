@@ -11,12 +11,16 @@
 package fuzzing
 
 import (
+	"analyzer/timer"
 	"fmt"
 	"os"
 	"path/filepath"
 )
 
 func writeMutationToFile(pathToFolder string, mut mutation) error {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	mutSel := mut.mutSel
 	mutFlow := mut.mutFlow
 
@@ -48,7 +52,7 @@ func writeMutationToFile(pathToFolder string, mut mutation) error {
 		}
 	}
 
-	_, err = file.WriteString(sep)
+	_, err = file.WriteString(sep + "\n")
 
 	for pos, count := range mutFlow {
 		content := fmt.Sprintf("%s;%d\n", pos, count)

@@ -48,9 +48,9 @@ func InitFuzzing() {
 * 	map[string]int: key: file:line of select, values: counter of operation to delay
  * 	error
 */
-func readFile(pathSelect string) (map[string][]int, map[string]int, error) {
+func readFile(pathSelect string) (map[string][]int, map[string][]int, error) {
 	resSelect := make(map[string][]int)
-	resFlow := make(map[string]int)
+	resFlow := make(map[string][]int)
 
 	file, err := os.Open(pathSelect)
 	if err != nil {
@@ -77,6 +77,8 @@ func readFile(pathSelect string) (map[string][]int, map[string]int, error) {
 			return resSelect, resFlow, fmt.Errorf("Incorrect line in fuzzing select file: %s", line)
 		}
 
+		path := elems[0]
+
 		if mode == 1 {
 			ids := strings.Split(elems[1], ",")
 
@@ -84,20 +86,27 @@ func readFile(pathSelect string) (map[string][]int, map[string]int, error) {
 				continue
 			}
 
-			resSelect[elems[0]] = make([]int, len(ids))
+			resSelect[path] = make([]int, len(ids))
 			for i, id := range ids {
 				idInt, err := strconv.Atoi(id)
 				if err != nil {
 					return resSelect, resFlow, err
 				}
-				resSelect[elems[0]][i] = idInt
+				resSelect[path][i] = idInt
 			}
 		} else {
-			count, err := strconv.Atoi(elems[1])
-			if err != nil {
-				return resSelect, resFlow, err
+			counts := strings.Split(elems[1], ",")
+			for _, count := range counts {
+				countInt, err := strconv.Atoi(count)
+				if err != nil {
+					return resSelect, resFlow, err
+				}
+				if _, ok := resFlow[path]; !ok {
+					resFlow[path] = make([]int, 0)
+				}
+
+				resFlow[path] = append(resFlow[path], countInt)
 			}
-			resFlow[elems[0]] = count
 		}
 	}
 

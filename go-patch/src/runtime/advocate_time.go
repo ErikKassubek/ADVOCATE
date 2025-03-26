@@ -33,24 +33,19 @@ func currentTime() int64 {
 
 type afterTimer struct {
 	C <-chan struct{}
-	r timer
+	r *timeTimer
 }
 
-func newTimer(d int64) *afterTimer {
+func newTimer2(d int64) *afterTimer {
 	c := make(chan struct{}, 1)
 	t := &afterTimer{
 		C: c,
-		r: timer{
-			when: when(d),
-			f:    sendTime,
-			arg:  c,
-		},
+		r: newTimer(when(d), 0, sendTime, c, nil),
 	}
-	startTimer(&t.r)
 	return t
 }
 
-func sendTime(c any, seq uintptr) {
+func sendTime(c any, seq uintptr, delay int64) {
 	select {
 	case c.(chan struct{}) <- struct{}{}:
 	default:
@@ -58,7 +53,7 @@ func sendTime(c any, seq uintptr) {
 }
 
 func after(d int64) <-chan struct{} {
-	return newTimer(d).C
+	return newTimer2(d).C
 }
 
 func when(nano int64) int64 {

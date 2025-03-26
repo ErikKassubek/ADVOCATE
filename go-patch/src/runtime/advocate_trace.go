@@ -1,4 +1,14 @@
-// ADVOCATE-FILE-START
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace.go
+// Brief: Functionality for the trace
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
 
 package runtime
 
@@ -42,6 +52,8 @@ const (
 	OperationAtomicAdd
 	OperationAtomicSwap
 	OperationAtomicCompareAndSwap
+	OperationAtomicAnd
+	OperationAtomicOr
 
 	OperationReplayEnd
 )
@@ -60,6 +72,7 @@ const (
 	exitCodeNegWG                 = 4
 	exitCodeUnlockOfUnlockedMutex = 5
 	exitCodeUnknownPanic          = 6
+	exitCodeTimeOut               = 7
 )
 
 var advocateTracingDisabled = true
@@ -91,7 +104,7 @@ func getOperationObjectString(op Operation) string {
 		return "Select"
 	case OperationCondSignal, OperationCondBroadcast, OperationCondWait:
 		return "Cond"
-	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap:
+	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
@@ -130,6 +143,8 @@ func SetExitCodeFromPanicString(msg any) {
 	case string:
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = exitCodeNegWG
+		}  else if hasPrefix(m, "test timed out") {
+			advocateExitCode = exitCodeTimeOut
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||
 				m == "sync: Unlock of unlocked RWMutex" ||
@@ -196,7 +211,6 @@ func getTpre(elem string) int {
  * 	index of the element in the trace
  */
 func insertIntoTrace(elem string) int {
-
 	return currentGoRoutine().addToTrace(elem)
 }
 
@@ -349,21 +363,7 @@ func GetAdvocateDisabled() bool {
 	return advocateTracingDisabled
 }
 
-// /*
-//  * BockTrace blocks the trace collection
-//  * Resume using UnblockTrace
-//  */
-// func BlockTrace() {
-// 	advocateTraceWritingDisabled = true
-// }
 
-// /*
-//  * UnblockTrace resumes the trace collection
-//  * Block using BlockTrace
-//  */
-// func UnblockTrace() {
-// 	advocateTraceWritingDisabled = false
-// }
 
 /*
  * DeleteTrace removes all trace elements from the trace

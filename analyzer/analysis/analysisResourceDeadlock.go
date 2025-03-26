@@ -13,8 +13,10 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 )
@@ -165,7 +167,7 @@ func insert2(dependencies []Dependency, lockset Lockset, event LockEvent) []Depe
 			// 	continue
 			// }
 
-			if vc1.GetClock()[i] != vc2.GetClock()[i] {
+			if vc1.GetValue(i) != vc2.GetValue(i) {
 				return false
 			}
 		}
@@ -360,6 +362,9 @@ func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 // ////////////////////////////////
 // High level functions for integration with Advocate
 func ResetState() {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	currentState = State{
 		threads: make(map[ThreadId]Thread),
 		cycles:  nil,
@@ -368,6 +373,9 @@ func ResetState() {
 }
 
 func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMustHappensBeforeVC clock.VectorClock) {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	if currentState.failed {
 		return
 	}
@@ -396,6 +404,8 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 }
 
 func CheckForResourceDeadlock() {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
 	if currentState.failed {
 		utils.LogError("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
@@ -465,14 +475,14 @@ func CheckForResourceDeadlock() {
 // Debug logging.
 
 func debugLog(v ...any) {
-	fmt.Println(v...)
+	log.Println(v...)
 }
 
 func logAbortReason(reason ...any) {
 	r := []any{"No Deadlock:"}
 	r = append(r, reason...)
 	utils.LogInfo(r...)
-	fmt.Println(r...)
+	log.Println(r...)
 }
 
 // Lock Depdendency methods.

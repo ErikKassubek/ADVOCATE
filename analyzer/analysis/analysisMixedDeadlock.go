@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/timer"
 	"analyzer/utils"
 	"strconv"
 )
@@ -24,29 +25,37 @@ import (
  *   tId (string): The trace id of the mutex operation
  *   vc (VectorClock): The current vector clock
  */
-func lockSetAddLock(routine int, lock int, tID string, vc clock.VectorClock) {
+func lockSetAddLock(mu *TraceElementMutex, vc clock.VectorClock) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
+	routine := mu.GetRoutine()
+	id := mu.GetID()
+
 	if _, ok := lockSet[routine]; !ok {
 		lockSet[routine] = make(map[int]string)
 	}
 	if _, ok := mostRecentAcquire[routine]; !ok {
-		mostRecentAcquire[routine] = make(map[int]VectorClockTID)
+		mostRecentAcquire[routine] = make(map[int]elemWithVc)
 	}
 
-	if _, ok := lockSet[routine][lock]; ok {
-		// TODO: TODO: add a result. Deadlock detection is currently disabled
-		// errorMsg := "Lock " + strconv.Itoa(lock) +
-		// 	" already in lockSet for routine " + strconv.Itoa(routine)
-		// results.Debug(errorMsg, results.ERROR)
+	// if _, ok := lockSet[routine][lock]; ok {
+	// TODO: TODO: add a result. Deadlock detection is currently disabled
+	// errorMsg := "Lock " + strconv.Itoa(lock) +
+	// 	" already in lockSet for routine " + strconv.Itoa(routine)
+	// results.Debug(errorMsg, results.ERROR)
 
-		// // this is a double locking
-		// found := "Double locking:\n"
-		// found += "\tlock1: " + posOld + "\n"
-		// found += "\tlock2: " + tID
-		// results.Result(found, results.CRITICAL)
-	}
+	// // this is a double locking
+	// found := "Double locking:\n"
+	// found += "\tlock1: " + posOld + "\n"
+	// found += "\tlock2: " + tID
+	// results.Result(found, results.CRITICAL)
+	// }
 
-	lockSet[routine][lock] = tID
-	mostRecentAcquire[routine][lock] = VectorClockTID{vc, tID, routine}
+	lockSet[routine][id] = mu.GetTID()
+	mostRecentAcquire[routine][id] = elemWithVc{vc, mu}
 }
 
 /*
@@ -56,6 +65,11 @@ func lockSetAddLock(routine int, lock int, tID string, vc clock.VectorClock) {
  *   lock (int): The id of the mutex
  */
 func lockSetRemoveLock(routine int, lock int) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
 	if _, ok := lockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
@@ -74,10 +88,13 @@ func lockSetRemoveLock(routine int, lock int) {
  *   tIDSend (string): The trace id of the channel recv
  */
 func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tIDRecv string) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	for m := range lockSet[routineSend] {
 		_, ok1 := mostRecentAcquire[routineRevc][m]
 		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].TID != mostRecentAcquire[routineRevc][m].TID {
+		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"
@@ -91,7 +108,7 @@ func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tID
 	for m := range lockSet[routineRevc] {
 		_, ok1 := mostRecentAcquire[routineRevc][m]
 		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].TID != mostRecentAcquire[routineRevc][m].TID {
+		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"

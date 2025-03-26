@@ -12,10 +12,12 @@ package analysis
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 
 	"analyzer/clock"
+	"analyzer/timer"
 	"analyzer/utils"
 )
 
@@ -27,9 +29,6 @@ const (
 	RecvOp
 	CloseOp
 )
-
-var waitingReceive = make([]*TraceElementChannel, 0)
-var maxOpID = make(map[int]int)
 
 /*
 * TraceElementChannel is a trace element for a channel
@@ -44,7 +43,7 @@ var maxOpID = make(map[int]int)
 *   oId (int): The id of the other communication
 *   qSize (int): The size of the channel queue
 *   qCount (int): The number of elements in the queue after the operation
-*   pos (string): The position of the channel operation in the code
+*   file (string), line(int): The position of the channel operation in the code
 *   sel (*traceElementSelect): The select operation, if the channel operation
 *       is part of a select, otherwise nil
 *   partner (*TraceElementChannel): The partner of the channel operation
@@ -60,7 +59,8 @@ type TraceElementChannel struct {
 	oID     int
 	qSize   int
 	qCount  int
-	pos     string
+	file    string
+	line    int
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
 	vc      clock.VectorClock
@@ -135,6 +135,11 @@ func AddTraceElementChannel(routine int, tPre string,
 		return errors.New("qSize is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementChannel{
 		routine: routine,
 		tPre:    tPreInt,
@@ -145,7 +150,8 @@ func AddTraceElementChannel(routine int, tPre string,
 		oID:     oIDInt,
 		qSize:   qSizeInt,
 		qCount:  qCountInt,
-		pos:     pos,
+		file:    file,
+		line:    line,
 	}
 
 	// check if partner was already processed, otherwise add to channelWithoutPartner
@@ -222,7 +228,15 @@ func (ch *TraceElementChannel) GetTSort() int {
  *   string: The position of the element
  */
 func (ch *TraceElementChannel) GetPos() string {
-	return ch.pos
+	return fmt.Sprintf("%s:%d", ch.file, ch.line)
+}
+
+func (ch *TraceElementChannel) GetFile() string {
+	return ch.file
+}
+
+func (ch *TraceElementChannel) GetLine() int {
+	return ch.line
 }
 
 /*
@@ -231,7 +245,7 @@ func (ch *TraceElementChannel) GetPos() string {
  *   string: The tID of the element
  */
 func (ch *TraceElementChannel) GetTID() string {
-	return ch.pos + "@" + strconv.Itoa(ch.tPre)
+	return ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
 }
 
 /*
@@ -455,39 +469,47 @@ func (ch *TraceElementChannel) ToString() string {
  *   string: The simple string representation of the element
  */
 func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
-	res := "C" + sep
-	res += strconv.Itoa(ch.tPre) + sep + strconv.Itoa(ch.tPost) + sep
-	res += strconv.Itoa(ch.id) + sep
-
+	op := ""
 	switch ch.opC {
 	case SendOp:
-		res += "S"
+		op = "S"
 	case RecvOp:
-		res += "R"
+		op = "R"
 	case CloseOp:
-		res += "C"
+		op = "C"
 	default:
 		utils.LogError("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
-		res = " "
+		op = "-"
 	}
 
-	res += sep + "f"
+	cl := "f"
+	if ch.cl {
+		cl = "t"
+	}
 
-	res += sep + strconv.Itoa(ch.oID)
-	res += sep + strconv.Itoa(ch.qSize)
-	res += sep + strconv.Itoa(ch.qCount)
+	posStr := ""
 	if pos {
-		res += sep + ch.pos
+		posStr = sep + ch.GetPos()
 	}
-	return res
+
+	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%s%d%s%d%s%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
 }
+
+var second = false
 
 /*
  * Update and calculate the vector clock of the element
  * MARK: Vector Clock
  */
 func (ch *TraceElementChannel) updateVectorClock() {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	ch.vc = currentVCHb[ch.routine].Copy()
+
+	if ch.tPost == 0 {
+		return
+	}
 
 	if ch.partner == nil {
 		ch.findPartner()
@@ -503,7 +525,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 		}
 	}
 
-	if ch.IsBuffered() && ch.tPost != 0 {
+	if ch.IsBuffered() {
 		if ch.opC == SendOp {
 			maxOpID[ch.id] = ch.oID
 		} else if ch.opC == RecvOp {
@@ -512,9 +534,23 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				return
 			}
 		}
-	}
 
-	if !ch.IsBuffered() { // unbuffered channel
+		switch ch.opC {
+		case SendOp:
+			Send(ch, currentVCHb, fifo)
+		case RecvOp:
+			if ch.cl { // recv on closed channel
+				RecvC(ch, currentVCHb, true)
+			} else {
+				Recv(ch, currentVCHb, fifo)
+			}
+		case CloseOp:
+			Close(ch, currentVCHb)
+		default:
+			err := "Unknown operation: " + ch.ToString()
+			utils.LogError(err)
+		}
+	} else { // unbuffered channel
 		switch ch.opC {
 		case SendOp:
 			if ch.partner != nil {
@@ -536,9 +572,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 		case RecvOp: // should not occur, but better save than sorry
 			if ch.partner != nil {
 				ch.partner.vc = currentVCHb[ch.partner.routine].Copy()
-				if currentIndex[ch.partner.routine] >= 0 && currentIndex[ch.partner.routine] < len(currentIndex) && ch.partner.routine >= 0 && ch.partner.routine < len(traces) {
-					Unbuffered(traces[ch.partner.routine][currentIndex[ch.partner.routine]], ch, currentVCHb)
-				}
+				Unbuffered(ch.partner, ch, currentVCHb)
 				// advance index of receive routine, send routine is already advanced
 				increaseIndex(ch.partner.routine)
 			} else {
@@ -554,24 +588,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 			err := "Unknown operation: " + ch.ToString()
 			utils.LogError(err)
 		}
-	} else { // buffered channel
-		switch ch.opC {
-		case SendOp:
-			Send(ch, currentVCHb, fifo)
-		case RecvOp:
-			if ch.cl { // recv on closed channel
-				RecvC(ch, currentVCHb, true)
-			} else {
-				Recv(ch, currentVCHb, fifo)
-			}
-		case CloseOp:
-			Close(ch, currentVCHb)
-		default:
-			err := "Unknown operation: " + ch.ToString()
-			utils.LogError(err)
-		}
 	}
-
 }
 
 /*
@@ -639,7 +656,8 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		cl:      ch.cl,
 		oID:     ch.oID,
 		qSize:   ch.qSize,
-		pos:     ch.pos,
+		file:    ch.file,
+		line:    ch.line,
 		sel:     ch.sel,
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),

@@ -14,7 +14,6 @@ package rewriter
 import (
 	"analyzer/analysis"
 	"analyzer/bugs"
-	timemeasurement "analyzer/timeMeasurement"
 	"analyzer/utils"
 	"errors"
 )
@@ -49,9 +48,6 @@ const (
  *   error: An error if the trace could not be created
  */
 func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
-	timemeasurement.Start("rewrite")
-	defer timemeasurement.End("rewrite")
-
 	if rewriteOnce {
 		bugString := bug.GetBugString()
 		if _, ok := rewrittenBugs[bug.Type]; !ok {
@@ -154,14 +150,15 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 		rewriteNeeded = true
 		code = exitCodeLeakCond
 		err = rewriteCondLeak(bug)
-	// case bugs.SNotExecutedWithPartner:
-	// 	rewriteNeeded = false
-	// 	err = errors.New("Rewrite for select not exec with partner not available")
+		// case bugs.SNotExecutedWithPartner:
+		// 	rewriteNeeded = false
+		// 	err = errors.New("Rewrite for select not exec with partner not available")
+	case bugs.RUnknownPanic:
+		err = errors.New("Unknown panic. No rewrite possible.")
+	case bugs.RTimeout:
+		err = errors.New("Timeout. No rewrite possible.")
 	default:
 		err = errors.New("For the given bug type no trace rewriting is implemented")
-	}
-	if rewriteNeeded && err != nil {
-		println("Error rewriting trace")
 	}
 	return rewriteNeeded, false, code, err
 }

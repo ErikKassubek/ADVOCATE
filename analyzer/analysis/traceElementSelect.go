@@ -12,7 +12,6 @@ package analysis
 
 import (
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
 	"errors"
 	"fmt"
 	"math"
@@ -33,7 +32,7 @@ import (
  *   containsDefault (bool): Whether the select statement contains a default case
  *   chosenCase (traceElementSelectCase): The chosen case, nil if default case chosen
  *   chosenDefault (bool): if the default case was chosen
- *   pos (string): The position of the select statement in the code
+ *   file (string), line(int): The position of the select statement in the code
  *   posPartner ([]bool): For each case state, wether a possible partner exists
  *   casesWithPosPartner ([]int): Casis of cases with possible partner based on HB
  */
@@ -47,7 +46,8 @@ type TraceElementSelect struct {
 	chosenIndex         int
 	containsDefault     bool
 	chosenDefault       bool
-	pos                 string
+	file                string
+	line                int
 	vc                  clock.VectorClock
 	casesWithPosPartner []int
 }
@@ -87,13 +87,19 @@ func AddTraceElementSelect(routine int, tPre string,
 		return errors.New("chosenIndex is not an integer")
 	}
 
+	file, line, err := posFromPosString(pos)
+	if err != nil {
+		return err
+	}
+
 	elem := TraceElementSelect{
 		routine:             routine,
 		tPre:                tPreInt,
 		tPost:               tPostInt,
 		id:                  idInt,
 		chosenIndex:         chosenIndexInt,
-		pos:                 pos,
+		file:                file,
+		line:                line,
 		casesWithPosPartner: make([]int, 0),
 	}
 
@@ -165,7 +171,8 @@ func AddTraceElementSelect(routine int, tPre string,
 			oID:     cOID,
 			qSize:   cOSize,
 			sel:     &elem,
-			pos:     pos,
+			file:    file,
+			line:    line,
 		}
 
 		casesList = append(casesList, elemCase)
@@ -264,7 +271,15 @@ func (se *TraceElementSelect) GetTSort() int {
  *   string: The position of the element
  */
 func (se *TraceElementSelect) GetPos() string {
-	return se.pos
+	return fmt.Sprintf("%s:%d", se.file, se.line)
+}
+
+func (se *TraceElementSelect) GetFile() string {
+	return se.file
+}
+
+func (se *TraceElementSelect) GetLine() int {
+	return se.line
 }
 
 /*
@@ -273,7 +288,7 @@ func (se *TraceElementSelect) GetPos() string {
  *   string: The tID of the element
  */
 func (se *TraceElementSelect) GetTID() string {
-	return se.pos + "@" + strconv.Itoa(se.tPre)
+	return se.GetPos() + "@" + strconv.Itoa(se.tPre)
 }
 
 /*
@@ -542,7 +557,7 @@ func (se *TraceElementSelect) ToString() string {
 		}
 	}
 	res += "," + strconv.Itoa(se.chosenIndex)
-	res += "," + se.pos
+	res += "," + se.GetPos()
 	return res
 }
 
@@ -563,11 +578,8 @@ func (se *TraceElementSelect) updateVectorClock() {
 		se.chosenCase.updateVectorClock()
 	}
 
-	if analysisCases["selectWithoutPartner"] || runFuzzing {
-		timemeasurement.Start("other")
-
+	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
 		CheckForSelectCaseWithoutPartnerSelect(se, currentVCHb[se.routine])
-		timemeasurement.End("other")
 	}
 
 	for _, c := range se.cases {
@@ -587,7 +599,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 
 			if _, ok := closeData[c.id]; ok {
 				if c.opC == SendOp {
-					foundSendOnClosedChannel(se.routine, c.id, se.pos, false)
+					foundSendOnClosedChannel(&c, false)
 				} else if c.opC == RecvOp {
 					foundReceiveOnClosedChannel(&c, false)
 				}
@@ -596,16 +608,13 @@ func (se *TraceElementSelect) updateVectorClock() {
 	}
 
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
 		for _, c := range se.cases {
 			CheckForLeakChannelRun(se.routine, c.id,
-				VectorClockTID{
-					Vc:      se.vc.Copy(),
-					TID:     se.GetTID(),
-					Routine: se.routine},
+				elemWithVc{
+					vc:   se.vc.Copy(),
+					elem: se},
 				int(c.opC), c.IsBuffered())
 		}
-		timemeasurement.End("leak")
 	}
 }
 
@@ -634,7 +643,8 @@ func (se *TraceElementSelect) Copy() TraceElement {
 		chosenIndex:     se.chosenIndex,
 		containsDefault: se.containsDefault,
 		chosenDefault:   se.chosenDefault,
-		pos:             se.pos,
+		file:            se.file,
+		line:            se.line,
 		vc:              se.vc.Copy(),
 	}
 }

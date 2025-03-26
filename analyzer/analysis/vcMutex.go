@@ -13,7 +13,7 @@ package analysis
 
 import (
 	"analyzer/clock"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
 )
 
 /*
@@ -39,6 +39,9 @@ func newRel(index int, nRout int) {
  *   wVc (map[int]VectorClock): The current weak vector clocks
  */
 func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	if mu.tPost == 0 {
 		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 		return
@@ -49,17 +52,17 @@ func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock
 	vc[mu.routine] = vc[mu.routine].Sync(relR[mu.id])
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
+	timer.Stop(timer.AnaHb)
+
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
 		addMostRecentAcquireTotal(mu, vc[mu.routine], 0)
-		timemeasurement.End("leak")
 	}
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
-		timemeasurement.End("other")
-	}
+	lockSetAddLock(mu, wVc[mu.routine])
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = mu
+	incFuzzingCounter(mu)
 }
 
 /*
@@ -69,6 +72,9 @@ func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock
  *   vc (map[int]VectorClock): The current vector clocks
  */
 func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	if mu.tPost == 0 {
 		return
 	}
@@ -78,11 +84,12 @@ func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
 	relR[mu.id] = vc[mu.routine].Copy()
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetRemoveLock(mu.routine, mu.id)
-		timemeasurement.End("other")
-	}
+	timer.Stop(timer.AnaHb)
+
+	lockSetRemoveLock(mu.routine, mu.id)
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = nil
 }
 
 /*
@@ -95,6 +102,9 @@ func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
  *   (vectorClock): The new vector clock
  */
 func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	if mu.tPost == 0 {
 		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 		return
@@ -104,17 +114,17 @@ func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]cloc
 	vc[mu.routine] = vc[mu.routine].Sync(relW[mu.id])
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
+	timer.Stop(timer.AnaHb)
+
 	if analysisCases["leak"] {
-		timemeasurement.Start("leak")
 		addMostRecentAcquireTotal(mu, vc[mu.routine], 1)
-		timemeasurement.End("leak")
 	}
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetAddLock(mu.routine, mu.id, mu.GetTID(), wVc[mu.routine])
-		timemeasurement.End("other")
-	}
+	lockSetAddLock(mu, wVc[mu.routine])
+
+	// for fuzzing
+	currentlyHoldLock[mu.id] = mu
+	incFuzzingCounter(mu)
 }
 
 /*
@@ -124,6 +134,9 @@ func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]cloc
  *   vc (map[int]VectorClock): The current vector clocks
  */
 func RUnlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
 	if mu.tPost == 0 {
 		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 		return
@@ -133,9 +146,9 @@ func RUnlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
 	relR[mu.id] = relR[mu.id].Sync(vc[mu.routine])
 	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
 
-	if analysisCases["mixedDeadlock"] {
-		timemeasurement.Start("other")
-		lockSetRemoveLock(mu.routine, mu.id)
-		timemeasurement.End("other")
-	}
+	timer.Stop(timer.AnaHb)
+
+	lockSetRemoveLock(mu.routine, mu.id)
+	// for fuzzing
+	currentlyHoldLock[mu.id] = nil
 }

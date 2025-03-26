@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -24,6 +25,9 @@ import (
  *    mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	if _, ok := allLocks[mu.id]; !ok {
 		allLocks[mu.id] = make([]TraceElement, 0)
 	}
@@ -37,6 +41,9 @@ func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
  *    mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	if _, ok := allLocks[mu.id]; !ok {
 		allUnlocks[mu.id] = make([]TraceElement, 0)
 	}
@@ -51,6 +58,9 @@ func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
  * If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
  */
 func checkForUnlockBeforeLock() {
+	timer.Start(timer.AnaUnlock)
+	defer timer.Stop(timer.AnaUnlock)
+
 	for id := range allUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
 		if sameRoutine(allLocks[id], allUnlocks[id]) {
@@ -66,8 +76,8 @@ func checkForUnlockBeforeLock() {
 
 		nrUnlock := len(allUnlocks)
 
-		locks := []TraceElement{}
-		unlocks := []TraceElement{}
+		locks := make([]TraceElement, 0)
+		unlocks := make([]TraceElement, 0)
 
 		if maxFlow < nrUnlock {
 			for _, l := range allLocks[id] {
@@ -88,16 +98,22 @@ func checkForUnlockBeforeLock() {
 			locksSorted := make([]TraceElement, 0)
 			unlockSorted := make([]TraceElement, 0)
 
-			for i := 0; i < len(locks); i++ {
-				for j := 0; j < len(unlocks); j++ {
+			for i := 0; i < len(locks); {
+				removed := false
+				for j := 0; j < len(unlocks); {
 					if clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == clock.Concurrent {
 						locksSorted = append(locksSorted, locks[i])
 						unlockSorted = append(unlockSorted, unlocks[i])
 						locks = append(locks[:i], locks[i+1:]...)
 						unlocks = append(unlocks[:j], unlocks[j+1:]...)
-						i--
-						j = 0
+						removed = true
+						break
+					} else {
+						j++
 					}
+				}
+				if !removed {
+					i++
 				}
 			}
 

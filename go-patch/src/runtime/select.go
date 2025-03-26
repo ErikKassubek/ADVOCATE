@@ -8,6 +8,7 @@ package runtime
 
 import (
 	"internal/abi"
+	"internal/runtime/sys"
 	"unsafe"
 )
 
@@ -27,7 +28,7 @@ var (
 )
 
 func selectsetpc(pc *uintptr) {
-	*pc = getcallerpc()
+	*pc = sys.GetCallerPC()
 }
 
 func sellock(scases []scase, lockorder []uint16) {
@@ -145,7 +146,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
  * the first bool is false
  */
 func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool) {
-	// ADVOCATE-CHANGE-END
+	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
 	}
@@ -191,6 +192,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 
 	// generate permuted order
 	norder := 0
+	allSynctest := true
 	for i := range scases {
 		cas := &scases[i]
 
@@ -200,6 +202,19 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 			continue
 		}
 
+		if cas.c.synctest {
+				if getg().syncGroup == nil {
+					panic(plainError("select on synctest channel from outside bubble"))
+				}
+		} else {
+			allSynctest = false
+		}
+
+		if cas.c.timer != nil {
+			cas.c.timer.maybeRunChan()
+		}
+
+
 		j := cheaprandn(uint32(norder + 1))
 		pollorder[norder] = pollorder[j]
 		pollorder[j] = uint16(i)
@@ -207,6 +222,13 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	}
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
+
+	waitReason := waitReasonSelect
+	if gp.syncGroup != nil && allSynctest {
+		// Every channel selected on is in a synctest bubble,
+		// so this goroutine will count as idle while selecting.
+		waitReason = waitReasonSynctestSelect
+	}
 
 	// sort the cases by Hchan address to get the locking order.
 	// simple heap sort, to guarantee n log n time and constant stack footprint.
@@ -267,7 +289,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	sellock(scases, lockorder)
 
 	var (
-		gp     *g
 		sg     *sudog
 		c      *hchan
 		k      *scase
@@ -334,7 +355,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// ADVOCATE-CHANGE-END
 
 	// pass 2 - enqueue on all chans
-	gp = getg()
 	if gp.waiting != nil {
 		throw("gp.waiting != nil")
 	}
@@ -369,6 +389,10 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		} else {
 			c.recvq.enqueue(sg)
 		}
+
+		if c.timer != nil {
+			blockTimerChan(c)
+		}
 	}
 
 	// wait for someone to wake us up
@@ -378,7 +402,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	goparkWithTimeout(selparkcommit, nil, waitReasonSelect, traceBlockSelect, 1, preferredTimeout)
+	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -404,7 +428,9 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	gp.waiting = nil
 	for _, casei := range lockorder {
 		k = &scases[casei]
-
+		if k.c.timer != nil {
+			unblockTimerChan(k.c)
+		}
 		if sg == sglist {
 			// sg has already been dequeued by the G that woke us up.
 			casi = int(casei)
@@ -599,14 +625,11 @@ sclose:
 }
 
 func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
-	// ADVOCATE-CHANGE-END
+	// ADVOCATE-END
+	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
 	}
-
-	// ADVOCATE-CHANGE-START
-
-	// ADVOCATE-CHANGE-END
 
 	// NOTE: In order to maintain a lean stack size, the number of scases
 	// is capped at 65536.
@@ -649,6 +672,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 	// generate permuted order
 	norder := 0
+	allSynctest := true
 	for i := range scases {
 		cas := &scases[i]
 
@@ -658,6 +682,18 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 			continue
 		}
 
+		if cas.c.synctest {
+			if getg().syncGroup == nil {
+				panic(plainError("select on synctest channel from outside bubble"))
+			}
+		} else {
+			allSynctest = false
+		}
+
+		if cas.c.timer != nil {
+			cas.c.timer.maybeRunChan()
+		}
+
 		j := cheaprandn(uint32(norder + 1))
 		pollorder[norder] = pollorder[j]
 		pollorder[j] = uint16(i)
@@ -665,6 +701,13 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	}
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
+
+	waitReason := waitReasonSelect
+	if gp.syncGroup != nil && allSynctest {
+		// Every channel selected on is in a synctest bubble,
+		// so this goroutine will count as idle while selecting.
+		waitReason = waitReasonSynctestSelect
+	}
 
 	// sort the cases by Hchan address to get the locking order.
 	// simple heap sort, to guarantee n log n time and constant stack footprint.
@@ -710,7 +753,9 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 			}
 		}
 	}
-	// ADVOCATE-CHANGE-START
+
+	// lock all the channels involved in the select
+	sellock(scases, lockorder)
 
 	// This block is called, if the code runs a select statement.
 	// AdvocateSelectPre records the state of the select case, meaning which
@@ -721,11 +766,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-CHANGE-END
 
-	// lock all the channels involved in the select
-	sellock(scases, lockorder)
-
 	var (
-		gp     *g
 		sg     *sudog
 		c      *hchan
 		k      *scase
@@ -734,13 +775,13 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		qp     unsafe.Pointer
 		nextp  **sudog
 	)
+
 	// pass 1 - look for something already waiting
 	var casi int
 	var cas *scase
 	var caseSuccess bool
 	var caseReleaseTime int64 = -1
 	var recvOK bool
-
 	for _, casei := range pollorder {
 		casi = int(casei)
 		cas = &scases[casi]
@@ -748,7 +789,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 
 		if casi >= nsends {
 			sg = c.sendq.dequeue()
-
 			if sg != nil {
 				goto recv
 			}
@@ -782,7 +822,6 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	}
 
 	// pass 2 - enqueue on all chans
-	gp = getg()
 	if gp.waiting != nil {
 		throw("gp.waiting != nil")
 	}
@@ -811,6 +850,10 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		} else {
 			c.recvq.enqueue(sg)
 		}
+
+		if c.timer != nil {
+			blockTimerChan(c)
+		}
 	}
 
 	// wait for someone to wake us up
@@ -820,7 +863,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	gopark(selparkcommit, nil, waitReasonSelect, traceBlockSelect, 1)
+	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -844,9 +887,12 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		sg1.c = nil
 	}
 	gp.waiting = nil
+
 	for _, casei := range lockorder {
 		k = &scases[casei]
-
+		if k.c.timer != nil {
+			unblockTimerChan(k.c)
+		}
 		if sg == sglist {
 			// sg has already been dequeued by the G that woke us up.
 			casi = int(casei)
@@ -913,6 +959,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	advocateRClose = !caseSuccess
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -941,9 +988,11 @@ bufrecv:
 		c.recvx = 0
 	}
 	c.qcount--
+
 	// ADVOCATE-CHANGE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -965,9 +1014,11 @@ bufsend:
 		c.sendx = 0
 	}
 	c.qcount++
+
 	// ADVOCATE-CHANGE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -978,17 +1029,21 @@ recv:
 		print("syncrecv: cas0=", cas0, " c=", c, "\n")
 	}
 	recvOK = true
+
 	// ADVOCATE-CHANGE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
+
 	goto retc
 
 rclose:
+	// read at end of closed channel
+
 	// ADVOCATE-CHANGE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
-	// read at end of closed channel
+
 	selunlock(scases, lockorder)
 	recvOK = false
 	if cas.elem != nil {
@@ -1010,9 +1065,11 @@ send:
 	if asanenabled {
 		asanread(cas.elem, c.elemtype.Size_)
 	}
+
 	// ADVOCATE-CHANGE-START
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
+
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
@@ -1027,13 +1084,12 @@ retc:
 
 sclose:
 	// send on closed channel
-	selunlock(scases, lockorder)
-
 	// ADVOCATE-CHANGE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, lockorder, advocateRClose)
 	// ADVOCATE-CHANGE-END
 
+	selunlock(scases, lockorder)
 	panic(plainError("send on closed channel"))
 }
 

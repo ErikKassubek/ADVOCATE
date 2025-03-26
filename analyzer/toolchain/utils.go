@@ -11,7 +11,11 @@
 
 package toolchain
 
-import "strings"
+import (
+	"io"
+	"os"
+	"strings"
+)
 
 // extractTraceNumber extracts the numeric part from a trace directory name
 func extractTraceNumber(trace string) string {
@@ -24,4 +28,23 @@ func extractTraceNumber(trace string) string {
 		return parts[1]
 	}
 	return ""
+}
+
+func checkForTimeout(output string) bool {
+	outFile, err := os.Open(output)
+	if err != nil {
+		return false
+	}
+	defer outFile.Close()
+
+	content, err := io.ReadAll(outFile)
+	if err != nil {
+		return false
+	}
+
+	if strings.Contains(string(content), "panic: test timed out after") {
+		return true
+	}
+
+	return false
 }

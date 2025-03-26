@@ -14,6 +14,7 @@ package toolchain
 import (
 	"analyzer/complete"
 	"analyzer/stats"
+	"analyzer/timer"
 	"analyzer/utils"
 	"fmt"
 	"os"
@@ -48,7 +49,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	}
 
 	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
-	pathToAnalyzer := filepath.Join(pathToAdvocate, "analyzer/analyzer")
 
 	// Change to the directory of the main file
 	dir := filepath.Dir(pathToFile)
@@ -99,11 +99,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		return fmt.Errorf("Error removing header: %v", err)
 	}
 
-	var durationRun time.Duration
-	var durationRecord time.Duration
-	var durationAnalysis time.Duration
-	var durationReplay time.Duration
-
 	// build the program
 	if measureTime {
 		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
@@ -114,12 +109,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 
 		// run the program
-		timeStart := time.Now()
+		timer.Start(timer.Run)
 		execPath := utils.MakePathLocal(executableName)
 		if err := runCommand(execPath); err != nil {
 			headerRemoverMain(pathToFile)
 		}
-		durationRun = time.Since(timeStart)
+		timer.Stop(timer.Run)
+
 	}
 
 	// Add header
@@ -135,13 +131,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		return err
 	}
 
-	// run the program
-	timeStart := time.Now()
+	// run the recording
+	timer.Start(timer.Recording)
 	execPath := utils.MakePathLocal(executableName)
+	timer.Stop(timer.Recording)
 	if err := runCommand(execPath); err != nil {
 		headerRemoverMain(pathToFile)
 	}
-	durationRecord = time.Since(timeStart)
 
 	// Remove header
 	if err := headerRemoverMain(pathToFile); err != nil {
@@ -150,23 +146,15 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
-	timeStart = time.Now()
-	runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
+
+	err = runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		"rewritten_trace", timeoutAnalysis, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+		"rewritten_trace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
 
-	if timeoutAnalysis != -1 {
-		timeoutString := fmt.Sprintf("%ds", timeoutAnalysis)
-		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput, "-timeout", timeoutString); err != nil {
-			return fmt.Errorf("Error applying analyzer: %v", err)
-		}
-	} else {
-		if err := runCommand(pathToAnalyzer, "run", "-trace", analyzerOutput); err != nil {
-			return fmt.Errorf("Error applying analyzer: %v", err)
-		}
+	if err != nil {
+		return err
 	}
-	durationAnalysis = time.Since(timeStart)
 
 	// Find rewritten_trace directories
 	rewrittenTraces, err := filepath.Glob(filepath.Join(dir, "rewritten_trace*"))
@@ -177,12 +165,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Apply replay header and run tests for each trace
 	timeoutRepl := time.Duration(0)
 	if timeoutReplay == -1 {
-		timeoutRepl = 100 * durationRecord
+		timeoutRepl = 500 * timer.GetTime(timer.Recording)
+		timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
 	} else {
 		timeoutRepl = time.Duration(timeoutReplay) * time.Second
 	}
 
-	timeStart = time.Now()
+	timer.Start(timer.Replay)
 	for _, trace := range rewrittenTraces {
 		traceNum := extractTraceNum(trace)
 		fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
@@ -206,8 +195,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 			return err
 		}
 	}
-
-	durationReplay = time.Since(timeStart)
+	timer.Stop(timer.Replay)
 
 	resultPath := filepath.Join(dir, "advocateResult")
 
@@ -222,16 +210,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	fmt.Println("Generate Bug Reports")
 	generateBugReports(resultPath, fuzzing)
 
-	resTimes := map[string]time.Duration{
-		"run":      durationRun,
-		"record":   durationRecord,
-		"analyzer": durationAnalysis,
-		"replay":   durationReplay,
-	}
-
-	if measureTime {
-		updateTimeFiles(programName, "Main", resultPath, resTimes, len(rewrittenTraces), 1)
-	}
+	timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
 
 	if notExecuted {
 		complete.Check(filepath.Join(dir, "advocateResult"), dir)
@@ -240,11 +219,11 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if createStats {
 		// create statistics
 		fmt.Println("Create statistics")
-		stats.CreateStats(dir, programName, "", fuzzing)
+		stats.CreateStats(dir, programName, "", movedTraces, fuzzing)
 	}
 
 	if total {
-		removeLogs(resultPath)
+		removeLogs(dir)
 	}
 
 	return nil

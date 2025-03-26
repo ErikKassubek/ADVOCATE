@@ -12,9 +12,11 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/memory"
 	"analyzer/utils"
 	"errors"
 	"fmt"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
@@ -35,10 +37,7 @@ var (
 	currentIndex     = make(map[int]int)
 	numberOfRoutines = 0
 	fifo             bool
-	runFuzzing       bool
-
-	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
-	durationInSeconds = -1 // the duration of the recording in seconds
+	modeIsFuzzing    bool
 )
 
 /*
@@ -56,7 +55,6 @@ func AddElementToTrace(element TraceElement) error {
 }
 
 func ClearTrace() {
-	utils.LogInfo("Clear Trace")
 	traces = make(map[int][]TraceElement)
 	currentIndex = make(map[int]int)
 }
@@ -109,6 +107,19 @@ func Sort() {
  */
 func GetTraces() map[int][]TraceElement {
 	return traces
+}
+
+/*
+ * Return the number of TraceElement with cap and len
+ */
+func GetTraceSize() (int, int) {
+	capTot := 0
+	lenTot := 0
+	for _, elems := range traces {
+		capTot += cap(elems)
+		lenTot += len(elems)
+	}
+	return capTot, lenTot
 }
 
 /*
@@ -211,7 +222,7 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("Element %s with tPre %d does not exist", bugArg, tPre)
+	return nil, fmt.Errorf("Element %s not in trace", bugArg)
 }
 
 /*
@@ -286,15 +297,16 @@ func SetNoRoutines(n int) {
 func getNextElement() TraceElement {
 	// find the local trace, where the element on which currentIndex points to
 	// has the smallest tpost
-	var minTSort = -1
-	var minRoutine = -1
+	minTSort := -1
+	minRoutine := -1
 	for routine, trace := range traces {
 		// no more elements in the routine trace
 		if currentIndex[routine] == -1 {
 			continue
 		}
 		// ignore non executed operations
-		if trace[currentIndex[routine]].GetTSort() == 0 {
+		tSort := trace[currentIndex[routine]].GetTSort()
+		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
 		if minTSort == -1 || trace[currentIndex[routine]].GetTSort() < minTSort {
@@ -322,13 +334,16 @@ func getLastElemPerRout() []TraceElement {
 			continue
 		}
 
-		res = append(res, trace[len(traces)-1])
+		res = append(res, trace[len(trace)-1])
 	}
 
 	return res
 }
 
 func increaseIndex(routine int) {
+	if currentIndex[routine] == -1 {
+		utils.LogError("Tried to increase index of -1 at routine ", routine)
+	}
 	currentIndex[routine]++
 	if currentIndex[routine] >= len(traces[routine]) {
 		currentIndex[routine] = -1
@@ -619,7 +634,7 @@ func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
  * Returns:
  *   map[int][]traceElement: The copy of the trace
  */
-func CopyCurrentTrace() map[int][]TraceElement {
+func CopyCurrentTrace() (map[int][]TraceElement, error) {
 	return CopyTrace(traces)
 }
 
@@ -630,12 +645,15 @@ func CopyCurrentTrace() map[int][]TraceElement {
  * Returns:
  *   map[int][]traceElement: The copy of the trace
  */
-func CopyTrace(original map[int][]TraceElement) map[int][]TraceElement {
+func CopyTrace(original map[int][]TraceElement) (map[int][]TraceElement, error) {
 	copyTrace := make(map[int][]TraceElement)
 	for routine, trace := range original {
 		copyTrace[routine] = copyTraceRoutine(trace)
+		if memory.WasCanceled() {
+			return copyTrace, fmt.Errorf("Not enough RAM")
+		}
 	}
-	return copyTrace
+	return copyTrace, nil
 }
 
 func copyTraceRoutine(trace []TraceElement) []TraceElement {
@@ -653,7 +671,7 @@ func copyTraceRoutine(trace []TraceElement) []TraceElement {
  */
 func SetTrace(trace map[int][]TraceElement) {
 	traces = make(map[int][]TraceElement)
-	traces = CopyTrace(trace)
+	traces, _ = CopyTrace(trace)
 }
 
 /*
@@ -690,9 +708,45 @@ func PrintTrace(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			fmt.Println(elem.thread, elem.string, elem.VectorClock.ToString())
+			utils.LogInfo(elem.string, elem.VectorClock.ToString())
 		} else {
-			fmt.Println(elem.thread, elem.string)
+			utils.LogInfo(elem.string)
 		}
 	}
+}
+
+func LogSizes() {
+	utils.LogError("Trace: ", memory.GetSizeInMB(traces))
+	utils.LogError("CurrentIndex: ", memory.GetSizeInMB(currentIndex))
+
+	utils.LogError("closeData: ", memory.GetSizeInMB(closeData))
+	utils.LogError("lastSendRoutine: ", memory.GetSizeInMB(lastSendRoutine))
+	utils.LogError("lastRecvRoutine: ", memory.GetSizeInMB(lastRecvRoutine))
+	utils.LogError("hasSend: ", memory.GetSizeInMB(hasSend))
+	utils.LogError("mostRecentSend: ", memory.GetSizeInMB(mostRecentSend))
+	utils.LogError("hasReceived: ", memory.GetSizeInMB(hasReceived))
+	utils.LogError("mostRecentReceive: ", memory.GetSizeInMB(mostRecentReceive))
+	utils.LogError("bufferedVCs: ", memory.GetSizeInMB(bufferedVCs))
+	utils.LogError("wgAdd: ", memory.GetSizeInMB(wgAdd))
+	utils.LogError("wgDone: ", memory.GetSizeInMB(wgDone))
+	utils.LogError("allLocks: ", memory.GetSizeInMB(allLocks))
+	utils.LogError("allUnlocks: ", memory.GetSizeInMB(allUnlocks))
+	utils.LogError("lockSet: ", memory.GetSizeInMB(lockSet))
+	utils.LogError("mostRecentAcquire: ", memory.GetSizeInMB(mostRecentAcquire))
+	utils.LogError("mostRecentAcquireTotal: ", memory.GetSizeInMB(mostRecentAcquireTotal))
+	utils.LogError("relW: ", memory.GetSizeInMB(relW))
+	utils.LogError("relR: ", memory.GetSizeInMB(relR))
+	utils.LogError("leakingChannels: ", memory.GetSizeInMB(leakingChannels))
+	utils.LogError("selectCases: ", memory.GetSizeInMB(selectCases))
+	utils.LogError("allForks: ", memory.GetSizeInMB(allForks))
+	utils.LogError("fuzzingFlowOnce: ", memory.GetSizeInMB(fuzzingFlowOnce))
+	utils.LogError("fuzzingFlowMutex: ", memory.GetSizeInMB(fuzzingFlowMutex))
+	utils.LogError("fuzzingFlowSend: ", memory.GetSizeInMB(fuzzingFlowSend))
+	utils.LogError("fuzzingFlowRecv: ", memory.GetSizeInMB(fuzzingFlowRecv))
+	utils.LogError("executedOnce: ", memory.GetSizeInMB(executedOnce))
+	utils.LogError("fuzzingCounter: ", memory.GetSizeInMB(fuzzingCounter))
+	utils.LogError("currentVCHb: ", memory.GetSizeInMB(currentVCHb))
+	utils.LogError("currentVCWmhb: ", memory.GetSizeInMB(currentVCWmhb))
+	utils.LogError("channelWithoutPartner: ", memory.GetSizeInMB(channelWithoutPartner))
+	utils.LogError("currentState: ", memory.GetSizeInMB(currentState))
 }

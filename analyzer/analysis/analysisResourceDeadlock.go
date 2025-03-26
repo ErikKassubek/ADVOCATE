@@ -391,9 +391,8 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 	case LockOp:
 		acquire(&currentState, false, event)
 	case TryLockOp:
-		if element.suc {
-			acquire(&currentState, false, event)
-		}
+		// We do not check event.suc because that could led to false negatives
+		acquire(&currentState, false, event)
 	case RLockOp:
 		acquire(&currentState, true, event)
 	case UnlockOp:

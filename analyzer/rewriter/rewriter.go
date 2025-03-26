@@ -63,8 +63,6 @@ func RewriteTrace(bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewr
 	rewriteNeeded = false
 	code = exitCodeNone
 	switch bug.Type {
-	case bugs.AUnknownPanic:
-		err = errors.New("Unknown panic occurred. No rewrite possible.")
 	case bugs.ASendOnClosed:
 		err = errors.New("Actual send on closed. Therefore no rewrite is needed.")
 	case bugs.ARecvOnClosed:

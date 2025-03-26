@@ -262,9 +262,9 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 *   outMachine: path to the output file for the reordered trace, no output file if empty
  */
 func InitResults(outReadable string, outMachine string) {
+	Reset()
 	outputReadableFile = outReadable
 	outputMachineFile = outMachine
-	Reset()
 }
 
 /*

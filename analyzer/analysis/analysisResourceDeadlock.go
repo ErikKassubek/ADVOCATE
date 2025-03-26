@@ -449,11 +449,13 @@ func CheckForResourceDeadlock() {
 			})
 		}
 
-		var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
-		stuckElement.ObjType = "DH"
+		for i := 0; i < len(cycleElements); i++ {
+			var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
+			stuckElement.ObjType = "DH"
 
-		results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
-
+			results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
+			cycleElements = append(cycleElements[1:], cycleElements[0])
+		}
 	}
 }
 

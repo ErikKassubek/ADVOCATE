@@ -66,6 +66,9 @@ func runWorkflowUnit(pathToAdvocate, dir, progName string,
 	if firstRun && !cont {
 		if !skipExisting {
 			os.RemoveAll("advocateResult")
+		}
+
+		if info, _ := os.Stat("advocateResult"); info == nil {
 			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
 				return fmt.Errorf("Failed to create advocateResult directory: %v", err)
 			}

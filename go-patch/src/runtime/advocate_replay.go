@@ -157,6 +157,9 @@ var replayLock mutex
 var replayDone int
 var replayDoneLock mutex
 
+var waitDeadlockDetect bool
+var waitDeadlockDetectLock mutex
+
 // read trace
 var replayData = make(AdvocateReplayTraces, 0)
 var numberElementsInTrace int
@@ -251,7 +254,7 @@ func DisableReplay() {
  * the program to terminate before the trace is finished.
  */
 func WaitForReplayFinish(exit bool) {
-	if !IsReplayEnabled() {
+	if IsReplayEnabled() { // Is this correct?
 		for {
 			lock(&replayDoneLock)
 			if replayDone >= numberElementsInTrace {
@@ -272,6 +275,18 @@ func WaitForReplayFinish(exit bool) {
 		// wait long enough, that all operations that have been released in the displayReplay
 		// can record the pre
 		sleep(0.5)
+	}
+
+	// Ensure that the deadlock detector is finished
+	for {
+		lock(&waitDeadlockDetectLock)
+		if !waitDeadlockDetect {
+			unlock(&waitDeadlockDetectLock)
+			break
+		}
+		unlock(&waitDeadlockDetectLock)
+
+		sleep(0.001)
 	}
 
 	if stuckReplayExecutedSuc {
@@ -306,9 +321,14 @@ func ReleaseWaits() {
 		}
 
 		if replayElem.Op == OperationReplayEnd {
-
+			println("Found ReplayEnd Marker with exit code", replayElem.Line)
 			// wait long enough, that all operations that have been released but not
 			// finished executing can execute
+			if replayElem.Line == ExitCodeCyclic {
+				lock(&waitDeadlockDetectLock)
+				waitDeadlockDetect = true
+				unlock(&waitDeadlockDetectLock)
+			}
 			sleep(0.5)
 
 			DisableReplay()
@@ -334,6 +354,10 @@ func ReleaseWaits() {
 					SetForceExit(true)
 					ExitReplayWithCode(replayElem.Line)
 				}
+
+				lock(&waitDeadlockDetectLock)
+				waitDeadlockDetect = false
+				unlock(&waitDeadlockDetectLock)
 			} else if isExitCodeConfOnEndElem(replayElem.Line) {
 				ExitReplayWithCode(replayElem.Line)
 			}

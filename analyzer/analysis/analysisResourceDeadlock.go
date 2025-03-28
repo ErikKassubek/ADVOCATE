@@ -64,8 +64,7 @@ type LockEvent struct {
 
 type ThreadId int
 type LockId struct {
-	id       int
-	readLock bool
+	id int
 }
 type Lockset map[LockId]struct{}
 
@@ -97,7 +96,7 @@ func acquire(s *State, read_lock bool, event LockEvent) {
 		}
 	}
 
-	lockId := LockId{event.lock_id, read_lock}
+	lockId := LockId{event.lock_id}
 
 	ls := s.threads[event.thread_id].current_lockset
 	if !ls.empty() {
@@ -105,28 +104,15 @@ func acquire(s *State, read_lock bool, event LockEvent) {
 		deps[lockId] = insert(deps[lockId], ls, event.Clone())
 	}
 
-	if lockId.isRead() {
-		lockId.addReader(s.threads[event.thread_id])
-	}
 	s.threads[event.thread_id].current_lockset.add(lockId)
 }
 
 func release(s *State, read_lock bool, event LockEvent) {
-	lockId := LockId{event.lock_id, read_lock}
-	if lockId.isRead() {
-		lockId.removeReader(s.threads[event.thread_id])
-		for _, thread := range s.threads {
-			if lockId.hasReaders(thread) {
-				continue
-			}
-			thread.current_lockset.remove(lockId)
-		}
-		s.threads[event.thread_id].current_lockset.remove(lockId)
-	} else {
-		if !s.threads[event.thread_id].current_lockset.remove(lockId) {
-			logAbortReason("Lock not found in lockset! Has probably been released in another thread, this is an unsupported case.")
-			s.failed = true
-		}
+	lockId := LockId{event.lock_id}
+
+	if !s.threads[event.thread_id].current_lockset.remove(lockId) {
+		logAbortReason("Lock not found in lockset! Has probably been released in another thread, this is an unsupported case.")
+		s.failed = true
 	}
 }
 
@@ -285,13 +271,13 @@ func isChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 
 	for _, d := range *chain_stack {
 		// Exit early. No two deps can hold the same lock. - Except for read locks
-		if d.lock == dependency.lock && dependency.lock.isWrite() {
+		if d.lock == dependency.lock {
 			logAbortReason("Two dependencies hold the same lock (early exit)")
 			return false
 		}
 		// Check (LD-1) LS(ls_j) cap LS(ls_i+1) for j in {1,..,i}
 		// Also (RW-LD-1)
-		if !d.lockset.disjointCouldBlock(dependency.lockset) {
+		if !d.lockset.disjoint(dependency.lockset) {
 			logAbortReason("Locksets are not disjoint (guard)")
 			return false
 		}
@@ -301,12 +287,12 @@ func isChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 	for l := range dependency.lockset {
 
 		// Also (RW-LD-2)
-		if (*chain_stack)[len(*chain_stack)-1].lock.equalsCouldBlock(l) {
+		if (*chain_stack)[len(*chain_stack)-1].lock == l {
 			return true
 		}
 
 	}
-	logAbortReason("Previous lock not in current lockset or both are read locks")
+	logAbortReason("Previous lock not in current lockset")
 	return false
 }
 
@@ -314,7 +300,7 @@ func isChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 // Also (RW-LD-3)
 func isCycleChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 	for l := range (*chain_stack)[0].lockset {
-		if l.equalsCouldBlock(dependency.lock) {
+		if l == dependency.lock {
 			return true
 		}
 	}
@@ -510,50 +496,6 @@ func (e LockEvent) Clone() LockEvent {
 	}
 }
 
-// Lock methods.
-
-func (l LockId) isRead() bool {
-	return l.readLock
-}
-
-func (l LockId) isWrite() bool {
-	return !l.readLock
-}
-
-func (l LockId) addReader(s Thread) {
-	s.readerCounter[l]++
-}
-
-func (l LockId) removeReader(s Thread) {
-	if !l.hasReaders(s) {
-		return
-	}
-	s.readerCounter[l]--
-	if s.readerCounter[l] <= 0 {
-		delete(s.readerCounter, l)
-	}
-}
-
-func (l LockId) hasReaders(s Thread) bool {
-	if _, exists := s.readerCounter[l]; !exists {
-		return false
-	}
-	return s.readerCounter[l] > 0
-}
-
-// Check if two locks are equal ignoring whether they are read or write locks.
-func (l LockId) equalsIgnoreRW(other LockId) bool {
-	return l.id == other.id
-}
-
-// Check if two locks are the same and at least one of them is a write lock.
-func (l LockId) equalsCouldBlock(other LockId) bool {
-	if !l.equalsIgnoreRW(other) {
-		return false
-	}
-	return l.isWrite() || other.isWrite()
-}
-
 // Lockset methods.
 
 func (ls Lockset) empty() bool {
@@ -608,17 +550,6 @@ func (ls Lockset) disjoint(ls2 Lockset) bool {
 	for l := range ls {
 		if _, contains := ls2[l]; contains {
 			return false
-		}
-	}
-	return true
-}
-
-func (ls Lockset) disjointCouldBlock(ls2 Lockset) bool {
-	for l := range ls {
-		for l2 := range ls2 {
-			if l.equalsCouldBlock(l2) {
-				return false
-			}
 		}
 	}
 	return true

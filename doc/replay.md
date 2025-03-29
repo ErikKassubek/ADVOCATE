@@ -6,6 +6,8 @@ Here we explain the exact replay used in the replay of rewritten traces and
 the GoPie fuzzing. For the explanation of the simplified replay used for
 flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 
+First we will look how the replay is used in the [toolchain](#toolchain). Then we will give a description of how the replay mechanism works and how it is implemented ([here](#Implementation)). <!-- At the end, we will look at some problems, that can cause the replay mechanism to [fail](#things-that-can-go-wrong). -->
+
 ## Toolchain
 
 The replay is run, if the test of main function starts with the following header:
@@ -33,7 +35,7 @@ First we will give an [overview](#overview) over the replay mechanism. Then
 we will give an [detailed explanation](#detail) of the implementation.
 <!-- At the end we will illustrate the mechanism with an [example](#example). -->
 
-### Overview
+### Replay Mechanism
 
 The replay is implemented as an wait and release mechanism.
 
@@ -51,43 +53,43 @@ The replay in the operation works as follows:
 ```
 If the operations is an ignored (internal) operation,
 execute directly.
-See (R0)
+See (E1)
 
 Get the next element in the trace.
-See (R1)
+See (E2)
 
 If current operations matches next event,
 then executed and send a direct acknowledgement
 to the manager.
-See (R2).
+See (E3).
 
 Otherwise, suspend operation and store signal
 to wake-up (suspended) operation in map.
-See (R3).
+See (E4).
 
 When wake-up signal is triggered, execute.
-See (R4).
+See (E5).
 
 After execution, send an acknowledgement
 to the manager.
-See (R5)
+See (E6)
 
 func operation(op) {
-	if ignored(op) {  // (R0)
+	if ignored(op) {  // (E1)
 		execute(op)
 		return
 	}
 
-	evt = headEvt()  // (R1)
-	if match(op, evt) {  // (R2)
+	evt = headEvt()  // (E2)
+	if match(op, evt) {  // (E3)
 		execute(op)
-		ackDir()  // (R5)
+		ackDir()  // (E6)
 	} else {
-		sig = suspend(op)  // (R3)
-    waitMap[op] = sig
-		if sig.ok {  // (R4)
+		sig = suspend(op)  // (E4)
+	    waitMap[op] = sig
+		if sig.ok {  // (E5)
 			execute(op)
-			ack()  // (R5)
+			ack()  // (E6)
 		}
 	}
 }
@@ -97,47 +99,48 @@ The replay manager runs in a background routine and is implemented as followed
 (here we ignore the timeout mechanism. For details on this, see the [detailed](#detail) explanation):
 
 ```
-Check if an operation has been directly
+Get the next element in the trace.
+See (M1)
+
+Check if the next element in the trace has been directly
 executed (ackDir). If this is the
 case, and it is not a channel, wait for the operation
 to fully execute (wait for ack). Then advance the trace to the next element.
-See (R1)
-
-Get the next element in the trace.
-See (R2)
+See (M2)
 
 If the next operation corresponds to an
 already waiting operation in a map, send the
 signal to release it and remove the operation
 from the waitMap.
-See (R3)
+See (M3)
 
-If it is not a channel, wait for the operation
+If it is not a channel communication or select, wait for the operation
 to fully execute (wait for ack).
-See (R4)
+See (M4)
 
 Advance to the next operation in the trace.
-See (R5)
+See (M5)
 
 func replayManager() {
 	while(replayInProgress()) {
-		if hasRelDirectly() {  // (R1)
+		evt = headEvt()  // (M1)
+
+		if hasRelDirectly() {  // (M2)
 			if !isChannel(evt) {
 				waitAck()
 			}
 			nextEvt()
 		}
 
-		evt = headEvt()  // (R2)
-		if sig, ok := waitMap[evt]; ok {  // (R3)
+		if sig, ok := waitMap[evt]; ok {  // (M3)
 			release(sig)
 			delete waitMap[evt]
 
-			if !isChannel(evt) {  // (R4)
+			if !isChannelCom(evt) {  // (M4)
 				waitAck()
 			}
 
-			nextEvt()  // (R5)
+			nextEvt()  // (M5)
 		}
 	}
 }
@@ -151,12 +154,45 @@ as well as the order in which they execute. When we release a routine spawn,
 we store the corresponding trace number in this routine. We can now use this
 operation, the position information and the order to uniquely identify each operation.
 
+#### Acknowledgement
+
+The implemented acknowledgements are necessary to prevent situations like the following:
+
+Assume we have the following program code
+```go
+var o sync.Once
+
+go func() {     // R1
+	o.Do(f1())  // Do 1
+}
+
+go func() {     // R2
+	o.Do(f2())  // Do 2
+}
+```
+
+Only one of the `do` operations will execute its argument function. Assume in the replay, we have first executed both `go` statements and now want to execute first the `Do 1` and then the `Do 2`, therefore executing `f1` but not `f2`. If we release `Do 1` and then directly release `Do 2`, we can get the following situations. Since go routines do not directly correspond to hardware threads, it is possible that both routines are mapped to the same thread. Lets assume, the underlying thread first executes the replay release on `Do 1`, but before the `Do 1` can be executed, the scheduler switches to routine 2. Here the `Do 2` is released and then executed, therefore running `f2`. Then the scheduler switches back to the first routines, running `Do 1`. Since the once `o` has already executed a function it will not execute `f1`. Additionally, if `f2` contains operations which are effected by replay, the routine will get stuck, since the replay mechanism will never release them.
+
+Similar situations can be constructed for situations, where operations with different execution times are executed directly next to each other. It the longer operation is executed first, it could happen that the next element, which executes much faster effectively executes first, even though it should have executed second.
+
+To prevent this, we use an acknowledgement. When an operation is released, the replay manager will pause. When the operations is completed, it will send an acknowledgement to the replay manager. Only when the acknowledgement is received, the current element will be advanced to the next element in the trace, meaning the next element can only be released when the previous operations has fully executed.
+
+For most operation this works, since they can be executed consecutively. The only operation where this does not work are the channels. Assume we have the following code:
+```go
+c := make(chan int, 0)
+
+go func() {
+	c <- 1
+}
+
+<- c
+```
+If we would wait for the send to fully execute and send an acknowledgement before we release the receive, the program would get stuck, because the send and the receive need to execute at the same time. We therefore do not wait for acknowledgements on channel communication operations and selects (M4).
 ### Detail
 
 The code for the replay is mainly in [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
 
-[advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read. The internal representation of the replay consists of a `map[int][]ReplayElement` `replayData`. For each of the routines, we store a slice
-of `ReplayElement`, meaning the list of elements in this routine.
+[advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read. The internal representation of the replay consists of a `map[int][]ReplayElement` `replayData`. For each of the routines, we store a slice of `ReplayElement`, meaning the list of elements in this routine.
 The lists are sorted by the `tPost` time stamp. Each `ReplayElement`
 represents one operation that is to be executed. It contains data about
 the type of operation, the timestamp and the position of the operation
@@ -359,14 +395,5 @@ possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
 
-<!--
-### Example
-Let' assume, we have the following program
-
-```go
-```
-
-and the operations should be executed in the following order:
-
-```
-``` -->
+<!-- ### Things that can go wrong
+TODO: write this -->

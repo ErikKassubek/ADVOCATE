@@ -66,3 +66,25 @@ When the program execution has finished, it will create a folder `advocateTrace`
 in which it stores the trace files. For each routine, one trace file will be
 generated. In it, each line contains the information about one recorded
 event. The events are sorted by the time when the operations was executed.
+
+### Timer
+To reconstruct the global trace from the recorded local traces, we need a consistent
+timer.
+
+The timer is implemented using an atomic variable, which is incremented every
+time a pre or post event is created. Unfortunately this needed to be implemented
+as a global counter, to get a consistent time value. Experiments with
+more local timer values have been made. The two methods we tried consisted in using the runtime.cputicks() and the runtime.nanotime() functions.
+
+The cputicks function is described by the go trace team as
+"On most platforms, this function queries the CPU for a tick count with a single instruction. (Intuitively a "tick" goes by roughly every CPU clock period, but in practice this clock usually has a constant rate that's independent of CPU frequency entirely.) [...] Unfortunately, many modern CPUs don't provide such a clock that is stable across CPU cores, meaning even though cores might synchronize with one another, the clock read-out on each CPU is not guaranteed to be ordered in the same direction as that synchronization. This led to traces with inconsistent timestamps." [^1]
+
+Additionally, the signature of the implementation notes:
+"careful: cputicks is not guaranteed to be monotonic! In particular, we have noticed drift between cpus on certain os/arch combinations. See issue 8976." [^2]
+
+For this reason, we cannot guarantee that a trace with this form of timestamp reflects the actual execution order.
+
+The nanotime() returns a time value from the operating system.
+
+[^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)
+[^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)

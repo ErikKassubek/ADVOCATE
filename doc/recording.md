@@ -71,20 +71,46 @@ event. The events are sorted by the time when the operations was executed.
 To reconstruct the global trace from the recorded local traces, we need a consistent
 timer.
 
-The timer is implemented using an atomic variable, which is incremented every
-time a pre or post event is created. Unfortunately this needed to be implemented
-as a global counter, to get a consistent time value. Experiments with
-more local timer values have been made. The two methods we tried consisted in using the runtime.cputicks() and the runtime.nanotime() functions.
+We wanted to implement the timer routine local if possible. For this, we looked at two possible time functions in the go runtime. Both of them have there problems
 
-The cputicks function is described by the go trace team as
+The `cputicks` function is described by the go tracer team as\
 "On most platforms, this function queries the CPU for a tick count with a single instruction. (Intuitively a "tick" goes by roughly every CPU clock period, but in practice this clock usually has a constant rate that's independent of CPU frequency entirely.) [...] Unfortunately, many modern CPUs don't provide such a clock that is stable across CPU cores, meaning even though cores might synchronize with one another, the clock read-out on each CPU is not guaranteed to be ordered in the same direction as that synchronization. This led to traces with inconsistent timestamps." [^1]
 
-Additionally, the signature of the implementation notes:
+Additionally, the signature of the implementation notes:\
 "careful: cputicks is not guaranteed to be monotonic! In particular, we have noticed drift between cpus on certain os/arch combinations. See issue 8976." [^2]
 
 For this reason, we cannot guarantee that a trace with this form of timestamp reflects the actual execution order.
 
-The nanotime() returns a time value from the operating system.
+The nanotime() returns a time value from the operating system. It it consistent over all routines.
 
-[^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)
-[^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)
+Here the problem lyes in the precision of those counters. Atomic operations like Load and Store only take a few nano seconds to execute. Assume we have the following program snippet.
+
+```go
+var a atomic.Uint64
+go func() {
+  a.Store(1)
+}()
+go func() {
+  x := a.Load()
+}
+```
+
+If the following code in the second routine depends on the value of `x`, it is necessary
+to determine the exact order of the Load and Store operations, to get an accurate analysis and especially replay.
+If we use the nanosecond counter as timer and the precision of the timer is to small, this may result in
+unclear orders.
+
+
+For Linux based systems, this uses `CLOCK_MONOTONIC` (normally defined in `/usr/include/time.h`) with a precision of, in most cases, `1 ns` (can by checked by running `clock_getres(CLOCK_MONOTONIC, &res); printf("%ld\n", res.tv_nsec)` as a c program).
+It is therefore enough. The problem, lies in the use in windows and macos. For windows, the `QueryPerformanceCounter` is used. According to [^3], this only has a resolution of about `100 ns`. This could lead to a situation, where the two atomic
+operations receive the same timer value, resulting in an incorrect replay.
+
+For this reason, we used the following approach:\
+For Linux system we use the `nanotime` function as our timer values.\
+For all other systems, we use a global atomic variable, that is increased every time a timer is requested (`return advocateGlobalCounter.Add(1)`).
+
+Those two different functions are implemented by using two files, annotated with `//go:build linux` for the Linux function and `//go:build !linux` for all other systems.
+
+[^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)\
+[^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)\
+[^3]: S, White et al. "Acquiring high-resolution time stamps". https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps#resolution-precision-accuracy-and-stability (Accessed 2025-03-29)

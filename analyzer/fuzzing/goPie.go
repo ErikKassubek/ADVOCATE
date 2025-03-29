@@ -15,12 +15,14 @@ import (
 	"analyzer/io"
 	"analyzer/utils"
 	"fmt"
+	"math"
 	"path/filepath"
 	"sort"
 )
 
-func createGoPieMut(pkgPath string) error {
-	energy := getEnergy()
+func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
+	// TODO: check if scheduling was successful and if so, get the length of the scheduling chain
+	energy := getEnergy(numberFuzzingRuns != 0, true, 0)
 
 	mutations := make(map[string]chain)
 
@@ -83,8 +85,16 @@ func createGoPieMut(pkgPath string) error {
 	return nil
 }
 
-func getEnergy() int {
-	score := 100 // TODO: calculate this score, not in paper and not really clear from the code
+func getEnergy(recordingBasedOnMutation bool, wasSchedulingSuccessfull bool, schedulingChainLength int) int {
+	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
+
+	if recordingBasedOnMutation {
+		if wasSchedulingSuccessfull {
+			score += 10 * schedulingChainLength
+		} else {
+			score = 0
+		}
+	}
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

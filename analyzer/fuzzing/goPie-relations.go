@@ -30,6 +30,11 @@ const (
 	After  = 1
 )
 
+var (
+	counterCPOP1 = 0
+	counterCPOP2 = 0
+)
+
 func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	var prevValid analysis.TraceElement
 
@@ -38,6 +43,7 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 			if prevValid != nil {
 				prevValid.AddRel1(routineTrace[i], After)
 				routineTrace[i].AddRel1(prevValid, Before)
+				counterCPOP1++
 			}
 			prevValid = routineTrace[i]
 		}
@@ -49,11 +55,16 @@ var (
 )
 
 func calculateRelRule2AddElem(elem analysis.TraceElement) {
+	if !isGoPieElem(elem) {
+		return
+	}
+
 	id := elem.GetID()
 	if _, ok := elemsByID[id]; ok {
 		elemsByID[id] = make([]analysis.TraceElement, 0)
 	}
 	elemsByID[id] = append(elemsByID[id], elem)
+	counterCPOP2++
 }
 
 func calculateRelRule2() {

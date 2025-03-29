@@ -257,7 +257,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// add mutations based on GoPie
 			if fuzzingModeGoPie {
 				utils.LogInfof("Create GoPie mutations")
-				createGoPieMut(progDir)
+				createGoPieMut(progDir, numberFuzzingRuns)
 			}
 
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))

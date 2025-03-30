@@ -102,7 +102,7 @@ func acquire(s *State, read_lock bool, event LockEvent) {
 	ls := s.threads[event.thread_id].current_lockset
 	if !ls.empty() {
 		deps := s.threads[event.thread_id].lock_dependencies
-		deps[lockId] = insert(deps[lockId], ls, event.Clone())
+		deps[lockId] = insert2(deps[lockId], ls, event.Clone())
 	}
 
 	if lockId.isRead() {

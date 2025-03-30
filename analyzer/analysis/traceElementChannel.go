@@ -64,6 +64,7 @@ type TraceElementChannel struct {
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -282,6 +283,10 @@ func (ch *TraceElementChannel) Operation() OpChannel {
  */
 func (ch *TraceElementChannel) GetVC() clock.VectorClock {
 	return ch.vc
+}
+
+func (ch *TraceElementChannel) GetVCWmHB() clock.VectorClock {
+	return ch.vcWmHB
 }
 
 /*
@@ -506,6 +511,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 	defer timer.Stop(timer.AnaHb)
 
 	ch.vc = currentVCHb[ch.routine].Copy()
+	ch.vcWmHB = currentVCWmhb[ch.routine].Copy()
 
 	if ch.tPost == 0 {
 		return
@@ -661,6 +667,7 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		sel:     ch.sel,
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),
+		vcWmHB:  ch.vcWmHB.Copy(),
 	}
 	return &newCh
 }

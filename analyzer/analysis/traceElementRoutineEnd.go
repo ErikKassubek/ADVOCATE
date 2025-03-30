@@ -27,6 +27,7 @@ type TraceElementRoutineEnd struct {
 	routine int
 	tPost   int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -133,6 +134,10 @@ func (fo *TraceElementRoutineEnd) GetVC() clock.VectorClock {
 	return fo.vc
 }
 
+func (fo *TraceElementRoutineEnd) GetVCWmHB() clock.VectorClock {
+	return fo.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -199,6 +204,7 @@ func (fo *TraceElementRoutineEnd) ToString() string {
  */
 func (fo *TraceElementRoutineEnd) updateVectorClock() {
 	fo.vc = currentVCHb[fo.routine].Copy()
+	fo.vcWmHB = currentVCHb[fo.routine].Copy()
 }
 
 /*
@@ -211,5 +217,6 @@ func (fo *TraceElementRoutineEnd) Copy() TraceElement {
 		routine: fo.routine,
 		tPost:   fo.tPost,
 		vc:      fo.vc.Copy(),
+		vcWmHB:  fo.vcWmHB.Copy(),
 	}
 }

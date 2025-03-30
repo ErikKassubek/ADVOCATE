@@ -39,6 +39,7 @@ type TraceElementOnce struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -178,6 +179,10 @@ func (on *TraceElementOnce) GetVC() clock.VectorClock {
 	return on.vc
 }
 
+func (on *TraceElementOnce) GetVCWmHB() clock.VectorClock {
+	return on.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -268,6 +273,7 @@ func (on *TraceElementOnce) ToString() string {
  */
 func (on *TraceElementOnce) updateVectorClock() {
 	on.vc = currentVCHb[on.routine].Copy()
+	on.vcWmHB = currentVCHb[on.routine].Copy()
 
 	if on.suc {
 		DoSuc(on, currentVCHb)
@@ -292,5 +298,6 @@ func (on *TraceElementOnce) Copy() TraceElement {
 		file:    on.file,
 		line:    on.line,
 		vc:      on.vc.Copy(),
+		vcWmHB:  on.vcWmHB.Copy(),
 	}
 }

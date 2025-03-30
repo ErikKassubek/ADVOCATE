@@ -680,7 +680,8 @@ func PrintTrace(types []string, clocks bool) {
 		string
 		time   int
 		thread int
-		clock.VectorClock
+		vc     clock.VectorClock
+		vcWmHB clock.VectorClock
 	}, 0)
 	for _, tra := range traces {
 		for _, elem := range tra {
@@ -690,8 +691,9 @@ func PrintTrace(types []string, clocks bool) {
 					string
 					time   int
 					thread int
-					clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC()})
+					vc     clock.VectorClock
+					vcWmHB clock.VectorClock
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetVCWmHB()})
 			}
 		}
 	}
@@ -703,8 +705,8 @@ func PrintTrace(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			utils.LogInfo(elem.thread, elem.string, elem.VectorClock.ToString())
-			fmt.Println(elem.thread, elem.string, elem.VectorClock.ToString())
+			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
+			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
 		} else {
 			utils.LogInfo(elem.thread, elem.string)
 			fmt.Println(elem.thread, elem.string)

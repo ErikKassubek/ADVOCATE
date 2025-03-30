@@ -31,5 +31,6 @@ type TraceElement interface {
 	ToString() string
 	updateVectorClock()
 	GetVC() clock.VectorClock
+	GetVCWmHB() clock.VectorClock
 	Copy() TraceElement
 }

@@ -51,6 +51,7 @@ type TraceElementWait struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -220,6 +221,10 @@ func (wa *TraceElementWait) GetVC() clock.VectorClock {
 	return wa.vc
 }
 
+func (wa *TraceElementWait) GetVCWmHB() clock.VectorClock {
+	return wa.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -307,6 +312,7 @@ func (wa *TraceElementWait) ToString() string {
  */
 func (wa *TraceElementWait) updateVectorClock() {
 	wa.vc = currentVCHb[wa.routine].Copy()
+	wa.vcWmHB = currentVCHb[wa.routine].Copy()
 
 	switch wa.opW {
 	case ChangeOp:
@@ -336,5 +342,6 @@ func (wa *TraceElementWait) Copy() TraceElement {
 		file:    wa.file,
 		line:    wa.line,
 		vc:      wa.vc.Copy(),
+		vcWmHB:  wa.vcWmHB.Copy(),
 	}
 }

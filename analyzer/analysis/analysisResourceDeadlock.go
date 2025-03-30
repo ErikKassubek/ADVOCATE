@@ -372,7 +372,7 @@ func ResetState() {
 	}
 }
 
-func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMustHappensBeforeVC clock.VectorClock) {
+func HandleMutexEventForRessourceDeadlock(element TraceElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
@@ -384,7 +384,7 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMust
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
 		lock_id:      element.GetID(),
-		vector_clock: currentMustHappensBeforeVC.Copy(),
+		vector_clock: element.vcWmHB.Copy(),
 	}
 
 	switch element.opM {

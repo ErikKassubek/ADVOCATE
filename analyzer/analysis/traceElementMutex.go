@@ -56,6 +56,7 @@ type TraceElementMutex struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -245,6 +246,10 @@ func (mu *TraceElementMutex) GetVC() clock.VectorClock {
 	return mu.vc
 }
 
+func (mu *TraceElementMutex) GetVCWmHB() clock.VectorClock {
+	return mu.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -364,6 +369,7 @@ func (mu *TraceElementMutex) ToString() string {
  */
 func (mu *TraceElementMutex) updateVectorClock() {
 	mu.vc = currentVCHb[mu.routine].Copy()
+	mu.vcWmHB = currentVCWmhb[mu.routine].Copy()
 
 	switch mu.opM {
 	case LockOp:
@@ -447,5 +453,6 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		file:    mu.file,
 		line:    mu.line,
 		vc:      mu.vc.Copy(),
+		vcWmHB:  mu.vcWmHB.Copy(),
 	}
 }

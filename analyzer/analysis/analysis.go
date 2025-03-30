@@ -242,7 +242,7 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 		if analysisCases["resourceDeadlock"] {
 			switch e := elem.(type) {
 			case *TraceElementMutex:
-				HandleMutexEventForRessourceDeadlock(*e, currentVCWmhb[e.routine])
+				HandleMutexEventForRessourceDeadlock(*e)
 			}
 		}
 

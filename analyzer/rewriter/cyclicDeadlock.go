@@ -32,7 +32,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 
 	lastTime := findLastTime(bug.TraceElement2)
 
-	fmt.Println("Last time:", lastTime)
+	// fmt.Println("Last time:", lastTime)
 
 	// remove tail after lastTime and the last lock
 	analysis.ShortenTrace(lastTime, true)
@@ -67,7 +67,6 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 			switch unlock := unlock.(type) {
 			case *analysis.TraceElementMutex:
 				if !(*unlock).IsLock() { // Find Unlock elements
-					// fmt.Println("Found unlock", elem.GetTPre(), elem.GetTPost(), elem.GetRoutine(), elem.GetID())
 					// Check if the unlocked mutex is in the locksets of the deadlock cycle
 					for _, lockElem := range locksetElements {
 						// If yes, make sure the unlock happens before the final lock attempts!
@@ -92,14 +91,12 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 								break
 							}
 
-							// fmt.Println("Routine start element:", routineStartElem.GetTID(), routineStartElem.GetTPre(), routineStartElem.GetTPost(), routineStartElem.GetRoutine(), routineStartElem.GetID())
 							routineEndElem := analysis.GetTraces()[lockElem.GetRoutine()][len(analysis.GetTraces()[lockElem.GetRoutine()])-1]
 							analysis.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTPre(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
 							if routineEndElem.GetTPost() > lastTime {
 								lastTime = routineEndElem.GetTPost()
 							}
 							analysis.ShiftConcurrentOrAfterToAfter(unlock)
-							fmt.Println("Shifted routine", lockElem.GetRoutine(), "to", (*unlock).GetTPre()-concurrentStartElem.GetTPre(), "its last time is", routineEndElem.GetTPost())
 						}
 					}
 				}
@@ -109,10 +106,11 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 
 	analysis.AddTraceElementReplay(lastTime+1, exitCodeCyclic, lastTime)
 
+	fmt.Println("Rewritten Trace:")
 	analysis.PrintTrace([]string{}, true)
 
 	for _, elem := range bug.TraceElement2 {
-		fmt.Println("Element:", elem.GetTPre(), elem.GetTPost(), elem.GetRoutine(), elem.GetID())
+		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetID())
 	}
 
 	return nil

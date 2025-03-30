@@ -102,7 +102,7 @@ func acquire(s *State, read_lock bool, event LockEvent) {
 	ls := s.threads[event.thread_id].current_lockset
 	if !ls.empty() {
 		deps := s.threads[event.thread_id].lock_dependencies
-		deps[lockId] = insert(deps[lockId], ls, event.Clone())
+		deps[lockId] = insert2(deps[lockId], ls, event.Clone())
 	}
 
 	if lockId.isRead() {
@@ -419,7 +419,7 @@ func CheckForResourceDeadlock() {
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
-		var request = cycle[len(cycle)-1].requests[0] // Should be the earliest request
+		var request = findEarliesRequest(cycle)
 
 		debugLog("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
@@ -458,18 +458,39 @@ func CheckForResourceDeadlock() {
 			})
 		}
 
-		for i := 0; i < len(cycleElements); i++ {
-			var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
-			stuckElement.ObjType = "DH"
+		var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
+		stuckElement.ObjType = "DH"
 
-			results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
-			cycleElements = append(cycleElements[1:], cycleElements[0])
-		}
+		results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
 	}
 }
 
 /////////////////////////////////
 // Auxiliary functions.
+
+// Finds the earliest request in a cycle.
+func findEarliesRequest(cycle []LockDependency) LockEvent {
+	earliest := cycle[0].requests[0]
+	_, _, earliestTime, err := infoFromTID(earliest.trace_id)
+	if err != nil {
+		utils.LogError(err.Error())
+		return earliest
+	}
+	for _, c := range cycle {
+		for _, r := range c.requests {
+			_, _, requestTime, err := infoFromTID(r.trace_id)
+			if err != nil {
+				utils.LogError(err.Error())
+				return earliest
+			}
+			if requestTime < earliestTime {
+				earliest = r
+				earliestTime = requestTime
+			}
+		}
+	}
+	return earliest
+}
 
 // Debug logging.
 

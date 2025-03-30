@@ -703,9 +703,11 @@ func PrintTrace(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			utils.LogInfo(elem.string, elem.VectorClock.ToString())
+			utils.LogInfo(elem.thread, elem.string, elem.VectorClock.ToString())
+			fmt.Println(elem.thread, elem.string, elem.VectorClock.ToString())
 		} else {
-			utils.LogInfo(elem.string)
+			utils.LogInfo(elem.thread, elem.string)
+			fmt.Println(elem.thread, elem.string)
 		}
 	}
 }

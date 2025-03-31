@@ -1,6 +1,6 @@
 # Select Based Fuzzing
 
-The select based fuzzing is based on [GFuzz](https://github.com/system-pclub/GFuzz).
+The select based fuzzing is based on [GFuzz](../replatedWorks/gfuzz.md).
 
 ## Fuzzing
 The main fuzzing loop is implemented as follows.\
@@ -18,11 +18,10 @@ Different to the original GFuzz implementation, which needs to run in to a bug t
 This loop is repeated until the mutation queue is empty. Additionally a maximum number of runs or a maximum time can be set.
 
 
-## GFuzz
-- It should be possible to determine all values needed to determine how interesting a run is from the trace
-- Replay should be adaptable, to prefer a specified select case
+## Implementation
+- It is possible to determine all values needed to determine how interesting a run is from the trace
 - Checking if a select case is possible using the HB relation would only make sense until the program run first executes a select, where a different channel is used than in the last recording. After that, the HB relation is no longer valid and can therefore not be used to determine, if a select case has a possible partner.
-- Maybe the score calculation could include information from the HB relation. E.g., a run where many not executed select cases have a possible partner, could be more interesting.
+- The score calculation could include information from the HB relation. E.g., a run where many not executed select cases have a possible partner, could be more interesting.
 
 ### Determine whether the run was interesting
 - A run is interesting, if one of the following conditions is met. The underlying information need to be stored in a file for the following runs.
@@ -52,8 +51,8 @@ This loop is repeated until the mutation queue is empty. Additionally a maximum 
   - MaxChBufFull: Maximum fullness for each buffer
     - Each buffered channel info in the trace contains the current qSize. Pass all send and get the biggest
 - With those values it is possible to determine the score
-- Later this should be extended based on information from the happens before
-
+- This is extended by the following value based on the HB information.
+  - SelPosPartner: For each select count the possible partner over all cases
 The score determination is extended by information from the HB relations.
 For now we extend it by increasing the the number of mutations for runs,
 in which the HB analysis indicates for multiple selects, that they have

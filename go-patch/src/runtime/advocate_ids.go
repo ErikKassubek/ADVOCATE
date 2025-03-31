@@ -36,8 +36,7 @@ func GetAdvocateObjectID() uint64 {
 	routine := currentGoRoutine()
 
 	if routine == nil {
-		getg().advocateRoutineInfo = newAdvocateRoutine(getg())
-		routine = currentGoRoutine()
+		return 0
 	}
 
 	routine.maxObjectId++

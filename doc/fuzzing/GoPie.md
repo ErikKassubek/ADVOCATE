@@ -1,6 +1,6 @@
 # Order Based Fuzzing
 
-The order based fuzzing is based on [GFuzz](https://github.com/system-pclub/GFuzz).
+The order based fuzzing is based on [GoPie](../replatedWorks/goPie.md).
 
 > [!WARNING]
 > This is not fully implemented yet

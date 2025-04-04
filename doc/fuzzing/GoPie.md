@@ -1,6 +1,6 @@
 # Order Based Fuzzing
 
-The order based fuzzing is based on [GoPie](../replatedWorks/goPie.md).
+The order based fuzzing is based on [GoPie](../relatedWorks/goPie.md).
 
 > [!WARNING]
 > This is not fully implemented yet

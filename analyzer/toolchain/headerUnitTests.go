@@ -179,7 +179,7 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, f
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitFuzzing("%s")
-  defer advocate.FinishTracing()
+  defer advocate.FinishFuzzing()
   // ======= Preamble End =======`, fuzzingTrace))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======

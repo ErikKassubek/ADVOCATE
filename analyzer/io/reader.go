@@ -93,6 +93,10 @@ func getTraceInfoFromFile(filePath string) error {
 	exitCode := 0
 	exitPos := ""
 
+	timeoutOldest := 0
+	timeoutDisabled := 0
+	timeoutAck := 0
+
 	for scanner.Scan() {
 		line := scanner.Text()
 		lineSplit := strings.Split(line, "!")
@@ -101,10 +105,6 @@ func getTraceInfoFromFile(filePath string) error {
 		}
 
 		switch lineSplit[0] {
-		case "Timeout":
-			if lineSplit[1] == "true" {
-				analysis.SetTimeoutHappened(true)
-			}
 		case "Runtime":
 			rt, err := strconv.Atoi(lineSplit[1])
 			if err == nil {
@@ -117,10 +117,17 @@ func getTraceInfoFromFile(filePath string) error {
 			}
 		case "ExitPosition":
 			exitPos = lineSplit[1]
+		case "ReplayOldest":
+			timeoutOldest, _ = strconv.Atoi(lineSplit[1])
+		case "ReplayDisabled":
+			timeoutDisabled, _ = strconv.Atoi(lineSplit[1])
+		case "ReplayAck":
+			timeoutAck, _ = strconv.Atoi(lineSplit[1])
 		}
 	}
 
 	analysis.SetExitInfo(exitCode, exitPos)
+	analysis.SetReplayTimeoutInfo(timeoutOldest, timeoutDisabled, timeoutAck)
 
 	return nil
 }

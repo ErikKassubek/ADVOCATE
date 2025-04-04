@@ -395,5 +395,63 @@ possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
 
-<!-- ### Things that can go wrong
-TODO: write this -->
+### Things that can go wrong
+
+It is possible, that either an element in the trace never tries to execute
+of that an operation tries to execute that is not in the trace. This could
+happen e.g. if the program uses randomness, if its behavior depends
+on an outside communication (e.g. API call) or if the
+control-flow changes due to non-atomic memory operations.
+
+An example would be the following
+
+```go
+
+m := sync.Mutex{}
+c := make(chan int, 1)
+
+if rand.Float64() < 0.5 {
+	c <- 1
+}
+
+m.Lock()
+
+```
+
+Assume that during the recording, the random number was less then 0.5,
+meaning the channel send is part of the trace. If we now try to
+replay this trace, it could happen that the value is now greater than 0.5.
+When we now arrive at the lock operation, the mutex wants to execute,
+but the replay manager still assumes, that the channel send should be the
+next operations. This causes the replay mechanism to get stuck.
+
+Similar situations could happen when using non-atomic operations depending on shared memory.
+Let's assume we have the following program.
+
+```go
+a := 0
+
+m := sync.Mutex{}
+
+go func () {
+	a = 1          // write
+}()
+
+go func () {
+	if a == 0 {   // read
+		m.Lock()
+		...
+		m.Unlock()
+	}
+}()
+```
+
+Our mechanism cannot influence the order of the write and read on `a`, since
+they are not atomic operations. Whether the lock and unlock on `m` can or must
+be executed, therefore depends on an order we cannot control, which may
+lead to the program getting stuck.
+
+To not get completely stuck if such operations occur, the replay mechanism
+is able to release waiting elements without them being the next trace element
+or to completely disable the replay, if it senses, that it is stuck (as
+described in the [details](#detail) section).

@@ -49,10 +49,15 @@ var ExitCodeNames = map[int]string{
 	41: "Cyclic deadlock",
 }
 
-var hasReturnedExitCode = false
-var ignoreAtomicsReplay = true
+var (
+	hasReturnedExitCode = false
+	ignoreAtomicsReplay = true
+	printDebug          = false
 
-var printDebug = false
+	tPostWhenOldestFirstReleased = 0
+	tPostWhenReplayDisabled      = 0
+	tPostWhenAckFirstTimeout     = 0
+)
 
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
@@ -186,8 +191,6 @@ var (
 
 	// for leak, TimePre of stuck elem
 	stuckReplayExecutedSuc = false
-
-	timeoutHappened = false
 
 	// for replay timeout
 	lastKey               string
@@ -347,7 +350,6 @@ func ReleaseWaits() {
 		key := replayElem.key()
 		if key == lastKey {
 			if hasTimePast(lastTime, releaseOldestWait) {
-				timeoutHappened = true
 				var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
@@ -359,6 +361,10 @@ func ReleaseWaits() {
 				}
 				unlock(&waitingOpsMutex)
 				if oldestKey != "" {
+					if tPostWhenOldestFirstReleased == 0 {
+						tPostWhenAckFirstTimeout = replayElem.Time
+					}
+
 					releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
 					if releaseOldestWait > 1 {
@@ -378,6 +384,7 @@ func ReleaseWaits() {
 				}
 			}
 			if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
+				tPostWhenReplayDisabled = replayElem.Time
 				DisableReplay()
 			}
 		}
@@ -559,7 +566,9 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) {
 		select {
 		case <-elem.chAck:
 		case <-after(sToNs(acknowledgementMaxWaitSec)):
-			timeoutHappened = true
+			if tPostWhenAckFirstTimeout == 0 {
+				tPostWhenAckFirstTimeout = elemReplay.Time
+			}
 		}
 	}
 
@@ -593,18 +602,9 @@ func isPositionInTrace(file string, line int) bool {
 	return true
 }
 
-func correctSelect(next Operation, op Operation) bool {
-	if op != OperationSelect {
-		return false
-	}
-
-	if next != OperationSelectCase && next != OperationSelectDefault {
-		return false
-	}
-
-	return true
-}
-
+/*
+ * When called, the calling routine is blocked and cannot be woken up again
+ */
 func BlockForever() {
 	gopark(nil, nil, waitReasonZero, traceBlockForever, 1)
 }
@@ -759,4 +759,15 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 	}
 
 	return AdvocateIgnore(file)
+}
+
+/*
+ * Return the replay status
+ * Return:
+ * 	(int): what was the next tPost, when the manager released an oldest for the first time, if never return 0
+ * 	(int): what was the next tPost, when the manager disables the replay because it was stuck, if not return 0
+ * 	(int): what was the next tPost, when an expected Acknowledgement timed out, if never return 0
+ */
+func GetReplayStatus() (int, int, int) {
+	return tPostWhenOldestFirstReleased, tPostWhenReplayDisabled, tPostWhenAckFirstTimeout
 }

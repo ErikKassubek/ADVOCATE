@@ -130,10 +130,13 @@ func writeToTraceFileInfo(tracePath string, numberRoutines int) {
 	defer file.Close()
 
 	exitCode, exitPos := runtime.GetExitCode()
+	replayOldest, replayDisabled, replayAck := runtime.GetReplayStatus()
 	file.WriteString(fmt.Sprintf("ExitCode!%d\n", exitCode))
 	file.WriteString(fmt.Sprintf("ExitPosition!%s\n", exitPos))
+	file.WriteString(fmt.Sprintf("ReplayOldest!%d\n", replayOldest))
+	file.WriteString(fmt.Sprintf("ReplayDisabled!%d\n", replayDisabled))
+	file.WriteString(fmt.Sprintf("ReplayAck!%d\n", replayAck))
 	file.WriteString(fmt.Sprintf("NumberRoutines!%d\n", numberRoutines))
-	file.WriteString(fmt.Sprintf("Timeout!%t\n", runtime.TimeoutHappened()))
 	if timerStarted {
 		file.WriteString(fmt.Sprintf("Runtime!%d", int(duration.Seconds())))
 	} else {

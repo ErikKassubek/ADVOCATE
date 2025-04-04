@@ -20,9 +20,20 @@ import (
 	"sort"
 )
 
+// store all created mutations to avoid doubling
+var allGoPieMutations = make(map[string]struct{})
+
+/*
+ * Create new mutations for GoPie
+ * Args:
+ * 	pkgPath (string): path to where the new traces should be created
+ * 	numberFuzzingRun (int): number of fuzzing run
+ * Returns:
+ * 	error
+ */
 func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 	// TODO: check if scheduling was successful and if so, get the length of the scheduling chain
-	energy := getEnergy(numberFuzzingRuns != 0, true, 0)
+	energy := getEnergy(numberFuzzingRuns != 0, len(schedulingChains))
 
 	mutations := make(map[string]chain)
 
@@ -31,7 +42,10 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
-			mutations[key] = mut
+			if _, ok := allGoPieMutations[key]; !ok { // is new mutation
+				mutations[key] = mut
+				allGoPieMutations[key] = struct{}{}
+			}
 		}
 	}
 
@@ -85,14 +99,21 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 	return nil
 }
 
-func getEnergy(recordingBasedOnMutation bool, wasSchedulingSuccessfull bool, schedulingChainLength int) int {
+/*
+ * Calculate the energy for a schedule. This determines how many mutations
+ * are created
+ * Args:
+ * 	recordedBasedOnMutation (bool): False if the recording was the first fuzzing run, otherwise true
+ * 	numberSchedulChain (int): Number of scheduling chains in the program
+ */
+func getEnergy(recordingBasedOnMutation bool, numberSchedulChains int) int {
 	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
 
 	if recordingBasedOnMutation {
-		if wasSchedulingSuccessfull {
-			score += 10 * schedulingChainLength
-		} else {
+		if analysis.GetTimeoutHappened() {
 			score = 0
+		} else {
+			score += 10 * numberSchedulChains
 		}
 	}
 

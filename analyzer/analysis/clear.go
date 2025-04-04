@@ -56,6 +56,9 @@ func ClearData() {
 	allForks = make(map[int]*TraceElementFork)
 	exitCode = 0
 	exitPos = ""
+	replayTimeoutOldest = 0
+	replayTimeoutDisabled = 0
+	replayTimeoutAck = 0
 	fuzzingFlowOnce = make([]ConcurrentEntry, 0)
 	fuzzingFlowMutex = make([]ConcurrentEntry, 0)
 	fuzzingFlowSend = make([]ConcurrentEntry, 0)
@@ -83,5 +86,5 @@ func ClearData() {
 	maxOpID = make(map[int]int)
 
 	numberOfRoutines = 0
-	timeoutHappened = false
+
 }

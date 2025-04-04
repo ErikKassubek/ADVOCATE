@@ -1,6 +1,6 @@
 # Select Based Fuzzing
 
-The select based fuzzing is based on [GFuzz](../replatedWorks/gfuzz.md).
+The select based fuzzing is based on [GFuzz](../relatedWorks/gfuzz.md).
 
 ## Fuzzing
 The main fuzzing loop is implemented as follows.\

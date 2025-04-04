@@ -46,6 +46,14 @@ func InitFuzzing(tracePath string) {
 }
 
 /*
+ * Run when fuzzing is finished (normally as defer)
+ * This records the traces and some additional info
+ */
+func FinishFuzzing() {
+	FinishTracing()
+}
+
+/*
  * Read the file containing the preferred select cases
  * Args:
  * 	pathSelect (string): path to the file containing the select

@@ -65,8 +65,6 @@ const (
 	none
 )
 
-
-
 var advocateTracingDisabled = true
 
 // var advocateTraceWritingDisabled = false
@@ -265,13 +263,6 @@ func GetNumberOfRoutines() int {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
 	return len(AdvocateRoutines)
-}
-
-/*
- * Return whether timeouts happened during replay or mutation execution
- */
-func TimeoutHappened() bool {
-	return timeoutHappened
 }
 
 /*

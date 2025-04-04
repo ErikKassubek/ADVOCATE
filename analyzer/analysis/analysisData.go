@@ -137,6 +137,11 @@ var (
 	exitCode int
 	exitPos  string
 
+	// replay timeout info
+	replayTimeoutOldest   int
+	replayTimeoutDisabled int
+	replayTimeoutAck      int
+
 	// for fuzzing flow
 	fuzzingFlowOnce  = make([]ConcurrentEntry, 0)
 	fuzzingFlowMutex = make([]ConcurrentEntry, 0)
@@ -152,7 +157,6 @@ var (
 
 	numberSelectCasesWithPartner int
 
-	timeoutHappened   bool // whether there was a timeout in any of the replay/mutation waits
 	durationInSeconds = -1 // the duration of the recording in seconds
 
 	waitingReceive = make([]*TraceElementChannel, 0)

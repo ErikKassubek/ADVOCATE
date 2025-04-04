@@ -131,17 +131,23 @@ func GetTraceFromId(id int) []TraceElement {
 	return traces[id]
 }
 
-func SetTimeoutHappened(timeout bool) {
-	timeoutHappened = timeout
-}
-
 func SetExitInfo(code int, pos string) {
 	exitCode = code
 	exitPos = pos
 }
 
+func SetReplayTimeoutInfo(oldest, disabled, ack int) {
+	replayTimeoutOldest = oldest
+	replayTimeoutDisabled = disabled
+	replayTimeoutAck = ack
+}
+
+/*
+ * Return if a timeout happened
+ * A timeout happened if at least one of the two timeout var is not 0
+ */
 func GetTimeoutHappened() bool {
-	return timeoutHappened
+	return (replayTimeoutOldest + replayTimeoutDisabled + replayTimeoutAck) != 0
 }
 
 func SetRuntimeDurationSec(sec int) {

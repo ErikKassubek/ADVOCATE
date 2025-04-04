@@ -19,8 +19,15 @@ const (
 	MUTATEBOUND = 128
 )
 
+/*
+ * Create the mutations for a GoPie chain
+ * Args:
+ * 	c (chain): The scheduling chain to mutate
+ * 	energy (int): Determines how many mutations are created
+ * Returns:
+ * 	map[string]chain: Set of mutations
+ */
 func mutate(c chain, energy int) map[string]chain {
-	// TODO: energy
 	if energy > 100 {
 		energy = 100
 	}

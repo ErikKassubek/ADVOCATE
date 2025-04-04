@@ -146,7 +146,8 @@ func main() {
 	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
 		"Mode for fuzzing. Possible values are:\n\tGoFuzz\n\tGoFuzzHB\n\tGFuzzFlow\n\tFlow\n\tGoPie")
 
-	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
+	// partially implemented by may not work, therefore disables, enable again when fixed
+	// flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
 	flag.Parse()
 
@@ -639,12 +640,12 @@ func printHelpMode(mode string) {
 		println("Analyze a test or tool chain")
 		println("This runs the analysis on tests or the main function")
 		println("Usage: ./analyzer analysis [options]")
-		println("  -main                  Run on the main function instead on tests")
+		// println("  -main                  Run on the main function instead on tests")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
-		println("  -timeoutRec [second]      Set a timeout in seconds for the recording")
-		println("  -timeoutRepl [second]      Set a timeout in seconds for the replay")
+		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
+		println("  -timeoutRepl [second]  Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")
 		println("  -recordTime            Set to record runtimes")
 		println("  -notExec               Set to determine never executed operations")
@@ -655,10 +656,10 @@ func printHelpMode(mode string) {
 		println("Create runs for fuzzing")
 		println("This creates and updates the information required for the fuzzing runs")
 		println("Usage: ./analyzer fuzzing [options]")
-		println("  -main                  Run on the main function instead on tests")
+		// println("  -main                  Run on the main function instead on tests")
 		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
-		println("  -exec [name]           If -main, name of the executable. Else name of the test to run (do not set to run all tests)")
+		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -noWarning             Only show critical bugs")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
 		println("     GoFuzz\n\tGoFuzzHB\n\tGFuzzFlow\n\tFlow\n\tGoPie")

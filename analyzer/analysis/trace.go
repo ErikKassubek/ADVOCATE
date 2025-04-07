@@ -23,6 +23,10 @@ import (
 )
 
 var (
+	// hb clocks have been calculated
+	hbWasCalc = false
+
+	// the trace
 	traces map[int][]TraceElement = make(map[int][]TraceElement)
 
 	// current happens before vector clocks
@@ -768,4 +772,11 @@ func LogSizes() {
 	utils.LogError("currentVCWmhb: ", memory.GetSizeInMB(currentVCWmhb))
 	utils.LogError("channelWithoutPartner: ", memory.GetSizeInMB(channelWithoutPartner))
 	utils.LogError("currentState: ", memory.GetSizeInMB(currentState))
+}
+
+/*
+ * Return if the hb vector clocks have been calculated for the current trace
+ */
+func HBWasCalc() bool {
+	return hbWasCalc
 }

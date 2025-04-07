@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	BOUND       = 3
-	MUTATEBOUND = 128
+	bound       = 3
+	mutateBound = 128
 )
 
 /*
@@ -60,7 +60,7 @@ func mutate(c chain, energy int) map[string]chain {
 			}
 
 			// Rule 3 -> substitute
-			if ch.len() <= BOUND && rand.Int()%2 == 1 {
+			if ch.len() <= bound && rand.Int()%2 == 1 {
 				newChs := substitute(ch)
 				for _, newCh := range newChs {
 					tset[newCh.toString()] = newCh
@@ -68,7 +68,7 @@ func mutate(c chain, energy int) map[string]chain {
 			}
 
 			// Rule 4 -> augment
-			if ch.len() <= BOUND && rand.Int()%2 == 1 {
+			if ch.len() <= bound && rand.Int()%2 == 1 {
 				newChs := augment(c)
 				for _, newCh := range newChs {
 					tset[newCh.toString()] = newCh
@@ -80,7 +80,7 @@ func mutate(c chain, energy int) map[string]chain {
 			}
 		}
 
-		if len(res) > MUTATEBOUND {
+		if len(res) > mutateBound {
 			break
 		}
 

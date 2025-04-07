@@ -47,7 +47,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 	}
 
 	runAnalysisOnExitCodes(false)
-	RunFullAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
+	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 }
 
 /*
@@ -160,7 +160,7 @@ func checkForLeakSimple() {
 }
 
 /*
-* Run the full analysis
+* Run the full analysis happens before based analysis
 * Args:
 *   assume_fifo (bool): True to assume fifo ordering in buffered channels
 *   ignoreCriticalSections (bool): True to ignore critical sections when updating
@@ -169,7 +169,7 @@ func checkForLeakSimple() {
 *   fuzzing (bool): true if run with fuzzing
 *   memCanceled: if memCanceled == true: analysis was canceled by memory
  */
-func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
+func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
 	fifo = assumeFifo
 	modeIsFuzzing = fuzzing
 
@@ -255,6 +255,8 @@ func RunFullAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCases
 			return
 		}
 	}
+
+	hbWasCalc = true
 
 	utils.LogInfo("Finished HB analysis")
 

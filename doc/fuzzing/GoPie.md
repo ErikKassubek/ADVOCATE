@@ -2,23 +2,20 @@
 
 The order based fuzzing is based on [GoPie](../relatedWorks/goPie.md).
 
-> [!WARNING]
-> This is not fully implemented yet
-
 ## Idea
 The main idea for [GoPie](https://github.com/CGCL-codes/GoPie) is to extend [GFuzz](https://github.com/system-pclub/GFuzz). Instead of just
 influencing the select, it tries to influence the interleaving of all concurrent
 operations in order to detect new bugs. GoPie uses only fork, channel and mutex operations.
 
-For now we only implement the GoPie Idea in our framework, without using any HB analysis.
+## GoPie
 
-## Feedback Collection
+### Feedback Collection
 Not all run executions are again selected for mutations. The selection mainly
 depends on whether the run was successful. Meaning, if the mutation replay
 was interrupted by a timeout on one of the waiting operations being triggered
 or if the runtime of a mutation exceeds a predefined values (e.g. 7 min per test).
 
-## Fragmentation
+### Fragmentation
 To prevent the path explosion problem, GoPie divides the program into
 smaller fragments, always only mutating one of them.
 
@@ -30,7 +27,7 @@ The chain stands for the order, in which the operations have been executed.
 Additionally, two consecutive triples in a chain must belong to different routines. This means,
 we only mutation the runs at positions, where the execution changes the routine. To build them, we traverse the trace in order of tPost and create sets of maximal length of consecutive operations, where two neighboring operations (we only look at the operations that are used for GoPie) are not in the same routine.
 
-## Relations
+### Relations
 We say $\langle c, c'\rangle \in CPOP_1$ is $c$ and $c_1$ are neighboring operations in the same routine. We say $\langle c, c' \rangle \in CPOP_2$ if $c$ and $c'$ are operations on the same primitive but in different routines.
 
 To see which mutations on a chain are possible, GoPie defines two Relation between operations. Those relations are defined by the following rules:
@@ -50,7 +47,7 @@ need to be calculated (do all of them need to be calculated up front or can
 we only calculate those when needed $\to$ The transitive inference seems to make it necessary,
 that all $Rel_{1/2}$ are calculated up front).
 
-## Mutation
+### Mutation
 Given such a scheduling chain, it can be mutated with the following rules:
 
 1. Abridge: This removes an item from the $SC$ (either from head or tail) if there
@@ -130,5 +127,62 @@ or if not then with a probability of 50% (Why?)
  -->
 
 
-## Order Enforcement
+### Order Enforcement
 For the order enforcement, we use the order enforcement implemented for the [replay](../replay.md) mechanism. This means we write a trace file and replay it. For now, the replay files are created as follows: For each modified scheduling chain, we create one replay trace. For each of them, we reorder the elements in the recorded trace that correspond to the elements in the scheduling chain, to follow the order from the chain. We then remove all elements after the last element in the modified scheduling chain and add a replay end trace element. This allows us to force the program to execute the scheduling chain and then run without any guidance, hopefully executing new code.
+
+## Improvements
+
+> [!WARNING]
+> This is not fully implemented yet
+
+Based on the original paper, we now implement multiple improvements.
+
+### HB
+
+### Mutation
+
+A downside of this approach is, that it creates a lot of mutations, that are
+not possible to be executed.
+
+Let' e.g. look at the following simple example:
+```go
+m := sync.Mutex{}
+
+go func() {
+  m.Lock()     // l1
+  m.Unlock()   // u1
+}
+
+m.Lock()       // l2
+m.Unlock()     // u2
+```
+
+We assume the execution order l1,u1,l2,u2.
+Since the execution changes the routine between u1 and l2, they are
+part of one execution chain. A mutation could therefore flip those two events,
+creating l1,l2,u1 as a schedule. This schedule is not valid, since the
+l2 would try to lock a mutex that is already locked. This would lead to
+the program getting stuck or, with timeouts, to have the same execution
+as the originally recorded version.
+
+The original goPie implementation has no way to detect those impossible schedules
+and will replay them, resulting in an stuck replay. GoPie will not create
+new mutations from those failed runs or will be able to draw any conclusion from
+them, but since those schedules are still replayed, they increase the number
+of runs and therefore the runtime.
+
+We can use our HB relation to directly check for schedules, that
+violate the relation, To do this, we first create all mutation from a given schedule.
+We then traverse all proposed schedules and remove all impossible once.
+
+This noticeably reduces the number of created mutations and therefore the runtime.
+
+### Analysis
+
+GoPie can only detect concurrency bugs, when the bugs are directly triggered.
+Using our predictive analysis, we can detect bugs even if they are not
+directly triggered.
+
+### Pre
+TODO: write
+

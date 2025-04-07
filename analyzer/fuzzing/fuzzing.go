@@ -33,6 +33,7 @@ const (
 	GFuzzFlow = "GFuzzFlow" // GFuzz with use of hb info and flow mutation
 	Flow      = "Flow"      // only flow mutation
 	GoPie     = "GoPie"     // only goPie
+	GoPieHB   = "GoPieHB"   // goPie with HB relation
 
 	mutSelType  = 0
 	mutPiType   = 1
@@ -81,16 +82,16 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow")
 	}
 
-	modes := []string{GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow}
+	modes := []string{GoPie, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow}
 	if !utils.ContainsString(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 
 	fuzzingMode = fm
-	fuzzingModeGoPie = (fuzzingMode == GoPie)
+	fuzzingModeGoPie = (fuzzingMode == GoPie || fuzzingMode == GoPieHB)
 	fuzzingModeGFuzz = (fuzzingMode == GFuzz || fuzzingMode == GFuzzFlow || fuzzingMode == GFuzzHB)
 	fuzzingModeFlow = (fuzzingMode == Flow || fuzzingMode == GFuzzFlow)
-	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzFlow || fuzzingMode == Flow)
+	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzFlow || fuzzingMode == Flow || fuzzingMode == GoPieHB)
 
 	if cont {
 		utils.LogInfo("Continue fuzzing")

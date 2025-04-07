@@ -169,7 +169,6 @@ func clearDataFull() {
 	numberSelectCasesWithPartner = 0
 
 	alreadyDelayedElems = make(map[string][]int)
-	
 
 	foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
 }

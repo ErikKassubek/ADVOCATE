@@ -20,8 +20,13 @@ import (
  * Parse the current trace and record all relevant data
  */
 func ParseTrace(trace map[int][]analysis.TraceElement) {
-	// clear current order
+	// clear current order for gFuzz
 	selectInfoTrace = make(map[string][]fuzzingSelect)
+
+	// clear chains for goPie
+	schedulingChains = make([]chain, 0)
+	currentChain = newChain()
+	lastRoutine = -1
 
 	for _, routine := range trace {
 		if fuzzingModeGoPie {

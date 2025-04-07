@@ -32,6 +32,7 @@ func ClearTrace() {
 }
 
 func ClearData() {
+	hbWasCalc = false
 	closeData = make(map[int]*TraceElementChannel)
 	lastSendRoutine = make(map[int]map[int]elemWithVc)
 	lastRecvRoutine = make(map[int]map[int]elemWithVc)

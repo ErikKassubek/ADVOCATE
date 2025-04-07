@@ -32,7 +32,6 @@ var allGoPieMutations = make(map[string]struct{})
  * 	error
  */
 func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
-	// TODO: check if scheduling was successful and if so, get the length of the scheduling chain
 	energy := getEnergy(numberFuzzingRuns != 0, len(schedulingChains))
 
 	mutations := make(map[string]chain)
@@ -42,7 +41,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
-			if _, ok := allGoPieMutations[key]; !ok { // is new mutation
+			if _, ok := allGoPieMutations[key]; !ok && mut.isValid() { // is mut new and HB valid
 				mutations[key] = mut
 				allGoPieMutations[key] = struct{}{}
 			}

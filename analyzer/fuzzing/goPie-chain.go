@@ -10,11 +10,16 @@
 
 package fuzzing
 
-import "analyzer/analysis"
+import (
+	"analyzer/analysis"
+	"analyzer/clock"
+)
 
-var schedulingChains []chain
-var currentChain chain = newChain()
-var lastRoutine int = -1
+var (
+	schedulingChains []chain
+	currentChain     chain
+	lastRoutine      = -1
+)
 
 type chain struct {
 	elems []analysis.TraceElement
@@ -125,4 +130,28 @@ func (ch *chain) toString() string {
 		res += e.ToString()
 	}
 	return res
+}
+
+/*
+ * Check if a chain is valid.
+ * A chain is valid if it isn't violation the HB relation
+ * If the analyzer did not run and therefore did not calculate the HB relation,
+ * the function will always return true
+ * Since HB relations are transitive, it is enough to check neighboring elements
+ * Returns:
+ * 	(bool): True if the mutation is valid, false otherwise
+ */
+func (ch *chain) isValid() bool {
+	if !analysis.HBWasCalc() {
+		return true
+	}
+
+	for i := range ch.len() - 1 {
+		hb := clock.GetHappensBefore(ch.elems[i].GetVC(), ch.elems[i+1].GetVC())
+		if hb == clock.After {
+			return false
+		}
+	}
+
+	return true
 }

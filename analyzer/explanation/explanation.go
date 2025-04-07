@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: explanation.go
 // Brief: Create an explanation file for a found bug

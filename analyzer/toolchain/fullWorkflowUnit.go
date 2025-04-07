@@ -339,7 +339,8 @@ func FindTestFunctions(file string) ([]string, error) {
 }
 
 /*
- * Run the full workflow for a given unit test
+ * Run the full workflow for a given unit test.
+ * This will run, record, analyzer and, if necessary, rewrite and replay the test
  * Args:
  *    pathToAdvocate (string): path to advocate
  *    dir (string): path to the package to test

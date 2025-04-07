@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisData.go
 // Brief: Variables and data for the analysis

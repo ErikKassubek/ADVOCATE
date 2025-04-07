@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisResourceDeadlock.go
 // Brief: Alternative analysis for cyclic mutex deadlocks.

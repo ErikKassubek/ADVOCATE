@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementSelect.go
 // Brief: Struct and functions for select operations in the trace
@@ -348,11 +348,11 @@ func (se *TraceElementSelect) GetPartner() *TraceElementChannel {
  * Get the string representation of the object type
  */
 func (se *TraceElementSelect) GetObjType(operation bool) string {
-	if !operation {
-		return "S"
+	if operation {
+		return ObjectTypeSelect + "S"
 	}
 
-	return "SS"
+	return ObjectTypeSelect
 }
 
 func (se *TraceElementSelect) GetCasiWithPosPartner() []int {

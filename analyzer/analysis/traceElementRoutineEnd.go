@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: TraceElementRoutineEnd.go
 // Brief: Struct and functions for fork operations in the trace
@@ -145,10 +145,10 @@ func (re *TraceElementRoutineEnd) GetVC() clock.VectorClock {
  * Get the string representation of the object type
  */
 func (re *TraceElementRoutineEnd) GetObjType(operation bool) string {
-	if !operation {
-		return "R"
+	if operation {
+		return ObjectTypeRoutineEnd + "E"
 	}
-	return "RE"
+	return ObjectTypeRoutineEnd
 }
 
 func (re *TraceElementRoutineEnd) IsEqual(elem TraceElement) bool {

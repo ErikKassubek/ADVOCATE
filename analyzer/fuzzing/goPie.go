@@ -16,6 +16,7 @@ import (
 	"analyzer/utils"
 	"fmt"
 	"math"
+	"os"
 	"path/filepath"
 	"sort"
 )
@@ -28,10 +29,8 @@ var allGoPieMutations = make(map[string]struct{})
  * Args:
  * 	pkgPath (string): path to where the new traces should be created
  * 	numberFuzzingRun (int): number of fuzzing run
- * Returns:
- * 	error
  */
-func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
+func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 	energy := getEnergy(numberFuzzingRuns != 0, len(schedulingChains))
 
 	mutations := make(map[string]chain)
@@ -41,35 +40,48 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
-			if _, ok := allGoPieMutations[key]; !ok && mut.isValid() { // is mut new and HB valid
-				mutations[key] = mut
+			if _, ok := allGoPieMutations[key]; !ok {
+				// only add if not invalidated by hb
+				if !useHBInfoFuzzing || mut.isValid() {
+					mutations[key] = mut
+				}
 				allGoPieMutations[key] = struct{}{}
+			} else {
+				utils.LogImportantf("B")
 			}
 		}
 	}
 
+	fuzzingPath := addFuzzingTraceFolder(pkgPath)
+	if fuzzingPath == "" {
+		return
+	}
+
+	original := analysis.GetTraces()
 	for _, mut := range mutations {
-		traces := analysis.GetTraces()
-		oldTrace, err := analysis.CopyCurrentTrace()
+		traces, err := analysis.CopyTrace(original)
 		if err != nil {
-			return fmt.Errorf("Could not copy trace: ", err.Error())
+			utils.LogError("Could not copy current trace")
 		}
 
-		tPosts := make([]int, 0)
+		tPosts := make([]int, len(mut.elems))
 		routines := make(map[int]struct{})
-		for _, elem := range mut.elems {
-			tPosts = append(tPosts, elem.GetTPost())
+		utils.LogImportantf("Len1: ", len(mut.elems))
+		for i, elem := range mut.elems {
+			tPosts[i] = elem.GetTPost()
 			routines[elem.GetRoutine()] = struct{}{}
 		}
 
 		sort.Ints(tPosts)
 
+		utils.LogImportantf("Len2: ", len(mut.elems))
 		for i, elem := range mut.elems {
 			routine, index := elem.GetTraceIndex()
+			utils.LogImportantf("%d %d", routine, index)
 			traces[routine][index].SetTSort(tPosts[i])
 		}
 
-		// TODO: is this sort necessary
+		// TODO: is this sort necessary, only sort routines that where changed
 		for routine := range routines {
 			traces[routine] = analysis.SortTrace(traces[routine])
 		}
@@ -80,22 +92,33 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) error {
 		// add a replayEndElem
 		analysis.AddTraceElementReplay(lastTPost+2, 0)
 
-		fileName := filepath.Join(pkgPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
+		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++
 
 		err = io.WriteTrace(fileName, analysis.GetNoRoutines())
 		if err != nil {
-			analysis.SetTrace(oldTrace)
-			return fmt.Errorf("Could not create pie mutation")
+			utils.LogError("Could not create pie mutation: ", err.Error())
 		}
 
 		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: fileName})
-
-		analysis.SetTrace(oldTrace)
-
 	}
+}
 
-	return nil
+/*
+ * Create the folder for the fuzzing traces of not exists
+ * Args:
+ * 	path (string): path to the folder
+ * Returns:
+ * 	string: path to the fuzzingTraces folder, or "" if an error occurred
+ */
+func addFuzzingTraceFolder(path string) string {
+	p := filepath.Join(path, "fuzzingTraces")
+	err := os.MkdirAll(p, os.ModePerm)
+	if err != nil {
+		utils.LogError("Could not create folder")
+		return ""
+	}
+	return p
 }
 
 /*

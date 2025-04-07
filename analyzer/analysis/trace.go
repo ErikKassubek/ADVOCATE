@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: trace.go
 // Brief: Functions and structs for the trace
@@ -21,6 +21,32 @@ import (
 	"strconv"
 	"strings"
 )
+
+// TODO: make trace as a struct
+
+type Trace struct {
+	// the trace
+	traces map[int][]TraceElement
+
+	// hb clocks have been calculated for this trace
+	hbWasCalc bool
+
+	// channel without partner
+	channelWithoutPartner map[int]map[int]*TraceElementChannel // id -> opId -> element
+}
+
+/*
+ * Create a new trace structure
+ * Returns:
+ * 	Trace: the new trace
+ */
+func NewTrace() Trace {
+	return Trace{
+		traces:                make(map[int][]TraceElement),
+		hbWasCalc:             false,
+		channelWithoutPartner: make(map[int]map[int]*TraceElementChannel),
+	}
+}
 
 var (
 	// hb clocks have been calculated

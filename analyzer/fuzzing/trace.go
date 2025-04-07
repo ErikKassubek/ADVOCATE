@@ -32,24 +32,36 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 		if fuzzingModeGoPie {
 			calculateRelRule1(routine)
 		}
+
 		for _, elem := range routine {
+			if ignoreFuzzing(elem) {
+				continue
+			}
+
+			if fuzzingModeGoPie {
+				calculateRelRule2AddElem(elem)
+				addElemToChain(elem)
+			}
+
 			if elem.GetTPost() == 0 {
 				continue
 			}
 
 			switch e := elem.(type) {
-			case *analysis.TraceElementFork:
-				parseFork(e)
 			case *analysis.TraceElementNew:
 				parseNew(e)
 			case *analysis.TraceElementChannel:
 				parseChannelOp(e, -2) // -2: not part of select
 			case *analysis.TraceElementSelect:
 				parseSelectOp(e)
-			case *analysis.TraceElementMutex:
-				parseMutexOp(e)
 			}
+
 		}
+	}
+
+	if fuzzingModeGoPie && currentChain.len() != 0 {
+		schedulingChains = append(schedulingChains, currentChain)
+		currentChain = newChain()
 	}
 
 	if fuzzingModeGoPie {
@@ -62,10 +74,17 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 	numberSelectCasesWithPartner = analysis.GetNumberSelectCasesWithPartner()
 }
 
-func parseFork(elem *analysis.TraceElementFork) {
-	if fuzzingModeGoPie {
-		addElemToChain(elem)
-	}
+/*
+ * For the creation of mutations we ignore all elements that do not directly
+ * correspond to relevant operations. Those are , replay, routineEnd
+ * Args:
+ * 	elem (*analysis.TraceElementFork): The element to check
+ * Returns:
+ * 	True if the element is of one of those types, false otherwise
+ */
+func ignoreFuzzing(elem analysis.TraceElement) bool {
+	t := elem.GetObjType(false)
+	return t == analysis.ObjectTypeNew || t == analysis.ObjectTypeReplay || t == analysis.ObjectTypeRoutineEnd
 }
 
 /*
@@ -148,10 +167,6 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 			channelNew.maxQCount = max(channelNew.maxQCount, elem.GetQCount())
 		}
 	}
-	if fuzzingModeGoPie {
-		calculateRelRule2AddElem(elem)
-		addElemToChain(elem)
-	}
 }
 
 func parseSelectOp(elem *analysis.TraceElementSelect) {
@@ -162,16 +177,5 @@ func parseSelectOp(elem *analysis.TraceElementSelect) {
 			return
 		}
 		parseChannelOp(elem.GetChosenCase(), elem.GetChosenIndex())
-	}
-	if fuzzingModeGoPie {
-		calculateRelRule2AddElem(elem)
-		addElemToChain(elem)
-	}
-}
-
-func parseMutexOp(elem *analysis.TraceElementMutex) {
-	if fuzzingModeGoPie {
-		calculateRelRule2AddElem(elem)
-		addElemToChain(elem)
 	}
 }

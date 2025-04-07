@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: vcChannel.go
 // Brief: Update functions for vector clocks from channel operations

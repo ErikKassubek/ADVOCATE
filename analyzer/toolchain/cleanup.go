@@ -114,7 +114,7 @@ func removeTraces(path string) {
 		"rewrittenTrace*",
 		"advocateTraceReplay_*",
 		"fuzzingData.log",
-		"fuzzingTrace_*",
+		// "fuzzingTrace_*",
 	}
 
 	files := make([]string, 0)
@@ -155,15 +155,31 @@ func removeLogs(path string) {
 	}
 }
 
-func RemoveFuzzingTrace(path string) {
+/*
+ * RemoveFuzzingTrace removes one or all fuzzing traces from path
+ * Args:
+ * 	path (string): path to the folder containing the fuzzing traces
+ * 	number (string): if number is not empty remove only the fuzzing trace with
+ * 		the stated number, otherwise remove all traces
+ * Returns:
+ * 	error
+ */
+func RemoveFuzzingTrace(path, number string) {
 	files := make([]string, 0)
 	filepath.WalkDir(path, func(p string, _ os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
 
+		fileNameToDel := "fuzzingTrace_"
+		if number == "" {
+			fileNameToDel += "*"
+		} else {
+			fileNameToDel += number
+		}
+
 		// Use Glob to check if the file/directory matches the pattern
-		match, err := filepath.Match("fuzzingTrace_*", filepath.Base(p))
+		match, err := filepath.Match(fileNameToDel, filepath.Base(p))
 		if err != nil {
 			return err
 		}

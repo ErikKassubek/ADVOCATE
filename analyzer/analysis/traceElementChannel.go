@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementChannel.go
 // Brief: Struct and functions for channel operations in the trace
@@ -309,18 +309,18 @@ func (ch *TraceElementChannel) GetTPost() int {
  */
 func (ch *TraceElementChannel) GetObjType(operation bool) string {
 	if !operation {
-		return "C"
+		return ObjectTypeChannel
 	}
 
 	switch ch.opC {
 	case SendOp:
-		return "CS"
+		return ObjectTypeChannel + "S"
 	case RecvOp:
-		return "CR"
+		return ObjectTypeChannel + "R"
 	case CloseOp:
-		return "CC"
+		return ObjectTypeChannel + "C"
 	}
-	return "C"
+	return ObjectTypeChannel
 }
 
 func (ch *TraceElementChannel) GetQCount() int {

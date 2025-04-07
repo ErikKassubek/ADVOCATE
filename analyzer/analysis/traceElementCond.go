@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementCond.go
 // Brief: Struct and functions for operations of conditional variables in the trace
@@ -259,18 +259,18 @@ func GetConcurrentWaitgroups(element TraceElement) map[string][]TraceElement {
  */
 func (co *TraceElementCond) GetObjType(operation bool) string {
 	if !operation {
-		return "D"
+		return ObjectTypeCond
 	}
 
 	switch co.opC {
 	case WaitCondOp:
-		return "DW"
+		return ObjectTypeCond + "W"
 	case BroadcastOp:
-		return "DB"
+		return ObjectTypeCond + "B"
 	case SignalOp:
-		return "DS"
+		return ObjectTypeCond + "S"
 	}
-	return "D"
+	return ObjectTypeCond
 }
 
 func (co *TraceElementCond) IsEqual(elem TraceElement) bool {

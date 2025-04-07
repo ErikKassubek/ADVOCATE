@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisUtil.go
 // Brief: Collection of utility functiond for trace analysis

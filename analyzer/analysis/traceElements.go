@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElements.go
 // Brief: Interface for all trace element types
@@ -11,6 +11,20 @@
 package analysis
 
 import "analyzer/clock"
+
+const (
+	ObjectTypeAtomic     = "A"
+	ObjectTypeChannel    = "C"
+	ObjectTypeCond       = "D"
+	ObjectTypeFork       = "R"
+	ObjectTypeMutex      = "M"
+	ObjectTypeNew        = "N"
+	ObjectTypeOnce       = "O"
+	ObjectTypeReplay     = "R"
+	ObjectTypeRoutineEnd = "E"
+	ObjectTypeSelect     = "S"
+	ObjectTypeWait       = "W"
+)
 
 // Interface for trace elements
 type TraceElement interface {

@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: vcAtomic.go
 // Brief: Update for vector clocks from atomic operations

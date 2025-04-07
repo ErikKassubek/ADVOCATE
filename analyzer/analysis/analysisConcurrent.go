@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisConcurrentCommunication.go
 // Brief: Find concurrent operations on the same element

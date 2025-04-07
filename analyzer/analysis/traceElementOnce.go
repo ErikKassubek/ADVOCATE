@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementOnce.go
 // Brief: Struct and functions for once operations in the trace
@@ -189,13 +189,13 @@ func (on *TraceElementOnce) GetVC() clock.VectorClock {
  */
 func (on *TraceElementOnce) GetObjType(operation bool) string {
 	if !operation {
-		return "O"
+		return ObjectTypeOnce
 	}
 
 	if on.suc {
-		return "OE"
+		return ObjectTypeOnce + "E"
 	}
-	return "ON"
+	return ObjectTypeOnce + "N"
 }
 
 /*

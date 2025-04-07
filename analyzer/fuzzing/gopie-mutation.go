@@ -17,6 +17,7 @@ import (
 const (
 	bound       = 3
 	mutateBound = 128
+	maxNoNew    = 5
 )
 
 /*
@@ -40,7 +41,10 @@ func mutate(c chain, energy int) map[string]chain {
 
 	res[c.toString()] = c
 
+	countNoNew := 0
+
 	for {
+		noNew := false
 		for _, ch := range res {
 			tset := make(map[string]chain, 0)
 
@@ -75,9 +79,22 @@ func mutate(c chain, energy int) map[string]chain {
 				}
 			}
 
+			lenBefore := len(res)
 			for k, v := range tset {
 				res[k] = v
 			}
+
+			if len(res) == lenBefore { // if no new elements where added
+				countNoNew++
+				// if no new mutation has been added for maxNoNew rounds, end creation of mutations
+				if countNoNew > maxNoNew {
+					noNew = true
+				}
+			}
+		}
+
+		if noNew {
+			break
 		}
 
 		if len(res) > mutateBound {

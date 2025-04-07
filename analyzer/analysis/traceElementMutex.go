@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementMutex.go
 // Brief: Struct and functions for mutex operations in the trace
@@ -261,24 +261,24 @@ func (mu *TraceElementMutex) GetVC() clock.VectorClock {
  */
 func (mu *TraceElementMutex) GetObjType(operation bool) string {
 	if !operation {
-		return "M"
+		return ObjectTypeMutex
 	}
 
 	switch mu.opM {
 	case LockOp:
-		return "ML"
+		return ObjectTypeMutex + "L"
 	case RLockOp:
-		return "MR"
+		return ObjectTypeMutex + "R"
 	case TryLockOp:
-		return "MT"
+		return ObjectTypeMutex + "T"
 	case TryRLockOp:
-		return "MY"
+		return ObjectTypeMutex + "Y"
 	case UnlockOp:
-		return "MU"
+		return ObjectTypeMutex + "U"
 	case RUnlockOp:
-		return "MN"
+		return ObjectTypeMutex + "N"
 	}
-	return "M"
+	return ObjectTypeMutex
 }
 
 func (mu *TraceElementMutex) IsSuc() bool {

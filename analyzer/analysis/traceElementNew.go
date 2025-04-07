@@ -134,24 +134,24 @@ func (n *TraceElementNew) GetTID() string {
 
 func (n *TraceElementNew) GetObjType(operation bool) string {
 	if !operation {
-		return "N"
+		return ObjectTypeNew
 	}
 
 	switch n.elemType {
 	case atomicVar:
-		return "NA"
+		return ObjectTypeNew + "A"
 	case channel:
-		return "NC"
+		return ObjectTypeNew + "C"
 	case conditional:
-		return "ND"
+		return ObjectTypeNew + "D"
 	case mutex:
-		return "NM"
+		return ObjectTypeNew + "M"
 	case once:
-		return "NO"
+		return ObjectTypeNew + "O"
 	case wait:
-		return "NW"
+		return ObjectTypeNew + "W"
 	default:
-		return "N"
+		return ObjectTypeNew
 	}
 }
 

@@ -177,6 +177,11 @@ We then traverse all proposed schedules and remove all impossible once.
 
 This noticeably reduces the number of created mutations and therefore the runtime.
 
+### Element
+
+Instead of only mutating channels and mutexes, we mutate all objects recorded
+in our trace.
+
 ### Analysis
 
 GoPie can only detect concurrency bugs, when the bugs are directly triggered.
@@ -186,3 +191,5 @@ directly triggered.
 ### Pre
 TODO: write
 
+### Check for new and Stop
+TODO: write

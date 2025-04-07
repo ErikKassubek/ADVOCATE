@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: readProg.go
 // Brief: Functions to read in a program an extrace all relevant operations

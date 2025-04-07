@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: main.go
 // Brief: Main file and starting point for the analyzer
@@ -12,8 +12,10 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -87,6 +89,9 @@ const (
 	FuzzNoAna   = 3
 )
 
+/*
+ * Main function
+ */
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
@@ -262,12 +267,16 @@ func main() {
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
 }
 
+/*
+ * Starting point for fuzzing
+ */
 func modeFuzzing() {
 	if progName == "" {
 		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
 		return
 	}
 
+	checkPath()
 	checkVersion()
 
 	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
@@ -278,8 +287,14 @@ func modeFuzzing() {
 	}
 }
 
+/*
+ * Start point for the toolchain
+ * This will run, analyze and replay a given program or test
+ */
 func modeToolchain(mode string, numRerecorded int) {
+	checkPath()
 	checkVersion()
+
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
 		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, cont, 0, 0)
 	if err != nil {
@@ -294,22 +309,20 @@ func modeToolchain(mode string, numRerecorded int) {
 	}
 }
 
-func getFolderTrace(pathTrace string) (string, error) {
-	folderTrace, err := filepath.Abs(pathTrace)
-	if err != nil {
-		return "", err
-	}
-
-	// remove last folder from path
-	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
-}
-
+/*
+ * modeAnalyzer is the starting point to the analyzer.
+ * This function will read the trace at a stored path, analyze it and,
+ * if needed, rewrite the trace.
+ * Args:
+ * 	TODO
+ * Returns:
+ * 	error
+ */
 func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	rewriteAll bool, newTrace string, ignoreRewrite string,
 	fuzzingRun int, onlyAPanicAndLeak bool) error {
-	// printHeader()
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -597,30 +610,14 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	return rewriteNeeded, false, nil
 }
 
-func printHeader() {
-	fmt.Print("\n")
-	fmt.Println(" $$$$$$\\  $$$$$$$\\  $$\\    $$\\  $$$$$$\\   $$$$$$\\   $$$$$$\\ $$$$$$$$\\ $$$$$$$$\\ ")
-	fmt.Println("$$  __$$\\ $$  __$$\\ $$ |   $$ |$$  __$$\\ $$  __$$\\ $$  __$$\\\\__$$  __|$$  _____|")
-	fmt.Println("$$ /  $$ |$$ |  $$ |$$ |   $$ |$$ /  $$ |$$ /  \\__|$$ /  $$ |  $$ |   $$ |      ")
-	fmt.Println("$$$$$$$$ |$$ |  $$ |\\$$\\  $$  |$$ |  $$ |$$ |      $$$$$$$$ |  $$ |   $$$$$\\    ")
-	fmt.Println("$$  __$$ |$$ |  $$ | \\$$\\$$  / $$ |  $$ |$$ |      $$  __$$ |  $$ |   $$  __|   ")
-	fmt.Println("$$ |  $$ |$$ |  $$ |  \\$$$  /  $$ |  $$ |$$ |  $$\\ $$ |  $$ |  $$ |   $$ |      ")
-	fmt.Println("$$ |  $$ |$$$$$$$  |   \\$  /    $$$$$$  |\\$$$$$$  |$$ |  $$ |  $$ |   $$$$$$$$\\ ")
-	fmt.Println("\\__|  \\__|\\_______/     \\_/     \\______/  \\______/ \\__|  \\__|  \\__|   \\________|")
+func getFolderTrace(pathTrace string) (string, error) {
+	folderTrace, err := filepath.Abs(pathTrace)
+	if err != nil {
+		return "", err
+	}
 
-	headerInfo := "\n\n\n" +
-		"Welcome to the trace analyzer and rewriter.\n" +
-		"This program analyzes a trace file and detects common concurrency bugs in Go programs.\n" +
-		"It can also create a reordered trace file based on the analysis results.\n" +
-		"Be aware, that the analysis is based on the trace file and may not be complete.\n" +
-		"Be aware, that the analysis may contain false positives and false negatives.\n" +
-		"\n" +
-		"If the rewrite of a trace file does not create the expected result, it can help to run the\n" +
-		"analyzer with the -ignCritSecflag to ignore the happens before relations of critical sections (mutex lock/unlock operations).\n" +
-		"For the first analysis this is not recommended, because it increases the likelihood of false positives." +
-		"\n\n\n"
-
-	fmt.Print(headerInfo)
+	// remove last folder from path
+	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
 }
 
 func printHelp() {
@@ -671,6 +668,14 @@ func printHelpMode(mode string) {
 	default:
 		println("Mode: unknown")
 		printHelp()
+	}
+}
+
+func checkPath() {
+	_, err := os.Stat(progPath)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		utils.LogErrorf("Could not find path %s", progPath)
+		panic(err)
 	}
 }
 

@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementAtomic.go
 // Brief: Struct and functions for atomic operations in the trace
@@ -203,23 +203,23 @@ func (at *TraceElementAtomic) GetVC() clock.VectorClock {
  */
 func (at *TraceElementAtomic) GetObjType(operation bool) string {
 	if !operation {
-		return "A"
+		return ObjectTypeAtomic
 	}
 
 	switch at.opA {
 	case LoadOp:
-		return "AL"
+		return ObjectTypeAtomic + "L"
 	case StoreOp:
-		return "AS"
+		return ObjectTypeAtomic + "S"
 	case AddOp:
-		return "AA"
+		return ObjectTypeAtomic + "A"
 	case SwapOp:
-		return "AW"
+		return ObjectTypeAtomic + "W"
 	case CompSwapOp:
-		return "AC"
+		return ObjectTypeAtomic + "C"
 	}
 
-	return "A"
+	return ObjectTypeAtomic
 }
 
 func (at *TraceElementAtomic) IsEqual(elem TraceElement) bool {

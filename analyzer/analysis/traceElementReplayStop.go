@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementReplayStop.go
 // Brief: Struct and functions for replay controll elements in the trace
@@ -132,10 +132,10 @@ func (er *TraceElementReplay) GetVC() clock.VectorClock {
  * Get the string representation of the object type
  */
 func (er *TraceElementReplay) GetObjType(operation bool) string {
-	if !operation {
-		return "R"
+	if operation {
+		return ObjectTypeReplay + "R"
 	}
-	return "RR"
+	return ObjectTypeReplay
 }
 
 func (er *TraceElementReplay) IsEqual(elem TraceElement) bool {

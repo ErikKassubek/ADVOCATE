@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementWait.go
 // Brief: Struct and functions for wait group operations in the trace
@@ -231,15 +231,15 @@ func (wa *TraceElementWait) GetVC() clock.VectorClock {
  */
 func (wa *TraceElementWait) GetObjType(operation bool) string {
 	if !operation {
-		return "W"
+		return ObjectTypeWait
 	}
 
 	if wa.delta > 0 {
-		return "WA"
+		return ObjectTypeWait + "A"
 	} else if wa.delta < 0 {
-		return "WD"
+		return ObjectTypeWait + "D"
 	}
-	return "WW"
+	return ObjectTypeWait + "W"
 }
 
 func (wa *TraceElementWait) IsEqual(elem TraceElement) bool {

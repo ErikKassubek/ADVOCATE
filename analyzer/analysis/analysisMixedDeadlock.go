@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisMixedDeadlock.go
 // Brief: Trace analysis for mixed deadlocks. Currently not used.

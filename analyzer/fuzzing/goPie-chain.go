@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"analyzer/analysis"
 	"analyzer/clock"
+	"fmt"
 )
 
 var (
@@ -127,7 +128,7 @@ func (ch *chain) len() int {
 func (ch *chain) toString() string {
 	res := ""
 	for _, e := range ch.elems {
-		res += e.ToString()
+		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
 	}
 	return res
 }

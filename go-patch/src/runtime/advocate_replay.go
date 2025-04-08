@@ -52,7 +52,7 @@ var ExitCodeNames = map[int]string{
 var (
 	hasReturnedExitCode = false
 	ignoreAtomicsReplay = true
-	printDebug          = true
+	printDebug          = false
 
 	tPostWhenFirstTimeout    = 0
 	tPostWhenReplayDisabled  = 0
@@ -572,8 +572,14 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
  *  next (bool): true if the next element in the trace was released, false if the oldest has been released
  */
 func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) {
+	if printDebug {
+		print("Release: ", elemReplay.key())
+	}
 	if rel {
 		elem.chWait <- elemReplay
+	}
+	if printDebug {
+		print("Ack: ", elemReplay.key())
 	}
 
 	if elem.waitAck {

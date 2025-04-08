@@ -20,6 +20,8 @@ import (
 
 var (
 	runAnalyzer func(pathTrace string, noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string, ignoreAtomics bool, fifo bool, ignoreCriticalSection bool, rewriteAll bool, newTrace string, ignoreRewrite string, fuzzing int, onlyAPanicAndLeak bool) error
+
+	currentResFolder = ""
 )
 
 /*

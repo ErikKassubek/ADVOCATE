@@ -156,42 +156,23 @@ func removeLogs(path string) {
 }
 
 /*
- * RemoveFuzzingTrace removes one or all fuzzing traces from path
+ * Remove the fuzzing trace folder
  * Args:
  * 	path (string): path to the folder containing the fuzzing traces
- * 	number (string): if number is not empty remove only the fuzzing trace with
- * 		the stated number, otherwise remove all traces
- * Returns:
- * 	error
+ * 	keepTrace (bool): if true move fuzzingTraces into the result folder, otherwise remove it
  */
-func RemoveFuzzingTrace(path, number string) {
-	files := make([]string, 0)
-	filepath.WalkDir(path, func(p string, _ os.DirEntry, err error) error {
+func ClearFuzzingTrace(path string, keepTrace bool) {
+	fuzzingPath := filepath.Join(path, "fuzzingTraces")
+
+	if keepTrace {
+		err := os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
 		if err != nil {
-			return err
+			utils.LogErrorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
 		}
-
-		fileNameToDel := "fuzzingTrace_"
-		if number == "" {
-			fileNameToDel += "*"
-		} else {
-			fileNameToDel += number
-		}
-
-		// Use Glob to check if the file/directory matches the pattern
-		match, err := filepath.Match(fileNameToDel, filepath.Base(p))
+	} else {
+		err := os.RemoveAll(fuzzingPath)
 		if err != nil {
-			return err
+			utils.LogErrorf("Could not delete fuzzingTraces: %s", err.Error())
 		}
-
-		if match {
-			files = append(files, p)
-		}
-
-		return nil
-	})
-
-	for _, trace := range files {
-		os.RemoveAll(trace)
 	}
 }

@@ -124,7 +124,7 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 			if cont && fileNumber != 0 {
 				directoryName = filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
 			}
-			directoryPath := filepath.Join(dir, directoryName)
+			currentResFolder = filepath.Join(dir, directoryName)
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)
 				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
@@ -148,7 +148,7 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 
 			// Move logs and results to the appropriate directory
 			total := fuzzing != -1
-			collect(dir, packagePath, directoryPath, total)
+			collect(dir, packagePath, currentResFolder, total)
 
 			if err != nil {
 				utils.LogErrorf(err.Error())
@@ -156,10 +156,10 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 			}
 
 			if anaPassed {
-				generateBugReports(directoryPath, fuzzing)
+				generateBugReports(currentResFolder, fuzzing)
 				if createStats {
 					// create statistics
-					err := stats.CreateStats(directoryPath, progName, testFunc, movedTraces, fuzzing)
+					err := stats.CreateStats(currentResFolder, progName, testFunc, movedTraces, fuzzing)
 					if err != nil {
 						utils.LogError("Could not create statistics: ", err.Error())
 					}

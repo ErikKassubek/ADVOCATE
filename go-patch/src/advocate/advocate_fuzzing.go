@@ -31,8 +31,6 @@ func InitFuzzing(tracePath string) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
-	isFuzzing = true
-
 	InitTracing()
 
 	if tracePath == "" { // GoFuzz and Flow
@@ -45,6 +43,7 @@ func InitFuzzing(tracePath string) {
 		}
 		runtime.InitFuzzingDelay(prefSel, prefFlow)
 	} else { // GoPie
+		runtime.InitFuzzingTrace(FinishFuzzing)
 		tracePathRewritten = tracePath
 		startReplay(0, true)
 	}

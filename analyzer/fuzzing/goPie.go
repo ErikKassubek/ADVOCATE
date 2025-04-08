@@ -125,7 +125,7 @@ func getEnergy(recordingBasedOnMutation bool, numberSchedulChains int) int {
 	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
 
 	if recordingBasedOnMutation {
-		if analysis.GetTimeoutHappened() {
+		if analysis.GetTimeoutHappened() || numberSchedulChains == 0 {
 			score = 0
 		} else {
 			score += 10 * numberSchedulChains

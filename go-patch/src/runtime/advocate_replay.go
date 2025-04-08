@@ -742,11 +742,14 @@ func isExitCodeConfOnEndElem(code int) bool {
  * 	msg: the panic message
  */
 func ExitReplayPanic(msg any) {
+	if IsAdvocateFuzzingEnabled() {
+		finishFuzzingFunc()
+	}
+
 	if !IsReplayEnabled() {
 		return
 	}
 
-	println("Exit with panic")
 	switch m := msg.(type) {
 	case plainError:
 		if expectedExitCode == ExitCodeSendClose && m.Error() == "send on closed channel" {

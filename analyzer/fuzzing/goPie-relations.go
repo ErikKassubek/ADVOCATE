@@ -93,6 +93,9 @@ func calculateRelRule3And4() {
 				// Rule 3
 				c1 := elem.GetRel1()
 				for _, c1Elem := range c1 {
+					if c1Elem == nil {
+						continue
+					}
 					c2 := c1Elem.GetRel2()
 					for _, c2Elem := range c2 {
 						elem.AddRel2(c2Elem)

@@ -77,7 +77,7 @@ var (
 	currentVCWmhb = make(map[int]clock.VectorClock)
 
 	// channel without partner in main trace
-	channelWithoutPartner map[int]map[int]*TraceElementChannel // id -> opId -> element
+	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel) // id -> opId -> element
 
 	fifo          bool
 	modeIsFuzzing bool

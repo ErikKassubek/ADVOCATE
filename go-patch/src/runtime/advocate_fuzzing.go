@@ -22,6 +22,8 @@ var (
 	fuzzingFlowData        = make(map[string][]int)
 	fuzzingFlowCounter     = make(map[string]int)
 	fuzzingFlowDataCounter = make(map[string]int)
+
+	finishFuzzingFunc func()
 )
 
 /*
@@ -43,7 +45,12 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int)
 	advocateFuzzingEnabled = true
 }
 
-func isAdvocateFuzzingEnabled() bool {
+func InitFuzzingTrace(finishFuzzing func()) {
+	finishFuzzingFunc = finishFuzzing
+	advocateFuzzingEnabled = true
+}
+
+func IsAdvocateFuzzingEnabled() bool {
 	return advocateFuzzingEnabled
 }
 

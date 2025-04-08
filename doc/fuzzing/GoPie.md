@@ -132,10 +132,14 @@ For the order enforcement, we use the order enforcement implemented for the [rep
 
 ## Improvements
 
-> [!WARNING]
-> This is not fully implemented yet
-
-Based on the original paper, we now implement multiple improvements.
+We merge the GoPie approach with our HB analysis. With this, we are able to
+reduce the number of runs the fuzzing needs to execute to trigger
+a bug by removing impossible mutations, increase its power by
+not only mutating channels and mutexes but all concurrency operations
+used for ADVOCATE as well as operations that have started but not fully executed,
+can find potential but not triggered bugs by using the HB analysis
+and use trace replay to increase the chance of a fuzzing run actually
+arriving at a mutated section.
 
 ### HB
 
@@ -175,7 +179,7 @@ We can use our HB relation to directly check for schedules, that
 violate the relation, To do this, we first create all mutation from a given schedule.
 We then traverse all proposed schedules and remove all impossible once.
 
-This noticeably reduces the number of created mutations and therefore the runtime.
+This can reduce the number of created mutations and therefore the runtime.
 
 ### Element
 
@@ -188,8 +192,68 @@ GoPie can only detect concurrency bugs, when the bugs are directly triggered.
 Using our predictive analysis, we can detect bugs even if they are not
 directly triggered.
 
-### Pre
-TODO: write
+### Trace Replay
 
-### Check for new and Stop
-TODO: write
+In the execution of a mutation, GoPie only controls the execution order
+of mutexes and channels.
+
+This may lead to the execution getting stuck. Some possible situations
+where this could happen are as follows:
+
+```go
+m := sync.Mutex()
+n := sync.Mutex()
+o := sync.Once()
+
+go func() {
+  o.Do() {func() {           // Do 1
+    m.Lock()
+    // the mutated section
+  }}
+}
+
+o.Do() {func() {            // Do 2
+  n.Lock()
+  // ...
+}}
+```
+
+If in the recording execution `Do 1` was first, but in the second, controlled
+run the `Do 2` is executed, the execution will get into a problem.
+First the mutated section is not executed anyway, meaning it cannot
+bring the expected insight. Additionally, depending on the details of the
+implementation, the program may block, since the lock in the `Do 2` is not
+expected.
+
+Another, similar situation would be as follows:
+```go
+m := sync.Mutex()
+n := sync.Mutex()
+x := atomic.Uint32
+
+go func() {
+  x.StoreUin32(0)
+}
+
+x.StoreUin32(1)
+
+if x.Load() == 0 {
+  m.Lock()
+  // the mutated section
+} else {
+  n.Lock()
+  // ...
+}
+```
+Here the execution of the mutated section depends on the order
+of the concurrent stores on the atomic variable `x`.
+
+By rewriting the complete recorded trace based on the mutation and removing
+all operations after the mutation from the trace, so that the
+execution can continue freely as soon as the mutation has been executed,
+we can reduce the probability of the fuzzing run getting into an
+undesired state.
+
+### Pre
+
+TODO: describe with example

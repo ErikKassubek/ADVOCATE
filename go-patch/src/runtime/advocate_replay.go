@@ -394,7 +394,6 @@ func ReleaseWaits() {
 					unlock(&waitingOpsMutex)
 				}
 			}
-			nextTimeoutOldest = !nextTimeoutOldest
 		}
 
 		if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {

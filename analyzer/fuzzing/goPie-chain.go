@@ -44,14 +44,14 @@ func addElemToChain(elem analysis.TraceElement) {
 	// add elem if the last routine is different from the routine of the elem
 	// if the current routine is empty, lastRoutine is -1 and this is always true
 	if lastRoutine != routine {
-		currentChain.add(elem)
+		currentChain.add(elem.Copy())
 	} else {
 		// if the routine is the same as the last routine, we need to start a new
 		// chain. In this case, store the current chain as a scheduling chains
 		// and start a new routine with the current element
 		schedulingChains = append(schedulingChains, currentChain)
 		currentChain = newChain()
-		currentChain.add(elem)
+		currentChain.add(elem.Copy())
 	}
 
 	lastRoutine = routine

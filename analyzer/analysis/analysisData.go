@@ -492,13 +492,10 @@ func SetTrace(trace Trace) {
 }
 
 /*
-* Print the trace sorted by tPre
-* Args:
-*   types: types of the elements to print. If empty, all elements will be printed
-*   clocks: if true, the clocks will be printed
+* Print the main trace sorted by tPost
  */
-func PrintTrace(types []string, clocks bool) {
-	MainTrace.PrintTrace(types, clocks)
+func PrintTrace() {
+	MainTrace.PrintTrace()
 }
 
 /*

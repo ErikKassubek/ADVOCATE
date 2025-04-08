@@ -101,6 +101,20 @@ func (t *Trace) Sort() {
 }
 
 /*
+ * Sort each routine of the trace by tpost
+ * Args:
+ * 	routines ([]int): List of routines to sort. For routines that are not in the trace, do nothing
+ */
+func (t *Trace) SortRoutines(routines []int) {
+	for _, routine := range routines {
+		if trace, ok := t.traces[routine]; ok {
+			sort.Sort(sortByTSort(trace))
+			t.traces[routine] = trace
+		}
+	}
+}
+
+/*
  * Get the traces
  * Returns:
  *   map[int][]traceElement: The traces
@@ -690,12 +704,19 @@ func (t *Trace) Copy() Trace {
 }
 
 /*
-* Print the trace sorted by tPre
+ * Print the trace sorted by tPost
+ */
+func (t *Trace) PrintTrace() {
+	t.PrintTraceArgs([]string{}, false)
+}
+
+/*
+* Print the trace sorted by tPost
 * Args:
 *   types: types of the elements to print. If empty, all elements will be printed
 *   clocks: if true, the clocks will be printed
  */
-func (t *Trace) PrintTrace(types []string, clocks bool) {
+func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	elements := make([]struct {
 		string
 		int

@@ -46,8 +46,6 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 					mutations[key] = mut
 				}
 				allGoPieMutations[key] = struct{}{}
-			} else {
-				utils.LogImportantf("B")
 			}
 		}
 	}
@@ -62,7 +60,6 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 
 		tPosts := make([]int, len(mut.elems))
 		routines := make(map[int]struct{})
-		utils.LogImportantf("Len1: ", len(mut.elems))
 		for i, elem := range mut.elems {
 			tPosts[i] = elem.GetTPost()
 			routines[elem.GetRoutine()] = struct{}{}
@@ -70,21 +67,27 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 
 		sort.Ints(tPosts)
 
-		utils.LogImportantf("Len2: ", len(mut.elems))
+		changedRoutinesMap := make(map[int]struct{})
+
 		for i, elem := range mut.elems {
 			routine, index := elem.GetTraceIndex()
-			utils.LogImportantf("%d %d", routine, index)
 			traceCopy.SetTSortAtIndex(tPosts[i], routine, index)
+			changedRoutinesMap[routine] = struct{}{}
 		}
 
-		// TODO: is this sort necessary, only sort routines that where changed
-		traceCopy.Sort()
+		changedRoutines := make([]int, 0, len(changedRoutinesMap))
+		for k := range changedRoutinesMap {
+			changedRoutines = append(changedRoutines, k)
+		}
+
+		traceCopy.SortRoutines(changedRoutines)
 
 		// remove all elements after the last elem in the chain
 		lastTPost := tPosts[len(tPosts)-1]
-		analysis.RemoveLater(lastTPost + 1)
+		traceCopy.RemoveLater(lastTPost + 1)
+
 		// add a replayEndElem
-		analysis.AddTraceElementReplay(lastTPost+2, 0)
+		traceCopy.AddTraceElementReplay(lastTPost+2, 0)
 
 		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++
@@ -99,7 +102,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 }
 
 /*
- * Create the folder for the fuzzing traces of not exists
+ * Create the folder for the fuzzing traces
  * Args:
  * 	path (string): path to the folder
  * Returns:
@@ -107,9 +110,10 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
  */
 func addFuzzingTraceFolder(path string) string {
 	p := filepath.Join(path, "fuzzingTraces")
+	os.RemoveAll(p)
 	err := os.MkdirAll(p, os.ModePerm)
 	if err != nil {
-		utils.LogError("Could not create folder")
+		utils.LogError("Could not create fuzzing folder")
 		return ""
 	}
 	return p

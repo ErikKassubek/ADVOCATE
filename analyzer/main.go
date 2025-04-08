@@ -339,7 +339,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	if numberElems == 0 {
-		return fmt.Errorf("Trace does not contain any elem")
+		return fmt.Errorf("Trace at %s does not contain any elements", pathTrace)
 	} else {
 		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 	}

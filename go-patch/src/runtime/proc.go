@@ -5078,7 +5078,7 @@ func newproc(fn *funcval) {
 		newg := newproc1(fn, gp, pc, false, waitReasonZero)
 
 		newg.advocateRoutineInfo = newAdvocateRoutine(newg)
-		newg.advocateRoutineInfo.replayRoutine = elem.Routine
+		newg.advocateRoutineInfo.replayRoutine = elem.Index
 
 		// for the main routine no fork exists, the elem.Routine is therefore 0
 		// The same is true for all internal routines that are created before the

@@ -119,7 +119,7 @@ func getTraceInfoFromFile(filePath string) error {
 			}
 		case "ExitPosition":
 			exitPos = lineSplit[1]
-		case "ReplayOldest":
+		case "ReplayTimeout":
 			timeoutOldest, _ = strconv.Atoi(lineSplit[1])
 		case "ReplayDisabled":
 			timeoutDisabled, _ = strconv.Atoi(lineSplit[1])

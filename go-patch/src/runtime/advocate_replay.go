@@ -52,11 +52,11 @@ var ExitCodeNames = map[int]string{
 var (
 	hasReturnedExitCode = false
 	ignoreAtomicsReplay = true
-	printDebug          = false
+	printDebug          = true
 
-	tPostWhenOldestFirstReleased = 0
-	tPostWhenReplayDisabled      = 0
-	tPostWhenAckFirstTimeout     = 0
+	tPostWhenFirstTimeout    = 0
+	tPostWhenReplayDisabled  = 0
+	tPostWhenAckFirstTimeout = 0
 )
 
 func SetReplayAtomic(repl bool) {
@@ -145,20 +145,20 @@ func (ro Operation) ToString() string {
  *     - for others: always true
  * PFile: file of the partner (mainly for channel/select)
  * PLine: line of the partner (mainly for channel/select)
- * SelIndex: index of the select case (only for select, otherwise)
+ * Index: Index of the select case (only for select) or index of the new routine (only for spawn), otherwise 0
  */
 type ReplayElement struct {
-	Routine  int
-	Op       Operation
-	Time     int
-	TimePre  int
-	File     string
-	Line     int
-	Blocked  bool
-	Suc      bool
-	PFile    string
-	PLine    int
-	SelIndex int
+	Routine int
+	Op      Operation
+	Time    int
+	TimePre int
+	File    string
+	Line    int
+	Blocked bool
+	Suc     bool
+	PFile   string
+	PLine   int
+	Index   int
 }
 
 func (elem *ReplayElement) key() string {
@@ -166,8 +166,8 @@ func (elem *ReplayElement) key() string {
 }
 
 func buildReplayKey(routine int, file string, line int) string {
-	return file + ":" + intToString(line)
-	// return intToString(routine) + ":" + file + ":" + intToString(line)
+	return intToString(routine) + ":" + file + ":" + intToString(line)
+	// return file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
@@ -319,6 +319,10 @@ func ReleaseWaits() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 
+	// for the timeout release, we alternatingly release the next element or skip
+	// the next element in the trace
+	nextTimeoutOldest := true
+
 	for {
 		// wait for acknowledgement of element that was directly
 		// released when it was called, because it was the next element
@@ -350,7 +354,7 @@ func ReleaseWaits() {
 
 		key := replayElem.key()
 		if key == lastKey {
-			if hasTimePast(lastTime, releaseOldestWait) {
+			if hasTimePast(lastTime, releaseOldestWait) { // skip due to timeout
 				var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
 				oldestKey := ""
 				lock(&waitingOpsMutex)
@@ -361,28 +365,36 @@ func ReleaseWaits() {
 					}
 				}
 				unlock(&waitingOpsMutex)
-				if oldestKey != "" {
-					if tPostWhenOldestFirstReleased == 0 {
-						tPostWhenAckFirstTimeout = replayElem.Time
-					}
 
-					releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
-
-					if releaseOldestWait > 1 {
-						releaseOldestWait--
-					}
-
-					lock(&replayDoneLock)
-					replayDone++
-					unlock(&replayDoneLock)
-
-					lock(&waitingOpsMutex)
-					if printDebug {
-						println("Deli: ", oldestKey)
-					}
-					delete(waitingOps, oldestKey)
-					unlock(&waitingOpsMutex)
+				if tPostWhenFirstTimeout == 0 {
+					tPostWhenAckFirstTimeout = replayElem.Time
 				}
+
+				if nextTimeoutOldest { // release the oldest waiting element
+					if oldestKey != "" {
+
+						releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
+
+						if releaseOldestWait > 1 {
+							releaseOldestWait--
+						}
+
+						lock(&replayDoneLock)
+						replayDone++
+						unlock(&replayDoneLock)
+
+						lock(&waitingOpsMutex)
+						if printDebug {
+							println("Release Oldes: ", oldestKey)
+						}
+						delete(waitingOps, oldestKey)
+						unlock(&waitingOpsMutex)
+					}
+				} else { // skip the currently waiting
+					foundReplayElement(replayElem.Routine)
+				}
+
+				nextTimeoutOldest = !nextTimeoutOldest
 			}
 			if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
 				tPostWhenReplayDisabled = replayElem.Time
@@ -423,7 +435,7 @@ func ReleaseWaits() {
 
 			lock(&waitingOpsMutex)
 			if printDebug {
-				println("Deli: ", key)
+				println("Release: ", key)
 			}
 			delete(waitingOps, key)
 		}
@@ -537,6 +549,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 				waitForAck: true,
 			}
 		}
+		foundReplayElement(nextElem.Routine)
 	} else {
 		// add to waiting list
 		lock(&waitingOpsMutex)
@@ -770,5 +783,5 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
  * 	(int): what was the next tPost, when an expected Acknowledgement timed out, if never return 0
  */
 func GetReplayStatus() (int, int, int) {
-	return tPostWhenOldestFirstReleased, tPostWhenReplayDisabled, tPostWhenAckFirstTimeout
+	return tPostWhenFirstTimeout, tPostWhenReplayDisabled, tPostWhenAckFirstTimeout
 }

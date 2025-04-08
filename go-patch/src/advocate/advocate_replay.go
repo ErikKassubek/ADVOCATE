@@ -166,7 +166,7 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 		var pLine int
 		var blocked = false
 		var suc = true
-		var selIndex int
+		var index int
 		fields := strings.Split(elem, ",")
 		time, _ = strconv.Atoi(fields[1])
 		tPre, _ := strconv.Atoi(fields[1])
@@ -181,6 +181,7 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			pos := strings.Split(fields[3], ":")
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
+			index, _ = strconv.Atoi(fields[2])
 		case "C":
 			switch fields[4] {
 			case "S":
@@ -294,7 +295,7 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			if time == 0 {
 				blocked = true
 			}
-			selIndex, _ = strconv.Atoi(fields[5])
+			index, _ = strconv.Atoi(fields[5])
 			pos := strings.Split(fields[6], ":")
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
@@ -359,7 +360,7 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			replayData = append(replayData, runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
 				Blocked: blocked, Suc: suc, PFile: pFile, PLine: pLine,
-				SelIndex: selIndex})
+				Index: index})
 
 		}
 	}

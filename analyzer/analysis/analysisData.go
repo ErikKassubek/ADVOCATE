@@ -65,6 +65,23 @@ type ConcurrentEntry struct {
 }
 
 var (
+	// trace data
+
+	// The MainTrace
+	MainTrace Trace
+
+	// current happens before vector clocks
+	currentVCHb = make(map[int]clock.VectorClock)
+
+	// current must happens before vector clocks
+	currentVCWmhb = make(map[int]clock.VectorClock)
+
+	// channel without partner in main trace
+	channelWithoutPartner map[int]map[int]*TraceElementChannel // id -> opId -> element
+
+	fifo          bool
+	modeIsFuzzing bool
+
 	// analysis cases to run
 	analysisCases   = make(map[string]bool)
 	analysisFuzzing = false
@@ -163,8 +180,343 @@ var (
 	maxOpID        = make(map[int]int)
 )
 
-// InitAnalysis initializes the analysis cases
+func SetExitInfo(code int, pos string) {
+	exitCode = code
+	exitPos = pos
+}
+
+func SetReplayTimeoutInfo(oldest, disabled, ack int) {
+	replayTimeoutOldest = oldest
+	replayTimeoutDisabled = disabled
+	replayTimeoutAck = ack
+}
+
+/*
+ * Return if a timeout happened
+ * A timeout happened if at least one of the two timeout var is not 0
+ */
+func GetTimeoutHappened() bool {
+	return (replayTimeoutOldest + replayTimeoutDisabled + replayTimeoutAck) != 0
+}
+
+func SetRuntimeDurationSec(sec int) {
+	durationInSeconds = sec
+}
+
+func GetRuntimeDurationInSec() int {
+	return durationInSeconds
+}
+
 func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
 	analysisCases = analysisCasesMap
 	analysisFuzzing = anaFuzzing
+}
+
+/*
+ * Set the global trace variable to a new, empty trace
+ */
+func InitTrace() {
+	MainTrace = NewTrace()
+}
+
+// ===========  Helper function for trace operations on the main trace ==========
+
+/*
+* Add an element to the main trace
+* Args:
+*   routine (int): The routine id
+*   element (TraceElement): The element to add
+ */
+func AddElementToTrace(element TraceElement) {
+	MainTrace.AddElement(element)
+}
+
+/*
+ * Given the file and line info, return the routine and index of the element
+ * in trace.
+ * Args:
+ *   tID (string): The tID of the element
+ * Returns:
+ *   *TraceElement: The element
+ *   error: An error if the element does not exist
+ */
+func GetTraceElementFromTID(tID string) (*TraceElement, error) {
+	return MainTrace.GetTraceElementFromTID(tID)
+}
+
+/*
+ * Given the bug info from the machine readable result file, return the element
+ * in the trace.
+ * Args:
+ *   bugArg (string): The bug info from the machine readable result file
+ * Returns:
+ *   *TraceElement: The element
+ *   error: An error if the element does not exist
+ */
+func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
+	return MainTrace.GetTraceElementFromBugArg(bugArg)
+}
+
+/*
+ * Shorten the trace by removing all elements after the given time
+ * Args:
+ *   time (int): The time to shorten the trace to
+ *   incl (bool): True if an element with the same time should stay included in the trace
+ */
+func ShortenTrace(time int, incl bool) {
+	MainTrace.ShortenTrace(time, incl)
+}
+
+/*
+ * Remove the element with the given tID from the trace
+ * Args:
+ *   tID (string): The tID of the element to remove
+ */
+func RemoveElementFromTrace(tID string) {
+	MainTrace.RemoveElementFromTrace(tID)
+}
+
+/*
+ * Shorten the trace of the given routine by removing all elements after and equal the given time
+ * Args:
+ *   routine (int): The routine to shorten
+ *   time (int): The time to shorten the trace to
+ */
+func ShortenRoutine(routine int, time int) {
+	MainTrace.ShortenRoutine(routine, time)
+}
+
+/*
+ * Get the trace of the given routine
+ * Args:
+ *   id (int): The id of the routine
+ * Returns:
+ *   []traceElement: The trace of the routine
+ */
+func GetRoutineTrace(id int) []TraceElement {
+	return MainTrace.GetRoutineTrace(id)
+}
+
+/*
+ * Shorten a given a routine to index
+ * Args:
+ * 	routine (int): the routine to shorten
+ * 	index (int): the index to which it should be shortened
+ * 	incl (bool): if true, the value a index will remain in the routine, otherwise it will be removed
+ */
+func ShortenRoutineIndex(routine, index int, incl bool) {
+	MainTrace.ShortenRoutineIndex(routine, index, incl)
+}
+
+/*
+ * Set the number of routines
+ * Args:
+ * 	n (int): The number of routines
+ */
+func SetNoRoutines(n int) {
+	MainTrace.SetNoRoutines(n)
+}
+
+/*
+ * Get the number of routines
+ * Return:
+ * 	(int): The number of routines
+ */
+func GetNoRoutines() int {
+	return MainTrace.GetNoRoutines()
+}
+
+/*
+ * Get the next element from a trace
+ * Update the current index of the trace
+ * Returns:
+ * 	(TraceElement) The element in the trace with the smallest TSort that
+ * 		has not been returned yet
+ */
+func getNextElement() TraceElement {
+	return MainTrace.getNextElement()
+}
+
+/*
+ * Get the last elements in each routine
+ * Returns
+ * 	[]TraceElements: List of elements that are the last element in a routine
+ */
+func getLastElemPerRout() []TraceElement {
+	return MainTrace.getLastElemPerRout()
+}
+
+/*
+ * For a given waitgroup id, get the number of add and done operations that were
+ * executed before a given time.
+ * Args:
+ *   wgID (int): The id of the waitgroup
+ *   waitTime (int): The time to check
+ * Returns:
+ *   int: The number of add operations
+ *   int: The number of done operations
+ */
+func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
+	return MainTrace.GetNrAddDoneBeforeTime(wgID, waitTime)
+}
+
+/*
+ * Shift all elements with time greater or equal to startTSort by shift
+ * Only shift forward
+ * Args:
+ *   startTPre (int): The time to start shifting
+ *   shift (int): The shift
+ */
+func ShiftTrace(startTPre int, shift int) bool {
+	return MainTrace.ShiftTrace(startTPre, shift)
+}
+
+/*
+ * Shift all elements that are concurrent or HB-later than the element such
+ * that they are after the element without changing the order of these elements
+ * Args:
+ *   element (traceElement): The element
+ */
+func ShiftConcurrentOrAfterToAfter(element TraceElement) {
+	MainTrace.ShiftConcurrentOrAfterToAfter(element)
+}
+
+/*
+ * Shift all elements that are concurrent or HB-later than the element such
+ * that they are after the element without changeing the order of these elements
+ * Only shift elements that are after start
+ * Args:
+ *   element (traceElement): The element
+ *   start (traceElement): The time to start shifting (not including)
+ */
+func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
+	MainTrace.ShiftConcurrentOrAfterToAfterStartingFromElement(element, start)
+}
+
+/*
+ * Shift the element to be after all elements, that are concurrent to it
+ * Args:
+ *   element (traceElement): The element
+ */
+func ShiftConcurrentToBefore(element TraceElement) {
+	MainTrace.ShiftConcurrentToBefore(element)
+}
+
+/*
+ * Remove all elements that are concurrent to the element and have time greater or equal to tmin
+ * Args:
+ *   element (traceElement): The element
+ */
+func RemoveConcurrent(element TraceElement, tmin int) {
+	MainTrace.RemoveConcurrent(element, tmin)
+}
+
+/*
+ * Remove all elements that are concurrent to the element or must happen after the element
+ * Args:
+ *   element (traceElement): The element
+ */
+func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
+	MainTrace.RemoveConcurrentOrAfter(element, tmin)
+}
+
+/*
+ * For each routine, get the earliest element that is concurrent to the element
+ * Args:
+ *   element (traceElement): The element
+ * Returns:
+ *   map[int]traceElement: The earliest concurrent element for each routine
+ */
+func GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
+	return MainTrace.GetConcurrentEarliest(element)
+}
+
+/*
+ * Remove all elements that have a later tPost that the given tPost
+ * Args:
+ * 	tPost (int): Remove elements after tPost
+ */
+func RemoveLater(tPost int) {
+	MainTrace.RemoveLater(tPost)
+}
+
+/*
+ * Shift all elements with time greater or equal to startTSort by shift
+ * Only shift back
+ * Args:
+ *   routine (int): The routine to shift
+ *   startTSort (int): The time to start shifting
+ *   shift (int): The shift
+ * Returns:
+ *   bool: True if the shift was successful, false otherwise (shift <= 0)
+ */
+func ShiftRoutine(routine int, startTSort int, shift int) bool {
+	return MainTrace.ShiftRoutine(routine, startTSort, shift)
+}
+
+/*
+ * Get the partial trace of all element between startTime and endTime incluseve.
+ * Args:
+ *  startTime (int): The start time
+ *  endTime (int): The end time
+ * Returns:
+ *  map[int][]TraceElement: The partial trace
+ */
+func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
+	return MainTrace.GetPartialTrace(startTime, endTime)
+}
+
+/*
+ * Sort each routine of the trace by tpost
+ */
+func SortTrace() {
+	MainTrace.Sort()
+}
+
+/*
+ * Copy the current main trace
+ * Returns:
+ *   Trace: The copy of the trace
+ */
+func CopyMainTrace() Trace {
+	return MainTrace.Copy()
+}
+
+/*
+ * Set the main trace
+ * Args:
+ *   trace (Trace): The trace
+ */
+func SetTrace(trace Trace) {
+	MainTrace = trace
+}
+
+/*
+* Print the trace sorted by tPre
+* Args:
+*   types: types of the elements to print. If empty, all elements will be printed
+*   clocks: if true, the clocks will be printed
+ */
+func PrintTrace(types []string, clocks bool) {
+	MainTrace.PrintTrace(types, clocks)
+}
+
+/*
+ * Return if the hb vector clocks have been calculated for the current trace
+ * Returns:
+ * 	hbWasCalc of the main trace
+ */
+func HBWasCalc() bool {
+	return MainTrace.hbWasCalc
+}
+
+/*
+ * Return how many elements are in a given routine of the main trace
+ * Args:
+ * 	routine (int): routine to check for
+ * Returns:
+ * 	number of elements in routine
+ */
+func numberElemsInTrace(routine int) int {
+	return MainTrace.numberElemsInTrace[routine]
 }

@@ -100,7 +100,7 @@ func AddTraceElementAtomic(routine int, tpost string,
 	}
 
 	elem := TraceElementAtomic{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
@@ -109,7 +109,8 @@ func AddTraceElementAtomic(routine int, tpost string,
 		line:    line,
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+	return nil
 }
 
 // MARK: Getter

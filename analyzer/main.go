@@ -382,7 +382,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	// collect the required data to decide whether run is interesting
 	// and to create the mutations
 	if fuzzingRun >= 0 {
-		fuzzing.ParseTrace(analysis.GetTraces())
+		fuzzing.ParseTrace(&analysis.MainTrace)
 	}
 
 	if noRewrite {
@@ -394,7 +394,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	failedRewrites := 0
 	notNeededRewrites := 0
 	utils.LogInfo("Start rewriting")
-	originalTrace, err := analysis.CopyCurrentTrace()
 
 	if err != nil {
 		utils.LogError("Failed to rewrite: ", err)
@@ -434,7 +433,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 			numberRewrittenTrace++
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
-		analysis.SetTrace(originalTrace)
 
 		if memory.WasCanceled() {
 			failedRewrites += max(0, numberOfResults-resultIndex-1)
@@ -587,7 +585,9 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, false, nil
 	}
 
-	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(bug, *rewrittenTrace, rewriteOnce)
+	traceCopy := analysis.CopyMainTrace()
+
+	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace, rewriteOnce)
 
 	if err != nil {
 		return rewriteNeeded, false, err
@@ -597,7 +597,8 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return rewriteNeeded, skip, err
 	}
 
-	err = io.WriteTrace(newTrace, numberOfRoutines)
+	// todo: write the copied trace
+	err = io.WriteTrace(&traceCopy, newTrace)
 	if err != nil {
 		return rewriteNeeded, false, err
 	}

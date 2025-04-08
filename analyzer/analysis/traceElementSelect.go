@@ -95,7 +95,7 @@ func AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := TraceElementSelect{
-		index:               numberElemsInTrace[routine],
+		index:               numberElemsInTrace(routine),
 		routine:             routine,
 		tPre:                tPreInt,
 		tPost:               tPostInt,
@@ -205,7 +205,9 @@ func AddTraceElementSelect(routine int, tPre string,
 		}
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+
+	return nil
 }
 
 // MARK: Getter

@@ -12,7 +12,6 @@ package analysis
 
 import (
 	"analyzer/clock"
-	"analyzer/memory"
 	"analyzer/utils"
 	"errors"
 	"fmt"
@@ -22,8 +21,6 @@ import (
 	"strings"
 )
 
-// TODO: make trace as a struct
-
 type Trace struct {
 	// the trace
 	traces map[int][]TraceElement
@@ -31,8 +28,10 @@ type Trace struct {
 	// hb clocks have been calculated for this trace
 	hbWasCalc bool
 
-	// channel without partner
-	channelWithoutPartner map[int]map[int]*TraceElementChannel // id -> opId -> element
+	numberOfRoutines   int
+	numberElemsInTrace map[int]int // routine -> number
+
+	currentIndex map[int]int
 }
 
 /*
@@ -42,62 +41,46 @@ type Trace struct {
  */
 func NewTrace() Trace {
 	return Trace{
-		traces:                make(map[int][]TraceElement),
-		hbWasCalc:             false,
-		channelWithoutPartner: make(map[int]map[int]*TraceElementChannel),
+		traces:             make(map[int][]TraceElement),
+		hbWasCalc:          false,
+		numberOfRoutines:   0,
+		numberElemsInTrace: make(map[int]int),
+		currentIndex:       make(map[int]int),
 	}
 }
 
-var (
-	// hb clocks have been calculated
-	hbWasCalc = false
-
-	// the trace
-	traces map[int][]TraceElement = make(map[int][]TraceElement)
-
-	// current happens before vector clocks
-	currentVCHb = make(map[int]clock.VectorClock)
-
-	// current must happens before vector clocks
-	currentVCWmhb = make(map[int]clock.VectorClock)
-
-	// channel without partner
-	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel) // id -> opId -> element
-
-	currentIndex     = make(map[int]int)
-	numberOfRoutines = 0
-	fifo             bool
-	modeIsFuzzing    bool
-
-	numberElemsInTrace = make(map[int]int) // routine -> number
-)
+/*
+ * Add an element to the trace
+ * Args:
+ * 	elem (TraceElement): Element to add
+ */
+func (t *Trace) AddElement(elem TraceElement) {
+	routine := elem.GetRoutine()
+	t.traces[routine] = append(t.traces[routine], elem)
+	t.numberElemsInTrace[routine]++
+}
 
 /*
-* Add an element to the trace
-* Args:
-*   routine (int): The routine id
-*   element (TraceElement): The element to add
-* Returns:
-*   error: An error if the routine does not exist
+ * Add an replay end element to a trace
+ * Args:
+ * 	ts (string): The timestamp of the event
+ * 	exitCode (int): The exit code of the event
+ * Returns:
+ * 	error
  */
-func AddElementToTrace(element TraceElement) error {
-	routine := element.GetRoutine()
-	traces[routine] = append(traces[routine], element)
-	numberElemsInTrace[routine]++
+func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
+	elem := TraceElementReplay{
+		tPost:    ts,
+		exitCode: exitCode,
+	}
+
+	t.AddElement(&elem)
+
 	return nil
 }
 
 /*
-* Add an empty routine to the trace
-* Args:
-*   routine (int): The routine id
- */
-// func AddEmptyRoutine(routine int) {
-// 	traces[routine] = make([]TraceElement, 0)
-// }
-
-/*
- * Sort the trace by tSort
+ * Helper functions to sort the trace by tSort
  */
 type sortByTSort []TraceElement
 
@@ -108,23 +91,12 @@ func (a sortByTSort) Less(i, j int) bool {
 }
 
 /*
- * Sort a trace by tpost
- * Args:
- *   trace ([]traceElement): The trace to sort
- * Returns:
- *   ([]traceElement): The sorted trace
+ * Sort each routine of the trace by tpost
  */
-func SortTrace(trace []TraceElement) []TraceElement {
-	sort.Sort(sortByTSort(trace))
-	return trace
-}
-
-/*
- * Sort all traces by tpost
- */
-func Sort() {
-	for routine, trace := range traces {
-		traces[routine] = SortTrace(trace)
+func (t *Trace) Sort() {
+	for routine, trace := range t.traces {
+		sort.Sort(sortByTSort(trace))
+		t.traces[routine] = trace
 	}
 }
 
@@ -133,17 +105,17 @@ func Sort() {
  * Returns:
  *   map[int][]traceElement: The traces
  */
-func GetTraces() map[int][]TraceElement {
-	return traces
+func (t *Trace) GetTraces() map[int][]TraceElement {
+	return t.traces
 }
 
 /*
  * Return the number of TraceElement with cap and len
  */
-func GetTraceSize() (int, int) {
+func (t *Trace) GetTraceSize() (int, int) {
 	capTot := 0
 	lenTot := 0
-	for _, elems := range traces {
+	for _, elems := range t.traces {
 		capTot += cap(elems)
 		lenTot += len(elems)
 	}
@@ -157,35 +129,8 @@ func GetTraceSize() (int, int) {
  * Returns:
  *   []traceElement: The trace of the routine
  */
-func GetTraceFromId(id int) []TraceElement {
-	return traces[id]
-}
-
-func SetExitInfo(code int, pos string) {
-	exitCode = code
-	exitPos = pos
-}
-
-func SetReplayTimeoutInfo(oldest, disabled, ack int) {
-	replayTimeoutOldest = oldest
-	replayTimeoutDisabled = disabled
-	replayTimeoutAck = ack
-}
-
-/*
- * Return if a timeout happened
- * A timeout happened if at least one of the two timeout var is not 0
- */
-func GetTimeoutHappened() bool {
-	return (replayTimeoutOldest + replayTimeoutDisabled + replayTimeoutAck) != 0
-}
-
-func SetRuntimeDurationSec(sec int) {
-	durationInSeconds = sec
-}
-
-func GetRuntimeDurationInSec() int {
-	return durationInSeconds
+func (t *Trace) GetRoutineTrace(id int) []TraceElement {
+	return t.traces[id]
 }
 
 /*
@@ -197,15 +142,15 @@ func GetRuntimeDurationInSec() int {
  *   *TraceElement: The element
  *   error: An error if the element does not exist
  */
-func GetTraceElementFromTID(tID string) (*TraceElement, error) {
+func (t *Trace) GetTraceElementFromTID(tID string) (*TraceElement, error) {
 	if tID == "" {
 		return nil, errors.New("tID is empty")
 	}
 
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		for index, elem := range trace {
 			if elem.GetTID() == tID {
-				return &traces[routine][index], nil
+				return &t.traces[routine][index], nil
 			}
 		}
 	}
@@ -221,7 +166,7 @@ func GetTraceElementFromTID(tID string) (*TraceElement, error) {
  *   *TraceElement: The element
  *   error: An error if the element does not exist
  */
-func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
+func (t *Trace) GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 	splitArg := strings.Split(bugArg, ":")
 
 	if splitArg[0] != "T" {
@@ -242,16 +187,16 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 		return nil, errors.New("Could not parse tPre from bug argument: " + bugArg)
 	}
 
-	for index, elem := range traces[routine] {
+	for index, elem := range t.traces[routine] {
 		if elem.GetTPre() == tPre {
-			return traces[routine][index], nil
+			return t.traces[routine][index], nil
 		}
 	}
 
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		for index, elem := range trace {
 			if elem.GetTPre() == tPre {
-				return traces[routine][index], nil
+				return t.traces[routine][index], nil
 			}
 		}
 	}
@@ -265,15 +210,15 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
  *   time (int): The time to shorten the trace to
  *   incl (bool): True if an element with the same time should stay included in the trace
  */
-func ShortenTrace(time int, incl bool) {
-	for routine, trace := range traces {
+func (t *Trace) ShortenTrace(time int, incl bool) {
+	for routine, trace := range t.traces {
 		for index, elem := range trace {
 			if incl && elem.GetTSort() > time {
-				traces[routine] = traces[routine][:index]
+				t.traces[routine] = t.traces[routine][:index]
 				break
 			}
 			if !incl && elem.GetTSort() >= time {
-				traces[routine] = traces[routine][:index]
+				t.traces[routine] = t.traces[routine][:index]
 				break
 			}
 		}
@@ -285,11 +230,11 @@ func ShortenTrace(time int, incl bool) {
  * Args:
  *   tID (string): The tID of the element to remove
  */
-func RemoveElementFromTrace(tID string) {
-	for routine, trace := range traces {
+func (t *Trace) RemoveElementFromTrace(tID string) {
+	for routine, trace := range MainTrace.traces {
 		for index, elem := range trace {
 			if elem.GetTID() == tID {
-				traces[routine] = append(traces[routine][:index], traces[routine][index+1:]...)
+				MainTrace.traces[routine] = append(MainTrace.traces[routine][:index], MainTrace.traces[routine][index+1:]...)
 				break
 			}
 		}
@@ -302,53 +247,72 @@ func RemoveElementFromTrace(tID string) {
  *   routine (int): The routine to shorten
  *   time (int): The time to shorten the trace to
  */
-func ShortenRoutine(routine int, time int) {
-	for index, elem := range traces[routine] {
+func (t *Trace) ShortenRoutine(routine int, time int) {
+	for index, elem := range t.traces[routine] {
 		if elem.GetTSort() >= time {
-			traces[routine] = traces[routine][:index]
+			t.traces[routine] = t.traces[routine][:index]
 			break
 		}
 	}
 }
 
-func ShortenRoutineIndex(routine int, index int, incl bool) {
+/*
+ * Shorten a given a routine to index
+ * Args:
+ * 	routine (int): the routine to shorten
+ * 	index (int): the index to which it should be shortened
+ * 	incl (bool): if true, the value a index will remain in the routine, otherwise it will be removed
+ */
+func (t *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
 	if incl {
-		traces[routine] = traces[routine][:index+1]
+		t.traces[routine] = t.traces[routine][:index+1]
 	} else {
-		traces[routine] = traces[routine][:index]
+		t.traces[routine] = t.traces[routine][:index]
 	}
 }
 
 /*
  * Set the number of routines
  * Args:
- *   n (int): The number of routines
+ * 	n (int): The number of routines
  */
-func SetNoRoutines(n int) {
-	numberOfRoutines = n
+func (t *Trace) SetNoRoutines(n int) {
+	t.numberOfRoutines = n
 }
 
-func GetNoRoutines() int {
-	return numberOfRoutines
+/*
+ * Get the number of routines
+ * Return:
+ * 	(int): The number of routines
+ */
+func (t *Trace) GetNoRoutines() int {
+	return t.numberOfRoutines
 }
 
-func getNextElement() TraceElement {
+/*
+ * Get the next element from a trace
+ * Update the current index of the trace
+ * Returns:
+ * 	(TraceElement) The element in the trace with the smallest TSort that
+ * 		has not been returned yet
+ */
+func (t *Trace) getNextElement() TraceElement {
 	// find the local trace, where the element on which currentIndex points to
 	// has the smallest tpost
 	minTSort := -1
 	minRoutine := -1
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		// no more elements in the routine trace
-		if currentIndex[routine] == -1 {
+		if t.currentIndex[routine] == -1 {
 			continue
 		}
 		// ignore non executed operations
-		tSort := trace[currentIndex[routine]].GetTSort()
+		tSort := trace[t.currentIndex[routine]].GetTSort()
 		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
-		if minTSort == -1 || trace[currentIndex[routine]].GetTSort() < minTSort {
-			minTSort = trace[currentIndex[routine]].GetTSort()
+		if minTSort == -1 || trace[t.currentIndex[routine]].GetTSort() < minTSort {
+			minTSort = trace[t.currentIndex[routine]].GetTSort()
 			minRoutine = routine
 		}
 	}
@@ -359,15 +323,20 @@ func getNextElement() TraceElement {
 	}
 
 	// return the element and increase the index
-	element := traces[minRoutine][currentIndex[minRoutine]]
-	increaseIndex(minRoutine)
+	element := t.traces[minRoutine][t.currentIndex[minRoutine]]
+	t.increaseIndex(minRoutine)
 
 	return element
 }
 
-func getLastElemPerRout() []TraceElement {
+/*
+ * Get the last elements in each routine
+ * Returns
+ * 	[]TraceElements: List of elements that are the last element in a routine
+ */
+func (t *Trace) getLastElemPerRout() []TraceElement {
 	res := make([]TraceElement, 0)
-	for _, trace := range traces {
+	for _, trace := range t.traces {
 		if len(trace) == 0 {
 			continue
 		}
@@ -378,13 +347,18 @@ func getLastElemPerRout() []TraceElement {
 	return res
 }
 
-func increaseIndex(routine int) {
-	if currentIndex[routine] == -1 {
+/*
+ * Update the currentIndex value of a trace for a routine
+ * Args:
+ * 	routine (int): the routine to update
+ */
+func (t *Trace) increaseIndex(routine int) {
+	if t.currentIndex[routine] == -1 {
 		utils.LogError("Tried to increase index of -1 at routine ", routine)
 	}
-	currentIndex[routine]++
-	if currentIndex[routine] >= len(traces[routine]) {
-		currentIndex[routine] = -1
+	t.currentIndex[routine]++
+	if t.currentIndex[routine] >= len(t.traces[routine]) {
+		t.currentIndex[routine] = -1
 	}
 }
 
@@ -398,11 +372,11 @@ func increaseIndex(routine int) {
  *   int: The number of add operations
  *   int: The number of done operations
  */
-func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
+func (t *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	nrAdd := 0
 	nrDone := 0
 
-	for _, trace := range traces {
+	for _, trace := range t.traces {
 		for _, elem := range trace {
 			switch e := elem.(type) {
 			case *TraceElementWait:
@@ -432,15 +406,15 @@ func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
  *   startTPre (int): The time to start shifting
  *   shift (int): The shift
  */
-func ShiftTrace(startTPre int, shift int) bool {
+func (t *Trace) ShiftTrace(startTPre int, shift int) bool {
 	if shift <= 0 {
 		return false
 	}
 
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		for index, elem := range trace {
 			if elem.GetTPre() >= startTPre {
-				traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
+				t.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 			}
 		}
 	}
@@ -450,15 +424,15 @@ func ShiftTrace(startTPre int, shift int) bool {
 
 /*
  * Shift all elements that are concurrent or HB-later than the element such
- * that they are after the element without changeing the order of these elements
+ * that they are after the element without changing the order of these elements
  * Args:
  *   element (traceElement): The element
  */
-func ShiftConcurrentOrAfterToAfter(element TraceElement) {
+func (t *Trace) ShiftConcurrentOrAfterToAfter(element TraceElement) {
 	elemsToShift := make([]TraceElement, 0)
 	minTime := -1
 
-	for _, trace := range traces {
+	for _, trace := range t.traces {
 		for _, elem := range trace {
 			if elem.GetTID() == element.GetTID() {
 				continue
@@ -489,12 +463,12 @@ func ShiftConcurrentOrAfterToAfter(element TraceElement) {
  *   element (traceElement): The element
  *   start (traceElement): The time to start shifting (not including)
  */
-func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
+func (t *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
 	elemsToShift := make([]TraceElement, 0)
 	minTime := -1
 	maxNotMoved := 0
 
-	for _, trace := range traces {
+	for _, trace := range t.traces {
 		for _, elem := range trace {
 			if elem.GetTID() == element.GetTID() {
 				continue
@@ -535,8 +509,8 @@ func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, star
  * Args:
  *   element (traceElement): The element
  */
-func ShiftConcurrentToBefore(element TraceElement) {
-	ShiftConcurrentOrAfterToAfterStartingFromElement(element, 0)
+func (t *Trace) ShiftConcurrentToBefore(element TraceElement) {
+	t.ShiftConcurrentOrAfterToAfterStartingFromElement(element, 0)
 }
 
 /*
@@ -544,8 +518,8 @@ func ShiftConcurrentToBefore(element TraceElement) {
  * Args:
  *   element (traceElement): The element
  */
-func RemoveConcurrent(element TraceElement, tmin int) {
-	for routine, trace := range traces {
+func (t *Trace) RemoveConcurrent(element TraceElement, tmin int) {
+	for routine, trace := range t.traces {
 		result := make([]TraceElement, 0)
 		for _, elem := range trace {
 			if elem.GetTSort() < tmin {
@@ -562,7 +536,7 @@ func RemoveConcurrent(element TraceElement, tmin int) {
 				result = append(result, elem)
 			}
 		}
-		traces[routine] = result
+		t.traces[routine] = result
 	}
 }
 
@@ -571,8 +545,8 @@ func RemoveConcurrent(element TraceElement, tmin int) {
  * Args:
  *   element (traceElement): The element
  */
-func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
-	for routine, trace := range traces {
+func (t *Trace) RemoveConcurrentOrAfter(element TraceElement, tmin int) {
+	for routine, trace := range t.traces {
 		result := make([]TraceElement, 0)
 		for _, elem := range trace {
 			if elem.GetTSort() < tmin {
@@ -589,7 +563,7 @@ func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 				result = append(result, elem)
 			}
 		}
-		traces[routine] = result
+		t.traces[routine] = result
 	}
 }
 
@@ -600,9 +574,9 @@ func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
  * Returns:
  *   map[int]traceElement: The earliest concurrent element for each routine
  */
-func GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
+func (t *Trace) GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
 	concurrent := make(map[int]*TraceElement)
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		for _, elem := range trace {
 			if elem.GetTID() == (*element).GetTID() {
 				continue
@@ -618,12 +592,14 @@ func GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
 
 /*
  * Remove all elements that have a later tPost that the given tPost
+ * Args:
+ * 	tPost (int): Remove elements after tPost
  */
-func RemoveLater(tPost int) {
-	for routine, trace := range traces {
+func (t *Trace) RemoveLater(tPost int) {
+	for routine, trace := range t.traces {
 		for i, elem := range trace {
 			if elem.GetTPost() > tPost {
-				traces[routine] = traces[routine][:i]
+				t.traces[routine] = t.traces[routine][:i]
 			}
 		}
 	}
@@ -639,14 +615,14 @@ func RemoveLater(tPost int) {
  * Returns:
  *   bool: True if the shift was successful, false otherwise (shift <= 0)
  */
-func ShiftRoutine(routine int, startTSort int, shift int) bool {
+func (t *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 	if shift <= 0 {
 		return false
 	}
 
-	for index, elem := range traces[routine] {
+	for index, elem := range t.traces[routine] {
 		if elem.GetTPre() >= startTSort {
-			traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
+			t.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 		}
 	}
 
@@ -661,16 +637,16 @@ func ShiftRoutine(routine int, startTSort int, shift int) bool {
  * Returns:
  *  map[int][]TraceElement: The partial trace
  */
-func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
+func (t *Trace) GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
 	result := make(map[int][]*TraceElement)
-	for routine, trace := range traces {
+	for routine, trace := range t.traces {
 		for index, elem := range trace {
 			if _, ok := result[routine]; !ok {
 				result[routine] = make([]*TraceElement, 0)
 			}
 			time := elem.GetTSort()
 			if time >= startTime && time <= endTime {
-				result[routine] = append(result[routine], &traces[routine][index])
+				result[routine] = append(result[routine], &t.traces[routine][index])
 			}
 		}
 	}
@@ -681,48 +657,36 @@ func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
 // MARK: Copy
 
 /*
- * Copy the current trace
+ * Deep copy a trace
  * Returns:
- *   map[int][]traceElement: The copy of the trace
+ * 	The copy of the trace
  */
-func CopyCurrentTrace() (map[int][]TraceElement, error) {
-	return CopyTrace(traces)
-}
-
-/*
- * CopyTrace the given trace
- * Args:
- *   original (map[int][]traceElement): The trace to copy
- * Returns:
- *   map[int][]traceElement: The copy of the trace
- */
-func CopyTrace(original map[int][]TraceElement) (map[int][]TraceElement, error) {
-	copyTrace := make(map[int][]TraceElement)
-	for routine, trace := range original {
-		copyTrace[routine] = copyTraceRoutine(trace)
-		if memory.WasCanceled() {
-			return copyTrace, fmt.Errorf("Not enough RAM")
+func (t *Trace) Copy() Trace {
+	tracesCopy := make(map[int][]TraceElement)
+	for routine, trace := range t.traces {
+		tracesCopy[routine] = make([]TraceElement, len(trace))
+		for i, elem := range trace {
+			tracesCopy[routine][i] = elem.Copy()
 		}
 	}
-	return copyTrace, nil
-}
 
-func copyTraceRoutine(trace []TraceElement) []TraceElement {
-	traceCopy := make([]TraceElement, 0)
-	for _, elem := range trace {
-		traceCopy = append(traceCopy, elem.Copy())
+	numberElemsInTraceCopy := make(map[int]int)
+	for routine, elem := range t.numberElemsInTrace {
+		numberElemsInTraceCopy[routine] = elem
 	}
-	return traceCopy
-}
 
-/*
- * Set the trace
- * Args:
- *   trace (map[int][]traceElement): The trace
- */
-func SetTrace(trace map[int][]TraceElement) {
-	traces = make(map[int][]TraceElement)
-	traces, _ = CopyTrace(trace)
+	currentIndexCopy := make(map[int]int)
+	for routine, elem := range t.currentIndex {
+		currentIndexCopy[routine] = elem
+	}
+
+	return Trace{
+		traces:             tracesCopy,
+		hbWasCalc:          t.hbWasCalc,
+		numberOfRoutines:   t.numberOfRoutines,
+		numberElemsInTrace: numberElemsInTraceCopy,
+		currentIndex:       currentIndexCopy,
+	}
 }
 
 /*
@@ -731,13 +695,13 @@ func SetTrace(trace map[int][]TraceElement) {
 *   types: types of the elements to print. If empty, all elements will be printed
 *   clocks: if true, the clocks will be printed
  */
-func PrintTrace(types []string, clocks bool) {
+func (t *Trace) PrintTrace(types []string, clocks bool) {
 	elements := make([]struct {
 		string
 		int
 		clock.VectorClock
 	}, 0)
-	for _, tra := range traces {
+	for _, tra := range t.traces {
 		for _, elem := range tra {
 			elemStr := elem.ToString()
 			if len(types) == 0 || utils.ContainsString(types, elemStr[0:1]) {
@@ -764,45 +728,59 @@ func PrintTrace(types []string, clocks bool) {
 	}
 }
 
-func LogSizes() {
-	utils.LogError("Trace: ", memory.GetSizeInMB(traces))
-	utils.LogError("CurrentIndex: ", memory.GetSizeInMB(currentIndex))
+/*
+ * Get all to element concurrent wait, broadcast and signal operations on the same condition variable
+ * Args:
+ *   element (traceElement): The element
+ *   filter ([]string): The types of the elements to return
+ * Returns:
+ *   []*traceElement: The concurrent elements
+ */
+func (t *Trace) GetConcurrentWaitgroups(element TraceElement) map[string][]TraceElement {
+	res := make(map[string][]TraceElement)
+	res["broadcast"] = make([]TraceElement, 0)
+	res["signal"] = make([]TraceElement, 0)
+	res["wait"] = make([]TraceElement, 0)
+	for _, trace := range t.traces {
+		for _, elem := range trace {
+			switch elem.(type) {
+			case *TraceElementCond:
+			default:
+				continue
+			}
 
-	utils.LogError("closeData: ", memory.GetSizeInMB(closeData))
-	utils.LogError("lastSendRoutine: ", memory.GetSizeInMB(lastSendRoutine))
-	utils.LogError("lastRecvRoutine: ", memory.GetSizeInMB(lastRecvRoutine))
-	utils.LogError("hasSend: ", memory.GetSizeInMB(hasSend))
-	utils.LogError("mostRecentSend: ", memory.GetSizeInMB(mostRecentSend))
-	utils.LogError("hasReceived: ", memory.GetSizeInMB(hasReceived))
-	utils.LogError("mostRecentReceive: ", memory.GetSizeInMB(mostRecentReceive))
-	utils.LogError("bufferedVCs: ", memory.GetSizeInMB(bufferedVCs))
-	utils.LogError("wgAdd: ", memory.GetSizeInMB(wgAdd))
-	utils.LogError("wgDone: ", memory.GetSizeInMB(wgDone))
-	utils.LogError("allLocks: ", memory.GetSizeInMB(allLocks))
-	utils.LogError("allUnlocks: ", memory.GetSizeInMB(allUnlocks))
-	utils.LogError("lockSet: ", memory.GetSizeInMB(lockSet))
-	utils.LogError("mostRecentAcquire: ", memory.GetSizeInMB(mostRecentAcquire))
-	utils.LogError("mostRecentAcquireTotal: ", memory.GetSizeInMB(mostRecentAcquireTotal))
-	utils.LogError("relW: ", memory.GetSizeInMB(relW))
-	utils.LogError("relR: ", memory.GetSizeInMB(relR))
-	utils.LogError("leakingChannels: ", memory.GetSizeInMB(leakingChannels))
-	utils.LogError("selectCases: ", memory.GetSizeInMB(selectCases))
-	utils.LogError("allForks: ", memory.GetSizeInMB(allForks))
-	utils.LogError("fuzzingFlowOnce: ", memory.GetSizeInMB(fuzzingFlowOnce))
-	utils.LogError("fuzzingFlowMutex: ", memory.GetSizeInMB(fuzzingFlowMutex))
-	utils.LogError("fuzzingFlowSend: ", memory.GetSizeInMB(fuzzingFlowSend))
-	utils.LogError("fuzzingFlowRecv: ", memory.GetSizeInMB(fuzzingFlowRecv))
-	utils.LogError("executedOnce: ", memory.GetSizeInMB(executedOnce))
-	utils.LogError("fuzzingCounter: ", memory.GetSizeInMB(fuzzingCounter))
-	utils.LogError("currentVCHb: ", memory.GetSizeInMB(currentVCHb))
-	utils.LogError("currentVCWmhb: ", memory.GetSizeInMB(currentVCWmhb))
-	utils.LogError("channelWithoutPartner: ", memory.GetSizeInMB(channelWithoutPartner))
-	utils.LogError("currentState: ", memory.GetSizeInMB(currentState))
+			if elem.GetTID() == element.GetTID() {
+				continue
+			}
+
+			e := elem.(*TraceElementCond)
+
+			if e.opC == WaitCondOp {
+				continue
+			}
+
+			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == clock.Concurrent {
+				e := elem.(*TraceElementCond)
+				if e.opC == SignalOp {
+					res["signal"] = append(res["signal"], elem)
+				} else if e.opC == BroadcastOp {
+					res["broadcast"] = append(res["broadcast"], elem)
+				} else if e.opC == WaitCondOp {
+					res["wait"] = append(res["wait"], elem)
+				}
+			}
+		}
+	}
+	return res
 }
 
 /*
- * Return if the hb vector clocks have been calculated for the current trace
+ * Set the tSort for an element given by its index
+ * Args:
+ * 	tSort (int): the new tSort
+ * 	routine (int): the routine of the element
+ * 	index (int): the index of the element in its routine
  */
-func HBWasCalc() bool {
-	return hbWasCalc
+func (t *Trace) SetTSortAtIndex(tPost, routine, index int) {
+	t.traces[routine][index].SetTSort(tPost)
 }

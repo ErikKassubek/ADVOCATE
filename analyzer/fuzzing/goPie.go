@@ -57,12 +57,8 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		return
 	}
 
-	original := analysis.GetTraces()
 	for _, mut := range mutations {
-		traces, err := analysis.CopyTrace(original)
-		if err != nil {
-			utils.LogError("Could not copy current trace")
-		}
+		traceCopy := analysis.CopyMainTrace()
 
 		tPosts := make([]int, len(mut.elems))
 		routines := make(map[int]struct{})
@@ -78,13 +74,11 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		for i, elem := range mut.elems {
 			routine, index := elem.GetTraceIndex()
 			utils.LogImportantf("%d %d", routine, index)
-			traces[routine][index].SetTSort(tPosts[i])
+			traceCopy.SetTSortAtIndex(tPosts[i], routine, index)
 		}
 
 		// TODO: is this sort necessary, only sort routines that where changed
-		for routine := range routines {
-			traces[routine] = analysis.SortTrace(traces[routine])
-		}
+		traceCopy.Sort()
 
 		// remove all elements after the last elem in the chain
 		lastTPost := tPosts[len(tPosts)-1]
@@ -95,7 +89,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++
 
-		err = io.WriteTrace(fileName, analysis.GetNoRoutines())
+		err := io.WriteTrace(&traceCopy, fileName)
 		if err != nil {
 			utils.LogError("Could not create pie mutation: ", err.Error())
 		}

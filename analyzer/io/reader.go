@@ -47,6 +47,8 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		return 0, 0, err
 	}
 
+	analysis.InitTrace()
+
 	elemCounter := 0
 	for _, file := range files {
 		if file.IsDir() {
@@ -76,7 +78,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		elemCounter += numberElems
 	}
 
-	analysis.Sort()
+	analysis.SortTrace()
 
 	return numberRoutines, elemCounter, nil
 }

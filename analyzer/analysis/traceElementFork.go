@@ -65,7 +65,7 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 	}
 
 	elem := TraceElementFork{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPost:   tPostInt,
 		id:      idInt,
@@ -74,7 +74,8 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
 	}
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+	return nil
 }
 
 // MARK Getter

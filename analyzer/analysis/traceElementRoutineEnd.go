@@ -48,11 +48,14 @@ func AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := TraceElementRoutineEnd{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPost:   tPostInt,
 	}
-	return AddElementToTrace(&elem)
+
+	AddElementToTrace(&elem)
+
+	return nil
 }
 
 // MARK Getter

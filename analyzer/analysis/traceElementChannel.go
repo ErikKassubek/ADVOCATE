@@ -145,7 +145,7 @@ func AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := TraceElementChannel{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -176,7 +176,8 @@ func AddTraceElementChannel(routine int, tPre string,
 		}
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+	return nil
 }
 
 // MARK: Getter
@@ -583,7 +584,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				}
 				Unbuffered(ch, ch.partner, currentVCHb)
 				// advance index of receive routine, send routine is already advanced
-				increaseIndex(ch.partner.routine)
+				MainTrace.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
 					SendC(ch)
@@ -597,7 +598,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				ch.partner.vc = currentVCHb[ch.partner.routine].Copy()
 				Unbuffered(ch.partner, ch, currentVCHb)
 				// advance index of receive routine, send routine is already advanced
-				increaseIndex(ch.partner.routine)
+				MainTrace.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
 					RecvC(ch, currentVCHb, false)
@@ -627,14 +628,14 @@ func (ch *TraceElementChannel) findPartner() int {
 		return -1
 	}
 
-	for routine, trace := range traces {
-		if currentIndex[routine] == -1 {
+	for routine, trace := range MainTrace.traces {
+		if MainTrace.currentIndex[routine] == -1 {
 			continue
 		}
 		// if routine == ch.routine {
 		// 	continue
 		// }
-		elem := trace[currentIndex[routine]]
+		elem := trace[MainTrace.currentIndex[routine]]
 
 		if elem.ToString() == ch.ToString() {
 			continue

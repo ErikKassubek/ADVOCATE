@@ -35,12 +35,7 @@ type TraceElementReplay struct {
  *   exitCode (int): The exit code of the event
  */
 func AddTraceElementReplay(t int, exitCode int) error {
-	elem := TraceElementReplay{
-		tPost:    t,
-		exitCode: exitCode,
-	}
-
-	return AddElementToTrace(&elem)
+	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
 
 // MARK: Getter

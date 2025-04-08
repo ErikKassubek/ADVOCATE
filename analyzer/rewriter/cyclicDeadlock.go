@@ -60,9 +60,14 @@ import (
  *                        lock(o)
  *            lock(o)     lock(m)
  * end()
+ *
+ * Args:
+ * 	trace (*analysis.Trace): Pointer to the trace to rewrite
+ * 	bug bugs.Bug: The bug to rewrite
+ * Returns:
+ * 	error
  */
-
-func rewriteCyclicDeadlock(bug bugs.Bug) error {
+func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 	firstTime := -1
 	lastTime := -1
 
@@ -82,7 +87,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 	}
 
 	// remove tail after lastTime
-	analysis.ShortenTrace(lastTime, true)
+	trace.ShortenTrace(lastTime, true)
 
 	routinesInCycle := make(map[int]struct{})
 
@@ -103,7 +108,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 			}
 
 			// shift the routine of elem1 so that elem 2 is before elem1
-			res := analysis.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), elem2.GetTPre()-elem1.GetTPre()+1)
+			res := trace.ShiftRoutine(elem1.GetRoutine(), elem1.GetTPre(), elem2.GetTPre()-elem1.GetTPre()+1)
 
 			if res {
 				found = true
@@ -115,7 +120,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 		}
 	}
 
-	currentTrace := analysis.GetTraces()
+	currentTrace := trace.GetTraces()
 	lastTime = -1
 
 	for routine := range routinesInCycle {
@@ -125,7 +130,7 @@ func rewriteCyclicDeadlock(bug bugs.Bug) error {
 			switch elem := elem.(type) {
 			case *analysis.TraceElementMutex:
 				if (*elem).IsLock() {
-					analysis.ShortenRoutineIndex(routine, i, true)
+					trace.ShortenRoutineIndex(routine, i, true)
 					if lastTime == -1 || (*elem).GetTSort() > lastTime {
 						lastTime = (*elem).GetTSort()
 					}

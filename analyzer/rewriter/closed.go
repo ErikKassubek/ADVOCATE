@@ -48,12 +48,13 @@ import (
 * elements T2'. We can therefore rewrite the trace as follows:
 * 	T1 ++ T2' ++ [X, c, a, X']
 * Args:
+*   trace (*analysis.Trace): Pointer to the trace to rewrite
 *   bug (Bug): The bug to create a trace for
 *   exitCode (int): The exit code to use for the stop marker
 * Returns:
 *   error: An error if the trace could not be created
  */
-func rewriteClosedChannel(bug bugs.Bug, exitCode int) error {
+func rewriteClosedChannel(trace *analysis.Trace, bug bugs.Bug, exitCode int) error {
 	utils.LogInfo("Start rewriting trace for send/receive on closed channel...")
 
 	if len(bug.TraceElement1) == 0 || bug.TraceElement1[0] == nil { // close
@@ -71,18 +72,18 @@ func rewriteClosedChannel(bug bugs.Bug, exitCode int) error {
 	}
 
 	// remove T3 -> T1 ++ [a] ++ T2 ++ [c]
-	analysis.ShortenTrace(t2, true)
+	trace.ShortenTrace(t2, true)
 
 	// transform T2 to T2' -> T1 ++ T2' ++ [c, a]
 	// This is done by removing all elements in T2, that are concurrent to c (including a)
 	// and then adding a after c
-	analysis.RemoveConcurrent(bug.TraceElement2[0], t1)
+	trace.RemoveConcurrent(bug.TraceElement2[0], t1)
 	bug.TraceElement1[0].SetT(t2 + 1)
 
-	analysis.AddElementToTrace(bug.TraceElement1[0])
+	trace.AddElement(bug.TraceElement1[0])
 
 	// add a stop marker -> T1 ++ T2' ++ [c, a, X']
-	analysis.AddTraceElementReplay(t2+2, exitCode)
+	trace.AddTraceElementReplay(t2+2, exitCode)
 
 	return nil
 }

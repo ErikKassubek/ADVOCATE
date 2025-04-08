@@ -17,9 +17,11 @@ import (
 // TODO: maybe move this directly into the analysis
 
 /*
- * Parse the current trace and record all relevant data
+ * Parse the trace and record all relevant data
+ * Args:
+ * 	trace (*trace *analysis.Trace): The trace to parse
  */
-func ParseTrace(trace map[int][]analysis.TraceElement) {
+func ParseTrace(trace *analysis.Trace) {
 	// clear current order for gFuzz
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 
@@ -28,7 +30,7 @@ func ParseTrace(trace map[int][]analysis.TraceElement) {
 	currentChain = newChain()
 	lastRoutine = -1
 
-	for _, routine := range trace {
+	for _, routine := range trace.GetTraces() {
 		if fuzzingModeGoPie {
 			calculateRelRule1(routine)
 		}

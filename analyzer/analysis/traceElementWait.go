@@ -108,7 +108,7 @@ func AddTraceElementWait(routine int, tpre,
 	}
 
 	elem := TraceElementWait{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPre:    tpre_int,
 		tPost:   tpost_int,
@@ -120,7 +120,9 @@ func AddTraceElementWait(routine int, tpre,
 		line:    line,
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+
+	return nil
 }
 
 // MARK: Getter

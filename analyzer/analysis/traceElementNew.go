@@ -74,7 +74,7 @@ func AddTraceElementNew(routine int, tPost string, id string, elemType string, n
 	}
 
 	elem := TraceElementNew{
-		index:    numberElemsInTrace[routine],
+		index:    numberElemsInTrace(routine),
 		routine:  routine,
 		tPost:    tPostInt,
 		id:       idInt,
@@ -84,7 +84,8 @@ func AddTraceElementNew(routine int, tPost string, id string, elemType string, n
 		line:     line,
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+	return nil
 }
 
 func (n *TraceElementNew) GetID() int {

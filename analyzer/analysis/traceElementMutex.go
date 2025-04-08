@@ -127,7 +127,7 @@ func AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := TraceElementMutex{
-		index:   numberElemsInTrace[routine],
+		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPre:    tPreInt,
 		tPost:   tPostInt,
@@ -141,7 +141,8 @@ func AddTraceElementMutex(routine int, tPre string,
 		rel2:    make([]TraceElement, 0),
 	}
 
-	return AddElementToTrace(&elem)
+	AddElementToTrace(&elem)
+	return nil
 }
 
 // MARK: Getter

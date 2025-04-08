@@ -180,9 +180,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		ResetState()
 	}
 
-	for i := 1; i <= numberOfRoutines; i++ {
-		currentVCHb[i] = clock.NewVectorClock(numberOfRoutines)
-		currentVCWmhb[i] = clock.NewVectorClock(numberOfRoutines)
+	for i := 1; i <= MainTrace.numberOfRoutines; i++ {
+		currentVCHb[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
+		currentVCWmhb[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
 	}
 
 	currentVCHb[1] = currentVCHb[1].Inc(1)
@@ -256,7 +256,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		}
 	}
 
-	hbWasCalc = true
+	MainTrace.hbWasCalc = true
 
 	utils.LogInfo("Finished HB analysis")
 

@@ -630,7 +630,7 @@ func checkForStuckRoutine() {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	for routine, trace := range traces {
+	for routine, trace := range MainTrace.traces {
 		if len(trace) < 1 {
 			continue
 		}

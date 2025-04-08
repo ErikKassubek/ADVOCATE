@@ -355,7 +355,7 @@ func GetNumberSelectCasesWithPartner() int {
  * select cases, if the select was executed after the channel
  */
 func rerunCheckForSelectCaseWithoutPartnerChannel() {
-	for _, trace := range traces {
+	for _, trace := range MainTrace.traces {
 		for _, elem := range trace {
 			if e, ok := elem.(*TraceElementChannel); ok {
 				CheckForSelectCaseWithoutPartnerChannel(e, e.GetVC(),

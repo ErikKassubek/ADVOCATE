@@ -24,10 +24,10 @@ import (
 /*
  * Write the trace to a file
  * Args:
+ *   traceToWrite (*analysis.Trace): Pointer to the trace to write
  *   path (string): The path to the file to write to
- *   numberRoutines (int): The number of routines in the trace
  */
-func WriteTrace(path string, numberRoutines int) error {
+func WriteTrace(traceToWrite *analysis.Trace, path string) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -45,6 +45,9 @@ func WriteTrace(path string, numberRoutines int) error {
 	}
 
 	// write the files
+
+	numberRoutines := traceToWrite.GetNoRoutines()
+
 	wg := sync.WaitGroup{}
 	for i := 1; i <= numberRoutines; i++ {
 		wg.Add(1)
@@ -58,7 +61,7 @@ func WriteTrace(path string, numberRoutines int) error {
 
 			// write trace
 			// println("Write trace to " + fileName + "...")
-			trace := analysis.GetTraceFromId(i)
+			trace := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre
 			sort.Slice(trace, func(i, j int) bool {

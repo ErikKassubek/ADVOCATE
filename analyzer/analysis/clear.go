@@ -27,12 +27,10 @@ func Clear() {
 }
 
 func ClearTrace() {
-	traces = make(map[int][]TraceElement)
-	currentIndex = make(map[int]int)
+	InitTrace()
 }
 
 func ClearData() {
-	hbWasCalc = false
 	closeData = make(map[int]*TraceElementChannel)
 	lastSendRoutine = make(map[int]map[int]elemWithVc)
 	lastRecvRoutine = make(map[int]map[int]elemWithVc)
@@ -69,7 +67,6 @@ func ClearData() {
 
 	currentVCHb = make(map[int]clock.VectorClock)
 	currentVCWmhb = make(map[int]clock.VectorClock)
-	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel)
 
 	oSuc = make(map[int]clock.VectorClock)
 
@@ -85,7 +82,4 @@ func ClearData() {
 
 	waitingReceive = make([]*TraceElementChannel, 0)
 	maxOpID = make(map[int]int)
-
-	numberOfRoutines = 0
-
 }

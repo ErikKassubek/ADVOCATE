@@ -319,10 +319,6 @@ func ReleaseWaits() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 
-	// for the timeout release, we alternatingly release the next element or skip
-	// the next element in the trace
-	nextTimeoutOldest := true
-
 	for {
 		// wait for acknowledgement of element that was directly
 		// released when it was called, because it was the next element
@@ -353,53 +349,57 @@ func ReleaseWaits() {
 		}
 
 		key := replayElem.key()
-		if key == lastKey {
-			if hasTimePast(lastTime, releaseOldestWait) { // skip due to timeout
-				var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
-				oldestKey := ""
-				lock(&waitingOpsMutex)
-				for key, ch := range waitingOps {
-					if oldest.counter == -1 || ch.counter < oldest.counter {
-						oldest = ch
-						oldestKey = key
-					}
-				}
-				unlock(&waitingOpsMutex)
 
+		if key == lastKey {
+			if hasTimePast(lastTime, releaseOldestWait) { // timeout
 				if tPostWhenFirstTimeout == 0 {
 					tPostWhenAckFirstTimeout = replayElem.Time
 				}
 
-				if nextTimeoutOldest { // release the oldest waiting element
-					if oldestKey != "" {
-
-						releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
-
-						if releaseOldestWait > 1 {
-							releaseOldestWait--
-						}
-
-						lock(&replayDoneLock)
-						replayDone++
-						unlock(&replayDoneLock)
-
-						lock(&waitingOpsMutex)
-						if printDebug {
-							println("Release Oldes: ", oldestKey)
-						}
-						delete(waitingOps, oldestKey)
-						unlock(&waitingOpsMutex)
-					}
-				} else { // skip the currently waiting
+				// we either release the longest waiting operation
+				// or skip the current next element in the trace
+				// If no elements are waiting we always skip the current element in the trace
+				// otherwise we choose either option with a prop of 0.5 (we use nanotime()%2 == 0 as a quasi random number generator from {0,1})
+				if len(waitingOps) == 0 || nanotime()%2 == 0 {
+					// skip the next element in the trace
 					foundReplayElement(replayElem.Routine)
-				}
+				} else {
+					// release the currently waiting element
+					var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
+					oldestKey := ""
+					lock(&waitingOpsMutex)
+					for key, ch := range waitingOps {
+						if oldest.counter == -1 || ch.counter < oldest.counter {
+							oldest = ch
+							oldestKey = key
+						}
+					}
+					unlock(&waitingOpsMutex)
 
-				nextTimeoutOldest = !nextTimeoutOldest
+					releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
+
+					if releaseOldestWait > 1 {
+						releaseOldestWait--
+					}
+
+					lock(&replayDoneLock)
+					replayDone++
+					unlock(&replayDoneLock)
+
+					lock(&waitingOpsMutex)
+					if printDebug {
+						println("Release Oldes: ", oldestKey)
+					}
+					delete(waitingOps, oldestKey)
+					unlock(&waitingOpsMutex)
+				}
 			}
-			if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
-				tPostWhenReplayDisabled = replayElem.Time
-				DisableReplay()
-			}
+			nextTimeoutOldest = !nextTimeoutOldest
+		}
+
+		if (len(waitingOps) == 0 && hasTimePast(lastTimeWithoutOldest, releaseWaitMaxNoWait)) || hasTimePast(lastTimeWithoutOldest, releaseWaitMaxWait) {
+			tPostWhenReplayDisabled = replayElem.Time
+			DisableReplay()
 		}
 
 		if AdvocateIgnoreReplay(replayElem.Op, replayElem.File) {
@@ -443,6 +443,7 @@ func ReleaseWaits() {
 
 		if !replayEnabled {
 			return
+
 		}
 	}
 }

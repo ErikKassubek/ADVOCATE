@@ -263,7 +263,8 @@ without it being added to the `waitOps` map first. If this is the case,
 it will, if required, check if the operation has already send its acknowledgement.
 If not, it will wait for it. If the acknowledgement has arrived, it will
 advance to the next element in the trace.\
-Then, the manager gets the next element that should be executed (see [here](#getnextreplayelement)). If no element is left, the replay is disabled.
+Then, the manager gets the next element that should be executed (see [here](#getnextreplayelement)).
+If no element is left, the replay is disabled.
 The same is true if the next element in the trace is the `replayEnd` element.
 If the bug is confirmed by reaching a certain point in the code (e.g leak or
 resource deadlock), this will confirm the replay. If the element is an
@@ -282,7 +283,12 @@ and there are a small number of trace elements, that cause the replay to get
 stuck. To still get a chance that is may resolve itself, the manager
 is able to release the longest waiting operation, if it senses that the
 replay is stuck. This will be done, if the next replayElement is the same for
-a too long time. Additionally, if no element has been cleared regularly
+a too long time. In this case, the replay will trigger the timeout mechanism.
+In this, either the oldest element in `waitOps` is released
+or the next element in the trace is skipped. We choose one of them at random.
+We hope that this will clear the
+blockage, so that the replay can continue to be executed.
+Additionally, if no element has been cleared regularly
 for a certain time, the replay will assume that it is stuck and cannot be
 brought back by releasing the oldest waiting elements and will therefore
 disable the replay completely, meaning the program will continue without

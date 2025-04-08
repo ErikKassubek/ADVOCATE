@@ -50,9 +50,9 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		}
 	}
 
-	fuzzingPath := addFuzzingTraceFolder(pkgPath)
-	if fuzzingPath == "" {
-		return
+	fuzzingPath := filepath.Join(pkgPath, "fuzzingTraces")
+	if numberFuzzingRuns == 0 {
+		addFuzzingTraceFolder(fuzzingPath)
 	}
 
 	for _, mut := range mutations {
@@ -105,18 +105,13 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
  * Create the folder for the fuzzing traces
  * Args:
  * 	path (string): path to the folder
- * Returns:
- * 	string: path to the fuzzingTraces folder, or "" if an error occurred
  */
-func addFuzzingTraceFolder(path string) string {
-	p := filepath.Join(path, "fuzzingTraces")
-	os.RemoveAll(p)
-	err := os.MkdirAll(p, os.ModePerm)
+func addFuzzingTraceFolder(path string) {
+	os.RemoveAll(path)
+	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
 		utils.LogError("Could not create fuzzing folder")
-		return ""
 	}
-	return p
 }
 
 /*

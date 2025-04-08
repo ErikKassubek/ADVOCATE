@@ -19,6 +19,8 @@ import (
 	"strings"
 )
 
+var isFuzzing = false
+
 /*
  * Initialize fuzzing
  * Args:
@@ -29,7 +31,11 @@ func InitFuzzing(tracePath string) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
-	if tracePath == "" {
+	isFuzzing = true
+
+	InitTracing()
+
+	if tracePath == "" { // GoFuzz and Flow
 		fuzzingSelectPath := "fuzzingData.log"
 		var err error
 		prefSel, prefFlow, err = readFile(fuzzingSelectPath)
@@ -38,11 +44,10 @@ func InitFuzzing(tracePath string) {
 			panic(err)
 		}
 		runtime.InitFuzzingDelay(prefSel, prefFlow)
-	} else {
+	} else { // GoPie
 		tracePathRewritten = tracePath
 		startReplay(0, false)
 	}
-	InitTracing()
 }
 
 /*

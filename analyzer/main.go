@@ -597,7 +597,6 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return rewriteNeeded, skip, err
 	}
 
-	// todo: write the copied trace
 	err = io.WriteTrace(&traceCopy, newTrace)
 	if err != nil {
 		return rewriteNeeded, false, err

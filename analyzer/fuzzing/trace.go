@@ -40,7 +40,7 @@ func ParseTrace(trace *analysis.Trace) {
 				continue
 			}
 
-			if fuzzingModeGoPie {
+			if fuzzingModeGoPie && canBeAddedToChain(elem) {
 				calculateRelRule2AddElem(elem)
 				addElemToChain(elem)
 			}
@@ -74,6 +74,24 @@ func ParseTrace(trace *analysis.Trace) {
 	sortSelects()
 
 	numberSelectCasesWithPartner = analysis.GetNumberSelectCasesWithPartner()
+}
+
+/*
+ * Decides if an element can be added to a scheduling chain
+ * For GoPie without improvements (!useHBInfoFuzzing) those are only mutex and channel (incl. select)
+ * With improvements those are all not ignored fuzzing elements
+ * Args:
+ * 	elem (analysis.TraceElement): Element to check
+ * Returns:
+ * 	true if it can be added to a scheduling chain, false otherwise
+ */
+func canBeAddedToChain(elem analysis.TraceElement) bool {
+	if useHBInfoFuzzing {
+		return !ignoreFuzzing(elem)
+	}
+
+	t := elem.GetObjType(false)
+	return t == analysis.ObjectTypeMutex || t == analysis.ObjectTypeChannel || t == analysis.ObjectTypeSelect
 }
 
 /*

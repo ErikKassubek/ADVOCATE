@@ -13,7 +13,6 @@ package fuzzing
 import (
 	"analyzer/analysis"
 	"analyzer/clock"
-	"analyzer/utils"
 )
 
 var (
@@ -143,7 +142,6 @@ func (ch *chain) toString() string {
  * 	(bool): True if the mutation is valid, false otherwise
  */
 func (ch *chain) isValid() bool {
-	utils.LogImportant("Is Valid")
 	if !analysis.HBWasCalc() {
 		return true
 	}

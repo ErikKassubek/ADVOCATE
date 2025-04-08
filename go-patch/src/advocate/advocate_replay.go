@@ -108,6 +108,9 @@ func startReplay(timeout int, atomic bool) {
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
 			runtime.ExitReplayWithCode(runtime.ExitCodeTimeout)
+			if isFuzzing {
+				FinishFuzzing()
+			}
 			panic("Timeout")
 		}()
 	}

@@ -166,7 +166,8 @@ func (elem *ReplayElement) key() string {
 }
 
 func buildReplayKey(routine int, file string, line int) string {
-	return intToString(routine) + ":" + file + ":" + intToString(line)
+	return file + ":" + intToString(line)
+	// return intToString(routine) + ":" + file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
@@ -401,7 +402,7 @@ func ReleaseWaits() {
 		if key != lastKey {
 			lastKey = key
 			if printDebug {
-				println("\n\n===================\nNext: ", replayElem.Op.ToString(), replayElem.File, replayElem.Line)
+				println("\n\n===================\nNext: ", key)
 				println("Currently Waiting: ", len(waitingOps))
 				for key := range waitingOps {
 					println(key)

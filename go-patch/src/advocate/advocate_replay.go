@@ -38,7 +38,7 @@ func FinishReplay() {
 }
 
 var timeout = false
-var tracePathRewritten = "rewritten_trace_"
+var tracePathRewritten = "rewrittenTrace_"
 
 /*
  * Read the trace from the trace folder.

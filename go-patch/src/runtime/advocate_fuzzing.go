@@ -16,12 +16,14 @@ const (
 )
 
 var (
-	advocateFuzzingEnabled = false
-	fuzzingSelectData      = make(map[string][]int)
-	fuzzingSelectDataIndex = make(map[string]int)
-	fuzzingFlowData        = make(map[string][]int)
-	fuzzingFlowCounter     = make(map[string]int)
-	fuzzingFlowDataCounter = make(map[string]int)
+	advocateFuzzingEnabled       = false
+	advocateFuzzingDelayEnabled  = false
+	advocateFuzzingReplayEnabled = false
+	fuzzingSelectData            = make(map[string][]int)
+	fuzzingSelectDataIndex       = make(map[string]int)
+	fuzzingFlowData              = make(map[string][]int)
+	fuzzingFlowCounter           = make(map[string]int)
+	fuzzingFlowDataCounter       = make(map[string]int)
 
 	finishFuzzingFunc func()
 )
@@ -43,11 +45,13 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int)
 	}
 
 	advocateFuzzingEnabled = true
+	advocateFuzzingDelayEnabled = true
 }
 
-func InitFuzzingTrace(finishFuzzing func()) {
+func InitFuzzingReplay(finishFuzzing func()) {
 	finishFuzzingFunc = finishFuzzing
 	advocateFuzzingEnabled = true
+	advocateFuzzingReplayEnabled = true
 }
 
 func IsAdvocateFuzzingEnabled() bool {
@@ -90,7 +94,7 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 
 // currently used in once.Do, chan.send, chan.recv, mutex.(Try)Lock, rwmutex.(Try)(R)Lock
 func FuzzingFlowWait(skip int) {
-	if !advocateFuzzingEnabled {
+	if !advocateFuzzingDelayEnabled {
 		return
 	}
 

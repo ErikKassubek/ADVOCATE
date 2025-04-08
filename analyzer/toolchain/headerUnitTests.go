@@ -27,14 +27,13 @@ import (
  *    testName (string): name of the test
  *    replay (bool): true for replay, false for only recording
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- *    fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), set to empty string
- *    replayNumber (string): id of the trace to replay
+ *    replayInfo (string): path of the fuzzing trace or if the replay trace
  *    timeoutReplay (int): timeout for replay
  *    record (bool): true to rerecord the leaks
  * Returns:
  *    error
  */
-func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, fuzzingTrace, replayNumber string, timeoutReplay int, record bool) error {
+func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", fileName)
 	}
@@ -48,7 +47,7 @@ func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, fuz
 		return errors.New("Test Method not found in file")
 	}
 
-	return addHeaderUnit(fileName, testName, replay, fuzzing, fuzzingTrace, replayNumber, timeoutReplay, record)
+	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, timeoutReplay, record)
 }
 
 /*
@@ -116,15 +115,13 @@ func testExists(fileName string, testName string) (bool, error) {
  *    fileName (string): path to the file
  *    testName (string): name of the test
  *    replay (bool): true for replay, false for only recording
- *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- *    fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), set to empty string
- *    index (string): id of the trace to replay
+ *    replayInfo (string): path of the fuzzing trace or if the replay trace
  *    timeoutReplay (int): timeout for replay
  *    record (bool): true to rerecord the trace
  * Returns:
  *    error
  */
-func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, fuzzingTrace, index string, timeoutReplay int, record bool) error {
+func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
 	importAdded := false
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
@@ -169,18 +166,18 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, f
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplayTracing("%s", false, %d, %s)
   defer advocate.FinishReplayTracing()
-  // ======= Preamble End =======`, index, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplay("%s", false, %d, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, index, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitFuzzing("%s")
   defer advocate.FinishFuzzing()
-  // ======= Preamble End =======`, fuzzingTrace))
+  // ======= Preamble End =======`, replayInfo))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()

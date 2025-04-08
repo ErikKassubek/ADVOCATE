@@ -474,7 +474,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, "0", timeoutReplay, false); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, timeoutReplay, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -573,7 +573,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 			}
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, "", int(timeoutRepl.Seconds()), record)
+		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 

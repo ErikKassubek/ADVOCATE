@@ -30,7 +30,7 @@ import (
  *   vc (VectorClock): The vector clock of the operation
  */
 //  func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
-func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
+func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 	buffered := (ch.qSize != 0)
 
 	if ch.id == -1 {
@@ -399,15 +399,10 @@ func checkForLeak() {
  *   se (*TraceElementSelect): The trace element
  *   ids (int): The channel ids
  *   buffered ([]bool): If the channels are buffered
- *   vc (VectorClock): The vector clock of the operation
- *   tID (string): The trace id
+ *   vc (*VectorClock): The vector clock of the operation
  *   opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
- *   idSel (int): The id of the select operation
- *   tPre (int): The tpre of the select operations. Used to connect the operations of the
- *     same select statement in leakingChannels.
- *   objId (int): The id of the select
  */
-func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc clock.VectorClock, opTypes []int) {
+func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -573,7 +568,7 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
  *   vc (VectorClock): The vector clock of the operation
  *   op (int): The operation on the mutex
  */
-func addMostRecentAcquireTotal(mu *TraceElementMutex, vc clock.VectorClock, op int) {
+func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 

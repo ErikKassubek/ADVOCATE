@@ -203,7 +203,7 @@ func CheckForSelectCaseWithoutPartner() {
 *   se (*TraceElementSelect): The trace elemen
 *   vc (VectorClock): The vector clock
  */
-func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc clock.VectorClock) {
+func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
@@ -277,7 +277,7 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc clock.Vec
 *   buffered (bool): True if the channel is buffered
 *   sel (bool): True if the operation is part of a select statement
  */
-func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc clock.VectorClock,
+func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorClock,
 	send bool, buffered bool) {
 
 	timer.Start(timer.AnaSelWithoutPartner)
@@ -318,7 +318,7 @@ func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc clock.VectorClo
 *   id (int): The id of the channel
 *   vc (VectorClock): The vector clock
  */
-func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc clock.VectorClock) {
+func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 

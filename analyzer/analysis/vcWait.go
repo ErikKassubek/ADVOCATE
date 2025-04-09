@@ -35,13 +35,13 @@ func newWg(index int, nRout int) {
  *   wa (*TraceElementWait): The trace element
  *   vc (map[int]VectorClock): The vector clocks
  */
-func Change(wa *TraceElementWait, vc map[int]clock.VectorClock) {
+func Change(wa *TraceElementWait, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newWg(wa.id, vc[wa.id].GetSize())
-	lastChangeWG[wa.id] = lastChangeWG[wa.id].Sync(vc[wa.routine])
-	vc[wa.routine] = vc[wa.routine].Inc(wa.routine)
+	lastChangeWG[wa.id].Sync(vc[wa.routine])
+	vc[wa.routine].Inc(wa.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -56,13 +56,13 @@ func Change(wa *TraceElementWait, vc map[int]clock.VectorClock) {
  *   wa (*TraceElementWait): The trace element
  *   vc (*map[int]VectorClock): The vector clocks
  */
-func Wait(wa *TraceElementWait, vc map[int]clock.VectorClock) {
+func Wait(wa *TraceElementWait, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newWg(wa.id, vc[wa.id].GetSize())
 	if wa.tPost != 0 {
-		vc[wa.routine] = vc[wa.routine].Sync(lastChangeWG[wa.id])
-		vc[wa.routine] = vc[wa.routine].Inc(wa.routine)
+		vc[wa.routine].Sync(lastChangeWG[wa.id])
+		vc[wa.routine].Inc(wa.routine)
 	}
 }

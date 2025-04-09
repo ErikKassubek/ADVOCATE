@@ -721,8 +721,8 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 		string
 		time   int
 		thread int
-		vc     clock.VectorClock
-		vcWmHB clock.VectorClock
+		vc     *clock.VectorClock
+		vcWmHB *clock.VectorClock
 	}, 0)
 	for _, tra := range t.traces {
 		for _, elem := range tra {
@@ -732,8 +732,8 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 					string
 					time   int
 					thread int
-					vc     clock.VectorClock
-					vcWmHB clock.VectorClock
+					vc     *clock.VectorClock
+					vcWmHB *clock.VectorClock
 				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetVCWmHB()})
 			}
 		}

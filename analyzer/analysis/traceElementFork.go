@@ -34,8 +34,8 @@ type TraceElementFork struct {
 	id      int
 	file    string
 	line    int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -161,11 +161,11 @@ func (fo *TraceElementFork) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (fo *TraceElementFork) GetVC() clock.VectorClock {
+func (fo *TraceElementFork) GetVC() *clock.VectorClock {
 	return fo.vc
 }
 
-func (fo *TraceElementFork) GetVCWmHB() clock.VectorClock {
+func (fo *TraceElementFork) GetVCWmHB() *clock.VectorClock {
 	return fo.vcWmHB
 }
 

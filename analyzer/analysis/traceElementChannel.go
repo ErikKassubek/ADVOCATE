@@ -65,8 +65,8 @@ type TraceElementChannel struct {
 	line    int
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -293,11 +293,11 @@ func (ch *TraceElementChannel) Operation() OpChannel {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (ch *TraceElementChannel) GetVC() clock.VectorClock {
+func (ch *TraceElementChannel) GetVC() *clock.VectorClock {
 	return ch.vc
 }
 
-func (ch *TraceElementChannel) GetVCWmHB() clock.VectorClock {
+func (ch *TraceElementChannel) GetVCWmHB() *clock.VectorClock {
 	return ch.vcWmHB
 }
 

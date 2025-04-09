@@ -57,8 +57,8 @@ type TraceElementMutex struct {
 	suc     bool
 	file    string
 	line    int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -254,11 +254,11 @@ func (mu *TraceElementMutex) IsLock() bool {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (mu *TraceElementMutex) GetVC() clock.VectorClock {
+func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
 	return mu.vc
 }
 
-func (mu *TraceElementMutex) GetVCWmHB() clock.VectorClock {
+func (mu *TraceElementMutex) GetVCWmHB() *clock.VectorClock {
 	return mu.vcWmHB
 }
 
@@ -457,7 +457,7 @@ func (mu *TraceElementMutex) updateVectorClock() {
 func (mu *TraceElementMutex) updateVectorClockAlt() {
 	mu.vc = currentVCHb[mu.routine].Copy()
 
-	currentVCHb[mu.routine] = currentVCHb[mu.routine].Inc(mu.routine)
+	currentVCHb[mu.routine].Inc(mu.routine)
 }
 
 /*

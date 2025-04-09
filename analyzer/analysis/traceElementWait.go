@@ -52,8 +52,8 @@ type TraceElementWait struct {
 	val     int
 	file    string
 	line    int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 }
 
 /*
@@ -225,11 +225,11 @@ func (wa *TraceElementWait) GetDelta() int {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (wa *TraceElementWait) GetVC() clock.VectorClock {
+func (wa *TraceElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
 
-func (wa *TraceElementWait) GetVCWmHB() clock.VectorClock {
+func (wa *TraceElementWait) GetVCWmHB() *clock.VectorClock {
 	return wa.vcWmHB
 }
 

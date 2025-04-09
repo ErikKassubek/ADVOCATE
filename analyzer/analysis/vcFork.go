@@ -23,7 +23,7 @@ import (
  *   vcHb (map[int]VectorClock): The current hb vector clocks
  *   vcMhb (map[int]VectorClock): The current mhb vector clocks
  */
-func Fork(fo *TraceElementFork, vcHb map[int]clock.VectorClock, vcMhb map[int]clock.VectorClock) {
+func Fork(fo *TraceElementFork, vcHb map[int]*clock.VectorClock, vcMhb map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -31,12 +31,12 @@ func Fork(fo *TraceElementFork, vcHb map[int]clock.VectorClock, vcMhb map[int]cl
 	newRout := fo.id
 
 	vcHb[newRout] = vcHb[oldRout].Copy()
-	vcHb[oldRout] = vcHb[oldRout].Inc(oldRout)
-	vcHb[newRout] = vcHb[newRout].Inc(newRout)
+	vcHb[oldRout].Inc(oldRout)
+	vcHb[newRout].Inc(newRout)
 
 	vcMhb[newRout] = vcMhb[oldRout].Copy()
-	vcMhb[oldRout] = vcMhb[oldRout].Inc(oldRout)
-	vcMhb[newRout] = vcMhb[newRout].Inc(newRout)
+	vcMhb[oldRout].Inc(oldRout)
+	vcMhb[newRout].Inc(newRout)
 
 	allForks[fo.id] = fo
 }

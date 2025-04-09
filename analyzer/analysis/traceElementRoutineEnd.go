@@ -29,8 +29,8 @@ type TraceElementRoutineEnd struct {
 	index   int
 	routine int
 	tPost   int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 }
 
 /*
@@ -141,11 +141,11 @@ func (re *TraceElementRoutineEnd) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (re *TraceElementRoutineEnd) GetVC() clock.VectorClock {
+func (re *TraceElementRoutineEnd) GetVC() *clock.VectorClock {
 	return re.vc
 }
 
-func (fo *TraceElementRoutineEnd) GetVCWmHB() clock.VectorClock {
+func (fo *TraceElementRoutineEnd) GetVCWmHB() *clock.VectorClock {
 	return fo.vcWmHB
 }
 

@@ -25,7 +25,7 @@ import (
  *   tId (string): The trace id of the mutex operation
  *   vc (VectorClock): The current vector clock
  */
-func lockSetAddLock(mu *TraceElementMutex, vc clock.VectorClock) {
+func lockSetAddLock(mu *TraceElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 	timer.Start(timer.AnaResource)

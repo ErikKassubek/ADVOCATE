@@ -47,8 +47,8 @@ type TraceElementCond struct {
 	opC     OpCond
 	file    string
 	line    int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 }
 
 /*
@@ -206,7 +206,7 @@ func (co *TraceElementCond) GetOpCond() OpCond {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (co *TraceElementCond) GetVC() clock.VectorClock {
+func (co *TraceElementCond) GetVC() *clock.VectorClock {
 	return co.vc
 }
 
@@ -215,7 +215,7 @@ func (co *TraceElementCond) GetVC() clock.VectorClock {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (co *TraceElementCond) GetVCWmHB() clock.VectorClock {
+func (co *TraceElementCond) GetVCWmHB() *clock.VectorClock {
 	return co.vcWmHB
 }
 

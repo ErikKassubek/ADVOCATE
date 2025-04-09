@@ -47,8 +47,8 @@ type TraceElementAtomic struct {
 	tPost   int
 	id      int
 	opA     opAtomic
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 	file    string
 	line    int
 }
@@ -196,11 +196,11 @@ func (at *TraceElementAtomic) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (at *TraceElementAtomic) GetVC() clock.VectorClock {
+func (at *TraceElementAtomic) GetVC() *clock.VectorClock {
 	return at.vc
 }
 
-func (at *TraceElementAtomic) GetVCWmHB() clock.VectorClock {
+func (at *TraceElementAtomic) GetVCWmHB() *clock.VectorClock {
 	return at.vcWmHB
 }
 

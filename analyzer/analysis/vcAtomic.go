@@ -33,13 +33,13 @@ func newLw(index int, nRout int) {
  *   at (*TraceElementAtomic): The trace element
  *   vc (*map[int]VectorClock): The vector clocks
  */
-func Write(at *TraceElementAtomic, vc map[int]clock.VectorClock) {
+func Write(at *TraceElementAtomic, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newLw(at.id, vc[at.id].GetSize())
 	lw[at.id] = vc[at.routine].Copy()
-	vc[at.routine] = vc[at.routine].Inc(at.routine)
+	vc[at.routine].Inc(at.routine)
 }
 
 /*
@@ -50,15 +50,15 @@ func Write(at *TraceElementAtomic, vc map[int]clock.VectorClock) {
  *   vc (map[int]VectorClock): The vector clocks
  *   sync bool: sync reader with last writer
  */
-func Read(at *TraceElementAtomic, vc map[int]clock.VectorClock, sync bool) {
+func Read(at *TraceElementAtomic, vc map[int]*clock.VectorClock, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newLw(at.id, vc[at.id].GetSize())
 	if sync {
-		vc[at.routine] = vc[at.routine].Sync(lw[at.id])
+		vc[at.routine].Sync(lw[at.id])
 	}
-	vc[at.routine] = vc[at.routine].Inc(at.routine)
+	vc[at.routine].Inc(at.routine)
 }
 
 /*
@@ -70,7 +70,7 @@ func Read(at *TraceElementAtomic, vc map[int]clock.VectorClock, sync bool) {
  *   cv (map[int]VectorClock): The vector clocks
  *   sync bool: sync reader with last writer
  */
-func Swap(at *TraceElementAtomic, cv map[int]clock.VectorClock, sync bool) {
+func Swap(at *TraceElementAtomic, cv map[int]*clock.VectorClock, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

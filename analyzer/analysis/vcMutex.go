@@ -38,19 +38,19 @@ func newRel(index int, nRout int) {
  *   vc (map[int]VectorClock): The current vector clocks
  *   wVc (map[int]VectorClock): The current weak vector clocks
  */
-func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock.VectorClock) {
+func Lock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+		vc[mu.routine].Inc(mu.routine)
 		return
 	}
 
 	newRel(mu.id, vc[mu.routine].GetSize())
-	vc[mu.routine] = vc[mu.routine].Sync(relW[mu.id])
-	vc[mu.routine] = vc[mu.routine].Sync(relR[mu.id])
-	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+	vc[mu.routine].Sync(relW[mu.id])
+	vc[mu.routine].Sync(relR[mu.id])
+	vc[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -71,7 +71,7 @@ func Lock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock
  *   mu (*TraceElementMutex): The trace element
  *   vc (map[int]VectorClock): The current vector clocks
  */
-func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
+func Unlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -82,7 +82,7 @@ func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
 	newRel(mu.id, vc[mu.routine].GetSize())
 	relW[mu.id] = vc[mu.routine].Copy()
 	relR[mu.id] = vc[mu.routine].Copy()
-	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+	vc[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -101,18 +101,18 @@ func Unlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
  * Returns:
  *   (vectorClock): The new vector clock
  */
-func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]clock.VectorClock) {
+func RLock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+		vc[mu.routine].Inc(mu.routine)
 		return
 	}
 
 	newRel(mu.id, vc[mu.routine].GetSize())
-	vc[mu.routine] = vc[mu.routine].Sync(relW[mu.id])
-	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+	vc[mu.routine].Sync(relW[mu.id])
+	vc[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -133,18 +133,18 @@ func RLock(mu *TraceElementMutex, vc map[int]clock.VectorClock, wVc map[int]cloc
  *   mu (*TraceElementMutex): The trace element
  *   vc (map[int]VectorClock): The current vector clocks
  */
-func RUnlock(mu *TraceElementMutex, vc map[int]clock.VectorClock) {
+func RUnlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+		vc[mu.routine].Inc(mu.routine)
 		return
 	}
 
 	newRel(mu.id, vc[mu.routine].GetSize())
-	relR[mu.id] = relR[mu.id].Sync(vc[mu.routine])
-	vc[mu.routine] = vc[mu.routine].Inc(mu.routine)
+	relR[mu.id].Sync(vc[mu.routine])
+	vc[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 

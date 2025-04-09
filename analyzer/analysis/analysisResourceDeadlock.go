@@ -59,7 +59,7 @@ type LockEvent struct {
 	thread_id    ThreadId
 	trace_id     string
 	lock_id      int
-	vector_clock clock.VectorClock
+	vector_clock *clock.VectorClock
 }
 
 type ThreadId int
@@ -157,7 +157,7 @@ func insert2(dependencies []Dependency, lockset Lockset, event LockEvent) []Depe
 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
 	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
-	equalModuloTID := func(tid ThreadId, vc1 clock.VectorClock, vc2 clock.VectorClock) bool {
+	equalModuloTID := func(tid ThreadId, vc1 *clock.VectorClock, vc2 *clock.VectorClock) bool {
 		if vc1.GetSize() != vc2.GetSize() {
 			return false
 		}

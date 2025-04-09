@@ -185,8 +185,8 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		currentVCWmhb[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
 	}
 
-	currentVCHb[1] = currentVCHb[1].Inc(1)
-	currentVCWmhb[1] = currentVCWmhb[1].Inc(1)
+	currentVCHb[1].Inc(1)
+	currentVCWmhb[1].Inc(1)
 
 	utils.LogInfo("Start HB analysis")
 

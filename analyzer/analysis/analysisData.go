@@ -15,14 +15,14 @@ import (
 )
 
 type elemWithVc struct {
-	vc   clock.VectorClock
+	vc   *clock.VectorClock
 	elem TraceElement
 }
 
 type VectorClockTID2 struct {
 	routine  int
 	id       int
-	vc       clock.VectorClock
+	vc       *clock.VectorClock
 	tID      string
 	typeVal  int
 	val      int
@@ -33,7 +33,7 @@ type VectorClockTID2 struct {
 
 type ElemWithVcVal struct {
 	Elem TraceElement
-	Vc   clock.VectorClock
+	Vc   *clock.VectorClock
 	Val  int
 }
 
@@ -71,10 +71,10 @@ var (
 	MainTrace Trace
 
 	// current happens before vector clocks
-	currentVCHb = make(map[int]clock.VectorClock)
+	currentVCHb = make(map[int]*clock.VectorClock)
 
 	// current must happens before vector clocks
-	currentVCWmhb = make(map[int]clock.VectorClock)
+	currentVCWmhb = make(map[int]*clock.VectorClock)
 
 	// channel without partner in main trace
 	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel) // id -> opId -> element
@@ -125,11 +125,11 @@ var (
 	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)      // id -> vcTID
 
 	// vector clocks for last release times
-	relW = make(map[int]clock.VectorClock) // id -> vc
-	relR = make(map[int]clock.VectorClock) // id -> vc
+	relW = make(map[int]*clock.VectorClock) // id -> vc
+	relR = make(map[int]*clock.VectorClock) // id -> vc
 
 	// vector clocks for last write times
-	lw = make(map[int]clock.VectorClock)
+	lw = make(map[int]*clock.VectorClock)
 
 	// for leak check
 	leakingChannels = make(map[int][]VectorClockTID2) // id -> vcTID
@@ -145,10 +145,10 @@ var (
 	currentlyWaiting = make(map[int][]int) // -> id -> []routine
 
 	// vector clocks for the successful do
-	oSuc = make(map[int]clock.VectorClock)
+	oSuc = make(map[int]*clock.VectorClock)
 
 	// vector clock for each wait group
-	lastChangeWG = make(map[int]clock.VectorClock)
+	lastChangeWG = make(map[int]*clock.VectorClock)
 
 	// exit code info
 	exitCode int

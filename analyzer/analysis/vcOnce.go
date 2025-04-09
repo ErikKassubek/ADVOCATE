@@ -35,13 +35,13 @@ func newOSuc(index int, nRout int) {
  *   on (*TraceElementOnce): The trace element
  *   vc (map[int]VectorClock): The current vector clocks
  */
-func DoSuc(on *TraceElementOnce, vc map[int]clock.VectorClock) {
+func DoSuc(on *TraceElementOnce, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newOSuc(on.id, vc[on.id].GetSize())
 	oSuc[on.id] = vc[on.routine].Copy()
-	vc[on.routine] = vc[on.routine].Inc(on.routine)
+	vc[on.routine].Inc(on.routine)
 }
 
 /*
@@ -50,11 +50,11 @@ func DoSuc(on *TraceElementOnce, vc map[int]clock.VectorClock) {
  *   on (*TraceElementOnce): The trace element
  *   vc (map[int]VectorClock): The current vector clocks
  */
-func DoFail(on *TraceElementOnce, vc map[int]clock.VectorClock) {
+func DoFail(on *TraceElementOnce, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	newOSuc(on.id, vc[on.id].GetSize())
-	vc[on.routine] = vc[on.routine].Sync(oSuc[on.id])
-	vc[on.routine] = vc[on.routine].Inc(on.routine)
+	vc[on.routine].Sync(oSuc[on.id])
+	vc[on.routine].Inc(on.routine)
 }

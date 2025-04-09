@@ -24,17 +24,17 @@ import (
  * Struct to represent a node in a lock graph
  */
 type lockGraphNode struct {
-	id       int               // id of the mutex represented by the node
-	routine  int               // id of the routine that holds the lock
-	rw       bool              // true if the mutex is a read-noWarningrite lock
-	rLock    bool              // true if the lock was a read lock
-	children []*lockGraphNode  // children of the node
-	outside  []*lockGraphNode  // nodes with the same lock ID that are in the tree of another routine
-	lockSet  map[int]struct{}  // ids of the nodes that are hold by the routine, when the node was created
-	vc       clock.VectorClock // vector clock of the node, is equal to the vector clock of the lock event
-	parent   *lockGraphNode    // parent of the node
-	tID      string            // trace id of the lock
-	visited  map[int]struct{}  // map to store the routine, for which the node was already visited when starting the DFS from the routines lock tree root
+	id       int                // id of the mutex represented by the node
+	routine  int                // id of the routine that holds the lock
+	rw       bool               // true if the mutex is a read-noWarningrite lock
+	rLock    bool               // true if the lock was a read lock
+	children []*lockGraphNode   // children of the node
+	outside  []*lockGraphNode   // nodes with the same lock ID that are in the tree of another routine
+	lockSet  map[int]struct{}   // ids of the nodes that are hold by the routine, when the node was created
+	vc       *clock.VectorClock // vector clock of the node, is equal to the vector clock of the lock event
+	parent   *lockGraphNode     // parent of the node
+	tID      string             // trace id of the lock
+	visited  map[int]struct{}   // map to store the routine, for which the node was already visited when starting the DFS from the routines lock tree root
 }
 
 /*
@@ -55,7 +55,7 @@ func newLockGraph(routine int) *lockGraphNode {
  *   vc (VectorClock): The vector clock of the childs lock operation
  *   lockSet ([]int): The lockSet of the child
  */
-func (node *lockGraphNode) addChild(childID int, tID string, childRw bool, childRLock bool, vc clock.VectorClock, lockSet map[int]struct{}) *lockGraphNode {
+func (node *lockGraphNode) addChild(childID int, tID string, childRw bool, childRLock bool, vc *clock.VectorClock, lockSet map[int]struct{}) *lockGraphNode {
 	child := &lockGraphNode{id: childID, parent: node, rw: childRw,
 		rLock: childRLock, routine: node.routine, vc: vc, lockSet: lockSet, tID: tID}
 	node.children = append(node.children, child)
@@ -129,9 +129,9 @@ var nodesPerID = make(map[int]map[int][]*lockGraphNode) // id -> routine -> []*l
  * Args:
  *   mu (*TraceElementMutex): The trace element
  *   rLock (bool): True if the lock is a read lock
- *   vc (VectorClock): The vector clock of the lock event
+ *   vc (*VectorClock): The vector clock of the lock event
  */
-func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc clock.VectorClock) {
+func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc *clock.VectorClock) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 

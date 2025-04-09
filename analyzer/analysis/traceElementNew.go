@@ -49,8 +49,8 @@ type TraceElementNew struct {
 	num      int
 	file     string
 	line     int
-	vc       clock.VectorClock
-	vcWmHB   clock.VectorClock
+	vc       *clock.VectorClock
+	vcWmHB   *clock.VectorClock
 }
 
 func AddTraceElementNew(routine int, tPost string, id string, elemType string, num string, pos string) error {
@@ -157,11 +157,11 @@ func (n *TraceElementNew) GetObjType(operation bool) string {
 	}
 }
 
-func (n *TraceElementNew) GetVC() clock.VectorClock {
+func (n *TraceElementNew) GetVC() *clock.VectorClock {
 	return n.vc
 }
 
-func (n *TraceElementNew) GetVCWmHB() clock.VectorClock {
+func (n *TraceElementNew) GetVCWmHB() *clock.VectorClock {
 	return n.vcWmHB
 }
 

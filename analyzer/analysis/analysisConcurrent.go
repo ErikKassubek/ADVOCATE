@@ -19,7 +19,7 @@ import (
 	"analyzer/utils"
 )
 
-func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
+func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
 
@@ -57,7 +57,7 @@ func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]clock.Vecto
 	}
 }
 
-func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]clock.VectorClock) {
+func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
 	if analysisFuzzing {
 		timer.Start(timer.FuzzingAna)
 		defer timer.Stop(timer.FuzzingAna)

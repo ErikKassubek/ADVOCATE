@@ -119,13 +119,13 @@ func (er *TraceElementReplay) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (er *TraceElementReplay) GetVC() clock.VectorClock {
-	return clock.VectorClock{}
+func (er *TraceElementReplay) GetVC() *clock.VectorClock {
+	return &clock.VectorClock{}
 }
 
 // GetVCWmHB implements TraceElement.
-func (at *TraceElementReplay) GetVCWmHB() clock.VectorClock {
-	return clock.VectorClock{}
+func (at *TraceElementReplay) GetVCWmHB() *clock.VectorClock {
+	return &clock.VectorClock{}
 }
 
 /*

@@ -50,8 +50,8 @@ type TraceElementSelect struct {
 	chosenDefault       bool
 	file                string
 	line                int
-	vc                  clock.VectorClock
-	vcWmHB              clock.VectorClock
+	vc                  *clock.VectorClock
+	vcWmHB              *clock.VectorClock
 	casesWithPosPartner []int
 }
 
@@ -306,11 +306,11 @@ func (se *TraceElementSelect) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (se *TraceElementSelect) GetVC() clock.VectorClock {
+func (se *TraceElementSelect) GetVC() *clock.VectorClock {
 	return se.vc
 }
 
-func (se *TraceElementSelect) GetVCWmHB() clock.VectorClock {
+func (se *TraceElementSelect) GetVCWmHB() *clock.VectorClock {
 	return se.vcWmHB
 }
 
@@ -598,7 +598,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 	se.vcWmHB = currentVCHb[se.routine].Copy()
 
 	if noChannel {
-		currentVCHb[se.routine] = currentVCHb[se.routine].Inc(se.routine)
+		currentVCHb[se.routine].Inc(se.routine)
 	} else {
 		// update the vector clock
 		se.chosenCase.vc = se.vc.Copy()

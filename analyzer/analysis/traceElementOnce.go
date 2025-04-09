@@ -39,8 +39,8 @@ type TraceElementOnce struct {
 	suc     bool
 	file    string
 	line    int
-	vc      clock.VectorClock
-	vcWmHB  clock.VectorClock
+	vc      *clock.VectorClock
+	vcWmHB  *clock.VectorClock
 }
 
 /*
@@ -183,11 +183,11 @@ func (on *TraceElementOnce) GetTID() string {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (on *TraceElementOnce) GetVC() clock.VectorClock {
+func (on *TraceElementOnce) GetVC() *clock.VectorClock {
 	return on.vc
 }
 
-func (on *TraceElementOnce) GetVCWmHB() clock.VectorClock {
+func (on *TraceElementOnce) GetVCWmHB() *clock.VectorClock {
 	return on.vcWmHB
 }
 

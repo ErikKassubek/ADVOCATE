@@ -256,4 +256,33 @@ undesired state.
 
 ### Pre
 
-TODO: describe with example
+GoPie only mutates operations that have fully executed, meaning
+in the case of a leak, the leaking operation is not mutated.
+Since we record those leaking operations, we are able to let them
+be part of the mutation. With this we may be able to unblock the leak,
+therefore accessing new code. An example would be the following program:
+
+```go
+m := sync.Mutex{}
+c := make(chan int, 0)
+
+go func() {
+  c <- 1              // send 1
+  codeWithBug()
+}
+
+go func() {
+  c <- 1              // send 2
+s}
+
+<- c
+```
+
+If we assume that the `send 2` communicated with the recv, and the `send 1`
+blocked, the program did not execute the `codeWithBug`. By making the
+not executed send available for mutation, it may change the order of the two
+sends, therefore executing the `send1` and the `codeWithBug`, enabling
+us to detect the bug.
+
+For the implementation of the scheduling chains, we assume the
+operations without a post counter to have a timer equal to there pre counter.

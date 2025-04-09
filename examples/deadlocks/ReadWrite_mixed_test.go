@@ -15,10 +15,9 @@ func TestReadWriteMixed(t *testing.T) {
 		x.RUnlock()
 	}()
 
-	go func() {
-		y.RLock()
-		x.Lock() // SHOULD NOT produce a deadlock since goroutine 1 only reads
-		x.Unlock()
-		y.RUnlock()
-	}()
+	y.RLock()
+	x.Lock() // SHOULD NOT produce a deadlock since goroutine 1 only reads
+	x.Unlock()
+	y.RUnlock()
+
 }

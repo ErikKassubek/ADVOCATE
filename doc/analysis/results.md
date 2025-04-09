@@ -28,6 +28,7 @@ with
 ```
 The typeIDs have the following meaning:
 
+- A00: Unknown panic
 - A01: Send on closed channel
 - A02: Receive on closed channel
 - A03: Close on closed channel
@@ -39,6 +40,8 @@ The typeIDs have the following meaning:
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter
+- P04: Possible unlock deadlock before lock
+- P05: Possible cyclic deadlock
 - L01: Leak on unbuffered channel with possible partner
 - L02: Leak on unbuffered channel without possible partner
 - L03: Leak on buffered channel with possible partner
@@ -52,8 +55,7 @@ The typeIDs have the following meaning:
 - R01: Unknown panic in recording
 - R02: Timeout in recording
 
-<!--P04: Possible cyclic deadlock, disabled-->
-<!--P05: Possible mixed deadlock, disabled-->
+<!--P06: Possible mixed deadlock, disabled-->
 `[args]` shows the elements involved in the problem. There are either
 one or two, while the args them self can contain multiple trace elements or select cases.\
 The arg in args are separated by a semicolon (;).\

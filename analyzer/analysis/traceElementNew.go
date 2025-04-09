@@ -50,6 +50,7 @@ type TraceElementNew struct {
 	file     string
 	line     int
 	vc       clock.VectorClock
+	vcWmHB   clock.VectorClock
 }
 
 func AddTraceElementNew(routine int, tPost string, id string, elemType string, num string, pos string) error {
@@ -160,6 +161,10 @@ func (n *TraceElementNew) GetVC() clock.VectorClock {
 	return n.vc
 }
 
+func (n *TraceElementNew) GetVCWmHB() clock.VectorClock {
+	return n.vcWmHB
+}
+
 func (n *TraceElementNew) GetNum() int {
 	return n.num
 }
@@ -197,6 +202,7 @@ func (n *TraceElementNew) SetTWithoutNotExecuted(tSort int) {
 
 func (n *TraceElementNew) updateVectorClock() {
 	n.vc = currentVCHb[n.routine].Copy()
+	n.vcWmHB = currentVCHb[n.routine].Copy()
 
 	currentVCHb[n.routine].Inc(n.routine)
 }
@@ -211,6 +217,7 @@ func (n *TraceElementNew) Copy() TraceElement {
 		file:     n.file,
 		line:     n.line,
 		vc:       n.vc.Copy(),
+		vcWmHB:   n.vcWmHB.Copy(),
 	}
 }
 

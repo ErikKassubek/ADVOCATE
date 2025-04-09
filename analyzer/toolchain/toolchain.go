@@ -56,7 +56,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
  */
 func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName, test string,
 	numRerecorded, fuzzing int, fuzzingTrace string,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces bool, firstRun, cont bool, fileNumber, testNumber int) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool, firstRun, cont bool, fileNumber, testNumber int) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFileOrDir = strings.Replace(pathToMainFileOrTestDir, "~", home, -1)
@@ -100,7 +100,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName, measureTime,
-			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces, firstRun, cont, fileNumber, testNumber)
+			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces, firstRun, skipExisting, cont, fileNumber, testNumber)
 	case "explain":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")

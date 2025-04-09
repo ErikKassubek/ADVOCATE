@@ -19,6 +19,7 @@ This is achieved through `happens-before-relation` and `vector-clocks`
 Furthermore it is also able to produce traces which can be fed back into the program in order to experience the predicted bug.
 
 AdvocateGo tries to detect the following situations:
+- A00: Unknown panic
 - A01: Send on closed channel
 - A02: Receive on closed channel
 - A03: Close on closed channel

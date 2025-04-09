@@ -48,6 +48,7 @@ type TraceElementCond struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 }
 
 /*
@@ -210,6 +211,15 @@ func (co *TraceElementCond) GetVC() clock.VectorClock {
 }
 
 /*
+ * Get the vector clock of the element for the weak must happens before relation
+ * Returns:
+ *   VectorClock: The vector clock of the element
+ */
+func (co *TraceElementCond) GetVCWmHB() clock.VectorClock {
+	return co.vcWmHB
+}
+
+/*
  * Get the string representation of the object type
  */
 func (co *TraceElementCond) GetObjType(operation bool) string {
@@ -320,6 +330,7 @@ func (co *TraceElementCond) ToString() string {
  */
 func (co *TraceElementCond) updateVectorClock() {
 	co.vc = currentVCHb[co.routine].Copy()
+	co.vcWmHB = currentVCWmhb[co.routine].Copy()
 
 	switch co.opC {
 	case WaitCondOp:
@@ -350,6 +361,7 @@ func (co *TraceElementCond) Copy() TraceElement {
 		file:    co.file,
 		line:    co.line,
 		vc:      co.vc.Copy(),
+		vcWmHB:  co.vcWmHB.Copy(),
 	}
 }
 

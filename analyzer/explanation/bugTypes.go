@@ -182,7 +182,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered a deadlock earlier in the trace than expected",
 	"11": "The replay got stuck during the execution.\n" +
 		"A waiting trace element was not executed for a long time.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -190,7 +191,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered an unexpected deadlock",
 	"12": "The replay got stuck during the execution.\n" +
 		"No trace element was executed for a long tim.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -198,7 +200,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced" +
+		"	 - The program encountered an unexpected deadlock",
 	"13": "The replay got stuck during the execution.\n" +
 		"The program tried to execute an operation, even though all elements in the trace have already been executed.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -220,7 +223,7 @@ var exitCodeExplanation = map[string]string{
 		"The replay was therefore able to confirm, that the negative wait group can actually occur.",
 	"33": "The replay resulted in an expected lock of an unlocked mutex triggering a panic. The bug was triggered. " +
 		"The replay was therefore able to confirm, that the unlock of a not locked mutex can actually occur.",
-	"41": "The replay was able to create the cyclic deadlock scenario.",
+	"41": "The replay reached the expected point and found stuck mutexes." + "The replay was therefore able to confirm that a deadlock can actually occur.",
 }
 
 var objectTypes = map[string]string{
@@ -249,6 +252,8 @@ var objectTypes = map[string]string{
 	"ON": "Once: Done Not Executed (because the once was already executed)",
 	"RF": "Routine: Fork",
 	"RE": "Routine: End",
+	"DH": "Mutex: Causing deadlock",
+	"DC": "Mutex: Part of deadlock",
 }
 
 func init() {

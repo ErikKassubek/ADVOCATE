@@ -18,12 +18,10 @@ func TestGuard(t *testing.T) {
 		guard.Unlock()
 	}()
 
-	go func() {
-		guard.Lock()
-		y.Lock()
-		x.Lock()
-		x.Unlock()
-		y.Unlock()
-		guard.Unlock()
-	}()
+	guard.Lock()
+	y.Lock()
+	x.Lock()
+	x.Unlock()
+	y.Unlock()
+	guard.Unlock()
 }

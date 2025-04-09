@@ -73,6 +73,7 @@ var (
 * 	notExec (bool): find never executed operations
 * 	stats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
+* 	skipExisting (bool): skip existing runs
 * 	cont (bool): continue partial fuzzing
  */
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
@@ -201,6 +202,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 * 	notExec (bool): find never executed operations
 * 	createStats (bool): create statistics
 * 	keepTraces (bool): keep the traces after analysis
+* 	skipExisting (bool): skip existing runs
 * 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
 * 	cont (bool): continue with an already started run
  */
@@ -239,7 +241,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
-			0, numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, firstRun, cont, fileNumber, testNumber)
+			0, numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

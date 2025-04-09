@@ -719,8 +719,10 @@ func (t *Trace) PrintTrace() {
 func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	elements := make([]struct {
 		string
-		int
-		clock.VectorClock
+		time   int
+		thread int
+		vc     clock.VectorClock
+		vcWmHB clock.VectorClock
 	}, 0)
 	for _, tra := range t.traces {
 		for _, elem := range tra {
@@ -728,23 +730,27 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 			if len(types) == 0 || utils.ContainsString(types, elemStr[0:1]) {
 				elements = append(elements, struct {
 					string
-					int
-					clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetVC()})
+					time   int
+					thread int
+					vc     clock.VectorClock
+					vcWmHB clock.VectorClock
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetVCWmHB()})
 			}
 		}
 	}
 
 	// sort elements by timestamp
 	sort.Slice(elements, func(i, j int) bool {
-		return elements[i].int < elements[j].int
+		return elements[i].time < elements[j].time
 	})
 
 	for _, elem := range elements {
 		if clocks {
-			utils.LogInfo(elem.string, elem.VectorClock.ToString())
+			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
+			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
 		} else {
-			utils.LogInfo(elem.string)
+			utils.LogInfo(elem.thread, elem.string)
+			fmt.Println(elem.thread, elem.string)
 		}
 	}
 }

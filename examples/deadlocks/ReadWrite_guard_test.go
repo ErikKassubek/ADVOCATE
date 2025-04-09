@@ -18,12 +18,11 @@ func TestReadWriteGuard(t *testing.T) {
 		guard.RUnlock()
 	}()
 
-	go func() {
-		guard.RLock()
-		y.Lock()
-		x.Lock()
-		x.Unlock()
-		y.Unlock()
-		guard.RUnlock()
-	}()
+	guard.RLock()
+	y.Lock()
+	x.Lock()
+	x.Unlock()
+	y.Unlock()
+	guard.RUnlock()
+
 }

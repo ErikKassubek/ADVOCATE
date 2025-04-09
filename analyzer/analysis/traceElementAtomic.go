@@ -48,6 +48,7 @@ type TraceElementAtomic struct {
 	id      int
 	opA     opAtomic
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 	file    string
 	line    int
 }
@@ -199,6 +200,10 @@ func (at *TraceElementAtomic) GetVC() clock.VectorClock {
 	return at.vc
 }
 
+func (at *TraceElementAtomic) GetVCWmHB() clock.VectorClock {
+	return at.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -307,6 +312,7 @@ func (at *TraceElementAtomic) ToString() string {
  */
 func (at *TraceElementAtomic) updateVectorClock() {
 	at.vc = currentVCHb[at.routine].Copy()
+	at.vcWmHB = currentVCWmhb[at.routine].Copy()
 
 	switch at.opA {
 	case LoadOp:
@@ -355,6 +361,7 @@ func (at *TraceElementAtomic) Copy() TraceElement {
 		id:      at.id,
 		opA:     at.opA,
 		vc:      at.vc.Copy(),
+		vcWmHB:  at.vcWmHB.Copy(),
 	}
 }
 

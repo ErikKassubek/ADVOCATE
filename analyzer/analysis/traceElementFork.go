@@ -35,6 +35,7 @@ type TraceElementFork struct {
 	file    string
 	line    int
 	vc      clock.VectorClock
+	vcWmHB  clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -164,6 +165,10 @@ func (fo *TraceElementFork) GetVC() clock.VectorClock {
 	return fo.vc
 }
 
+func (fo *TraceElementFork) GetVCWmHB() clock.VectorClock {
+	return fo.vcWmHB
+}
+
 /*
  * Get the string representation of the object type
  */
@@ -242,6 +247,7 @@ func (fo *TraceElementFork) ToString() string {
  */
 func (fo *TraceElementFork) updateVectorClock() {
 	fo.vc = currentVCHb[fo.routine].Copy()
+	fo.vcWmHB = currentVCWmhb[fo.routine].Copy()
 
 	Fork(fo, currentVCHb, currentVCWmhb)
 }
@@ -260,6 +266,7 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		file:    fo.file,
 		line:    fo.line,
 		vc:      fo.vc.Copy(),
+		vcWmHB:  fo.vcWmHB.Copy(),
 	}
 }
 

@@ -15,10 +15,8 @@ func TestBasic(t *testing.T) {
 		x.Unlock()
 	}()
 
-	go func() {
-		y.Lock()
-		x.Lock() // this SHOULD produce a deadlock
-		x.Unlock()
-		y.Unlock()
-	}()
+	y.Lock()
+	x.Lock() // this SHOULD produce a deadlock
+	x.Unlock()
+	y.Unlock()
 }

@@ -123,6 +123,11 @@ func (er *TraceElementReplay) GetVC() clock.VectorClock {
 	return clock.VectorClock{}
 }
 
+// GetVCWmHB implements TraceElement.
+func (at *TraceElementReplay) GetVCWmHB() clock.VectorClock {
+	return clock.VectorClock{}
+}
+
 /*
  * Get the string representation of the object type
  */

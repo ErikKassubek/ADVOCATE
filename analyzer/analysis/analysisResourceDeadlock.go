@@ -14,6 +14,8 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	"analyzer/timer"
+	"analyzer/utils"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -37,8 +39,8 @@ import (
 // Lock dependencies are computed thread-local. We make use of the following structures.
 
 type Thread struct {
-	lockset           Lockset // The thread's current lockset.
-	lock_dependencies map[LockId][]Dep
+	lock_dependencies map[LockId][]Dependency
+	current_lockset   Lockset        // The thread's current lockset.
 	readerCounter     map[LockId]int // Store how many readers a readlock has
 }
 
@@ -46,16 +48,17 @@ type Thread struct {
 // type Deps map[Lock]map[Lockset][]Event
 // Hence, we introduce some intermediate structure.
 
-type Dep struct {
+type Dependency struct {
 	lockset  Lockset
-	requests []Event
+	requests []LockEvent
 }
 
 // Representation of vector clocks, events, threads, lock and lockset.
 
-type Event struct {
+type LockEvent struct {
 	thread_id    ThreadId
 	trace_id     string
+	lock_id      int
 	vector_clock clock.VectorClock
 }
 
@@ -76,6 +79,7 @@ type Lockset map[LockId]struct{}
 type State struct {
 	threads map[ThreadId]Thread // Recording lock dependencies in phase 1
 	cycles  []Cycle             // Computing cycles in phase 2
+	failed  bool                // Analysis failed (encountered unsupported lock action)
 }
 
 var currentState State
@@ -84,51 +88,59 @@ var currentState State
 
 // We show the event processing functions for acquire and release.
 
-func acquire(s *State, lockId LockId, event Event) {
+func acquire(s *State, read_lock bool, event LockEvent) {
 	if _, exists := s.threads[event.thread_id]; !exists {
 		s.threads[event.thread_id] = Thread{
-			lockset:           make(Lockset),
-			lock_dependencies: make(map[LockId][]Dep),
+			current_lockset:   make(Lockset),
+			lock_dependencies: make(map[LockId][]Dependency),
 			readerCounter:     make(map[LockId]int),
 		}
 	}
 
-	ls := s.threads[event.thread_id].lockset
+	lockId := LockId{event.lock_id, read_lock}
+
+	ls := s.threads[event.thread_id].current_lockset
 	if !ls.empty() {
 		deps := s.threads[event.thread_id].lock_dependencies
-		deps[lockId] = insert(deps[lockId], ls, event)
+		deps[lockId] = insert(deps[lockId], ls, event.Clone())
 	}
 
 	if lockId.isRead() {
 		lockId.addReader(s.threads[event.thread_id])
 	}
-	s.threads[event.thread_id].lockset.add(lockId)
+	s.threads[event.thread_id].current_lockset.add(lockId)
 }
 
-func release(s *State, lockId LockId, event Event) {
+func release(s *State, read_lock bool, event LockEvent) {
+	lockId := LockId{event.lock_id, read_lock}
 	if lockId.isRead() {
 		lockId.removeReader(s.threads[event.thread_id])
 		for _, thread := range s.threads {
 			if lockId.hasReaders(thread) {
 				continue
 			}
-			thread.lockset.remove(lockId)
+			thread.current_lockset.remove(lockId)
+		}
+		s.threads[event.thread_id].current_lockset.remove(lockId)
+	} else {
+		if !s.threads[event.thread_id].current_lockset.remove(lockId) {
+			logAbortReason("Lock not found in lockset! Has probably been released in another thread, this is an unsupported case.")
+			s.failed = true
 		}
 	}
-	s.threads[event.thread_id].lockset.remove(lockId)
 }
 
 // Insert a new lock dependency for a given thread and lock x.
 // We assume that event e acquired lock x.
 // We might have already an entry that shares the same lock and lockset!
-func insert(dependencies []Dep, ls Lockset, event Event) []Dep {
+func insert(dependencies []Dependency, ls Lockset, event LockEvent) []Dependency {
 	for i, v := range dependencies {
 		if v.lockset.equal(ls) {
 			dependencies[i].requests = append(dependencies[i].requests, event)
 			return dependencies
 		}
 	}
-	return append(dependencies, Dep{ls.Clone(), []Event{event}})
+	return append(dependencies, Dependency{ls.Clone(), []LockEvent{event}})
 }
 
 // The above insert function records all requests that share the same dependency (tid,l,ls).
@@ -140,19 +152,20 @@ func insert(dependencies []Dep, ls Lockset, event Event) []Dep {
 // if in between f and e no intra-thread synchronization took place.
 // This can be checked via helper function equalModuloTID.
 // Assumption: Vector clocks underapproximate the must happen-before relation.
-func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
+func insert2(dependencies []Dependency, lockset Lockset, event LockEvent) []Dependency {
 	// Helper function.
 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
+	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
 	equalModuloTID := func(tid ThreadId, vc1 clock.VectorClock, vc2 clock.VectorClock) bool {
 		if vc1.GetSize() != vc2.GetSize() {
 			return false
 		}
 
 		for i := 1; i <= vc1.GetSize(); i++ {
-			if i == int(tid) {
-				continue
-			}
+			// if i == int(tid) {
+			// 	continue
+			// }
 
 			if vc1.GetValue(i) != vc2.GetValue(i) {
 				return false
@@ -162,29 +175,27 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 		return true
 	}
 
-	for i, v := range ds {
+	for i, v := range dependencies {
 		if v.lockset.equal(lockset) {
 			add_vc := true
 
-			for j, f := range ds[i].requests {
+			for _, f := range dependencies[i].requests {
 				if equalModuloTID(event.thread_id, event.vector_clock, f.vector_clock) {
-					ds[i].requests[j] = event
+					// dependencies[i].requests[j] = event // We want to keep the first request for a better replay
+					fmt.Println("Ignoring an event because it is concurrent with an already stored event")
 					add_vc = false
 				}
 
 			}
 
 			if add_vc {
-				ds[i].requests = append(ds[i].requests, event)
+				dependencies[i].requests = append(dependencies[i].requests, event)
 			}
 
-			// TODO
-			// We also might want to impose a limit on the size of "[]Dep
-			// A good strategy is to evict by "replacing".
-			return ds
+			return dependencies
 		}
 	}
-	return append(ds, Dep{lockset.Clone(), []Event{event}})
+	return append(dependencies, Dependency{lockset.Clone(), []LockEvent{event}})
 }
 
 // Algorithm phase 2
@@ -193,66 +204,84 @@ func insert2(ds []Dep, lockset Lockset, event Event) []Dep {
 // A cycle involves n threads and results from some n lock dependencies.
 // For each thread we record the requests that might block.
 
-type Entry struct {
-	thread_id ThreadId
-	requests  []Event
+type LockDependency struct {
+	thread   ThreadId
+	lock     LockId
+	lockset  Lockset
+	requests []LockEvent
 }
 
-type Cycle []Entry
+type Cycle []LockDependency
 
 func report(s *State, c Cycle) {
 	s.cycles = append(s.cycles, c)
-
 }
 
 // After phase 1, the following function yields all cyclice lock depndencies.
-// TODO kinda unnecessary?
+
+// The implementation below follows the algorithm used in UNDEAD (https://github.com/UTSASRG/UnDead/blob/master/analyzer.hh)
 func getCycles(s *State) []Cycle {
 	if s.cycles != nil {
 		return s.cycles
 	}
 	s.cycles = []Cycle{}
-	find_cycles(s)
+
+	traversed_thread := make(map[ThreadId]bool)
+	for tid := range s.threads {
+		traversed_thread[tid] = false
+	}
+
+	var chain_stack []LockDependency
+	for thread_id := range traversed_thread {
+		traversed_thread[thread_id] = true
+		for lock, dependencies := range s.threads[thread_id].lock_dependencies {
+			for _, dependency := range dependencies {
+				chain_stack = append(chain_stack, LockDependency{thread_id, lock, dependency.lockset, dependency.requests}) // push
+				dfs(s, &chain_stack, traversed_thread)
+				chain_stack = chain_stack[:len(chain_stack)-1] // pop
+			}
+		}
+	}
 
 	return s.cycles
 }
 
-type LockDependency struct {
-	thread_id ThreadId
-	lock      LockId
-	lockset   Lockset
-	requests  []Event
-}
-
-// The implementation below follows the algorithm used in UNDEAD (https://github.com/UTSASRG/UnDead/blob/master/analyzer.hh)
-func find_cycles(s *State) {
-	thread_ids := make(map[ThreadId]struct{})
-	is_traversed := make(map[ThreadId]bool)
-	for tid := range s.threads {
-		thread_ids[tid] = struct{}{}
-		is_traversed[tid] = false
-	}
-
-	var chain_stack []LockDependency
-	for thread_id := range thread_ids {
-		if len(s.threads[thread_id].lock_dependencies) == 0 {
+func dfs(s *State, chain_stack *[]LockDependency, traversed_thread map[ThreadId]bool) {
+	for tid, is_traversed := range traversed_thread {
+		if is_traversed {
 			continue
 		}
-		visiting := thread_id
-		is_traversed[thread_id] = true
-		for lock, dependencies := range s.threads[thread_id].lock_dependencies {
-			for _, dependency := range dependencies {
-				chain_stack = append(chain_stack, LockDependency{thread_id, lock, dependency.lockset, dependency.requests}) // push
+
+		for l, l_d := range s.threads[tid].lock_dependencies {
+			for _, l_ls_d := range l_d {
+				ld := LockDependency{tid, l, l_ls_d.lockset, l_ls_d.requests}
+				if isChain(chain_stack, ld) {
+					if isCycleChain(chain_stack, ld) {
+						var c Cycle = make([]LockDependency, len(*chain_stack)+1)
+						for i, d := range *chain_stack {
+							c[i] = d.Clone()
+						}
+						c[len(*chain_stack)] = ld
+
+						// Check for infeasible deadlocks
+						if checkAndFilterConcurrentRequests(&c) {
+							report(s, c)
+						}
+					} else {
+						traversed_thread[tid] = true
+						*chain_stack = append(*chain_stack, ld) // push
+						dfs(s, chain_stack, traversed_thread)
+						*chain_stack = (*chain_stack)[:len(*chain_stack)-1] // pop
+						traversed_thread[tid] = false
+					}
+				}
 			}
-			dfs(s, &chain_stack, visiting, is_traversed, thread_ids)
-			chain_stack = chain_stack[:len(chain_stack)-1] // pop
 		}
 	}
-
 }
 
 // Check if adding dependency to chain will still be a chain.
-func isChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
+func isChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 
 	for _, d := range *chain_stack {
 		// Exit early. No two deps can hold the same lock. - Except for read locks
@@ -283,7 +312,7 @@ func isChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
 
 // Check (LD-3) l_n in ls_1
 // Also (RW-LD-3)
-func isCycleChain(chain_stack *[]LockDependency, dependency *LockDependency) bool {
+func isCycleChain(chain_stack *[]LockDependency, dependency LockDependency) bool {
 	for l := range (*chain_stack)[0].lockset {
 		if l.equalsCouldBlock(dependency.lock) {
 			return true
@@ -294,11 +323,11 @@ func isCycleChain(chain_stack *[]LockDependency, dependency *LockDependency) boo
 }
 
 // Check if there is one ore more chains of concurrent requests and filter out any requests that are not part of them
-func checkAndfilterConcurrentRequests(cycle *Cycle) bool {
+func checkAndFilterConcurrentRequests(cycle *Cycle) bool {
 	for i := range *cycle {
 		// Check if each request has a concurrent request in the element before and after
 		// All requests that have a previous request
-		requests_with_prev := []Event{}
+		requests_with_prev := []LockEvent{}
 		for _, req := range (*cycle)[i].requests {
 			for _, prev_req := range (*cycle)[(len(*cycle)+i-1)%len(*cycle)].requests {
 				if clock.GetHappensBefore(req.vector_clock, prev_req.vector_clock) == clock.Concurrent {
@@ -308,7 +337,7 @@ func checkAndfilterConcurrentRequests(cycle *Cycle) bool {
 			}
 		}
 		// All requests that have a next request
-		requests_with_both := []Event{}
+		requests_with_both := []LockEvent{}
 		for _, req := range requests_with_prev {
 			for _, next_req := range (*cycle)[(i+1)%len(*cycle)].requests {
 				if clock.GetHappensBefore(req.vector_clock, next_req.vector_clock) == clock.Concurrent {
@@ -330,51 +359,6 @@ func checkAndfilterConcurrentRequests(cycle *Cycle) bool {
 	return true
 }
 
-func dfs(s *State, chain_stack *[]LockDependency, visiting ThreadId, is_traversed map[ThreadId]bool, thread_ids map[ThreadId]struct{}) {
-	for tid := range thread_ids {
-		if len(s.threads[tid].lock_dependencies) == 0 {
-			continue
-		}
-
-		if !is_traversed[tid] {
-			for l, l_d := range s.threads[tid].lock_dependencies {
-				for _, l_ls_d := range l_d {
-					ld := LockDependency{tid, l, l_ls_d.lockset, l_ls_d.requests}
-					if isChain(chain_stack, &ld) {
-						if isCycleChain(chain_stack, &ld) {
-							var c Cycle = make([]Entry, len(*chain_stack)+1)
-							for i, d := range *chain_stack {
-								c[i].requests = d.requests
-								c[i].thread_id = d.thread_id
-
-							}
-							c[len(*chain_stack)].requests = ld.requests
-							c[len(*chain_stack)].thread_id = ld.thread_id
-
-							// Check for infeasible deadlocks
-							if checkAndfilterConcurrentRequests(&c) {
-								report(s, c)
-								continue
-							}
-						}
-
-						is_traversed[tid] = true
-						*chain_stack = append(*chain_stack, ld) // push
-						dfs(s, chain_stack, visiting, is_traversed, thread_ids)
-						*chain_stack = (*chain_stack)[:len(*chain_stack)-1] // pop
-						is_traversed[tid] = false
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
-}
-
 // ////////////////////////////////
 // High level functions for integration with Advocate
 func ResetState() {
@@ -384,80 +368,167 @@ func ResetState() {
 	currentState = State{
 		threads: make(map[ThreadId]Thread),
 		cycles:  nil,
+		failed:  false,
 	}
 }
 
-func HandleMutexEventForRessourceDeadlock(element TraceElementMutex, currentMustHappensBeforeVC clock.VectorClock) {
+func HandleMutexEventForRessourceDeadlock(element TraceElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	event := Event{
+	if currentState.failed {
+		return
+	}
+
+	event := LockEvent{
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
-		vector_clock: currentMustHappensBeforeVC.Copy(),
+		lock_id:      element.GetID(),
+		vector_clock: element.vcWmHB.Copy(),
 	}
 
 	switch element.opM {
 	case LockOp:
-		acquire(&currentState, LockId{element.GetID(), false}, event)
+		acquire(&currentState, false, event)
 	case TryLockOp:
-		// Currently suc seems to always be false on trylocks, we do not rly support them rightnow
-		if element.suc {
-			acquire(&currentState, LockId{element.GetID(), false}, event)
-		}
+		// We do not check event.suc because that could led to false negatives
+		acquire(&currentState, false, event)
 	case RLockOp:
-		acquire(&currentState, LockId{element.GetID(), true}, event)
+		acquire(&currentState, true, event)
 	case UnlockOp:
-		release(&currentState, LockId{element.GetID(), false}, event)
+		release(&currentState, false, event)
 	case RUnlockOp:
-		release(&currentState, LockId{element.GetID(), true}, event)
+		release(&currentState, true, event)
 	}
 }
 
 func CheckForResourceDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
+	if currentState.failed {
+		utils.LogError("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
+		return
+	}
+	for i, t := range currentState.threads {
+		debugLog("Found", len(t.lock_dependencies), "dependencies in Thread", i)
+	}
 
 	getCycles(&currentState)
 
+	debugLog("Found", len(currentState.cycles), "cycles")
+
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
-		log.Println("Found cycle with the following entries:", cycle)
-		for i := 0; i < len(cycle); i++ {
-			log.Println("Entry in routine", cycle[i].thread_id, ", amount of different lock requests that might block it:", len(cycle[i].requests))
-			var r = cycle[i].requests[0]
+		var request = findEarliesRequest(cycle)
 
-			file, line, tPre, err := infoFromTID(r.trace_id)
+		debugLog("Found cycle with the following entries:", cycle)
+		for i := 0; i < len(cycle); i++ {
+			debugLog("Entry in routine", cycle[i].thread, ":")
+			debugLog("\tLockset:", cycle[i].lockset)
+			debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
+			for i, r := range cycle[i].requests {
+				debugLog("\t\tLock request", i, ":", r)
+			}
+
+			for _, r := range cycle[i].requests {
+				if clock.GetHappensBefore(request.vector_clock, r.vector_clock) == clock.Concurrent {
+					request = r
+					break
+				}
+			}
+
+			if request.thread_id != cycle[i].thread {
+				utils.LogError("Request thread id ", request.thread_id, "does not match entry thread id", cycle[i].thread, ". Ignoring circle!")
+				break
+			}
+
+			file, line, tPre, err := infoFromTID(request.trace_id)
 			if err != nil {
-				log.Print(err.Error())
-				continue
+				utils.LogError(err.Error())
+				break
 			}
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: int(r.thread_id),
-				ObjID:     0, //TODO in our current approach we loose the Object Id
+				RoutineID: int(request.thread_id),
+				ObjID:     request.lock_id,
 				TPre:      tPre,
 				ObjType:   "DC",
 				File:      file,
 				Line:      line,
 			})
-
-			log.Println("Lock request:", r.trace_id, "in routine", r.thread_id)
 		}
 
-		results.Result(results.CRITICAL, results.PCyclicDeadlock, "head", []results.ResultElem{cycleElements[0]}, "tail", cycleElements)
+		var stuckElement = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
+		stuckElement.ObjType = "DH"
 
+		results.Result(results.CRITICAL, results.PCyclicDeadlock, "stuck", []results.ResultElem{stuckElement}, "cycle", cycleElements)
 	}
 }
 
 /////////////////////////////////
 // Auxiliary functions.
 
+// Finds the earliest request in a cycle.
+func findEarliesRequest(cycle []LockDependency) LockEvent {
+	earliest := cycle[0].requests[0]
+	_, _, earliestTime, err := infoFromTID(earliest.trace_id)
+	if err != nil {
+		utils.LogError(err.Error())
+		return earliest
+	}
+	for _, c := range cycle {
+		for _, r := range c.requests {
+			_, _, requestTime, err := infoFromTID(r.trace_id)
+			if err != nil {
+				utils.LogError(err.Error())
+				return earliest
+			}
+			if requestTime < earliestTime {
+				earliest = r
+				earliestTime = requestTime
+			}
+		}
+	}
+	return earliest
+}
+
 // Debug logging.
 
-func logAbortReason(reason string) {
-	return
-	log.Println("No Deadlock: ", reason)
+func debugLog(v ...any) {
+	log.Println(v...)
+}
+
+func logAbortReason(reason ...any) {
+	r := []any{"No Deadlock:"}
+	r = append(r, reason...)
+	utils.LogInfo(r...)
+	log.Println(r...)
+}
+
+// Lock Depdendency methods.
+
+func (l LockDependency) Clone() LockDependency {
+	reqs := make([]LockEvent, len(l.requests))
+	for i, r := range l.requests {
+		reqs[i] = r.Clone()
+	}
+	return LockDependency{
+		thread:   l.thread,
+		lock:     l.lock,
+		lockset:  l.lockset.Clone(),
+		requests: reqs,
+	}
+}
+
+// Event methods.
+
+func (e LockEvent) Clone() LockEvent {
+	return LockEvent{
+		thread_id:    e.thread_id,
+		trace_id:     e.trace_id,
+		lock_id:      e.lock_id,
+		vector_clock: e.vector_clock.Copy(),
+	}
 }
 
 // Lock methods.
@@ -515,8 +586,12 @@ func (ls Lockset) add(x LockId) {
 	ls[x] = struct{}{}
 }
 
-func (ls Lockset) remove(x LockId) {
+func (ls Lockset) remove(x LockId) bool {
+	if _, contains := ls[x]; !contains {
+		return false
+	}
 	delete(ls, x)
+	return true
 }
 
 func (ls Lockset) Clone() Lockset {

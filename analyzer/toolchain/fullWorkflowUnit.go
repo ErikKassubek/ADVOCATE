@@ -42,13 +42,14 @@ import (
  *    fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
  *    fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  *    keepTraces (bool): do not delete traces after analysis
- *    firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ * 	  firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+ * 	  skipExisting (bool): do not overwrite existing results, skip those tests
  *    cont (bool): continue an already started run
  * Returns:
  *    error
  */
 func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
+	measureTime, notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -65,10 +66,19 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 	}
 
 	if firstRun && !cont {
-		os.RemoveAll("advocateResult")
-		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-			return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		if !skipExisting {
+			os.RemoveAll("advocateResult")
 		}
+
+		if info, _ := os.Stat("advocateResult"); info == nil {
+			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
+				return fmt.Errorf("Failed to create advocateResult directory: %v", err)
+			}
+		}
+
+		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
+		removeTraces(dir)
+		removeLogs(dir)
 	}
 
 	// Find all _test.go files in the directory
@@ -97,6 +107,9 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 		}
 
 		for _, testFunc := range testFunctions {
+			analysis.ClearTrace()
+			analysis.ClearData()
+
 			if (pathToTest == "" || pathToTest == file) && testName != "" && testName != testFunc {
 				continue
 			}
@@ -132,6 +145,15 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 					if !isFuzzing {
 						timer.Stop(timer.TotalTest)
 					}
+					continue
+				}
+			}
+
+			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
+			if fuzzing < 1 {
+				utils.LogInfo("Create ", directoryName)
+				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
+					utils.LogErrorf("Failed to create directory %s: %v\n", directoryName, err)
 					continue
 				}
 			}

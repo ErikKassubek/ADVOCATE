@@ -179,6 +179,9 @@ var (
 	replayDone     int
 	replayDoneLock mutex
 
+	waitDeadlockDetect     bool
+	waitDeadlockDetectLock mutex
+
 	// read trace
 	replayData            = make(AdvocateReplayTraces, 0)
 	numberElementsInTrace int
@@ -187,7 +190,7 @@ var (
 	replayIndex = make(map[uint64]int)
 
 	// exit code
-	replayExitCode   bool
+	replayForceExit  bool
 	expectedExitCode int
 
 	// for leak, TimePre of stuck elem
@@ -280,7 +283,7 @@ func DisableReplay() {
  * the program to terminate before the trace is finished.
  */
 func WaitForReplayFinish(exit bool) {
-	if !IsReplayEnabled() {
+	if IsReplayEnabled() { // Is this correct?
 		for {
 			lock(&replayDoneLock)
 			if replayDone >= numberElementsInTrace {
@@ -301,6 +304,18 @@ func WaitForReplayFinish(exit bool) {
 		// wait long enough, that all operations that have been released in the displayReplay
 		// can record the pre
 		sleep(0.5)
+	}
+
+	// Ensure that the deadlock detector is finished
+	for {
+		lock(&waitDeadlockDetectLock)
+		if !waitDeadlockDetect {
+			unlock(&waitDeadlockDetectLock)
+			break
+		}
+		unlock(&waitDeadlockDetectLock)
+
+		sleep(0.001)
 	}
 
 	if stuckReplayExecutedSuc {
@@ -335,16 +350,46 @@ func ReleaseWaits() {
 		}
 
 		if replayElem.Op == OperationReplayEnd {
-			if isExitCodeConfOnEndElem(replayElem.Line) {
-				ExitReplayWithCode(replayElem.Line)
-			}
-
+			println("Found ReplayEnd Marker with exit code", replayElem.Line)
 			// wait long enough, that all operations that have been released but not
 			// finished executing can execute
+			if replayElem.Line == ExitCodeCyclic {
+				lock(&waitDeadlockDetectLock)
+				waitDeadlockDetect = true
+				unlock(&waitDeadlockDetectLock)
+			}
 			sleep(0.5)
 
 			DisableReplay()
 			// foundReplayElement(routine)
+			sleep(0.1)
+
+			// Check if a deadlock has been reached
+			if replayElem.Line == ExitCodeCyclic {
+				stuckRoutines := checkForStuckRoutines(1.0, 100)
+
+				stuckMutexCounter := 0
+				for id, reason := range stuckRoutines {
+					println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
+					// TODO invert to everything that could NOT be a deadlock
+					if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
+						stuckMutexCounter++
+					}
+				}
+
+				println("Number of routines waiting on mutexes:", stuckMutexCounter)
+
+				if stuckMutexCounter > 0 {
+					SetForceExit(true)
+					ExitReplayWithCode(replayElem.Line)
+				}
+
+				lock(&waitDeadlockDetectLock)
+				waitDeadlockDetect = false
+				unlock(&waitDeadlockDetectLock)
+			} else if isExitCodeConfOnEndElem(replayElem.Line) {
+				ExitReplayWithCode(replayElem.Line)
+			}
 			return
 		}
 
@@ -456,6 +501,32 @@ func replayElemFromKey(key string) ReplayElement {
 		Suc:     true,
 		Blocked: false,
 	}
+}
+
+/*
+- Returns all routines for which the wait reason has not changed within checkStuckTime seconds.
+*/
+func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
+	stuckRoutines := make(map[uint64]waitReason)
+
+	lock(&AdvocateRoutinesLock)
+	for id, routine := range AdvocateRoutines {
+		stuckRoutines[id] = routine.G.waitreason
+	}
+	unlock(&AdvocateRoutinesLock)
+
+	// Repeatedly check if wait reason has changed
+	for i := 0; i < checkStuckIterations; i++ {
+		sleep(checkStuckTime / float64(checkStuckIterations))
+		lock(&AdvocateRoutinesLock)
+		for id, routine := range AdvocateRoutines {
+			if _, ok := stuckRoutines[id]; ok && routine.G.waitreason != stuckRoutines[id] {
+				delete(stuckRoutines, id)
+			}
+		}
+		unlock(&AdvocateRoutinesLock)
+	}
+	return stuckRoutines
 }
 
 type replayChan struct {
@@ -684,12 +755,12 @@ func foundReplayElement(routine int) {
 }
 
 /*
- * Set the replay code
+ * Set if to force exit on Replay Finish
  * Args:
- * 	code: the replay code
+ * 	force: force exit
  */
-func SetExitCode(code bool) {
-	replayExitCode = code
+func SetForceExit(force bool) {
+	replayForceExit = force
 }
 
 /*
@@ -708,18 +779,22 @@ func SetExpectedExitCode(code int) {
 */
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
-		// TODO: is this correct?
-		if isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
-			return
-		}
+		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
+		// 	return
+		// }
 		println("\nExit Replay with code ", code, ExitCodeNames[code])
 		hasReturnedExitCode = true
+	} else {
+		println("Exit code already returned")
 	}
-	if replayExitCode && ExitCodeNames[code] != "" {
+	if replayForceExit && ExitCodeNames[code] != "" {
 		if !advocateTracingDisabled { // do not exit if recording is enabled
 			return
 		}
+		println("Forcing exit with code ", code, ExitCodeNames[code])
 		exit(int32(code))
+	} else {
+		println("Exit code not set")
 	}
 }
 
@@ -729,11 +804,10 @@ func ExitReplayWithCode(code int) {
  * such a code
  * The codes are
  *    20 - 29: Leak
- *    40 - 49: Deadlocks
  *
  */
 func isExitCodeConfOnEndElem(code int) bool {
-	return (code >= 20 && code < 30) || (code >= 40 && code <= 49)
+	return (code >= 20 && code < 30) || (code >= 40 && code < 50)
 }
 
 /*

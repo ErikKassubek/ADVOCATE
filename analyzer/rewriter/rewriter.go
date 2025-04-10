@@ -19,21 +19,21 @@ import (
 )
 
 const (
-	exitCodeNone           = -1
-	exitCodeStuckFinish    = 10
-	exitCodeStuckWaitElem  = 11
-	exitCodeStuckNoElem    = 12
-	exitCodeElemEmptyTrace = 13
-	exitCodeLeakUnbuf      = 20
-	exitCodeLeakBuf        = 21
-	exitCodeLeakMutex      = 22
-	exitCodeLeakCond       = 23
-	exitCodeLeakWG         = 24
-	exitSendClose          = 30
-	exitRecvClose          = 31
-	exitNegativeWG         = 32
-	exitUnlockBeforeLock   = 33
-	exitCodeCyclic         = 41
+	exitCodeNone         = -1
+	exitCodePanic        = 3
+	exitCodeTimeout      = 10
+	exitCodeLeakUnbuf    = 20
+	exitCodeLeakBuf      = 21
+	exitCodeLeakMutex    = 22
+	exitCodeLeakCond     = 23
+	exitCodeLeakWG       = 24
+	exitSendClose        = 30
+	exitRecvClose        = 31
+	exitCloseClose       = 32
+	exitCloseNil         = 33
+	exitNegativeWG       = 34
+	exitUnlockBeforeLock = 35
+	exitCodeCyclic       = 41
 )
 
 /*

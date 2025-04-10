@@ -21,6 +21,48 @@ var startTime time.Time
 var duration time.Duration
 
 /*
+ * InitTracing initializes the tracing.
+ * The function creates the trace folder and starts the background memory test.
+ * Args:
+ */
+func InitTracing() {
+	// if the program panics, but is not in the main routine, no trace is written
+	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
+	blocked := make(chan struct{})
+	writingDone := make(chan struct{})
+	runtime.GetAdvocatePanicChannels(blocked, writingDone)
+	go func() {
+		<-blocked
+		FinishTracing()
+		writingDone <- struct{}{}
+	}()
+
+	// if the program is terminated by the user, the defer in the header
+	// is not executed. Therefore capture the signal and write the trace.
+	interuptSignal := make(chan os.Signal, 1)
+	signal.Notify(interuptSignal, os.Interrupt)
+	go func() {
+		<-interuptSignal
+		println("\nCancel Run. Write trace. Cancel again to force exit.")
+		go func() {
+			<-interuptSignal
+			os.Exit(1)
+		}()
+		if runtime.IsTracingEnabled() {
+			FinishTracing()
+		}
+		os.Exit(1)
+	}()
+
+	startTime = time.Now()
+	timerStarted = true
+
+	// go writeTraceIfFull()
+	// go removeAtomicsIfFull()
+	runtime.InitTracing(FinishTracing)
+}
+
+/*
  * Write the trace of the program to a file.
  * The trace is written in the file named file_name.
  * The trace is written in the format of advocate.
@@ -51,7 +93,7 @@ func FinishTracing() {
 
 	time.Sleep(100 * time.Millisecond)
 
-	runtime.DisableTrace()
+	runtime.DisableTracing()
 
 	if timerStarted {
 		duration = time.Since(startTime)
@@ -172,46 +214,4 @@ func deleteEmptyFiles() {
 		}
 	}
 
-}
-
-/*
- * InitTracing initializes the tracing.
- * The function creates the trace folder and starts the background memory test.
- * Args:
- */
-func InitTracing() {
-	// if the program panics, but is not in the main routine, no trace is written
-	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
-	blocked := make(chan struct{})
-	writingDone := make(chan struct{})
-	runtime.GetAdvocatePanicChannels(blocked, writingDone)
-	go func() {
-		<-blocked
-		FinishTracing()
-		writingDone <- struct{}{}
-	}()
-
-	// if the program is terminated by the user, the defer in the header
-	// is not executed. Therefore capture the signal and write the trace.
-	interuptSignal := make(chan os.Signal, 1)
-	signal.Notify(interuptSignal, os.Interrupt)
-	go func() {
-		<-interuptSignal
-		println("\nCancel Run. Write trace. Cancel again to force exit.")
-		go func() {
-			<-interuptSignal
-			os.Exit(1)
-		}()
-		if !runtime.GetAdvocateDisabled() {
-			FinishTracing()
-		}
-		os.Exit(1)
-	}()
-
-	startTime = time.Now()
-	timerStarted = true
-
-	// go writeTraceIfFull()
-	// go removeAtomicsIfFull()
-	runtime.InitAdvocate()
 }

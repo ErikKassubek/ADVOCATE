@@ -38,7 +38,7 @@ func DoSuc(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, currentVC[on.id].GetSize())
+	newOSuc(on.id, currentVC[on.routine].GetSize())
 	oSuc[on.id] = currentVC[on.routine].Copy()
 
 	currentVC[on.routine].Inc(on.routine)
@@ -54,7 +54,7 @@ func DoFail(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, currentVC[on.id].GetSize())
+	newOSuc(on.id, currentVC[on.routine].GetSize())
 
 	currentVC[on.routine].Sync(oSuc[on.id])
 	currentVC[on.routine].Inc(on.routine)

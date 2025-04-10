@@ -20,10 +20,7 @@ where `X` identifies the element as an replay control element.\
 - [exitCode]: If enabled, the replay will end with this exit code. The exit code can have to following values:
   - 0: The replay finished without being able to confirm the predicted bug
   - 3: The replay paniced unexpectadly
-  - 10: Replay Stuck: Long wait time for finishing replay
-  - 11: Replay Stuck: Long wait time for running element
-  - 12: Replay Stuck: No traced operation has been executed for approx. 20s
-  - 13: The program tried to execute an operation, although all elements in the trace have already been executed.
+  - 10: Timeout
   - 20: Leak: Leaking unbuffered channel or select was unstuck
   - 21: Leak: Leaking buffered channel or select was unstuck
   - 22: Leak: Leaking Mutex was unstuck
@@ -31,8 +28,9 @@ where `X` identifies the element as an replay control element.\
   - 24: Leak: Leaking WaitGroup was unstuck
   - 30: Send on close
   - 31: Receive on close
-  - 32: Negative WaitGroup counter
-  - 33: Unlock before lock
+  - 32: Close on close
+  - 33: Negative WaitGroup counter
+  - 34: Unlock before lock
   - 41: Cyclic Deadlock
 - tPreLast $\in \mathbb N$ is the tPre of the last element in the replay, e.g. the tPre of the stuck element in a leak. Only used to detect if leak replay was successful
 

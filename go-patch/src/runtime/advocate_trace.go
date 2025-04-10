@@ -266,32 +266,6 @@ func GetNumberOfRoutines() int {
 }
 
 /*
- * InitAdvocate enables the collection of the trace
- * Args:
- * 	size: size of the channel used to link the atomic recording to the main
- *    recording.
- */
-func InitAdvocate() {
-	advocateTracingDisabled = false
-}
-
-/*
- * DisableTrace disables the collection of the trace
- */
-func DisableTrace() {
-	advocateTracingDisabled = true
-}
-
-/*
- * GetAdvocateDisabled returns if the trace collection is disabled
- * Return:
- * 	true if the trace collection is disabled, false otherwise
- */
-func GetAdvocateDisabled() bool {
-	return advocateTracingDisabled
-}
-
-/*
  * DeleteTrace removes all trace elements from the trace
  * Do not remove the routine objects them self
  * Make sure to call BlockTrace(), before calling this function

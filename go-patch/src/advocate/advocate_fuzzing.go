@@ -45,7 +45,7 @@ func InitFuzzing(tracePath string) {
 	} else { // GoPie
 		runtime.InitFuzzingReplay(FinishFuzzing)
 		tracePathRewritten = tracePath
-		startReplay(0, true)
+		startReplay(20, true)
 	}
 }
 

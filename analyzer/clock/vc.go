@@ -146,6 +146,15 @@ func (vc *VectorClock) Inc(routine int) {
  *   (vectorClock): The synced vc (not a copy)
  */
 func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
+	if vc == nil {
+		vc = rec.Copy()
+		return vc
+	}
+
+	if rec == nil {
+		return vc
+	}
+
 	if vc.size == 0 && rec.size == 0 {
 		_, file, line, _ := runtime.Caller(1)
 		utils.LogError("Sync of empty vector clocks: " + file + ":" + strconv.Itoa(line))

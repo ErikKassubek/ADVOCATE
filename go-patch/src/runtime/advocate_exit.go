@@ -28,14 +28,13 @@ const (
 	exitCodeTimeOut               = 7
 )
 
-
 /*
  * Get the channels used to write the trace on certain panics
  * Args:
  *    apwb (chan struct{}): advocatePanicWriteBlock
  *    apd (chan struct{}): advocatePanicDone
  */
- func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
+func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
 	advocatePanicWriteBlock = apwb
 	advocatePanicDone = apd
 }
@@ -51,27 +50,29 @@ func SetExitCodeFromPanicString(msg any) {
 	switch m := msg.(type) {
 	case plainError:
 		if m.Error() == "send on closed channel" {
-			advocateExitCode = exitCodeSendOnClosed
+			advocateExitCode = ExitCodeSendClose
 		} else if m.Error() == "close of closed channel" {
-			advocateExitCode = exitCodeCloseOnClosed
+			advocateExitCode = ExitCodeCloseClose
 		} else if m.Error() == "close of nil channel" {
-			advocateExitCode = exitCodeCloseOnNilChannel
+			advocateExitCode = ExitCodeCloseNil
 		}
 	case string:
 		if m == "sync: negative WaitGroup counter" {
-			advocateExitCode = exitCodeNegWG
+			advocateExitCode = ExitCodeNegativeWG
 		} else if hasPrefix(m, "test timed out") {
 			advocateExitCode = exitCodeTimeOut
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||
 				m == "sync: Unlock of unlocked RWMutex" ||
 				m == "sync: unlock of unlocked mutex" {
-				advocateExitCode = exitCodeUnlockOfUnlockedMutex
+				advocateExitCode = ExitCodeUnlockBeforeLock
 			}
 		}
+	default:
+		println("SetExitCode: other")
 	}
 
 	if advocateExitCode == 0 {
-		advocateExitCode = exitCodeUnknownPanic
+		advocateExitCode = ExitCodePanic
 	}
 }

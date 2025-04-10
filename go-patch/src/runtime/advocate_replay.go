@@ -21,8 +21,10 @@ const (
 	ExitCodeLeakWG           = 24
 	ExitCodeSendClose        = 30
 	ExitCodeRecvClose        = 31
-	ExitCodeNegativeWG       = 32
-	ExitCodeUnlockBeforeLock = 33
+	ExitCodeCloseClose       = 32
+	ExitCodeCloseNil         = 33
+	ExitCodeNegativeWG       = 34
+	ExitCodeUnlockBeforeLock = 35
 	ExitCodeCyclic           = 41
 )
 
@@ -44,8 +46,10 @@ var ExitCodeNames = map[int]string{
 	24: "Leak: Leaking WaitGroup was unstuck",
 	30: "Send on close",
 	31: "Receive on close",
-	32: "Negative WaitGroup counter",
-	33: "Unlock of unlocked mutex",
+	32: "Close on close",
+	33: "Close on nil",
+	34: "Negative WaitGroup counter",
+	35: "Unlock of unlocked mutex",
 	41: "Cyclic deadlock",
 }
 
@@ -814,13 +818,14 @@ func ExitReplayWithCode(code int) {
 		println("Exit code already returned")
 	}
 	if replayForceExit && ExitCodeNames[code] != "" {
-		if !advocateTracingDisabled { // do not exit if recording is enabled
-			return
-		}
+		// if !advocateTracingDisabled { // do not exit if recording is enabled
+		// 	return
+		// }
 		println("Forcing exit with code ", code, ExitCodeNames[code])
 		exit(int32(code))
 	} else {
 		println("Exit code not set")
+		exit(-1)
 	}
 }
 
@@ -842,35 +847,44 @@ func isExitCodeConfOnEndElem(code int) bool {
  * 	msg: the panic message
  */
 func ExitReplayPanic(msg any) {
-	println("ExitReplayPanic")
+	SetExitCodeFromPanicString(msg)
+
 	if IsAdvocateFuzzingEnabled() {
-		println("finishFuzzingFunc")
 		finishFuzzingFunc()
+	} else if IsTracingEnabled() {
+		finishTracingFunc()
 	}
 
 	if !IsReplayEnabled() {
 		return
 	}
 
-	switch m := msg.(type) {
-	case plainError:
-		if expectedExitCode == ExitCodeSendClose && m.Error() == "send on closed channel" {
-			ExitReplayWithCode(ExitCodeSendClose)
-		}
-	case string:
-		if expectedExitCode == ExitCodeNegativeWG && m == "sync: negative WaitGroup counter" {
-			ExitReplayWithCode(ExitCodeNegativeWG)
-		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
-			if m == "sync: RUnlock of unlocked RWMutex" ||
-				m == "sync: Unlock of unlocked RWMutex" ||
-				m == "sync: unlock of unlocked mutex" {
-				ExitReplayWithCode(ExitCodeUnlockBeforeLock)
-			}
-		} else if hasPrefix(m, "test timed out after") || m == "Timeout" {
-			ExitReplayWithCode(ExitCodeTimeout)
-		}
+	if expectedExitCode == ExitCodeDefault || expectedExitCode == advocateExitCode {
+		ExitReplayWithCode(advocateExitCode)
 	}
 
+	// switch m := msg.(type) {
+	// case plainError:
+	// 	if (expectedExitCode == ExitCodeSendClose || expectedExitCode == ExitCodeDefault) &&
+	// 		m.Error() == "send on closed channel" {
+	// 		ExitReplayWithCode(ExitCodeSendClose)
+	// 	}
+	// case string:
+	// 	if (expectedExitCode == ExitCodeNegativeWG || expectedExitCode == ExitCodeDefault) &&
+	// 		m == "sync: negative WaitGroup counter" {
+	// 		ExitReplayWithCode(ExitCodeNegativeWG)
+	// 	} else if expectedExitCode == ExitCodeUnlockBeforeLock || expectedExitCode == ExitCodeDefault {
+	// 		if m == "sync: RUnlock of unlocked RWMutex" ||
+	// 			m == "sync: Unlock of unlocked RWMutex" ||
+	// 			m == "sync: unlock of unlocked mutex" {
+	// 			ExitReplayWithCode(ExitCodeUnlockBeforeLock)
+	// 		}
+	// 	} else if hasPrefix(m, "test timed out after") || m == "Timeout" {
+	// 		ExitReplayWithCode(ExitCodeTimeout)
+	// 	}
+	// }
+
+	// should be unreachable
 	ExitReplayWithCode(ExitCodePanic)
 }
 

@@ -100,8 +100,7 @@ func startReplay(timeout int, atomic bool) {
 	}
 
 	if !foundTraceFiles {
-		time.Sleep(20 * time.Second)
-		panic("Could not found trace files for replay")
+		panic("Could not find trace files for replay")
 	}
 
 	if timeout > 0 {
@@ -465,7 +464,7 @@ func InitReplayTracing(index string, exitCode bool, timeout int, atomic bool) {
 			<-interuptSignal
 			os.Exit(1)
 		}()
-		if !runtime.GetAdvocateDisabled() {
+		if runtime.IsTracingEnabled() {
 			FinishReplayTracing()
 		}
 		os.Exit(1)
@@ -473,7 +472,7 @@ func InitReplayTracing(index string, exitCode bool, timeout int, atomic bool) {
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()
-	runtime.InitAdvocate()
+	runtime.InitTracing(FinishTracing)
 
 	InitReplay(index, exitCode, timeout, atomic)
 }

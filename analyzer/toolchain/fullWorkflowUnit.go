@@ -138,6 +138,7 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 				directoryName = filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
 			}
 			currentResFolder = filepath.Join(dir, directoryName)
+
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)
 				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
@@ -145,14 +146,6 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 					if !isFuzzing {
 						timer.Stop(timer.TotalTest)
 					}
-					continue
-				}
-			}
-
-			if fuzzing < 1 {
-				utils.LogInfo("Create ", directoryName)
-				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {
-					utils.LogErrorf("Failed to create directory %s: %v\n", directoryName, err)
 					continue
 				}
 			}

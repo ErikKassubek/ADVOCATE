@@ -51,7 +51,7 @@ type TraceElementSelect struct {
 	file                string
 	line                int
 	vc                  *clock.VectorClock
-	vcWmHB              *clock.VectorClock
+	wVc                 *clock.VectorClock
 	casesWithPosPartner []int
 }
 
@@ -106,7 +106,7 @@ func AddTraceElementSelect(routine int, tPre string,
 		line:                line,
 		casesWithPosPartner: make([]int, 0),
 		vc:                  clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:              clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:                 clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	cs := strings.Split(cases, "~")
@@ -312,8 +312,8 @@ func (se *TraceElementSelect) GetVC() *clock.VectorClock {
 	return se.vc
 }
 
-func (se *TraceElementSelect) GetVCWmHB() *clock.VectorClock {
-	return se.vcWmHB
+func (se *TraceElementSelect) GetwVc() *clock.VectorClock {
+	return se.wVc
 }
 
 /*
@@ -596,11 +596,12 @@ func (se *TraceElementSelect) ToString() string {
 func (se *TraceElementSelect) updateVectorClock() {
 	noChannel := se.chosenDefault || se.tPost == 0
 
-	se.vc = currentVCHb[se.routine].Copy()
-	se.vcWmHB = currentVCHb[se.routine].Copy()
+	se.vc = currentVC[se.routine].Copy()
+	se.wVc = currentVC[se.routine].Copy()
 
 	if noChannel {
-		currentVCHb[se.routine].Inc(se.routine)
+		currentVC[se.routine].Inc(se.routine)
+		currentWVC[se.routine].Inc(se.routine)
 	} else {
 		// update the vector clock
 		se.chosenCase.vc = se.vc.Copy()
@@ -608,7 +609,7 @@ func (se *TraceElementSelect) updateVectorClock() {
 	}
 
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
-		CheckForSelectCaseWithoutPartnerSelect(se, currentVCHb[se.routine])
+		CheckForSelectCaseWithoutPartnerSelect(se, currentVC[se.routine])
 	}
 
 	for _, c := range se.cases {
@@ -676,7 +677,7 @@ func (se *TraceElementSelect) Copy() TraceElement {
 		file:            se.file,
 		line:            se.line,
 		vc:              se.vc.Copy(),
-		vcWmHB:          se.vcWmHB.Copy(),
+		wVc:             se.wVc.Copy(),
 	}
 }
 

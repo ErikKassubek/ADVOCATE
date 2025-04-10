@@ -71,10 +71,10 @@ var (
 	MainTrace Trace
 
 	// current happens before vector clocks
-	currentVCHb = make(map[int]*clock.VectorClock)
+	currentVC = make(map[int]*clock.VectorClock)
 
 	// current must happens before vector clocks
-	currentVCWmhb = make(map[int]*clock.VectorClock)
+	currentWVC = make(map[int]*clock.VectorClock)
 
 	// channel without partner in main trace
 	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel) // id -> opId -> element

@@ -11,7 +11,6 @@
 package analysis
 
 import (
-	"analyzer/clock"
 	"analyzer/timer"
 )
 
@@ -19,9 +18,8 @@ import (
  * Update and calculate the vector clocks given a wait operation
  * Args:
  *   co (*TraceElementCond): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func CondWait(co *TraceElementCond, vc map[int]*clock.VectorClock) {
+func CondWait(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -31,41 +29,43 @@ func CondWait(co *TraceElementCond, vc map[int]*clock.VectorClock) {
 		}
 		currentlyWaiting[co.id] = append(currentlyWaiting[co.id], co.routine)
 	}
-	vc[co.routine].Inc(co.routine)
+	currentVC[co.routine].Inc(co.routine)
+	currentWVC[co.routine].Inc(co.routine)
 }
 
 /*
  * Update and calculate the vector clocks given a signal operation
  * Args:
  *   co (*TraceElementCond): The trace element
- *   vc (map[int]*VectorClock): The current vector clocks
  */
-func CondSignal(co *TraceElementCond, vc map[int]*clock.VectorClock) {
+func CondSignal(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if len(currentlyWaiting[co.id]) != 0 {
 		tWait := currentlyWaiting[co.id][0]
 		currentlyWaiting[co.id] = currentlyWaiting[co.id][1:]
-		vc[tWait].Sync(vc[co.routine])
+		currentVC[tWait].Sync(currentVC[co.routine])
 	}
-	vc[co.routine].Inc(co.routine)
+
+	currentVC[co.routine].Inc(co.routine)
+	currentWVC[co.routine].Inc(co.routine)
 }
 
 /*
  * Update and calculate the vector clocks given a broadcast operation
  * Args:
  *   co (*TraceElementCond): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func CondBroadcast(co *TraceElementCond, vc map[int]*clock.VectorClock) {
+func CondBroadcast(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	for _, wait := range currentlyWaiting[co.id] {
-		vc[wait].Sync(vc[co.routine])
+		currentVC[wait].Sync(currentVC[co.routine])
 	}
 	currentlyWaiting[co.id] = make([]int, 0)
 
-	vc[co.routine].Inc(co.routine)
+	currentVC[co.routine].Inc(co.routine)
+	currentWVC[co.routine].Inc(co.routine)
 }

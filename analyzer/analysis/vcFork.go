@@ -11,7 +11,6 @@
 package analysis
 
 import (
-	"analyzer/clock"
 	"analyzer/timer"
 )
 
@@ -20,23 +19,21 @@ import (
  * Args:
  *   oldRout (int): The id of the old routine
  *   newRout (int): The id of the new routine
- *   vcHb (map[int]VectorClock): The current hb vector clocks
- *   vcMhb (map[int]VectorClock): The current mhb vector clocks
  */
-func Fork(fo *TraceElementFork, vcHb map[int]*clock.VectorClock, vcMhb map[int]*clock.VectorClock) {
+func Fork(fo *TraceElementFork) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	oldRout := fo.routine
 	newRout := fo.id
 
-	vcHb[newRout] = vcHb[oldRout].Copy()
-	vcHb[oldRout].Inc(oldRout)
-	vcHb[newRout].Inc(newRout)
+	currentVC[newRout] = currentVC[oldRout].Copy()
+	currentVC[oldRout].Inc(oldRout)
+	currentVC[newRout].Inc(newRout)
 
-	vcMhb[newRout] = vcMhb[oldRout].Copy()
-	vcMhb[oldRout].Inc(oldRout)
-	vcMhb[newRout].Inc(newRout)
+	currentWVC[newRout] = currentWVC[oldRout].Copy()
+	currentWVC[oldRout].Inc(oldRout)
+	currentWVC[newRout].Inc(newRout)
 
 	allForks[fo.id] = fo
 }

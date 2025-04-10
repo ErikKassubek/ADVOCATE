@@ -35,7 +35,7 @@ type TraceElementFork struct {
 	file    string
 	line    int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -75,7 +75,7 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 	AddElementToTrace(&elem)
 	return nil
@@ -167,8 +167,8 @@ func (fo *TraceElementFork) GetVC() *clock.VectorClock {
 	return fo.vc
 }
 
-func (fo *TraceElementFork) GetVCWmHB() *clock.VectorClock {
-	return fo.vcWmHB
+func (fo *TraceElementFork) GetwVc() *clock.VectorClock {
+	return fo.wVc
 }
 
 /*
@@ -248,10 +248,10 @@ func (fo *TraceElementFork) ToString() string {
  * MARK: VectorClock
  */
 func (fo *TraceElementFork) updateVectorClock() {
-	fo.vc = currentVCHb[fo.routine].Copy()
-	fo.vcWmHB = currentVCWmhb[fo.routine].Copy()
+	fo.vc = currentVC[fo.routine].Copy()
+	fo.wVc = currentWVC[fo.routine].Copy()
 
-	Fork(fo, currentVCHb, currentVCWmhb)
+	Fork(fo)
 }
 
 /*
@@ -268,7 +268,7 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		file:    fo.file,
 		line:    fo.line,
 		vc:      fo.vc.Copy(),
-		vcWmHB:  fo.vcWmHB.Copy(),
+		wVc:     fo.wVc.Copy(),
 	}
 }
 

@@ -123,8 +123,8 @@ func (er *TraceElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
-// GetVCWmHB implements TraceElement.
-func (at *TraceElementReplay) GetVCWmHB() *clock.VectorClock {
+// GetwVc implements TraceElement.
+func (at *TraceElementReplay) GetwVc() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 

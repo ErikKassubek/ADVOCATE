@@ -33,28 +33,30 @@ func newOSuc(index int, nRout int) {
  * Update and calculate the vector clocks given a successful do operation
  * Args:
  *   on (*TraceElementOnce): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func DoSuc(on *TraceElementOnce, vc map[int]*clock.VectorClock) {
+func DoSuc(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, vc[on.id].GetSize())
-	oSuc[on.id] = vc[on.routine].Copy()
-	vc[on.routine].Inc(on.routine)
+	newOSuc(on.id, currentVC[on.id].GetSize())
+	oSuc[on.id] = currentVC[on.routine].Copy()
+
+	currentVC[on.routine].Inc(on.routine)
+	currentWVC[on.routine].Inc(on.routine)
 }
 
 /*
  * Update and calculate the vector clocks given a unsuccessful do operation
  * Args:
  *   on (*TraceElementOnce): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func DoFail(on *TraceElementOnce, vc map[int]*clock.VectorClock) {
+func DoFail(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, vc[on.id].GetSize())
-	vc[on.routine].Sync(oSuc[on.id])
-	vc[on.routine].Inc(on.routine)
+	newOSuc(on.id, currentVC[on.id].GetSize())
+
+	currentVC[on.routine].Sync(oSuc[on.id])
+	currentVC[on.routine].Inc(on.routine)
+	currentWVC[on.routine].Inc(on.routine)
 }

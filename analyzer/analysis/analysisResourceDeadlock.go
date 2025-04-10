@@ -384,7 +384,7 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex) {
 		thread_id:    ThreadId(element.GetRoutine()),
 		trace_id:     element.GetTID(),
 		lock_id:      element.GetID(),
-		vector_clock: element.vcWmHB.Copy(),
+		vector_clock: element.wVc.Copy(),
 	}
 
 	switch element.opM {

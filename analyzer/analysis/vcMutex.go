@@ -35,30 +35,30 @@ func newRel(index int, nRout int) {
  * Update and calculate the vector clocks given a lock operation
  * Args:
  *   mu (*TraceElementMutex): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
- *   wVc (map[int]VectorClock): The current weak vector clocks
  */
-func Lock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*clock.VectorClock) {
+func Lock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine].Inc(mu.routine)
+		currentVC[mu.routine].Inc(mu.routine)
+		currentWVC[mu.routine].Inc(mu.routine)
 		return
 	}
 
-	newRel(mu.id, vc[mu.routine].GetSize())
-	vc[mu.routine].Sync(relW[mu.id])
-	vc[mu.routine].Sync(relR[mu.id])
-	vc[mu.routine].Inc(mu.routine)
+	currentVC[mu.routine].Sync(relW[mu.id])
+	currentVC[mu.routine].Sync(relR[mu.id])
+
+	currentVC[mu.routine].Inc(mu.routine)
+	currentWVC[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
 	if analysisCases["leak"] {
-		addMostRecentAcquireTotal(mu, vc[mu.routine], 0)
+		addMostRecentAcquireTotal(mu, currentVC[mu.routine], 0)
 	}
 
-	lockSetAddLock(mu, wVc[mu.routine])
+	lockSetAddLock(mu, currentWVC[mu.routine])
 
 	// for fuzzing
 	currentlyHoldLock[mu.id] = mu
@@ -69,9 +69,8 @@ func Lock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*clo
  * Update and calculate the vector clocks given a unlock operation
  * Args:
  *   mu (*TraceElementMutex): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func Unlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
+func Unlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -79,10 +78,12 @@ func Unlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
 		return
 	}
 
-	newRel(mu.id, vc[mu.routine].GetSize())
-	relW[mu.id] = vc[mu.routine].Copy()
-	relR[mu.id] = vc[mu.routine].Copy()
-	vc[mu.routine].Inc(mu.routine)
+	newRel(mu.id, currentVC[mu.routine].GetSize())
+	relW[mu.id] = currentVC[mu.routine].Copy()
+	relR[mu.id] = currentVC[mu.routine].Copy()
+
+	currentVC[mu.routine].Inc(mu.routine)
+	currentWVC[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -96,31 +97,32 @@ func Unlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
  * Update and calculate the vector clocks given a rlock operation
  * Args:
  *   mu (*TraceElementMutex): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
- *   wVc (map[int]VectorClock): The current weak vector clocks
  * Returns:
  *   (vectorClock): The new vector clock
  */
-func RLock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*clock.VectorClock) {
+func RLock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine].Inc(mu.routine)
+		currentVC[mu.routine].Inc(mu.routine)
+		currentWVC[mu.routine].Inc(mu.routine)
 		return
 	}
 
-	newRel(mu.id, vc[mu.routine].GetSize())
-	vc[mu.routine].Sync(relW[mu.id])
-	vc[mu.routine].Inc(mu.routine)
+	newRel(mu.id, currentVC[mu.routine].GetSize())
+	currentVC[mu.routine].Sync(relW[mu.id])
+
+	currentVC[mu.routine].Inc(mu.routine)
+	currentWVC[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 
 	if analysisCases["leak"] {
-		addMostRecentAcquireTotal(mu, vc[mu.routine], 1)
+		addMostRecentAcquireTotal(mu, currentVC[mu.routine], 1)
 	}
 
-	lockSetAddLock(mu, wVc[mu.routine])
+	lockSetAddLock(mu, currentWVC[mu.routine])
 
 	// for fuzzing
 	currentlyHoldLock[mu.id] = mu
@@ -131,20 +133,22 @@ func RLock(mu *TraceElementMutex, vc map[int]*clock.VectorClock, wVc map[int]*cl
  * Update and calculate the vector clocks given a runlock operation
  * Args:
  *   mu (*TraceElementMutex): The trace element
- *   vc (map[int]VectorClock): The current vector clocks
  */
-func RUnlock(mu *TraceElementMutex, vc map[int]*clock.VectorClock) {
+func RUnlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if mu.tPost == 0 {
-		vc[mu.routine].Inc(mu.routine)
+		currentVC[mu.routine].Inc(mu.routine)
+		currentWVC[mu.routine].Inc(mu.routine)
 		return
 	}
 
-	newRel(mu.id, vc[mu.routine].GetSize())
-	relR[mu.id].Sync(vc[mu.routine])
-	vc[mu.routine].Inc(mu.routine)
+	newRel(mu.id, currentVC[mu.routine].GetSize())
+	relR[mu.id].Sync(currentVC[mu.routine])
+
+	currentVC[mu.routine].Inc(mu.routine)
+	currentWVC[mu.routine].Inc(mu.routine)
 
 	timer.Stop(timer.AnaHb)
 

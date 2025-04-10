@@ -48,7 +48,7 @@ type TraceElementCond struct {
 	file    string
 	line    int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 }
 
 /*
@@ -102,7 +102,7 @@ func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN 
 		file:    file,
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -217,8 +217,8 @@ func (co *TraceElementCond) GetVC() *clock.VectorClock {
  * Returns:
  *   VectorClock: The vector clock of the element
  */
-func (co *TraceElementCond) GetVCWmHB() *clock.VectorClock {
-	return co.vcWmHB
+func (co *TraceElementCond) GetwVc() *clock.VectorClock {
+	return co.wVc
 }
 
 /*
@@ -331,16 +331,16 @@ func (co *TraceElementCond) ToString() string {
  * MARK: VectorClock
  */
 func (co *TraceElementCond) updateVectorClock() {
-	co.vc = currentVCHb[co.routine].Copy()
-	co.vcWmHB = currentVCWmhb[co.routine].Copy()
+	co.vc = currentVC[co.routine].Copy()
+	co.wVc = currentWVC[co.routine].Copy()
 
 	switch co.opC {
 	case WaitCondOp:
-		CondWait(co, currentVCHb)
+		CondWait(co)
 	case SignalOp:
-		CondSignal(co, currentVCHb)
+		CondSignal(co)
 	case BroadcastOp:
-		CondBroadcast(co, currentVCHb)
+		CondBroadcast(co)
 	}
 
 }
@@ -363,7 +363,7 @@ func (co *TraceElementCond) Copy() TraceElement {
 		file:    co.file,
 		line:    co.line,
 		vc:      co.vc.Copy(),
-		vcWmHB:  co.vcWmHB.Copy(),
+		wVc:     co.wVc.Copy(),
 	}
 }
 

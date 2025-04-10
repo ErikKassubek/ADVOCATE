@@ -26,8 +26,9 @@ import (
  * Args:
  *   traceToWrite (*analysis.Trace): Pointer to the trace to write
  *   path (string): The path to the file to write to
+ *   replay (bool): If true, write only the elements relevant for replay
  */
-func WriteTrace(traceToWrite *analysis.Trace, path string) error {
+func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -69,6 +70,9 @@ func WriteTrace(traceToWrite *analysis.Trace, path string) error {
 			})
 
 			for index, element := range trace {
+				if !replay || !isReplay(element) {
+					continue
+				}
 				elementString := element.ToString()
 				if _, err := file.WriteString(elementString); err != nil {
 					utils.LogError("Error in writing trace to file. Could not write string: ", err.Error())
@@ -87,6 +91,18 @@ func WriteTrace(traceToWrite *analysis.Trace, path string) error {
 	}
 	wg.Wait()
 	return nil
+}
+
+/*
+ * Check if the element is relevant for replay
+ * Args:
+ * 	element (analysis.TraceElement): element to check
+ * Returns:
+ * 	true if relevant for replay, false if ignored in replay
+ */
+func isReplay(element analysis.TraceElement) bool {
+	t := element.GetObjType(false)
+	return !(t == analysis.ObjectTypeNew || t == analysis.ObjectTypeRoutineEnd)
 }
 
 /*

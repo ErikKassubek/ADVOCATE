@@ -65,8 +65,8 @@ func ClearData() {
 	executedOnce = make(map[int]*ConcurrentEntry)
 	fuzzingCounter = make(map[int]map[string]int)
 
-	currentVCHb = make(map[int]*clock.VectorClock)
-	currentVCWmhb = make(map[int]*clock.VectorClock)
+	currentVC = make(map[int]*clock.VectorClock)
+	currentWVC = make(map[int]*clock.VectorClock)
 
 	oSuc = make(map[int]*clock.VectorClock)
 

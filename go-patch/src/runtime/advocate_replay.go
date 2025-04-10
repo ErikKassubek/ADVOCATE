@@ -396,7 +396,7 @@ func ReleaseWaits() {
 		key := replayElem.key()
 
 		if key == lastKey {
-			if hasTimePast(lastTime, releaseOldestWait) { // timeout
+			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
 				if tPostWhenFirstTimeout == 0 {
 					tPostWhenAckFirstTimeout = replayElem.Time
 				}
@@ -410,7 +410,7 @@ func ReleaseWaits() {
 					foundReplayElement(replayElem.Routine)
 				} else {
 					// release the currently waiting element
-					var oldest = replayChan{nil, nil, -1, false, 0, "", 0}
+					var oldest = replayChan{nil, nil, -1, false, 0, "", 0, false}
 					oldestKey := ""
 					lock(&waitingOpsMutex)
 					for key, ch := range waitingOps {
@@ -421,7 +421,7 @@ func ReleaseWaits() {
 					}
 					unlock(&waitingOpsMutex)
 
-					releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
+					suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
 					if releaseOldestWait > 1 {
 						releaseOldestWait--
@@ -432,7 +432,7 @@ func ReleaseWaits() {
 					unlock(&replayDoneLock)
 
 					lock(&waitingOpsMutex)
-					if printDebug {
+					if printDebug && suc {
 						println("Release Oldes: ", oldestKey)
 					}
 					delete(waitingOps, oldestKey)
@@ -478,9 +478,6 @@ func ReleaseWaits() {
 			unlock(&replayDoneLock)
 
 			lock(&waitingOpsMutex)
-			if printDebug {
-				println("Release: ", key)
-			}
 			delete(waitingOps, key)
 		}
 		unlock(&waitingOpsMutex)
@@ -530,13 +527,14 @@ func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map
 }
 
 type replayChan struct {
-	chWait  chan ReplayElement
-	chAck   chan struct{}
-	counter int
-	waitAck bool
-	routine int
-	file    string
-	line    int
+	chWait   chan ReplayElement
+	chAck    chan struct{}
+	counter  int
+	waitAck  bool
+	routine  int
+	file     string
+	line     int
+	released bool
 }
 
 type released struct {
@@ -601,18 +599,21 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	key := buildReplayKey(routine, file, line)
 
 	if printDebug {
-		println("Wait: ", op.ToString(), file, line)
+		println("Wait: ", key)
 	}
 
 	chWait := make(chan ReplayElement, 1)
 	chAck := make(chan struct{}, 1)
 
-	replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line}
+	replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line, false}
 
 	_, nextElem := getNextReplayElement()
-	if key == nextElem.key() {
+	if key == nextElem.key() && !waitForAck.waitForAck {
 		// if it is the next element, release directly and add elems to waitForAck
 		replayElem.chWait <- nextElem
+		if printDebug {
+			println("ReleaseDir: ", key, waitForResponse)
+		}
 		if replayElem.waitAck {
 			waitForAck = released{
 				replayC:    replayElem,
@@ -620,7 +621,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 				waitForAck: true,
 			}
 		}
-		foundReplayElement(nextElem.Routine)
+		// foundReplayElement(nextElem.Routine)
 	} else {
 		// add to waiting list
 		lock(&waitingOpsMutex)
@@ -641,26 +642,46 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
  *  elemReplay (ReplayElement): the corresponding replay element
  *  rel (bool): the waiting channel should be released
  *  next (bool): true if the next element in the trace was released, false if the oldest has been released
+ * Returns:
+ * 	bool: true if the element was released, false if not, especially if it already has been released before
  */
-func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) {
-	if printDebug {
-		print("Release: ", elemReplay.key())
+func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) bool {
+	if elem.released {
+		if printDebug {
+			println("Already released: ", elemReplay.key())
+		}
+		return false
 	}
+
 	if rel {
 		elem.chWait <- elemReplay
-	}
-	if printDebug {
-		print("Ack: ", elemReplay.key())
+		elem.released = true
+		if printDebug {
+			println("Release: ", elemReplay.key())
+		}
 	}
 
 	if elem.waitAck {
+		if printDebug {
+			println("Wait Ack: ", elemReplay.key())
+		}
 		select {
 		case <-elem.chAck:
+			if printDebug {
+				println("Ack: ", elemReplay.key())
+			}
 		case <-after(sToNs(acknowledgementMaxWaitSec)):
+			if printDebug {
+				println("AckTimeout: ", elemReplay.key())
+			}
 			if tPostWhenAckFirstTimeout == 0 {
 				tPostWhenAckFirstTimeout = elemReplay.Time
 			}
 		}
+	}
+
+	if printDebug {
+		println("Complete: ", elemReplay.key())
 	}
 
 	lastTime = currentTime()
@@ -671,6 +692,8 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) {
 	} else {
 		releasedElementOldest(elemReplay.key())
 	}
+
+	return true
 }
 
 /*
@@ -741,7 +764,7 @@ func getNextReplayElement() (int, ReplayElement) {
 		return getNextReplayElement()
 	}
 
-	return routine, replayData[uint64(routine)][0]
+	return routine, elem
 }
 
 func releasedElementOldest(key string) {
@@ -752,6 +775,9 @@ func foundReplayElement(routine int) {
 	lock(&replayLock)
 	defer unlock(&replayLock)
 	replayIndex[uint64(routine)]++
+	if printDebug {
+		println("Advance: ", routine, replayIndex[uint64(routine)])
+	}
 }
 
 /*
@@ -816,7 +842,9 @@ func isExitCodeConfOnEndElem(code int) bool {
  * 	msg: the panic message
  */
 func ExitReplayPanic(msg any) {
+	println("ExitReplayPanic")
 	if IsAdvocateFuzzingEnabled() {
+		println("finishFuzzingFunc")
 		finishFuzzingFunc()
 	}
 

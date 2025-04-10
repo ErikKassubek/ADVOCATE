@@ -114,7 +114,7 @@ signal to release it and remove the operation
 from the waitMap.
 See (M3)
 
-If it is not a channel communication or select, wait for the operation
+If it is not a channel communication, select or once.Do, wait for the operation
 to fully execute (wait for ack).
 See (M4)
 
@@ -136,7 +136,7 @@ func replayManager() {
 			release(sig)
 			delete waitMap[evt]
 
-			if !isChannelCom(evt) {  // (M4)
+			if !isChannelComOrOnceDo(evt) {  // (M4)
 				waitAck()
 			}
 
@@ -206,7 +206,23 @@ execute, it informs the replay manager that it wants to execute. It will then wa
 in which they appear in the trace. In most cases, the manager will then wait
 for an acknowledgement from the operation, that it has finished executing.
 For channel send/recv we do not wait for an acknowledgement, since here multiple
-operation need to be executed at the same time.
+operation need to be executed at the same time. We also do not wait for the
+`Do` on a once to fully execute. The `Do` first executes its parameter function.
+Let's assume we have the following code:
+
+```go
+o := sync.Once{}
+m := sync.Mutex{}
+
+o.Do(func() {
+	m.Lock()
+})
+```
+We need to first start run the `Do`. Then the `Lock` operation must be
+fully executed. If we would wait for an acknowledgement of the `Do`, the
+replay of the `Lock` would block, since it must be executed, before the
+`Do` finishes and therefore could send its acknowledgement.
+
 To prevent the replay from getting stuck, the manager is able to release operations out of order if it thinks, something went wrong.\
 The Order enforcements consists of the operation and the replay manager. First, we have the code in operations itself, that blocks the execution of the operation, until its released by the replay manager.\
 The manager will release the operations in the correct order.

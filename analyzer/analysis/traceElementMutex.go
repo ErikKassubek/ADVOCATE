@@ -58,7 +58,7 @@ type TraceElementMutex struct {
 	file    string
 	line    int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -141,7 +141,7 @@ func AddTraceElementMutex(routine int, tPre string,
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -260,8 +260,8 @@ func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
 	return mu.vc
 }
 
-func (mu *TraceElementMutex) GetVCWmHB() *clock.VectorClock {
-	return mu.vcWmHB
+func (mu *TraceElementMutex) GetwVc() *clock.VectorClock {
+	return mu.wVc
 }
 
 /*
@@ -394,48 +394,48 @@ func (mu *TraceElementMutex) ToString() string {
 * MARK: VectorClock
  */
 func (mu *TraceElementMutex) updateVectorClock() {
-	mu.vc = currentVCHb[mu.routine].Copy()
-	mu.vcWmHB = currentVCWmhb[mu.routine].Copy()
+	mu.vc = currentVC[mu.routine].Copy()
+	mu.wVc = currentWVC[mu.routine].Copy()
 
 	switch mu.opM {
 	case LockOp:
-		Lock(mu, currentVCHb, currentVCWmhb)
+		Lock(mu)
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockLock(mu)
 		}
 		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
+			CyclicDeadlockMutexLock(mu, false, currentWVC[mu.routine])
 		}
 	case RLockOp:
-		RLock(mu, currentVCHb, currentVCWmhb)
+		RLock(mu)
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockLock(mu)
 		}
 		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
+			CyclicDeadlockMutexLock(mu, true, currentWVC[mu.routine])
 		}
 	case TryLockOp:
 		if mu.suc {
 			if analysisCases["unlockBeforeLock"] {
 				checkForUnlockBeforeLockLock(mu)
 			}
-			Lock(mu, currentVCHb, currentVCWmhb)
+			Lock(mu)
 			if analysisCases["cyclicDeadlock"] {
-				CyclicDeadlockMutexLock(mu, false, currentVCWmhb[mu.routine])
+				CyclicDeadlockMutexLock(mu, false, currentWVC[mu.routine])
 			}
 		}
 	case TryRLockOp:
 		if mu.suc {
-			RLock(mu, currentVCHb, currentVCWmhb)
+			RLock(mu)
 			if analysisCases["unlockBeforeLock"] {
 				checkForUnlockBeforeLockLock(mu)
 			}
 			if analysisCases["cyclicDeadlock"] {
-				CyclicDeadlockMutexLock(mu, true, currentVCWmhb[mu.routine])
+				CyclicDeadlockMutexLock(mu, true, currentWVC[mu.routine])
 			}
 		}
 	case UnlockOp:
-		Unlock(mu, currentVCHb)
+		Unlock(mu)
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockUnlock(mu)
 		}
@@ -446,7 +446,7 @@ func (mu *TraceElementMutex) updateVectorClock() {
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockUnlock(mu)
 		}
-		RUnlock(mu, currentVCHb)
+		RUnlock(mu)
 		if analysisCases["cyclicDeadlock"] {
 			CyclicDeadlockMutexUnLock(mu)
 		}
@@ -457,9 +457,10 @@ func (mu *TraceElementMutex) updateVectorClock() {
 }
 
 func (mu *TraceElementMutex) updateVectorClockAlt() {
-	mu.vc = currentVCHb[mu.routine].Copy()
+	mu.vc = currentVC[mu.routine].Copy()
 
-	currentVCHb[mu.routine].Inc(mu.routine)
+	currentVC[mu.routine].Inc(mu.routine)
+	currentWVC[mu.routine].Inc(mu.routine)
 }
 
 /*
@@ -480,7 +481,7 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		file:    mu.file,
 		line:    mu.line,
 		vc:      mu.vc.Copy(),
-		vcWmHB:  mu.vcWmHB.Copy(),
+		wVc:     mu.wVc.Copy(),
 	}
 }
 

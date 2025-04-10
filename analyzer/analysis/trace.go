@@ -722,7 +722,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 		time   int
 		thread int
 		vc     *clock.VectorClock
-		vcWmHB *clock.VectorClock
+		wVc    *clock.VectorClock
 	}, 0)
 	for _, tra := range t.traces {
 		for _, elem := range tra {
@@ -733,8 +733,8 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 					time   int
 					thread int
 					vc     *clock.VectorClock
-					vcWmHB *clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetVCWmHB()})
+					wVc    *clock.VectorClock
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetwVc()})
 			}
 		}
 	}
@@ -746,8 +746,8 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 
 	for _, elem := range elements {
 		if clocks {
-			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
-			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.vcWmHB.ToString())
+			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
+			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
 		} else {
 			utils.LogInfo(elem.thread, elem.string)
 			fmt.Println(elem.thread, elem.string)

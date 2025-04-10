@@ -272,10 +272,8 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.Ve
 * Args:
 *   id (int): The id of the channel
 *   vc (VectorClock): The vector clock
-*   tID (string): The position of the channel operation in the program
 *   send (bool): True if the operation is a send
 *   buffered (bool): True if the channel is buffered
-*   sel (bool): True if the operation is part of a select statement
  */
 func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorClock,
 	send bool, buffered bool) {

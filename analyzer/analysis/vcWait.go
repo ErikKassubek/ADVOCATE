@@ -16,7 +16,6 @@ import (
 	"analyzer/timer"
 )
 
-// TODO: do we need lastChangeWg
 /*
  * Create a new wg if needed
  * Args:
@@ -33,15 +32,16 @@ func newWg(index int, nRout int) {
  * Calculate the new vector clock for a add or done operation and update cv
  * Args:
  *   wa (*TraceElementWait): The trace element
- *   vc (map[int]VectorClock): The vector clocks
  */
-func Change(wa *TraceElementWait, vc map[int]*clock.VectorClock) {
+func Change(wa *TraceElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newWg(wa.id, vc[wa.id].GetSize())
-	lastChangeWG[wa.id].Sync(vc[wa.routine])
-	vc[wa.routine].Inc(wa.routine)
+	newWg(wa.id, currentVC[wa.id].GetSize())
+	lastChangeWG[wa.id].Sync(currentVC[wa.routine])
+
+	currentVC[wa.routine].Inc(wa.routine)
+	currentWVC[wa.routine].Inc(wa.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -54,15 +54,17 @@ func Change(wa *TraceElementWait, vc map[int]*clock.VectorClock) {
  * Calculate the new vector clock for a wait operation and update cv
  * Args:
  *   wa (*TraceElementWait): The trace element
- *   vc (*map[int]VectorClock): The vector clocks
  */
-func Wait(wa *TraceElementWait, vc map[int]*clock.VectorClock) {
+func Wait(wa *TraceElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newWg(wa.id, vc[wa.id].GetSize())
+	newWg(wa.id, currentVC[wa.id].GetSize())
+
 	if wa.tPost != 0 {
-		vc[wa.routine].Sync(lastChangeWG[wa.id])
-		vc[wa.routine].Inc(wa.routine)
+		currentVC[wa.routine].Sync(lastChangeWG[wa.id])
 	}
+
+	currentVC[wa.routine].Inc(wa.routine)
+	currentWVC[wa.routine].Inc(wa.routine)
 }

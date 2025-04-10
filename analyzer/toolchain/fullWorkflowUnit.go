@@ -149,7 +149,6 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 				}
 			}
 
-			utils.LogInfof("Running full workflow for test: %s in package: %s in file: %s\n", testFunc, packageName, file)
 			if fuzzing < 1 {
 				utils.LogInfo("Create ", directoryName)
 				if err := os.MkdirAll(directoryName, os.ModePerm); err != nil {

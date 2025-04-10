@@ -48,7 +48,7 @@ type TraceElementAtomic struct {
 	id      int
 	opA     opAtomic
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 	file    string
 	line    int
 }
@@ -109,7 +109,7 @@ func AddTraceElementAtomic(routine int, tpost string,
 		file:    file,
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -202,8 +202,8 @@ func (at *TraceElementAtomic) GetVC() *clock.VectorClock {
 	return at.vc
 }
 
-func (at *TraceElementAtomic) GetVCWmHB() *clock.VectorClock {
-	return at.vcWmHB
+func (at *TraceElementAtomic) GetwVc() *clock.VectorClock {
+	return at.wVc
 }
 
 /*
@@ -313,16 +313,16 @@ func (at *TraceElementAtomic) ToString() string {
  * Update and calculate the vector clock of the element
  */
 func (at *TraceElementAtomic) updateVectorClock() {
-	at.vc = currentVCHb[at.routine].Copy()
-	at.vcWmHB = currentVCWmhb[at.routine].Copy()
+	at.vc = currentVC[at.routine].Copy()
+	at.wVc = currentWVC[at.routine].Copy()
 
 	switch at.opA {
 	case LoadOp:
-		Read(at, currentVCHb, true)
+		Read(at, true)
 	case StoreOp, AddOp, AndOp, OrOp:
-		Write(at, currentVCHb)
+		Write(at)
 	case SwapOp, CompSwapOp:
-		Swap(at, currentVCHb, true)
+		Swap(at, true)
 	default:
 		err := "Unknown operation: " + at.ToString()
 		utils.LogError(err)
@@ -333,15 +333,15 @@ func (at *TraceElementAtomic) updateVectorClock() {
  * Update and calculate the vector clock of the element
  */
 func (at *TraceElementAtomic) updateVectorClockAlt() {
-	at.vc = currentVCHb[at.routine].Copy()
+	at.vc = currentVC[at.routine].Copy()
 
 	switch at.opA {
 	case LoadOp:
-		Read(at, currentVCHb, false)
+		Read(at, false)
 	case StoreOp, AddOp, AndOp, OrOp:
-		Write(at, currentVCHb)
+		Write(at)
 	case SwapOp, CompSwapOp:
-		Swap(at, currentVCHb, false)
+		Swap(at, false)
 	default:
 		err := "Unknown operation: " + at.ToString()
 		utils.LogError(err)
@@ -363,7 +363,7 @@ func (at *TraceElementAtomic) Copy() TraceElement {
 		id:      at.id,
 		opA:     at.opA,
 		vc:      at.vc.Copy(),
-		vcWmHB:  at.vcWmHB.Copy(),
+		wVc:     at.wVc.Copy(),
 	}
 }
 

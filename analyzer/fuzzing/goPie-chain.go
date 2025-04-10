@@ -49,7 +49,9 @@ func addElemToChain(elem analysis.TraceElement) {
 		// if the routine is the same as the last routine, we need to start a new
 		// chain. In this case, store the current chain as a scheduling chains
 		// and start a new routine with the current element
-		schedulingChains = append(schedulingChains, currentChain)
+		if currentChain.len() > 1 {
+			schedulingChains = append(schedulingChains, currentChain)
+		}
 		currentChain = newChain()
 		currentChain.add(elem.Copy())
 	}
@@ -148,7 +150,7 @@ func (ch *chain) isValid() bool {
 	}
 
 	for i := range ch.len() - 1 {
-		hb := clock.GetHappensBefore(ch.elems[i].GetVCWmHB(), ch.elems[i+1].GetVCWmHB())
+		hb := clock.GetHappensBefore(ch.elems[i].GetwVc(), ch.elems[i+1].GetwVc())
 		if hb == clock.After {
 			return false
 		}

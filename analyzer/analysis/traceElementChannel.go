@@ -66,7 +66,7 @@ type TraceElementChannel struct {
 	sel     *TraceElementSelect
 	partner *TraceElementChannel
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 	rel1    []TraceElement
 	rel2    []TraceElement
 }
@@ -159,7 +159,7 @@ func AddTraceElementChannel(routine int, tPre string,
 		file:    file,
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
 	}
@@ -299,8 +299,8 @@ func (ch *TraceElementChannel) GetVC() *clock.VectorClock {
 	return ch.vc
 }
 
-func (ch *TraceElementChannel) GetVCWmHB() *clock.VectorClock {
-	return ch.vcWmHB
+func (ch *TraceElementChannel) GetwVc() *clock.VectorClock {
+	return ch.wVc
 }
 
 /*
@@ -536,8 +536,8 @@ func (ch *TraceElementChannel) updateVectorClock() {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	ch.vc = currentVCHb[ch.routine].Copy()
-	ch.vcWmHB = currentVCWmhb[ch.routine].Copy()
+	ch.vc = currentVC[ch.routine].Copy()
+	ch.wVc = currentWVC[ch.routine].Copy()
 
 	if ch.tPost == 0 {
 		return
@@ -569,15 +569,15 @@ func (ch *TraceElementChannel) updateVectorClock() {
 
 		switch ch.opC {
 		case SendOp:
-			Send(ch, currentVCHb, fifo)
+			Send(ch, currentVC, currentWVC, fifo)
 		case RecvOp:
 			if ch.cl { // recv on closed channel
-				RecvC(ch, currentVCHb, true)
+				RecvC(ch, currentVC, currentWVC, true)
 			} else {
-				Recv(ch, currentVCHb, fifo)
+				Recv(ch, currentVC, currentWVC, fifo)
 			}
 		case CloseOp:
-			Close(ch, currentVCHb)
+			Close(ch, currentVC, currentWVC)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			utils.LogError(err)
@@ -586,36 +586,36 @@ func (ch *TraceElementChannel) updateVectorClock() {
 		switch ch.opC {
 		case SendOp:
 			if ch.partner != nil {
-				ch.partner.vc = currentVCHb[ch.partner.routine].Copy()
+				ch.partner.vc = currentVC[ch.partner.routine].Copy()
 				if ch.partner.sel != nil {
-					ch.partner.sel.vc = currentVCHb[ch.partner.routine].Copy()
+					ch.partner.sel.vc = currentVC[ch.partner.routine].Copy()
 				}
-				Unbuffered(ch, ch.partner, currentVCHb)
+				Unbuffered(ch, ch.partner, currentVC, currentWVC)
 				// advance index of receive routine, send routine is already advanced
 				MainTrace.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
 					SendC(ch)
 				} else {
-					StuckChan(ch.routine, currentVCHb)
+					StuckChan(ch.routine, currentVC, currentWVC)
 				}
 			}
 
 		case RecvOp: // should not occur, but better save than sorry
 			if ch.partner != nil {
-				ch.partner.vc = currentVCHb[ch.partner.routine].Copy()
-				Unbuffered(ch.partner, ch, currentVCHb)
+				ch.partner.vc = currentVC[ch.partner.routine].Copy()
+				Unbuffered(ch.partner, ch, currentVC, currentWVC)
 				// advance index of receive routine, send routine is already advanced
 				MainTrace.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
-					RecvC(ch, currentVCHb, false)
+					RecvC(ch, currentVC, currentWVC, false)
 				} else {
-					StuckChan(ch.routine, currentVCHb)
+					StuckChan(ch.routine, currentVC, currentWVC)
 				}
 			}
 		case CloseOp:
-			Close(ch, currentVCHb)
+			Close(ch, currentVC, currentWVC)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			utils.LogError(err)
@@ -694,7 +694,7 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		sel:     ch.sel,
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),
-		vcWmHB:  ch.vcWmHB.Copy(),
+		wVc:     ch.wVc.Copy(),
 	}
 	return &newCh
 }

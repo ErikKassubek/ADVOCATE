@@ -40,7 +40,7 @@ type TraceElementOnce struct {
 	file    string
 	line    int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 }
 
 /*
@@ -91,7 +91,7 @@ func AddTraceElementOnce(routine int, tPre string,
 		file:    file,
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -189,8 +189,8 @@ func (on *TraceElementOnce) GetVC() *clock.VectorClock {
 	return on.vc
 }
 
-func (on *TraceElementOnce) GetVCWmHB() *clock.VectorClock {
-	return on.vcWmHB
+func (on *TraceElementOnce) GetwVc() *clock.VectorClock {
+	return on.wVc
 }
 
 /*
@@ -294,13 +294,13 @@ func (on *TraceElementOnce) ToString() string {
  * MARK: VectorClock
  */
 func (on *TraceElementOnce) updateVectorClock() {
-	on.vc = currentVCHb[on.routine].Copy()
-	on.vcWmHB = currentVCHb[on.routine].Copy()
+	on.vc = currentVC[on.routine].Copy()
+	on.wVc = currentVC[on.routine].Copy()
 
 	if on.suc {
-		DoSuc(on, currentVCHb)
+		DoSuc(on)
 	} else {
-		DoFail(on, currentVCHb)
+		DoFail(on)
 	}
 
 }
@@ -321,7 +321,7 @@ func (on *TraceElementOnce) Copy() TraceElement {
 		file:    on.file,
 		line:    on.line,
 		vc:      on.vc.Copy(),
-		vcWmHB:  on.vcWmHB.Copy(),
+		wVc:     on.wVc.Copy(),
 	}
 }
 

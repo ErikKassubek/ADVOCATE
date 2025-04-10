@@ -53,7 +53,7 @@ type TraceElementWait struct {
 	file    string
 	line    int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 }
 
 /*
@@ -120,7 +120,7 @@ func AddTraceElementWait(routine int, tpre,
 		file:    file,
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -231,8 +231,8 @@ func (wa *TraceElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
 
-func (wa *TraceElementWait) GetVCWmHB() *clock.VectorClock {
-	return wa.vcWmHB
+func (wa *TraceElementWait) GetwVc() *clock.VectorClock {
+	return wa.wVc
 }
 
 /*
@@ -333,14 +333,14 @@ func (wa *TraceElementWait) ToString() string {
  * MARK: VectorClock
  */
 func (wa *TraceElementWait) updateVectorClock() {
-	wa.vc = currentVCHb[wa.routine].Copy()
-	wa.vcWmHB = currentVCHb[wa.routine].Copy()
+	wa.vc = currentVC[wa.routine].Copy()
+	wa.wVc = currentWVC[wa.routine].Copy()
 
 	switch wa.opW {
 	case ChangeOp:
-		Change(wa, currentVCHb)
+		Change(wa)
 	case WaitOp:
-		Wait(wa, currentVCHb)
+		Wait(wa)
 	default:
 		err := "Unknown operation on wait group: " + wa.ToString()
 		utils.LogError(err)
@@ -365,7 +365,7 @@ func (wa *TraceElementWait) Copy() TraceElement {
 		file:    wa.file,
 		line:    wa.line,
 		vc:      wa.vc.Copy(),
-		vcWmHB:  wa.vcWmHB.Copy(),
+		wVc:     wa.wVc.Copy(),
 	}
 }
 

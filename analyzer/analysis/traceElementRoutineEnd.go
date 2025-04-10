@@ -30,7 +30,7 @@ type TraceElementRoutineEnd struct {
 	routine int
 	tPost   int
 	vc      *clock.VectorClock
-	vcWmHB  *clock.VectorClock
+	wVc     *clock.VectorClock
 }
 
 /*
@@ -53,7 +53,7 @@ func AddTraceElementRoutineEnd(routine int, tPost string) error {
 		routine: routine,
 		tPost:   tPostInt,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
-		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)
@@ -147,8 +147,8 @@ func (re *TraceElementRoutineEnd) GetVC() *clock.VectorClock {
 	return re.vc
 }
 
-func (fo *TraceElementRoutineEnd) GetVCWmHB() *clock.VectorClock {
-	return fo.vcWmHB
+func (fo *TraceElementRoutineEnd) GetwVc() *clock.VectorClock {
+	return fo.wVc
 }
 
 /*
@@ -227,8 +227,8 @@ func (re *TraceElementRoutineEnd) ToString() string {
  * MARK: VectorClock
  */
 func (re *TraceElementRoutineEnd) updateVectorClock() {
-	re.vc = currentVCHb[re.routine].Copy()
-	re.vcWmHB = currentVCHb[re.routine].Copy()
+	re.vc = currentVC[re.routine].Copy()
+	re.wVc = currentVC[re.routine].Copy()
 }
 
 /*
@@ -242,7 +242,7 @@ func (re *TraceElementRoutineEnd) Copy() TraceElement {
 		routine: re.routine,
 		tPost:   re.tPost,
 		vc:      re.vc.Copy(),
-		vcWmHB:  re.vcWmHB.Copy(),
+		wVc:     re.wVc.Copy(),
 	}
 }
 

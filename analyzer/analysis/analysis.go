@@ -181,12 +181,12 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 	}
 
 	for i := 1; i <= MainTrace.numberOfRoutines; i++ {
-		currentVCHb[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
-		currentVCWmhb[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
+		currentVC[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
+		currentWVC[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
 	}
 
-	currentVCHb[1].Inc(1)
-	currentVCWmhb[1].Inc(1)
+	currentVC[1].Inc(1)
+	currentWVC[1].Inc(1)
 
 	utils.LogInfo("Start HB analysis")
 
@@ -320,7 +320,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 func checkLeak(elem TraceElement) {
 	switch e := elem.(type) {
 	case *TraceElementChannel:
-		CheckForLeakChannelStuck(e, currentVCHb[e.routine])
+		CheckForLeakChannelStuck(e, currentVC[e.routine])
 	case *TraceElementMutex:
 		CheckForLeakMutex(e)
 	case *TraceElementWait:
@@ -344,7 +344,7 @@ func checkLeak(elem TraceElement) {
 			}
 		}
 		timer.Stop(timer.AnaLeak)
-		CheckForLeakSelectStuck(e, ids, buffered, currentVCHb[e.routine], opTypes)
+		CheckForLeakSelectStuck(e, ids, buffered, currentVC[e.routine], opTypes)
 	case *TraceElementCond:
 		CheckForLeakCond(e)
 	}

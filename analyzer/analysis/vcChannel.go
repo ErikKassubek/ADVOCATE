@@ -36,9 +36,10 @@ type bufferedVC struct {
  * 	routRecv (int): the route of the receiver
  * 	tID_send (string): the position of the send in the program
  * 	tID_recv (string): the position of the receive in the program
- * 	vc (map[int]VectorClock): the current vector clocks
+ * 	vc (map[int]*VectorClock): the current vector clocks
+ * 	wVc (map[int]*VectorClock)
  */
-func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]*clock.VectorClock) {
+func Unbuffered(sender TraceElement, recv TraceElement, vc, wVc map[int]*clock.VectorClock) {
 	if analysisCases["concurrentRecv"] || analysisFuzzing { // or fuzzing
 		switch r := recv.(type) {
 		case *TraceElementChannel:
@@ -81,9 +82,12 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]*clock.Vector
 		vc[sender.GetRoutine()] = vc[recv.GetRoutine()].Copy()
 		vc[sender.GetRoutine()].Inc(sender.GetRoutine())
 		vc[recv.GetRoutine()].Inc(recv.GetRoutine())
+		wVc[sender.GetRoutine()].Inc(sender.GetRoutine())
+		wVc[recv.GetRoutine()].Inc(recv.GetRoutine())
 
 	} else {
 		vc[sender.GetRoutine()].Inc(sender.GetRoutine())
+		wVc[sender.GetRoutine()].Inc(sender.GetRoutine())
 	}
 
 	timer.Stop(timer.AnaHb)
@@ -112,6 +116,7 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc map[int]*clock.Vector
 type holdObj struct {
 	ch   *TraceElementChannel
 	vc   map[int]*clock.VectorClock
+	wvc  map[int]*clock.VectorClock
 	fifo bool
 }
 
@@ -119,15 +124,17 @@ type holdObj struct {
  * Update and calculate the vector clocks given a send on a buffered channel.
  * Args:
  * 	ch (*TraceElementChannel): The trace element
- * 	vc (map[int]VectorClock): the current vector clocks
+ * 	vc (map[int]*VectorClock): the current vector clocks
+ * 	wVc (map[int]*VectorClock): the current weak vector clocks
  *  fifo (bool): true if the channel buffer is assumed to be fifo
  */
-func Send(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
+func Send(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if ch.tPost == 0 {
 		vc[ch.routine].Inc(ch.routine)
+		wVc[ch.routine].Inc(ch.routine)
 		return
 	}
 
@@ -140,7 +147,7 @@ func Send(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 	count := bufferedVCsCount[ch.id]
 
 	if bufferedVCsSize[ch.id] <= count {
-		holdSend = append(holdSend, holdObj{ch, vc, fifo})
+		holdSend = append(holdSend, holdObj{ch, vc, wVc, fifo})
 		return
 	}
 
@@ -167,6 +174,7 @@ func Send(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 	mostRecentSend[ch.routine][ch.id] = ElemWithVcVal{ch, mostRecentSend[ch.routine][ch.id].Vc.Sync(vc[ch.routine]).Copy(), ch.id}
 
 	vc[ch.routine].Inc(ch.routine)
+	wVc[ch.routine].Inc(ch.routine)
 
 	bufferedVCs[ch.id][count] = bufferedVC{true, ch.oID, vc[ch.routine].Copy(), ch.routine, ch.GetTID()}
 
@@ -190,7 +198,7 @@ func Send(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 
 	for i, hold := range holdRecv {
 		if hold.ch.id == ch.id {
-			Recv(hold.ch, hold.vc, hold.fifo)
+			Recv(hold.ch, hold.vc, hold.wvc, hold.fifo)
 			holdRecv = append(holdRecv[:i], holdRecv[i+1:]...)
 			break
 		}
@@ -202,10 +210,11 @@ func Send(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
  * Update and calculate the vector clocks given a receive on a buffered channel.
  * Args:
  * 	ch (*TraceElementChannel): The trace element
- * 	vc (map[int]VectorClock): the current vector clocks
+ * 	vc (map[int]*VectorClock): the current vector clocks
+ * 	wVc (map[int]*VectorClock): the current weak vector clocks
  *  fifo (bool): true if the channel buffer is assumed to be fifo
  */
-func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
+func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -215,6 +224,7 @@ func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 
 	if ch.tPost == 0 {
 		vc[ch.routine].Inc(ch.routine)
+		wVc[ch.routine].Inc(ch.routine)
 		return
 	}
 
@@ -225,7 +235,7 @@ func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 	newBufferedVCs(ch.id, ch.qSize, vc[ch.routine].GetSize())
 
 	if bufferedVCsCount[ch.id] == 0 {
-		holdRecv = append(holdRecv, holdObj{ch, vc, fifo})
+		holdRecv = append(holdRecv, holdObj{ch, vc, wVc, fifo})
 		return
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}
@@ -263,6 +273,7 @@ func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 	mostRecentReceive[ch.routine][ch.id] = ElemWithVcVal{ch, mostRecentReceive[ch.routine][ch.id].Vc.Sync(vc[ch.routine]), ch.id}
 
 	vc[ch.routine].Inc(ch.routine)
+	wVc[ch.routine].Inc(ch.routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -279,7 +290,7 @@ func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
 
 	for i, hold := range holdSend {
 		if hold.ch.id == ch.id {
-			Send(hold.ch, hold.vc, hold.fifo)
+			Send(hold.ch, hold.vc, hold.wvc, hold.fifo)
 			holdSend = append(holdSend[:i], holdSend[i+1:]...)
 			break
 		}
@@ -290,13 +301,15 @@ func Recv(ch *TraceElementChannel, vc map[int]*clock.VectorClock, fifo bool) {
  * Update and calculate the vector clocks for a stuck channel element
  * Args:
  *  routint (int): the route of the operation
- *  vc (map[int]VectorClock): the current vector clocks
+ *  vc (map[int]*VectorClock): the current vector clocks
+ *  wVc (map[int]VectorClock): the current weak vector clocks
  */
-func StuckChan(routine int, vc map[int]*clock.VectorClock) {
+func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	vc[routine].Inc(routine)
+	wVc[routine].Inc(routine)
 }
 
 /*
@@ -304,8 +317,9 @@ func StuckChan(routine int, vc map[int]*clock.VectorClock) {
  * Args:
  * 	ch (*TraceElementChannel): The trace element
  * 	vc (map[int]VectorClock): the current vector clocks
+ * 	wVc (map[int]VectorClock): the current weakvector clocks
  */
-func Close(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
+func Close(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	if ch.tPost == 0 {
 		return
 	}
@@ -319,6 +333,7 @@ func Close(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 
 	vc[ch.routine].Inc(ch.routine)
+	wVc[ch.routine].Inc(ch.routine)
 
 	closeData[ch.id] = ch
 
@@ -348,9 +363,10 @@ func SendC(ch *TraceElementChannel) {
  * Args:
  * 	ch (*TraceElementChannel): The trace element
  * 	vc (map[int]VectorClock): the current vector clocks
- *  buffered (bool): true if the channel is buffered
+ * 	wVc (map[int]VectorClock): the current weakvector clocks
+ * 	buffered (bool): true if the channel is buffered
  */
-func RecvC(ch *TraceElementChannel, vc map[int]*clock.VectorClock, buffered bool) {
+func RecvC(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, buffered bool) {
 	if ch.tPost == 0 {
 		return
 	}
@@ -363,7 +379,10 @@ func RecvC(ch *TraceElementChannel, vc map[int]*clock.VectorClock, buffered bool
 	if _, ok := closeData[ch.id]; ok {
 		vc[ch.routine] = vc[ch.routine].Sync(closeData[ch.id].vc)
 	}
+
 	vc[ch.routine].Inc(ch.routine)
+	wVc[ch.routine].Inc(ch.routine)
+
 	timer.Stop(timer.AnaHb)
 
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {

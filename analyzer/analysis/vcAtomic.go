@@ -31,15 +31,16 @@ func newLw(index int, nRout int) {
  * Calculate the new vector clock for a write operation and update cv
  * Args:
  *   at (*TraceElementAtomic): The trace element
- *   vc (*map[int]VectorClock): The vector clocks
  */
-func Write(at *TraceElementAtomic, vc map[int]*clock.VectorClock) {
+func Write(at *TraceElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newLw(at.id, vc[at.id].GetSize())
-	lw[at.id] = vc[at.routine].Copy()
-	vc[at.routine].Inc(at.routine)
+	newLw(at.id, currentVC[at.id].GetSize())
+	lw[at.id] = currentVC[at.routine].Copy()
+
+	currentVC[at.routine].Inc(at.routine)
+	currentWVC[at.routine].Inc(at.routine)
 }
 
 /*
@@ -47,18 +48,19 @@ func Write(at *TraceElementAtomic, vc map[int]*clock.VectorClock) {
  * Args:
  *   at (*TraceElementAtomic): The trace element
  *   numberOfRoutines (int): The number of routines in the trace
- *   vc (map[int]VectorClock): The vector clocks
  *   sync bool: sync reader with last writer
  */
-func Read(at *TraceElementAtomic, vc map[int]*clock.VectorClock, sync bool) {
+func Read(at *TraceElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newLw(at.id, vc[at.id].GetSize())
+	newLw(at.id, currentVC[at.id].GetSize())
 	if sync {
-		vc[at.routine].Sync(lw[at.id])
+		currentVC[at.routine].Sync(lw[at.id])
 	}
-	vc[at.routine].Inc(at.routine)
+
+	currentVC[at.routine].Inc(at.routine)
+	currentWVC[at.routine].Inc(at.routine)
 }
 
 /*
@@ -67,13 +69,12 @@ func Read(at *TraceElementAtomic, vc map[int]*clock.VectorClock, sync bool) {
  * Args:
  *   at (*TraceElementAtomic): The trace element
  *   numberOfRoutines (int): The number of routines in the trace
- *   cv (map[int]VectorClock): The vector clocks
  *   sync bool: sync reader with last writer
  */
-func Swap(at *TraceElementAtomic, cv map[int]*clock.VectorClock, sync bool) {
+func Swap(at *TraceElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	Read(at, cv, sync)
-	Write(at, cv)
+	Read(at, sync)
+	Write(at)
 }

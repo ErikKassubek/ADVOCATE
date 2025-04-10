@@ -92,7 +92,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++
 
-		err := io.WriteTrace(&traceCopy, fileName)
+		err := io.WriteTrace(&traceCopy, fileName, true)
 		if err != nil {
 			utils.LogError("Could not create pie mutation: ", err.Error())
 		}

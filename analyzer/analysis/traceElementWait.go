@@ -119,6 +119,8 @@ func AddTraceElementWait(routine int, tpre,
 		val:     val_int,
 		file:    file,
 		line:    line,
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)

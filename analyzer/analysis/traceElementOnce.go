@@ -90,6 +90,8 @@ func AddTraceElementOnce(routine int, tPre string,
 		suc:     sucBool,
 		file:    file,
 		line:    line,
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)

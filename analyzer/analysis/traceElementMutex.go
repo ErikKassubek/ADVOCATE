@@ -140,6 +140,8 @@ func AddTraceElementMutex(routine int, tPre string,
 		line:    line,
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)

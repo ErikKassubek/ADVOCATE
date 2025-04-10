@@ -108,6 +108,8 @@ func AddTraceElementAtomic(routine int, tpost string,
 		opA:     opAInt,
 		file:    file,
 		line:    line,
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)

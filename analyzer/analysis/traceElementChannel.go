@@ -158,6 +158,8 @@ func AddTraceElementChannel(routine int, tPre string,
 		qCount:  qCountInt,
 		file:    file,
 		line:    line,
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
 	}

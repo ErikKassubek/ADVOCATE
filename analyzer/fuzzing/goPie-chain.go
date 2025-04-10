@@ -148,7 +148,7 @@ func (ch *chain) isValid() bool {
 	}
 
 	for i := range ch.len() - 1 {
-		hb := clock.GetHappensBefore(ch.elems[i].GetVC(), ch.elems[i+1].GetVC())
+		hb := clock.GetHappensBefore(ch.elems[i].GetVCWmHB(), ch.elems[i+1].GetVCWmHB())
 		if hb == clock.After {
 			return false
 		}

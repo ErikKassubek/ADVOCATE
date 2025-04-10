@@ -105,6 +105,8 @@ func AddTraceElementSelect(routine int, tPre string,
 		file:                file,
 		line:                line,
 		casesWithPosPartner: make([]int, 0),
+		vc:                  clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:              clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	cs := strings.Split(cases, "~")

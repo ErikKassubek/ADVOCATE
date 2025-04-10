@@ -52,6 +52,8 @@ func AddTraceElementRoutineEnd(routine int, tPost string) error {
 		index:   numberElemsInTrace(routine),
 		routine: routine,
 		tPost:   tPostInt,
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 
 	AddElementToTrace(&elem)

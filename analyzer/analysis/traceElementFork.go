@@ -74,6 +74,8 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 		line:    line,
 		rel1:    make([]TraceElement, 2),
 		rel2:    make([]TraceElement, 0),
+		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
+		vcWmHB:  clock.NewVectorClock(MainTrace.numberOfRoutines),
 	}
 	AddElementToTrace(&elem)
 	return nil

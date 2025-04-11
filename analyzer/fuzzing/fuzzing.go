@@ -20,6 +20,9 @@ import (
 	"time"
 )
 
+/*
+ * Encapsulating type for the different mutations
+ */
 type mutation struct {
 	mutType int
 	mutSel  map[string][]fuzzingSelect
@@ -44,7 +47,7 @@ const (
 	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
 
-	factorCaseWithPartner = 2
+	factorCaseWithPartner = 3
 	maxFlowMut            = 10
 )
 
@@ -294,6 +297,17 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 }
 
 /*
+ * Remove and return the first mutation from the mutation queue
+ * Returns:
+ * 	the first mutation from the mutation queue
+ */
+func popMutation() mutation {
+	var mut mutation
+	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
+	return mut
+}
+
+/*
  * Get the probability that a select changes its preferred case
  * It is selected in such a way, that at least one of the selects if flipped
  * with a probability of at least 99%.
@@ -306,6 +320,9 @@ func getFlipProbability() float64 {
 	return max(pMin, 1-math.Pow(1-p, 1/float64(numberSelects)))
 }
 
+/*
+ * Reset fuzzing
+ */
 func resetFuzzing() {
 	numberFuzzingRuns = 0
 	mutationQueue = make([]mutation, 0)

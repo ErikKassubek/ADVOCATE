@@ -12,6 +12,9 @@ package fuzzing
 
 import "analyzer/utils"
 
+/*
+* Create new mutations for GFuzz if the previous run was interesting
+ */
 func createGFuzzMut() {
 	// add new mutations based on GFuzz select
 	if isInterestingSelect() {

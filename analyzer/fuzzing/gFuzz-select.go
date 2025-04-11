@@ -12,15 +12,14 @@ package fuzzing
 
 import (
 	"analyzer/analysis"
-	"fmt"
-	"sort"
-
 	"math/rand"
+	"sort"
 )
 
 /*
  * Struct to handle the selects for fuzzing
- *   t: tpost of the select execution, used for order
+ *   id (string): replay id
+ *   t (int): tpost of the select execution, used for order
  *   chosenCase (int): id of the chosen case, -1 for default
  *   numberCases (int): number of cases not including default
  *   containsDefault (bool): true if contains default case, otherwise false
@@ -35,7 +34,11 @@ type fuzzingSelect struct {
 	casiWithPos     []int
 }
 
-// TODO: change to replay id including replay routine
+/*
+ * Add a select to selectInfoTrace
+ * Args:
+ * 	e (*analysis.TraceElementSelect): the select trace element to add
+ */
 func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	fs := fuzzingSelect{
 		id:              e.GetReplayID(),
@@ -50,6 +53,9 @@ func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	numberSelects++
 }
 
+/*
+ * Sort the list of occurrences of each select by the time value
+ */
 func sortSelects() {
 	for key := range selectInfoTrace {
 		sort.Slice(selectInfoTrace[key], func(i, j int) bool {
@@ -58,12 +64,8 @@ func sortSelects() {
 	}
 }
 
-func (fs fuzzingSelect) toString() string {
-	return fmt.Sprintf("%s;%d;%d", fs.id, fs.chosenCase, fs.numberCases)
-}
-
 /*
- * Get a copy of fs with a randomly selected case id
+ * Get a copy of fs with a randomly selected case id.
  * Args:
  *   def (bool): if true, default is a possible value, if false it is not
  *   flipChange (bool): probability that a select case is chosen randomly. Otherwise the chosen case is kept
@@ -148,8 +150,4 @@ func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 
 	// Fallback (should never reach here)
 	return 0
-}
-
-func (fs fuzzingSelect) isEqual(fs2 fuzzingSelect) bool {
-	return fs.id == fs2.id && fs.chosenCase == fs2.chosenCase && fs.numberCases == fs2.numberCases && fs.containsDefault == fs2.containsDefault
 }

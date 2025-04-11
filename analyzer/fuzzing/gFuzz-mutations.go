@@ -29,7 +29,7 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 	for i := 0; i < numberMutations; i++ {
 		mut := createMutation(flipChance)
 
-		id := getIdFromMut(mut)
+		id := getIDFromMut(mut)
 		if id == "" {
 			continue
 		}
@@ -45,6 +45,13 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 	return numberMutAdded
 }
 
+/*
+ * createMutation creates one new mutation
+ * Args:
+ * 	flipChance (float64): probability that a select changes its preferred case
+ * Returns:
+ * 	map[string][]fuzzingSelect: the new mutation
+ */
 func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	res := make(map[string][]fuzzingSelect)
 
@@ -58,40 +65,6 @@ func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	return res
 }
 
-func popMutation() mutation {
-	var mut mutation
-	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
-	return mut
-}
-
-func areMutEqual(mut1, mut2 map[string][]fuzzingSelect) bool {
-	// different amount of keys
-	if len(mut1) != len(mut2) {
-		return false
-	}
-
-	for key, slice1 := range mut1 {
-		slice2, exists := mut2[key]
-		// key in mut1 is not in mut2
-		if !exists {
-			return false
-		}
-
-		// slice1 and slice 2 are not identical, order must be the same
-		if len(slice1) != len(slice2) {
-			return false
-		}
-
-		for index, sel := range slice1 {
-			if !sel.isEqual(slice2[index]) {
-				return false
-			}
-		}
-	}
-
-	return true
-}
-
 /*
  * Get a unique string id for a given mutation
  * Args:
@@ -99,7 +72,7 @@ func areMutEqual(mut1, mut2 map[string][]fuzzingSelect) bool {
  * Returns:
  * 	string: id
  */
-func getIdFromMut(mut map[string][]fuzzingSelect) string {
+func getIDFromMut(mut map[string][]fuzzingSelect) string {
 	keys := make([]string, 0, len(mut))
 	for key := range mut {
 		keys = append(keys, key)

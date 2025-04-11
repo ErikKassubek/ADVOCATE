@@ -11,9 +11,14 @@
 package fuzzing
 
 import (
+	"analyzer/analysis"
 	"analyzer/utils"
 )
 
+/*
+ * Info for a channel wether it was closed in all runs,
+ * never closed or in some runs closed and in others not
+ */
 type closeInfo string
 
 const (
@@ -33,6 +38,7 @@ var (
 	selectInfoTrace  = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
 	numberSelects    = 0
 	numberClose      = 0
+	elemsByID        = make(map[int][]analysis.TraceElement) // id -> chan/sel/mutex elem
 	// Info from the file/the previous runs
 	channelInfoFile              = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
 	pairInfoFile                 = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
@@ -82,6 +88,14 @@ type fuzzingPair struct {
 	com     float64
 }
 
+/*
+ * Merge the close information for a channel from a trace into the internal
+ * Args:
+ * 	trace (closeInfo): info from the last recorded run
+ * 	file (closeInfo): stored close info
+ * Returns:
+ * 	closeInfo: the new close info for the channel
+ */
 func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
 	if trace != file {
 		return sometimes
@@ -89,6 +103,10 @@ func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
 	return file
 }
 
+/*
+ * For each channel merge the close info from the last run into the
+ * internal close info for all ever executed channel close
+ */
 func mergeTraceInfoIntoFileInfo() {
 	// channel info
 	for _, cit := range channelInfoTrace {
@@ -132,6 +150,7 @@ func clearData() {
 	channelInfoTrace = make(map[int]fuzzingChannel)
 	pairInfoTrace = make(map[string]fuzzingPair)
 	selectInfoTrace = make(map[string][]fuzzingSelect)
+	elemsByID = make(map[int][]analysis.TraceElement)
 }
 
 /*

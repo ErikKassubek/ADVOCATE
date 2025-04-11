@@ -83,6 +83,8 @@ The newly created mutations are then stored in a queue to be run.
 ### Flip Probability
 The flip probability is the probability that a single select in the fuzzingData will change its preferred case compared to the previous mutation. If its set to high, the mutation mechanism basically becomes completely random. If its to small, the program will result in the same mutation being created over and over again. For now the probability is calculated as $$P = max(0.1, 1 - (1 - 0.99)^{1/numSel})$$ where $numSel$ is the number of selects in the previous mutation. This is selected in such a way, that the probability of at least one of the selects to flip its preferred case is at least $99\%$, but the probability for each individual select to get flipped is at least $10\%$. This may be changed based on experimental results.
 
+This is extended for the version with HB information. Here we want to increase the chance for of a case with a possible partner to be chosen. We don't want to make them impossible, since it can happen that a different case in a earlier select uncovers a potential partner in a later select for a case, which was indicated to have no potential partner in the previous run. We therefore chose those cases with a higher probability (3:1).
+
 
 
 ### Running a mutation

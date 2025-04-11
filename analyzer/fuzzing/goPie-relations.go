@@ -12,8 +12,6 @@ package fuzzing
 
 import "analyzer/analysis"
 
-// TODO: is it correct, that in R1, only the element before and after the element in the same routine is used
-
 /*
 We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
 We define <c, c'> in CPOP2, if c and c' are operations in different routines
@@ -35,11 +33,16 @@ var (
 	counterCPOP2 = 0
 )
 
+/*
+ * For each element in a routine trace, store the rule 1 information
+ * Args:
+ * 	routineTrace []analysis.TraceElement: the list of elems in the same trace
+ */
 func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	var prevValid analysis.TraceElement
 
 	for i := range routineTrace {
-		if isGoPieElem(routineTrace[i]) {
+		if isGoPieElem(routineTrace[i]) || useHBInfoFuzzing {
 			if prevValid != nil {
 				prevValid.AddRel1(routineTrace[i], After)
 				routineTrace[i].AddRel1(prevValid, Before)
@@ -50,12 +53,13 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	}
 }
 
-var (
-	elemsByID = make(map[int][]analysis.TraceElement) // id -> chan/sel/mutex elem
-)
-
+/*
+ * For each element in a routine trace, add it to the map from id to operation
+ * Args:
+ * 	elem (analysis.TraceElement): Element to add
+ */
 func calculateRelRule2AddElem(elem analysis.TraceElement) {
-	if !isGoPieElem(elem) {
+	if !isGoPieElem(elem) && !useHBInfoFuzzing {
 		return
 	}
 
@@ -67,6 +71,9 @@ func calculateRelRule2AddElem(elem analysis.TraceElement) {
 	counterCPOP2++
 }
 
+/*
+ * For all elements apply rule 2
+ */
 func calculateRelRule2() {
 	for _, elems := range elemsByID {
 		for i := 0; i < len(elems)-1; i++ {
@@ -82,6 +89,9 @@ func calculateRelRule2() {
 	}
 }
 
+/*
+ * For all elements apply rules 3 and 4
+ */
 func calculateRelRule3And4() {
 	hasChanged := true
 

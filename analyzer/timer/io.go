@@ -64,6 +64,12 @@ func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 	}
 }
 
+/*
+ * If time measurement is enabled, write the current timer values to a file
+ * Args:
+ * 	progName (string): name of the prog
+ * 	testName (string): name of the test
+ */
 func UpdateTimeFileOverview(progName string, testName string) {
 	if !measureTime {
 		return

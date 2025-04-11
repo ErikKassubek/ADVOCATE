@@ -517,11 +517,11 @@ func isCycleValidGuard(cycle []*lockGraphNode) bool {
 				continue
 			}
 
-			for ls_i := range cycle[i].lockSet {
+			for lsI := range cycle[i].lockSet {
 				// log.Println("Checking for", ls_i, "in lockset", cycle[j].lockSet, "of lock", cycle[j].id)
 
 				// if a lock appears in the lockSet of two different dependencies it is a guard lock
-				if _, ok := cycle[j].lockSet[ls_i]; !ok {
+				if _, ok := cycle[j].lockSet[lsI]; !ok {
 					continue
 				}
 

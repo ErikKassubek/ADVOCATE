@@ -31,7 +31,7 @@ var allGoPieMutations = make(map[string]struct{})
  * 	numberFuzzingRun (int): number of fuzzing run
  */
 func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
-	energy := getEnergy(numberFuzzingRuns != 0, len(schedulingChains))
+	energy := getEnergy()
 
 	mutations := make(map[string]chain)
 
@@ -117,25 +117,20 @@ func addFuzzingTraceFolder(path string) {
 /*
  * Calculate the energy for a schedule. This determines how many mutations
  * are created
- * Args:
- * 	recordedBasedOnMutation (bool): False if the recording was the first fuzzing run, otherwise true
- * 	numberSchedulChain (int): Number of scheduling chains in the program
  */
-func getEnergy(recordingBasedOnMutation bool, numberSchedulChains int) int {
-	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
+func getEnergy() int {
+	numberSchedulChains := len(schedulingChains)
 
-	if recordingBasedOnMutation {
-		if analysis.GetTimeoutHappened() || numberSchedulChains == 0 {
-			score = 0
-		} else {
-			score += 10 * numberSchedulChains
-		}
+	// not interesting
+	if analysis.GetTimeoutHappened() || numberSchedulChains == 0 {
+		return 0
 	}
+
+	score := counterCPOP1 + int(math.Log(float64(counterCPOP2))) + 10*numberSchedulChains
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score
 	}
 
 	return int(float64(score+1)/float64(maxGoPieScore)) * 100
-
 }

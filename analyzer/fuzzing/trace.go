@@ -14,8 +14,6 @@ import (
 	"analyzer/analysis"
 )
 
-// TODO: maybe move this directly into the analysis
-
 /*
  * Parse the trace and record all relevant data
  * Args:
@@ -189,6 +187,11 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 	}
 }
 
+/*
+ * Parse a select operation in the trace for fuzzing
+ * Args:
+ * 	elem (*analysis.TraceElementSelect): the select element
+ */
 func parseSelectOp(elem *analysis.TraceElementSelect) {
 	if fuzzingModeGFuzz {
 		addFuzzingSelect(elem)

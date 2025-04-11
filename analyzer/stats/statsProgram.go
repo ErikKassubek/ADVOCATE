@@ -19,6 +19,13 @@ import (
 	"strings"
 )
 
+/*
+ * CreateStatsTotal creates an overview over all statistics for a program
+ * (not split by test/run)
+ * Args:
+ * 	pathFolder (string): path the where the stat files should be created
+ * 	progName (string): name of the analyzed program
+ */
 func CreateStatsTotal(pathFolder, progName string) error {
 	resultPath := filepath.Join(pathFolder, "advocateResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")

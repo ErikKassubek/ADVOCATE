@@ -21,7 +21,7 @@ analysis results. If no partner can be found, the operation is added to
 a list of stuck channel elements without partner $s$.
 For each non stuck channel element and each case in a non stuck
 select element, including not selected cases in those elements, we check
-if the element would be a potentialpartner for one of the stuck elements.
+if the element would be a potential partner for one of the stuck elements.
 If it is, the element and its partner are
 added to the analysis result and the element is removed from $s$.
 If all elements are processed, we traverse through $s$ and add a result

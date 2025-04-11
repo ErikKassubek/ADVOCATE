@@ -12,6 +12,12 @@ package fuzzing
 
 import "math"
 
+/*
+ * Calculate how many gFuzz mutations should be created for a given
+ * trace
+ * Returns:
+ * 	int: the number of mutations
+ */
 func numberMutations() int {
 	score := calculateScore()
 	maxGFuzzScore = math.Max(score, maxGFuzzScore)
@@ -21,7 +27,6 @@ func numberMutations() int {
 
 /*
  * Calculate the score of the given run
- * score = sum log2 countChOpPair + 10 * createCh + 10 * closeCh + 10 * sum maxChBufFull
  */
 func calculateScore() float64 {
 	const fact1 = 10.0
@@ -48,6 +53,7 @@ func calculateScore() float64 {
 	res += fact1 * bufFullSum
 
 	if useHBInfoFuzzing {
+		// number of select cases with possible partner (both executed and not executed)
 		res += fact2 * float64(numberSelectCasesWithPartner)
 	}
 

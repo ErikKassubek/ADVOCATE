@@ -19,16 +19,22 @@ import (
 	"analyzer/utils"
 )
 
-func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
+/*
+ * getConcurrentSendForFuzzing checks if for the given send, there is a
+ * concurrent send on the same channel
+ * Args:
+ * 	sender (*TraceElementChannel): Send trace element
+ */
+func getConcurrentSendForFuzzing(sender *TraceElementChannel) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
 
-	id := ch.id
-	routine := ch.routine
+	id := sender.id
+	routine := sender.routine
 
-	incFuzzingCounter(ch)
+	incFuzzingCounter(sender)
 
-	if ch.GetTPost() != 0 {
+	if sender.GetTPost() != 0 {
 		return
 	}
 
@@ -37,23 +43,23 @@ func getConcurrentSendForFuzzing(ch *TraceElementChannel, vc map[int]*clock.Vect
 			continue
 		}
 
-		if elem[ch.id].vc.GetClock() == nil {
+		if elem[sender.id].vc.GetClock() == nil {
 			continue
 		}
 
-		happensBefore := clock.GetHappensBefore(elem[id].vc, vc[routine])
+		happensBefore := clock.GetHappensBefore(elem[id].vc, currentVC[routine])
 		if happensBefore == clock.Concurrent {
 			elem2 := elem[id].elem
 			fuzzingFlowSend = append(fuzzingFlowSend, ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: CERecv})
 		}
 	}
 
-	if ch.tPost != 0 {
+	if sender.tPost != 0 {
 		if _, ok := lastSendRoutine[routine]; !ok {
 			lastSendRoutine[routine] = make(map[int]elemWithVc)
 		}
 
-		lastSendRoutine[routine][id] = elemWithVc{vc[routine].Copy(), ch}
+		lastSendRoutine[routine][id] = elemWithVc{currentVC[routine].Copy(), sender}
 	}
 }
 

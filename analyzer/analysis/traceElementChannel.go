@@ -590,7 +590,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				if ch.partner.sel != nil {
 					ch.partner.sel.vc = currentVC[ch.partner.routine].Copy()
 				}
-				Unbuffered(ch, ch.partner, currentVC, currentWVC)
+				Unbuffered(ch, ch.partner)
 				// advance index of receive routine, send routine is already advanced
 				MainTrace.increaseIndex(ch.partner.routine)
 			} else {
@@ -604,7 +604,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 		case RecvOp: // should not occur, but better save than sorry
 			if ch.partner != nil {
 				ch.partner.vc = currentVC[ch.partner.routine].Copy()
-				Unbuffered(ch.partner, ch, currentVC, currentWVC)
+				Unbuffered(ch.partner, ch)
 				// advance index of receive routine, send routine is already advanced
 				MainTrace.increaseIndex(ch.partner.routine)
 			} else {

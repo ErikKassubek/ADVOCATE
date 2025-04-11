@@ -20,6 +20,12 @@ import (
 	"strings"
 )
 
+/*
+ * getNewDataMap provides a new map to store the analyzer stats.
+ * It has the form bugTypeID -> counter
+ * Returns:
+ * 	map[string]int: The new map
+ */
 func getNewDataMap() map[string]int {
 	keys := []string{
 		"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
@@ -35,6 +41,13 @@ func getNewDataMap() map[string]int {
 	return m
 }
 
+/*
+ * getNewDataMapMap provides a map used for collecting statistics of the analysis.
+ * The fields are detected, replayWritten, replaySuccessful, unexpectedPanic.
+ * Each field contains a data map as created by getNewDataMap()
+ * Returns:
+ * 	map[string]map[string]int: The map
+ */
 func getNewDataMapMap() map[string]map[string]int {
 	return map[string]map[string]int{
 		"detected":         getNewDataMap(),
@@ -115,6 +128,15 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 	return resTotal, resUnique, err
 }
 
+/*
+ * Store a bug that has been processed in the statistics.
+ * Used to count number of unique bugs
+ * Properties:
+ * 	paths ([]struct): list of paths to each element involved in the bug
+ * 	bugType (string): ID of the bug type
+ * 	replayWritten (bool): true if a replay trace was created for the bug
+ * 	replaySuc (bool): true if the replay of the bug was successful
+ */
 type processedBug struct {
 	paths         []string
 	bugType       string
@@ -122,6 +144,11 @@ type processedBug struct {
 	replaySuc     bool
 }
 
+/*
+ * Get a string representation of a bug
+ * Returns:
+ * 	string: string representation of the bug
+ */
 func (pb *processedBug) getKey() string {
 	res := pb.bugType
 	for _, path := range pb.paths {

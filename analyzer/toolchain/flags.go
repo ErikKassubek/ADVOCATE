@@ -30,12 +30,11 @@ var (
 	fifoFlag                  bool
 	ignoreCriticalSectionFlag bool
 	rewriteAllFlag            bool
-	ignoreRewriteFlag         string
 	onlyAPanicAndLeakFlag     bool
 )
 
 func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
-	fifo, ignoreCriticalSection, rewriteAll bool, ignoreRewrite string, onlyAPanicAndLeak bool,
+	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
 	timeoutRec, timeoutRepl int) {
 
 	noRewriteFlag = noRewrite
@@ -46,7 +45,6 @@ func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
 	fifoFlag = fifo
 	ignoreCriticalSectionFlag = ignoreCriticalSection
 	rewriteAllFlag = rewriteAll
-	ignoreRewriteFlag = ignoreRewrite
 	onlyAPanicAndLeakFlag = onlyAPanicAndLeak
 
 	timeoutRecording = timeoutRec

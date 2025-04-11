@@ -27,6 +27,7 @@ import (
  *   retwriteOnce (bool): skip double bugs
  * Returns:
  *   bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
+ *   skip: true if the rewrite can be skipped, because it was rewritten before
  *   code: expected exit code
  *   error: An error if the trace could not be created
  */

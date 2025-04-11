@@ -17,7 +17,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 )
 
@@ -25,12 +24,12 @@ import (
  * Collect stats about the traces
  * Args:
  *     dataPath (string): path to the result folder
- *     traceId (int): name of trace folder is datapath_traceId
+ *     traceID (int): name of trace folder is datapath_traceId
  * Returns:
  *     map[string]int: map with the stats
  *     error
  */
-func statsTraces(dataPath string, traceId int) (map[string]int, error) {
+func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 	res := map[string]int{
 		"numberElements": 0,
 
@@ -68,7 +67,7 @@ func statsTraces(dataPath string, traceId int) (map[string]int, error) {
 		"numberOnceOperations": 0,
 	}
 
-	tracePath := filepath.Join(dataPath, fmt.Sprintf("advocateTrace_%d", traceId))
+	tracePath := filepath.Join(dataPath, fmt.Sprintf("advocateTrace_%d", traceID))
 
 	// do not count the same twice
 	known := map[string][]string{
@@ -98,6 +97,16 @@ func statsTraces(dataPath string, traceId int) (map[string]int, error) {
 	return res, err
 }
 
+/*
+ * parseTraceFile parses a trace file to get all relevant stats information
+ * Args:
+ * 	tracePath (string): Path the the trace file
+ * 	stats (*map[string]int): Map to store the information in
+ * 	known (*map[string][]string): Information about primitives that have already been
+ * 		seem in other trace files
+ * Returns:
+ * 	error
+ */
 func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][]string) error {
 	// open the file
 	file, err := os.Open(tracePath)
@@ -191,25 +200,4 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 		}
 	}
 	return err
-}
-
-func getRoutineFromFileName(fileName string) (int, error) {
-	// the file name is "trace_routineID.log"
-	// remove the .log at the end
-	fileName1 := strings.TrimSuffix(fileName, ".log")
-	if fileName1 == fileName {
-		return 0, errors.New("File name does not end with .log")
-	}
-
-	fileName2 := strings.TrimPrefix(fileName1, "trace_")
-	if fileName2 == fileName1 {
-		return 0, errors.New("File name does not start with trace_")
-	}
-
-	routine, err := strconv.Atoi(fileName2)
-	if err != nil {
-		return 0, err
-	}
-
-	return routine, nil
 }

@@ -540,7 +540,7 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, fuzzin
 	outT := filepath.Join(pkgPath, "rewrittenTrace")
 	err := runAnalyzer(tracePath, noRewriteFlag, analyisCasesFlag, outR,
 		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		outT, ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+		outT, fuzzing, onlyAPanicAndLeakFlag)
 
 	if err != nil {
 		return err

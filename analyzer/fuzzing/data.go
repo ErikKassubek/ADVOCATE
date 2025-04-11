@@ -12,7 +12,6 @@ package fuzzing
 
 import (
 	"analyzer/utils"
-	"fmt"
 )
 
 type closeInfo string
@@ -44,8 +43,6 @@ var (
 
 	useHBInfoFuzzing = true
 	runFullAnalysis  = true
-
-	foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
 )
 
 /*
@@ -83,25 +80,6 @@ type fuzzingPair struct {
 	sendSel int
 	recvSel int
 	com     float64
-}
-
-func (f fuzzingChannel) toString() string {
-	return fmt.Sprintf("%s;%s;%d;%d", f.globalID, f.closeInfo, f.qSize, f.maxQCount)
-}
-
-func (f fuzzingPair) toString() string {
-	return fmt.Sprintf("%s;%s;%f", f.sendID, f.recvID, f.com)
-}
-
-func addFuzzingChannel(id string, closeInfo closeInfo, qSize int, maxQSize int) {
-	fc := fuzzingChannel{globalID: id, closeInfo: closeInfo, qSize: qSize, maxQCount: maxQSize}
-	channelInfoFile[id] = fc
-}
-
-func addFuzzingPair(sendID string, recvID string, com float64) {
-	key := sendID + "-" + recvID
-	fp := fuzzingPair{sendID: sendID, recvID: recvID, com: com}
-	pairInfoFile[key] = fp
 }
 
 func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
@@ -146,6 +124,9 @@ func mergeTraceInfoIntoFileInfo() {
 	}
 }
 
+/*
+ * Reset the fuzzing data that is unique for each run
+ */
 func clearData() {
 	// clear the trace data
 	channelInfoTrace = make(map[int]fuzzingChannel)
@@ -153,6 +134,10 @@ func clearData() {
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 }
 
+/*
+ * Reset the fuzzing data that is unique for each test but used for each fuzzing
+ * run of a test
+ */
 func clearDataFull() {
 	numberOfPreviousRuns = 0
 	maxGFuzzScore = 0.0
@@ -169,6 +154,4 @@ func clearDataFull() {
 	numberSelectCasesWithPartner = 0
 
 	alreadyDelayedElems = make(map[string][]int)
-
-	foundBugs = make(map[string]bool) // string from bug.Bug -> replay suc or not necessary
 }

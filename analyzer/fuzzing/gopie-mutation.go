@@ -109,6 +109,15 @@ func mutate(c chain, energy int) map[string]chain {
 	return res
 }
 
+/*
+ * Abridge mutation. This creates two new mutations, where either the
+ * first or the last element has been removed
+ * Args:
+ * 	c (chain): the chain to mutate
+ * Returns:
+ * 	chain: a copy of the chain with the first element removed
+ * 	chain: a copy of the chain with the last element removed
+ */
 func abridge(c chain) (chain, chain) {
 	ncHead := c.copy()
 	ncHead.removeHead()
@@ -118,6 +127,14 @@ func abridge(c chain) (chain, chain) {
 	return ncHead, ncTail
 }
 
+/*
+ * Flip mutations. For each pair of neighboring elements in the chain, a
+ * new chain is created where those two elements are flipped
+ * Args:
+ * 	c (chain): the chain to mutate
+ * Returns:
+ * 	[]chain: the list of mutated chains
+ */
 func flip(c chain) []chain {
 	res := make([]chain, 0)
 
@@ -131,6 +148,15 @@ func flip(c chain) []chain {
 	return res
 }
 
+/*
+ * Substitute mutations. For each element create new mutations, where this
+ * element is replaced by an element with another trace element from the same
+ * routine. This new element can not be in the chain already
+ * Args:
+ * 	c (chain): the chain to mutate
+ * Returns:
+ * 	[]chain: the list of mutated chains
+ */
 func substitute(c chain) []chain {
 	res := make([]chain, 0)
 
@@ -147,6 +173,15 @@ func substitute(c chain) []chain {
 	return res
 }
 
+/*
+ * Augment mutations. For each element in the Rel2 set of the last element
+ * in the chain that is not in the chain already, created a new chain where
+ * this element is added at the end.
+ * Args:
+ * 	c (chain): the chain to mutate
+ * Returns:
+ * 	[]chain: the list of mutated chains
+ */
 func augment(c chain) []chain {
 	res := make([]chain, 0)
 

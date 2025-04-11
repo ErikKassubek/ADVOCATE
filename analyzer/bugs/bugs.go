@@ -19,6 +19,9 @@ import (
 	"strings"
 )
 
+/*
+ResultType is a type for the possible type of a fond bug including its id
+*/
 type ResultType string
 
 const (
@@ -61,12 +64,26 @@ const (
 	// SNotExecutedWithPartner = "S00"
 )
 
+/*
+ * Type to store a specific id in a select
+ * Parameter:
+ * 	ID (int): id of the involved channel
+ * 	ObjType (string): object type
+ * 	Index (int): internal index of the select int the case
+ */
 type BugElementSelectCase struct {
 	ID      int
 	ObjType string
 	Index   int
 }
 
+/* GetBugElementSelectCase builds a BugElementSelectCase from a string
+ * Args:
+ * 	arg (string): the string representing the case
+ * Returns:
+ * 	BugElementSelectCase: the bug select as a BugElementSelectCase
+ * 	error
+ */
 func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 	elems := strings.Split(arg, ":")
 	id, err := strconv.Atoi(elems[1])
@@ -81,13 +98,28 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 	return BugElementSelectCase{id, objType, index}, nil
 }
 
+/*
+ * Bug is a type to describe and store a found bug
+ * Args:
+ * 	Type (ResultType): The type of the bug
+ * 	TraceElement1 ([]analysis.TraceElement): first list of trace element involved in the bug
+ * 		normally the elements that actually cause the bug, e.g. for send on close the send
+ * 	TraceElement2 ([]analysis.TraceElement): second list of trace element involved in the bug
+ * 		normally the elements indirectly involved or elements to solve the bug (possible partner),
+ * 		e.g. for send on close the close
+ */
 type Bug struct {
-	Type             ResultType
-	TraceElement1    []analysis.TraceElement
-	TraceElement1Sel []BugElementSelectCase
-	TraceElement2    []analysis.TraceElement
+	Type          ResultType
+	TraceElement1 []analysis.TraceElement
+	// TraceElement1Sel []BugElementSelectCase
+	TraceElement2 []analysis.TraceElement
 }
 
+/*
+ * GetBugString Convert the bug to a string. Mostly used internally
+ * Returns:
+ *   string: The bug as a string
+ */
 func (b Bug) GetBugString() string {
 	paths := make([]string, 0)
 
@@ -108,7 +140,7 @@ func (b Bug) GetBugString() string {
 }
 
 /*
- * Convert the bug to a string
+ * ToString convert the bug to a string. Mostly used for output
  * Returns:
  *   string: The bug as a string
  */
@@ -365,7 +397,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	}
 
 	bug.TraceElement1 = make([]analysis.TraceElement, 0)
-	bug.TraceElement1Sel = make([]BugElementSelectCase, 0)
+	// bug.TraceElement1Sel = make([]BugElementSelectCase, 0)
 
 	for _, bugArg := range strings.Split(bugArg1, ";") {
 		if strings.TrimSpace(bugArg) == "" {
@@ -378,14 +410,15 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 				return actual, bug, err
 			}
 			bug.TraceElement1 = append(bug.TraceElement1, elem)
-		} else if strings.HasPrefix(bugArg, "S") {
-			elem, err := GetBugElementSelectCase(bugArg)
-			if err != nil {
-				println("Could not read: " + bugArg + " from results")
-				return actual, bug, err
-			}
-			bug.TraceElement1Sel = append(bug.TraceElement1Sel, elem)
 		}
+		// else if strings.HasPrefix(bugArg, "S") {
+		// 	elem, err := GetBugElementSelectCase(bugArg)
+		// 	if err != nil {
+		// 		println("Could not read: " + bugArg + " from results")
+		// 		return actual, bug, err
+		// 	}
+		// 	// bug.TraceElement1Sel = append(bug.TraceElement1Sel, elem)
+		// }
 	}
 
 	bug.TraceElement2 = make([]analysis.TraceElement, 0)

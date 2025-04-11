@@ -15,6 +15,14 @@ import (
 	"sort"
 )
 
+/*
+ * createMutationsGFuzz creates the new mutations for a trace based on GFuzz
+ * Args:
+ * 	numberMutation (int): number of mutation to create
+ * 	flipChance (float64): probability that for a given select the preferred case is changed
+ * Returns:
+ * 	int: number of added mutations
+ */
 func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 	numberMutAdded := 0
 

@@ -36,25 +36,23 @@ type bufferedVC struct {
  * 	routRecv (int): the route of the receiver
  * 	tID_send (string): the position of the send in the program
  * 	tID_recv (string): the position of the receive in the program
- * 	vc (map[int]*VectorClock): the current vector clocks
- * 	wVc (map[int]*VectorClock)
  */
-func Unbuffered(sender TraceElement, recv TraceElement, vc, wVc map[int]*clock.VectorClock) {
+func Unbuffered(sender TraceElement, recv TraceElement) {
 	if analysisCases["concurrentRecv"] || analysisFuzzing { // or fuzzing
 		switch r := recv.(type) {
 		case *TraceElementChannel:
-			checkForConcurrentRecv(r, vc)
+			checkForConcurrentRecv(r, currentVC)
 		case *TraceElementSelect:
-			checkForConcurrentRecv(&r.chosenCase, vc)
+			checkForConcurrentRecv(&r.chosenCase, currentVC)
 		}
 	}
 
 	if analysisFuzzing {
 		switch s := sender.(type) {
 		case *TraceElementChannel:
-			getConcurrentSendForFuzzing(s, vc)
+			getConcurrentSendForFuzzing(s)
 		case *TraceElementSelect:
-			getConcurrentSendForFuzzing(&s.chosenCase, vc)
+			getConcurrentSendForFuzzing(&s.chosenCase)
 		}
 	}
 
@@ -72,22 +70,22 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc, wVc map[int]*clock.V
 
 		// for detection of send on closed
 		hasSend[sender.GetID()] = true
-		mostRecentSend[sender.GetRoutine()][sender.GetID()] = ElemWithVcVal{sender, mostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(vc[sender.GetRoutine()]).Copy(), sender.GetID()}
+		mostRecentSend[sender.GetRoutine()][sender.GetID()] = ElemWithVcVal{sender, mostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(currentVC[sender.GetRoutine()]).Copy(), sender.GetID()}
 
 		// for detection of receive on closed
 		hasReceived[sender.GetID()] = true
-		mostRecentReceive[recv.GetRoutine()][sender.GetID()] = ElemWithVcVal{recv, mostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(vc[recv.GetRoutine()]).Copy(), sender.GetID()}
+		mostRecentReceive[recv.GetRoutine()][sender.GetID()] = ElemWithVcVal{recv, mostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(currentVC[recv.GetRoutine()]).Copy(), sender.GetID()}
 
-		vc[recv.GetRoutine()].Sync(vc[sender.GetRoutine()])
-		vc[sender.GetRoutine()] = vc[recv.GetRoutine()].Copy()
-		vc[sender.GetRoutine()].Inc(sender.GetRoutine())
-		vc[recv.GetRoutine()].Inc(recv.GetRoutine())
-		wVc[sender.GetRoutine()].Inc(sender.GetRoutine())
-		wVc[recv.GetRoutine()].Inc(recv.GetRoutine())
+		currentVC[recv.GetRoutine()].Sync(currentVC[sender.GetRoutine()])
+		currentVC[sender.GetRoutine()] = currentVC[recv.GetRoutine()].Copy()
+		currentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		currentVC[recv.GetRoutine()].Inc(recv.GetRoutine())
+		currentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		currentWVC[recv.GetRoutine()].Inc(recv.GetRoutine())
 
 	} else {
-		vc[sender.GetRoutine()].Inc(sender.GetRoutine())
-		wVc[sender.GetRoutine()].Inc(sender.GetRoutine())
+		currentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		currentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
 	}
 
 	timer.Stop(timer.AnaHb)
@@ -103,13 +101,13 @@ func Unbuffered(sender TraceElement, recv TraceElement, vc, wVc map[int]*clock.V
 	}
 
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
-		CheckForSelectCaseWithoutPartnerChannel(sender, vc[sender.GetRoutine()], true, false)
-		CheckForSelectCaseWithoutPartnerChannel(recv, vc[recv.GetRoutine()], false, false)
+		CheckForSelectCaseWithoutPartnerChannel(sender, currentVC[sender.GetRoutine()], true, false)
+		CheckForSelectCaseWithoutPartnerChannel(recv, currentVC[recv.GetRoutine()], false, false)
 	}
 
 	if analysisCases["leak"] {
-		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), elemWithVc{vc[sender.GetRoutine()].Copy(), sender}, 0, false)
-		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), elemWithVc{vc[recv.GetRoutine()].Copy(), recv}, 1, false)
+		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), elemWithVc{currentVC[sender.GetRoutine()].Copy(), sender}, 0, false)
+		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), elemWithVc{currentVC[recv.GetRoutine()].Copy(), recv}, 1, false)
 	}
 }
 

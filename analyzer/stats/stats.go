@@ -19,12 +19,24 @@ import (
 	"strings"
 )
 
+/*
+ * testData stores information about a test
+ * Parameter:
+ * 	name (string): name of the test
+ * 	numberRuns (int): for fuzzing, how often the test was run
+ * 	results (map[string]map[string]int): information about the found bugs in this test
+ */
 type testData struct {
 	name       string
 	numberRuns int
 	results    map[string]map[string]int
 }
 
+/*
+ * toString returns the string representation of the statistics of a test
+ * Returns:
+ * 	string: the string representation
+ */
 func (td *testData) toString() string {
 	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
 
@@ -38,9 +50,17 @@ func (td *testData) toString() string {
 }
 
 /*
- * Create files with the required stats
+ * CreateStats adds the information of an analyzed test to the stats info
+ * Args:
+ * 	pathFolder (string): path to where the stats file should be created
+ * 	progName (string): name of the analyzed program
+ * 	testName (string): name of the analyzed test
+ * 	traceID (int): id of the trace
+ * 	fuzzing (int): number of fuzzing run
+ * Returns:
+ * 	error
  */
-func CreateStats(pathFolder, progName string, testName string, traceId, fuzzing int) error {
+func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing int) error {
 	// statsProg, err := statsProgram(pathToProgram)
 	// if err != nil {
 	// 	return err
@@ -48,7 +68,7 @@ func CreateStats(pathFolder, progName string, testName string, traceId, fuzzing 
 
 	utils.LogInfo("Create statistics")
 
-	statsTrace, err := statsTraces(pathFolder, traceId)
+	statsTrace, err := statsTraces(pathFolder, traceID)
 	if err != nil {
 		return err
 	}
@@ -231,6 +251,13 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	return nil
 }
 
+/*
+ * writeStatsFile writes the collected stats to a csv file
+ * Args:
+ * 	path (string): path to where the stat file should be created
+ * 	header (string): first line of the stat file containing column names
+ * 	data (string): the stats data to write into the files
+ */
 func writeStatsFile(path, header, data string) {
 	newFile := false
 	_, err := os.Stat(path)

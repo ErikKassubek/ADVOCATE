@@ -115,7 +115,6 @@ func main() {
 	flag.BoolVar(&fifo, "fifo", false, "Assume a FIFO ordering for buffered channels (default false)")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-	flag.StringVar(&ignoreRewrite, "ignoreRew", "", "Path to a result machine file. If a found bug is already in this file, it will not be rewritten")
 
 	flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
 		"If not set, only the first occurence is rewritten")
@@ -226,7 +225,7 @@ func main() {
 	}
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
-		fifo, ignoreCriticalSection, rewriteAll, ignoreRewrite, onlyAPanicAndLeak,
+		fifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
 		timeoutRecording, timeoutReplay)
 
 	// function injection to prevent circle import
@@ -278,7 +277,7 @@ func modeFuzzing() {
 		return
 	}
 
-	checkPath()
+	checkProgPath()
 	checkVersion()
 
 	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
@@ -294,7 +293,7 @@ func modeFuzzing() {
  * This will run, analyze and replay a given program or test
  */
 func modeToolchain(mode string, numRerecorded int) {
-	checkPath()
+	checkProgPath()
 	checkVersion()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
 		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, skipExisting, cont, 0, 0)
@@ -315,15 +314,25 @@ func modeToolchain(mode string, numRerecorded int) {
  * This function will read the trace at a stored path, analyze it and,
  * if needed, rewrite the trace.
  * Args:
- * 	TODO
+ * 	pathTrace (string): path to the trace to be analyzed
+ * 	noRewrite (bool): if set, rewrite is disabled
+ * 	analysisCases (map[string]bool): map of analysis cases to run
+ * 	outReadable (string): path to the readable result file
+ * 	outMachine (string): path to the machine result file
+ * 	ignoreAtomics (bool): if true, atomics are ignored for replay
+ * 	fifo (bool): assume, that the channels work as a fifo queue
+ * 	ignoreCriticalSection (bool): ignore the ordering of lock/unlock for the hb analysis
+ * 	rewriteAll (bool): rewrite bugs that have been rewritten before
+ * 	newTrace (string): path to where the rewritten trace should be created
+ * 	fuzzingRun (int): number of fuzzing run (0 for recording, then always add 1)
+ * 	onlyAPanicAndLeak (bool): only check for actual leaks and panics, do not calculate HB information
  * Returns:
  * 	error
  */
 func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	rewriteAll bool, newTrace string, ignoreRewrite string,
-	fuzzingRun int, onlyAPanicAndLeak bool) error {
+	rewriteAll bool, newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -364,10 +373,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	if canceled, ram := memory.CheckCanceled(); canceled {
+	if memory.WasCanceled() {
 		// analysis.LogSizes()
 		analysis.Clear()
-		if ram {
+		if memory.WasCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		} else {
 			return fmt.Errorf("Analysis was canceled due to unexpected panic")
@@ -407,8 +416,6 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
-
-	addAlreadyProcessed(rewrittenBugs, ignoreRewrite)
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"
@@ -534,32 +541,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 	return analysisCases, nil
 }
 
-func addAlreadyProcessed(alreadyProcessed map[bugs.ResultType][]string, ignoreRewrite string) {
-	if ignoreRewrite == "" {
-		return
-	}
-
-	data, err := os.ReadFile(ignoreRewrite)
-	if err != nil {
-		return
-	}
-	for _, bugStr := range strings.Split(string(data), "\n") {
-		_, bug, err := bugs.ProcessBug(bugStr)
-		if err != nil {
-			continue
-		}
-
-		if _, ok := alreadyProcessed[bug.Type]; !ok {
-			alreadyProcessed[bug.Type] = make([]string, 0)
-		} else {
-			if utils.ContainsString(alreadyProcessed[bug.Type], bugStr) {
-				continue
-			}
-		}
-		alreadyProcessed[bug.Type] = append(alreadyProcessed[bug.Type], bugStr)
-	}
-}
-
 /*
  * Rewrite the trace file based on given analysis results
  * Args:
@@ -612,6 +593,15 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	return rewriteNeeded, false, nil
 }
 
+/*
+ * getFolderTrace returns the path to the folder containing the trace, given the
+ * path to the trace
+ * Args:
+ * 	pathTrace (string): path to the traces
+ * Returns:
+ * 	string: path to the folder containing the trace folder
+ * 	error
+ */
 func getFolderTrace(pathTrace string) (string, error) {
 	folderTrace, err := filepath.Abs(pathTrace)
 	if err != nil {
@@ -622,6 +612,9 @@ func getFolderTrace(pathTrace string) (string, error) {
 	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
 }
 
+/*
+ * printHelp prints the usage help. Can be called with -h
+ */
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
 	println("There are two different modes of operation:")
@@ -632,6 +625,11 @@ func printHelp() {
 	printHelpMode("fuzzing")
 }
 
+/*
+ * printHelpMode prints the help for one mode
+ * Args:
+ * 	mode (string): the mode (analysis or fuzzing)
+ */
 func printHelpMode(mode string) {
 	switch mode {
 	case "analysis":
@@ -669,7 +667,11 @@ func printHelpMode(mode string) {
 	}
 }
 
-func checkPath() {
+/*
+ * checkProgPath checks if the provided path to the program that should
+ * be run/analyzed exists. If not, it panics.
+ */
+func checkProgPath() {
 	_, err := os.Stat(progPath)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		utils.LogErrorf("Could not find path %s", progPath)
@@ -677,6 +679,14 @@ func checkPath() {
 	}
 }
 
+/*
+ * checkVersion checks the version of the program to be analyzed.
+ * Advocate is implemented in and for go1.24. It the analyzed program has another
+ * version, especially if the other version is also installed on the machine,
+ * this can lead to problems. checkVersion therefore reads the version of the
+ * analyzed program and if its not 1.24, a warning and information is printed
+ * to the terminal
+ */
 func checkVersion() {
 	var goModPath string
 

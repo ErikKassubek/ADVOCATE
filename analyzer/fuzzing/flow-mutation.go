@@ -19,6 +19,9 @@ import (
 // if false, all flow mutations are collected into one mutations run
 const oneMutPerDelay = true
 
+/*
+ * createMutationsFlow creates new mutations based on the flow mutation
+ */
 func createMutationsFlow() {
 	numberMutAdded := 0
 

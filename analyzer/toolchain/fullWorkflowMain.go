@@ -151,7 +151,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	err = runAnalyzer(analyzerOutput, noRewriteFlag, analyisCasesFlag,
 		"results_readable.log", "results_machine.log",
 		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		"rewrittenTrace", ignoreRewriteFlag, fuzzing, onlyAPanicAndLeakFlag)
+		"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
 
 	if err != nil {
 		return err

@@ -16,11 +16,10 @@ import (
 )
 
 /*
-* Struct to save an atomic event in the trace
-* MARK: Struct
-* Fields:
-*   tpost (int): The timestamp of the event
-*   exitCode (int): expected exit code
+ * Struct to save an atomic event in the trace
+ * Fields:
+ *   tpost (int): The timestamp of the event
+ *   exitCode (int): expected exit code
  */
 type TraceElementReplay struct {
 	tPost    int
@@ -29,21 +28,18 @@ type TraceElementReplay struct {
 
 /*
  * Create an end of replay event
- * MARK: New
  * Args:
- *   t (string): The timestamp of the event
- *   exitCode (int): The exit code of the event
+ * 	t (string): The timestamp of the event
+ * 	exitCode (int): The exit code of the event
  */
 func AddTraceElementReplay(t int, exitCode int) error {
 	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
 
-// MARK: Getter
-
 /*
  * Get the id of the element
  * Returns:
- *   int: The id of the element
+ * 	int: The id of the element
  */
 func (er *TraceElementReplay) GetID() int {
 	return 0
@@ -52,7 +48,7 @@ func (er *TraceElementReplay) GetID() int {
 /*
  * Get the routine of the element
  * Returns:
- *   int: The routine of the element
+ * 	int: The routine of the element
  */
 func (er *TraceElementReplay) GetRoutine() int {
 	return 1
@@ -60,7 +56,7 @@ func (er *TraceElementReplay) GetRoutine() int {
 
 /*
  * Get the tpost of the element.
- *   int: The tpost of the element
+ * 	int: The tpost of the element
  */
 func (er *TraceElementReplay) GetTPre() int {
 	return er.tPost
@@ -69,7 +65,7 @@ func (er *TraceElementReplay) GetTPre() int {
 /*
  * Get the tpost of the element.
  * Returns:
- *   int: The tpost of the element
+ * 	int: The tpost of the element
  */
 func (er *TraceElementReplay) GetTPost() int {
 	return er.tPost
@@ -78,7 +74,7 @@ func (er *TraceElementReplay) GetTPost() int {
 /*
  * Get the timer, ther is used for the sorting of the trace
  * Returns:
- *   int: The timer of the element
+ * 	int: The timer of the element
  */
 func (er *TraceElementReplay) GetTSort() int {
 	return er.tPost
@@ -87,7 +83,7 @@ func (er *TraceElementReplay) GetTSort() int {
 /*
  * Get the position of the operation.
  * Returns:
- *   string: The file of the element
+ * 	string: The file of the element
  */
 func (er *TraceElementReplay) GetPos() string {
 	return ""
@@ -108,7 +104,7 @@ func (er *TraceElementReplay) GetLine() int {
 /*
  * Get the tID of the element.
  * Returns:
- *   string: The tID of the element
+ * 	string: The tID of the element
  */
 func (er *TraceElementReplay) GetTID() string {
 	return ""
@@ -117,7 +113,7 @@ func (er *TraceElementReplay) GetTID() string {
 /*
  * Dummy function to implement the interface
  * Returns:
- *   VectorClock: The vector clock of the element
+ * 	VectorClock: The vector clock of the element
  */
 func (er *TraceElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
@@ -146,12 +142,10 @@ func (er *TraceElementReplay) GetTraceIndex() (int, int) {
 	return -1, -1
 }
 
-// MARK: Setter
-
 /*
  * Set the tPre and tPost of the element
  * Args:
- *   time (int): The tPre and tPost of the element
+ * 	time (int): The tPre and tPost of the element
  */
 func (mu *TraceElementReplay) SetT(time int) {
 	mu.tPost = time
@@ -160,7 +154,7 @@ func (mu *TraceElementReplay) SetT(time int) {
 /*
  * Set the tpre of the element.
  * Args:
- *   tPre (int): The tpre of the element
+ * 	tPre (int): The tpre of the element
  */
 func (mu *TraceElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
@@ -170,7 +164,7 @@ func (mu *TraceElementReplay) SetTPre(tPre int) {
 /*
  * Set the timer, ther is used for the sorting of the trace
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (er *TraceElementReplay) SetTSort(tSort int) {
 	tSort = max(1, tSort)
@@ -182,7 +176,7 @@ func (er *TraceElementReplay) SetTSort(tSort int) {
  * Set the timer, ther is used for the sorting of the trace, only if the original
  * value was not 0
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
@@ -192,9 +186,8 @@ func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 
 /*
  * Get the simple string representation of the element.
- * MARK: ToString
  * Returns:
- *   string: The simple string representation of the element
+ * 	string: The simple string representation of the element
  */
 func (er *TraceElementReplay) ToString() string {
 	res := "X," + strconv.Itoa(er.tPost) + "," + strconv.Itoa(er.exitCode)
@@ -203,18 +196,15 @@ func (er *TraceElementReplay) ToString() string {
 
 /*
  * Update and calculate the vector clock of the element
- * MARK: VectorClock
  */
 func (er *TraceElementReplay) updateVectorClock() {
 	// nothing to do
 }
 
-// MARK: Copy
-
 /*
  * Create a copy of the element
  * Returns:
- *   TraceElement: The copy of the element
+ * 	TraceElement: The copy of the element
  */
 func (er *TraceElementReplay) Copy() TraceElement {
 	return &TraceElementReplay{
@@ -223,19 +213,22 @@ func (er *TraceElementReplay) Copy() TraceElement {
 	}
 }
 
-// MARK: GoPie
+// Dummy function for traceElement
 func (er *TraceElementReplay) AddRel1(_ TraceElement, _ int) {
 	return
 }
 
+// Dummy function for traceElement
 func (er *TraceElementReplay) AddRel2(_ TraceElement) {
 	return
 }
 
+// Dummy function for traceElement
 func (er *TraceElementReplay) GetRel1() []TraceElement {
 	return make([]TraceElement, 0)
 }
 
+// Dummy function for traceElement
 func (er *TraceElementReplay) GetRel2() []TraceElement {
 	return make([]TraceElement, 0)
 }

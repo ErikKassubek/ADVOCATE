@@ -32,7 +32,6 @@ const (
 
 /*
 * TraceElementChannel is a trace element for a channel
-* MARK: Struct
 * Fields:
 *   index (int): Index in the routine
 *   routine (int): The routine id
@@ -73,7 +72,6 @@ type TraceElementChannel struct {
 
 /*
 * Create a new channel trace element
-* MARK: New
 * Args:
 *   routine (int): The routine id
 *   tPre (string): The timestamp at the start of the event
@@ -183,8 +181,6 @@ func AddTraceElementChannel(routine int, tPre string,
 	return nil
 }
 
-// MARK: Getter
-
 /*
 * Get the partner of the channel operation
 * Returns:
@@ -197,7 +193,7 @@ func (ch *TraceElementChannel) GetPartner() *TraceElementChannel {
 /*
  * Get the id of the element
  * Returns:
- *   int: The id of the element
+ * 	int: The id of the element
  */
 func (ch *TraceElementChannel) GetID() int {
 	return ch.id
@@ -206,7 +202,7 @@ func (ch *TraceElementChannel) GetID() int {
 /*
 	* Get the routine of the element
  * Returns:
- *   int: The routine of the element
+ * 	int: The routine of the element
 */
 func (ch *TraceElementChannel) GetRoutine() int {
 	return ch.routine
@@ -215,7 +211,7 @@ func (ch *TraceElementChannel) GetRoutine() int {
 /*
  * Get the tpre of the element
  * Returns:
- *   int: The tpre of the element
+ * 	int: The tpre of the element
  */
 func (ch *TraceElementChannel) GetTPre() int {
 	return ch.tPre
@@ -224,7 +220,7 @@ func (ch *TraceElementChannel) GetTPre() int {
 /*
  * Get the timer, that is used for the sorting of the trace
  * Returns:
- *   float32: The time of the element
+ * 	float32: The time of the element
  */
 func (ch *TraceElementChannel) GetTSort() int {
 	if ch.tPost == 0 {
@@ -236,20 +232,35 @@ func (ch *TraceElementChannel) GetTSort() int {
 /*
  * Get the position of the operation.
  * Returns:
- *   string: The position of the element
+ * 	string: The position of the element
  */
 func (ch *TraceElementChannel) GetPos() string {
 	return fmt.Sprintf("%s:%d", ch.file, ch.line)
 }
 
+/*
+ * Get the replay id of the element
+ * Returns:
+ * 	The replay id
+ */
 func (ch *TraceElementChannel) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", ch.routine, ch.file, ch.line)
 }
 
+/*
+ * Get the file of the element
+ * Returns:
+ * 	The file of the element
+ */
 func (ch *TraceElementChannel) GetFile() string {
 	return ch.file
 }
 
+/*
+ * Get the line of the element
+ * Returns:
+ * 	The line of the element
+ */
 func (ch *TraceElementChannel) GetLine() int {
 	return ch.line
 }
@@ -257,7 +268,7 @@ func (ch *TraceElementChannel) GetLine() int {
 /*
  * Get the tID of the element.
  * Returns:
- *   string: The tID of the element
+ * 	string: The tID of the element
  */
 func (ch *TraceElementChannel) GetTID() string {
 	return ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
@@ -266,7 +277,7 @@ func (ch *TraceElementChannel) GetTID() string {
 /*
  * Get the oID of the element
  * Returns:
- *   int: The oID of the element
+ * 	int: The oID of the element
  */
 func (ch *TraceElementChannel) GetOID() int {
 	return ch.oID
@@ -275,7 +286,7 @@ func (ch *TraceElementChannel) GetOID() int {
 /*
  * Check if the channel operation is buffered
  * Returns:
- *   bool: Whether the channel operation is buffered
+ * 	bool: Whether the channel operation is buffered
  */
 func (ch *TraceElementChannel) IsBuffered() bool {
 	return ch.qSize != 0
@@ -284,7 +295,7 @@ func (ch *TraceElementChannel) IsBuffered() bool {
 /*
  * Get the type of the operation
  * Returns:
- *   OpChannel: The type of the operation
+ * 	OpChannel: The type of the operation
  */
 func (ch *TraceElementChannel) Operation() OpChannel {
 	return ch.opC
@@ -293,12 +304,17 @@ func (ch *TraceElementChannel) Operation() OpChannel {
 /*
  * Get the vector clock of the element
  * Returns:
- *   VectorClock: The vector clock of the element
+ * 	VectorClock: The vector clock of the element
  */
 func (ch *TraceElementChannel) GetVC() *clock.VectorClock {
 	return ch.vc
 }
 
+/*
+ * Get the weak vector clock of the element
+ * Returns:
+ * 	VectorClock: The vector clock of the element
+ */
 func (ch *TraceElementChannel) GetwVc() *clock.VectorClock {
 	return ch.wVc
 }
@@ -306,7 +322,7 @@ func (ch *TraceElementChannel) GetwVc() *clock.VectorClock {
 /*
  * Get the tpost of the element
  * Returns:
- *   int: The tpost of the element
+ * 	int: The tpost of the element
  */
 func (ch *TraceElementChannel) GetTPost() int {
 	return ch.tPost
@@ -314,6 +330,10 @@ func (ch *TraceElementChannel) GetTPost() int {
 
 /*
  * Get the string representation of the object type
+ * Args:
+ * 	operation (bool): if true get the operation code, otherwise only the primitive code
+ * Returns:
+ * 	string: the object type
  */
 func (ch *TraceElementChannel) GetObjType(operation bool) string {
 	if !operation {
@@ -331,28 +351,48 @@ func (ch *TraceElementChannel) GetObjType(operation bool) string {
 	return ObjectTypeChannel
 }
 
+/*
+ * Get the number of elems in the queue after the operation
+ * Returns:
+ * 	VectorClock: The number of elems in the queue after the operation
+ */
 func (ch *TraceElementChannel) GetQCount() int {
 	return ch.qCount
 }
 
+/*
+ * Get the select the element is a part of
+ * Returns:
+ * 	VectorClock: The select the element is a part of, if not in select it is nil
+ */
 func (ch *TraceElementChannel) GetSelect() *TraceElementSelect {
 	return ch.sel
 }
 
+/*
+ * Given a trace element, check if it is equal to this element
+ * Args:
+ * 	elem (TraceElement): The element to check against
+ * Returns:
+ * 	bool: true if it is the same operation, false otherwise
+ */
 func (ch *TraceElementChannel) IsEqual(elem TraceElement) bool {
 	return ch.routine == elem.GetRoutine() && ch.ToString() == elem.ToString()
 }
 
+/*
+ * Get the trace local index of the element in the trace
+ * Returns:
+ * 	VectorClock: The trace local index of the element in the trace
+ */
 func (ch *TraceElementChannel) GetTraceIndex() (int, int) {
 	return ch.routine, ch.index
 }
 
-// MARK: Setter
-
 /*
  * Set the tPre and tPost of the element
  * Args:
- *   time (int): The tPre and tPost of the element
+ * 	time (int): The tPre and tPost of the element
  */
 func (ch *TraceElementChannel) SetT(time int) {
 	ch.tPre = time
@@ -362,7 +402,7 @@ func (ch *TraceElementChannel) SetT(time int) {
 /*
  * Set the partner of the channel operation
  * Args:
- *   partner (*TraceElementChannel): The partner of the channel operation
+ * 	partner (*TraceElementChannel): The partner of the channel operation
  */
 func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
 	ch.partner = partner
@@ -371,7 +411,7 @@ func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
 /*
 * Set the tpre of the element.
 * Args:
- *   tPre (int): The tpre of the element
+ * 	tPre (int): The tpre of the element
 */
 func (ch *TraceElementChannel) SetTPre(tPre int) {
 	ch.tPre = tPre
@@ -387,7 +427,7 @@ func (ch *TraceElementChannel) SetTPre(tPre int) {
 /*
 * Set the tpre of the element. Do not set the tpre of the select operation
 * Args:
- *   tPre (int): The tpre of the element
+ * 	tPre (int): The tpre of the element
 */
 func (ch *TraceElementChannel) SetTPre2(tPre int) {
 	ch.tPre = tPre
@@ -399,7 +439,7 @@ func (ch *TraceElementChannel) SetTPre2(tPre int) {
 /*
  * Set the tpost of the element.
  * Args:
- *   tPost (int): The tpost of the element
+ * 	tPost (int): The tpost of the element
  */
 func (ch *TraceElementChannel) SetTPost(tPost int) {
 	ch.tPost = tPost
@@ -411,7 +451,7 @@ func (ch *TraceElementChannel) SetTPost(tPost int) {
 /*
  * Set the tpost of the element. Do not set the tpost of the select operation
  * Args:
- *   tPost (int): The tpost of the element
+ * 	tPost (int): The tpost of the element
  */
 func (ch *TraceElementChannel) SetTPost2(tPost int) {
 	ch.tPost = tPost
@@ -420,7 +460,7 @@ func (ch *TraceElementChannel) SetTPost2(tPost int) {
 /*
  * Set the timer, that is used for the sorting of the trace
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (ch *TraceElementChannel) SetTSort(tpost int) {
 	ch.SetTPre(tpost)
@@ -434,7 +474,7 @@ func (ch *TraceElementChannel) SetTSort(tpost int) {
 /*
  * Set the timer, that is used for the sorting of the trace. Do not set the tpost of the select operation
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (ch *TraceElementChannel) SetTSort2(tpost int) {
 	ch.SetTPre(tpost)
@@ -445,7 +485,7 @@ func (ch *TraceElementChannel) SetTSort2(tpost int) {
  * Set the timer, that is used for the sorting of the trace, only if the original
  * value was not 0
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
 	ch.SetTPre(tSort)
@@ -462,7 +502,7 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
  * Set the timer, that is used for the sorting of the trace, only if the original
  * value was not 0. Do not set the tpost of the select operation
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
 	ch.SetTPre(tSort)
@@ -474,18 +514,16 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
 /*
  * Set the oID of the element
  * Args:
- *   oID (int): The oID of the element
+ * 	oID (int): The oID of the element
  */
 func (ch *TraceElementChannel) SetOID(oID int) {
 	ch.oID = oID
 }
 
-// MARK: ToString
-
 /*
  * Get the simple string representation of the element
  * Returns:
- *   string: The simple string representation of the element
+ * 	string: The simple string representation of the element
  */
 func (ch *TraceElementChannel) ToString() string {
 	return ch.toStringSep(",", true)
@@ -494,10 +532,10 @@ func (ch *TraceElementChannel) ToString() string {
 /*
  * Get the simple string representation of the element
  * Args:
- *   sep (string): The separator between the values
- *   pos (bool): Whether the position should be included
+ * 	sep (string): The separator between the values
+ * 	pos (bool): Whether the position should be included
  * Returns:
- *   string: The simple string representation of the element
+ * 	string: The simple string representation of the element
  */
 func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 	op := ""
@@ -529,8 +567,7 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 var second = false
 
 /*
- * Update and calculate the vector clock of the element
- * MARK: Vector Clock
+ * Store and update the vector clock of the element
  */
 func (ch *TraceElementChannel) updateVectorClock() {
 	timer.Start(timer.AnaHb)
@@ -625,9 +662,8 @@ func (ch *TraceElementChannel) updateVectorClock() {
 
 /*
  * Find the partner of the channel operation
- * MARK: Partner
  * Returns:
- *   int: The routine id of the partner, -1 if no partner was found
+ * 	int: The routine id of the partner, -1 if no partner was found
  */
 func (ch *TraceElementChannel) findPartner() int {
 
@@ -671,12 +707,10 @@ func (ch *TraceElementChannel) findPartner() int {
 	return -1
 }
 
-// MARK: Copy
-
 /*
  * Create a copy of the channel element
  * Returns:
- *   TraceElement: The copy of the element
+ * 	TraceElement: The copy of the element
  */
 func (ch *TraceElementChannel) Copy() TraceElement {
 	newCh := TraceElementChannel{
@@ -695,11 +729,20 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),
 		wVc:     ch.wVc.Copy(),
+		rel1:    ch.rel1,
+		rel2:    ch.rel1,
 	}
 	return &newCh
 }
 
-// MARK: GoPie
+// ========= For GoPie fuzzing ===========
+
+/*
+ * Add an element to the rel1 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ * 	pos (int): before (0) or after (1)
+ */
 func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -707,14 +750,29 @@ func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 	ch.rel1[pos] = elem
 }
 
+/*
+ * Add an element to the rel2 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ */
 func (ch *TraceElementChannel) AddRel2(elem TraceElement) {
 	ch.rel2 = append(ch.rel2, elem)
 }
 
+/*
+ * Return the rel1 set
+ * Returns:
+ * 	[]*TraceElement: the rel1 set
+ */
 func (ch *TraceElementChannel) GetRel1() []TraceElement {
 	return ch.rel1
 }
 
+/*
+ * Return the rel2 set
+ * Returns:
+ * 	[]*TraceElement: the rel2 set
+ */
 func (ch *TraceElementChannel) GetRel2() []TraceElement {
 	return ch.rel2
 }

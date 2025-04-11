@@ -24,10 +24,9 @@ import (
  * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
  * If so, add an error or warning to the result.
  * If not, add to leakingChannels, for later check.
- * MARK: Channel Stuck
  * Args:
- *   ch (*TraceElementChannel): The trace element
- *   vc (VectorClock): The vector clock of the operation
+ * 	ch (*TraceElementChannel): The trace element
+ * 	vc (VectorClock): The vector clock of the operation
  */
 //  func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
 func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
@@ -139,13 +138,12 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
  * Run for channel operation with a post event. Check if the operation would be
  * possible communication partner for a stuck operation in leakingChannels.
  * If so, add an error or warning to the result and remove the stuck operation.
- * MARK: ChannelRun
  * Args:
- *   routineID (int): The routine id
- *   objID (int): The channel id
- *   vc (VectorClock): The vector clock of the operation
- *   opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
- *   buffered (bool): If the channel is buffered
+ * 	routineID (int): The routine id
+ * 	objID (int): The channel id
+ * 	vc (VectorClock): The vector clock of the operation
+ * 	opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
+ * 	buffered (bool): If the channel is buffered
  */
 func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType int, buffered bool) bool {
 	timer.Start(timer.AnaLeak)
@@ -394,13 +392,12 @@ func checkForLeak() {
  * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
  * If so, add an error or warning to the result.
  * If not, add all elements to leakingChannels, for later check.
- * MARK: SelectStuck
  * Args:
- *   se (*TraceElementSelect): The trace element
- *   ids (int): The channel ids
- *   buffered ([]bool): If the channels are buffered
- *   vc (*VectorClock): The vector clock of the operation
- *   opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
+ * 	se (*TraceElementSelect): The trace element
+ * 	ids (int): The channel ids
+ * 	buffered ([]bool): If the channels are buffered
+ * 	vc (*VectorClock): The vector clock of the operation
+ * 	opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
  */
 func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
 	timer.Start(timer.AnaLeak)
@@ -513,9 +510,8 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 
 /*
  * Run for mutex operation without a post event. Show an error in the results
- * MARK: Mutex
  * Args:
- *   mu (*TraceElementMutex): The trace element
+ * 	mu (*TraceElementMutex): The trace element
  */
 func CheckForLeakMutex(mu *TraceElementMutex) {
 	timer.Start(timer.AnaLeak)
@@ -564,9 +560,9 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 /*
  * Add the most recent acquire operation for a mutex
  * Args:
- *   mu (*TraceElementMutex): The trace element
- *   vc (VectorClock): The vector clock of the operation
- *   op (int): The operation on the mutex
+ * 	mu (*TraceElementMutex): The trace element
+ * 	vc (VectorClock): The vector clock of the operation
+ * 	op (int): The operation on the mutex
  */
 func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op int) {
 	timer.Start(timer.AnaLeak)
@@ -577,9 +573,8 @@ func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op 
 
 /*
  * Run for wait group operation without a post event. Show an error in the results
- * MARK: WaitGroup
  * Args:
- *   wa (*TraceElementWait): The trace element
+ * 	wa (*TraceElementWait): The trace element
  */
 func CheckForLeakWait(wa *TraceElementWait) {
 	timer.Start(timer.AnaLeak)
@@ -600,9 +595,8 @@ func CheckForLeakWait(wa *TraceElementWait) {
 
 /*
  * Run for conditional varable operation without a post event. Show an error in the results
- * MARK: Cond
  * Args:
- *   co (*TraceElementCond): The trace element
+ * 	co (*TraceElementCond): The trace element
  */
 func CheckForLeakCond(co *TraceElementCond) {
 	timer.Start(timer.AnaLeak)

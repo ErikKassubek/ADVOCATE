@@ -19,8 +19,8 @@ import (
 /*
  * Create a new wg if needed
  * Args:
- *   index (int): The id of the wait group
- *   nRout (int): The number of routines in the trace
+ * 	index (int): The id of the wait group
+ * 	nRout (int): The number of routines in the trace
  */
 func newWg(index int, nRout int) {
 	if _, ok := lastChangeWG[index]; !ok {
@@ -31,7 +31,7 @@ func newWg(index int, nRout int) {
 /*
  * Calculate the new vector clock for a add or done operation and update cv
  * Args:
- *   wa (*TraceElementWait): The trace element
+ * 	wa (*TraceElementWait): The trace element
  */
 func Change(wa *TraceElementWait) {
 	timer.Start(timer.AnaHb)
@@ -53,7 +53,7 @@ func Change(wa *TraceElementWait) {
 /*
  * Calculate the new vector clock for a wait operation and update cv
  * Args:
- *   wa (*TraceElementWait): The trace element
+ * 	wa (*TraceElementWait): The trace element
  */
 func Wait(wa *TraceElementWait) {
 	timer.Start(timer.AnaHb)

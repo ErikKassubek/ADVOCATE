@@ -62,7 +62,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 		}
 
 		for _, line := range lines {
-			if !utils.ContainsInt(traceElems[file], line) {
+			if !utils.Contains(traceElems[file], line) {
 				if _, ok := res[file]; !ok {
 					res[file] = make([]int, 0)
 				}

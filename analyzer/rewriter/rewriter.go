@@ -21,15 +21,15 @@ import (
 /*
  * Create a new trace from the given bug
  * Args:
- *   trace (*analysis.Trace): Pointer to the trace to rewrite
- *   bug (Bug): The bug to create a trace for
- *   rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
- *   retwriteOnce (bool): skip double bugs
+ * 	trace (*analysis.Trace): Pointer to the trace to rewrite
+ * 	bug (Bug): The bug to create a trace for
+ * 	rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
+ * 	retwriteOnce (bool): skip double bugs
  * Returns:
- *   bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
- *   skip: true if the rewrite can be skipped, because it was rewritten before
- *   code: expected exit code
- *   error: An error if the trace could not be created
+ * 	bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
+ * 	skip: true if the rewrite can be skipped, because it was rewritten before
+ * 	code: expected exit code
+ * 	error: An error if the trace could not be created
  */
 func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
 	if rewriteOnce {
@@ -37,7 +37,7 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 		if _, ok := rewrittenBugs[bug.Type]; !ok {
 			rewrittenBugs[bug.Type] = make([]string, 0)
 		} else {
-			if utils.ContainsString((rewrittenBugs)[bug.Type], bugString) {
+			if utils.Contains((rewrittenBugs)[bug.Type], bugString) {
 				return false, true, 0, nil
 			}
 		}

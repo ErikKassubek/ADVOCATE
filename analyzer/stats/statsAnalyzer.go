@@ -60,12 +60,12 @@ func getNewDataMapMap() map[string]map[string]int {
 /*
  * Parse the analyzer and replay output to collect the corresponding information
  * Args:
- *     pathToResults (string): path to the advocateResult folder
- *     fuzzing (int): number of fuzzing run, -1 for not fuzzing
+ * 	  pathToResults (string): path to the advocateResult folder
+ * 	  fuzzing (int): number of fuzzing run, -1 for not fuzzing
  * Returns:
- *     map[string]int: map with total information
- *     map[string]int: map with unique information
- *     error
+ * 	  map[string]int: map with total information
+ * 	  map[string]int: map with unique information
+ * 	  error
  */
 func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
 	// reset foundBugs
@@ -160,11 +160,11 @@ func (pb *processedBug) getKey() string {
 /*
  * Parse a bug file to get the information
  * Args:
- *     filePath (string): path to the bug file
- *     resTotal (map[string]map[string]int): total results
- *     resUnique (map[string]map[string]int): unique results
+ * 	  filePath (string): path to the bug file
+ * 	  resTotal (map[string]map[string]int): total results
+ * 	  resUnique (map[string]map[string]int): unique results
  * Returns:
- *     error
+ * 	  error
  */
 func processBugFile(filePath string, foundBugs map[string]processedBug,
 	resTotal map[string]map[string]int, resUnique map[string]map[string]int) error {

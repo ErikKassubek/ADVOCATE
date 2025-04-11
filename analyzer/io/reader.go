@@ -29,12 +29,12 @@ import (
 /*
  * Create the trace from all files in a folder.
  * Args:
- *   filePath (string): The path to the folder
- *   ignoreAtomics (bool): If atomic operations should be ignored
+ * 	filePath (string): The path to the folder
+ * 	ignoreAtomics (bool): If atomic operations should be ignored
  * Returns:
- *   int: The number of routines
- *   int: The number of elements
- *   error: An error if the trace could not be created
+ * 	int: The number of routines
+ * 	int: The number of elements
+ * 	error: An error if the trace could not be created
  */
 func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, error) {
 	timer.Start(timer.Io)
@@ -137,11 +137,11 @@ func getTraceInfoFromFile(filePath string) error {
 /*
  * Read and build the trace from a file
  * Args:
- *   filePath (string): The path to the log file
- *   routine (int): The routine id
- *   ignoreAtomics (bool): If atomic operations should be ignored
+ * 	filePath (string): The path to the log file
+ * 	routine (int): The routine id
+ * 	ignoreAtomics (bool): If atomic operations should be ignored
  * Returns:
- *   int: number of elements
+ * 	int: number of elements
  *	 error: An error if the trace could not be created
  */
 func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int, error) {
@@ -171,11 +171,11 @@ func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int,
 /*
  * Process one element from the log file.
  * Args:
- *   element (string): The element to process
- *   routine (int): The routine id, equal to the line number
- *   ignoreAtomics (bool): If atomic operations should be ignored
+ * 	element (string): The element to process
+ * 	routine (int): The routine id, equal to the line number
+ * 	ignoreAtomics (bool): If atomic operations should be ignored
  * Returns:
- *   error: An error if the element could not be processed
+ * 	error: An error if the element could not be processed
  */
 func processElement(element string, routine int, ignoreAtomics bool) error {
 	if element == "" {

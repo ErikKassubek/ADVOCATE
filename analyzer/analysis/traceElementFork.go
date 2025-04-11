@@ -18,14 +18,13 @@ import (
 )
 
 /*
-* TraceElementFork is a trace element for a go statement
-* MARK: Struct
-* Fields:
-*   index (int): Index in the routine
-*   routine (int): The routine id
-*   tpost (int): The timestamp at the end of the event
-*   id (int): The id of the new go statement
-*   file (string), line(int): The position of the trace element in the file
+ * TraceElementFork is a trace element for a go statement
+ * Fields:
+ *   index (int): Index in the routine
+ *   routine (int): The routine id
+ *   tpost (int): The timestamp at the end of the event
+ *   id (int): The id of the new go statement
+ *   file (string), line(int): The position of the trace element in the file
  */
 type TraceElementFork struct {
 	index   int
@@ -42,12 +41,11 @@ type TraceElementFork struct {
 
 /*
  * Create a new go statement trace element
- * MARK: New
  * Args:
- *   routine (int): The routine id
- *   tPost (string): The timestamp at the end of the event
- *   id (string): The id of the new routine
- *   pos (string): The position of the trace element in the file
+ * 	routine (int): The routine id
+ * 	tPost (string): The timestamp at the end of the event
+ * 	id (string): The id of the new routine
+ * 	pos (string): The position of the trace element in the file
  */
 func AddTraceElementFork(routine int, tPost string, id string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
@@ -81,12 +79,10 @@ func AddTraceElementFork(routine int, tPost string, id string, pos string) error
 	return nil
 }
 
-// MARK Getter
-
 /*
  * Get the id of the element
  * Returns:
- *   int: The id of the element
+ * 	int: The id of the element
  */
 func (fo *TraceElementFork) GetID() int {
 	return fo.id
@@ -95,7 +91,7 @@ func (fo *TraceElementFork) GetID() int {
 /*
  * Get the routine of the element
  * Returns:
- *   int: The routine of the element
+ * 	int: The routine of the element
  */
 func (fo *TraceElementFork) GetRoutine() int {
 	return fo.routine
@@ -104,7 +100,7 @@ func (fo *TraceElementFork) GetRoutine() int {
 /*
  * Get the tpre of the element. For atomic elements, tpre and tpost are the same
  * Returns:
- *   int: The tpre of the element
+ * 	int: The tpre of the element
  */
 func (fo *TraceElementFork) GetTPre() int {
 	return fo.tPost
@@ -113,7 +109,7 @@ func (fo *TraceElementFork) GetTPre() int {
 /*
  * Get the tpost of the element. For atomic elements, tpre and tpost are the same
  * Returns:
- *   int: The tpost of the element
+ * 	int: The tpost of the element
  */
 func (fo *TraceElementFork) GetTPost() int {
 	return fo.tPost
@@ -122,7 +118,7 @@ func (fo *TraceElementFork) GetTPost() int {
 /*
  * Get the timer, that is used for the sorting of the trace
  * Returns:
- *   int: The timer of the element
+ * 	int: The timer of the element
  */
 func (fo *TraceElementFork) GetTSort() int {
 	return fo.tPost
@@ -131,20 +127,35 @@ func (fo *TraceElementFork) GetTSort() int {
 /*
  * Get the position of the operation.
  * Returns:
- *   string: The position of the element
+ * 	string: The position of the element
  */
 func (fo *TraceElementFork) GetPos() string {
 	return fmt.Sprintf("%s:%d", fo.file, fo.line)
 }
 
+/*
+ * Get the replay id of the element
+ * Returns:
+ * 	The replay id
+ */
 func (fo *TraceElementFork) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", fo.routine, fo.file, fo.line)
 }
 
+/*
+ * Get the file of the element
+ * Returns:
+ * 	The file of the element
+ */
 func (fo *TraceElementFork) GetFile() string {
 	return fo.file
 }
 
+/*
+ * Get the rline of the element
+ * Returns:
+ * 	The line of the element
+ */
 func (fo *TraceElementFork) GetLine() int {
 	return fo.line
 }
@@ -152,7 +163,7 @@ func (fo *TraceElementFork) GetLine() int {
 /*
  * Get the tID of the element.
  * Returns:
- *   string: The tID of the element
+ * 	string: The tID of the element
  */
 func (fo *TraceElementFork) GetTID() string {
 	return fo.GetPos() + "@" + strconv.Itoa(fo.tPost)
@@ -161,12 +172,17 @@ func (fo *TraceElementFork) GetTID() string {
 /*
  * Get the vector clock of the element
  * Returns:
- *   VectorClock: The vector clock of the element
+ * 	VectorClock: The vector clock of the element
  */
 func (fo *TraceElementFork) GetVC() *clock.VectorClock {
 	return fo.vc
 }
 
+/*
+ * Get the weak vector clock of the element
+ * Returns:
+ * 	VectorClock: The vector clock of the element
+ */
 func (fo *TraceElementFork) GetwVc() *clock.VectorClock {
 	return fo.wVc
 }
@@ -181,20 +197,30 @@ func (fo *TraceElementFork) GetObjType(operation bool) string {
 	return ObjectTypeFork
 }
 
+/*
+ * Given a trace element, check if it is equal to this element
+ * Args:
+ * 	elem (TraceElement): The element to check against
+ * Returns:
+ * 	bool: true if it is the same operation, false otherwise
+ */
 func (fo *TraceElementFork) IsEqual(elem TraceElement) bool {
 	return fo.routine == elem.GetRoutine() && fo.ToString() == elem.ToString()
 }
 
+/*
+ * Get the trace local index of the element in the trace
+ * Returns:
+ * 	VectorClock: The trace local index of the element in the trace
+ */
 func (fo *TraceElementFork) GetTraceIndex() (int, int) {
 	return fo.routine, fo.index
 }
 
-// MARK: Setter
-
 /*
  * Set the tPre and tPost of the element
  * Args:
- *   time (int): The tPre and tPost of the element
+ * 	time (int): The tPre and tPost of the element
  */
 func (fo *TraceElementFork) SetT(time int) {
 	fo.tPost = time
@@ -203,7 +229,7 @@ func (fo *TraceElementFork) SetT(time int) {
 /*
  * Set the tpre of the element.
  * Args:
- *   tPre (int): The tpre of the element
+ * 	tPre (int): The tpre of the element
  */
 func (fo *TraceElementFork) SetTPre(tPre int) {
 	fo.tPost = tPre
@@ -212,7 +238,7 @@ func (fo *TraceElementFork) SetTPre(tPre int) {
 /*
  * Set the timer, that is used for the sorting of the trace
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (fo *TraceElementFork) SetTSort(tpost int) {
 	fo.SetTPre(tpost)
@@ -223,7 +249,7 @@ func (fo *TraceElementFork) SetTSort(tpost int) {
  * Set the timer, that is used for the sorting of the trace, only if the original
  * value was not 0
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (fo *TraceElementFork) SetTWithoutNotExecuted(tSort int) {
 	fo.SetTPre(tSort)
@@ -234,9 +260,8 @@ func (fo *TraceElementFork) SetTWithoutNotExecuted(tSort int) {
 
 /*
  * Get the simple string representation of the element
- * MARK: ToString
  * Returns:
- *   string: The simple string representation of the element
+ * 	string: The simple string representation of the element
  */
 func (fo *TraceElementFork) ToString() string {
 	return "G" + "," + strconv.Itoa(fo.tPost) + "," + strconv.Itoa(fo.id) +
@@ -245,7 +270,6 @@ func (fo *TraceElementFork) ToString() string {
 
 /*
  * Update and calculate the vector clock of the element
- * MARK: VectorClock
  */
 func (fo *TraceElementFork) updateVectorClock() {
 	fo.vc = currentVC[fo.routine].Copy()
@@ -257,7 +281,7 @@ func (fo *TraceElementFork) updateVectorClock() {
 /*
  * Copy the element
  * Returns:
- *   TraceElement: The copy of the element
+ * 	TraceElement: The copy of the element
  */
 func (fo *TraceElementFork) Copy() TraceElement {
 	return &TraceElementFork{
@@ -269,10 +293,19 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		line:    fo.line,
 		vc:      fo.vc.Copy(),
 		wVc:     fo.wVc.Copy(),
+		rel1:    fo.rel1,
+		rel2:    fo.rel2,
 	}
 }
 
-// MARK: GoPie
+// ========= For GoPie fuzzing ===========
+
+/*
+ * Add an element to the rel1 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ * 	pos (int): before (0) or after (1)
+ */
 func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -280,14 +313,29 @@ func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 	fo.rel1[pos] = elem
 }
 
+/*
+ * Add an element to the rel2 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ */
 func (fo *TraceElementFork) AddRel2(elem TraceElement) {
 	fo.rel2 = append(fo.rel2, elem)
 }
 
+/*
+ * Return the rel1 set
+ * Returns:
+ * 	[]*TraceElement: the rel1 set
+ */
 func (fo *TraceElementFork) GetRel1() []TraceElement {
 	return fo.rel1
 }
 
+/*
+ * Return the rel2 set
+ * Returns:
+ * 	[]*TraceElement: the rel2 set
+ */
 func (fo *TraceElementFork) GetRel2() []TraceElement {
 	return fo.rel2
 }

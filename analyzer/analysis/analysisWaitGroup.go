@@ -22,7 +22,7 @@ import (
 /*
  * Collect all adds and dones for the analysis
  * Args:
- *    wa *TraceElementWait: the trace wait or done element
+ * 	 wa *TraceElementWait: the trace wait or done element
  */
 func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 	timer.Start(timer.AnaWait)
@@ -40,7 +40,7 @@ func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 /*
  * Collect all adds for the analysis
  * Args:
- *    wa *TraceElementWait: the trace wait element
+ * 	 wa *TraceElementWait: the trace wait element
  */
 func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 	// if necessary, create maps and lists
@@ -57,7 +57,7 @@ func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 /*
  * Collect all dones for the analysis
  * Args:
- *    wa *TraceElementWait: the trace done element
+ * 	 wa *TraceElementWait: the trace done element
  */
 func checkForDoneBeforeAddDone(wa *TraceElementWait) {
 	// if necessary, create maps and lists
@@ -98,7 +98,7 @@ func checkForDoneBeforeAdd() {
 			// i-th done in the result message
 
 			for _, add := range wgAdd[id] {
-				if !utils.ContainsString(graph["t"], add.GetTID()) {
+				if !utils.Contains(graph["t"], add.GetTID()) {
 					addsNegWg = append(addsNegWg, add)
 				}
 			}

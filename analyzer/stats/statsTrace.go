@@ -23,11 +23,11 @@ import (
 /*
  * Collect stats about the traces
  * Args:
- *     dataPath (string): path to the result folder
- *     traceID (int): name of trace folder is datapath_traceId
+ * 	  dataPath (string): path to the result folder
+ * 	  traceID (int): name of trace folder is datapath_traceId
  * Returns:
- *     map[string]int: map with the stats
- *     error
+ * 	  map[string]int: map with the stats
+ * 	  error
  */
 func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 	res := map[string]int{
@@ -138,7 +138,7 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			(*stats)["numberOfSpawns"]++
 		case "A":
 			(*stats)["numberAtomicOperations"]++
-			if !utils.ContainsString((*known)["atomic"], fields[2]) {
+			if !utils.Contains((*known)["atomic"], fields[2]) {
 				(*stats)["numberAtomics"]++
 				(*known)["atomic"] = append((*known)["atomic"], fields[2])
 			}
@@ -149,7 +149,7 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			} else {
 				(*stats)["numberBufferedOps"]++
 			}
-			if !utils.ContainsString((*known)["channel"], fields[3]) {
+			if !utils.Contains((*known)["channel"], fields[3]) {
 				(*stats)["numberChannels"]++
 				if fields[7] == "0" {
 					(*stats)["numberUnbufferedChannels"]++
@@ -169,25 +169,25 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			}
 		case "M":
 			(*stats)["numberMutexOperations"]++
-			if !utils.ContainsString((*known)["mutex"], fields[3]) {
+			if !utils.Contains((*known)["mutex"], fields[3]) {
 				(*stats)["numberMutexes"]++
 				(*known)["mutex"] = append((*known)["mutex"], fields[3])
 			}
 		case "W":
 			(*stats)["numberWaitGroupOperations"]++
-			if !utils.ContainsString((*known)["waitGroup"], fields[3]) {
+			if !utils.Contains((*known)["waitGroup"], fields[3]) {
 				(*stats)["numberWaitGroups"]++
 				(*known)["waitGroup"] = append((*known)["waitGroup"], fields[3])
 			}
 		case "O":
 			(*stats)["numberOnceOperations"]++
-			if !utils.ContainsString((*known)["once"], fields[3]) {
+			if !utils.Contains((*known)["once"], fields[3]) {
 				(*stats)["numberOnce"]++
 				(*known)["once"] = append((*known)["once"], fields[3])
 			}
 		case "D":
 			(*stats)["numberCondVarOperations"]++
-			if !utils.ContainsString((*known)["condVar"], fields[3]) {
+			if !utils.Contains((*known)["condVar"], fields[3]) {
 				(*stats)["numberCondVars"]++
 				(*known)["condVar"] = append((*known)["condVar"], fields[3])
 			}

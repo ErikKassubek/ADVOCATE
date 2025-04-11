@@ -21,12 +21,12 @@ import (
 /*
  * Get the info from a TID
  * Args:
- *   tID (string): The TID
+ * 	tID (string): The TID
  * Return:
- *   string: the file
- *   int: the line
- *   int: the tPre
- *   error: the error
+ * 	string: the file
+ * 	int: the line
+ * 	int: the tPre
+ * 	error: the error
  */
 func infoFromTID(tID string) (string, int, int, error) {
 	spilt1 := utils.SplitAtLast(tID, "@")

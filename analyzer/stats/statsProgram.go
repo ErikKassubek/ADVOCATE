@@ -145,10 +145,10 @@ func CreateStatsTotal(pathFolder, progName string) error {
 /*
  * Parse a program to measure the number of files, and number of lines
  * Args:
- *     programPath (string): path to the folder containing the program
+ * 	  programPath (string): path to the folder containing the program
  * Returns:
- *     map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
- *     error
+ * 	  map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
+ * 	  error
  */
 func statsProgram(programPath string) (map[string]int, error) {
 	res := make(map[string]int)
@@ -184,10 +184,10 @@ func statsProgram(programPath string) (map[string]int, error) {
 /*
  * Parse one program file to measure the number of lines
  * Args:
- *     programPath (string): path to the file
+ * 	  programPath (string): path to the file
  * Returns:
- *     map[string]int: map with numberLines, numberNonEmptyLines
- *     error
+ * 	  map[string]int: map with numberLines, numberNonEmptyLines
+ * 	  error
  */
 func parseProgramFile(filePath string) (map[string]int, error) {
 	res := make(map[string]int)

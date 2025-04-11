@@ -33,7 +33,6 @@ import (
  */
 
 // =============== Channel/Select ====================
-// MARK: Channel/Select
 
 /*
  * Rewrite a trace where a leaking unbuffered channel/select with possible partner was found.
@@ -71,9 +70,9 @@ func rewriteUnbufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
  * if both elements are channel operations.
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0].(*analysis.TraceElementChannel)
@@ -135,9 +134,9 @@ func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
  * if a channel is stuck and a select is a possible partner
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0].(*analysis.TraceElementChannel)
@@ -209,9 +208,9 @@ func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
  * if a select is stuck and a channel is a possible partner
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0].(*analysis.TraceElementSelect)
@@ -376,9 +375,9 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
  * Rewrite a trace for a leaking buffered channel
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0]
@@ -420,7 +419,6 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 }
 
 // ================== Mutex ====================
-// MARK: Mutex
 
 /*
  * Rewrite a trace where a leaking mutex was found.
@@ -429,9 +427,9 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
  * rewrite fails. If a rewrite is possible, we try to run the stock lock operation
  * before the last lock operation, so that the mutex is not blocked anymore.
  * We therefore rewrite the trace from
- *   T_1 + [l'] + T_2 + [l] + T_3
+ * 	T_1 + [l'] + T_2 + [l] + T_3
  * to
- *   T_1' + T_2' + [X_s, l, X_e]
+ * 	T_1' + T_2' + [X_s, l, X_e]
  * where l is the stuck lock, l' is the last lock, T_1, T_2, T_3 are the traces
  * before, between and after the locks, T_1' and T_2' are the elements from T_1 and T_2, that
  * are before (HB) l, X_s is the start and X_e is the stop signal, that releases the program from the
@@ -439,9 +437,9 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
  *
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	utils.LogInfo("Start rewriting trace for mutex leak...")
@@ -472,15 +470,14 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 }
 
 // ================== WaitGroup ====================
-// MARK: WaitGroup
 
 /*
  * Rewrite a trace where a leaking waitgroup was found.
  * Args:
  * 	trace (*analysis.Trace): The trace to rewrite
- *   bug (Bug): The bug to create a trace for
+ * 	bug (Bug): The bug to create a trace for
  * Returns:
- *   error: An error if the trace could not be created
+ * 	error: An error if the trace could not be created
  */
 func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	utils.LogInfo("Start rewriting trace for waitgroup leak...")
@@ -505,7 +502,6 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 }
 
 // ================== Cond ====================
-// MARK: Cond
 
 /*
  * Rewrite a trace where a leaking cond was found.

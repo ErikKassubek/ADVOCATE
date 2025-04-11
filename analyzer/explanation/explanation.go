@@ -40,11 +40,11 @@ import (
  * It reads the results of the analysis, the code of the bug elements and the replay info.
  * It then writes all this information into a file.
  * Args:
- *    path: the path to the folder, where the results of the analysis and the trace are stored
- *    index: the index of the bug in the results
- *    ignoreDouble: if true, only write one bug report for each bug
+ * 	 path: the path to the folder, where the results of the analysis and the trace are stored
+ * 	 index: the index of the bug in the results
+ * 	 ignoreDouble: if true, only write one bug report for each bug
  * Returns:
- *    error: if an error occurred
+ * 	 error: if an error occurred
  */
 func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
@@ -112,6 +112,19 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 
 }
 
+/*
+ * Read an result machine file file and get one result
+ * Args:
+ * 	path (string): path to the result file
+ * 	index (int): index of the relevant bug in the file
+ * 	fileWithHeader (string): file that contains the header for the recording
+ * 	headerLine (int): line number of the first line of the header
+ * Returns:
+ * 	string: bug type
+ * 	map[int][]string: bug element positions
+ * 	map[int]string: bug element types
+ * 	error
+ */
 func readAnalysisResults(path string, index int, fileWithHeader string, headerLine int) (string, map[int][]string, map[int]string, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
@@ -182,6 +195,24 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 	return bugType, bugPos, bugElemType, nil
 }
 
+// writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
+// 	replay, progInfo, fuzzing)
+
+/*
+ * Write an bug explanation file
+ * Args:
+  * 	path (string): path where the explanation file should be created
+	* 	index (int): index of the bug file (name is e.g. bug_[index])
+	* 	description (map[string]string): description of the bug, containing e.g. bug/diagnostics, name, explanation
+	* 	positions (map[int][]string): positions of the bug elements
+	* 	bugElemType (map[int]string): types of the bug elements
+	* 	code (map[int][]string): program codes that contains the bug elements
+	* 	replay (map[string]string): information about the replay
+	* 	progInfo (map[string]sting): Info about the prog, e.g. prog/test name
+	* 	fuzzing (int): Fuzzing run number
+	* Returns:
+	* 	error
+*/
 func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
 	replay map[string]string, progInfo map[string]string, fuzzing int) error {

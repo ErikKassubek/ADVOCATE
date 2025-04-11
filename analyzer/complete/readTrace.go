@@ -126,7 +126,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 			}
 
 			for _, line := range lines {
-				if !utils.ContainsInt(res[file], line) {
+				if !utils.Contains(res[file], line) {
 					res[file] = append(res[file], line)
 				}
 			}

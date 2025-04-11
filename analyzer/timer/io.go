@@ -24,9 +24,9 @@ var (
 /*
  * Function to write the time information to a file
  * Args:
- *     progName (string): name of the program
- *     testName (string): name of the test
- *     numberReplay (int): number of replay
+ * 	  progName (string): name of the program
+ * 	  testName (string): name of the test
+ * 	  numberReplay (int): number of replay
  */
 func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 	if !measureTime {

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: readProg.go
-// Brief: Functions to read in a program an extrace all relevant operations
+// Brief: Functions to read in a program an extract all relevant operations
 //
 // Author: Erik Kassubek
 // Created: 2024-06-26
@@ -23,6 +23,16 @@ import (
 	"strings"
 )
 
+/*
+ * Pass over all go files in a program and get the positions of all relevant
+ * primitives and operation on those primitives
+ * Args:
+ * 	progPath (string): path to the project
+ * Returns:
+ * 	map[string][]int: all lines in the code that contain relevant operations.
+ * 		The map has the form filePath -> list of lines in this file
+ * 	error
+ */
 func getProgramElements(progPath string) (map[string][]int, error) {
 	progElems := make(map[string][]int)
 
@@ -73,6 +83,14 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 	return progElems, err
 }
 
+/*
+ * Given a directory, recursively collect all go files
+ * Args:
+ * 	dir (sting): path to the directory
+ * Returns:
+ * 	[]string: paths to all go file in dir
+ * 	error
+ */
 func collectGoFiles(dir string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
@@ -158,7 +176,6 @@ type visitor struct {
 	elements    []int // line numbers
 }
 
-// Visit wird für jeden Knoten im AST aufgerufen.
 func (v *visitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return nil

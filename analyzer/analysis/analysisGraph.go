@@ -26,10 +26,10 @@ import (
  * - edges from all add operations to t
  * - edges from done to add if the add happens before the done
  * Args:
- *   increases (map[int][]*TraceElement): Operations that increase the "counter" (adds and locks)
- *   decreases (map[int][]*TraceElement): Operations that decrease the "counter" (dones and unlocks)
+ * 	increases (map[int][]TraceElement): Operations that increase the "counter" (adds and locks)
+ * 	decreases (map[int][]TraceElement): Operations that decrease the "counter" (dones and unlocks)
  * Returns:
- *   []Edge: The graph
+ * 	[]Edge: The graph
  */
 func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[string][]string {
 	graph := make(map[string][]string, 0)
@@ -63,9 +63,9 @@ func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[
 /*
  * Calculate the maximum flow of a graph using the ford fulkerson algorithm
  * Args:
- *   graph ([]Edge): The graph
+ * 	graph ([]Edge): The graph
  * Returns:
- *   int: The maximum flow
+ * 	int: The maximum flow
  */
 func calculateMaxFlow(graph map[string][]string) (int, map[string][]string, error) {
 	maxFlow := 0
@@ -94,10 +94,10 @@ func calculateMaxFlow(graph map[string][]string) (int, map[string][]string, erro
 /*
  * Find a path in a graph using a breadth-fifoirst search
  * Args:
- *   graph ([]Edge): The graph
+ * 	graph ([]Edge): The graph
  * Returns:
- *   []string: The path
- *   int: The flow
+ * 	[]string: The path
+ * 	int: The flow
  */
 func findPath(graph map[string][]string) ([]string, int) {
 	visited := make(map[string]bool, 0)
@@ -135,10 +135,10 @@ func findPath(graph map[string][]string) ([]string, int) {
 /*
  * Remove an element from a list
  * Args:
- *   list ([]string): The list
- *   element (string): The element to remove
+ * 	list ([]string): The list
+ * 	element (string): The element to remove
  * Returns:
- *   []string: The list without the element
+ * 	[]string: The list without the element
  */
 func remove(list []string, element string) []string {
 	for i, e := range list {

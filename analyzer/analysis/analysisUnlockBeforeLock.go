@@ -22,7 +22,7 @@ import (
 /*
  * Collect all locks for the analysis
  * Args:
- *    mu *TraceElementMutex: the trace mutex element
+ * 	 mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
@@ -38,7 +38,7 @@ func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
 /*
  * Collect all unlocks for the analysis
  * Args:
- *    mu *TraceElementMutex: the trace mutex element
+ * 	 mu *TraceElementMutex: the trace mutex element
  */
 func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
@@ -81,7 +81,7 @@ func checkForUnlockBeforeLock() {
 
 		if maxFlow < nrUnlock {
 			for _, l := range allLocks[id] {
-				if !utils.ContainsString(graph["t"], l.GetTID()) {
+				if !utils.Contains(graph["t"], l.GetTID()) {
 					locks = append(locks, l)
 				}
 			}

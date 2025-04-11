@@ -23,15 +23,15 @@ import (
 /*
  * Insert the header into a main function
  * Args:
- *    fileName (string): path to the main file
- *    replay (bool): true for replay, false for only recording
- *    replayNumber (string): id of the trace to replay
- *    replayTimeout (int): replay for timeout
- *    record (bool): if both replay and record are set, the replay is rerecorded
- *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
- *   fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+ * 	 fileName (string): path to the main file
+ * 	 replay (bool): true for replay, false for only recording
+ * 	 replayNumber (string): id of the trace to replay
+ * 	 replayTimeout (int): replay for timeout
+ * 	 record (bool): if both replay and record are set, the replay is rerecorded
+ * 	 fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
+ * 	fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  * Returns:
- *    error
+ * 	 error
  */
 func headerInserterMain(fileName string, replay bool, replayNumber string,
 	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {
@@ -49,9 +49,9 @@ func headerInserterMain(fileName string, replay bool, replayNumber string,
 /*
  * Remove the header from a file with a header in a main function
  * Args:
- *    fileName (string): name of the file
+ * 	 fileName (string): name of the file
  * Returns:
- *    error
+ * 	 error
  */
 func headerRemoverMain(fileName string) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
@@ -103,10 +103,10 @@ func headerRemoverMain(fileName string) error {
 /*
  * Check if there is a main function in the given file
  * Args:
- *    fileName (string): name of the file
+ * 	 fileName (string): name of the file
  * Returns
- *    bool: true if the file contains a main function, false otherwise
- *    error
+ * 	 bool: true if the file contains a main function, false otherwise
+ * 	 error
  */
 func mainMethodExists(fileName string) (bool, error) {
 	file, err := os.Open(fileName)
@@ -138,15 +138,15 @@ func mainMethodExists(fileName string) (bool, error) {
 /*
  * Add the header into the main file
  * Args:
- *    fileName (string): name of the file containing the main routine
- *    replay (bool): true for replay, false for just recording
- *    replayNumber (int): id of the trace to replay
- *    replayTimeout (int): replay for timeout
- *    record (bool): if both replay and record are set, the replay is rerecorded
- *    fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
- *   fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+ * 	 fileName (string): name of the file containing the main routine
+ * 	 replay (bool): true for replay, false for just recording
+ * 	 replayNumber (int): id of the trace to replay
+ * 	 replayTimeout (int): replay for timeout
+ * 	 record (bool): if both replay and record are set, the replay is rerecorded
+ * 	 fuzzing (int): fuzzing run, if no fuzzing: -1, for initial run: 0
+ * 	fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
  * Return:
- *    error
+ * 	 error
  */
 func addMainHeader(fileName string, replay bool, replayNumber string,
 	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {

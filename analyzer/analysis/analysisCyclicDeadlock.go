@@ -40,7 +40,7 @@ type lockGraphNode struct {
 /*
  * Create a new lock graph
  * Returns:
- *   (*lockGraphNode): The new node
+ * 	(*lockGraphNode): The new node
  */
 func newLockGraph(routine int) *lockGraphNode {
 	return &lockGraphNode{id: -1, routine: routine}
@@ -49,11 +49,11 @@ func newLockGraph(routine int) *lockGraphNode {
 /*
  * Add a child to the node
  * Args:
- *   childID (int): The id of the child
- *   childRw (bool): True if the child is a read-noWarningrite lock
- *   childRLock (bool): True if the child is a read lock
- *   vc (VectorClock): The vector clock of the childs lock operation
- *   lockSet ([]int): The lockSet of the child
+ * 	childID (int): The id of the child
+ * 	childRw (bool): True if the child is a read-noWarningrite lock
+ * 	childRLock (bool): True if the child is a read lock
+ * 	vc (VectorClock): The vector clock of the childs lock operation
+ * 	lockSet ([]int): The lockSet of the child
  */
 func (node *lockGraphNode) addChild(childID int, tID string, childRw bool, childRLock bool, vc *clock.VectorClock, lockSet map[int]struct{}) *lockGraphNode {
 	child := &lockGraphNode{id: childID, parent: node, rw: childRw,
@@ -127,9 +127,9 @@ var nodesPerID = make(map[int]map[int][]*lockGraphNode) // id -> routine -> []*l
  * Add the lock to the currently hold locks
  * Add the node to the lock tree
  * Args:
- *   mu (*TraceElementMutex): The trace element
- *   rLock (bool): True if the lock is a read lock
- *   vc (*VectorClock): The vector clock of the lock event
+ * 	mu (*TraceElementMutex): The trace element
+ * 	rLock (bool): True if the lock is a read lock
+ * 	vc (*VectorClock): The vector clock of the lock event
  */
 func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc *clock.VectorClock) {
 	timer.Start(timer.AnaResource)
@@ -167,7 +167,7 @@ func CyclicDeadlockMutexLock(mu *TraceElementMutex, rLock bool, vc *clock.Vector
 /*
  * Remove the lock from the currently hold locks
  * Args:
- *   mu (*TraceElementMutex): The trace element
+ * 	mu (*TraceElementMutex): The trace element
  */
 func CyclicDeadlockMutexUnLock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaResource)
@@ -247,7 +247,7 @@ func findOutsideConnections() {
  * Traverse all nodes of the tree recursively.
  * For each node, add all nodes with the same id but different routine to the outside connections
  * Args:
- *   node (*lockGraphNode): The node to start the traversal
+ * 	node (*lockGraphNode): The node to start the traversal
  */
 func traverseTreeAndAddOutsideConnections(node *lockGraphNode) {
 	if node == nil {
@@ -347,9 +347,9 @@ func isInCurrentPath(node *lockGraphNode, currentPath *([]*lockGraphNode)) (bool
 /*
  * Remove cyclic permutations
  * Args:
- *   cycles ([][]*lockGraphNode): The cycles to remove permutations from
+ * 	cycles ([][]*lockGraphNode): The cycles to remove permutations from
  * Returns:
- *   ([][]*lockGraphNode): The cycles without cyclic permutations
+ * 	([][]*lockGraphNode): The cycles without cyclic permutations
  */
 func removeCyclicPermutations(cycles [][]*lockGraphNode) [][]*lockGraphNode {
 	// remove cyclic permutations (same cycle but different starting point)
@@ -370,10 +370,10 @@ func removeCyclicPermutations(cycles [][]*lockGraphNode) [][]*lockGraphNode {
  * Check if two cycles are cyclic permutations of each other. The function
  * assumes that the cycles have the same length.
  * Args:
- *   cycle1 ([]*lockGraphNode): The first cycle
- *   cycle2 ([]*lockGraphNode): The second cycle
+ * 	cycle1 ([]*lockGraphNode): The first cycle
+ * 	cycle2 ([]*lockGraphNode): The second cycle
  * Returns:
- *   (bool): True if the cycles are cyclic permutations of each other
+ * 	(bool): True if the cycles are cyclic permutations of each other
  */
 func isCyclicPermutation(cycle1 []*lockGraphNode, cycle2 []*lockGraphNode) bool {
 	for i := 0; i < len(cycle1); i++ {
@@ -397,9 +397,9 @@ func isCyclicPermutation(cycle1 []*lockGraphNode, cycle2 []*lockGraphNode) bool 
  * - two operations on the same lock connected by an edge are not both read operations (R3)
  * - the cycle is valid considering gate locks (R4)
  * Args:
- *   cycle ([]*lockGraphNode): The cycle to check
+ * 	cycle ([]*lockGraphNode): The cycle to check
  * Returns:
- *   (bool): True if the cycle can create a deadlock
+ * 	(bool): True if the cycle can create a deadlock
  */
 func isCycleDeadlock(cycle []*lockGraphNode) bool {
 	// does the cycle consists of more than one different lock? (R1)
@@ -433,9 +433,9 @@ func isCycleDeadlock(cycle []*lockGraphNode) bool {
 /*
  * Check if the cycle consists of more than one different lock
  * Args:
- *   cycle ([]*lockGraphNode): The cycle to check
+ * 	cycle ([]*lockGraphNode): The cycle to check
  * Returns:
- *   (bool): True if the cycle consists of more than one different lock
+ * 	(bool): True if the cycle consists of more than one different lock
  */
 func isCycleMoreThanOneMutex(cycle []*lockGraphNode) bool {
 	moreThanOneMutexIndex := -1
@@ -455,9 +455,9 @@ func isCycleMoreThanOneMutex(cycle []*lockGraphNode) bool {
 /*
  * Check if all lock operations in the cycle are concurrent
  * Args:
- *   cycle ([]*lockGraphNode): The cycle to check
+ * 	cycle ([]*lockGraphNode): The cycle to check
  * Returns:
- *   (bool): True if all lock operations in the cycle are concurrent
+ * 	(bool): True if all lock operations in the cycle are concurrent
  */
 func isCycleConcurrent(cycle []*lockGraphNode) bool {
 	for i := 0; i < len(cycle); i++ {
@@ -479,9 +479,9 @@ func isCycleConcurrent(cycle []*lockGraphNode) bool {
  * Check, that the cycle is valid considering read-noWarningrite locks
  * Two operations on the same lock connected by an edge are not both read operations
  * Args:
- *   cycle ([]*lockGraphNode): The cycle to check
+ * 	cycle ([]*lockGraphNode): The cycle to check
  * Returns:
- *   (bool): True if the cycle is valid considering read-noWarningrite locks
+ * 	(bool): True if the cycle is valid considering read-noWarningrite locks
  */
 func isCycleValidRead(cycle []*lockGraphNode) bool {
 	for i := 0; i < len(cycle); i++ {
@@ -505,9 +505,9 @@ func isCycleValidRead(cycle []*lockGraphNode) bool {
 /*
  * Check, that the cycle is valid considering guard locks
  * Args:
- *   cycle ([]*lockGraphNode): The cycle to check
+ * 	cycle ([]*lockGraphNode): The cycle to check
  * Returns:
- *   (bool): True if the cycle is valid considering guard locks
+ * 	(bool): True if the cycle is valid considering guard locks
  */
 func isCycleValidGuard(cycle []*lockGraphNode) bool {
 	for i := 0; i < len(cycle); i++ {
@@ -539,9 +539,9 @@ func isCycleValidGuard(cycle []*lockGraphNode) bool {
 /*
  * Get the current lock set of a routine
  * Args:
- *   routine (int): The id of the routine
+ * 	routine (int): The id of the routine
  * Returns:
- *   ([]int): The current lock set of the routine
+ * 	([]int): The current lock set of the routine
  */
 func getCurrentLockSet(routine int) map[int]struct{} {
 	ls := make(map[int]struct{})

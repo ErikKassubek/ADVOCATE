@@ -468,10 +468,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 /*
  * Parse the given analysis cases
  * Args:
- *   cases (string): The string of analysis cases to parse
+ * 	cases (string): The string of analysis cases to parse
  * Returns:
- *   map[string]bool: A map of the analysis cases and if they are set
- *   error: An error if the cases could not be parsed
+ * 	map[string]bool: A map of the analysis cases and if they are set
+ * 	error: An error if the cases could not be parsed
  */
 func parseAnalysisCases(cases string) (map[string]bool, error) {
 	analysisCases := map[string]bool{
@@ -544,15 +544,15 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 /*
  * Rewrite the trace file based on given analysis results
  * Args:
- *   outMachine (string): The path to the analysis result file
- *   newTrace (string): The path where the new traces folder will be created
- *   resultIndex (int): The index of the result to use for the reordered trace file
- *   numberOfRoutines (int): The number of routines in the trace
- *   rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
+ * 	outMachine (string): The path to the analysis result file
+ * 	newTrace (string): The path where the new traces folder will be created
+ * 	resultIndex (int): The index of the result to use for the reordered trace file
+ * 	numberOfRoutines (int): The number of routines in the trace
+ * 	rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
  * Returns:
- *   bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
- *   bool: true if rewrite was skipped because of double
- *   error: An error if the trace file could not be created
+ * 	bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
+ * 	bool: true if rewrite was skipped because of double
+ * 	error: An error if the trace file could not be created
  */
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {

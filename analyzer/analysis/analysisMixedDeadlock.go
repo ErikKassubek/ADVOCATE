@@ -20,10 +20,10 @@ import (
 /*
  * Add a lock to the lockSet of a routine. Also save the vector clock of the acquire
  * Args:
- *   routine (int): The routine id
- *   lock (int): The id of the mutex
- *   tId (string): The trace id of the mutex operation
- *   vc (VectorClock): The current vector clock
+ * 	routine (int): The routine id
+ * 	lock (int): The id of the mutex
+ * 	tId (string): The trace id of the mutex operation
+ * 	vc (VectorClock): The current vector clock
  */
 func lockSetAddLock(mu *TraceElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
@@ -61,8 +61,8 @@ func lockSetAddLock(mu *TraceElementMutex, vc *clock.VectorClock) {
 /*
  * Remove a lock from the lockSet of a routine
  * Args:
- *   routine (int): The routine id
- *   lock (int): The id of the mutex
+ * 	routine (int): The routine id
+ * 	lock (int): The id of the mutex
  */
 func lockSetRemoveLock(routine int, lock int) {
 	timer.Start(timer.AnaLeak)
@@ -82,10 +82,10 @@ func lockSetRemoveLock(routine int, lock int) {
 /*
  * Check for mixed deadlocks
  * Args:
- *   routineSend (int): The routine id of the send operation
- *   routineRevc (int): The routine id of the receive operation
- *   tIDSend (string): The trace id of the channel send
- *   tIDSend (string): The trace id of the channel recv
+ * 	routineSend (int): The routine id of the send operation
+ * 	routineRevc (int): The routine id of the receive operation
+ * 	tIDSend (string): The trace id of the channel send
+ * 	tIDSend (string): The trace id of the channel recv
  */
 func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tIDRecv string) {
 	timer.Start(timer.AnaLeak)

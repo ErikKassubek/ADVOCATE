@@ -27,6 +27,9 @@ type Timer struct {
 	running   bool
 }
 
+/*
+ * Start a timer
+ */
 func (t *Timer) Start() {
 	if t.running {
 		return
@@ -36,6 +39,9 @@ func (t *Timer) Start() {
 	t.running = true
 }
 
+/*
+ * Stop a timer
+ */
 func (t *Timer) Stop() {
 	if !t.running {
 		return
@@ -45,6 +51,11 @@ func (t *Timer) Stop() {
 	return
 }
 
+/*
+ * Get the elapsed time of the timer
+ * Returns:
+ * 	time.Duration: current elapsed time of timer
+ */
 func (t *Timer) GetTime() time.Duration {
 	if t.running {
 		return t.elapsed + time.Since(t.startTime)
@@ -52,6 +63,9 @@ func (t *Timer) GetTime() time.Duration {
 	return t.elapsed
 }
 
+/*
+ * Reset the timer
+ */
 func (t *Timer) Reset() {
 	t.running = false
 	t.elapsed = time.Duration(0)

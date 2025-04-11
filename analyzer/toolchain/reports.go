@@ -20,8 +20,8 @@ var movedTraces int = 0
 /*
  * Generate the bug reports
  * Args:
- *    folderName string: path to folder containing the results
- *    fuzzingRun int: number of fuzzing run, -1 for not fuzzing
+ * 	 folderName string: path to folder containing the results
+ * 	 fuzzingRun int: number of fuzzing run, -1 for not fuzzing
  */
 func generateBugReports(folder string, fuzzing int) {
 	err := explanation.CreateOverview(folder, true, fuzzing)

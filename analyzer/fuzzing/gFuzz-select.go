@@ -18,12 +18,12 @@ import (
 
 /*
  * Struct to handle the selects for fuzzing
- *   id (string): replay id
- *   t (int): tpost of the select execution, used for order
- *   chosenCase (int): id of the chosen case, -1 for default
- *   numberCases (int): number of cases not including default
- *   containsDefault (bool): true if contains default case, otherwise false
- *   casiWithPos([]int): list of casi with
+ * 	id (string): replay id
+ * 	t (int): tpost of the select execution, used for order
+ * 	chosenCase (int): id of the chosen case, -1 for default
+ * 	numberCases (int): number of cases not including default
+ * 	containsDefault (bool): true if contains default case, otherwise false
+ * 	casiWithPos([]int): list of casi with
  */
 type fuzzingSelect struct {
 	id              string
@@ -67,10 +67,10 @@ func sortSelects() {
 /*
  * Get a copy of fs with a randomly selected case id.
  * Args:
- *   def (bool): if true, default is a possible value, if false it is not
- *   flipChange (bool): probability that a select case is chosen randomly. Otherwise the chosen case is kept
+ * 	def (bool): if true, default is a possible value, if false it is not
+ * 	flipChange (bool): probability that a select case is chosen randomly. Otherwise the chosen case is kept
  * Return:
- *   (int): the chosen case ID
+ * 	(int): the chosen case ID
  */
 func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelect {
 	// do only flip with certain chance
@@ -93,7 +93,7 @@ func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelec
  * The case is between 0 and fs.numberCases if def is false and between -1 and fs.numberCases otherwise
  * fs.chosenCase is never chosen
  * The values in fs.casiWithPos have a higher likelihood to be chosen by a
- *   factor factorCaseWithPartner (defined in fuzzing/data.go)
+ * 	factor factorCaseWithPartner (defined in fuzzing/data.go)
  */
 func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 	// Determine the starting number based on includeZero

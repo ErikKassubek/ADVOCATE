@@ -253,12 +253,12 @@ func AddElementToTrace(element TraceElement) {
  * Given the file and line info, return the routine and index of the element
  * in trace.
  * Args:
- *   tID (string): The tID of the element
+ * 	tID (string): The tID of the element
  * Returns:
- *   *TraceElement: The element
- *   error: An error if the element does not exist
+ * 	*TraceElement: The element
+ * 	error: An error if the element does not exist
  */
-func GetTraceElementFromTID(tID string) (*TraceElement, error) {
+func GetTraceElementFromTID(tID string) (TraceElement, error) {
 	return MainTrace.GetTraceElementFromTID(tID)
 }
 
@@ -266,10 +266,10 @@ func GetTraceElementFromTID(tID string) (*TraceElement, error) {
  * Given the bug info from the machine readable result file, return the element
  * in the trace.
  * Args:
- *   bugArg (string): The bug info from the machine readable result file
+ * 	bugArg (string): The bug info from the machine readable result file
  * Returns:
- *   *TraceElement: The element
- *   error: An error if the element does not exist
+ * 	*TraceElement: The element
+ * 	error: An error if the element does not exist
  */
 func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 	return MainTrace.GetTraceElementFromBugArg(bugArg)
@@ -278,8 +278,8 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 /*
  * Shorten the trace by removing all elements after the given time
  * Args:
- *   time (int): The time to shorten the trace to
- *   incl (bool): True if an element with the same time should stay included in the trace
+ * 	time (int): The time to shorten the trace to
+ * 	incl (bool): True if an element with the same time should stay included in the trace
  */
 func ShortenTrace(time int, incl bool) {
 	MainTrace.ShortenTrace(time, incl)
@@ -288,7 +288,7 @@ func ShortenTrace(time int, incl bool) {
 /*
  * Remove the element with the given tID from the trace
  * Args:
- *   tID (string): The tID of the element to remove
+ * 	tID (string): The tID of the element to remove
  */
 func RemoveElementFromTrace(tID string) {
 	MainTrace.RemoveElementFromTrace(tID)
@@ -297,8 +297,8 @@ func RemoveElementFromTrace(tID string) {
 /*
  * Shorten the trace of the given routine by removing all elements after and equal the given time
  * Args:
- *   routine (int): The routine to shorten
- *   time (int): The time to shorten the trace to
+ * 	routine (int): The routine to shorten
+ * 	time (int): The time to shorten the trace to
  */
 func ShortenRoutine(routine int, time int) {
 	MainTrace.ShortenRoutine(routine, time)
@@ -307,9 +307,9 @@ func ShortenRoutine(routine int, time int) {
 /*
  * Get the trace of the given routine
  * Args:
- *   id (int): The id of the routine
+ * 	id (int): The id of the routine
  * Returns:
- *   []traceElement: The trace of the routine
+ * 	[]traceElement: The trace of the routine
  */
 func GetRoutineTrace(id int) []TraceElement {
 	return MainTrace.GetRoutineTrace(id)
@@ -368,11 +368,11 @@ func getLastElemPerRout() []TraceElement {
  * For a given waitgroup id, get the number of add and done operations that were
  * executed before a given time.
  * Args:
- *   wgID (int): The id of the waitgroup
- *   waitTime (int): The time to check
+ * 	wgID (int): The id of the waitgroup
+ * 	waitTime (int): The time to check
  * Returns:
- *   int: The number of add operations
- *   int: The number of done operations
+ * 	int: The number of add operations
+ * 	int: The number of done operations
  */
 func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	return MainTrace.GetNrAddDoneBeforeTime(wgID, waitTime)
@@ -382,8 +382,8 @@ func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
  * Shift all elements with time greater or equal to startTSort by shift
  * Only shift forward
  * Args:
- *   startTPre (int): The time to start shifting
- *   shift (int): The shift
+ * 	startTPre (int): The time to start shifting
+ * 	shift (int): The shift
  */
 func ShiftTrace(startTPre int, shift int) bool {
 	return MainTrace.ShiftTrace(startTPre, shift)
@@ -393,7 +393,7 @@ func ShiftTrace(startTPre int, shift int) bool {
  * Shift all elements that are concurrent or HB-later than the element such
  * that they are after the element without changing the order of these elements
  * Args:
- *   element (traceElement): The element
+ * 	element (traceElement): The element
  */
 func ShiftConcurrentOrAfterToAfter(element TraceElement) {
 	MainTrace.ShiftConcurrentOrAfterToAfter(element)
@@ -404,8 +404,8 @@ func ShiftConcurrentOrAfterToAfter(element TraceElement) {
  * that they are after the element without changeing the order of these elements
  * Only shift elements that are after start
  * Args:
- *   element (traceElement): The element
- *   start (traceElement): The time to start shifting (not including)
+ * 	element (traceElement): The element
+ * 	start (traceElement): The time to start shifting (not including)
  */
 func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
 	MainTrace.ShiftConcurrentOrAfterToAfterStartingFromElement(element, start)
@@ -414,7 +414,7 @@ func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, star
 /*
  * Shift the element to be after all elements, that are concurrent to it
  * Args:
- *   element (traceElement): The element
+ * 	element (traceElement): The element
  */
 func ShiftConcurrentToBefore(element TraceElement) {
 	MainTrace.ShiftConcurrentToBefore(element)
@@ -423,7 +423,7 @@ func ShiftConcurrentToBefore(element TraceElement) {
 /*
  * Remove all elements that are concurrent to the element and have time greater or equal to tmin
  * Args:
- *   element (traceElement): The element
+ * 	element (traceElement): The element
  */
 func RemoveConcurrent(element TraceElement, tmin int) {
 	MainTrace.RemoveConcurrent(element, tmin)
@@ -432,7 +432,7 @@ func RemoveConcurrent(element TraceElement, tmin int) {
 /*
  * Remove all elements that are concurrent to the element or must happen after the element
  * Args:
- *   element (traceElement): The element
+ * 	element (traceElement): The element
  */
 func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 	MainTrace.RemoveConcurrentOrAfter(element, tmin)
@@ -441,11 +441,11 @@ func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 /*
  * For each routine, get the earliest element that is concurrent to the element
  * Args:
- *   element (traceElement): The element
+ * 	element (traceElement): The element
  * Returns:
- *   map[int]traceElement: The earliest concurrent element for each routine
+ * 	map[int]traceElement: The earliest concurrent element for each routine
  */
-func GetConcurrentEarliest(element *TraceElement) map[int]*TraceElement {
+func GetConcurrentEarliest(element TraceElement) map[int]TraceElement {
 	return MainTrace.GetConcurrentEarliest(element)
 }
 
@@ -462,11 +462,11 @@ func RemoveLater(tPost int) {
  * Shift all elements with time greater or equal to startTSort by shift
  * Only shift back
  * Args:
- *   routine (int): The routine to shift
- *   startTSort (int): The time to start shifting
- *   shift (int): The shift
+ * 	routine (int): The routine to shift
+ * 	startTSort (int): The time to start shifting
+ * 	shift (int): The shift
  * Returns:
- *   bool: True if the shift was successful, false otherwise (shift <= 0)
+ * 	bool: True if the shift was successful, false otherwise (shift <= 0)
  */
 func ShiftRoutine(routine int, startTSort int, shift int) bool {
 	return MainTrace.ShiftRoutine(routine, startTSort, shift)
@@ -480,7 +480,7 @@ func ShiftRoutine(routine int, startTSort int, shift int) bool {
  * Returns:
  *  map[int][]TraceElement: The partial trace
  */
-func GetPartialTrace(startTime int, endTime int) map[int][]*TraceElement {
+func GetPartialTrace(startTime int, endTime int) map[int][]TraceElement {
 	return MainTrace.GetPartialTrace(startTime, endTime)
 }
 
@@ -494,7 +494,7 @@ func SortTrace() {
 /*
  * Copy the current main trace
  * Returns:
- *   Trace: The copy of the trace
+ * 	Trace: The copy of the trace
  */
 func CopyMainTrace() Trace {
 	return MainTrace.Copy()
@@ -503,7 +503,7 @@ func CopyMainTrace() Trace {
 /*
  * Set the main trace
  * Args:
- *   trace (Trace): The trace
+ * 	trace (Trace): The trace
  */
 func SetTrace(trace Trace) {
 	MainTrace = trace

@@ -21,9 +21,9 @@ import (
 /*
  * Get the positions of the bug elements in the program
  * Args:
- *   traceElem1 (map[int]string): The trace elements of the bug
+ * 	traceElem1 (map[int]string): The trace elements of the bug
  * Returns:
- *   map[int][]string: Dict for the code snippets
+ * 	map[int][]string: Dict for the code snippets
  */
 func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (map[int][]string, error) {
 	res := make(map[int][]string)
@@ -62,12 +62,12 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 /*
  * Get the code snippet of a program file at a specific line
  * Args:
- *   file (string): The path to the file
- *   line (int): The line number
- *   numbers (bool): If line numbers should be included
+ * 	file (string): The path to the file
+ * 	line (int): The line number
+ * 	numbers (bool): If line numbers should be included
  * Returns:
- *   string: The code snippet
- *   error: An error if the file could not be read
+ * 	string: The code snippet
+ * 	error: An error if the file could not be read
  */
 func GetProgramCode(file string, line int, numbers bool) (string, error) {
 	content, err := os.ReadFile(file)

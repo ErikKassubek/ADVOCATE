@@ -118,7 +118,7 @@ type Bug struct {
 /*
  * GetBugString Convert the bug to a string. Mostly used internally
  * Returns:
- *   string: The bug as a string
+ * 	string: The bug as a string
  */
 func (b Bug) GetBugString() string {
 	paths := make([]string, 0)
@@ -142,7 +142,7 @@ func (b Bug) GetBugString() string {
 /*
  * ToString convert the bug to a string. Mostly used for output
  * Returns:
- *   string: The bug as a string
+ * 	string: The bug as a string
  */
 func (b Bug) ToString() string {
 	typeStr := ""
@@ -287,11 +287,11 @@ func (b Bug) Println() {
 /*
  * Process the bug that was selected from the analysis results
  * Args:
- *   bugStr: The bug that was selected
+ * 	bugStr: The bug that was selected
  * Returns:
- *   bool: true, if the bug was not a possible, but a actually occuring bug
- *   Bug: The bug that was selected
- *   error: An error if the bug could not be processed
+ * 	bool: true, if the bug was not a possible, but a actually occuring bug
+ * 	Bug: The bug that was selected
+ * 	error: An error if the bug could not be processed
  */
 func ProcessBug(bugStr string) (bool, Bug, error) {
 	bug := Bug{}

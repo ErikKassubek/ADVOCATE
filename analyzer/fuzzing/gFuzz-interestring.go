@@ -73,7 +73,7 @@ func isInterestingSelect() bool {
 			}
 
 			for _, sel := range data { // case has been executed for the first time
-				if !utils.ContainsInt(alreadyExecCase, sel.chosenCase) {
+				if !utils.Contains(alreadyExecCase, sel.chosenCase) {
 					return true
 				}
 			}

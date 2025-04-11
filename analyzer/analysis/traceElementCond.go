@@ -28,15 +28,14 @@ const (
 
 /*
  * TraceElementCond is a trace element for a condition variable
- * MARK: Struct
  * Fields:
- *   routine (int): The routine id
- *   tpre (int): The timestamp at the start of the event
- *   tpost (int): The timestamp at the end of the event
- *   id (int): The id of the condition variable
- *   opC (opCond): The operation on the condition variable
- *   file (string), line(int): The position of the condition variable operation in the code
- *   tID (string): The id of the trace element, contains the position and the tpre
+ * 	routine (int): The routine id
+ * 	tpre (int): The timestamp at the start of the event
+ * 	tpost (int): The timestamp at the end of the event
+ * 	id (int): The id of the condition variable
+ * 	opC (opCond): The operation on the condition variable
+ * 	file (string), line(int): The position of the condition variable operation in the code
+ * 	tID (string): The id of the trace element, contains the position and the tpre
  */
 type TraceElementCond struct {
 	index   int
@@ -49,18 +48,19 @@ type TraceElementCond struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
+	rel1    []TraceElement
+	rel2    []TraceElement
 }
 
 /*
  * Create a new condition variable trace element
- * MARK: New
  * Args:
- *   routine (int): The routine id
- *   tPre (string): The timestamp at the start of the event
- *   tPost (string): The timestamp at the end of the event
- *   id (string): The id of the condition variable
- *   opC (string): The operation on the condition variable
- *   pos (string): The position of the condition variable operation in the code
+ * 	routine (int): The routine id
+ * 	tPre (string): The timestamp at the start of the event
+ * 	tPost (string): The timestamp at the end of the event
+ * 	id (string): The id of the condition variable
+ * 	opC (string): The operation on the condition variable
+ * 	pos (string): The position of the condition variable operation in the code
  */
 func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
@@ -103,18 +103,18 @@ func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN 
 		line:    line,
 		vc:      clock.NewVectorClock(MainTrace.numberOfRoutines),
 		wVc:     clock.NewVectorClock(MainTrace.numberOfRoutines),
+		rel1:    make([]TraceElement, 2),
+		rel2:    make([]TraceElement, 0),
 	}
 
 	AddElementToTrace(&elem)
 	return nil
 }
 
-// MARK: Getter
-
 /*
  * Get the id of the element
  * Returns:
- *   int: The id of the element
+ * 	int: The id of the element
  */
 func (co *TraceElementCond) GetID() int {
 	return co.id
@@ -123,7 +123,7 @@ func (co *TraceElementCond) GetID() int {
 /*
  * Get the routine of the element
  * Returns:
- *   (int): The routine id
+ * 	(int): The routine id
  */
 func (co *TraceElementCond) GetRoutine() int {
 	return co.routine
@@ -132,7 +132,7 @@ func (co *TraceElementCond) GetRoutine() int {
 /*
  * Get the tpre of the element.
  * Returns:
- *   int: The tpre of the element
+ * 	int: The tpre of the element
  */
 func (co *TraceElementCond) GetTPre() int {
 	return co.tPre
@@ -141,7 +141,7 @@ func (co *TraceElementCond) GetTPre() int {
 /*
  * Get the tpost of the element.
  * Returns:
- *   int: The tpost of the element
+ * 	int: The tpost of the element
  */
 func (co *TraceElementCond) GetTPost() int {
 	return co.tPost
@@ -150,7 +150,7 @@ func (co *TraceElementCond) GetTPost() int {
 /*
  * Get the timer, that is used for sorting the trace
  * Returns:
- *   (int): The timer of the element
+ * 	(int): The timer of the element
  */
 func (co *TraceElementCond) GetTSort() int {
 	t := co.tPre
@@ -188,7 +188,7 @@ func (co *TraceElementCond) GetLine() int {
 /*
  * Get the tID of the element.
  * Returns:
- *   string: The tID of the element
+ * 	string: The tID of the element
  */
 func (co *TraceElementCond) GetTID() string {
 	return co.GetPos() + "@" + strconv.Itoa(co.tPre)
@@ -197,7 +197,7 @@ func (co *TraceElementCond) GetTID() string {
 /*
  * Get the operation of the element
  * Returns:
- *   (OpCond): The operation of the element
+ * 	(OpCond): The operation of the element
  */
 func (co *TraceElementCond) GetOpCond() OpCond {
 	return co.opC
@@ -206,7 +206,7 @@ func (co *TraceElementCond) GetOpCond() OpCond {
 /*
  * Get the vector clock of the element
  * Returns:
- *   VectorClock: The vector clock of the element
+ * 	VectorClock: The vector clock of the element
  */
 func (co *TraceElementCond) GetVC() *clock.VectorClock {
 	return co.vc
@@ -215,7 +215,7 @@ func (co *TraceElementCond) GetVC() *clock.VectorClock {
 /*
  * Get the vector clock of the element for the weak must happens before relation
  * Returns:
- *   VectorClock: The vector clock of the element
+ * 	VectorClock: The vector clock of the element
  */
 func (co *TraceElementCond) GetwVc() *clock.VectorClock {
 	return co.wVc
@@ -248,12 +248,10 @@ func (co *TraceElementCond) GetTraceIndex() (int, int) {
 	return co.routine, co.index
 }
 
-// MARK: Setter
-
 /*
  * Set the tPre and tPost of the element
  * Args:
- *   time (int): The tPre and tPost of the element
+ * 	time (int): The tPre and tPost of the element
  */
 func (co *TraceElementCond) SetT(time int) {
 	co.tPre = time
@@ -263,7 +261,7 @@ func (co *TraceElementCond) SetT(time int) {
 /*
  * Set the tpre of the element.
  * Args:
- *   tPre (int): The tpre of the element
+ * 	tPre (int): The tpre of the element
  */
 func (co *TraceElementCond) SetTPre(tPre int) {
 	co.tPre = tPre
@@ -275,7 +273,7 @@ func (co *TraceElementCond) SetTPre(tPre int) {
 /*
  * Set the timer that is used for sorting the trace
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (co *TraceElementCond) SetTSort(tSort int) {
 	co.SetTPre(tSort)
@@ -288,7 +286,7 @@ func (co *TraceElementCond) SetTSort(tSort int) {
  * Set the timer, that is used for the sorting of the trace, only if the original
  * value was not 0
  * Args:
- *   tSort (int): The timer of the element
+ * 	tSort (int): The timer of the element
  */
 func (co *TraceElementCond) SetTWithoutNotExecuted(tSort int) {
 	co.SetTPre(tSort)
@@ -306,9 +304,8 @@ func (co *TraceElementCond) SetTWithoutNotExecuted(tSort int) {
 
 /*
  * Get the string representation of the element
- * MARK: ToString
  * Returns:
- *   (string): The string representation of the element
+ * 	(string): The string representation of the element
  */
 func (co *TraceElementCond) ToString() string {
 	res := "D,"
@@ -328,7 +325,6 @@ func (co *TraceElementCond) ToString() string {
 
 /*
  * Update the vector clock of the trace and element
- * MARK: VectorClock
  */
 func (co *TraceElementCond) updateVectorClock() {
 	co.vc = currentVC[co.routine].Copy()
@@ -345,12 +341,10 @@ func (co *TraceElementCond) updateVectorClock() {
 
 }
 
-// MARK: Copy
-
 /*
  * Copy the element
  * Returns:
- *   (TraceElement): The copy of the element
+ * 	(TraceElement): The copy of the element
  */
 func (co *TraceElementCond) Copy() TraceElement {
 	return &TraceElementCond{
@@ -364,22 +358,49 @@ func (co *TraceElementCond) Copy() TraceElement {
 		line:    co.line,
 		vc:      co.vc.Copy(),
 		wVc:     co.wVc.Copy(),
+		rel1:    co.rel1,
+		rel2:    co.rel1,
 	}
 }
 
-// MARK: GoPie
-func (co *TraceElementCond) AddRel1(_ TraceElement, _ int) {
-	return
+// ========= For GoPie fuzzing ===========
+
+/*
+ * Add an element to the rel1 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ * 	pos (int): before (0) or after (1)
+ */
+func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
+	if pos < 0 || pos > 1 {
+		return
+	}
+	co.rel1[pos] = elem
 }
 
-func (co *TraceElementCond) AddRel2(_ TraceElement) {
-	return
+/*
+ * Add an element to the rel2 set of the element
+ * Args:
+ * 	elem (TraceElement): elem to add
+ */
+func (co *TraceElementCond) AddRel2(elem TraceElement) {
+	co.rel2 = append(co.rel2, elem)
 }
 
+/*
+ * Return the rel1 set
+ * Returns:
+ * 	[]*TraceElement: the rel1 set
+ */
 func (co *TraceElementCond) GetRel1() []TraceElement {
-	return make([]TraceElement, 0)
+	return co.rel1
 }
 
+/*
+ * Return the rel2 set
+ * Returns:
+ * 	[]*TraceElement: the rel2 set
+ */
 func (co *TraceElementCond) GetRel2() []TraceElement {
-	return make([]TraceElement, 0)
+	return co.rel2
 }

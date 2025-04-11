@@ -21,10 +21,10 @@ import (
 /*
  * Function to move results files from the package directory to the destination directory
  * Args:
- *    progPath (string): path to the program
- *    packagePath (string): path to the package directory
- *    destination (string): path to the destination directory
- *    total (bool): merge all already created logs into total log, for fuzzing
+ * 	 progPath (string): path to the program
+ * 	 packagePath (string): path to the package directory
+ * 	 destination (string): path to the destination directory
+ * 	 total (bool): merge all already created logs into total log, for fuzzing
  */
 func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{

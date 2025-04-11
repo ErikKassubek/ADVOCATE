@@ -17,6 +17,14 @@ import (
 	"strings"
 )
 
+/*
+ * Read the program info from the output.log file
+ * Args:
+ * 	path (string): path to the folder containing the output.log file
+ * Returns:
+ * 	map[string]string: information about the analyzed test, e.g. file/test name and header position info
+ * 	error
+ */
 func readProgInfo(path string) (map[string]string, error) {
 	res := make(map[string]string)
 
@@ -55,16 +63,4 @@ func readProgInfo(path string) (map[string]string, error) {
 	res["headerLine"] = strings.TrimSpace(res["headerLine"])
 
 	return res, nil
-}
-
-func getProgInfo(info map[string]string, key string) string {
-	if _, ok := info[key]; !ok {
-		return "Failed to read command for " + key
-	}
-
-	if info[key] == "" {
-		return "Failed to read command for " + key
-	}
-
-	return info[key]
 }

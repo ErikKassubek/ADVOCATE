@@ -87,7 +87,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	modes := []string{GoPie, GoPieHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
-	if !utils.ContainsString(modes, fm) {
+	if !utils.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 

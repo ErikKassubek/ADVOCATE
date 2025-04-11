@@ -20,8 +20,8 @@ import (
 /*
  * Create a new oSuc if needed
  * Args:
- *   index (int): The id of the atomic variable
- *   nRout (int): The number of routines in the trace
+ * 	index (int): The id of the atomic variable
+ * 	nRout (int): The number of routines in the trace
  */
 func newOSuc(index int, nRout int) {
 	if _, ok := oSuc[index]; !ok {
@@ -32,7 +32,7 @@ func newOSuc(index int, nRout int) {
 /*
  * Update and calculate the vector clocks given a successful do operation
  * Args:
- *   on (*TraceElementOnce): The trace element
+ * 	on (*TraceElementOnce): The trace element
  */
 func DoSuc(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
@@ -48,7 +48,7 @@ func DoSuc(on *TraceElementOnce) {
 /*
  * Update and calculate the vector clocks given a unsuccessful do operation
  * Args:
- *   on (*TraceElementOnce): The trace element
+ * 	on (*TraceElementOnce): The trace element
  */
 func DoFail(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)

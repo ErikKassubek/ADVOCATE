@@ -20,8 +20,8 @@ import (
 /*
  * vectorClock is a vector clock
  * Fields:
- *   size (int): The size of the vector clock
- *   clock ([]int): The vector clock
+ * 	size (int): The size of the vector clock
+ * 	clock ([]int): The vector clock
  */
 type VectorClock struct {
 	size  int
@@ -31,9 +31,9 @@ type VectorClock struct {
 /*
  * Create a new vector clock
  * Args:
- *   size (int): The size of the vector clock
+ * 	size (int): The size of the vector clock
  * Returns:
- *   (vectorClock): The new vector clock
+ * 	(vectorClock): The new vector clock
  */
 func NewVectorClock(size int) *VectorClock {
 	if size < 0 {
@@ -49,8 +49,8 @@ func NewVectorClock(size int) *VectorClock {
 /*
  * Create a new vector clock and set it
  * Args:
- *   size (int): The size of the vector clock
- *   cl (map[uint32]iunt)32: The vector clock
+ * 	size (int): The size of the vector clock
+ * 	cl (map[uint32]iunt)32: The vector clock
  * Returns:
  * 	*VectorClock: A Pointer to the new vector clock
  */
@@ -78,7 +78,7 @@ func NewVectorClockSet(size int, cl map[uint32]uint32) *VectorClock {
 /*
  * Get the size of the vector clock
  * Returns:
- *   (int): The size of the vector clock
+ * 	(int): The size of the vector clock
  */
 func (vc VectorClock) GetSize() int {
 	return int(vc.size)
@@ -98,7 +98,7 @@ func (vc *VectorClock) SetValue(index int, value uint32) {
 /*
  * Get the vector clock
  * Returns:
- *   (map[uint32]uint32): The vector clock
+ * 	(map[uint32]uint32): The vector clock
  */
 func (vc *VectorClock) GetClock() map[uint32]uint32 {
 	return vc.clock
@@ -107,7 +107,7 @@ func (vc *VectorClock) GetClock() map[uint32]uint32 {
 /*
  * Get a string representation of the vector clock
  * Returns:
- *   (string): The string representation of the vector clock
+ * 	(string): The string representation of the vector clock
  */
 func (vc *VectorClock) ToString() string {
 	str := "["
@@ -124,7 +124,7 @@ func (vc *VectorClock) ToString() string {
 /*
  * Increment the vector clock at the given position
  * Args:
- *   routine (int): The routine to increment
+ * 	routine (int): The routine to increment
  */
 func (vc *VectorClock) Inc(routine int) {
 	if routine > int(vc.size) {
@@ -141,9 +141,9 @@ func (vc *VectorClock) Inc(routine int) {
 /*
  * Update the vector clock with the received vector clock
  * Args:
- *   rec (vectorClock): The received vector clock
+ * 	rec (vectorClock): The received vector clock
  * Returns:
- *   (vectorClock): The synced vc (not a copy)
+ * 	(vectorClock): The synced vc (not a copy)
  */
 func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 	if vc == nil {
@@ -180,7 +180,7 @@ func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 /*
  * Create a copy of the vector clock
  * Returns:
- *   (vectorClock): The copy of the vector clock
+ * 	(vectorClock): The copy of the vector clock
  */
 func (vc *VectorClock) Copy() *VectorClock {
 	newVc := NewVectorClock(vc.size)

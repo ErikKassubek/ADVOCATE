@@ -22,10 +22,10 @@ const (
 /*
  * Check if vc1 is a cause of vc2
  * Args:
- *   vc1 (*vectorClock): The first vector clock
- *   vc2 (*vectorClock): The second vector clock
+ * 	vc1 (*vectorClock): The first vector clock
+ * 	vc2 (*vectorClock): The second vector clock
  * Returns:
- *   bool: True if vc1 is a cause of vc2, false otherwise
+ * 	bool: True if vc1 is a cause of vc2, false otherwise
  */
 func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
 	atLeastOneSmaller := false
@@ -43,10 +43,10 @@ func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
  * Get the happens before relation between two operations given there
  * vector clocks
  * Args:
- *   vc1 (*vectorClock): The first vector clock
- *   vc2 (*vectorClock): The second vector clock
+ * 	vc1 (*vectorClock): The first vector clock
+ * 	vc2 (*vectorClock): The second vector clock
  * Returns:
- *   happensBefore: The happens before relation between the two vector clocks
+ * 	happensBefore: The happens before relation between the two vector clocks
  */
 func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) HappensBefore {
 	if vc1.size != vc2.size {

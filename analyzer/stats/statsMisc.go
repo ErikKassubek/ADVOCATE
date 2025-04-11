@@ -39,10 +39,10 @@ var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibl
 /*
  * Collect miscellaneous statistics about the run
  * Args:
- *     dataPath (string): path to the result folder
+ * 	  dataPath (string): path to the result folder
  * Returns:
- *     map[string]int: map with the stats
- *     error
+ * 	  map[string]int: map with the stats
+ * 	  error
  */
 func statsMisc(dataPath, testName string) (map[string]int, error) {
 	stats := map[string]int{}

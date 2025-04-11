@@ -18,24 +18,6 @@ import (
 	"errors"
 )
 
-const (
-	exitCodeNone         = -1
-	exitCodePanic        = 3
-	exitCodeTimeout      = 10
-	exitCodeLeakUnbuf    = 20
-	exitCodeLeakBuf      = 21
-	exitCodeLeakMutex    = 22
-	exitCodeLeakCond     = 23
-	exitCodeLeakWG       = 24
-	exitSendClose        = 30
-	exitRecvClose        = 31
-	exitCloseClose       = 32
-	exitCloseNil         = 33
-	exitNegativeWG       = 34
-	exitUnlockBeforeLock = 35
-	exitCodeCyclic       = 41
-)
-
 /*
  * Create a new trace from the given bug
  * Args:
@@ -62,7 +44,7 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 	}
 
 	rewriteNeeded = false
-	code = exitCodeNone
+	code = analysis.ExitCodeNone
 	switch bug.Type {
 	case bugs.ASendOnClosed:
 		err = errors.New("Actual send on closed. Therefore no rewrite is needed.")
@@ -81,19 +63,19 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 	case bugs.ASelCaseWithoutPartner:
 		err = errors.New("Rewriting trace for select without partner is not possible")
 	case bugs.PSendOnClosed:
-		code = exitSendClose
+		code = analysis.ExitCodeSendClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(trace, bug, exitSendClose)
+		err = rewriteClosedChannel(trace, bug, analysis.ExitCodeSendClose)
 	case bugs.PRecvOnClosed:
-		code = exitRecvClose
+		code = analysis.ExitCodeRecvClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(trace, bug, exitRecvClose)
+		err = rewriteClosedChannel(trace, bug, analysis.ExitCodeRecvClose)
 	case bugs.PNegWG:
-		code = exitNegativeWG
+		code = analysis.ExitCodeNegativeWG
 		rewriteNeeded = true
 		err = rewriteGraph(trace, bug, code)
 	case bugs.PUnlockBeforeLock:
-		code = exitUnlockBeforeLock
+		code = analysis.ExitCodeUnlockBeforeLock
 		rewriteNeeded = true
 		err = rewriteGraph(trace, bug, code)
 	// case bugs.MixedDeadlock:
@@ -104,13 +86,13 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 	case bugs.LWithoutBlock:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible.")
 	case bugs.LUnbufferedWith:
-		code = exitCodeLeakUnbuf
+		code = analysis.ExitCodeLeakUnbuf
 		rewriteNeeded = true
 		err = rewriteUnbufChanLeak(trace, bug)
 	case bugs.LUnbufferedWithout:
 		err = errors.New("No possible partner for stuck channel found. Cannot rewrite trace.")
 	case bugs.LBufferedWith:
-		code = exitCodeLeakBuf
+		code = analysis.ExitCodeLeakBuf
 		rewriteNeeded = true
 		err = rewriteBufChanLeak(trace, bug)
 	case bugs.LBufferedWithout:
@@ -118,7 +100,7 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 	case bugs.LNilChan:
 		err = errors.New("Leak on nil channel. Cannot rewrite trace.")
 	case bugs.LSelectWith:
-		code = exitCodeLeakUnbuf
+		code = analysis.ExitCodeLeakUnbuf
 		rewriteNeeded = true
 		switch b := bug.TraceElement2[0].(type) {
 		case *analysis.TraceElementSelect:
@@ -131,23 +113,23 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.Re
 			}
 		default:
 			rewriteNeeded = false
-			code = exitCodeNone
+			code = analysis.ExitCodeNone
 			err = errors.New("For the given bug type no trace rewriting is possible")
 		}
 	case bugs.LSelectWithout:
-		code = exitCodeNone
+		code = analysis.ExitCodeNone
 		err = errors.New("No possible partner for stuck select found. Cannot rewrite trace.")
 	case bugs.LMutex:
 		rewriteNeeded = true
-		code = exitCodeLeakMutex
+		code = analysis.ExitCodeLeakMutex
 		err = rewriteMutexLeak(trace, bug)
 	case bugs.LWaitGroup:
 		rewriteNeeded = true
-		code = exitCodeLeakWG
+		code = analysis.ExitCodeLeakWG
 		err = rewriteWaitGroupLeak(trace, bug)
 	case bugs.LCond:
 		rewriteNeeded = true
-		code = exitCodeLeakCond
+		code = analysis.ExitCodeLeakCond
 		err = rewriteCondLeak(trace, bug)
 		// case bugs.SNotExecutedWithPartner:
 		// 	rewriteNeeded = false

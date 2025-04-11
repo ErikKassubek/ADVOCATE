@@ -809,5 +809,8 @@ func (t *Trace) GetConcurrentWaitgroups(element TraceElement) map[string][]Trace
  * 	index (int): the index of the element in its routine
  */
 func (t *Trace) SetTSortAtIndex(tPost, routine, index int) {
+	if len(t.traces[routine]) <= index {
+		return
+	}
 	t.traces[routine][index].SetTSort(tPost)
 }

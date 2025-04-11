@@ -151,7 +151,7 @@ func main() {
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGoFuzz\n\tGoFuzzHB\n\tGFuzzFlow\n\tFlow\n\tGoPie")
+		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	// flag.BoolVar(&modeMain, "main", false, "set to run on main function")
@@ -340,7 +340,8 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	if numberElems == 0 {
-		return fmt.Errorf("Trace at %s does not contain any elements", pathTrace)
+		utils.LogInfof("Trace at %s does not contain any elements", pathTrace)
+		return nil
 	} else {
 		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 	}
@@ -635,15 +636,15 @@ func printHelpMode(mode string) {
 	switch mode {
 	case "analysis":
 		println("Mode: analysis")
-		println("Analyze a test or tool chain")
-		println("This runs the analysis on tests or the main function")
+		println("Analyze tests")
+		println("This runs the analysis on tests")
 		println("Usage: ./analyzer analysis [options]")
 		// println("  -main                  Run on the main function instead on tests")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
 		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
-		println("  -timeoutRepl [second]  Set a timeout in seconds for the replay")
+		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")
 		println("  -recordTime            Set to record runtimes")
 		println("  -notExec               Set to determine never executed operations")
@@ -652,20 +653,16 @@ func printHelpMode(mode string) {
 	case "fuzzing":
 		println("Mode: fuzzing")
 		println("Create runs for fuzzing")
-		println("This creates and updates the information required for the fuzzing runs")
+		println("This creates and updates the information required for the fuzzing runs as well as executes the fuzzing runs")
 		println("Usage: ./analyzer fuzzing [options]")
 		// println("  -main                  Run on the main function instead on tests")
 		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
-		println("  -noWarning             Only show critical bugs")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
-		println("     GoFuzz\n\tGoFuzzHB\n\tGFuzzFlow\n\tFlow\n\tGoPie")
-		println("     GoFuzzHB")
-		println("     GoFuzzFlow")
-		println("     Flow")
-		println("     GoPie")
-		println("Additionally, the tags from mode tool can be used")
+		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
+
+		println("Additionally, the tags from mode analysis can be used")
 	default:
 		println("Mode: unknown")
 		printHelp()

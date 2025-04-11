@@ -1,17 +1,7 @@
 # AdvocateGo
-> [!NOTE]
-> This program is a work in progress and may result in incorrect or incomplete results.
-
-> [!WARNING]
-> This program currently only runs / is tested under Linux
-
-> [!IMPORTANT]
-> ADVOCATE is implemented for go version 1.24.
-> Make sure, that the program does not choose another version/toolchain and is compatible with go 1.24.
-> The output `package advocate is not in std ` or similar indicates a problem with the used version.
-> AdvocateGo currently does not work for programs requiring go 1.23
 
 ## What is AdvocateGo
+
 AdvocateGo is an analysis tool for Go programs.
 It detects concurrency bugs and gives  diagnostic insight.
 This is achieved through `happens-before-relation` and `vector-clocks`
@@ -19,6 +9,7 @@ This is achieved through `happens-before-relation` and `vector-clocks`
 Furthermore it is also able to produce traces which can be fed back into the program in order to experience the predicted bug.
 
 AdvocateGo tries to detect the following situations:
+
 - A00: Unknown panic
 - A01: Send on closed channel
 - A02: Receive on closed channel
@@ -45,31 +36,46 @@ AdvocateGo tries to detect the following situations:
 - R02: Timeout in recording
 
 ## Documentation
-A detailed description of the inner workings can be found in the [doc](doc) folder (currently in the process of being rewritten and therefore not complete)
 
+A detailed description of the inner workings can be found in the [doc](doc) folder (currently in the process of being rewritten and therefore not complete)
 
 ## Usage
 
+> [!WARNING]
+> This program currently only runs / is tested under Linux
+
+> [!IMPORTANT]
+> ADVOCATE is implemented for go version 1.24.
+> Make sure, that the program does not choose another version/toolchain and is compatible with go 1.24.
+> The output `package advocate is not in std ` or similar indicates a problem with the used version.
+
 ### Preparation
+
 Before Advocate can be used, it must first be build.
 
 First you need to build the [analyzer](analyzer).
 It can be build using the standard
+
 ```shell
 go build
 ```
+
 command.
 
 
 Additionally, the modified go runtime must be build. The runtime can be found in [go-patch](go-patch).
 To build it run the
+
 ```shell
 ./src/make.bash
 ```
+
 or
+
 ```shell
 ./src/make.bat
 ```
+
 script. This will create a go executable in the `bin` directory.
 
 
@@ -77,11 +83,13 @@ script. This will create a go executable in the `bin` directory.
 
 The complete analysis is done with the [analyzer](analyzer).
 
+Currently, the analysis and fuzzing can only be applied to unit tests.
+
 ADVOCATE has two different modes.
 
 #### Mode: analysis
-The analysis mode is the main mode to analyzer tests or the main function of a
-program.
+
+The analysis mode is the main mode to analyzer tests.
 
 For the (specified) tests or the main function, it will run the program and
 record the trace, analyze the trace and, if something was found,
@@ -89,38 +97,39 @@ create a trace that should trigger the found bug and replay this trace,
 to confirm the bug.
 
 It can be run with
+
 ```shell
 ./analyzer analysis [args]
 ```
-to run tests, or with
-```shell
-./analyzer analysis -main [args]
-```
-to analyze the main function.
 
 The following arg is required:
 
 - `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder
 
-If the main function is analyzed, the following arg is also required:
+<!-- If the main function is analyzed, the following arg is also required:
 
-- `-exec [path]`: Name of the executable of the program when building with `go build` (For programs that cannot simply be build with `go build` only the tests can be analyzed).
+- `-exec [path]`: Name of the executable of the program when building with `go build` (For programs that cannot simply be build with `go build` only the tests can be analyzed). -->
 
-If tests are analyzed this can be used to specify a single test to be analyzed:
+If only a single test should be analyzed, this can be set with
 
 - `-exec [testName]`
 
-If not set, all tests will be analyzed.
+If not set, all tests will be analyzed. Be aware, that this will run all tests
+with this name, meaning if multiple tests have the same name, they will all be run
+
+To set timeouts, you can set
+
+- `-timeoutRec [to in s]`: Timeout for the recording in seconds (Default: 10 min)
+- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 * recording time)
 
 To get additional information, the following tags can also be set:
 
 - `-recordTime`: measure the runtime for the different phases and create a time file
-- `-stats`: create multiple statistic files as described [here](doc/statistics.md)\
+- `-stats`: create multiple statistic files as described [here](doc/statistics.md)
 - `-notExec`: Find operations, that have never been executed
+- `-keepTrace`: Do not delete the trace after analysis
 
 If one of these are set, the `-prog [name]` tag must be set to indicate the name of the program.
-
-There are additional tags. To get them, run `./analyzer analysis -h`.
 
 While running, the analyzer will create a `advocateResult` folder. In it, it will create on
 folder for each of the analyzed tests. In this folder it will create a file
@@ -129,19 +138,42 @@ overview over all detected bugs. Additionally, it will create a bug folder.
 this folder contains one file for each of the found bugs, detailing the
 type and position of the bug and information about the replay (if performed).
 
-The created statistic and time files can also be found in the `advocateResult` folder
+The created statistic and time files can also be found in the `advocateResult` folder.
+
+An example command would be
+
+```shell
+./analyzer analysis  -path ~/pathToProg/progDir/ -prog progName
+```
 
 #### Mode: fuzzing
-To run the fuzzing as described [here](doc/fuzzing.md), the following commands can be used:
+
+To run the fuzzing as described [here](doc/fuzzing.md), the following command can be used:
 
 ```shell
 ./analyzer fuzzing [args]
-./analyzer fuzzing -main [args]
 ```
 
-The required and additional tags as well as the output files are the same as for the tool mode.
+To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
+The available modes are:
+
+- `GFuzz`: Run the [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing
+- `GFuzzHB`: Run the improved [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing using happens-before information
+- `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
+- `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
+- `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md) based fuzzing
+- `GoPieHB`: Run the improved [GoPie](doc/fuzzing/GoPie.md) based fuzzing using happens-before information
+
+All other required and additional tags as well as the output files are the same as for the tool mode.
+
+An example command would therefore be
+
+```shell
+./analyzer fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
+```
 
 ### Warning
+
 It is the users responsibility of the user to make sure, that the input to
 the program, including e.g. API calls are equal for the recording and the
 tracing. Otherwise the replay is likely to get stuck.

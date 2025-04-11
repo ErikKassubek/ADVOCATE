@@ -46,7 +46,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 		return
 	}
 
-	runAnalysisOnExitCodes(false)
+	runAnalysisOnExitCodes(fuzzing)
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 }
 
@@ -64,7 +64,7 @@ func runAnalysisOnExitCodes(all bool) {
 	}
 
 	switch exitCode {
-	case 2: // close on closed
+	case ExitCodeCloseClose: // close on closed
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -75,7 +75,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case 3: // close on nil
+	case ExitCodeCloseNil: // close on nil
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -86,7 +86,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case 4: // negative wg counter
+	case ExitCodeNegativeWG: // negative wg counter
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -97,7 +97,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case 5: // unlock of not locked mutex
+	case ExitCodeUnlockBeforeLock: // unlock of not locked mutex
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -108,7 +108,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, results.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case 6: // unknown panic
+	case ExitCodePanic: // unknown panic
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,

@@ -15,10 +15,8 @@ import (
 	"analyzer/utils"
 )
 
-/*
- * Info for a channel wether it was closed in all runs,
- * never closed or in some runs closed and in others not
- */
+// Info for a channel wether it was closed in all runs,
+// never closed or in some runs closed and in others not
 type closeInfo string
 
 const (
@@ -51,15 +49,14 @@ var (
 	runFullAnalysis  = true
 )
 
-/*
- * For each channel that has ever been created, store the
- * following information:
- * 	globalId: file:line of creation with new
- * 	localId: id in this run
- * 	qSize: buffer size of the channel
- * 	maxQSize: maximum buffer fullness over all runs
- * 	whether the channel has always/never/sometimes been closed
- */
+// For each channel that has ever been created, store the
+// following information:
+//
+//   - globalId: file:line of creation with new
+//   - localId: id in this run
+//   - qSize: buffer size of the channel
+//   - maxQSize: maximum buffer fullness over all runs
+//   - whether the channel has always/never/sometimes been closed
 type fuzzingChannel struct {
 	globalID  string
 	localID   int
@@ -68,17 +65,16 @@ type fuzzingChannel struct {
 	maxQCount int
 }
 
-/*
- * For each pair of channel operations, that have communicated, store the following information:
- * 	 sendID: file:line:caseSend of the send
- * 	   caseSend: If the send is in a select, the case ID, otherwise 0
- * 	 recvID: file:line:Recv of the recv
- * 	   caseRecv: If the recv is in a select, the case ID, otherwise 0
- * 	 chanID: local ID of the channel
- * 	 sendSel: id of the select case, if not part of select: -2
- * 	 recvSel: id of the select case, if not part of select: -2
- * 	 com: number of communication in this run of avg of communications over all runs
- */
+// For each pair of channel operations, that have communicated, store the following information:
+//
+//   - sendID: file:line:caseSend of the send
+//   - caseSend: If the send is in a select, the case ID, otherwise 0
+//   - recvID: file:line:Recv of the recv
+//   - caseRecv: If the recv is in a select, the case ID, otherwise 0
+//   - chanID: local ID of the channel
+//   - sendSel: id of the select case, if not part of select: -2
+//   - recvSel: id of the select case, if not part of select: -2
+//   - com: number of communication in this run of avg of communications over all runs
 type fuzzingPair struct {
 	sendID  string
 	recvID  string
@@ -88,14 +84,14 @@ type fuzzingPair struct {
 	com     float64
 }
 
-/*
- * Merge the close information for a channel from a trace into the internal
- * Args:
- * 	trace (closeInfo): info from the last recorded run
- * 	file (closeInfo): stored close info
- * Returns:
- * 	closeInfo: the new close info for the channel
- */
+// Merge the close information for a channel from a trace into the internal
+//
+// Parameter:
+//   - trace (closeInfo): info from the last recorded run
+//   - file (closeInfo): stored close info
+//
+// Returns:
+//   - closeInfo: the new close info for the channel
 func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
 	if trace != file {
 		return sometimes
@@ -103,10 +99,8 @@ func mergeCloseInfo(trace closeInfo, file closeInfo) closeInfo {
 	return file
 }
 
-/*
- * For each channel merge the close info from the last run into the
- * internal close info for all ever executed channel close
- */
+// For each channel merge the close info from the last run into the
+// internal close info for all ever executed channel close
 func mergeTraceInfoIntoFileInfo() {
 	// channel info
 	for _, cit := range channelInfoTrace {
@@ -142,9 +136,7 @@ func mergeTraceInfoIntoFileInfo() {
 	}
 }
 
-/*
- * Reset the fuzzing data that is unique for each run
- */
+// Reset the fuzzing data that is unique for each run
 func clearData() {
 	// clear the trace data
 	channelInfoTrace = make(map[int]fuzzingChannel)
@@ -153,10 +145,8 @@ func clearData() {
 	elemsByID = make(map[int][]analysis.TraceElement)
 }
 
-/*
- * Reset the fuzzing data that is unique for each test but used for each fuzzing
- * run of a test
- */
+// Reset the fuzzing data that is unique for each test but used for each fuzzing
+// run of a test
 func clearDataFull() {
 	numberOfPreviousRuns = 0
 	maxGFuzzScore = 0.0

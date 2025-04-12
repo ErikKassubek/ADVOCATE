@@ -12,12 +12,11 @@ package fuzzing
 
 import "math"
 
-/*
- * Calculate how many gFuzz mutations should be created for a given
- * trace
- * Returns:
- * 	int: the number of mutations
- */
+// Calculate how many gFuzz mutations should be created for a given
+// trace
+//
+// Returns:
+//   - int: the number of mutations
 func numberMutations() int {
 	score := calculateScore()
 	maxGFuzzScore = math.Max(score, maxGFuzzScore)
@@ -25,9 +24,7 @@ func numberMutations() int {
 	return int(math.Ceil(5.0 * score / maxGFuzzScore))
 }
 
-/*
- * Calculate the score of the given run
- */
+// Calculate the score of the given run
 func calculateScore() float64 {
 	const fact1 = 10.0
 	const fact2 = 10.0

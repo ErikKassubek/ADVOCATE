@@ -12,16 +12,14 @@ package fuzzing
 
 import "analyzer/analysis"
 
-/*
-We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
-We define <c, c'> in CPOP2, if c and c' are operations in different routines
-but on the same primitive.
-From this we define the relations Rel1 and Rel2 with the following rules:
-Rule 1: exists c, c', <c, c'> in CPOP1 -> c' in Rel1(c)  (same routine, element before and after)
-Rule 2: exists c, c', <c, c'> in CPOP2 -> c' in Rel2(c)  (different routine, same primitive)
-Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
-Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
-*/
+// We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
+// We define <c, c'> in CPOP2, if c and c' are operations in different routines
+// but on the same primitive.
+// From this we define the relations Rel1 and Rel2 with the following rules:
+// Rule 1: exists c, c', <c, c'> in CPOP1 -> c' in Rel1(c)  (same routine, element before and after)
+// Rule 2: exists c, c', <c, c'> in CPOP2 -> c' in Rel2(c)  (different routine, same primitive)
+// Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
+// Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
 const (
 	Before = 0
@@ -33,11 +31,10 @@ var (
 	counterCPOP2 = 0
 )
 
-/*
- * For each element in a routine trace, store the rule 1 information
- * Args:
- * 	routineTrace []analysis.TraceElement: the list of elems in the same trace
- */
+// For each element in a routine trace, store the rule 1 information
+//
+// Parameter:
+//   - routineTrace []analysis.TraceElement: the list of elems in the same trace
 func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	var prevValid analysis.TraceElement
 
@@ -53,11 +50,10 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	}
 }
 
-/*
- * For each element in a routine trace, add it to the map from id to operation
- * Args:
- * 	elem (analysis.TraceElement): Element to add
- */
+// For each element in a routine trace, add it to the map from id to operation
+//
+// Parameter:
+//   - elem (analysis.TraceElement): Element to add
 func calculateRelRule2AddElem(elem analysis.TraceElement) {
 	if !isGoPieElem(elem) && !useHBInfoFuzzing {
 		return
@@ -71,9 +67,7 @@ func calculateRelRule2AddElem(elem analysis.TraceElement) {
 	counterCPOP2++
 }
 
-/*
- * For all elements apply rule 2
- */
+// For all elements apply rule 2
 func calculateRelRule2() {
 	for _, elems := range elemsByID {
 		for i := 0; i < len(elems)-1; i++ {
@@ -89,9 +83,7 @@ func calculateRelRule2() {
 	}
 }
 
-/*
- * For all elements apply rules 3 and 4
- */
+// For all elements apply rules 3 and 4
 func calculateRelRule3And4() {
 	hasChanged := true
 
@@ -128,10 +120,8 @@ func calculateRelRule3And4() {
 
 }
 
-/*
- * GoPie only looks at fork, mutex, rwmutex and channel (and select)
- * Return if the elem is one of them
- */
+// GoPie only looks at fork, mutex, rwmutex and channel (and select)
+// Return if the elem is one of them
 func isGoPieElem(elem analysis.TraceElement) bool {
 	validTypes := []string{"R", "M", "C", "S"}
 	elemTypeShort := elem.GetObjType(false)

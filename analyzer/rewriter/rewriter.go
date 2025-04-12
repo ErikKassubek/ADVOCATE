@@ -18,19 +18,19 @@ import (
 	"errors"
 )
 
-/*
- * Create a new trace from the given bug
- * Args:
- * 	trace (*analysis.Trace): Pointer to the trace to rewrite
- * 	bug (Bug): The bug to create a trace for
- * 	rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
- * 	retwriteOnce (bool): skip double bugs
- * Returns:
- * 	bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
- * 	skip: true if the rewrite can be skipped, because it was rewritten before
- * 	code: expected exit code
- * 	error: An error if the trace could not be created
- */
+// Create a new trace from the given bug
+//
+// Parameter:
+//   - trace (*analysis.Trace): Pointer to the trace to rewrite
+//   - bug (Bug): The bug to create a trace for
+//   - rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
+//   - retwriteOnce (bool): skip double bugs
+//
+// Returns:
+//   - bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
+//   - skip: true if the rewrite can be skipped, because it was rewritten before
+//   - code: expected exit code
+//   - error: An error if the trace could not be created
 func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[bugs.ResultType][]string, rewriteOnce bool) (rewriteNeeded bool, skip bool, code int, err error) {
 	if rewriteOnce {
 		bugString := bug.GetBugString()

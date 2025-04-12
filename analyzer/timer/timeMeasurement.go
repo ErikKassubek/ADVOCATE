@@ -48,12 +48,11 @@ var (
 	measureTime = false
 )
 
-/*
- * Init time measurement
- * Args:
- * 	mt (bool): if true, time is print into a time file
- * 	progPath (string):  path to the result folder
- */
+// Init time measurement
+//
+// Parameter:
+//   - mt (bool): if true, time is print into a time file
+//   - progPath (string):  path to the result folder
 func Init(mt bool, progPath string) {
 	measureTime = mt
 
@@ -65,67 +64,58 @@ func Init(mt bool, progPath string) {
 	}
 }
 
-/*
- * Start a specified timer
- * Args:
- * 	t int: the timer to start
- */
+// Start a specified timer
+//
+// Parameter:
+//   - t int: the timer to start
 func Start(t int) {
 	timer[t].Start()
 }
 
-/*
- * Stop a specified timer
- * Args:
- * 	t int: the timer to stop
- */
+// Stop a specified timer
+//
+// Parameter:
+//   - t int: the timer to stop
 func Stop(t int) {
 	timer[t].Stop()
 }
 
-/*
- * Get the current time from a specified counter
- * Args:
- * 	t int: the timer to start
- * Returns:
- * 	time.Duration: the current time of the specified counter
- */
+// Get the current time from a specified counter
+//
+// Parameter:
+//   - t int: the timer to start
+//
+// Returns:
+//   - time.Duration: the current time of the specified counter
 func GetTime(t int) time.Duration {
 	return timer[t].GetTime()
 }
 
-/*
- * Reset all counter to zero
- */
+// Reset all counter to zero
 func ResetAll() {
 	for i := range numberTimer {
 		timer[i].Reset()
 	}
 }
 
-/*
- * Reset all counter to zero that are test specific
- */
+// Reset all counter to zero that are test specific
 func ResetTest() {
 	for i := 1; i < numberTimer; i++ {
 		timer[i].Reset()
 	}
 }
 
-/*
- * Reset all counter to zero that are specific for each fuzzing run
- */
+// Reset all counter to zero that are specific for each fuzzing run
 func ResetFuzzing() {
 	for i := 3; i < numberTimer; i++ {
 		timer[i].Reset()
 	}
 }
 
-/*
- * Get a string representation of test specific timer values
- * Returns:
- * 	string: representation of test specific timer values
- */
+// Get a string representation of test specific timer values
+//
+// Returns:
+//   - string: representation of test specific timer values
 func ToString() string {
 	res := ""
 

@@ -17,14 +17,13 @@ import (
 	"strconv"
 )
 
-/*
- * Add a lock to the lockSet of a routine. Also save the vector clock of the acquire
- * Args:
- * 	routine (int): The routine id
- * 	lock (int): The id of the mutex
- * 	tId (string): The trace id of the mutex operation
- * 	vc (VectorClock): The current vector clock
- */
+// Add a lock to the lockSet of a routine. Also save the vector clock of the acquire
+//
+// Parameter:
+//   - routine (int): The routine id
+//   - lock (int): The id of the mutex
+//   - tId (string): The trace id of the mutex operation
+//   - vc (VectorClock): The current vector clock
 func lockSetAddLock(mu *TraceElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -58,12 +57,11 @@ func lockSetAddLock(mu *TraceElementMutex, vc *clock.VectorClock) {
 	mostRecentAcquire[routine][id] = elemWithVc{vc, mu}
 }
 
-/*
- * Remove a lock from the lockSet of a routine
- * Args:
- * 	routine (int): The routine id
- * 	lock (int): The id of the mutex
- */
+// Remove a lock from the lockSet of a routine
+//
+// Parameter:
+//   - routine (int): The routine id
+//   - lock (int): The id of the mutex
 func lockSetRemoveLock(routine int, lock int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -79,14 +77,13 @@ func lockSetRemoveLock(routine int, lock int) {
 	delete(lockSet[routine], lock)
 }
 
-/*
- * Check for mixed deadlocks
- * Args:
- * 	routineSend (int): The routine id of the send operation
- * 	routineRevc (int): The routine id of the receive operation
- * 	tIDSend (string): The trace id of the channel send
- * 	tIDSend (string): The trace id of the channel recv
- */
+// Check for mixed deadlocks
+//
+// Parameter:
+//   - routineSend (int): The routine id of the send operation
+//   - routineRevc (int): The routine id of the receive operation
+//   - tIDSend (string): The trace id of the channel send
+//   - tIDSend (string): The trace id of the channel recv
 func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tIDRecv string) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -120,35 +117,33 @@ func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tID
 	}
 }
 
-/*
-func checkForMixedDeadlock2(routine int) {
-	for m := range lockSet[routine] {
-		// if the lock was not acquired by the routine, continue. Should not happen
-		vc1, okS := mostRecentAcquire[routine][m]
-		if !okS {
-			continue
-		}
+// func checkForMixedDeadlock2(routine int) {
+// 	for m := range lockSet[routine] {
+// 		// if the lock was not acquired by the routine, continue. Should not happen
+// 		vc1, okS := mostRecentAcquire[routine][m]
+// 		if !okS {
+// 			continue
+// 		}
 
-		for routine2, acquire := range mostRecentAcquire {
-			if routine == routine2 {
-				continue
-			}
+// 		for routine2, acquire := range mostRecentAcquire {
+// 			if routine == routine2 {
+// 				continue
+// 			}
 
-			if vc2, ok := acquire[m]; ok {
-				weakHappensBefore := clock.GetHappensBefore(vc1, vc2)
-				if weakHappensBefore != Concurrent {
-					continue
-				}
+// 			if vc2, ok := acquire[m]; ok {
+// 				weakHappensBefore := clock.GetHappensBefore(vc1, vc2)
+// 				if weakHappensBefore != Concurrent {
+// 					continue
+// 				}
 
-				// found possible mixed deadlock
-				found := "Possible mixed deadlock:\n"
-				found += "\tlock1: " + lockSet[routine][m] + "\n"
-				found += "\tlock2: " + lockSet[routine2][m]
+// 				// found possible mixed deadlock
+// 				found := "Possible mixed deadlock:\n"
+// 				found += "\tlock1: " + lockSet[routine][m] + "\n"
+// 				found += "\tlock2: " + lockSet[routine2][m]
 
-				results.Result(found, results.CRITICAL)
-			}
+// 				results.Result(found, results.CRITICAL)
+// 			}
 
-		}
-	}
-}
-*/
+// 		}
+// 	}
+// }

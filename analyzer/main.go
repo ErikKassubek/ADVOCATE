@@ -90,9 +90,7 @@ const (
 	FuzzNoAna   = 3
 )
 
-/*
- * Main function
- */
+// Main function
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
@@ -268,9 +266,7 @@ func main() {
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
 }
 
-/*
- * Starting point for fuzzing
- */
+// Starting point for fuzzing
 func modeFuzzing() {
 	if progName == "" {
 		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
@@ -288,10 +284,8 @@ func modeFuzzing() {
 	}
 }
 
-/*
- * Start point for the toolchain
- * This will run, analyze and replay a given program or test
- */
+// Start point for the toolchain
+// This will run, analyze and replay a given program or test
 func modeToolchain(mode string, numRerecorded int) {
 	checkProgPath()
 	checkVersion()
@@ -309,26 +303,26 @@ func modeToolchain(mode string, numRerecorded int) {
 	}
 }
 
-/*
- * modeAnalyzer is the starting point to the analyzer.
- * This function will read the trace at a stored path, analyze it and,
- * if needed, rewrite the trace.
- * Args:
- * 	pathTrace (string): path to the trace to be analyzed
- * 	noRewrite (bool): if set, rewrite is disabled
- * 	analysisCases (map[string]bool): map of analysis cases to run
- * 	outReadable (string): path to the readable result file
- * 	outMachine (string): path to the machine result file
- * 	ignoreAtomics (bool): if true, atomics are ignored for replay
- * 	fifo (bool): assume, that the channels work as a fifo queue
- * 	ignoreCriticalSection (bool): ignore the ordering of lock/unlock for the hb analysis
- * 	rewriteAll (bool): rewrite bugs that have been rewritten before
- * 	newTrace (string): path to where the rewritten trace should be created
- * 	fuzzingRun (int): number of fuzzing run (0 for recording, then always add 1)
- * 	onlyAPanicAndLeak (bool): only check for actual leaks and panics, do not calculate HB information
- * Returns:
- * 	error
- */
+// modeAnalyzer is the starting point to the analyzer.
+// This function will read the trace at a stored path, analyze it and,
+// if needed, rewrite the trace.
+//
+// Parameter:
+//   - pathTrace (string): path to the trace to be analyzed
+//   - noRewrite (bool): if set, rewrite is disabled
+//   - analysisCases (map[string]bool): map of analysis cases to run
+//   - outReadable (string): path to the readable result file
+//   - outMachine (string): path to the machine result file
+//   - ignoreAtomics (bool): if true, atomics are ignored for replay
+//   - fifo (bool): assume, that the channels work as a fifo queue
+//   - ignoreCriticalSection (bool): ignore the ordering of lock/unlock for the hb analysis
+//   - rewriteAll (bool): rewrite bugs that have been rewritten before
+//   - newTrace (string): path to where the rewritten trace should be created
+//   - fuzzingRun (int): number of fuzzing run (0 for recording, then always add 1)
+//   - onlyAPanicAndLeak (bool): only check for actual leaks and panics, do not calculate HB information
+//
+// Returns:
+//   - error
 func modeAnalyzer(pathTrace string, noRewrite bool,
 	analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
@@ -465,14 +459,14 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	return nil
 }
 
-/*
- * Parse the given analysis cases
- * Args:
- * 	cases (string): The string of analysis cases to parse
- * Returns:
- * 	map[string]bool: A map of the analysis cases and if they are set
- * 	error: An error if the cases could not be parsed
- */
+// Parse the given analysis cases
+//
+// Parameter:
+//   - cases (string): The string of analysis cases to parse
+//
+// Returns:
+//   - map[string]bool: A map of the analysis cases and if they are set
+//   - error: An error if the cases could not be parsed
 func parseAnalysisCases(cases string) (map[string]bool, error) {
 	analysisCases := map[string]bool{
 		"all":                  false, // all cases enabled
@@ -484,7 +478,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		"leak":                 false,
 		"selectWithoutPartner": false,
 		"unlockBeforeLock":     false,
-		"cyclicDeadlock":       false, // only for comparison with resource deadlock
 		"mixedDeadlock":        false,
 		"resourceDeadlock":     false,
 	}
@@ -497,9 +490,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		for c := range analysisCases {
 			analysisCases[c] = true
 		}
-
-		// remove to run old cyclic deadlock detection
-		analysisCases["cyclicDeadlock"] = false
 
 		// takes to long, only take out for tests
 		analysisCases["resourceDeadlock"] = false
@@ -529,8 +519,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		case 'u':
 			analysisCases["unlockBeforeLock"] = true
 		case 'c':
-			// enable to run old cyclic deadlock detection
-			// analysisCases["cyclicDeadlock"] = true
 			analysisCases["resourceDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true
@@ -541,19 +529,19 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 	return analysisCases, nil
 }
 
-/*
- * Rewrite the trace file based on given analysis results
- * Args:
- * 	outMachine (string): The path to the analysis result file
- * 	newTrace (string): The path where the new traces folder will be created
- * 	resultIndex (int): The index of the result to use for the reordered trace file
- * 	numberOfRoutines (int): The number of routines in the trace
- * 	rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
- * Returns:
- * 	bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
- * 	bool: true if rewrite was skipped because of double
- * 	error: An error if the trace file could not be created
- */
+// Rewrite the trace file based on given analysis results
+//
+// Parameter:
+//   - outMachine (string): The path to the analysis result file
+//   - newTrace (string): The path where the new traces folder will be created
+//   - resultIndex (int): The index of the result to use for the reordered trace file
+//   - numberOfRoutines (int): The number of routines in the trace
+//   - rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
+//
+// Returns:
+//   - bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
+//   - bool: true if rewrite was skipped because of double
+//   - error: An error if the trace file could not be created
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
 	timer.Start(timer.Rewrite)
@@ -593,15 +581,15 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	return rewriteNeeded, false, nil
 }
 
-/*
- * getFolderTrace returns the path to the folder containing the trace, given the
- * path to the trace
- * Args:
- * 	pathTrace (string): path to the traces
- * Returns:
- * 	string: path to the folder containing the trace folder
- * 	error
- */
+// getFolderTrace returns the path to the folder containing the trace, given the
+// path to the trace
+//
+// Parameter:
+//   - pathTrace (string): path to the traces
+//
+// Returns:
+//   - string: path to the folder containing the trace folder
+//   - error
 func getFolderTrace(pathTrace string) (string, error) {
 	folderTrace, err := filepath.Abs(pathTrace)
 	if err != nil {
@@ -612,9 +600,7 @@ func getFolderTrace(pathTrace string) (string, error) {
 	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
 }
 
-/*
- * printHelp prints the usage help. Can be called with -h
- */
+// printHelp prints the usage help. Can be called with -h
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
 	println("There are two different modes of operation:")
@@ -625,11 +611,10 @@ func printHelp() {
 	printHelpMode("fuzzing")
 }
 
-/*
- * printHelpMode prints the help for one mode
- * Args:
- * 	mode (string): the mode (analysis or fuzzing)
- */
+// printHelpMode prints the help for one mode
+//
+// Parameter:
+//   - mode (string): the mode (analysis or fuzzing)
 func printHelpMode(mode string) {
 	switch mode {
 	case "analysis":
@@ -667,10 +652,8 @@ func printHelpMode(mode string) {
 	}
 }
 
-/*
- * checkProgPath checks if the provided path to the program that should
- * be run/analyzed exists. If not, it panics.
- */
+// checkProgPath checks if the provided path to the program that should
+// be run/analyzed exists. If not, it panics.
 func checkProgPath() {
 	_, err := os.Stat(progPath)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
@@ -679,14 +662,12 @@ func checkProgPath() {
 	}
 }
 
-/*
- * checkVersion checks the version of the program to be analyzed.
- * Advocate is implemented in and for go1.24. It the analyzed program has another
- * version, especially if the other version is also installed on the machine,
- * this can lead to problems. checkVersion therefore reads the version of the
- * analyzed program and if its not 1.24, a warning and information is printed
- * to the terminal
- */
+// checkVersion checks the version of the program to be analyzed.
+// Advocate is implemented in and for go1.24. It the analyzed program has another
+// version, especially if the other version is also installed on the machine,
+// this can lead to problems. checkVersion therefore reads the version of the
+// analyzed program and if its not 1.24, a warning and information is printed
+// to the terminal
 func checkVersion() {
 	var goModPath string
 

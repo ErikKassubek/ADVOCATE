@@ -19,9 +19,7 @@ import (
 	"strings"
 )
 
-/*
-ResultType is a type for the possible type of a fond bug including its id
-*/
+// ResultType is a type for the possible type of a fond bug including its id
 type ResultType string
 
 const (
@@ -64,26 +62,26 @@ const (
 	// SNotExecutedWithPartner = "S00"
 )
 
-/*
- * Type to store a specific id in a select
- * Parameter:
- * 	ID (int): id of the involved channel
- * 	ObjType (string): object type
- * 	Index (int): internal index of the select int the case
- */
+// Type to store a specific id in a select
+//
+// Parameter:
+//   - ID (int): id of the involved channel
+//   - ObjType (string): object type
+//   - Index (int): internal index of the select int the case
 type BugElementSelectCase struct {
 	ID      int
 	ObjType string
 	Index   int
 }
 
-/* GetBugElementSelectCase builds a BugElementSelectCase from a string
- * Args:
- * 	arg (string): the string representing the case
- * Returns:
- * 	BugElementSelectCase: the bug select as a BugElementSelectCase
- * 	error
- */
+// GetBugElementSelectCase builds a BugElementSelectCase from a string
+//
+// Parameter:
+//   - arg (string): the string representing the case
+//
+// Returns:
+//   - BugElementSelectCase: the bug select as a BugElementSelectCase
+//   - error
 func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 	elems := strings.Split(arg, ":")
 	id, err := strconv.Atoi(elems[1])
@@ -98,16 +96,15 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 	return BugElementSelectCase{id, objType, index}, nil
 }
 
-/*
- * Bug is a type to describe and store a found bug
- * Args:
- * 	Type (ResultType): The type of the bug
- * 	TraceElement1 ([]analysis.TraceElement): first list of trace element involved in the bug
- * 		normally the elements that actually cause the bug, e.g. for send on close the send
- * 	TraceElement2 ([]analysis.TraceElement): second list of trace element involved in the bug
- * 		normally the elements indirectly involved or elements to solve the bug (possible partner),
- * 		e.g. for send on close the close
- */
+// Bug is a type to describe and store a found bug
+//
+// Parameter:
+//   - Type (ResultType): The type of the bug
+//   - TraceElement1 ([]analysis.TraceElement): first list of trace element involved in the bug
+//     normally the elements that actually cause the bug, e.g. for send on close the send
+//   - TraceElement2 ([]analysis.TraceElement): second list of trace element involved in the bug
+//     normally the elements indirectly involved or elements to solve the bug (possible partner),
+//     e.g. for send on close the close
 type Bug struct {
 	Type          ResultType
 	TraceElement1 []analysis.TraceElement
@@ -115,11 +112,10 @@ type Bug struct {
 	TraceElement2 []analysis.TraceElement
 }
 
-/*
- * GetBugString Convert the bug to a string. Mostly used internally
- * Returns:
- * 	string: The bug as a string
- */
+// GetBugString Convert the bug to a string. Mostly used internally
+//
+// Returns:
+//   - string: The bug as a string
 func (b Bug) GetBugString() string {
 	paths := make([]string, 0)
 
@@ -139,11 +135,10 @@ func (b Bug) GetBugString() string {
 	return res
 }
 
-/*
- * ToString convert the bug to a string. Mostly used for output
- * Returns:
- * 	string: The bug as a string
- */
+// ToString convert the bug to a string. Mostly used for output
+//
+// Returns:
+//   - string: The bug as a string
 func (b Bug) ToString() string {
 	typeStr := ""
 	arg1Str := ""
@@ -277,22 +272,20 @@ func (b Bug) ToString() string {
 	return res
 }
 
-/*
- * Print the bug
- */
+// Print the bug
 func (b Bug) Println() {
 	println(b.ToString())
 }
 
-/*
- * Process the bug that was selected from the analysis results
- * Args:
- * 	bugStr: The bug that was selected
- * Returns:
- * 	bool: true, if the bug was not a possible, but a actually occuring bug
- * 	Bug: The bug that was selected
- * 	error: An error if the bug could not be processed
- */
+// Process the bug that was selected from the analysis results
+//
+// Parameter:
+//   - bugStr: The bug that was selected
+//
+// Returns:
+//   - bool: true, if the bug was not a possible, but a actually occuring bug
+//     Bug: The bug that was selected
+//     error: An error if the bug could not be processed
 func ProcessBug(bugStr string) (bool, Bug, error) {
 	bug := Bug{}
 

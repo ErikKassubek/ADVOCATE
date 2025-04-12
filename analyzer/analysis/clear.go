@@ -16,9 +16,7 @@ import (
 	"analyzer/results"
 )
 
-/*
- * Clear the data structures used for the analysis
- */
+// Clear the data structures used for the analysis
 func Clear() {
 	ClearTrace()
 	ClearData()
@@ -27,7 +25,7 @@ func Clear() {
 }
 
 func ClearTrace() {
-	InitTrace()
+	SetMainTraceToNewTrace()
 }
 
 func ClearData() {
@@ -74,9 +72,6 @@ func ClearData() {
 	holdRecv = make([]holdObj, 0)
 
 	currentState = State{}
-	currentNode = make(map[int][]*lockGraphNode)
-	lockGraphs = make(map[int]*lockGraphNode)           // routine -> lockGraphNode
-	nodesPerID = make(map[int]map[int][]*lockGraphNode) // id -> routine -> []*lockGraphNode
 
 	numberSelectCasesWithPartner = 0
 

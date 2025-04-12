@@ -19,16 +19,15 @@ import (
 	"strings"
 )
 
-/*
- * Run for channel operation without a post event. Check if the operation has
- * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
- * If so, add an error or warning to the result.
- * If not, add to leakingChannels, for later check.
- * Args:
- * 	ch (*TraceElementChannel): The trace element
- * 	vc (VectorClock): The vector clock of the operation
- */
-//  func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
+// Run for channel operation without a post event. Check if the operation has
+// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// If so, add an error or warning to the result.
+// If not, add to leakingChannels, for later check.
+//
+// Parameter:
+//   - ch (*TraceElementChannel): The trace element
+//   - vc (VectorClock): The vector clock of the operation
+//   - func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
 func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 	buffered := (ch.qSize != 0)
 
@@ -134,17 +133,16 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 	}
 }
 
-/*
- * Run for channel operation with a post event. Check if the operation would be
- * possible communication partner for a stuck operation in leakingChannels.
- * If so, add an error or warning to the result and remove the stuck operation.
- * Args:
- * 	routineID (int): The routine id
- * 	objID (int): The channel id
- * 	vc (VectorClock): The vector clock of the operation
- * 	opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
- * 	buffered (bool): If the channel is buffered
- */
+// Run for channel operation with a post event. Check if the operation would be
+// possible communication partner for a stuck operation in leakingChannels.
+// If so, add an error or warning to the result and remove the stuck operation.
+//
+// Parameter:
+//   - routineID (int): The routine id
+//   - objID (int): The channel id
+//   - vc (VectorClock): The vector clock of the operation
+//   - opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
+//   - buffered (bool): If the channel is buffered
 func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType int, buffered bool) bool {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -251,10 +249,8 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 	return res
 }
 
-/*
- * After all operations have been analyzed, check if there are still leaking
- * operations without a possible partner.
- */
+// After all operations have been analyzed, check if there are still leaking
+// operations without a possible partner.
 func checkForLeak() {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -387,18 +383,17 @@ func checkForLeak() {
 	}
 }
 
-/*
- * Run for select operation without a post event. Check if the operation has
- * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
- * If so, add an error or warning to the result.
- * If not, add all elements to leakingChannels, for later check.
- * Args:
- * 	se (*TraceElementSelect): The trace element
- * 	ids (int): The channel ids
- * 	buffered ([]bool): If the channels are buffered
- * 	vc (*VectorClock): The vector clock of the operation
- * 	opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
- */
+// Run for select operation without a post event. Check if the operation has
+// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// If so, add an error or warning to the result.
+// If not, add all elements to leakingChannels, for later check.
+//
+// Parameter:
+//   - se (*TraceElementSelect): The trace element
+//   - ids (int): The channel ids
+//   - buffered ([]bool): If the channels are buffered
+//   - vc (*VectorClock): The vector clock of the operation
+//   - opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
 func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -508,11 +503,10 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 	}
 }
 
-/*
- * Run for mutex operation without a post event. Show an error in the results
- * Args:
- * 	mu (*TraceElementMutex): The trace element
- */
+// Run for mutex operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - mu (*TraceElementMutex): The trace element
 func CheckForLeakMutex(mu *TraceElementMutex) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -557,13 +551,12 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 		"mutex", []results.ResultElem{arg1}, "last", []results.ResultElem{arg2})
 }
 
-/*
- * Add the most recent acquire operation for a mutex
- * Args:
- * 	mu (*TraceElementMutex): The trace element
- * 	vc (VectorClock): The vector clock of the operation
- * 	op (int): The operation on the mutex
- */
+// Add the most recent acquire operation for a mutex
+//
+// Parameter:
+//   - mu (*TraceElementMutex): The trace element
+//   - vc (VectorClock): The vector clock of the operation
+//   - op (int): The operation on the mutex
 func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -571,11 +564,10 @@ func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op 
 	mostRecentAcquireTotal[mu.id] = ElemWithVcVal{Elem: mu, Vc: vc.Copy(), Val: op}
 }
 
-/*
- * Run for wait group operation without a post event. Show an error in the results
- * Args:
- * 	wa (*TraceElementWait): The trace element
- */
+// Run for wait group operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - wa (*TraceElementWait): The trace element
 func CheckForLeakWait(wa *TraceElementWait) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -593,11 +585,10 @@ func CheckForLeakWait(wa *TraceElementWait) {
 		"wait", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
-/*
- * Run for conditional varable operation without a post event. Show an error in the results
- * Args:
- * 	co (*TraceElementCond): The trace element
- */
+// Run for conditional varable operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - co (*TraceElementCond): The trace element
 func CheckForLeakCond(co *TraceElementCond) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)

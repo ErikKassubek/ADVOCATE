@@ -20,12 +20,11 @@ import (
 	"strings"
 )
 
-/*
- * getNewDataMap provides a new map to store the analyzer stats.
- * It has the form bugTypeID -> counter
- * Returns:
- * 	map[string]int: The new map
- */
+// getNewDataMap provides a new map to store the analyzer stats.
+// It has the form bugTypeID -> counter
+//
+// Returns:
+//   - map[string]int: The new map
 func getNewDataMap() map[string]int {
 	keys := []string{
 		"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
@@ -41,13 +40,12 @@ func getNewDataMap() map[string]int {
 	return m
 }
 
-/*
- * getNewDataMapMap provides a map used for collecting statistics of the analysis.
- * The fields are detected, replayWritten, replaySuccessful, unexpectedPanic.
- * Each field contains a data map as created by getNewDataMap()
- * Returns:
- * 	map[string]map[string]int: The map
- */
+// getNewDataMapMap provides a map used for collecting statistics of the analysis.
+// The fields are detected, replayWritten, replaySuccessful, unexpectedPanic.
+// Each field contains a data map as created by getNewDataMap()
+//
+// Returns:
+//   - map[string]map[string]int: The map
 func getNewDataMapMap() map[string]map[string]int {
 	return map[string]map[string]int{
 		"detected":         getNewDataMap(),
@@ -57,16 +55,16 @@ func getNewDataMapMap() map[string]map[string]int {
 	}
 }
 
-/*
- * Parse the analyzer and replay output to collect the corresponding information
- * Args:
- * 	  pathToResults (string): path to the advocateResult folder
- * 	  fuzzing (int): number of fuzzing run, -1 for not fuzzing
- * Returns:
- * 	  map[string]int: map with total information
- * 	  map[string]int: map with unique information
- * 	  error
- */
+// Parse the analyzer and replay output to collect the corresponding information
+//
+// Parameter:
+//   - pathToResults (string): path to the advocateResult folder
+//   - fuzzing (int): number of fuzzing run, -1 for not fuzzing
+//
+// Returns:
+//   - map[string]int: map with total information
+//   - map[string]int: map with unique information
+//   - error
 func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
 	// reset foundBugs
 	foundBugs := make(map[string]processedBug)
@@ -128,15 +126,14 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 	return resTotal, resUnique, err
 }
 
-/*
- * Store a bug that has been processed in the statistics.
- * Used to count number of unique bugs
- * Properties:
- * 	paths ([]struct): list of paths to each element involved in the bug
- * 	bugType (string): ID of the bug type
- * 	replayWritten (bool): true if a replay trace was created for the bug
- * 	replaySuc (bool): true if the replay of the bug was successful
- */
+// Store a bug that has been processed in the statistics.
+// Used to count number of unique bugs
+// Properties:
+//
+//   - paths ([]struct): list of paths to each element involved in the bug
+//   - bugType (string): ID of the bug type
+//   - replayWritten (bool): true if a replay trace was created for the bug
+//   - replaySuc (bool): true if the replay of the bug was successful
 type processedBug struct {
 	paths         []string
 	bugType       string
@@ -144,11 +141,10 @@ type processedBug struct {
 	replaySuc     bool
 }
 
-/*
- * Get a string representation of a bug
- * Returns:
- * 	string: string representation of the bug
- */
+// Get a string representation of a bug
+//
+// Returns:
+//   - string: string representation of the bug
 func (pb *processedBug) getKey() string {
 	res := pb.bugType
 	for _, path := range pb.paths {
@@ -157,15 +153,15 @@ func (pb *processedBug) getKey() string {
 	return res
 }
 
-/*
- * Parse a bug file to get the information
- * Args:
- * 	  filePath (string): path to the bug file
- * 	  resTotal (map[string]map[string]int): total results
- * 	  resUnique (map[string]map[string]int): unique results
- * Returns:
- * 	  error
- */
+// Parse a bug file to get the information
+//
+// Parameter:
+//   - filePath (string): path to the bug file
+//   - resTotal (map[string]map[string]int): total results
+//   - resUnique (map[string]map[string]int): unique results
+//
+// Returns:
+//   - error
 func processBugFile(filePath string, foundBugs map[string]processedBug,
 	resTotal map[string]map[string]int, resUnique map[string]map[string]int) error {
 	file, err := os.Open(filePath)

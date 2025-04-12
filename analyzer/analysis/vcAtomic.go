@@ -15,23 +15,21 @@ import (
 	"analyzer/timer"
 )
 
-/*
- * Create a new lw if needed
- * Args:
- * 	index (int): The id of the atomic variable
- * 	nRout (int): The number of routines in the trace
- */
+// Create a new lw if needed
+//
+// Parameter:
+//   - index (int): The id of the atomic variable
+//   - nRout (int): The number of routines in the trace
 func newLw(index int, nRout int) {
 	if _, ok := lw[index]; !ok {
 		lw[index] = clock.NewVectorClock(nRout)
 	}
 }
 
-/*
- * Calculate the new vector clock for a write operation and update cv
- * Args:
- * 	at (*TraceElementAtomic): The trace element
- */
+// Calculate the new vector clock for a write operation and update cv
+//
+// Parameter:
+//   - at (*TraceElementAtomic): The trace element
 func Write(at *TraceElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -43,13 +41,12 @@ func Write(at *TraceElementAtomic) {
 	currentWVC[at.routine].Inc(at.routine)
 }
 
-/*
- * Calculate the new vector clock for a read operation and update cv
- * Args:
- * 	at (*TraceElementAtomic): The trace element
- * 	numberOfRoutines (int): The number of routines in the trace
- * 	sync bool: sync reader with last writer
- */
+// Calculate the new vector clock for a read operation and update cv
+//
+// Parameter:
+//   - at (*TraceElementAtomic): The trace element
+//   - numberOfRoutines (int): The number of routines in the trace
+//   - sync bool: sync reader with last writer
 func Read(at *TraceElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -63,14 +60,13 @@ func Read(at *TraceElementAtomic, sync bool) {
 	currentWVC[at.routine].Inc(at.routine)
 }
 
-/*
- * Calculate the new vector clock for a swap operation and update cv. A swap
- * operation is a read and a write.
- * Args:
- * 	at (*TraceElementAtomic): The trace element
- * 	numberOfRoutines (int): The number of routines in the trace
- * 	sync bool: sync reader with last writer
- */
+// Calculate the new vector clock for a swap operation and update cv. A swap
+// operation is a read and a write.
+//
+// Parameter:
+//   - at (*TraceElementAtomic): The trace element
+//   - numberOfRoutines (int): The number of routines in the trace
+//   - sync bool: sync reader with last writer
 func Swap(at *TraceElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

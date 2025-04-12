@@ -24,12 +24,11 @@ import (
 // store all created mutations to avoid doubling
 var allGoPieMutations = make(map[string]struct{})
 
-/*
- * Create new mutations for GoPie
- * Args:
- * 	pkgPath (string): path to where the new traces should be created
- * 	numberFuzzingRun (int): number of fuzzing run
- */
+// Create new mutations for GoPie
+//
+// Parameter:
+//   - pkgPath (string): path to where the new traces should be created
+//   - numberFuzzingRun (int): number of fuzzing run
 func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 	energy := getEnergy()
 
@@ -101,11 +100,10 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 	}
 }
 
-/*
- * Create the folder for the fuzzing traces
- * Args:
- * 	path (string): path to the folder
- */
+// Create the folder for the fuzzing traces
+//
+// Parameter:
+//   - path (string): path to the folder
 func addFuzzingTraceFolder(path string) {
 	os.RemoveAll(path)
 	err := os.MkdirAll(path, os.ModePerm)
@@ -114,10 +112,8 @@ func addFuzzingTraceFolder(path string) {
 	}
 }
 
-/*
- * Calculate the energy for a schedule. This determines how many mutations
- * are created
- */
+// Calculate the energy for a schedule. This determines how many mutations
+// are created
 func getEnergy() int {
 	numberSchedulChains := len(schedulingChains)
 

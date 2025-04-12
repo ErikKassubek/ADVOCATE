@@ -24,19 +24,19 @@ import (
 	"time"
 )
 
-/*
- * Run ADVOCATE on a program with a main function
- * Args:
- * 	 pathToAdvocate (string): path to the ADVOCATE folder
- * 	 pathToFile (string): path to the file containing the main function
- * 	 executableName (string): name of the executable
- * 	 keepTraces (bool): do not delete the traces after analysis
- * 	 fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- * 	fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
- * 	 firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
- * Returns:
- * 	 error
- */
+// Run ADVOCATE on a program with a main function
+//
+// Parameter:
+//   - pathToAdvocate (string): path to the ADVOCATE folder
+//   - pathToFile (string): path to the file containing the main function
+//   - executableName (string): name of the executable
+//   - keepTraces (bool): do not delete the traces after analysis
+//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//
+// Returns:
+//   - error
 func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
 	keepTraces bool, fuzzing int, fuzzingTrace string, firstRun bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {

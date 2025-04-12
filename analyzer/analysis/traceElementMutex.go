@@ -32,19 +32,18 @@ const (
 	RUnlockOp
 )
 
-/*
- * TraceElementMutex is a trace element for a mutex
- * Fields:
- * 	index (int): Index in the routine
- * 	routine (int): The routine id
- * 	tpre (int): The timestamp at the start of the event
- * 	tpost (int): The timestamp at the end of the event
- * 	id (int): The id of the mutex
- * 	rw (bool): Whether the mutex is a read-noWarningrite mutex
- * 	opM (opMutex): The operation on the mutex
- * 	suc (bool): Whether the operation was successful (only for trylock else always true)
- * 	file (string), line(int): The position of the mutex operation in the code
- */
+// TraceElementMutex is a trace element for a mutex
+// Fields:
+//
+//   - index (int): Index in the routine
+//   - routine (int): The routine id
+//   - tpre (int): The timestamp at the start of the event
+//   - tpost (int): The timestamp at the end of the event
+//   - id (int): The id of the mutex
+//   - rw (bool): Whether the mutex is a read-noWarningrite mutex
+//   - opM (opMutex): The operation on the mutex
+//   - suc (bool): Whether the operation was successful (only for trylock else always true)
+//   - file (string), line(int): The position of the mutex operation in the code
 type TraceElementMutex struct {
 	index   int
 	routine int
@@ -62,18 +61,17 @@ type TraceElementMutex struct {
 	rel2    []TraceElement
 }
 
-/*
- * Create a new mutex trace element
- * Args:
- * 	routine (int): The routine id
- * 	tPre (string): The timestamp at the start of the event
- * 	tPost (string): The timestamp at the end of the event
- * 	id (string): The id of the mutex
- * 	rw (string): Whether the mutex is a read-noWarningrite mutex
- * 	opM (string): The operation on the mutex
- * 	suc (string): Whether the operation was successful (only for trylock else always true)
- * 	pos (string): The position of the mutex operation in the code
- */
+// Create a new mutex trace element
+//
+// Parameter:
+//   - routine (int): The routine id
+//   - tPre (string): The timestamp at the start of the event
+//   - tPost (string): The timestamp at the end of the event
+//   - id (string): The id of the mutex
+//   - rw (string): Whether the mutex is a read-noWarningrite mutex
+//   - opM (string): The operation on the mutex
+//   - suc (string): Whether the operation was successful (only for trylock else always true)
+//   - pos (string): The position of the mutex operation in the code
 func AddTraceElementMutex(routine int, tPre string,
 	tPost string, id string, rw string, opM string, suc string,
 	pos string) error {
@@ -146,47 +144,42 @@ func AddTraceElementMutex(routine int, tPre string,
 	return nil
 }
 
-/*
- * Get the id of the element
- * Returns:
- * 	int: The id of the element
- */
+// Get the id of the element
+//
+// Returns:
+//   - int: The id of the element
 func (mu *TraceElementMutex) GetID() int {
 	return mu.id
 }
 
-/*
- * Get the routine of the element
- * Returns:
- * 	int: The routine of the element
- */
+// Get the routine of the element
+//
+// Returns:
+//   - int: The routine of the element
 func (mu *TraceElementMutex) GetRoutine() int {
 	return mu.routine
 }
 
-/*
- * Get the tpre of the element.
- * Returns:
- * 	int: The tpre of the element
- */
+// Get the tpre of the element.
+//
+// Returns:
+//   - int: The tpre of the element
 func (mu *TraceElementMutex) GetTPre() int {
 	return mu.tPre
 }
 
-/*
- * Get the tpost of the element.
- * Returns:
- * 	int: The tpost of the element
- */
+// Get the tpost of the element.
+//
+// Returns:
+//   - int: The tpost of the element
 func (mu *TraceElementMutex) GetTPost() int {
 	return mu.tPost
 }
 
-/*
- * Get the timer, that is used for the sorting of the trace
- * Returns:
- * 	int: The timer of the element
- */
+// Get the timer, that is used for the sorting of the trace
+//
+// Returns:
+//   - int: The timer of the element
 func (mu *TraceElementMutex) GetTSort() int {
 	if mu.tPost == 0 {
 		// add at the end of the trace
@@ -195,94 +188,85 @@ func (mu *TraceElementMutex) GetTSort() int {
 	return mu.tPost
 }
 
-/*
- * Get the position of the operation.
- * Returns:
- * 	string: The position of the element
- */
+// Get the position of the operation.
+//
+// Returns:
+//   - string: The position of the element
 func (mu *TraceElementMutex) GetPos() string {
 	return fmt.Sprintf("%s:%d", mu.file, mu.line)
 }
 
-/*
- * Get the replay id of the element
- * Returns:
- * 	The replay id
- */
+// Get the replay id of the element
+//
+// Returns:
+//   - The replay id
 func (mu *TraceElementMutex) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", mu.routine, mu.file, mu.line)
 }
 
-/*
- * Get the file of the element
- * Returns:
- * 	The file of the element
- */
+// Get the file of the element
+//
+// Returns:
+//   - The file of the element
 func (mu *TraceElementMutex) GetFile() string {
 	return mu.file
 }
 
-/*
- * Get the line of the element
- * Returns:
- * 	The line of the element
- */
+// Get the line of the element
+//
+// Returns:
+//   - The line of the element
 func (mu *TraceElementMutex) GetLine() int {
 	return mu.line
 }
 
-/*
- * Get the tID of the element.
- * Returns:
- * 	string: The tID of the element
- */
+// Get the tID of the element.
+//
+// Returns:
+//   - string: The tID of the element
 func (mu *TraceElementMutex) GetTID() string {
 	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
-/*
- * Get the operation of the element
- * Returns:
- * 	OpMutex: The operation of the element
- */
+// Get the operation of the element
+//
+// Returns:
+//   - OpMutex: The operation of the element
 func (mu *TraceElementMutex) GetOperation() OpMutex {
 	return mu.opM
 }
 
-/*
- * Get if the element is a lock operation
- * Returns:
- * 	bool: If the element is a lock operation
- */
+// Get if the element is a lock operation
+//
+// Returns:
+//   - bool: If the element is a lock operation
 func (mu *TraceElementMutex) IsLock() bool {
 	return mu.opM == LockOp || mu.opM == RLockOp || mu.opM == TryLockOp || mu.opM == TryRLockOp
 }
 
-/*
- * Get the vector clock of the element
- * Returns:
- * 	VectorClock: The vector clock of the element
- */
+// Get the vector clock of the element
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
 func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
 	return mu.vc
 }
 
-/*
- * Get the weak vector clock of the element
- * Returns:
- * 	VectorClock: The vector clock of the element
- */
+// Get the weak vector clock of the element
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
 func (mu *TraceElementMutex) GetwVc() *clock.VectorClock {
 	return mu.wVc
 }
 
-/*
- * Get the string representation of the object type
- * Args:
- * 	operation (bool): if true get the operation code, otherwise only the primitive code
- * Returns:
- * 	string: the object type
- */
+// Get the string representation of the object type
+//
+// Parameter:
+//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - string: the object type
 func (mu *TraceElementMutex) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeMutex
@@ -305,50 +289,46 @@ func (mu *TraceElementMutex) GetObjType(operation bool) string {
 	return ObjectTypeMutex
 }
 
-/*
- * Get wether the locking was successful of the element
- * Returns:
- * 	For trylock wether it was successful, otherwise always true
- */
+// Get wether the locking was successful of the element
+//
+// Returns:
+//   - For trylock wether it was successful, otherwise always true
 func (mu *TraceElementMutex) IsSuc() bool {
 	return mu.suc
 }
 
-/*
- * Given a trace element, check if it is equal to this element
- * Args:
- * 	elem (TraceElement): The element to check against
- * Returns:
- * 	bool: true if it is the same operation, false otherwise
- */
+// Given a trace element, check if it is equal to this element
+//
+// Parameter:
+//   - elem (TraceElement): The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
 func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
 	return mu.routine == elem.GetRoutine() && mu.ToString() == elem.ToString()
 }
 
-/*
- * Get the trace local index of the element in the trace
- * Returns:
- * 	VectorClock: The trace local index of the element in the trace
- */
+// Get the trace local index of the element in the trace
+//
+// Returns:
+//   - VectorClock: The trace local index of the element in the trace
 func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
 	return mu.routine, mu.index
 }
 
-/*
- * Set the tPre and tPost of the element
- * Args:
- * 	time (int): The tPre and tPost of the element
- */
+// Set the tPre and tPost of the element
+//
+// Parameter:
+//   - time (int): The tPre and tPost of the element
 func (mu *TraceElementMutex) SetT(time int) {
 	mu.tPre = time
 	mu.tPost = time
 }
 
-/*
- * Set the tpre of the element.
- * Args:
- * 	tPre (int): The tpre of the element
- */
+// Set the tpre of the element.
+//
+// Parameter:
+//   - tPre (int): The tpre of the element
 func (mu *TraceElementMutex) SetTPre(tPre int) {
 	mu.tPre = tPre
 	if mu.tPost != 0 && mu.tPost < tPre {
@@ -356,22 +336,20 @@ func (mu *TraceElementMutex) SetTPre(tPre int) {
 	}
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace
- * Args:
- * 	tSort (int): The timer of the element
- */
+// Set the timer, that is used for the sorting of the trace
+//
+// Parameter:
+//   - tSort (int): The timer of the element
 func (mu *TraceElementMutex) SetTSort(tSort int) {
 	mu.SetTPre(tSort)
 	mu.tPost = tSort
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace, only if the original
- * value was not 0
- * Args:
- * 	tSort (int): The timer of the element
- */
+// Set the timer, that is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter:
+//   - tSort (int): The timer of the element
 func (mu *TraceElementMutex) SetTWithoutNotExecuted(tSort int) {
 	mu.SetTPre(tSort)
 	if mu.tPost != 0 {
@@ -379,11 +357,10 @@ func (mu *TraceElementMutex) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
-/*
- * Get the simple string representation of the element
- * Returns:
- * 	string: The simple string representation of the element
- */
+// Get the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
 func (mu *TraceElementMutex) ToString() string {
 	res := "M,"
 	res += strconv.Itoa(mu.tPre) + "," + strconv.Itoa(mu.tPost) + ","
@@ -419,9 +396,7 @@ func (mu *TraceElementMutex) ToString() string {
 	return res
 }
 
-/*
- * Store and update the vector clock of the trace and elementk
- */
+// Store and update the vector clock of the trace and elementk
 func (mu *TraceElementMutex) updateVectorClock() {
 	mu.vc = currentVC[mu.routine].Copy()
 	mu.wVc = currentWVC[mu.routine].Copy()
@@ -432,16 +407,10 @@ func (mu *TraceElementMutex) updateVectorClock() {
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockLock(mu)
 		}
-		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexLock(mu, false, currentWVC[mu.routine])
-		}
 	case RLockOp:
 		RLock(mu)
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockLock(mu)
-		}
-		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexLock(mu, true, currentWVC[mu.routine])
 		}
 	case TryLockOp:
 		if mu.suc {
@@ -449,9 +418,6 @@ func (mu *TraceElementMutex) updateVectorClock() {
 				checkForUnlockBeforeLockLock(mu)
 			}
 			Lock(mu)
-			if analysisCases["cyclicDeadlock"] {
-				CyclicDeadlockMutexLock(mu, false, currentWVC[mu.routine])
-			}
 		}
 	case TryRLockOp:
 		if mu.suc {
@@ -459,36 +425,25 @@ func (mu *TraceElementMutex) updateVectorClock() {
 			if analysisCases["unlockBeforeLock"] {
 				checkForUnlockBeforeLockLock(mu)
 			}
-			if analysisCases["cyclicDeadlock"] {
-				CyclicDeadlockMutexLock(mu, true, currentWVC[mu.routine])
-			}
 		}
 	case UnlockOp:
 		Unlock(mu)
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockUnlock(mu)
 		}
-		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexUnLock(mu)
-		}
 	case RUnlockOp:
 		if analysisCases["unlockBeforeLock"] {
 			checkForUnlockBeforeLockUnlock(mu)
 		}
 		RUnlock(mu)
-		if analysisCases["cyclicDeadlock"] {
-			CyclicDeadlockMutexUnLock(mu)
-		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()
 		utils.LogError(err)
 	}
 }
 
-/*
- * Store and update the vector clock of the trace and element
- * if the ignoreCriticalSections flag is set
- */
+// Store and update the vector clock of the trace and element
+// if the ignoreCriticalSections flag is set
 func (mu *TraceElementMutex) updateVectorClockAlt() {
 	mu.vc = currentVC[mu.routine].Copy()
 
@@ -496,11 +451,10 @@ func (mu *TraceElementMutex) updateVectorClockAlt() {
 	currentWVC[mu.routine].Inc(mu.routine)
 }
 
-/*
- * Copy the element
- * Returns:
- * 	TraceElement: The copy of the element
- */
+// Copy the element
+//
+// Returns:
+//   - TraceElement: The copy of the element
 func (mu *TraceElementMutex) Copy() TraceElement {
 	return &TraceElementMutex{
 		index:   mu.index,
@@ -522,12 +476,11 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 
 // ========= For GoPie fuzzing ===========
 
-/*
- * Add an element to the rel1 set of the element
- * Args:
- * 	elem (TraceElement): elem to add
- * 	pos (int): before (0) or after (1)
- */
+// Add an element to the rel1 set of the element
+//
+// Parameter:
+//   - elem (TraceElement): elem to add
+//   - pos (int): before (0) or after (1)
 func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -535,29 +488,26 @@ func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
 	mu.rel1[pos] = elem
 }
 
-/*
- * Add an element to the rel2 set of the element
- * Args:
- * 	elem (TraceElement): elem to add
- */
+// Add an element to the rel2 set of the element
+//
+// Parameter:
+//   - elem (TraceElement): elem to add
 func (mu *TraceElementMutex) AddRel2(elem TraceElement) {
 	mu.rel2 = append(mu.rel2, elem)
 }
 
-/*
- * Return the rel1 set
- * Returns:
- * 	[]*TraceElement: the rel1 set
- */
+// Return the rel1 set
+//
+// Returns:
+//   - []*TraceElement: the rel1 set
 func (mu *TraceElementMutex) GetRel1() []TraceElement {
 	return mu.rel1
 }
 
-/*
- * Return the rel2 set
- * Returns:
- * 	[]*TraceElement: the rel1 set
- */
+// Return the rel2 set
+//
+// Returns:
+//   - []*TraceElement: the rel1 set
 func (mu *TraceElementMutex) GetRel2() []TraceElement {
 	return mu.rel2
 }

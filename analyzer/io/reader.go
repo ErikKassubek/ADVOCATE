@@ -8,9 +8,6 @@
 //
 // License: BSD-3-Clause
 
-/*
-Package reader provides functions for reading and processing log files.
-*/
 package io
 
 import (
@@ -26,16 +23,16 @@ import (
 	"strings"
 )
 
-/*
- * Create the trace from all files in a folder.
- * Args:
- * 	filePath (string): The path to the folder
- * 	ignoreAtomics (bool): If atomic operations should be ignored
- * Returns:
- * 	int: The number of routines
- * 	int: The number of elements
- * 	error: An error if the trace could not be created
- */
+// Create the trace from all files in a folder.
+//
+// Parameter:
+//   - filePath (string): The path to the folder
+//   - ignoreAtomics (bool): If atomic operations should be ignored
+//
+// Returns:
+//   - int: The number of routines
+//   - int: The number of elements
+//   - error: An error if the trace could not be created
 func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
@@ -47,7 +44,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		return 0, 0, err
 	}
 
-	analysis.InitTrace()
+	analysis.SetMainTraceToNewTrace()
 
 	elemCounter := 0
 	for _, file := range files {
@@ -134,16 +131,16 @@ func getTraceInfoFromFile(filePath string) error {
 	return nil
 }
 
-/*
- * Read and build the trace from a file
- * Args:
- * 	filePath (string): The path to the log file
- * 	routine (int): The routine id
- * 	ignoreAtomics (bool): If atomic operations should be ignored
- * Returns:
- * 	int: number of elements
- *	 error: An error if the trace could not be created
- */
+// Read and build the trace from a file
+//
+// Parameter:
+//   - filePath (string): The path to the log file
+//   - routine (int): The routine id
+//   - ignoreAtomics (bool): If atomic operations should be ignored
+//
+// Returns:
+//   - - int: number of elements
+//   - error: An error if the trace could not be created
 func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -168,15 +165,15 @@ func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int,
 	return counter, scanner.Err()
 }
 
-/*
- * Process one element from the log file.
- * Args:
- * 	element (string): The element to process
- * 	routine (int): The routine id, equal to the line number
- * 	ignoreAtomics (bool): If atomic operations should be ignored
- * Returns:
- * 	error: An error if the element could not be processed
- */
+// Process one element from the log file.
+//
+// Parameter:
+//   - element (string): The element to process
+//   - routine (int): The routine id, equal to the line number
+//   - ignoreAtomics (bool): If atomic operations should be ignored
+//
+// Returns:
+//   - error: An error if the element could not be processed
 func processElement(element string, routine int, ignoreAtomics bool) error {
 	if element == "" {
 		return errors.New("Element is empty")

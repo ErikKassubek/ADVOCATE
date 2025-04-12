@@ -22,32 +22,26 @@ var (
 	lastRoutine      = -1
 )
 
-/*
- * Representation of a scheduling chain
- * A chain is an ordered list of adjacent element from the trace,
- * where two neighboring elements must be from different routines
- */
+// Representation of a scheduling chain
+// A chain is an ordered list of adjacent element from the trace,
+// where two neighboring elements must be from different routines
 type chain struct {
 	elems []analysis.TraceElement
 }
 
-/*
- * Create a new, empty chain
- * Returns:
- * chain: the new chain
- */
+// Create a new, empty chain
+//
+// Returns: chain: the new chain
 func newChain() chain {
 	elems := make([]analysis.TraceElement, 0)
 	return chain{elems}
 }
 
-/*
- * Traverse all elements in the trace in order of execution.
- * From this build the scheduling chains. A scheduling chain
- * is always the segment of maximum length, such that
- * to neighboring elements in the chain are neighbors in the global trace
- * and two neighboring elements in the chain are not in the same routine
- */
+// Traverse all elements in the trace in order of execution.
+// From this build the scheduling chains. A scheduling chain
+// is always the segment of maximum length, such that
+// to neighboring elements in the chain are neighbors in the global trace
+// and two neighboring elements in the chain are not in the same routine
 func addElemToChain(elem analysis.TraceElement) {
 	routine := elem.GetRoutine()
 
@@ -69,11 +63,10 @@ func addElemToChain(elem analysis.TraceElement) {
 	lastRoutine = routine
 }
 
-/*
- * Add a new element to the chain
- * Args:
- * 	elem (analysis.TraceElement): Element to add
- */
+// Add a new element to the chain
+//
+// Parameter:
+//   - elem (analysis.TraceElement): Element to add
 func (ch *chain) add(elem analysis.TraceElement) {
 	if elem == nil {
 		return
@@ -82,12 +75,11 @@ func (ch *chain) add(elem analysis.TraceElement) {
 	ch.elems = append(ch.elems, elem)
 }
 
-/*
- * replace replaces the element at a given index in a chain with another element
- * Args:
- * 	index (int): index to change at
- * 	elem (analysis.TraceElement): element to set at index
- */
+// replace replaces the element at a given index in a chain with another element
+//
+// Parameter:
+//   - index (int): index to change at
+//   - elem (analysis.TraceElement): element to set at index
 func (ch *chain) replace(index int, elem analysis.TraceElement) {
 	if elem == nil {
 		return
@@ -99,13 +91,13 @@ func (ch *chain) replace(index int, elem analysis.TraceElement) {
 	ch.elems[index] = elem
 }
 
-/*
- * Returns if the chain contains a specific element
- * Args:
- * 	elem (analysis.TraceElement): the element to check for
- * Return:
- * 	bool: true if the chain contains elem, false otherwise
- */
+// Returns if the chain contains a specific element
+//
+// Parameter:
+//   - elem (analysis.TraceElement): the element to check for
+//
+// Returns:
+//   - bool: true if the chain contains elem, false otherwise
 func (ch *chain) contains(elem analysis.TraceElement) bool {
 	if elem == nil {
 		return false
@@ -120,47 +112,40 @@ func (ch *chain) contains(elem analysis.TraceElement) bool {
 	return false
 }
 
-/*
- * Remove the first element from the chain
- */
+// Remove the first element from the chain
 func (ch *chain) removeHead() {
 	ch.elems = ch.elems[1:]
 }
 
-/*
- * Remove the last element from the chain
- */
+// Remove the last element from the chain
 func (ch *chain) removeTail() {
 	ch.elems = ch.elems[:len(ch.elems)-1]
 }
 
-/*
- * Return the last element of a chain
- * Returns:
- * 	analysis.TraceElement: the last element in the chain
- */
+// Return the last element of a chain
+//
+// Returns:
+//   - analysis.TraceElement: the last element in the chain
 func (ch *chain) lastElem() analysis.TraceElement {
 	return ch.elems[len(ch.elems)-1]
 }
 
-/*
- * Swap the two elements in the chain given by the indexes.
- * If at least on index is not in the chain, nothing is done
- * Args:
- * 	i (int): index of the first element
- * 	j (int): index of the second element
- */
+// Swap the two elements in the chain given by the indexes.
+// If at least on index is not in the chain, nothing is done
+//
+// Parameter:
+//   - i (int): index of the first element
+//   - j (int): index of the second element
 func (ch *chain) swap(i, j int) {
 	if i >= 0 && i < len(ch.elems) && j >= 0 && j < len(ch.elems) {
 		ch.elems[i], ch.elems[j] = ch.elems[j], ch.elems[i]
 	}
 }
 
-/*
- * Create a copy of the chain
- * Returns:
- * 	chain: a copy of the chain
- */
+// Create a copy of the chain
+//
+// Returns:
+//   - chain: a copy of the chain
 func (ch *chain) copy() chain {
 	newElems := make([]analysis.TraceElement, len(ch.elems))
 
@@ -174,20 +159,18 @@ func (ch *chain) copy() chain {
 	return newChain
 }
 
-/*
- * Get the number of elements in a scheduling chain
- * Returns:
- * 	the number of elements in the chain
- */
+// Get the number of elements in a scheduling chain
+//
+// Returns:
+//   - the number of elements in the chain
 func (ch *chain) len() int {
 	return len(ch.elems)
 }
 
-/*
- * Get a string representation of a scheduling chain
- * Returns:
- * 	A string representation of the chain
- */
+// Get a string representation of a scheduling chain
+//
+// Returns:
+//   - A string representation of the chain
 func (ch *chain) toString() string {
 	res := ""
 	for _, e := range ch.elems {
@@ -196,15 +179,14 @@ func (ch *chain) toString() string {
 	return res
 }
 
-/*
- * Check if a chain is valid.
- * A chain is valid if it isn't violation the HB relation
- * If the analyzer did not run and therefore did not calculate the HB relation,
- * the function will always return true
- * Since HB relations are transitive, it is enough to check neighboring elements
- * Returns:
- * 	bool: True if the mutation is valid, false otherwise
- */
+// Check if a chain is valid.
+// A chain is valid if it isn't violation the HB relation
+// If the analyzer did not run and therefore did not calculate the HB relation,
+// the function will always return true
+// Since HB relations are transitive, it is enough to check neighboring elements
+//
+// Returns:
+//   - bool: True if the mutation is valid, false otherwise
 func (ch *chain) isValid() bool {
 	if !analysis.HBWasCalc() {
 		return true

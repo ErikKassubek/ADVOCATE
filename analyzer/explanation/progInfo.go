@@ -17,14 +17,14 @@ import (
 	"strings"
 )
 
-/*
- * Read the program info from the output.log file
- * Args:
- * 	path (string): path to the folder containing the output.log file
- * Returns:
- * 	map[string]string: information about the analyzed test, e.g. file/test name and header position info
- * 	error
- */
+// Read the program info from the output.log file
+//
+// Parameter:
+//   - path (string): path to the folder containing the output.log file
+//
+// Returns:
+//   - map[string]string: information about the analyzed test, e.g. file/test name and header position info
+//   - error
 func readProgInfo(path string) (map[string]string, error) {
 	res := make(map[string]string)
 

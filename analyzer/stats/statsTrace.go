@@ -20,15 +20,15 @@ import (
 	"strings"
 )
 
-/*
- * Collect stats about the traces
- * Args:
- * 	  dataPath (string): path to the result folder
- * 	  traceID (int): name of trace folder is datapath_traceId
- * Returns:
- * 	  map[string]int: map with the stats
- * 	  error
- */
+// Collect stats about the traces
+//
+// Parameter:
+//   - dataPath (string): path to the result folder
+//   - traceID (int): name of trace folder is datapath_traceId
+//
+// Returns:
+//   - map[string]int: map with the stats
+//   - error
 func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 	res := map[string]int{
 		"numberElements": 0,
@@ -97,16 +97,16 @@ func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 	return res, err
 }
 
-/*
- * parseTraceFile parses a trace file to get all relevant stats information
- * Args:
- * 	tracePath (string): Path the the trace file
- * 	stats (*map[string]int): Map to store the information in
- * 	known (*map[string][]string): Information about primitives that have already been
- * 		seem in other trace files
- * Returns:
- * 	error
- */
+// parseTraceFile parses a trace file to get all relevant stats information
+//
+// Parameter:
+//   - tracePath (string): Path the the trace file
+//   - stats (*map[string]int): Map to store the information in
+//   - known (*map[string][]string): Information about primitives that have already been
+//   - seem in other trace files
+//
+// Returns:
+//   - error
 func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][]string) error {
 	// open the file
 	file, err := os.Open(tracePath)

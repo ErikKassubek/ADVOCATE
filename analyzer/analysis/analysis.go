@@ -18,16 +18,14 @@ import (
 	"analyzer/utils"
 )
 
-/*
- * RunAnalysis starts the analysis of the main trace
- * Args:
- * 	assume_fifo (bool): True to assume fifo ordering in buffered channels
- * 	ignoreCriticalSections (bool): True to ignore critical sections when updating
- * 		vector clocks
- * 	analysisCasesMap (map[string]bool): The analysis cases to run
- * 	fuzzing (bool): true if run with fuzzing
- * 	onlyAPanicAndLeak (bool): only test for actual panics and leaks
- */
+// RunAnalysis starts the analysis of the main trace
+//
+// Parameter:
+//   - assume_fifo (bool): True to assume fifo ordering in buffered channels
+//   - ignoreCriticalSections (bool): True to ignore critical sections when updating vector clocks
+//   - analysisCasesMap (map[string]bool): The analysis cases to run
+//   - fuzzing (bool): true if run with fuzzing
+//   - onlyAPanicAndLeak (bool): only test for actual panics and leaks
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
@@ -51,11 +49,10 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 }
 
-/*
- * runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
- * Args:
- * 	all (bool): If true, check for all, else only check for the once, that are not detected by the full analysis
- */
+// runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
+//
+// Parameter:
+//   - all (bool): If true, check for all, else only check for the once, that are not detected by the full analysis
 func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
@@ -142,12 +139,10 @@ func runAnalysisOnExitCodes(all bool) {
 	}
 }
 
-/*
- * checkForLeakSimple check only for leaks without using the hb info
- * Do not check for potential partners
- * This is done by checking for each routine, if the last element is a blocking element
- * and if its tPost is 0
- */
+// checkForLeakSimple check only for leaks without using the hb info
+// Do not check for potential partners
+// This is done by checking for each routine, if the last element is a blocking element
+// and if its tPost is 0
 func checkForLeakSimple() {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
@@ -161,15 +156,13 @@ func checkForLeakSimple() {
 	}
 }
 
-/*
-* RunHBAnalysis runs the full analysis happens before based analysis
-* Args:
-*   assume_fifo (bool): True to assume fifo ordering in buffered channels
-*   ignoreCriticalSections (bool): True to ignore critical sections when updating
-*   	vector clocks
-*   analysisCasesMap (map[string]bool): The analysis cases to run
-*   fuzzing (bool): true if run with fuzzing
- */
+// RunHBAnalysis runs the full analysis happens before based analysis
+//
+// Parameter:
+//   - assume_fifo (bool): True to assume fifo ordering in buffered channels
+//   - ignoreCriticalSections (bool): True to ignore critical sections when updating vector clocks
+//   - analysisCasesMap (map[string]bool): The analysis cases to run
+//   - fuzzing (bool): true if run with fuzzing
 func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
 	fifo = assumeFifo
 	modeIsFuzzing = fuzzing
@@ -291,12 +284,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		return
 	}
 
-	if analysisCases["cyclicDeadlock"] {
-		utils.LogInfo("Check for cyclic deadlock")
-		checkForCyclicDeadlock()
-		utils.LogInfo("Finish check for cyclic deadlock")
-	}
-
 	// if memory.WasCanceled() {
 	// 	return
 	// }
@@ -318,12 +305,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 	}
 }
 
-/*
- * checkLeak checks for a given element if it leaked (has no tPost). If so,
- * it will look for a possible way to resolve the leak
- * Args:
- * 	elem (TraceElement): Element to check
- */
+// checkLeak checks for a given element if it leaked (has no tPost). If so,
+// it will look for a possible way to resolve the leak
+//
+// Parameter:
+//   - elem (TraceElement): Element to check
 func checkLeak(elem TraceElement) {
 	switch e := elem.(type) {
 	case *TraceElementChannel:

@@ -20,9 +20,7 @@ import (
 	"time"
 )
 
-/*
- * Encapsulating type for the different mutations
- */
+// Encapsulating type for the different mutations
 type mutation struct {
 	mutType int
 	mutSel  map[string][]fuzzingSelect
@@ -62,23 +60,22 @@ var (
 	fuzzingModeFlow  = false
 )
 
-/*
-* Create the fuzzing data
-* Args:
-* 	modeMain (bool): if true, run fuzzing on main function, otherwise on test
-* 	fm (bool): the mode used for fuzzing
-* 	advocate (string): path to advocate
-* 	progPath (string): path to the folder containing the prog/test
-* 	progName (string): name of the program
-* 	name (string): If modeMain, name of the executable, else name of the test
-* 	ignoreAtomic (bool): if true, ignore atomics for replay
-* 	meaTime (bool): measure runtime
-* 	notExec (bool): find never executed operations
-* 	stats (bool): create statistics
-* 	keepTraces (bool): keep the traces after analysis
-* 	skipExisting (bool): skip existing runs
-* 	cont (bool): continue partial fuzzing
- */
+// Create the fuzzing data
+//
+// Parameter:
+//   - modeMain (bool): if true, run fuzzing on main function, otherwise on test
+//   - fm (bool): the mode used for fuzzing
+//   - advocate (string): path to advocate
+//   - progPath (string): path to the folder containing the prog/test
+//   - progName (string): name of the program
+//   - name (string): If modeMain, name of the executable, else name of the test
+//   - ignoreAtomic (bool): if true, ignore atomics for replay
+//   - meaTime (bool): measure runtime
+//   - notExec (bool): find never executed operations
+//   - stats (bool): create statistics
+//   - keepTraces (bool): keep the traces after analysis
+//   - skipExisting (bool): skip existing runs
+//   - cont (bool): continue partial fuzzing
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, cont bool) error {
 
@@ -191,24 +188,23 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	return nil
 }
 
-/*
-* Run Fuzzing on one program/test
-* Args:
-* 	modeMain (bool): if true, run fuzzing on main function, otherwise on test
-* 	advocate (string): path to advocate
-* 	progName (string): name of the program
-* 	testPath (string): path to the test file
-* 	name (string): If modeMain, name of the executable, else name of the test
-* 	ignoreAtomic (bool): if true, ignore atomics for replay
-* 	hBInfoFuzzing (bool): whether to us HB info in fuzzing
-* 	meaTime (bool): measure runtime
-* 	notExec (bool): find never executed operations
-* 	createStats (bool): create statistics
-* 	keepTraces (bool): keep the traces after analysis
-* 	skipExisting (bool): skip existing runs
-* 	firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
-* 	cont (bool): continue with an already started run
- */
+// Run Fuzzing on one program/test
+//
+// Parameter:
+//   - modeMain (bool): if true, run fuzzing on main function, otherwise on test
+//   - advocate (string): path to advocate
+//   - progName (string): name of the program
+//   - testPath (string): path to the test file
+//   - name (string): If modeMain, name of the executable, else name of the test
+//   - ignoreAtomic (bool): if true, ignore atomics for replay
+//   - hBInfoFuzzing (bool): whether to us HB info in fuzzing
+//   - meaTime (bool): measure runtime
+//   - notExec (bool): find never executed operations
+//   - createStats (bool): create statistics
+//   - keepTraces (bool): keep the traces after analysis
+//   - skipExisting (bool): skip existing runs
+//   - firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//   - cont (bool): continue with an already started run
 func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
@@ -296,23 +292,20 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 	return nil
 }
 
-/*
- * Remove and return the first mutation from the mutation queue
- * Returns:
- * 	the first mutation from the mutation queue
- */
+// Remove and return the first mutation from the mutation queue
+//
+// Returns:
+//   - the first mutation from the mutation queue
 func popMutation() mutation {
 	var mut mutation
 	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
 	return mut
 }
 
-/*
- * Get the probability that a select changes its preferred case
- * It is selected in such a way, that at least one of the selects if flipped
- * with a probability of at least 99%.
- * Additionally the flip probability is at least 10% for each select.
- */
+// Get the probability that a select changes its preferred case
+// It is selected in such a way, that at least one of the selects if flipped
+// with a probability of at least 99%.
+// Additionally the flip probability is at least 10% for each select.
 func getFlipProbability() float64 {
 	p := 0.99   // min prob that at least one case is flipped
 	pMin := 0.1 // min prob that a select is flipt
@@ -320,9 +313,7 @@ func getFlipProbability() float64 {
 	return max(pMin, 1-math.Pow(1-p, 1/float64(numberSelects)))
 }
 
-/*
- * Reset fuzzing
- */
+// Reset fuzzing
 func resetFuzzing() {
 	numberFuzzingRuns = 0
 	mutationQueue = make([]mutation, 0)

@@ -36,14 +36,14 @@ const (
 
 var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibleUnique, NumGuardLock, NumGuardLockUnique, ReplayDeadlockStuck, ReplayDeadlockNumStuckMutexes, NumIgnoreConcurrent, NumIgnoreConcurrentUnique, ReplayDeadlockReachedEnd, NumUnlockInOtherThread, NumUnlockInOtherThreadUnique}
 
-/*
- * Collect miscellaneous statistics about the run
- * Args:
- * 	  dataPath (string): path to the result folder
- * Returns:
- * 	  map[string]int: map with the stats
- * 	  error
- */
+// Collect miscellaneous statistics about the run
+//
+// Parameter:
+//   - dataPath (string): path to the result folder
+//
+// Returns:
+//   - map[string]int: map with the stats
+//   - error
 func statsMisc(dataPath, testName string) (map[string]int, error) {
 	stats := map[string]int{}
 	for _, v := range MiscStats {

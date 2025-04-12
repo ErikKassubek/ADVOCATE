@@ -18,14 +18,12 @@ import (
 
 const maxRuntimeRecordingSec = 7 * 60 // 7 min
 
-/*
- * A run is considered interesting, if at least one of the following conditions is met
- * 	1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
- * 	2. An operation pair's execution counter changes significantly (by at least 50%) from previous avg over all runs.
- * 	3. A new channel operation is triggered, such as creating, closing or not closing a channel for the first time
- * 	4. A buffered channel gets a larger maximum fullness than in all previous executions (MaxChBufFull)
- * 	5. A select case is executed for the first time
- */
+// A run is considered interesting, if at least one of the following conditions is met
+//  1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
+//  2. An operation pair's execution counter changes significantly (by at least 50%) from previous avg over all runs.
+//  3. A new channel operation is triggered, such as creating, closing or not closing a channel for the first time
+//  4. A buffered channel gets a larger maximum fullness than in all previous executions (MaxChBufFull)
+//  5. A select case is executed for the first time
 func isInterestingSelect() bool {
 	// 1. The run contains a new pair of channel operations (new meaning it has not been seen in any of the previous runs)
 	for keyTrace, pit := range pairInfoTrace {
@@ -83,11 +81,9 @@ func isInterestingSelect() bool {
 	return false
 }
 
-/*
- * A run is interesting vor interleaving mutation, if during the run,
- * the schedule chain was actually scheduled and no timeouts occurred and the
- * whole recording did not extend a predefined maximal runtime
- */
+// A run is interesting vor interleaving mutation, if during the run,
+// the schedule chain was actually scheduled and no timeouts occurred and the
+// whole recording did not extend a predefined maximal runtime
 func isInterestingInterleaving() bool {
 	// timeouts
 	if analysis.GetTimeoutHappened() {

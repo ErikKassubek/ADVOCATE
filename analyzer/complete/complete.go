@@ -18,14 +18,14 @@ import (
 	"strings"
 )
 
-/*
- * Check if all program elements are in trace
- * Args:
- * 	resultFolderPath: path to the folder containing the trace files
- * 	progPath: path to the program file
- * Returns:
- * 	error: error if any
- */
+// Check if all program elements are in trace
+//
+// Parameter:
+//   - resultFolderPath: path to the folder containing the trace files
+//   - progPath: path to the program file
+//
+// Returns:
+//   - error: error if any
 func Check(resultFolderPath string, progPath string) error {
 	progElems, err := getProgramElements(progPath)
 	if err != nil {
@@ -75,13 +75,12 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 	return res
 }
 
-/*
- * GetNotSelectedSelectCases prints the elements and select cases that were not executed
- * into a file.
- * Args:
- * 	elements: the elements that were not executed
- * 	selects: the select cases that were not selected
- */
+// GetNotSelectedSelectCases prints the elements and select cases that were not executed
+// into a file.
+//
+// Parameter:
+//   - elements: the elements that were not executed
+//   - selects: the select cases that were not selected
 func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[int][]int,
 	path string) error {
 

@@ -252,13 +252,13 @@ var objectTypes = map[string]string{
 	"DC": "Mutex: Part of deadlock",
 }
 
-/*
- * Get the code key from the description
- * Args:
- * 	  description (string): bug description
- * Returns:
- * 	  string: code if exists, otherwise empty string
- */
+// Get the code key from the description
+//
+// Parameter:
+//   - description (string): bug description
+//
+// Returns:
+//   - string: code if exists, otherwise empty string
 func GetCodeFromDescription(description string) string {
 	if value, ok := bugCodes[description]; ok {
 		return value
@@ -266,13 +266,13 @@ func GetCodeFromDescription(description string) string {
 	return ""
 }
 
-/*
- * Get the bug type descriptions from the bug type codes
- * Args:
- * 	bugType (string): bug type code
- * Returns:
- * 	map[string]string: bug type descriptions
- */
+// Get the bug type descriptions from the bug type codes
+//
+// Parameter:
+//   - bugType (string): bug type code
+//
+// Returns:
+//   - map[string]string: bug type descriptions
 func getBugTypeDescription(bugType string) map[string]string {
 	return map[string]string{
 		"crit":        bugCrit[bugType],
@@ -281,13 +281,12 @@ func getBugTypeDescription(bugType string) map[string]string {
 	}
 }
 
-/*
- * Get bug element (operation) type from elem type code
- * Args:
- * 	elemType string: code for the object (operation)
- * Returns:
- * string: description of the bug type
- */
+// Get bug element (operation) type from elem type code
+//
+// Parameter:
+//   - elemType string: code for the object (operation)
+//
+// Returns: string: description of the bug type
 func getBugElementType(elemType string) string {
 	if _, ok := objectTypes[elemType]; !ok {
 		return "Unknown element type"

@@ -20,19 +20,19 @@ import (
 	"strings"
 )
 
-/*
- * Add the header into a unit test
- * Args:
- * 	 fileName (string): path to the file containing the the test
- * 	 testName (string): name of the test
- * 	 replay (bool): true for replay, false for only recording
- * 	 fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- * 	 replayInfo (string): path of the fuzzing trace or if the replay trace
- * 	 timeoutReplay (int): timeout for replay
- * 	 record (bool): true to rerecord the leaks
- * Returns:
- * 	 error
- */
+// Add the header into a unit test
+//
+// Parameter:
+//   - fileName (string): path to the file containing the the test
+//   - testName (string): name of the test
+//   - replay (bool): true for replay, false for only recording
+//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - replayInfo (string): path of the fuzzing trace or if the replay trace
+//   - timeoutReplay (int): timeout for replay
+//   - record (bool): true to rerecord the leaks
+//
+// Returns:
+//   - error
 func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", fileName)
@@ -50,14 +50,14 @@ func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, rep
 	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, timeoutReplay, record)
 }
 
-/*
- * Remove all headers from a unit test file
- * Args:
- * 	 fileName (string): path to the file containing the the test
- * 	 testName (string): name of the test
- * Returns:
- * 	 error
- */
+// Remove all headers from a unit test file
+//
+// Parameter:
+//   - fileName (string): path to the file containing the the test
+//   - testName (string): name of the test
+//
+// Returns:
+//   - error
 func headerRemoverUnit(fileName string) error {
 	if fileName == "" {
 		return fmt.Errorf("Please provide a file name")
@@ -70,15 +70,15 @@ func headerRemoverUnit(fileName string) error {
 	return removeHeaderUnit(fileName)
 }
 
-/*
- * Check if a test exists
- * Args:
- * 	 fileName (string): path to the file
- * 	 testName (string): name of the test
- * Returns:
- * 	 bool: true if the test exists, false otherwise
- * 	 error
- */
+// Check if a test exists
+//
+// Parameter:
+//   - fileName (string): path to the file
+//   - testName (string): name of the test
+//
+// Returns:
+//   - bool: true if the test exists, false otherwise
+//   - error
 func testExists(fileName string, testName string) (bool, error) {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -107,20 +107,20 @@ func testExists(fileName string, testName string) (bool, error) {
 	return false, nil
 }
 
-/*
- * Add the header into the unit tests. Do not call directly.
- * Call via headerInserterUnit. This functions assumes, that the
- * test exists.
- * Args:
- * 	 fileName (string): path to the file
- * 	 testName (string): name of the test
- * 	 replay (bool): true for replay, false for only recording
- * 	 replayInfo (string): path of the fuzzing trace or if the replay trace
- * 	 timeoutReplay (int): timeout for replay
- * 	 record (bool): true to rerecord the trace
- * Returns:
- * 	 error
- */
+// Add the header into the unit tests. Do not call directly.
+// Call via headerInserterUnit. This functions assumes, that the
+// test exists.
+//
+// Parameter:
+//   - fileName (string): path to the file
+//   - testName (string): name of the test
+//   - replay (bool): true for replay, false for only recording
+//   - replayInfo (string): path of the fuzzing trace or if the replay trace
+//   - timeoutReplay (int): timeout for replay
+//   - record (bool): true to rerecord the trace
+//
+// Returns:
+//   - error
 func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
 	importAdded := false
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
@@ -200,15 +200,15 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 	return nil
 }
 
-/*
- * Remove the header from the unit test. Do not call directly.
- * Call via headerRemoverUnit. This functions assumes, that the
- * test exists.
- * Args:
- * 	 fileName (string): path to the file
- * Returns:
- * 	 error
- */
+// Remove the header from the unit test. Do not call directly.
+// Call via headerRemoverUnit. This functions assumes, that the
+// test exists.
+//
+// Parameter:
+//   - fileName (string): path to the file
+//
+// Returns:
+//   - error
 func removeHeaderUnit(fileName string) error {
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {

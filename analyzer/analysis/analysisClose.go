@@ -17,12 +17,12 @@ import (
 	"analyzer/utils"
 )
 
-/*
- * Check if a send or receive on a closed channel is possible
- * It it is possible, print a warning or error
- * Args:
- * 	ch (*TraceElementChannel): The trace element
- */
+// checkForCommunicationOnClosedChannel checks if a send or receive on a
+// closed channel is possible.
+// It it is possible, print a warning or error.
+//
+// Parameter:
+//   - ch (*TraceElementChannel): The trace element
 func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -114,13 +114,12 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 
 }
 
-/*
- * Sound actual send on closed
- * Args:
- * 	elem (TraceElement): the send/select elem
- * 	id (int): id of the channel
- * 	actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
- */
+// foundSendOnClosedChannel is called, id an actual send on closed was found.
+//
+// Parameter:
+//   - elem (TraceElement): the send/select elem
+//   - id (int): id of the channel
+//   - actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
 func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -166,11 +165,10 @@ func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 
 }
 
-/*
- * Log the detection of an actual receive on a closed channel
- * Args:
- * 	ch (*TraceElementChannel): The trace element
- */
+// foundReceiveOnClosedChannel log the detection of an actual receive on a closed channel
+//
+// Parameter:
+//   - ch (*TraceElementChannel): The trace element
 func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -223,12 +221,11 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 	}
 }
 
-/*
- * Check for a close on a closed channel.
- * Must be called, before the current close operation is added to closePos
- * Args:
- * 	ch (*TraceElementChannel): The trace element
- */
+// checkForClosedOnClosed checks for a close on a closed channel.
+// Must be called, before the current close operation is added to closePos
+//
+// Parameter:
+//   - ch (*TraceElementChannel): The trace element
 func checkForClosedOnClosed(ch *TraceElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)

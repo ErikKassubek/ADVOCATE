@@ -28,26 +28,26 @@ import (
 	"time"
 )
 
-/*
- * Run ADVOCATE for all given unit tests
- * Args:
- * 	 pathToAdvocate (string): pathToAdvocate
- * 	 dir (string): path to the folder containing the unit tests
- * 	 pathToTest (string): path to the test file, should be set if exec is set
- * 	 progName (string): name of the analyzed program
- * 	 measureTime (bool): if true, measure the time for all steps. This
- * 	   also runs the tests once without any recoding/replay to get a base value
- * 	 notExecuted (bool): if true, check for never executed operations
- * 	 createStats (bool): create a stats file
- * 	 fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- * 	 fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
- * 	 keepTraces (bool): do not delete traces after analysis
- * 	  firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
- * 	  skipExisting (bool): do not overwrite existing results, skip those tests
- * 	 cont (bool): continue an already started run
- * Returns:
- * 	 error
- */
+// Run ADVOCATE for all given unit tests
+//
+// Parameter:
+//   - pathToAdvocate (string): pathToAdvocate
+//   - dir (string): path to the folder containing the unit tests
+//   - pathToTest (string): path to the test file, should be set if exec is set
+//   - progName (string): name of the analyzed program
+//   - measureTime (bool): if true, measure the time for all steps. This
+//   - also runs the tests once without any recoding/replay to get a base value
+//   - notExecuted (bool): if true, check for never executed operations
+//   - createStats (bool): create a stats file
+//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - keepTraces (bool): do not delete traces after analysis
+//   - firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//   - skipExisting (bool): do not overwrite existing results, skip those tests
+//   - cont (bool): continue an already started run
+//
+// Returns:
+//   - error
 func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 	measureTime, notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
@@ -220,17 +220,17 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 	return nil
 }
 
-/*
- * Function to find all _test.go files in the specified directory
- * Args:
- * 	 dir (string): folder to search in
- * 	 cont (bool): only return test files not already in the advocateResult
- * Returns:
- * 	 []string: found files
- * 	 int: min file num, only if cont, otherwise 0
- * 	 int: total number of files
- * 	 error
- */
+// Function to find all _test.go files in the specified directory
+//
+// Parameter:
+//   - dir (string): folder to search in
+//   - cont (bool): only return test files not already in the advocateResult
+//
+// Returns:
+//   - []string: found files
+//   - int: min file num, only if cont, otherwise 0
+//   - int: total number of files
+//   - error
 func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	var testFiles []string
 
@@ -326,14 +326,14 @@ func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
 	return res, maxFileNum, nil
 }
 
-/*
- * Function to find all test function in the specified file
- * Args:
- * 	 file (string): file to search in
- * Returns:
- * 	 []string: functions
- * 	 error
- */
+// Function to find all test function in the specified file
+//
+// Parameter:
+//   - file (string): file to search in
+//
+// Returns:
+//   - []string: functions
+//   - error
 func FindTestFunctions(file string) ([]string, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -352,22 +352,22 @@ func FindTestFunctions(file string) ([]string, error) {
 	return testFunctions, nil
 }
 
-/*
- * Run the full workflow for a given unit test.
- * This will run, record, analyzer and, if necessary, rewrite and replay the test
- * Args:
- * 	 pathToAdvocate (string): path to advocate
- * 	 dir (string): path to the package to test
- * 	 progName (string): name of the program
- * 	 testName (string): name of the test
- * 	 pkg (string): adjusted package path
- * 	 file (string): file with the test
- * 	 fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
- * Returns:
- * 	 int: number of run replays
- * 	 bool: true if analysis passed without error
- * 	 error
- */
+// Run the full workflow for a given unit test.
+// This will run, record, analyzer and, if necessary, rewrite and replay the test
+//
+// Parameter:
+//   - pathToAdvocate (string): path to advocate
+//   - dir (string): path to the package to test
+//   - progName (string): name of the program
+//   - testName (string): name of the test
+//   - pkg (string): adjusted package path
+//   - file (string): file with the test
+//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//
+// Returns:
+//   - int: number of run replays
+//   - bool: true if analysis passed without error
+//   - error
 func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int, fuzzingTrace string) (int, bool, error) {
 	output := "output.log"
 

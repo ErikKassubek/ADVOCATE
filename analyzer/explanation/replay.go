@@ -18,15 +18,15 @@ import (
 	"strings"
 )
 
-/*
- * Get the text for the rewrite and replay info for the explanation
- * Args:
- * 	bugType (string): bug code
- * 	code (map[string]string): replay output codes
- * 	index (int): index of the bug that is explained
- * Returns:
- * 	map[string]string: Information for the rewrite/replay part of the explanation file
- */
+// Get the text for the rewrite and replay info for the explanation
+//
+// Parameter:
+//   - bugType (string): bug code
+//   - code (map[string]string): replay output codes
+//   - index (int): index of the bug that is explained
+//
+// Returns:
+//   - map[string]string: Information for the rewrite/replay part of the explanation file
 func getRewriteInfo(bugType string, codes map[string]string, index string) map[string]string {
 	res := make(map[string]string)
 
@@ -68,13 +68,13 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 
 }
 
-/*
- * From the bug code get wether the bug was actual, possible or a (possible) leak
- * Args:
- * 	bugCode (string): the bug code
- * Returns:
- * 	string: Actual, Possible, Leak or Pos Leak
- */
+// From the bug code get wether the bug was actual, possible or a (possible) leak
+//
+// Parameter:
+//   - bugCode (string): the bug code
+//
+// Returns:
+//   - string: Actual, Possible, Leak or Pos Leak
 func getRewriteType(bugCode string) string {
 	switch bugCode[:1] {
 	case "A":
@@ -92,13 +92,12 @@ func getRewriteType(bugCode string) string {
 	return ""
 }
 
-/*
- * Get the output codes from the output.log file
- * Args:
- * 	path (string): path to the folder containing the output.log file
- * Returns:
- * map[string]stringL exit codes
- */
+// Get the output codes from the output.log file
+//
+// Parameter:
+//   - path (string): path to the folder containing the output.log file
+//
+// Returns: map[string]stringL exit codes
 func getOutputCodes(path string) map[string]string {
 	output := filepath.Join(path, "output.log")
 	if _, err := os.Stat(output); os.IsNotExist(err) {
@@ -162,17 +161,17 @@ func getOutputCodes(path string) map[string]string {
 	return replayCode
 }
 
-/*
- * Get the text for the replay info for the explanation
- * Args:
- * 	code (map[string]string): replay output codes
- * 	index (int): index of the bug that is explained
- * Returns:
- * 	string: exit code
- * 	string: replay result explanation
- * 	string: replay success info
- * 	error
- */
+// Get the text for the replay info for the explanation
+//
+// Parameter:
+//   - code (map[string]string): replay output codes
+//   - index (int): index of the bug that is explained
+//
+// Returns:
+//   - string: exit code
+//   - string: replay result explanation
+//   - string: replay success info
+//   - error
 func getReplayInfo(codes map[string]string, index string) (string, string, string, error) {
 	if _, ok := codes["AdvocateFailExplanationInfo"]; ok {
 		fmt.Println("Could not read")

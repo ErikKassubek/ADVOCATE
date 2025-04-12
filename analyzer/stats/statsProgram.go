@@ -19,13 +19,12 @@ import (
 	"strings"
 )
 
-/*
- * CreateStatsTotal creates an overview over all statistics for a program
- * (not split by test/run)
- * Args:
- * 	pathFolder (string): path the where the stat files should be created
- * 	progName (string): name of the analyzed program
- */
+// CreateStatsTotal creates an overview over all statistics for a program
+// (not split by test/run)
+//
+// Parameter:
+//   - pathFolder (string): path the where the stat files should be created
+//   - progName (string): name of the analyzed program
 func CreateStatsTotal(pathFolder, progName string) error {
 	resultPath := filepath.Join(pathFolder, "advocateResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
@@ -142,14 +141,14 @@ func CreateStatsTotal(pathFolder, progName string) error {
 	return err
 }
 
-/*
- * Parse a program to measure the number of files, and number of lines
- * Args:
- * 	  programPath (string): path to the folder containing the program
- * Returns:
- * 	  map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
- * 	  error
- */
+// Parse a program to measure the number of files, and number of lines
+//
+// Parameter:
+//   - programPath (string): path to the folder containing the program
+//
+// Returns:
+//   - map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
+//   - error
 func statsProgram(programPath string) (map[string]int, error) {
 	res := make(map[string]int)
 	res["numberFiles"] = 0
@@ -181,14 +180,14 @@ func statsProgram(programPath string) (map[string]int, error) {
 	return res, err
 }
 
-/*
- * Parse one program file to measure the number of lines
- * Args:
- * 	  programPath (string): path to the file
- * Returns:
- * 	  map[string]int: map with numberLines, numberNonEmptyLines
- * 	  error
- */
+// Parse one program file to measure the number of lines
+//
+// Parameter:
+//   - programPath (string): path to the file
+//
+// Returns:
+//   - map[string]int: map with numberLines, numberNonEmptyLines
+//   - error
 func parseProgramFile(filePath string) (map[string]int, error) {
 	res := make(map[string]int)
 	res["numberLines"] = 0

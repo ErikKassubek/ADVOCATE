@@ -27,19 +27,18 @@ const (
 	WaitOp
 )
 
-/*
- * TraceElementWait is a trace element for a wait group statement
- * Fields:
- *   index (int): Index in the routine
- *   tpre (int): The timestamp at the start of the event
- *   tpost (int): The timestamp at the end of the event
- *   id (int): The id of the wait group
- *   opW (opW): The operation on the wait group
- *   delta (int): The delta of the wait group
- *   val (int): The value of the wait group
- *   file (string), line(int): The position of the wait group in the code
- *   tID (string): The id of the trace element, contains the position and the tpre
- */
+// TraceElementWait is a trace element for a wait group statement
+// Fields:
+//
+//   - index (int): Index in the routine
+//   - tpre (int): The timestamp at the start of the event
+//   - tpost (int): The timestamp at the end of the event
+//   - id (int): The id of the wait group
+//   - opW (opW): The operation on the wait group
+//   - delta (int): The delta of the wait group
+//   - val (int): The value of the wait group
+//   - file (string), line(int): The position of the wait group in the code
+//   - tID (string): The id of the trace element, contains the position and the tpre
 type TraceElementWait struct {
 	index   int
 	routine int
@@ -57,18 +56,17 @@ type TraceElementWait struct {
 	rel2    []TraceElement
 }
 
-/*
- * Create a new wait group trace element
- * Args:
- * 	routine (int): The routine id
- * 	tpre (string): The timestamp at the start of the event
- * 	tpost (string): The timestamp at the end of the event
- * 	id (string): The id of the wait group
- * 	opW (string): The operation on the wait group
- * 	delta (string): The delta of the wait group
- * 	val (string): The value of the wait group
- * 	pos (string): The position of the wait group in the code
- */
+// Create a new wait group trace element
+//
+// Parameter:
+//   - routine (int): The routine id
+//   - tpre (string): The timestamp at the start of the event
+//   - tpost (string): The timestamp at the end of the event
+//   - id (string): The id of the wait group
+//   - opW (string): The operation on the wait group
+//   - delta (string): The delta of the wait group
+//   - val (string): The value of the wait group
+//   - pos (string): The position of the wait group in the code
 func AddTraceElementWait(routine int, tpre,
 	tpost, id, opW, delta, val, pos string) error {
 	tpre_int, err := strconv.Atoi(tpre)
@@ -130,47 +128,42 @@ func AddTraceElementWait(routine int, tpre,
 	return nil
 }
 
-/*
- * Get the id of the element
- * Returns:
- * 	int: The id of the element
- */
+// Get the id of the element
+//
+// Returns:
+//   - int: The id of the element
 func (wa *TraceElementWait) GetID() int {
 	return wa.id
 }
 
-/*
- * Get the routine of the element
- * Returns:
- * 	int: The routine of the element
- */
+// Get the routine of the element
+//
+// Returns:
+//   - int: The routine of the element
 func (wa *TraceElementWait) GetRoutine() int {
 	return wa.routine
 }
 
-/*
- * Get the timestamp at the start of the event
- * Returns:
- * 	int: The timestamp at the start of the event
- */
+// Get the timestamp at the start of the event
+//
+// Returns:
+//   - int: The timestamp at the start of the event
 func (wa *TraceElementWait) GetTPre() int {
 	return wa.tPre
 }
 
-/*
- * Get the timestamp at the end of the event
- * Returns:
- * 	int: The timestamp at the end of the event
- */
+// Get the timestamp at the end of the event
+//
+// Returns:
+//   - int: The timestamp at the end of the event
 func (wa *TraceElementWait) GetTPost() int {
 	return wa.tPost
 }
 
-/*
- * Get the timer, that is used for the sorting of the trace
- * Returns:
- * 	int: The timer of the element
- */
+// Get the timer, that is used for the sorting of the trace
+//
+// Returns:
+//   - int: The timer of the element
 func (wa *TraceElementWait) GetTSort() int {
 	if wa.tPost == 0 {
 		// add at the end of the trace
@@ -179,11 +172,10 @@ func (wa *TraceElementWait) GetTSort() int {
 	return wa.tPost
 }
 
-/*
- * Get the position of the operation.
- * Returns:
- * 	string: The position of the element
- */
+// Get the position of the operation.
+//
+// Returns:
+//   - string: The position of the element
 func (wa *TraceElementWait) GetPos() string {
 	return fmt.Sprintf("%s:%d", wa.file, wa.line)
 }
@@ -200,20 +192,18 @@ func (wa *TraceElementWait) GetLine() int {
 	return wa.line
 }
 
-/*
- * Get the tID of the element.
- * Returns:
- * 	string: The tID of the element
- */
+// Get the tID of the element.
+//
+// Returns:
+//   - string: The tID of the element
 func (wa *TraceElementWait) GetTID() string {
 	return wa.GetPos() + "@" + strconv.Itoa(wa.tPre)
 }
 
-/*
- * Get if the operation is a wait op
- * Returns:
- * 	bool: True if the operation is a wait op
- */
+// Get if the operation is a wait op
+//
+// Returns:
+//   - bool: True if the operation is a wait op
 func (wa *TraceElementWait) IsWait() bool {
 	return wa.opW == WaitOp
 }
@@ -222,11 +212,10 @@ func (wa *TraceElementWait) GetDelta() int {
 	return wa.delta
 }
 
-/*
- * Get the vector clock of the element
- * Returns:
- * 	VectorClock: The vector clock of the element
- */
+// Get the vector clock of the element
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
 func (wa *TraceElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
@@ -235,9 +224,7 @@ func (wa *TraceElementWait) GetwVc() *clock.VectorClock {
 	return wa.wVc
 }
 
-/*
- * Get the string representation of the object type
- */
+// Get the string representation of the object type
 func (wa *TraceElementWait) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeWait
@@ -259,21 +246,19 @@ func (wa *TraceElementWait) GetTraceIndex() (int, int) {
 	return wa.routine, wa.index
 }
 
-/*
- * Set the tPre and tPost of the element
- * Args:
- * 	time (int): The tPre and tPost of the element
- */
+// Set the tPre and tPost of the element
+//
+// Parameter:
+//   - time (int): The tPre and tPost of the element
 func (wa *TraceElementWait) SetT(time int) {
 	wa.tPre = time
 	wa.tPost = time
 }
 
-/*
- * Set the tpre of the element.
- * Args:
- * 	tPre (int): The tpre of the element
- */
+// Set the tpre of the element.
+//
+// Parameter:
+//   - tPre (int): The tpre of the element
 func (wa *TraceElementWait) SetTPre(tPre int) {
 	wa.tPre = tPre
 	if wa.tPost != 0 && wa.tPost < tPre {
@@ -281,22 +266,20 @@ func (wa *TraceElementWait) SetTPre(tPre int) {
 	}
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace
- * Args:
- * 	tSort (int): The timer of the element
- */
+// Set the timer, that is used for the sorting of the trace
+//
+// Parameter:
+//   - tSort (int): The timer of the element
 func (wa *TraceElementWait) SetTSort(tSort int) {
 	wa.SetTPre(tSort)
 	wa.tPost = tSort
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace, only if the original
- * value was not 0
- * Args:
- * 	tSort (int): The timer of the element
- */
+// Set the timer, that is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter:
+//   - tSort (int): The timer of the element
 func (wa *TraceElementWait) SetTWithoutNotExecuted(tSort int) {
 	wa.SetTPre(tSort)
 	if wa.tPost != 0 {
@@ -304,11 +287,10 @@ func (wa *TraceElementWait) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
-/*
- * Get the simple string representation of the element
- * Returns:
- * 	string: The simple string representation of the element
- */
+// Get the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
 func (wa *TraceElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(wa.tPre) + "," + strconv.Itoa(wa.tPost) + ","
@@ -325,9 +307,7 @@ func (wa *TraceElementWait) ToString() string {
 	return res
 }
 
-/*
- * Update and calculate the vector clock of the element
- */
+// Update and calculate the vector clock of the element
 func (wa *TraceElementWait) updateVectorClock() {
 	wa.vc = currentVC[wa.routine].Copy()
 	wa.wVc = currentWVC[wa.routine].Copy()
@@ -343,11 +323,10 @@ func (wa *TraceElementWait) updateVectorClock() {
 	}
 }
 
-/*
- * Copy the element
- * Returns:
- * 	TraceElement: The copy of the element
- */
+// Copy the element
+//
+// Returns:
+//   - TraceElement: The copy of the element
 func (wa *TraceElementWait) Copy() TraceElement {
 	return &TraceElementWait{
 		index:   wa.index,
@@ -369,12 +348,11 @@ func (wa *TraceElementWait) Copy() TraceElement {
 
 // ========= For GoPie fuzzing ===========
 
-/*
- * Add an element to the rel1 set of the element
- * Args:
- * 	elem (TraceElement): elem to add
- * 	pos (int): before (0) or after (1)
- */
+// Add an element to the rel1 set of the element
+//
+// Parameter:
+//   elem (TraceElement): elem to add
+//   pos (int): before (0) or after (1)
 
 func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
@@ -383,29 +361,26 @@ func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
 	wa.rel1[pos] = elem
 }
 
-/*
- * Add an element to the rel2 set of the element
- * Args:
- * 	elem (TraceElement): elem to add
- */
+// Add an element to the rel2 set of the element
+//
+// Parameter:
+//   - elem (TraceElement): elem to add
 func (wa *TraceElementWait) AddRel2(elem TraceElement) {
 	wa.rel2 = append(wa.rel2, elem)
 }
 
-/*
- * Return the rel1 set
- * Returns:
- * 	[]*TraceElement: the rel1 set
- */
+// Return the rel1 set
+//
+// Returns:
+//   - []*TraceElement: the rel1 set
 func (wa *TraceElementWait) GetRel1() []TraceElement {
 	return wa.rel1
 }
 
-/*
- * Return the rel2 set
- * Returns:
- * 	[]*TraceElement: the rel2 set
- */
+// Return the rel2 set
+//
+// Returns:
+//   - []*TraceElement: the rel2 set
 func (wa *TraceElementWait) GetRel2() []TraceElement {
 	return wa.rel1
 }

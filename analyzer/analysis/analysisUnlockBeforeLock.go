@@ -19,11 +19,10 @@ import (
 	"fmt"
 )
 
-/*
- * Collect all locks for the analysis
- * Args:
- * 	 mu *TraceElementMutex: the trace mutex element
- */
+// Collect all locks for the analysis
+//
+// Parameter:
+//   - mu *TraceElementMutex: the trace mutex element
 func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
@@ -35,11 +34,10 @@ func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
 	allLocks[mu.id] = append(allLocks[mu.id], mu)
 }
 
-/*
- * Collect all unlocks for the analysis
- * Args:
- * 	 mu *TraceElementMutex: the trace mutex element
- */
+// Collect all unlocks for the analysis
+//
+// Parameter:
+//   - mu *TraceElementMutex: the trace mutex element
 func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
@@ -51,12 +49,10 @@ func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
 	allUnlocks[mu.id] = append(allUnlocks[mu.id], mu)
 }
 
-/*
- * Check if we can get a unlock of a not locked mutex
- * For each done operation, build a bipartite st graph.
- * Use the Ford-Fulkerson algorithm to find the maximum flow.
- * If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
- */
+// Check if we can get a unlock of a not locked mutex
+// For each done operation, build a bipartite st graph.
+// Use the Ford-Fulkerson algorithm to find the maximum flow.
+// If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
 func checkForUnlockBeforeLock() {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
@@ -166,6 +162,16 @@ func checkForUnlockBeforeLock() {
 	}
 }
 
+// getUnlockElemFromTID returns the element from allUnlocks with the given tID
+// for a given mutex
+//
+// Parameter:
+//   - id (int): id of the mutex
+//   - tID (int): tID of the unlock operation
+//
+// Returns:
+//   - TraceElement: if found the element, otherwise nil
+//   - error
 func getUnlockElemFromTID(id int, tID string) (TraceElement, error) {
 	for _, u := range allUnlocks[id] {
 		if u.GetTID() == tID {

@@ -19,12 +19,12 @@ import (
 	"analyzer/utils"
 )
 
-/*
- * getConcurrentSendForFuzzing checks if for the given send, there is a
- * concurrent send on the same channel
- * Args:
- * 	sender (*TraceElementChannel): Send trace element
- */
+// getConcurrentSendForFuzzing checks if for the given send, if there is a
+// concurrent send on the same channel. If there is, the information is stored
+// in fuzzingFlowSend. This is used for fuzzing.
+//
+// Parameter:
+//   - sender (*TraceElementChannel): Send trace element
 func getConcurrentSendForFuzzing(sender *TraceElementChannel) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
@@ -63,6 +63,12 @@ func getConcurrentSendForFuzzing(sender *TraceElementChannel) {
 	}
 }
 
+// checkForConcurrentRecv checks if for the given recv, if there is a
+// concurrent recv on the same channel. If there is, the information is stored
+// in fuzzingFlowRecv.
+//
+// Parameter:
+//   - ch (*TraceElementChannel): recv trace element
 func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
 	if analysisFuzzing {
 		timer.Start(timer.FuzzingAna)
@@ -126,6 +132,12 @@ func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]*clock.VectorClo
 	}
 }
 
+// getConcurrentMutexForFuzzing checks if for the given mutex operations, if there is a
+// concurrent mutex operations on the same mutex. If there is, the information is stored
+// in fuzzingFlowMutex.
+//
+// Parameter:
+//   - mu *TraceElementMutex: mutex operations
 func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
@@ -150,6 +162,12 @@ func getConcurrentMutexForFuzzing(mu *TraceElementMutex) {
 
 }
 
+// getConcurrentOnceForFuzzing checks if for the given once operations, if there is a
+// concurrent once operations on the same primitive. If there is, the information is stored
+// in fuzzingFlowOnce.
+//
+// Parameter:
+//   - on *TraceElementOnce: once.Do operations
 func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
 	timer.Start(timer.FuzzingAna)
 	timer.Stop(timer.FuzzingAna)
@@ -171,10 +189,27 @@ func getConcurrentOnceForFuzzing(on *TraceElementOnce) {
 	}
 }
 
+// GetConcurrentInfoForFuzzing returns the required fuzzing information for
+// the flow fuzzing mutation.
+//
+// Returns:
+//   - *[]ConcurrentEntry: once that can be delayed in flow fuzzing
+//   - *[]ConcurrentEntry: mutex operations that can be delayed in flow fuzzing
+//   - *[]ConcurrentEntry: send that can be delayed in flow fuzzing
+//   - *[]ConcurrentEntry: recv that can be delayed in flow fuzzing
 func GetConcurrentInfoForFuzzing() (*[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry, *[]ConcurrentEntry) {
 	return &fuzzingFlowOnce, &fuzzingFlowMutex, &fuzzingFlowSend, &fuzzingFlowRecv
 }
 
+// getFuzzingCounter returns the fuzzing counter for an element. If the element
+// has no counter it is set to 0. The fuzzing counter gives for a given
+// primitive how often an operation has been executed on the primitive before.
+//
+// Parameter:
+//   - te (TraceElement): The trace element to get the counter for
+//
+// Returns:
+//   - int: the current fuzzing counter for the element
 func getFuzzingCounter(te TraceElement) int {
 	id := te.GetID()
 	pos := te.GetPos()
@@ -189,6 +224,10 @@ func getFuzzingCounter(te TraceElement) int {
 	return 0
 }
 
+// incFuzzingCounter increases the fuzzing counter of a given element
+//
+// Parameter:
+//   - te (TraceElement): The element to increase the counter for
 func incFuzzingCounter(te TraceElement) {
 	id := te.GetID()
 	pos := te.GetPos()

@@ -19,24 +19,22 @@ import (
 	"strings"
 )
 
-/*
- * testData stores information about a test
- * Parameter:
- * 	name (string): name of the test
- * 	numberRuns (int): for fuzzing, how often the test was run
- * 	results (map[string]map[string]int): information about the found bugs in this test
- */
+// testData stores information about a test
+//
+// Parameter:
+//   - name (string): name of the test
+//   - numberRuns (int): for fuzzing, how often the test was run
+//   - results (map[string]map[string]int): information about the found bugs in this test
 type testData struct {
 	name       string
 	numberRuns int
 	results    map[string]map[string]int
 }
 
-/*
- * toString returns the string representation of the statistics of a test
- * Returns:
- * 	string: the string representation
- */
+// toString returns the string representation of the statistics of a test
+//
+// Returns:
+//   - string: the string representation
 func (td *testData) toString() string {
 	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
 
@@ -49,17 +47,17 @@ func (td *testData) toString() string {
 	return res
 }
 
-/*
- * CreateStats adds the information of an analyzed test to the stats info
- * Args:
- * 	pathFolder (string): path to where the stats file should be created
- * 	progName (string): name of the analyzed program
- * 	testName (string): name of the analyzed test
- * 	traceID (int): id of the trace
- * 	fuzzing (int): number of fuzzing run
- * Returns:
- * 	error
- */
+// CreateStats adds the information of an analyzed test to the stats info
+//
+// Parameter:
+//   - pathFolder (string): path to where the stats file should be created
+//   - progName (string): name of the analyzed program
+//   - testName (string): name of the analyzed test
+//   - traceID (int): id of the trace
+//   - fuzzing (int): number of fuzzing run
+//
+// Returns:
+//   - error
 func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing int) error {
 	// statsProg, err := statsProgram(pathToProgram)
 	// if err != nil {
@@ -92,20 +90,20 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 
 }
 
-/*
-* Write the collected statistics to files
-* Args:
-*     path (string): path to where the stats file should be created
-*     progName (string): name of the program
-*     testName (string): name of the test
-*     statsProg (map[string]int): statistics about the program
-*     statsTraces (map[string]int): statistics about the trace
-*     statsMisc (map[string]int): miscellaneous statistics
-*     statsAnalyzerTotal (map[string]map[string]int): statistics about the total analysis and replay
-*     statsAnalyzerUnique (map[string]map[string]int): statistics about the unique analysis and replay
-* Returns:
-*     error
- */
+// Write the collected statistics to files
+//
+// Parameter:
+//   - path (string): path to where the stats file should be created
+//   - progName (string): name of the program
+//   - testName (string): name of the test
+//   - statsProg (map[string]int): statistics about the program
+//   - statsTraces (map[string]int): statistics about the trace
+//   - statsMisc (map[string]int): miscellaneous statistics
+//   - statsAnalyzerTotal (map[string]map[string]int): statistics about the total analysis and replay
+//   - statsAnalyzerUnique (map[string]map[string]int): statistics about the unique analysis and replay
+//
+// Returns:
+//   - error
 func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int, statsMisc map[string]int,
 	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
 
@@ -251,13 +249,12 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	return nil
 }
 
-/*
- * writeStatsFile writes the collected stats to a csv file
- * Args:
- * 	path (string): path to where the stat file should be created
- * 	header (string): first line of the stat file containing column names
- * 	data (string): the stats data to write into the files
- */
+// writeStatsFile writes the collected stats to a csv file
+//
+// Parameter:
+//   - path (string): path to where the stat file should be created
+//   - header (string): first line of the stat file containing column names
+//   - data (string): the stats data to write into the files
 func writeStatsFile(path, header, data string) {
 	newFile := false
 	_, err := os.Stat(path)

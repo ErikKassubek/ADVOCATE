@@ -16,15 +16,14 @@ import (
 	"sort"
 )
 
-/*
- * Struct to handle the selects for fuzzing
- * 	id (string): replay id
- * 	t (int): tpost of the select execution, used for order
- * 	chosenCase (int): id of the chosen case, -1 for default
- * 	numberCases (int): number of cases not including default
- * 	containsDefault (bool): true if contains default case, otherwise false
- * 	casiWithPos([]int): list of casi with
- */
+// Struct to handle the selects for fuzzing
+//
+//   - id (string): replay id
+//   - t (int): tpost of the select execution, used for order
+//   - chosenCase (int): id of the chosen case, -1 for default
+//   - numberCases (int): number of cases not including default
+//   - containsDefault (bool): true if contains default case, otherwise false
+//   - casiWithPos([]int): list of casi with
 type fuzzingSelect struct {
 	id              string
 	t               int
@@ -34,11 +33,10 @@ type fuzzingSelect struct {
 	casiWithPos     []int
 }
 
-/*
- * Add a select to selectInfoTrace
- * Args:
- * 	e (*analysis.TraceElementSelect): the select trace element to add
- */
+// Add a select to selectInfoTrace
+//
+// Parameter:
+//   - e (*analysis.TraceElementSelect): the select trace element to add
 func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	fs := fuzzingSelect{
 		id:              e.GetReplayID(),
@@ -53,9 +51,7 @@ func addFuzzingSelect(e *analysis.TraceElementSelect) {
 	numberSelects++
 }
 
-/*
- * Sort the list of occurrences of each select by the time value
- */
+// Sort the list of occurrences of each select by the time value
 func sortSelects() {
 	for key := range selectInfoTrace {
 		sort.Slice(selectInfoTrace[key], func(i, j int) bool {
@@ -64,14 +60,14 @@ func sortSelects() {
 	}
 }
 
-/*
- * Get a copy of fs with a randomly selected case id.
- * Args:
- * 	def (bool): if true, default is a possible value, if false it is not
- * 	flipChange (bool): probability that a select case is chosen randomly. Otherwise the chosen case is kept
- * Return:
- * 	(int): the chosen case ID
- */
+// Get a copy of fs with a randomly selected case id.
+//
+// Parameter:
+//   - def (bool): if true, default is a possible value, if false it is not
+//   - flipChange (bool): probability that a select case is chosen randomly. Otherwise the chosen case is kept
+//
+// Returns:
+//   - (int): the chosen case ID
 func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelect {
 	// do only flip with certain chance
 	if rand.Float64() > flipChance {
@@ -88,13 +84,12 @@ func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelec
 	return fuzzingSelect{id: fs.id, t: fs.t, chosenCase: prefCase, numberCases: fs.numberCases, containsDefault: fs.containsDefault}
 }
 
-/*
- * Randomly select a case.
- * The case is between 0 and fs.numberCases if def is false and between -1 and fs.numberCases otherwise
- * fs.chosenCase is never chosen
- * The values in fs.casiWithPos have a higher likelihood to be chosen by a
- * 	factor factorCaseWithPartner (defined in fuzzing/data.go)
- */
+// Randomly select a case.
+// The case is between 0 and fs.numberCases if def is false and between -1 and fs.numberCases otherwise
+// fs.chosenCase is never chosen
+// The values in fs.casiWithPos have a higher likelihood to be chosen by a
+//
+//   - factor factorCaseWithPartner (defined in fuzzing/data.go)
 func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 	// Determine the starting number based on includeZero
 	start := 0

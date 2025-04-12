@@ -18,16 +18,16 @@ import (
 	"strings"
 )
 
-/*
- * Get the info from a TID
- * Args:
- * 	tID (string): The TID
- * Return:
- * 	string: the file
- * 	int: the line
- * 	int: the tPre
- * 	error: the error
- */
+// Get the info from a TID
+//
+// Parameter:
+//   - tID (string): The TID
+//
+// Returns:
+//   - string: the file
+//   - int: the line
+//   - int: the tPre
+//   - error: the error
 func infoFromTID(tID string) (string, int, int, error) {
 	spilt1 := utils.SplitAtLast(tID, "@")
 

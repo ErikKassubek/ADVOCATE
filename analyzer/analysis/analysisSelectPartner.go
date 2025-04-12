@@ -19,10 +19,8 @@ import (
 	"strings"
 )
 
-/*
-* CheckForSelectCaseWithoutPartner checks for select cases without a valid
-* partner. Call when all elements have been processed.
- */
+// CheckForSelectCaseWithoutPartner checks for select cases without a valid
+// partner. Call when all elements have been processed.
 func CheckForSelectCaseWithoutPartner() {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
@@ -196,13 +194,12 @@ func CheckForSelectCaseWithoutPartner() {
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerSelect checks for select cases without a valid
-* partner. Call whenever a select is processed.
-* Args:
-*   se (*TraceElementSelect): The trace elemen
-*   vc (VectorClock): The vector clock
- */
+// CheckForSelectCaseWithoutPartnerSelect checks for select cases without a valid
+// partner. Call whenever a select is processed.
+//
+// Parameter:
+//   - se (*TraceElementSelect): The trace elemen
+//   - vc (VectorClock): The vector clock
 func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
@@ -266,15 +263,14 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.Ve
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerChannel checks for select cases without a valid
-* partner. Call whenever a channel operation is processed.
-* Args:
-*   id (int): The id of the channel
-*   vc (VectorClock): The vector clock
-*   send (bool): True if the operation is a send
-*   buffered (bool): True if the channel is buffered
- */
+// CheckForSelectCaseWithoutPartnerChannel checks for select cases without a valid
+// partner. Call whenever a channel operation is processed.
+//
+// Parameter:
+//   - id (int): The id of the channel
+//   - vc (VectorClock): The vector clock
+//   - send (bool): True if the operation is a send
+//   - buffered (bool): True if the channel is buffered
 func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorClock,
 	send bool, buffered bool) {
 
@@ -309,13 +305,12 @@ func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorCl
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerClose checks for select cases without a valid
-* partner. Call whenever a close operation is processed.
-* Args:
-*   id (int): The id of the channel
-*   vc (VectorClock): The vector clock
- */
+// CheckForSelectCaseWithoutPartnerClose checks for select cases without a valid
+// partner. Call whenever a close operation is processed.
+//
+// Parameter:
+//   - id (int): The id of the channel
+//   - vc (VectorClock): The vector clock
 func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
@@ -340,18 +335,14 @@ func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.Ve
 	}
 }
 
-/*
- * Get number of cases with possible partner
- */
+// Get number of cases with possible partner
 func GetNumberSelectCasesWithPartner() int {
 	return numberSelectCasesWithPartner
 }
 
-/*
- * Rerun the CheckForSelectCaseWithoutPartnerChannel for all channel. This
- * is needed to find potential communication partners for not executed
- * select cases, if the select was executed after the channel
- */
+// Rerun the CheckForSelectCaseWithoutPartnerChannel for all channel. This
+// is needed to find potential communication partners for not executed
+// select cases, if the select was executed after the channel
 func rerunCheckForSelectCaseWithoutPartnerChannel() {
 	for _, trace := range MainTrace.traces {
 		for _, elem := range trace {

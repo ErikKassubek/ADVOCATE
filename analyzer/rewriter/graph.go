@@ -16,13 +16,12 @@ import (
 	"analyzer/utils"
 )
 
-/*
- * Create a new trace for a negative wait group counter (done before add)
- * Args:
- * 	trace (*analysis.Trace): Trace to rewrite
- * 	bug (Bug): The bug to create a trace for
- * 	expectedErrorCode (int): For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
- */
+// Create a new trace for a negative wait group counter (done before add)
+//
+// Parameter:
+//   - trace (*analysis.Trace): Trace to rewrite
+//   - bug (Bug): The bug to create a trace for
+//   - expectedErrorCode (int): For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
 func rewriteGraph(trace *analysis.Trace, bug bugs.Bug, expectedErrorCode int) error {
 	if bug.Type == bugs.PNegWG {
 		utils.LogInfo("Start rewriting trace for negative waitgroup counter...")

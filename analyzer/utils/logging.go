@@ -26,125 +26,114 @@ const (
 var numberErr = 0
 var numberTimeout = 0
 
-/*
- * Log function for information
- * Printed in base color
- * Args:
- * 	v (...any): the content of the log
- */
+// Log function for information
+// Printed in base color
+//
+// Parameter:
+//   - v (...any): the content of the log
 func LogInfo(v ...any) {
 	log.Println(v...)
 }
 
-/*
- * Formatted log function for information
- * Printed in base color
- * Args:
- * 	format (string): the format (e.g. "%s")
- * 	v (...any): the content of the log
- */
+// Formatted log function for information
+// Printed in base color
+//
+// Parameter:
+//   - format (string): the format (e.g. "%s")
+//   - v (...any): the content of the log
 func LogInfof(format string, v ...any) {
 	log.Printf(format, v...)
 }
 
-/*
- * Log function for important information
- * Printed in yellow
- * Args:
- * 	v (...any): the content of the log
- */
+// Log function for important information
+// Printed in yellow
+//
+// Parameter:
+//   - v (...any): the content of the log
 func LogImportant(v ...any) {
 	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
 }
 
-/*
- * Formatted log function for important information
- * Printed in yellow
- * Args:
- * 	format (string): the format (e.g. "%s")
- * 	v (...any): the content of the log
- */
+// Formatted log function for important information
+// Printed in yellow
+//
+// Parameter:
+//   - format (string): the format (e.g. "%s")
+//   - v (...any): the content of the log
 func LogImportantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
 }
 
-/*
- * Log function for results
- * Printed in green
- * Args:
- * 	v (...any): the content of the log
- */
+// Log function for results
+// Printed in green
+//
+// Parameter:
+//   - v (...any): the content of the log
 func LogResult(v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
 }
 
-/*
- * Formatted log function for results
- * Printed in green
- * Args:
- * 	format (string): the format (e.g. "%s")
- * 	v (...any): the content of the log
- */
+// Formatted log function for results
+// Printed in green
+//
+// Parameter:
+//   - format (string): the format (e.g. "%s")
+//   - v (...any): the content of the log
 func LogResultf(format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
 }
 
-/*
- * Log function for timeout
- * Printed in purple
- * Counts number of timeouts
- * Args:
- * 	v (...any): the content of the log
- */
+// Log function for timeout
+// Printed in purple
+// Counts number of timeouts
+//
+// Parameter:
+//   - v (...any): the content of the log
 func LogTimeout(v ...any) {
 	log.Print(Purple, fmt.Sprint(v...), Reset, "\n")
 	numberTimeout++
 }
 
-/*
- * Formatted log function for timeout
- * Printed in purple
- * Counts number of timeouts
- * Args:
- * 	format (string): the format (e.g. "%s")
- * 	v (...any): the content of the log
- */
+// Formatted log function for timeout
+// Printed in purple
+// Counts number of timeouts
+//
+// Parameter:
+//   - format (string): the format (e.g. "%s")
+//   - v (...any): the content of the log
 func LogTimeoutf(format string, v ...any) {
 	log.Printf(Purple+format+Reset, v...)
 	numberTimeout++
 }
 
-/*
- * Log function for errors
- * Printed in red
- * Counts number of error
- * Args:
- * 	v (...any): the content of the log
- */
+// Log function for errors
+// Printed in red
+// Counts number of error
+//
+// Parameter:
+//   - v (...any): the content of the log
 func LogError(v ...any) {
 	log.Print(Red, fmt.Sprint(v...), Reset, "\n")
 	numberErr++
 }
 
-/*
- * Formatted log function for errors
- * Printed in red
- * Counts number of error
- * Args:
- * 	format (string): the format (e.g. "%s")
- * 	v (...any): the content of the log
- */
+// Formatted log function for errors
+// Printed in red
+// Counts number of error
+//
+// Parameter:
+//   - format (string): the format (e.g. "%s")
+//   - v (...any): the content of the log
 func LogErrorf(format string, v ...any) {
 	log.Printf(Red+format+Reset, v...)
 	numberErr++
 }
 
-/*
- * GetNumberErr returns the number of errors and timeouts
- * Returns:
- * 	int: number of errors
- * 	int: number of timeouts
- */
+// GetNumberErr returns the number of errors and timeouts
+//
+// Returns:
+//   - int: number of errors
+//   - int: number of timeouts
 func GetNumberErr() (int, int) {
 	return numberErr, numberTimeout
 }

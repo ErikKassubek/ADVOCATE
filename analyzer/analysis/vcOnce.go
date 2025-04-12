@@ -17,23 +17,21 @@ import (
 
 // TODO: do we need the oSuc
 
-/*
- * Create a new oSuc if needed
- * Args:
- * 	index (int): The id of the atomic variable
- * 	nRout (int): The number of routines in the trace
- */
+// Create a new oSuc if needed
+//
+// Parameter:
+//   - index (int): The id of the atomic variable
+//   - nRout (int): The number of routines in the trace
 func newOSuc(index int, nRout int) {
 	if _, ok := oSuc[index]; !ok {
 		oSuc[index] = clock.NewVectorClock(nRout)
 	}
 }
 
-/*
- * Update and calculate the vector clocks given a successful do operation
- * Args:
- * 	on (*TraceElementOnce): The trace element
- */
+// Update and calculate the vector clocks given a successful do operation
+//
+// Parameter:
+//   - on (*TraceElementOnce): The trace element
 func DoSuc(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -45,11 +43,10 @@ func DoSuc(on *TraceElementOnce) {
 	currentWVC[on.routine].Inc(on.routine)
 }
 
-/*
- * Update and calculate the vector clocks given a unsuccessful do operation
- * Args:
- * 	on (*TraceElementOnce): The trace element
- */
+// Update and calculate the vector clocks given a unsuccessful do operation
+//
+// Parameter:
+//   - on (*TraceElementOnce): The trace element
 func DoFail(on *TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

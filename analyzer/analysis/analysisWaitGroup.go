@@ -19,11 +19,10 @@ import (
 	"fmt"
 )
 
-/*
- * Collect all adds and dones for the analysis
- * Args:
- * 	 wa *TraceElementWait: the trace wait or done element
- */
+// Collect all adds and dones for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace wait or done element
 func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)
@@ -37,11 +36,10 @@ func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 	}
 }
 
-/*
- * Collect all adds for the analysis
- * Args:
- * 	 wa *TraceElementWait: the trace wait element
- */
+// Collect all adds for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace wait element
 func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 	// if necessary, create maps and lists
 	if _, ok := wgAdd[wa.id]; !ok {
@@ -54,11 +52,10 @@ func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 	}
 }
 
-/*
- * Collect all dones for the analysis
- * Args:
- * 	 wa *TraceElementWait: the trace done element
- */
+// Collect all dones for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace done element
 func checkForDoneBeforeAddDone(wa *TraceElementWait) {
 	// if necessary, create maps and lists
 	if _, ok := wgDone[wa.id]; !ok {
@@ -70,12 +67,10 @@ func checkForDoneBeforeAddDone(wa *TraceElementWait) {
 	wgDone[wa.id] = append(wgDone[wa.id], wa)
 }
 
-/*
- * Check if a wait group counter could become negative
- * For each done operation, build a bipartite st graph.
- * Use the Ford-Fulkerson algorithm to find the maximum flow.
- * If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
- */
+// Check if a wait group counter could become negative
+// For each done operation, build a bipartite st graph.
+// Use the Ford-Fulkerson algorithm to find the maximum flow.
+// If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
 func checkForDoneBeforeAdd() {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)

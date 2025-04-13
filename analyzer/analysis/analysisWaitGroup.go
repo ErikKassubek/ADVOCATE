@@ -93,18 +93,13 @@ func checkForDoneBeforeAdd() {
 			// i-th done in the result message
 
 			for _, add := range wgAdd[id] {
-				if !utils.Contains(graph["t"], add.GetTID()) {
+				if !utils.Contains(graph[drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}
 			}
 
-			for _, dones := range graph["s"] {
-				doneVcTID, err := getDoneElemFromTID(id, dones)
-				if err != nil {
-					utils.LogError(err.Error())
-				} else {
-					donesNegWg = append(donesNegWg, doneVcTID)
-				}
+			for _, dones := range graph[source] {
+				donesNegWg = append(donesNegWg, dones)
 			}
 
 			addsNegWgSorted := make([]TraceElement, 0)
@@ -181,6 +176,13 @@ func checkForDoneBeforeAdd() {
 	}
 }
 
+// getDoneElemFromTID returns the done element from wgDone with the given tID
+//
+// Parameter:
+//   - id (int): the id of the wait group
+//   - tID (string): the tID of the element
+//
+// Returns:
 func getDoneElemFromTID(id int, tID string) (TraceElement, error) {
 	for _, done := range wgDone[id] {
 		if done.GetTID() == tID {

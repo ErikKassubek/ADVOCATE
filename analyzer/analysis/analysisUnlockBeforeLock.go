@@ -77,18 +77,13 @@ func checkForUnlockBeforeLock() {
 
 		if maxFlow < nrUnlock {
 			for _, l := range allLocks[id] {
-				if !utils.Contains(graph["t"], l.GetTID()) {
+				if !utils.Contains(graph[drain], l) {
 					locks = append(locks, l)
 				}
 			}
 
-			for _, u := range graph["s"] {
-				unlockTId, err := getUnlockElemFromTID(id, u)
-				if err != nil {
-					utils.LogError(err.Error())
-				} else {
-					unlocks = append(unlocks, unlockTId)
-				}
+			for _, u := range graph[source] {
+				unlocks = append(unlocks, u)
 			}
 
 			locksSorted := make([]TraceElement, 0)

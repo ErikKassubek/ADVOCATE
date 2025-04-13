@@ -311,7 +311,8 @@ func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
 // Get the trace local index of the element in the trace
 //
 // Returns:
-//   - VectorClock: The trace local index of the element in the trace
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
 	return mu.routine, mu.index
 }

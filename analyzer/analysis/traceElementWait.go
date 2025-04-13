@@ -28,8 +28,8 @@ const (
 )
 
 // TraceElementWait is a trace element for a wait group statement
-// Fields:
 //
+// Fields:
 //   - index (int): Index in the routine
 //   - tpre (int): The timestamp at the start of the event
 //   - tpost (int): The timestamp at the end of the event
@@ -180,14 +180,26 @@ func (wa *TraceElementWait) GetPos() string {
 	return fmt.Sprintf("%s:%d", wa.file, wa.line)
 }
 
+// Get the replay id of the element
+//
+// Returns:
+//   - The replay id
 func (wa *TraceElementWait) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", wa.routine, wa.file, wa.line)
 }
 
+// Get the file of the element
+//
+// Returns:
+//   - The file of the element
 func (wa *TraceElementWait) GetFile() string {
 	return wa.file
 }
 
+// Get the line of the element
+//
+// Returns:
+//   - The line of the element
 func (wa *TraceElementWait) GetLine() int {
 	return wa.line
 }
@@ -208,6 +220,12 @@ func (wa *TraceElementWait) IsWait() bool {
 	return wa.opW == WaitOp
 }
 
+// GetDelta returns the delta of the element. The delta is the value by which the counter
+// of the wait has been changed. For Add the delta is > 0, for Done it is -1,
+// for Wait it is 0
+//
+// Returns:
+//   - int: the delta of the wait element
 func (wa *TraceElementWait) GetDelta() int {
 	return wa.delta
 }
@@ -220,11 +238,21 @@ func (wa *TraceElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
 
+// Get the weak vector clock of the element
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
 func (wa *TraceElementWait) GetwVc() *clock.VectorClock {
 	return wa.wVc
 }
 
 // Get the string representation of the object type
+//
+// Parameter:
+//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - string: the object type
 func (wa *TraceElementWait) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeWait
@@ -238,10 +266,22 @@ func (wa *TraceElementWait) GetObjType(operation bool) string {
 	return ObjectTypeWait + "W"
 }
 
+// Given a trace element, check if it is equal to this element
+//
+// Parameter:
+//   - elem (TraceElement): The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
 func (wa *TraceElementWait) IsEqual(elem TraceElement) bool {
 	return wa.routine == elem.GetRoutine() && wa.ToString() == elem.ToString()
 }
 
+// Get the trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (wa *TraceElementWait) GetTraceIndex() (int, int) {
 	return wa.routine, wa.index
 }
@@ -351,9 +391,9 @@ func (wa *TraceElementWait) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   elem (TraceElement): elem to add
-//   pos (int): before (0) or after (1)
-
+//
+//	elem (TraceElement): elem to add
+//	pos (int): before (0) or after (1)
 func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return

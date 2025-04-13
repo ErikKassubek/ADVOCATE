@@ -239,7 +239,8 @@ func (on *TraceElementOnce) IsEqual(elem TraceElement) bool {
 // Get the trace local index of the element in the trace
 //
 // Returns:
-//   - VectorClock: The trace local index of the element in the trace
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (on *TraceElementOnce) GetTraceIndex() (int, int) {
 	return on.routine, on.index
 }

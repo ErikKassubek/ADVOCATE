@@ -236,7 +236,8 @@ func (n *TraceElementNew) GetNum() int {
 // Get the trace local index of the element in the trace
 //
 // Returns:
-//   - VectorClock: The trace local index of the element in the trace
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (n *TraceElementNew) GetTraceIndex() (int, int) {
 	return n.routine, n.index
 }

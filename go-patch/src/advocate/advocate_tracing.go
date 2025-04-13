@@ -20,11 +20,8 @@ var timerStarted = false
 var startTime time.Time
 var duration time.Duration
 
-/*
- * InitTracing initializes the tracing.
- * The function creates the trace folder and starts the background memory test.
- * Args:
- */
+// InitTracing initializes the tracing.
+// The function creates the trace folder and starts the background memory test.
 func InitTracing() {
 	// if the program panics, but is not in the main routine, no trace is written
 	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
@@ -62,11 +59,9 @@ func InitTracing() {
 	runtime.InitTracing(FinishTracing)
 }
 
-/*
- * Write the trace of the program to a file.
- * The trace is written in the file named file_name.
- * The trace is written in the format of advocate.
- */
+// Write the trace of the program to a file.
+// The trace is written in the file named file_name.
+// The trace is written in the format of advocate.
 func FinishTracing() {
 	if hasFinished {
 		return
@@ -102,11 +97,13 @@ func FinishTracing() {
 	writeToTraceFiles(tracePathRecorded)
 }
 
-/*
- * Write the trace to a set of files. The traces are written into a folder
- * with name trace. For each routine, a file is created. The file is named
- * trace_routineId.log. The trace of the routine is written into the file.
- */
+// Write the trace to a set of files. The traces are written into a folder
+// with name trace. For each routine, a file is created. The file is named
+// trace_routineId.log. The trace of the routine is written into the file.
+//
+// Parameter:
+//
+//	tracePath string: path to where the trace should be written
 func writeToTraceFiles(tracePath string) {
 	numRout := runtime.GetNumberOfRoutines()
 	var wg sync.WaitGroup
@@ -121,13 +118,14 @@ func writeToTraceFiles(tracePath string) {
 	wg.Wait()
 }
 
-/*
- * Write the trace of a routine to a file.
- * The trace is written in the file named trace_routineId.log.
- * The trace is written in the format of advocate.
- * Args:
- * 	- routine: The id of the routine
- */
+// Write the trace of a routine to a file.
+// The trace is written in the file named trace_routineId.log.
+// The trace is written in the format of advocate.
+//
+// Parameter:
+//   - routine: The id of the routine
+//   - wg *sync.WaitGroup: wait group used to make writing of different routines concurrent
+//   - tracePath string: path to where the trace should be written
 func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
 	// create the file if it does not exist and open it
 	defer wg.Done()
@@ -187,31 +185,29 @@ func writeToTraceFileInfo(tracePath string, numberRoutines int) {
 
 }
 
-/*
- * Delete empty files in the trace folder.
- * The function deletes all files in the trace folder that are empty.
- */
-func deleteEmptyFiles() {
-	files, err := os.ReadDir(tracePathRecorded)
-	if err != nil {
-		panic(err)
-	}
+// Delete empty files in the trace folder.
+// The function deletes all files in the trace folder that are empty.
+// func deleteEmptyFiles() {
+// 	files, err := os.ReadDir(tracePathRecorded)
+// 	if err != nil {
+// 		panic(err)
+// 	}
 
-	for _, file := range files {
-		if file.IsDir() {
-			continue
-		}
+// 	for _, file := range files {
+// 		if file.IsDir() {
+// 			continue
+// 		}
 
-		stat, err := os.Stat(tracePathRecorded + "/" + file.Name())
-		if err != nil {
-			continue
-		}
-		if stat.Size() == 0 {
-			err := os.Remove(tracePathRecorded + "/" + file.Name())
-			if err != nil {
-				panic(err)
-			}
-		}
-	}
+// 		stat, err := os.Stat(tracePathRecorded + "/" + file.Name())
+// 		if err != nil {
+// 			continue
+// 		}
+// 		if stat.Size() == 0 {
+// 			err := os.Remove(tracePathRecorded + "/" + file.Name())
+// 			if err != nil {
+// 				panic(err)
+// 			}
+// 		}
+// 	}
 
-}
+// }

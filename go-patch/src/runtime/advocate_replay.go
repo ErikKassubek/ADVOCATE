@@ -71,11 +71,10 @@ func GetReplayAtomic() bool {
 	return !ignoreAtomicsReplay
 }
 
-/*
- * String representation of the replay operation.
- * Return:
- * 	string: string representation of the replay operation
- */
+// String representation of the replay operation.
+//
+// Returns:
+//   - string: string representation of the replay operation
 func (ro Operation) ToString() string {
 	switch ro {
 	case OperationNone:
@@ -133,24 +132,25 @@ func (ro Operation) ToString() string {
 	}
 }
 
-/*
- * The replay data structure.
- * The replay data structure is used to store the trace of the program.
- * op: identifier of the operation
- * time: time of the operation
- * timePre: pre time
- * file: file in which the operation is executed
- * line: line number of the operation
- * blocked: true if the operation is blocked (never finised, tpost=0), false otherwise
- * suc: success of the opeartion
- *     - for mutexes: trylock operations true if the lock was acquired, false otherwise
- * 			for other operations always true
- *     - for once: true if the once was chosen (was the first), false otherwise
- *     - for others: always true
- * PFile: file of the partner (mainly for channel/select)
- * PLine: line of the partner (mainly for channel/select)
- * Index: Index of the select case (only for select) or index of the new routine (only for spawn), otherwise 0
- */
+// The replay data structure.
+// The replay data structure is used to store the routine local trace of the replay.
+//
+// Fields:
+// - Routine int: id of the represented routine
+//   - op: identifier of the operation
+//   - time: time of the operation
+//   - timePre: pre time
+//   - file: file in which the operation is executed
+//   - line: line number of the operation
+//   - blocked: true if the operation is blocked (never finised, tpost=0), false otherwise
+//   - suc: success of the opeartion
+//     for mutexes: trylock operations true if the lock was acquired, false otherwise
+//     for other operations always true
+//     for once: true if the once was chosen (was the first), false otherwise
+//     for others: always true
+//   - PFile: file of the partner (mainly for channel/select)
+//   - PLine: line of the partner (mainly for channel/select)
+//   - Index: Index of the select case (only for select) or index of the new routine (only for spawn), otherwise 0
 type ReplayElement struct {
 	Routine int
 	Op      Operation
@@ -165,10 +165,20 @@ type ReplayElement struct {
 	Index   int
 }
 
+// Get the key (id) of a replay element
+//
+// Returns:
+//   - the key of elem
 func (elem *ReplayElement) key() string {
 	return buildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 
+// Build the key (id) of a replay element
+//
+// Parameters:
+//   - routine int: replay routine of the element
+//   - file string: code position file of the element
+//   - line int: code position line of the element
 func buildReplayKey(routine int, file string, line int) string {
 	return intToString(routine) + ":" + file + ":" + intToString(line)
 	// return file + ":" + intToString(line)
@@ -207,12 +217,11 @@ var (
 	releaseOldestWait     = releaseOldestWaitLastMax
 )
 
-/*
- * Add a replay trace to the replay data.
- * Arguments:
- * 	routine: the routine id
- * 	trace: the replay trace
- */
+// Add a routine local replay trace to the replay data.
+//
+// Parameters:
+//   - routine uint64: the routine id
+//   - trace trace: the replay trace
 func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 	if _, ok := replayData[routine]; ok {
 		panic("Routine already exists")
@@ -232,9 +241,7 @@ func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 	}
 }
 
-/*
- * Print the replay data.
- */
+// Print the replay data.
 func (t AdvocateReplayTraces) Print() {
 	for id, trace := range t {
 		println("\nRoutine: ", id)
@@ -242,18 +249,14 @@ func (t AdvocateReplayTraces) Print() {
 	}
 }
 
-/*
- * Print the replay trace for one routine.
- */
+// Print the replay trace for one routine.
 func (t AdvocateReplayTrace) Print() {
 	for _, e := range t {
 		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
 	}
 }
 
-/*
- * Enable the replay.
- */
+// Enable the replay by starting the replay manager
 func EnableReplay() {
 	go ReleaseWaits()
 
@@ -331,9 +334,7 @@ func IsReplayEnabled() bool {
 	return replayEnabled
 }
 
-/*
- * Function to run in the background and to release the waiting operations
- */
+// Function to run in the background and to release the waiting operations
 func ReleaseWaits() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
@@ -493,6 +494,13 @@ func ReleaseWaits() {
 	}
 }
 
+// Given an replay element key, create the corresponding replay element
+//
+// Parameter:
+//   - key (string): te replay key
+//
+// Returns:
+//   - ReplayElement: a replay element that fits to the key
 func replayElemFromKey(key string) ReplayElement {
 	keySplit := split(key, ':')
 	return ReplayElement{
@@ -504,9 +512,12 @@ func replayElemFromKey(key string) ReplayElement {
 	}
 }
 
-/*
-- Returns all routines for which the wait reason has not changed within checkStuckTime seconds.
-*/
+// Returns all routines for which the wait reason has not changed within checkStuckTime seconds.
+// Used to detect if replay of deadlock was successful
+//
+// Parameters:
+//   - checkStuckTime float64: find routines that have been waiting for at least this many seconds
+//   - checkStuckIterations int: iterations to check
 func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
 	stuckRoutines := make(map[uint64]waitReason)
 
@@ -555,17 +566,22 @@ var counter = 0
 // element
 var waitForAck released
 
-/*
- * Wait until the correct operation is about to be executed.
- * Arguments:
- * 	op: the operation type that is about to be executed
- * 	skip: number of stack frames to skip
- * 	waitForResponse bool: whether the wait should wait for a response after finished
- * Return:
- * 	bool: true if the operation should wait, false otherwise
- * 	chan ReplayElement: channel to wait on
- * 	chan struct{}: chan to report back on when finished
- */
+// Called by operations during replay. If the operations is the next operation
+// to be executed it is release, otherwise the operation is stored into the
+// waiting operations. The function provides channels to the operation
+// on which they wait to be released and send an acknowledgement when they have
+// finished executing
+//
+// Parameter:
+//   - op: the operation type that is about to be executed
+//   - skip: number of stack frames to skip
+//   - waitForResponse bool: whether the wait should wait for a response after finished
+//
+// Returns:
+//   - bool: true if the operation should wait, otherwise it can immediately execute
+//     and ignore all replay mechanisms, e.g. used if replay is enabled
+//   - chan ReplayElement: channel to wait on
+//   - chan struct{}: chan to report back on when finished
 func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
 	// without this the runtime build runs into an deadlock message, no idea why
 	if !replayEnabled {
@@ -577,17 +593,23 @@ func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan Rep
 	return WaitForReplayPath(op, file, line, waitForResponse)
 }
 
-/*
- * Wait until the correct operation is about to be executed.
- * Arguments:
- * 	op: the operation type that is about to be executed
- * 	file: file in which the operation is executed
- * 	line: line number of the operation
- * 	waitForResponse bool: whether the wait should wait for a response after finished
- * Return:
- * 	bool: true if the operation should wait, false otherwise
- * 	chan ReplayElement: channel to wait on
- */
+// Called by operations during replay. If the operations is the next operation
+// to be executed it is release, otherwise the operation is stored into the
+// waiting operations. The function provides channels to the operation
+// on which they wait to be released and send an acknowledgement when they have
+// finished executing
+//
+// Parameter:
+//   - op: the operation type that is about to be executed
+//   - file: file in which the operation is executed
+//   - line: line number of the operation
+//   - waitForResponse bool: whether the wait should wait for a response after finished
+//
+// Returns:
+//   - bool: true if the operation should wait, otherwise it can immediately execute
+//     and ignore all replay mechanisms, e.g. used if replay is enabled
+//   - chan ReplayElement: channel to wait on
+//   - chan struct{}: chan to report back on when finished
 func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
 	if !replayEnabled {
 		return false, nil, nil
@@ -639,16 +661,17 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	return true, chWait, chAck
 }
 
-/*
- * Release a waiting operation and, if required, wait for the acknowledgement
- * Args:
- *  elem (replayChan): the element to be released
- *  elemReplay (ReplayElement): the corresponding replay element
- *  rel (bool): the waiting channel should be released
- *  next (bool): true if the next element in the trace was released, false if the oldest has been released
- * Returns:
- * 	bool: true if the element was released, false if not, especially if it already has been released before
- */
+// Release a waiting operation and, if required, wait for the acknowledgement
+//
+// Parameter:
+//   - elem (replayChan): the element to be released
+//   - elemReplay (ReplayElement): the corresponding replay element
+//   - rel (bool): the waiting channel should be released
+//   - next (bool): true if the next element in the trace was released, false if the oldest has been released
+//
+// Returns:
+//   - bool: true if the element was released, false if not, especially if it already has been released before
+
 func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) bool {
 	if elem.released {
 		if printDebug {
@@ -700,41 +723,18 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	return true
 }
 
-/*
- * Check if the position is in the trace.
- * Args:
- * 	file: file in which the operation is executed
- * 	line: line number of the operation
- * Return:
- * 	bool: true if the position is in the trace, false otherwise
- */
-func isPositionInTrace(file string, line int) bool {
-	if _, ok := traceElementPositions[file]; !ok {
-		return false
-	}
-
-	if !containsInt(traceElementPositions[file], line) {
-		return false
-	}
-
-	return true
-}
-
-/*
- * When called, the calling routine is blocked and cannot be woken up again
- */
+// When called, the calling routine is blocked and cannot be woken up again
 func BlockForever() {
 	gopark(nil, nil, waitReasonZero, traceBlockForever, 1)
 }
 
 var alreadyExecutedAsOldest = make(map[string]int)
 
-/*
- * Get the next replay element.
- * Return:
- * 	uint64: the routine of the next replay element or -1 if the trace is empty
- * 	ReplayElement: the next replay element
- */
+// Get the next element to be executed from the replay trace
+//
+// Returns:
+//   - uint64: the routine of the next replay element or -1 if the trace is empty
+//   - ReplayElement: the next replay element
 func getNextReplayElement() (int, ReplayElement) {
 	lock(&replayLock)
 	defer unlock(&replayLock)
@@ -771,10 +771,20 @@ func getNextReplayElement() (int, ReplayElement) {
 	return routine, elem
 }
 
+// Release an element as the oldest element event if it is not the operations turn
+//
+// Parameter:
+//   - key string: key of the element to be released
 func releasedElementOldest(key string) {
 	alreadyExecutedAsOldest[key]++
 }
 
+// foundReplayElement is executed if an operation has been executed.
+// It advances the index of the replay trace to the next values, such
+// that the next element is returned as the next element to be replayed
+//
+// Parameter:
+//   - routine int: routine in which an operation was executed
 func foundReplayElement(routine int) {
 	lock(&replayLock)
 	defer unlock(&replayLock)
@@ -784,29 +794,27 @@ func foundReplayElement(routine int) {
 	}
 }
 
-/*
- * Set if to force exit on Replay Finish
- * Args:
- * 	force: force exit
- */
+// Set replayForceExit
+//
+// Parameter:
+//
+//	force: force exit
 func SetForceExit(force bool) {
 	replayForceExit = force
 }
 
-/*
- * Set the expected exit code
- * Args:
- * 	code: the expected exit code
- */
+// Set the expected exit code
+//
+// Parameters:
+//   - code: the expected exit code
 func SetExpectedExitCode(code int) {
 	expectedExitCode = code
 }
 
-/*
-- Exit the program with the given code.
-- Args:
-- code: the exit code
-*/
+// Exit the program with the given code.
+//
+// Parameter:
+//   - code: the exit code
 func ExitReplayWithCode(code int) {
 	if !hasReturnedExitCode {
 		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
@@ -829,25 +837,27 @@ func ExitReplayWithCode(code int) {
 	}
 }
 
-/*
- * For some exit codes, the replay is seen as confirmed, if the replay end
- * element is reached. This function returns wether the exit code is
- * such a code
- * The codes are
- *    20 - 29: Leak
- *
- */
+//	For some exit codes, the replay is seen as confirmed, if the replay end
+//	element is reached. This function returns wether the exit code is
+//	such a code
+//	The codes are
+//	   20 - 29: Leak
+//
+// Parameter:
+//   - code int: the exit code
+//
+// Returns:
+//   - bool: true if the code is a leak code
 func isExitCodeConfOnEndElem(code int) bool {
 	return (code >= 20 && code < 30) || (code >= 40 && code < 50)
 }
 
-/*
- * Exit the program with the given code if the program panics.
- * Args:
- * 	msg: the panic message
- */
+// Exit the program with the given code if the program panics.
+//
+// Parameter:
+//   - msg: the panic message
 func ExitReplayPanic(msg any) {
-	SetExitCodeFromPanicString(msg)
+	SetExitCodeFromPanicMsg(msg)
 
 	if IsAdvocateFuzzingEnabled() {
 		finishFuzzingFunc()
@@ -863,31 +873,21 @@ func ExitReplayPanic(msg any) {
 		ExitReplayWithCode(advocateExitCode)
 	}
 
-	// switch m := msg.(type) {
-	// case plainError:
-	// 	if (expectedExitCode == ExitCodeSendClose || expectedExitCode == ExitCodeDefault) &&
-	// 		m.Error() == "send on closed channel" {
-	// 		ExitReplayWithCode(ExitCodeSendClose)
-	// 	}
-	// case string:
-	// 	if (expectedExitCode == ExitCodeNegativeWG || expectedExitCode == ExitCodeDefault) &&
-	// 		m == "sync: negative WaitGroup counter" {
-	// 		ExitReplayWithCode(ExitCodeNegativeWG)
-	// 	} else if expectedExitCode == ExitCodeUnlockBeforeLock || expectedExitCode == ExitCodeDefault {
-	// 		if m == "sync: RUnlock of unlocked RWMutex" ||
-	// 			m == "sync: Unlock of unlocked RWMutex" ||
-	// 			m == "sync: unlock of unlocked mutex" {
-	// 			ExitReplayWithCode(ExitCodeUnlockBeforeLock)
-	// 		}
-	// 	} else if hasPrefix(m, "test timed out after") || m == "Timeout" {
-	// 		ExitReplayWithCode(ExitCodeTimeout)
-	// 	}
-	// }
-
 	// should be unreachable
 	ExitReplayWithCode(ExitCodePanic)
 }
 
+// AdvocateIgnoreReplay decides if an operation should be ignored for replay.
+// Ignored means it is just executed when called without waiting.
+// All internal operations are ignored
+// Atomic operations are ignored if the corresponding variable is set
+//
+// Parameter:
+//   - operation Operation: the operation to check
+//   - file string: the file where the operation is executed
+//
+// Returns:
+//   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnoreReplay(operation Operation, file string) bool {
 	if ignoreAtomicsReplay && getOperationObjectString(operation) == "Atomic" {
 		return true
@@ -900,13 +900,13 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 	return AdvocateIgnore(file)
 }
 
-/*
- * Return the replay status
- * Return:
- * 	(int): what was the next tPost, when the manager released an oldest for the first time, if never return 0
- * 	(int): what was the next tPost, when the manager disables the replay because it was stuck, if not return 0
- * 	(int): what was the next tPost, when an expected Acknowledgement timed out, if never return 0
- */
+// Return the replay status
+//
+// Returns:
+//   - int: what was the next tPost, when the manager released an oldest for the first time, if never return 0
+//   - int: what was the next tPost, when the manager disables the replay because it was stuck, if not return 0
+//   - int: what was the next tPost, when an expected Acknowledgement timed out, if never return 0
+
 func GetReplayStatus() (int, int, int) {
 	return tPostWhenFirstTimeout, tPostWhenReplayDisabled, tPostWhenAckFirstTimeout
 }

@@ -28,9 +28,11 @@ var (
 	finishFuzzingFunc func()
 )
 
-/*
- * Init fuzzing based on simple delay of flow and select
- */
+// Init fuzzing based on simple delay of flow and preferred select cases
+//
+// Parameter:
+//   - selectData map[string][]int: preferred select cases (select pos -> []preferred case index)
+//   - fuzzingFlow map[string][]int: operations to delay (file -> []lines)
 func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int) {
 	fuzzingSelectData = selectData
 	fuzzingFlowData = fuzzingFlow
@@ -48,25 +50,33 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int)
 	advocateFuzzingDelayEnabled = true
 }
 
+// InitFuzzingReplay initializes fuzzing based on full replay
+//
+// Parameter:
+//   - finishFuzzing func(): advocate.FinishFuzzing function
 func InitFuzzingReplay(finishFuzzing func()) {
 	finishFuzzingFunc = finishFuzzing
 	advocateFuzzingEnabled = true
 	advocateFuzzingReplayEnabled = true
 }
 
+// Get if fuzzing is enables
+//
+// Returns:
+//   - bool: true if fuzzing is enabled, false otherwise
 func IsAdvocateFuzzingEnabled() bool {
 	return advocateFuzzingEnabled
 }
 
-/*
- * Get the preferred case for the specified select
- * Args:
- *  skip for runtime.Caller
- * Returns:
- * 	bool: true if a preferred case exists, false otherwise
- * 	int: preferred case, -1 for default
- * 	int64: fuzzing timeout in seconds
- */
+// Get the preferred case for the specified select
+//
+// Parameter:
+//   - skip int: skip for runtime.Caller
+//
+// Returns:
+//   - bool: true if a preferred case exists, false otherwise
+//   - int: preferred case, -1 for default
+//   - int64: fuzzing timeout in seconds
 func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 	if !advocateFuzzingEnabled {
 		return false, 0, selectPreferredTimeoutSec
@@ -92,7 +102,12 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 	return false, 0, selectPreferredTimeoutSec
 }
 
-// currently used in once.Do, chan.send, chan.recv, mutex.(Try)Lock, rwmutex.(Try)(R)Lock
+// FuzzingFlowWait is called by the operations to check if they should wait for
+// the delay based fuzzing.
+// Currently used in once.Do, chan.send, chan.recv, mutex.(Try)Lock, rwmutex.(Try)(R)Lock
+//
+// Parameter:
+//   - skip int: skip for runtime.Caller
 func FuzzingFlowWait(skip int) {
 	if !advocateFuzzingDelayEnabled {
 		return

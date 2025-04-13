@@ -14,11 +14,10 @@ import "internal/runtime/atomic"
 
 var advocateCurrentRoutineID atomic.Uint64
 
-/*
- * GetAdvocateRoutineID returns a new id for a routine
- * Return:
- * 	new id
- */
+// GetAdvocateRoutineID returns a new id for a routine
+//
+// Returns:
+//   - new id
 func GetAdvocateRoutineID() uint64 {
 	id := advocateCurrentRoutineID.Add(1)
 	if id > 184467440 {
@@ -27,11 +26,9 @@ func GetAdvocateRoutineID() uint64 {
 	return id
 }
 
-/*
- * GetAdvocateObjectID returns a new id for a mutex, channel or waitgroup
- * Return:
- * 	new id
- */
+// GetAdvocateObjectID returns a new id for an primitive
+// Return:
+//   - new id
 func GetAdvocateObjectID() uint64 {
 	routine := currentGoRoutine()
 

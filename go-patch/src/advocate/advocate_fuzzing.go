@@ -21,12 +21,11 @@ import (
 
 var isFuzzing = false
 
-/*
- * Initialize fuzzing
- * Args:
- * 	tracePath (string): For fuzzing approaches that use trace, add the path to the
- *    trace, otherwise set to ""
- */
+// Initialize fuzzing
+//
+// Parameter:
+//   - tracePath string: For fuzzing approaches that use trace, add the path to the
+//     trace, otherwise set to ""
 func InitFuzzing(tracePath string) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
@@ -45,28 +44,27 @@ func InitFuzzing(tracePath string) {
 	} else { // GoPie
 		runtime.InitFuzzingReplay(FinishFuzzing)
 		tracePathRewritten = tracePath
-		startReplay(20, true)
+		runtime.SetReplayAtomic(true)
+		startReplay(20)
 	}
 }
 
-/*
- * Run when fuzzing is finished (normally as defer)
- * This records the traces and some additional info
- */
+// Run when fuzzing is finished (normally as defer)
+// This records the traces and some additional info
 func FinishFuzzing() {
 	FinishTracing()
 }
 
-/*
- * Read the file containing the preferred select cases
- * Args:
- * 	pathSelect (string): path to the file containing the select
- * 		preferred cases
- * Returns:
- * 	map[string][]int: key: file:line of select, values: list of preferred cases in select
-* 	map[string]int: key: file:line of select, values: counter of operation to delay
- * 	error
-*/
+// Read the file containing the preferred select cases
+//
+// Parameter:
+//   - pathSelect string: path to the file containing the select
+//     preferred cases
+//
+// Returns:
+//   - map[string][]int: key: file:line of select, values: list of preferred cases in select
+//   - map[string]int: key: file:line of select, values: counter of operation to delay
+//   - error
 func readFile(pathSelect string) (map[string][]int, map[string][]int, error) {
 	resSelect := make(map[string][]int)
 	resFlow := make(map[string][]int)

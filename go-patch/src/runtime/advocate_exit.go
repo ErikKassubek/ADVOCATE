@@ -28,22 +28,30 @@ const (
 	exitCodeTimeOut               = 7
 )
 
-/*
- * Get the channels used to write the trace on certain panics
- * Args:
- *    apwb (chan struct{}): advocatePanicWriteBlock
- *    apd (chan struct{}): advocatePanicDone
- */
+// Get the channels used to write the trace on certain panics
+//
+// Parameters:
+//   - apwb (chan struct{}): advocatePanicWriteBlock
+//   - apd (chan struct{}): advocatePanicDone
 func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
 	advocatePanicWriteBlock = apwb
 	advocatePanicDone = apd
 }
 
+// GetExitCode returns the exit code and exit position
+//
+// Returns:
+//   - int: exit code
+//   - string: exit position
 func GetExitCode() (int, string) {
 	return advocateExitCode, advocateExitCodePos
 }
 
-func SetExitCodeFromPanicString(msg any) {
+// SetExitCodeFromPanicMsg sets the panic info from the panic message
+//
+// Parameter:
+//   - msg any: the panic message
+func SetExitCodeFromPanicMsg(msg any) {
 	_, file, line, _ := Caller(2)
 	advocateExitCodePos = file + ":" + intToString(line)
 

@@ -24,7 +24,7 @@ var (
 	currentResFolder = ""
 )
 
-// Function injection for modeAnalyzer
+// InitFuncAnalyzer provides function injection for modeAnalyzer
 func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 	noRewrite bool, analysisCases map[string]bool, outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
@@ -32,7 +32,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 	runAnalyzer = funcAnalyzer
 }
 
-// Main function for the toolchain
+// Run is the main function for the toolchain
 //
 // Parameter:
 //   - mode string: mode of the toolchain (main or test or explain)
@@ -111,9 +111,4 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 	}
 
 	return nil
-}
-
-func getAbsolutPath(path string) string {
-	home, _ := os.UserHomeDir()
-	return strings.Replace(path, "~", home, -1)
 }

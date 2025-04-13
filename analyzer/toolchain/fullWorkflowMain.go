@@ -230,6 +230,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	return nil
 }
 
+// Given a path to a trace file, return the trace number
+//
+// Parameter:
+//   - tracePath: path to the file
+//
+// Returns:
+//   - string: trace number
 func extractTraceNum(tracePath string) string {
 	re := regexp.MustCompile(`[0-9]+$`)
 	return re.FindString(tracePath)

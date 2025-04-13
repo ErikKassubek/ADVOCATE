@@ -606,6 +606,9 @@ func CheckForLeakCond(co *TraceElementCond) {
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
+// Iterate over all routines and check if the routines finished.
+// Only record leaking routines, that don't have a leaking element (tPost = 0)
+// as its last element, since they are recorded separately
 func checkForStuckRoutine() {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)

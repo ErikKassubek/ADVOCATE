@@ -265,6 +265,17 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	return testFiles, maxFileNum, totalNumFiles, err
 }
 
+// getFilesInResult finds all test files that have already been run and therefore
+// have an entry in the results. Clear up incomplete result folders
+//
+// Parameter:
+//   - dir string: path to the directory containing the test files
+//   - cont bool: if true, exclude the last executed test file and remove its result file
+//
+// Returns:
+//   - map[string]struct{}: map containing already processed test files
+//   - int: total number of files
+//   - error
 func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
 	res := make(map[string]struct{})
 
@@ -408,7 +419,6 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 
 	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
 	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
-	pathToAnalyzer := filepath.Join(pathToAdvocate, "analyzer/analyzer")
 
 	if runtime.GOOS == "windows" {
 		pathToPatchedGoRuntime += ".exe"
@@ -437,7 +447,8 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 		utils.LogError("Recording failed: ", err.Error())
 	}
 
-	err = unitTestAnalyzer(pathToAnalyzer, dir, pkg, "advocateTrace", output, fuzzing)
+	pkgPath := filepath.Join(dir, pkg)
+	err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
 	if err != nil {
 		return 0, false, err
 	}
@@ -451,7 +462,15 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 	return numberReplay, true, nil
 }
 
-// run the tests without recording/replay
+// unitTestRun runs a test without recording/replay
+//
+// Parameter:
+//   - pkg string: path to the package containing the test
+//   - file string: path to the file containing the test function
+//   - name of the test function to run
+//
+// Returns:
+//   - error
 func unitTestRun(pkg, file, testName string) error {
 	timer.Start(timer.Run)
 	defer timer.Stop(timer.Run)
@@ -476,6 +495,20 @@ func unitTestRun(pkg, file, testName string) error {
 	return err
 }
 
+// unitTestRun runs a test and records the trace and run info
+//
+// Parameter:
+//   - pathToFoRoot string: path to the root of the modified go runtime
+//   - pathToPatchedGoRuntime string: path to the patched runtime executable
+//   - pkg string: path to the package containing the test
+//   - file string: path to the file containing the test function
+//   - testName string: name of the test function to run
+//   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
+//   - fuzzingPath string: path to the fuzzing guidance information file, if not fuzzing set to ""
+//   - output string: path to where the output should be created
+//
+// Returns:
+//   - error
 func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, fuzzingPath, output string) error {
 	timer.Start(timer.Recording)
 	defer timer.Stop(timer.Recording)
@@ -528,9 +561,18 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	return err
 }
 
-// Apply analyzer
-func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, fuzzing int) error {
-	pkgPath := filepath.Join(dir, pkg)
+// unitTestRun runs the analysis on a recorded trace
+//
+// Parameter:
+//   - pkgPath string: path to the analyzed package
+//   - traceName string: name of the trace to analyze
+//   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
+//
+// Returns:
+//   - error
+//
+// The trace is expected to be at dir/pkg/traceName
+func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 	tracePath := filepath.Join(pkgPath, traceName)
 
 	utils.LogInfof("Run the analyzer for %s", tracePath)
@@ -550,6 +592,18 @@ func unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output string, fuzzin
 	return nil
 }
 
+// unitTestReplay runs a replay for a test
+//
+// Parameter:
+//   - pathToFoRoot string: path to the root of the modified go runtime
+//   - pathToPatchedGoRuntime string: path to the patched runtime executable
+//   - dir: path to the root of the analyzed project
+//   - pkg string: path to the package containing the test, global path should be dir/pkg
+//   - file string: path to the file containing the test function
+//   - testName string: name of the test function to run
+//
+// Returns:
+//   - int: number of executed replays
 func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName string) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
@@ -621,23 +675,22 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 // 	return nrRewTrace, len(rerecordedTraces)
 // }
+// func getRerecord(trace string) bool {
+// 	data, err := os.ReadFile(filepath.Join(trace, "rewrite_info.log"))
+// 	if err != nil {
+// 		return false
+// 	}
 
-func getRerecord(trace string) bool {
-	data, err := os.ReadFile(filepath.Join(trace, "rewrite_info.log"))
-	if err != nil {
-		return false
-	}
+// 	elems := strings.Split(string(data), "#")
+// 	if len(elems) != 3 {
+// 		return false
+// 	}
 
-	elems := strings.Split(string(data), "#")
-	if len(elems) != 3 {
-		return false
-	}
+// 	if len(elems[1]) == 0 {
+// 		return false
+// 	}
 
-	if len(elems[1]) == 0 {
-		return false
-	}
+// 	return string([]rune(elems[1])[0]) == "S"
+// 	// return string([]rune(elems[1])[0]) == "L"
 
-	return string([]rune(elems[1])[0]) == "S"
-	// return string([]rune(elems[1])[0]) == "L"
-
-}
+// }

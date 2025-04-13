@@ -141,6 +141,10 @@ func removeTraces(path string) {
 	}
 }
 
+// removeLogs removes the result and output files
+//
+// Parameter:
+//   - path to the folder containing the result and output files
 func removeLogs(path string) {
 	logsToRemove := []string{
 		"results_machine.log",

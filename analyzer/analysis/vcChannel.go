@@ -110,6 +110,9 @@ func Unbuffered(sender TraceElement, recv TraceElement) {
 	}
 }
 
+// holdObj can temporarily hold an channel operations with additional information
+// it is used in the case that for a synchronous communication, the recv is
+// recorded before the send
 type holdObj struct {
 	ch   *TraceElementChannel
 	vc   map[int]*clock.VectorClock
@@ -117,7 +120,7 @@ type holdObj struct {
 	fifo bool
 }
 
-// Update and calculate the vector clocks given a send on a buffered channel.
+// Send updates and calculates the vector clocks given a send on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -345,6 +348,7 @@ func Close(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 }
 
+// SendC record an actual send on closed
 func SendC(ch *TraceElementChannel) {
 	if analysisCases["sendOnClosed"] {
 		foundSendOnClosedChannel(ch, true)

@@ -18,6 +18,7 @@ import (
 	"strconv"
 )
 
+// OpCond provides an enum for the operation of a conditional variable
 type OpCond int
 
 const (
@@ -165,14 +166,26 @@ func (co *TraceElementCond) GetPos() string {
 	return fmt.Sprintf("%s:%d", co.file, co.line)
 }
 
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
 func (co *TraceElementCond) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", co.routine, co.file, co.line)
 }
 
+// GetFile returns the file of the element
+//
+// Returns:
+//   - The file of the element
 func (co *TraceElementCond) GetFile() string {
 	return co.file
 }
 
+// GetLine returns the line of the element
+//
+// Returns:
+//   - The line of the element
 func (co *TraceElementCond) GetLine() int {
 	return co.line
 }
@@ -226,10 +239,22 @@ func (co *TraceElementCond) GetObjType(operation bool) string {
 	return ObjectTypeCond
 }
 
+// Given a trace element, check if it is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
 func (co *TraceElementCond) IsEqual(elem TraceElement) bool {
 	return co.routine == elem.GetRoutine() && co.ToString() == elem.ToString()
 }
 
+// Get the trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (co *TraceElementCond) GetTraceIndex() (int, int) {
 	return co.routine, co.index
 }

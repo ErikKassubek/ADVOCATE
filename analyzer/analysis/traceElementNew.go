@@ -17,6 +17,8 @@ import (
 	"strconv"
 )
 
+// newOpType is an enum for type of primitive that is created
+// For now only mutex is used
 type newOpType string
 
 const (
@@ -309,6 +311,10 @@ func (n *TraceElementNew) updateVectorClock() {
 	currentWVC[n.routine].Inc(n.routine)
 }
 
+// Copy the element
+//
+// Returns:
+//   - TraceElement: The copy of the element
 func (n *TraceElementNew) Copy() TraceElement {
 	return &TraceElementNew{
 		index:    n.index,

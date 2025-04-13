@@ -30,6 +30,13 @@ func extractTraceNumber(trace string) string {
 	return ""
 }
 
+// For a given run, check if it was terminated by a timeout
+//
+// Parameter:
+//   - output (string): path to the output.log file
+//
+// Returns:
+//   - true if an timeout occurred, false otherwise
 func checkForTimeout(output string) bool {
 	outFile, err := os.Open(output)
 	if err != nil {

@@ -81,14 +81,26 @@ func (er *TraceElementReplay) GetPos() string {
 	return ""
 }
 
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
 func (er *TraceElementReplay) GetReplayID() string {
 	return ""
 }
 
+// GetFile returns the file of the element
+//
+// Returns:
+//   - The file of the element
 func (er *TraceElementReplay) GetFile() string {
 	return ""
 }
 
+// GetLine returns the line of the element
+//
+// Returns:
+//   - The line of the element
 func (er *TraceElementReplay) GetLine() int {
 	return 0
 }
@@ -122,10 +134,22 @@ func (er *TraceElementReplay) GetObjType(operation bool) string {
 	return ObjectTypeReplay
 }
 
+// Given a trace element, check if it is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
 func (er *TraceElementReplay) IsEqual(elem TraceElement) bool {
 	return er.ToString() == elem.ToString()
 }
 
+// GetTraceIndex returns the trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
 func (er *TraceElementReplay) GetTraceIndex() (int, int) {
 	return -1, -1
 }

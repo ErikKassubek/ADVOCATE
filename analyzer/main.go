@@ -114,8 +114,12 @@ func main() {
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
-	flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
-		"If not set, only the first occurence is rewritten")
+	// TODO: !rewriteAll for now disabled, enable if it is implemented that only successful replays are considered previous replays
+	// If the first replay is not successful it may be successful on a later try. At the moment, the later tries would not be run
+
+	// flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
+	// 	"If not set, only the first occurence is rewritten")
+	rewriteAll = true
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")

@@ -60,6 +60,14 @@ func infoFromTID(tID string) (string, int, int, error) {
 	return split2[0], line, tPre, nil
 }
 
+// sameRoutine determines if for aal trace elements in the list, if they are
+// operations on the same primitive, they have the same routine
+//
+// Parameter:
+//   - elems ...[]TraceElement: lists of trace elements
+//
+// Returns:
+//   - true if for each primitive, the element in elems are always in the same routine
 func sameRoutine(elems ...[]TraceElement) bool {
 	ids := make(map[int]int)
 	for _, elem := range elems {
@@ -75,6 +83,15 @@ func sameRoutine(elems ...[]TraceElement) bool {
 	return true
 }
 
+// posFromPosString returns the file and line from a pos string
+//
+// Parameter:
+//   - pos string: [file]:[line]
+//
+// Returns:
+//   - string: file
+//   - int: line
+//   - error
 func posFromPosString(pos string) (string, int, error) {
 	posSplit := strings.Split(pos, ":")
 	if len(posSplit) != 2 {

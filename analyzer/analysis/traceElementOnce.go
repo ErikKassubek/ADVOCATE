@@ -151,7 +151,7 @@ func (on *TraceElementOnce) GetPos() string {
 	return fmt.Sprintf("%s:%d", on.file, on.line)
 }
 
-// Get the replay id of the element
+// GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
@@ -159,7 +159,7 @@ func (on *TraceElementOnce) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", on.routine, on.file, on.line)
 }
 
-// Get the file of the element
+// GetFile returns the file of the element
 //
 // Returns:
 //   - The file of the element
@@ -167,7 +167,7 @@ func (on *TraceElementOnce) GetFile() string {
 	return on.file
 }
 
-// Get the rline of the element
+// GetLine returns the line of the element
 //
 // Returns:
 //   - The line of the element
@@ -175,7 +175,7 @@ func (on *TraceElementOnce) GetLine() int {
 	return on.line
 }
 
-// Get the tID of the element.
+// GetTID returns the tID of the element.
 //
 // Returns:
 //   - string: The tID of the element
@@ -343,9 +343,9 @@ func (on *TraceElementOnce) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   elem TraceElement: elem to add
-//   pos int: before (0) or after (1)
-
+//
+//	elem TraceElement: elem to add
+//	pos int: before (0) or after (1)
 func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -372,7 +372,7 @@ func (on *TraceElementOnce) GetRel1() []TraceElement {
 // Return the rel2 set
 //
 // Returns:
-//   - []*TraceElement: the rel1 set
+//   - []*TraceElement: the rel2 set
 func (on *TraceElementOnce) GetRel2() []TraceElement {
 	return on.rel2
 }

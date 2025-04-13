@@ -12,6 +12,20 @@
 
 package runtime
 
+// Struct to store a spawn
+//
+// Fields
+//   - tPre int64: time when the operation started
+//   - tPost int64: time when the operation finished
+//   - id uint64: id of the select
+//   - cases []AdvocateTraceChannel: the operation for each of the non default cases
+//     The elements are sorted the same as the internal sorting in the select,
+//     first all send, then all recv
+//   - selIndex int: The index of the operation in cases that was executed,
+//     if default was executed, this is set to -1
+//   - hasDef bool: true if the select has a default case, false otherwise
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceSelect struct {
 	tPre     int64
 	tPost    int64
@@ -23,16 +37,17 @@ type AdvocateTraceSelect struct {
 	line     int
 }
 
-/*
- * AdvocateSelectPre adds a select to the trace
- * Args:
- * 	cases: cases of the select
- * 	nsends: number of send cases
- * 	block: true if the select is blocking (has no default), false otherwise
- * 	lockOrder: internal order of the locks
- * Return:
- * 	index of the operation in the trace
- */
+// AdvocateSelectPre adds a select to the trace
+//
+// Parameter:
+//   - cases: cases of the select
+//   - nsends: number of send cases
+//   - ncases: total number of non default cases
+//   - block: true if the select is blocking (has no default), false otherwise
+//   - lockOrder: internal order of the locks
+//
+// Returns:
+//   - index of the operation in the trace
 func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, lockorder []uint16) int {
 	if advocateTracingDisabled {
 		return -1
@@ -116,14 +131,13 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 	return insertIntoTrace(elem)
 }
 
-/*
- * AdvocateSelectPost adds a post event for select in case of an non-default case
- * Args:
- * 	index: index of the operation in the trace
- * 	c: channel of the chosen case
- * 	selIndex: index of the chosen case in the select
- * 	rClosed: true if the channel was closed at another routine
- */
+// AdvocateSelectPost adds a post event for select in case of an non-default case
+//
+// Parameter:
+//   - index: index of the operation in the trace
+//   - c: channel of the chosen case
+//   - selIndex: index of the chosen case in the select
+//   - rClosed: true if the channel was closed at another routine
 func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	if advocateTracingDisabled {
 		return
@@ -163,17 +177,15 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
-// MARK: OneNonDef
-
-/*
-* AdvocateSelectPreOneNonDef adds a new select element to the trace if the
-* select has exactly one non-default case and a default case
-* Args:
-* 	c: channel of the non-default case
-* 	send: true if the non-default case is a send, false otherwise
-* Return:
-* 	index of the operation in the trace
- */
+// AdvocateSelectPreOneNonDef adds a new select element to the trace if the
+// select has exactly one non-default case and a default case
+//
+// Parameter:
+//   - c: channel of the non-default case
+//   - send: true if the non-default case is a send, false otherwise
+//
+// Returns:
+//   - index of the operation in the trace
 func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	if advocateTracingDisabled {
 		return -1
@@ -227,13 +239,13 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	return insertIntoTrace(elem)
 }
 
-/*
- * AdvocateSelectPostOneNonDef adds the selected case for a select with one
- * non-default and one default case
- * Args:
- * 	index: index of the operation in the trace
- * 	res: true for channel, false for default
- */
+// AdvocateSelectPostOneNonDef adds the selected case for a select with one
+// non-default and one default case
+//
+// Parameter:
+//   - index: index of the operation in the trace
+//   - res: true for channel, false for default
+//   - c *hchan: the channel in the select cases
 func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 	if advocateTracingDisabled {
 		return
@@ -267,6 +279,14 @@ func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation of the form
+//     [S],[tPre],[tPost],[id],[cases],[selIndex],[file],[line]
+//     where cases consists of the form [case]~[case]~..., followed by a d
+//     if the select has a default that was not executed, or D if it was executed.
+//     The [case] is build using AdvocateTraceChannel.toStringForSelect()
 func (elem AdvocateTraceSelect) toString() string {
 	p1 := buildTraceElemString("S", elem.tPre, elem.tPost, elem.id)
 	p2 := buildTraceElemString(elem.selIndex, posToString(elem.file, elem.line))
@@ -291,6 +311,10 @@ func (elem AdvocateTraceSelect) toString() string {
 	return buildTraceElemString(p1, cases, p2)
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceSelect) getOperation() Operation {
 	if elem.selIndex == -1 {
 		return OperationSelectDefault

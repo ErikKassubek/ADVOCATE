@@ -235,7 +235,7 @@ func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 		if _, ok := traceElementPositions[e.File]; !ok {
 			traceElementPositions[e.File] = make([]int, 0)
 		}
-		if !containsInt(traceElementPositions[e.File], e.Line) {
+		if !containsList(traceElementPositions[e.File], e.Line) {
 			traceElementPositions[e.File] = append(traceElementPositions[e.File], e.Line)
 		}
 	}
@@ -893,7 +893,7 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 		return true
 	}
 
-	if contains(file, "go/pkg/mod/") {
+	if containsStr(file, "go/pkg/mod/") {
 		return true
 	}
 

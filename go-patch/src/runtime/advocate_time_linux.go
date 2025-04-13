@@ -14,11 +14,9 @@
 
 package runtime
 
-/*
- * GetAdvocateCounter will update the timer and return the new value
- * Return:
- * 	new time value
- */
+// GetAdvocateCounter will update the timer and return the new value
+// Return:
+//   - new time value
 func GetNextTimeStep() int64 {
 	return nanotime()
 }

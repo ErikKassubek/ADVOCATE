@@ -14,26 +14,24 @@ package runtime
 
 var finishTracingFunc func()
 
-/*
- * InitTracing enables the collection of the trace
- */
+// InitTracing enables the collection of the trace
+//
+// Parameter:
+//   - finishFuzzing func(): function injection for the advocate.FinishFuzzing function
 func InitTracing(finishFuzzing func()) {
 	advocateTracingDisabled = false
 	finishTracingFunc = finishFuzzing
 }
 
-/*
- * DisableTracing disables the collection of the trace
- */
+// DisableTracing disables the trace recording
 func DisableTracing() {
 	advocateTracingDisabled = true
 }
 
-/*
- * IsTracingEnabled returns wether tracing is enabled
- * Return:
- * 	true if enabled, false otherwise
- */
+// IsTracingEnabled returns whether tracing is enabled
+//
+// Returns:
+//   - true if enabled, false otherwise
 func IsTracingEnabled() bool {
 	return !advocateTracingDisabled
 }

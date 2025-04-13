@@ -12,6 +12,15 @@
 
 package runtime
 
+// Struct to store an operation on a once
+//
+// Fields
+//   - tPre int64: time when the operation started
+//   - tPost int64: time when the operation finished
+//   - id string: id of the once
+//   - suc bool: true if the func in the Do was executed, false otherwise
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceOnce struct {
 	tPre  int64
 	tPost int64
@@ -21,13 +30,13 @@ type AdvocateTraceOnce struct {
 	line  int
 }
 
-/*
- * AdvocateOncePre adds a once to the trace
- * Args:
- * 	id: id of the once
- * Return:
- * 	index of the operation in the trace
- */
+// AdvocateOncePre adds a once to the trace
+//
+// Parameter:
+//   - id uint64: id of the once
+//
+// Returns:
+//   - int: index of the operation in the trace
 func AdvocateOncePre(id uint64) int {
 	if advocateTracingDisabled {
 		return -1
@@ -51,12 +60,11 @@ func AdvocateOncePre(id uint64) int {
 	return insertIntoTrace(elem)
 }
 
-/*
- * Add the end counter to an operation of the trace
- * Args:
- * 	index: index of the operation in the trace
- * 	suc: true if the do on the once was called for the first time, false otherwise
- */
+// Add the end counter to an operation of the trace
+//
+// Parameter:
+//   - index int: index of the operation in the trace
+//   - suc bool: true if the do on the once was called for the first time, false otherwise
 func AdvocateOncePost(index int, suc bool) {
 	if advocateTracingDisabled {
 		return
@@ -75,10 +83,19 @@ func AdvocateOncePost(index int, suc bool) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation of the form
+//     O,[tPre],[tPost],[id],[suc],[file],[line]
 func (elem AdvocateTraceOnce) toString() string {
 	return buildTraceElemString("O", elem.tPre, elem.tPost, elem.id, elem.suc, posToString(elem.file, elem.line))
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elen AdvocateTraceOnce) getOperation() Operation {
 	return OperationOnceDo
 }

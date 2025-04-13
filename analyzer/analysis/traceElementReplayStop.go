@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementReplayStop.go
 // Brief: Struct and functions for replay controll elements in the trace
@@ -15,192 +15,224 @@ import (
 	"strconv"
 )
 
-/*
-* Struct to save an atomic event in the trace
-* MARK: Struct
-* Fields:
-*   tpost (int): The timestamp of the event
-*   exitCode (int): expected exit code
-*   lastElemTPre (int): tpre of the last elem, e.g. the tpre of the stuck elem in leak
- */
+// Struct to save an atomic event in the trace
+// Fields:
+//
+//   - tpost int: The timestamp of the event
+//   - exitCode int: expected exit code
 type TraceElementReplay struct {
-	tPost        int
-	exitCode     int
-	lastElemTPre int
+	tPost    int
+	exitCode int
 }
 
-/*
- * Create a new atomic trace element
- * MARK: New
- * Args:
- *   t (string): The timestamp of the event
- *   exitCode (int): The exit code of the event
- *   lastElemT (int): TPre of the
- */
-func AddTraceElementReplay(t int, exitCode int, lastElemTPre int) error {
-	elem := TraceElementReplay{
-		tPost:        t,
-		exitCode:     exitCode,
-		lastElemTPre: lastElemTPre,
-	}
-
-	return AddElementToTrace(&elem)
+// Create an end of replay event
+//
+// Parameter:
+//   - t string: The timestamp of the event
+//   - exitCode int: The exit code of the event
+func AddTraceElementReplay(t int, exitCode int) error {
+	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
 
-// MARK: Getter
-
-/*
- * Get the id of the element
- * Returns:
- *   int: The id of the element
- */
-func (at *TraceElementReplay) GetID() int {
+// Get the id of the element
+//
+// Returns:
+//   - int: The id of the element
+func (er *TraceElementReplay) GetID() int {
 	return 0
 }
 
-/*
- * Get the routine of the element
- * Returns:
- *   int: The routine of the element
- */
-func (at *TraceElementReplay) GetRoutine() int {
+// Get the routine of the element
+//
+// Returns:
+//   - int: The routine of the element
+func (er *TraceElementReplay) GetRoutine() int {
 	return 1
 }
 
-/*
- * Get the tpost of the element.
- *   int: The tpost of the element
- */
-func (at *TraceElementReplay) GetTPre() int {
-	return at.tPost
+// Get the tpost of the element.
+//
+//   - int: The tpost of the element
+func (er *TraceElementReplay) GetTPre() int {
+	return er.tPost
 }
 
-/*
- * Get the tpost of the element.
- * Returns:
- *   int: The tpost of the element
- */
-func (at *TraceElementReplay) getTpost() int {
-	return at.tPost
+// Get the tpost of the element.
+//
+// Returns:
+//   - int: The tpost of the element
+func (er *TraceElementReplay) GetTPost() int {
+	return er.tPost
 }
 
-/*
- * Get the timer, that is used for the sorting of the trace
- * Returns:
- *   int: The timer of the element
- */
-func (at *TraceElementReplay) GetTSort() int {
-	return at.tPost
+// Get the timer, ther is used for the sorting of the trace
+//
+// Returns:
+//   - int: The timer of the element
+func (er *TraceElementReplay) GetTSort() int {
+	return er.tPost
 }
 
-/*
- * Get the position of the operation.
- * Returns:
- *   string: The file of the element
- */
-func (at *TraceElementReplay) GetPos() string {
+// Get the position of the operation.
+//
+// Returns:
+//   - string: The file of the element
+func (er *TraceElementReplay) GetPos() string {
 	return ""
 }
 
-/*
- * Get the tID of the element.
- * Returns:
- *   string: The tID of the element
- */
-func (at *TraceElementReplay) GetTID() string {
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
+func (er *TraceElementReplay) GetReplayID() string {
 	return ""
 }
 
-/*
- * Dummy function to implement the interface
- * Returns:
- *   VectorClock: The vector clock of the element
- */
-func (at *TraceElementReplay) GetVC() clock.VectorClock {
-	return clock.VectorClock{}
+// GetFile returns the file of the element
+//
+// Returns:
+//   - The file of the element
+func (er *TraceElementReplay) GetFile() string {
+	return ""
 }
 
-/*
- * Get the string representation of the object type
- */
-func (at *TraceElementReplay) GetObjType() string {
-	return "RR"
+// GetLine returns the line of the element
+//
+// Returns:
+//   - The line of the element
+func (er *TraceElementReplay) GetLine() int {
+	return 0
 }
 
-// MARK: Setter
+// Get the tID of the element.
+//
+// Returns:
+//   - string: The tID of the element
+func (er *TraceElementReplay) GetTID() string {
+	return ""
+}
 
-/*
- * Set the tPre and tPost of the element
- * Args:
- *   time (int): The tPre and tPost of the element
- */
+// Dummy function to implement the interface
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
+func (er *TraceElementReplay) GetVC() *clock.VectorClock {
+	return &clock.VectorClock{}
+}
+
+// GetwVc implements TraceElement.
+func (at *TraceElementReplay) GetwVc() *clock.VectorClock {
+	return &clock.VectorClock{}
+}
+
+// Get the string representation of the object type
+func (er *TraceElementReplay) GetObjType(operation bool) string {
+	if operation {
+		return ObjectTypeReplay + "R"
+	}
+	return ObjectTypeReplay
+}
+
+// Given a trace element, check if it is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (er *TraceElementReplay) IsEqual(elem TraceElement) bool {
+	return er.ToString() == elem.ToString()
+}
+
+// GetTraceIndex returns the trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (er *TraceElementReplay) GetTraceIndex() (int, int) {
+	return -1, -1
+}
+
+// Set the tPre and tPost of the element
+//
+// Parameter:
+//   - time int: The tPre and tPost of the element
 func (mu *TraceElementReplay) SetT(time int) {
 	mu.tPost = time
 }
 
-/*
- * Set the tpre of the element.
- * Args:
- *   tPre (int): The tpre of the element
- */
+// Set the tpre of the element.
+//
+// Parameter:
+//   - tPre int: The tpre of the element
 func (mu *TraceElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
 	mu.tPost = tPre
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace
- * Args:
- *   tSort (int): The timer of the element
- */
-func (at *TraceElementReplay) SetTSort(tSort int) {
+// Set the timer, ther is used for the sorting of the trace
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (er *TraceElementReplay) SetTSort(tSort int) {
 	tSort = max(1, tSort)
-	at.SetTPre(tSort)
-	at.tPost = tSort
+	er.SetTPre(tSort)
+	er.tPost = tSort
 }
 
-/*
- * Set the timer, that is used for the sorting of the trace, only if the original
- * value was not 0
- * Args:
- *   tSort (int): The timer of the element
- */
-func (at *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
+// Set the timer, ther is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
-	at.SetTPre(tSort)
-	at.tPost = tSort
+	er.SetTPre(tSort)
+	er.tPost = tSort
 }
 
-/*
- * Get the simple string representation of the element.
- * MARK: ToString
- * Returns:
- *   string: The simple string representation of the element
- */
-func (at *TraceElementReplay) ToString() string {
-	res := "X," + strconv.Itoa(at.tPost) + "," + strconv.Itoa(at.exitCode) + "," + strconv.Itoa(at.lastElemTPre)
+// Get the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (er *TraceElementReplay) ToString() string {
+	res := "X," + strconv.Itoa(er.tPost) + "," + strconv.Itoa(er.exitCode)
 	return res
 }
 
-/*
- * Update and calculate the vector clock of the element
- * MARK: VectorClock
- */
-func (at *TraceElementReplay) updateVectorClock() {
+// Update and calculate the vector clock of the element
+func (er *TraceElementReplay) updateVectorClock() {
 	// nothing to do
 }
 
-// MARK: Copy
-
-/*
- * Create a copy of the element
- * Returns:
- *   TraceElement: The copy of the element
- */
-func (at *TraceElementReplay) Copy() TraceElement {
+// Create a copy of the element
+//
+// Returns:
+//   - TraceElement: The copy of the element
+func (er *TraceElementReplay) Copy() TraceElement {
 	return &TraceElementReplay{
-		tPost:        at.tPost,
-		exitCode:     at.exitCode,
-		lastElemTPre: at.lastElemTPre,
+		tPost:    er.tPost,
+		exitCode: er.exitCode,
 	}
+}
+
+// Dummy function for traceElement
+func (er *TraceElementReplay) AddRel1(_ TraceElement, _ int) {
+	return
+}
+
+// Dummy function for traceElement
+func (er *TraceElementReplay) AddRel2(_ TraceElement) {
+	return
+}
+
+// Dummy function for traceElement
+func (er *TraceElementReplay) GetRel1() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+// Dummy function for traceElement
+func (er *TraceElementReplay) GetRel2() []TraceElement {
+	return make([]TraceElement, 0)
 }

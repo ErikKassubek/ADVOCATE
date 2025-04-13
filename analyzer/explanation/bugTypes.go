@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: bugTypes.go
 // Brief: Print informations for all bug types
@@ -10,21 +10,23 @@
 
 package explanation
 
-import (
-	"fmt"
-)
-
 // type (bug / diagnostics)
 var bugCrit = map[string]string{
+	"R00": "Bug",
+	"R01": "Diagnostic",
 	"A01": "Bug",
 	"A02": "Diagnostics",
 	"A03": "Bug",
-	"A04": "Diagnostics",
-	"A05": "Diagnostics",
+	"A04": "Bug",
+	"A05": "Bug",
+	"A06": "Bug",
+	"A07": "Diagnostics",
+	"A08": "Diagnostics",
 	"P01": "Bug",
 	"P02": "Diagnostic",
 	"P03": "Bug",
 	"P04": "Bug",
+	"P05": "Bug",
 	"L00": "Leak",
 	"L01": "Leak",
 	"L02": "Leak",
@@ -42,25 +44,32 @@ var bugNames = map[string]string{
 	"A01": "Actual Send on Closed Channel",
 	"A02": "Actual Receive on Closed Channel",
 	"A03": "Actual Close on Closed Channel",
-	"A04": "Concurrent Receive",
-	"A05": "Select Case without Partner",
+	"A04": "Actual close on nil channel",
+	"A05": "Actual negative Wait Group",
+	"A06": "Actual unlock of not locked mutex",
+	"A07": "Concurrent Receive",
+	"A08": "Select Case without Partner",
 
 	"P01": "Possible Send on Closed Channel",
 	"P02": "Possible Receive on Closed Channel",
 	"P03": "Possible Negative WaitGroup cCounter",
 	"P04": "Possible unlock of not locked mutex",
+	"P05": "Possible cyclic deadlock",
 
 	"L00": "Leak on routine without blocking operation",
-	"L01": "Leak of unbuffered Channel with possible partner",
-	"L02": "Leak on unbuffered Channel without possible partner",
-	"L03": "Leak of buffered Channel with possible partner",
+	"L01": "Leak on unbuffered channel with possible partner",
+	"L02": "Leak on unbuffered channel without possible partner",
+	"L03": "Leak on buffered Channel with possible partner",
 	"L04": "Leak on buffered Channel without possible partner",
 	"L05": "Leak on nil channel",
-	"L06": "Leak of select with possible partner",
+	"L06": "Leak on select with possible partner",
 	"L07": "Leak on select without possible partner",
 	"L08": "Leak on sync.Mutex",
 	"L09": "Leak on sync.WaitGroup",
 	"L10": "Leak on sync.Cond",
+
+	"R01": "Unknown Panic",
+	"R02": "Timeout",
 }
 
 var bugCodes = make(map[string]string) // inverse of bugNames, initialized in init
@@ -71,14 +80,22 @@ var bugExplanations = map[string]string{
 		"The occurrence of a send on closed leads to a panic.",
 	"A02": "During the execution of the program, a receive on a closed channel occurred.\n",
 	"A03": "During the execution of the program, a close on a close channel occurred.\n" +
-		"The occurrence of a close on a closed channel leads to a panic.",
-	"A04": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
+		"The occurrence of a close on a closed channel lead to a panic.",
+	"A04": "During the execution of the program, a close on a nil channel occurred.\n" +
+		"The occurrence of a close on a nil channel lead to a panic.",
+	"A05": "During the execution, a negative waitgroup counter occured.\n" +
+		"The occurrence of a negative wait group counter lead to a panic.",
+	"A06": "During the execution, a not locked mutex was unlocked.\n" +
+		"The occurrence of this lead to a panic.",
+	"A07": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	"A05": "During the execution of the program, a select was executed, where, based " +
+	"A08": "During the execution of the program, a select was executed, where, based " +
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
+	"R00": "During the execution of the program, a unknown panic occured",
+	"R01": "The execution of the program timed out",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
@@ -95,38 +112,42 @@ var bugExplanations = map[string]string{
 		"Although the unlock of a not locked mutex did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
 		"A unlock of a not locked mutex will result in a panic.",
+	"P05": "The analysis detected a possible cyclic deadlock.\n" +
+		"If this deadlock contains or influences the run of the main routine, this can " +
+		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
+		"resources.",
 	"L00": "The analyzer detected a leak on a routine without a blocking operations.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +
 		"This can be a desired behavior, but it can also be a signal for a not otherwise detected block.",
-	"L01": "The analyzer detected a leak of an unbuffered channel with a possible partner.\n" +
-		"A leak of an unbuffered channel is a situation, where a unbuffered channel is " +
+	"L01": "The analyzer detected a Leak on an unbuffered channel with a possible partner.\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the deadlock.",
-	"L02": "The analyzer detected a leak of an unbuffered channel without a possible partner.\n" +
-		"A leak of an unbuffered channel is a situation, where a unbuffered channel is " +
+	"L02": "The analyzer detected a Leak on an unbuffered channel without a possible partner.\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
-	"L03": "The analyzer detected a leak of a buffered channel with a possible partner.\n" +
-		"A leak of a buffered channel is a situation, where a buffered channel is " +
+	"L03": "The analyzer detected a Leak on a buffered channel with a possible partner.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L04": "The analyzer detected a leak of a buffered channel without a possible partner.\n" +
-		"A leak of a buffered channel is a situation, where a buffered channel is " +
+	"L04": "The analyzer detected a Leak on a buffered channel without a possible partner.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L05": "The analyzer detected a leak on a nil channel.\n" +
 		"A leak on a nil channel is a situation, where a nil channel is still blocking at the end of the program.\n" +
 		"A nil channel is a channel, which was never initialized or set to nil." +
 		"An operation on a nil channel will block indefinitely.",
-	"L06": "The analyzer detected a leak of a select with a possible partner.\n" +
-		"A leak of a select is a situation, where a select is still blocking at the end of the program.\n" +
+	"L06": "The analyzer detected a Leak on a select with a possible partner.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L07": "The analyzer detected a leak of a select without a possible partner.\n" +
-		"A leak of a select is a situation, where a select is still blocking at the end of the program.\n" +
+	"L07": "The analyzer detected a Leak on a select without a possible partner.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L08": "The analyzer detected a leak on a sync.Mutex.\n" +
 		"A leak on a sync.Mutex is a situation, where a sync.Mutex lock operations is still blocking at the end of the program.\n" +
@@ -137,185 +158,6 @@ var bugExplanations = map[string]string{
 	"L10": "The analyzer detected a leak on a sync.Cond.\n" +
 		"A leak on a sync.Cond is a situation, where a sync.Cond wait is still blocking at the end of the program.\n" +
 		"A sync.Cond wait is blocking, because the condition is not met.",
-}
-
-// examples
-var bugExamples map[string]string = map[string]string{
-	"A01": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    c <- 1            // <-------\n}",
-	"A02": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    <-c               // <-------\n}",
-	"A03": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    close(c)          // <-------\n" +
-		"    close(c)          // <-------\n}",
-	"A04": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        <-c             // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <-c             // <-------\n" +
-		"    }()\n\n" +
-		"    c <- 1\n" +
-		"}",
-	"A05": "func main() {\n" +
-		"    c := make(chan int)\n" +
-		"    d := make(chan int)\n" +
-		"    go func() {\n" +
-		"        <-c\n" +
-		"    }()\n\n" +
-		"    select{\n" +
-		"    case c1 := <- c:\n" +
-		"        print(c1)\n" +
-		"    case d <- 1:      // <-------\n" +
-		"        print(\"d\")\n" +
-		"    }\n",
-	"P01": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c\n" +
-		"    }()\n\n" +
-		"    close(c)            // <-------\n}",
-	"P02": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <-------\n" +
-		"    }()\n\n" +
-		"    close(c)            // <-------\n}",
-	"P03": "func main() {\n" +
-		"    var wg sync.WaitGroup\n\n" +
-		"    go func() {\n" +
-		"        wg.Add(1)       // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        wg.Done()       // <-------\n" +
-		"    }()\n\n" +
-		"    wg.Wait()\n}",
-	"P04": "func main() {\n" +
-		"    var m sync.Mutex\n\n" +
-		"    go func() {\n" +
-		"        m.Lock()       // <-------\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        m.Unlock()     // <-------\n" +
-		"    }()\n\n}",
-	"L00": "func main() {\n" +
-		"    go func() {\n" +
-		"        time.Sleep(time.Second)          // <------- Is still running when main routine terminates\n" +
-		"    }()\n\n" +
-		"}",
-	"L01": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n" +
-		"}",
-	"L02": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak, no possible partner\n" +
-		"    }()\n" +
-		"}",
-	"L03": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n" +
-		"}",
-	"L04": "func main() {\n" +
-		"    c := make(chan int, 1)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak, no possible partner\n" +
-		"    }()\n" +
-		"}",
-	"L05": "func main() {\n" +
-		"    var c chan int      // <------- Not initialized -> c = nil\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Leak\n" +
-		"    }()\n",
-	"L06": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        c <- 1          // <------- Communicates\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        <- c            // <------- Communicates, possible partner\n" +
-		"    }()\n\n" +
-		"    go func() {\n" +
-		"        select {        // <------- Leak\n" +
-		"        case c <- 1:    // <------- Possible partner\n" +
-		"        }\n" +
-		"    }()\n" +
-		"}",
-	"L07": "func main() {\n" +
-		"    c := make(chan int)\n\n" +
-		"    go func() {\n" +
-		"        select {        // <------- Leak, no possible partner\n" +
-		"        case c <- 1:\n" +
-		"        }\n" +
-		"    }()\n" +
-		"}",
-	"L08": "func main() {\n" +
-		"    var m sync.Mutex\n\n" +
-		"    go func() {\n" +
-		"        m.Lock()        // <------- Leak\n" +
-		"    }()\n\n" +
-		"    m.Lock()            // <------- Lock, no unlock\n" +
-		"}",
-	"L09": "func main() {\n" +
-		"    var wg sync.WaitGroup\n\n" +
-		"    wg.Add(1)           // <------- Add, no Done\n" +
-		"    wg.Wait()           // <------- Leak\n" +
-		"}",
-	"L10": "func main() {\n" +
-		"    var c sync.Cond\n\n" +
-		"    c.Wait()            // <------- Leak, no signal/broadcast\n" +
-		"}",
-}
-
-var rewriteType = map[string]string{
-	"A01": "Actual",
-	"A02": "Actual",
-	"A03": "Actual",
-	"A04": "Actual",
-	"A05": "Actual",
-	"P01": "Possible",
-	"P02": "Possible",
-	"P03": "Possible",
-	"P04": "Possible",
-	"L01": "LeakPos",
-	"L02": "Leak",
-	"L03": "LeakPos",
-	"L04": "Leak",
-	"L05": "Leak",
-	"L06": "LeakPos",
-	"L07": "Leak",
-	"L08": "LeakPos",
-	"L09": "LeakPos",
-	"L10": "LeakPos",
 }
 
 var exitCodeExplanation = map[string]string{
@@ -336,7 +178,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered a deadlock earlier in the trace than expected",
 	"11": "The replay got stuck during the execution.\n" +
 		"A waiting trace element was not executed for a long time.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -344,7 +187,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced\n" +
+		"	 - The program encountered an unexpected deadlock",
 	"12": "The replay got stuck during the execution.\n" +
 		"No trace element was executed for a long tim.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -352,7 +196,8 @@ var exitCodeExplanation = map[string]string{
 		"    - The program was altered between recording and replay\n" +
 		"    - The program execution path is not deterministic, e.g. its execution path is determined by a random number\n" +
 		"    - The program execution path depends on the order of not tracked operations\n" +
-		"    - The program execution depends on outside input, that was not exactly reproduced",
+		"    - The program execution depends on outside input, that was not exactly reproduced" +
+		"	 - The program encountered an unexpected deadlock",
 	"13": "The replay got stuck during the execution.\n" +
 		"The program tried to execute an operation, even though all elements in the trace have already been executed.\n" +
 		"This can be caused by a stuck replay.\n" +
@@ -374,7 +219,7 @@ var exitCodeExplanation = map[string]string{
 		"The replay was therefore able to confirm, that the negative wait group can actually occur.",
 	"33": "The replay resulted in an expected lock of an unlocked mutex triggering a panic. The bug was triggered. " +
 		"The replay was therefore able to confirm, that the unlock of a not locked mutex can actually occur.",
-	// "41": "cyclic",
+	"41": "The replay reached the expected point and found stuck mutexes." + "The replay was therefore able to confirm that a deadlock can actually occur.",
 }
 
 var objectTypes = map[string]string{
@@ -396,28 +241,24 @@ var objectTypes = map[string]string{
 	"WD": "Waitgroup: Done",
 	"WW": "Waitgroup: Wait",
 	"SS": "Select:",
-	"NW": "Conditional Variable: Wait",
-	"NB": "Conditional Variable: Broadcast",
-	"NS": "Conditional Variable: Signal",
+	"DW": "Conditional Variable: Wait",
+	"DB": "Conditional Variable: Broadcast",
+	"DS": "Conditional Variable: Signal",
 	"OE": "Once: Done Executed",
 	"ON": "Once: Done Not Executed (because the once was already executed)",
-	"GF": "Routine: Fork",
-	"GE": "Routine",
+	"RF": "Routine: Fork",
+	"RE": "Routine: End",
+	"DH": "Mutex: Causing deadlock",
+	"DC": "Mutex: Part of deadlock",
 }
 
-func init() {
-	for key, value := range bugNames {
-		bugCodes[value] = key
-	}
-}
-
-/*
- * Get the code key from the description
- * Args:
- *     description (string): bug description
- * Returns:
- *     string: code if exists, otherwise empty string
- */
+// Get the code key from the description
+//
+// Parameter:
+//   - description string: bug description
+//
+// Returns:
+//   - string: code if exists, otherwise empty string
 func GetCodeFromDescription(description string) string {
 	if value, ok := bugCodes[description]; ok {
 		return value
@@ -425,21 +266,27 @@ func GetCodeFromDescription(description string) string {
 	return ""
 }
 
+// Get the bug type descriptions from the bug type codes
+//
+// Parameter:
+//   - bugType string: bug type code
+//
+// Returns:
+//   - map[string]string: bug type descriptions
 func getBugTypeDescription(bugType string) map[string]string {
 	return map[string]string{
 		"crit":        bugCrit[bugType],
 		"name":        bugNames[bugType],
 		"explanation": bugExplanations[bugType],
-		"example":     bugExamples[bugType],
 	}
 }
 
-func printBugTypeDescription(bugType string) {
-	fmt.Println(bugCrit[bugType] + ": " + bugNames[bugType] + "\n")
-	fmt.Println(bugExplanations[bugType] + "\n")
-	fmt.Println(bugExamples[bugType])
-}
-
+// Get bug element (operation) type from elem type code
+//
+// Parameter:
+//   - elemType string: code for the object (operation)
+//
+// Returns: string: description of the bug type
 func getBugElementType(elemType string) string {
 	if _, ok := objectTypes[elemType]; !ok {
 		return "Unknown element type"

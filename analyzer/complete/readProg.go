@@ -1,7 +1,7 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: readProg.go
-// Brief: Functions to read in a program an extrace all relevant operations
+// Brief: Functions to read in a program an extract all relevant operations
 //
 // Author: Erik Kassubek
 // Created: 2024-06-26
@@ -11,37 +11,47 @@
 package complete
 
 import (
+	"analyzer/utils"
 	"fmt"
 	"go/ast"
 	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
+// Pass over all go files in a program and get the positions of all relevant
+// primitives and operation on those primitives
+//
+// Parameter:
+//   - progPath string: path to the project
+//
+// Returns:
+//   - map[string][]int: all lines in the code that contain relevant operations.
+//   - The map has the form filePath -> list of lines in this file
+//   - error
 func getProgramElements(progPath string) (map[string][]int, error) {
 	progElems := make(map[string][]int)
 
 	files, err := collectGoFiles(progPath)
 	if err != nil {
-		println("Error in collecting files")
+		utils.LogError("Error in collecting files")
 		return nil, err
 	}
 
 	pkg, err := analyzeFiles(files)
 	if err != nil {
-		println("Error in analyzing files")
+		utils.LogError("Error in analyzing files")
 		return nil, err
 	}
 
 	// traverse all .go files in the directory recursively
 	err = filepath.Walk(progPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			println("Error in walking")
+			utils.LogError("Error in walking")
 			return err
 		}
 
@@ -52,7 +62,7 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 		if strings.HasSuffix(path, ".go") {
 			content, err := os.ReadFile(path)
 			if err != nil {
-				println("Error in reading file")
+				utils.LogError("Error in reading file")
 				return err
 			}
 
@@ -73,11 +83,19 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 	return progElems, err
 }
 
+// Given a directory, recursively collect all go files
+//
+// Parameter:
+//   - dir string: path to the directory
+//
+// Returns:
+//   - []string: paths to all go file in dir
+//   - error
 func collectGoFiles(dir string) ([]string, error) {
 	var files []string
 	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			log.Printf("Error when collecting %q: %v\n", path, err)
+			utils.LogErrorf("Error when collecting %q: %v\n", path, err)
 			return err
 		}
 		if info == nil {
@@ -99,6 +117,14 @@ func collectGoFiles(dir string) ([]string, error) {
 	return files, nil
 }
 
+// analyzeFiles type-checks a package and returns the resulting package object
+//
+// Parameter:
+//   - files []string: list of files to analyze
+//
+// Returns:
+//   - *types.Package: the resulting types package
+//   - error
 func analyzeFiles(files []string) (*types.Package, error) {
 	fset := token.NewFileSet()
 	var astFiles []*ast.File
@@ -106,8 +132,6 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	for _, file := range files {
 		parsedFile, err := parser.ParseFile(fset, file, nil, parser.ParseComments)
 		if err != nil {
-			// println("Error in parsing file")
-			// return nil, err
 			continue
 		}
 		astFiles = append(astFiles, parsedFile)
@@ -117,14 +141,21 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	pkg, _ := conf.Check("mypackage", fset, astFiles, &types.Info{
 		Uses: make(map[*ast.Ident]types.Object),
 	})
-	// if err != nil {
-	// 	println("Error in checking")
-	// 	return nil, err
-	// }
 
 	return pkg, nil
 }
 
+// getElemsFromContent passes the ast tree and for a given file, finds the
+// line numbers of all relevant elements
+//
+// Parameter:
+//   - path string: the path to the analyzed file
+//   - content string: the content of the file
+//   - pkg *types.Package: The type information for the ast
+//
+// Returns:
+//   - []int: the line numbers containing relevant operations
+//   - error
 func getElemsFromContent(path string, content string, pkg *types.Package) ([]int, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, path, content, parser.ParseComments)
@@ -146,10 +177,6 @@ func getElemsFromContent(path string, content string, pkg *types.Package) ([]int
 		}
 	}
 
-	// if syncPkg == nil {
-	// 	fmt.Println("Could not find sync package")
-	// }
-
 	v := &visitor{fset: fset, pkg: pkg, info: info, syncPkg: syncPkg,
 		selectCases: make(map[string]struct{}), elements: make([]int, 0)}
 	ast.Walk(v, node)
@@ -168,7 +195,15 @@ type visitor struct {
 	elements    []int // line numbers
 }
 
-// Visit wird für jeden Knoten im AST aufgerufen.
+// Visit is called for each node when passing the ast. It determines if the
+// node represents a relevant operations and if so records the line number
+// of the element
+//
+// Parameter:
+//   - n ast.Node: the currently visited node
+//
+// Returns:
+//   - ast.Visitor
 func (v *visitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return nil
@@ -230,7 +265,7 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 		for _, stmt := range x.Body.List {
 			caseClause, ok := stmt.(*ast.CommClause)
 			if !ok {
-				continue // Nicht ein case-Teil, weitermachen
+				continue // Nicht ein case-timeouteil, weitermachen
 			}
 			switch comm := caseClause.Comm.(type) {
 			case *ast.SendStmt:
@@ -244,7 +279,6 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 			}
 		}
 	case *ast.RangeStmt:
-		// TODO: Does not work yet
 		rangeExpr := x.X
 		rangeExprType := v.info.Types[rangeExpr].Type
 		// Check if the range expression is a channel
@@ -256,6 +290,11 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 	return v
 }
 
+// recordElement stores the line of a node in the visitor
+//
+// Parameter:
+//   - pos (token.Position): the code position of the node for which the
+//     function is called
 func (v *visitor) recordElement(pos token.Position) {
 	v.elements = append(v.elements, pos.Line)
 }

@@ -1,4 +1,14 @@
-// ADVOCATE-FILE-START
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace.go
+// Brief: Functionality for the trace
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
 
 package runtime
 
@@ -24,7 +34,7 @@ const (
 	OperationRWMutexRUnlock
 	OperationRWMutexTryRLock
 
-	OperationOnce
+	OperationOnceDo
 
 	OperationWaitgroupAddDone
 	OperationWaitgroupWait
@@ -42,6 +52,8 @@ const (
 	OperationAtomicAdd
 	OperationAtomicSwap
 	OperationAtomicCompareAndSwap
+	OperationAtomicAnd
+	OperationAtomicOr
 
 	OperationReplayEnd
 )
@@ -54,8 +66,6 @@ const (
 )
 
 var advocateTracingDisabled = true
-var advocatePanicWriteBlock chan struct{}
-var advocatePanicDone chan struct{}
 
 // var advocateTraceWritingDisabled = false
 
@@ -71,7 +81,7 @@ func getOperationObjectString(op Operation) string {
 		return "Mutex"
 	case OperationRWMutexLock, OperationRWMutexUnlock, OperationRWMutexTryLock, OperationRWMutexRLock, OperationRWMutexRUnlock, OperationRWMutexTryRLock:
 		return "RWMutex"
-	case OperationOnce:
+	case OperationOnceDo:
 		return "Once"
 	case OperationWaitgroupAddDone, OperationWaitgroupWait:
 		return "Waitgroup"
@@ -79,7 +89,7 @@ func getOperationObjectString(op Operation) string {
 		return "Select"
 	case OperationCondSignal, OperationCondBroadcast, OperationCondWait:
 		return "Cond"
-	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap:
+	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
@@ -87,15 +97,9 @@ func getOperationObjectString(op Operation) string {
 	return "Unknown"
 }
 
-/*
- * Get the channels used to write the trace on certain panics
- * Args:
- *    apwb (chan struct{}): advocatePanicWriteBlock
- *    apd (chan struct{}): advocatePanicDone
- */
-func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
-	advocatePanicWriteBlock = apwb
-	advocatePanicDone = apd
+type traceElem interface {
+	toString() string
+	getOperation() Operation
 }
 
 /*
@@ -109,7 +113,7 @@ func CurrentTraceToString() string {
 		if i != 0 {
 			res += "\n"
 		}
-		res += elem
+		res += elem.toString()
 	}
 
 	return res
@@ -122,24 +126,17 @@ func CurrentTraceToString() string {
  * Return:
  * 	string representation of the trace
  */
-func traceToString(trace *[]string, atomics *[]string) string {
+func traceToString(trace *[]traceElem) string {
 	res := ""
-
-	println("TraceToString", len(*trace), len(*atomics), len(*trace)+len(*atomics))
 
 	// if atomic recording is disabled
 	for i, elem := range *trace {
 		if i != 0 {
 			res += "\n"
 		}
-		res += elem
+		res += elem.toString()
 	}
 	return res
-}
-
-func getTpre(elem string) int {
-	split := splitStringAtCommas(elem, []int{1, 2})
-	return stringToInt(split[1])
 }
 
 /*
@@ -149,8 +146,7 @@ func getTpre(elem string) int {
  * Return:
  * 	index of the element in the trace
  */
-func insertIntoTrace(elem string) int {
-
+func insertIntoTrace(elem traceElem) int {
 	return currentGoRoutine().addToTrace(elem)
 }
 
@@ -174,7 +170,7 @@ func TraceToStringByID(id uint64) (string, bool) {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
 	if routine, ok := AdvocateRoutines[id]; ok {
-		return traceToString(&routine.Trace, &routine.Atomics), true
+		return traceToString(&routine.Trace), true
 	}
 	return "", false
 }
@@ -211,12 +207,11 @@ func TraceToStringByIDChannel(id int, c chan<- string) {
 		unlock(&AdvocateRoutinesLock)
 		res := ""
 
-		// if atomic recording is disabled
 		for i, elem := range routine.Trace {
 			if i != 0 {
 				res += "\n"
 			}
-			res += elem
+			res += elem.toString()
 
 			if i%1000 == 0 {
 				c <- res
@@ -246,7 +241,7 @@ func AllTracesToString() string {
 		if routine == nil {
 			panic("Trace is nil")
 		}
-		res += traceToString(&routine.Trace, &routine.Atomics) + "\n"
+		res += traceToString(&routine.Trace) + "\n"
 
 	}
 	return res
@@ -269,48 +264,6 @@ func GetNumberOfRoutines() int {
 	defer unlock(&AdvocateRoutinesLock)
 	return len(AdvocateRoutines)
 }
-
-/*
- * InitAdvocate enables the collection of the trace
- * Args:
- * 	size: size of the channel used to link the atomic recording to the main
- *    recording.
- */
-func InitAdvocate() {
-	advocateTracingDisabled = false
-}
-
-/*
- * DisableTrace disables the collection of the trace
- */
-func DisableTrace() {
-	advocateTracingDisabled = true
-}
-
-/*
- * GetAdvocateDisabled returns if the trace collection is disabled
- * Return:
- * 	true if the trace collection is disabled, false otherwise
- */
-func GetAdvocateDisabled() bool {
-	return advocateTracingDisabled
-}
-
-// /*
-//  * BockTrace blocks the trace collection
-//  * Resume using UnblockTrace
-//  */
-// func BlockTrace() {
-// 	advocateTraceWritingDisabled = true
-// }
-
-// /*
-//  * UnblockTrace resumes the trace collection
-//  * Block using BlockTrace
-//  */
-// func UnblockTrace() {
-// 	advocateTraceWritingDisabled = false
-// }
 
 /*
  * DeleteTrace removes all trace elements from the trace

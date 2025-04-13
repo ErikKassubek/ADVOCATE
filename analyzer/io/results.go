@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: results.go
 // Brief: Read the analysis result file and analyze its content
@@ -12,31 +12,34 @@ package io
 
 import (
 	"analyzer/bugs"
+	"analyzer/timer"
+	"analyzer/utils"
 	"bufio"
+	"fmt"
 	"os"
-	"strconv"
 )
 
-/*
- * Read the fail containing the output of the analysis
- * Extract the needed information to create a trace to replay the selected error
- * Args:
- *   filePath (string): The path to the file containing the analysis results
- *   index (int): The index of the result to create a trace for (0 based)
- * Returns:
- *   bool: true, if the bug was not a possible, but an actually occuring bug
- *   Bug: The bug that was selected
- *   error: An error if the bug could not be processed
- */
-func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
-	println("Read analysis results from " + filePath + " for index " + strconv.Itoa(index))
+// Read the fail containing the output of the analysis
+// Extract the needed information to create a trace to replay the selected error
+//
+// Parameter:
+//   - filePath string: The path to the file containing the analysis results
+//   - index int: The index of the result to create a trace for (0 based)
+//
+// Returns:
+//   - bool: true, if the bug was not a possible, but an actually occuring bug
+//   - Bug: The bug that was selected
+//   - error: An error if the bug could not be processed
+func ReadAnalysisResults(resMachinePath string, index int) (bool, bugs.Bug, error) {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
 
 	bugStr := ""
 
-	file, err := os.Open(filePath)
+	file, err := os.Open(resMachinePath)
 	if err != nil {
-		println("Error opening file: " + filePath)
-		panic(err)
+		utils.LogError("Error opening file: " + resMachinePath)
+		return false, bugs.Bug{}, err
 	}
 
 	scanner := bufio.NewScanner(file)
@@ -50,27 +53,22 @@ func ReadAnalysisResults(filePath string, index int) (bool, bugs.Bug, error) {
 		i++
 
 		if err := scanner.Err(); err != nil {
-
 			println("Error reading file line.")
 			break
 		}
-
 	}
 
-	println("Analysis results read")
+	if bugStr == "" {
+		return false, bugs.Bug{}, fmt.Errorf("Empty bug string")
+	}
 
 	actual, bug, err := bugs.ProcessBug(bugStr)
 	if err != nil {
-		println("Error processing bug")
-		println(err.Error())
+		err = fmt.Errorf("Error processing bug %s: %w", bugStr, err)
 		return false, bug, err
 	}
 
-	bug.Println()
-
 	if actual {
-		println("The bug is an actual bug.")
-		println("No rewrite needed.")
 		return true, bug, nil
 	}
 

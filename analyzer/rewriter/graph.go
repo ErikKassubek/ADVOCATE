@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: waitGroup.go
 // Brief: Rewrite for negative wait group counter
@@ -13,19 +13,20 @@ package rewriter
 import (
 	"analyzer/analysis"
 	"analyzer/bugs"
+	"analyzer/utils"
 )
 
-/*
- * Create a new trace for a negative wait group counter (done before add)
- * Args:
- *   bug (Bug): The bug to create a trace for
- *   expectedErrorCode (int): For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
- */
-func rewriteGraph(bug bugs.Bug, expectedErrorCode int) error {
+// Create a new trace for a negative wait group counter (done before add)
+//
+// Parameter:
+//   - trace *analysis.Trace: Trace to rewrite
+//   - bug Bug: The bug to create a trace for
+//   - expectedErrorCode int: For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
+func rewriteGraph(trace *analysis.Trace, bug bugs.Bug, expectedErrorCode int) error {
 	if bug.Type == bugs.PNegWG {
-		println("Start rewriting trace for negative waitgroup counter...")
+		utils.LogInfo("Start rewriting trace for negative waitgroup counter...")
 	} else if bug.Type == bugs.PUnlockBeforeLock {
-		println("Start rewriting trace for unlock before lock...")
+		utils.LogInfo("Start rewriting trace for unlock before lock...")
 	}
 
 	minTime := -1
@@ -34,7 +35,7 @@ func rewriteGraph(bug bugs.Bug, expectedErrorCode int) error {
 	for i := range bug.TraceElement2 {
 		elem1 := bug.TraceElement1[i] // done/unlock
 
-		analysis.ShiftConcurrentOrAfterToAfter(elem1)
+		trace.ShiftConcurrentOrAfterToAfter(elem1)
 
 		if minTime == -1 || elem1.GetTPre() < minTime {
 			minTime = elem1.GetTPre()
@@ -47,7 +48,7 @@ func rewriteGraph(bug bugs.Bug, expectedErrorCode int) error {
 
 	// add start and end
 	if !(minTime == -1 && maxTime == -1) {
-		analysis.AddTraceElementReplay(maxTime+1, expectedErrorCode, max(bug.TraceElement1[0].GetTPre(), bug.TraceElement2[0].GetTPre()))
+		trace.AddTraceElementReplay(maxTime+1, expectedErrorCode)
 	}
 
 	return nil

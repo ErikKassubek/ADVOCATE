@@ -1,9 +1,18 @@
 // ADVOCATE-FILE-START
 
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_util.go
+// Brief: Helper functions
+//
+// Author: Erik Kassubek
+// Created: 2023-05-25
+//
+// License: BSD-3-Clause
+
 package runtime
 
 import (
-	"runtime/internal/atomic"
 	"unsafe"
 )
 
@@ -44,17 +53,25 @@ func pointerAddressAsString[T any](ptr *T, size bool) string {
 		return str
 	}
 
-	const desiredLength = 11
+	const desiredLength = 9
 
 	// Get the length of the input string
 	strLen := len(str)
 
 	if strLen >= desiredLength {
-		// If the string has 11 or more letters, return the last 11
+		// If the string has 9 or more letters, return the last 9
 		return str[strLen-desiredLength:]
 	}
 
 	return str
+}
+
+func pointerAddressAsUint32[T any](ptr *T, size bool) uint32 {
+	return stringToUint32(pointerAddressAsString(ptr, size))
+}
+
+func pointerAddressAsUint64[T any](ptr *T, size bool) uint64 {
+	return stringToUint64(pointerAddressAsString(ptr, size))
 }
 
 /*
@@ -91,7 +108,6 @@ func int32ToString(n int32) string {
 		return string(rune(n + '0'))
 	} else {
 		return int32ToString(n/10) + string(rune(n%10+'0'))
-
 	}
 }
 
@@ -149,6 +165,14 @@ func stringToInt(s string) int {
 	return result * sign
 }
 
+func stringToUint32(s string) uint32 {
+	return uint32(stringToInt(s))
+}
+
+func stringToUint64(s string) uint64 {
+	return uint64(stringToInt(s))
+}
+
 // MARK: BOOL -> STR
 
 /*
@@ -165,153 +189,58 @@ func boolToString(b bool) string {
 	return "f"
 }
 
-// MARK: STR manipulation
-
-/*
- * Split a string at a separator
- * Args:
- * 	s: string to split
- * 	sep: separator
- * 	indices: at witch separators to split the string, must be sorted, 1 based
- * 		if nil split at all separators
- * Return:
- * 	split string
- */
-func splitStringAtSeparator(s string, sep rune, indices []int) []string {
-	var start int
-	result := make([]string, 0)
-
-	if indices == nil {
-		for i, r := range s {
-			if r == sep {
-				result = append(result, s[start:i])
-				start = i + 1
-			}
-		}
-	} else {
-		count := 0
-		for _, index := range indices {
-			for i, r := range s[start:] {
-				if r == sep {
-					count++
-					if count == index {
-						result = append(result, s[start:start+i])
-						start += i + 1
-						break
-					}
-				}
-			}
-		}
-	}
-	result = append(result, s[start:])
-	return result
-}
-
-/*
- * Split a string at comma
- * Args:
- * 	s: string to split
- * 	indices: at witch commas to split the string, must be sorted, 1 based,
- * 		if nil split at all commas
- * Return:
- * 	splitted string
- */
-func splitStringAtCommas(s string, indices []int) []string {
-	return splitStringAtSeparator(s, ',', indices)
-}
-
-/*
- * Merge a string slice to a string separated by comma
- * Args:
- * 	s: slice of strings to merge
- * Return:
- * 	merged string, separated by commas
- */
-func mergeString(s []string) string {
-	return mergeStringSep(s, ",")
-}
-
-/*
- * Merge a string slice to a string
- * Args:
- * 	s: slice of strings to merge
- * 	sep: separator
- * Return:
- * 	merged string, separated by commas
- */
-func mergeStringSep(s []string, sep string) string {
-	var result string
-	for i, elem := range s {
+// String
+func buildTraceElemString(values ...any) string {
+	res := ""
+	for i, v := range values {
 		if i != 0 {
-			result += sep
+			res += ","
 		}
-		result += elem
+
+		res += convToString(v)
 	}
-	return result
+	return res
 }
 
-/*
- * Split a string by the seperator
- */
-func splitString(line string, sep string) []string {
-	var result []string
-	start := 0
-	for i := 0; i < len(line); i++ {
-		if line[i] == sep[0] {
-			result = append(result, line[start:i])
-			start = i + 1
+func buildTraceElemStringSep(sep string, values ...any) string {
+	res := ""
+	for i, v := range values {
+		if i != 0 {
+			res += sep
 		}
+
+		res += convToString(v)
 	}
-	result = append(result, line[start:])
-	return result
+	return res
 }
 
-// MARK: ADVOCATE
-
-var advocateCurrentRoutineID atomic.Uint64
-var advocateGlobalCounter atomic.Uint64
-
-/*
- * GetAdvocateRoutineID returns a new id for a routine
- * Return:
- * 	new id
- */
-func GetAdvocateRoutineID() uint64 {
-	id := advocateCurrentRoutineID.Add(1)
-	if id > 184467440 {
-		panic("Overflow Error: Two many routines. Max: 184467440")
+func convToString(val any) string {
+	switch v := val.(type) {
+	case string:
+		return v
+	case int:
+		return intToString(v)
+	case uint:
+		return uint64ToString(uint64(v))
+	case int32:
+		return int32ToString(v)
+	case int64:
+		return int64ToString(v)
+	case uint32:
+		return uint32ToString(v)
+	case uint64:
+		return uint64ToString(v)
+	case bool:
+		if v {
+			return "t"
+		}
+		return "f"
 	}
-	return id
+	return ""
 }
 
-/*
- * GetAdvocateObjectID returns a new id for a mutex, channel or waitgroup
- * Return:
- * 	new id
- */
-func GetAdvocateObjectID() uint64 {
-	routine := currentGoRoutine()
-
-	if routine == nil {
-		getg().goInfo = newAdvocateRoutine(getg())
-		routine = currentGoRoutine()
-	}
-
-	routine.maxObjectId++
-	if routine.maxObjectId > 99999999999 {
-		panic("Overflow Error: Tow many objects in one routine. Max: 99999999999")
-	}
-	id := routine.id*100000000000 + routine.maxObjectId
-	return id
-}
-
-/*
- * GetAdvocateCounter will update the timer and return the new value
- * Return:
- * 	new time value
- */
-func GetNextTimeStep() uint64 {
-	return advocateGlobalCounter.Add(2)
+func posToString(file string, line int) string {
+	return file + ":" + intToString(line)
 }
 
 /*
@@ -361,13 +290,29 @@ func contains(s, sub string) bool {
 	return false
 }
 
-/*
- * Slow down the execution of the program
- */
-func slowExecution() {
-	for i := 0; i < 1e8; i++ {
-		// do nothing
+func hasPrefix(s, prefix string) bool {
+	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
+}
+
+func hasSuffix(s, suffix string) bool {
+	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
+}
+
+func split(s string, sep rune) []string {
+	var res []string
+	var current string
+
+	for _, char := range s {
+		if char == sep {
+			res = append(res, current)
+			current = ""
+		} else {
+			current += string(char)
+		}
 	}
+
+	res = append(res, current)
+	return res
 }
 
 // ADVOCATE-FILE-END

@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisUtil.go
 // Brief: Collection of utility functiond for trace analysis
@@ -18,16 +18,16 @@ import (
 	"strings"
 )
 
-/*
- * Get the info from a TID
- * Args:
- *   tID (string): The TID
- * Return:
- *   string: the file
- *   int: the line
- *   int: the tPre
- *   error: the error
- */
+// Get the info from a TID
+//
+// Parameter:
+//   - tID string: The TID
+//
+// Returns:
+//   - string: the file
+//   - int: the line
+//   - int: the tPre
+//   - error: the error
 func infoFromTID(tID string) (string, int, int, error) {
 	spilt1 := utils.SplitAtLast(tID, "@")
 
@@ -60,6 +60,14 @@ func infoFromTID(tID string) (string, int, int, error) {
 	return split2[0], line, tPre, nil
 }
 
+// sameRoutine determines if for aal trace elements in the list, if they are
+// operations on the same primitive, they have the same routine
+//
+// Parameter:
+//   - elems ...[]TraceElement: lists of trace elements
+//
+// Returns:
+//   - true if for each primitive, the element in elems are always in the same routine
 func sameRoutine(elems ...[]TraceElement) bool {
 	ids := make(map[int]int)
 	for _, elem := range elems {
@@ -73,4 +81,28 @@ func sameRoutine(elems ...[]TraceElement) bool {
 	}
 
 	return true
+}
+
+// posFromPosString returns the file and line from a pos string
+//
+// Parameter:
+//   - pos string: [file]:[line]
+//
+// Returns:
+//   - string: file
+//   - int: line
+//   - error
+func posFromPosString(pos string) (string, int, error) {
+	posSplit := strings.Split(pos, ":")
+	if len(posSplit) != 2 {
+		return "", 0, fmt.Errorf("Invalid pos %s", pos)
+	}
+
+	line, err := strconv.Atoi(posSplit[1])
+	if err != nil {
+		return "", 0, fmt.Errorf("Invalid pos %s: %s", pos, err.Error())
+	}
+
+	return posSplit[0], line, nil
+
 }

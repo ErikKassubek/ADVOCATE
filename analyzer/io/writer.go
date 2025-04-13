@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: writer.go
 // Brief: Write the internal trace into files
@@ -12,59 +12,32 @@ package io
 
 import (
 	"analyzer/analysis"
-	"io"
+	"analyzer/timer"
+	"analyzer/utils"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"sync"
 )
 
-/*
- * Copy a file from source to dest
- * Args:
- *   source (string): The path to the source file
- *   dest (string): The path to the destination file
- */
-func CopyFolder(source string, dest string) {
-	sourceFile, err := os.Open(source)
-	if err != nil {
-		panic(err)
-	}
-	defer sourceFile.Close()
+// Write the trace to a file
+//
+// Parameter:
+//   - traceToWrite *analysis.Trace: Pointer to the trace to write
+//   - path string: The path to the file to write to
+//   - replay bool: If true, write only the elements relevant for replay
+func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
 
-	destFile, err := os.Create(dest)
-	if err != nil {
-		panic(err)
-	}
-	defer destFile.Close()
-
-	_, err = io.Copy(destFile, sourceFile)
-	if err != nil {
-		panic(err)
-	}
-
-	err = destFile.Sync()
-	if err != nil {
-		panic(err)
-	}
-}
-
-/*
- * Write the trace to a file
- * Args:
- *   path (string): The path to the file to write to
- *   numberRoutines (int): The number of routines in the trace
- */
-func WriteTrace(path string, numberRoutines int) error {
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
-		println(path + " already exists. Delete folder " + path)
+		utils.LogInfo(path + " already exists. Delete folder " + path)
 		if err := os.RemoveAll(path); err != nil {
 			return err
 		}
 	}
-
-	println("Create new trace at " + path)
 
 	// create new folder
 	if err := os.Mkdir(path, 0755); err != nil {
@@ -72,21 +45,23 @@ func WriteTrace(path string, numberRoutines int) error {
 	}
 
 	// write the files
+
+	numberRoutines := traceToWrite.GetNoRoutines()
+
 	wg := sync.WaitGroup{}
 	for i := 1; i <= numberRoutines; i++ {
 		wg.Add(1)
 		go func(i int) {
-			fileName := path + "trace_" + strconv.Itoa(i) + ".log"
-			// println("Create new file " + fileName + "...")
+			fileName := filepath.Join(path, "trace_"+strconv.Itoa(i)+".log")
 			file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				panic(err)
+				utils.LogError("Error in writing trace to file. Could not open file: ", err.Error())
 			}
 			defer file.Close()
 
 			// write trace
 			// println("Write trace to " + fileName + "...")
-			trace := analysis.GetTraceFromId(i)
+			trace := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre
 			sort.Slice(trace, func(i, j int) bool {
@@ -94,38 +69,55 @@ func WriteTrace(path string, numberRoutines int) error {
 			})
 
 			for index, element := range trace {
+				if !replay || !isReplay(element) {
+					continue
+				}
 				elementString := element.ToString()
 				if _, err := file.WriteString(elementString); err != nil {
-					panic(err)
+					utils.LogError("Error in writing trace to file. Could not write string: ", err.Error())
 				}
 				if index < len(trace)-1 {
 					if _, err := file.WriteString("\n"); err != nil {
-						panic(err)
+						utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
 					}
 				}
 			}
 			if _, err := file.WriteString("\n"); err != nil {
-				panic(err)
+				utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
 			}
 			wg.Done()
 		}(i)
 	}
 	wg.Wait()
-	println("Trace written")
 	return nil
 }
 
-/*
- * In path, create a file with the result message and the exit code for the rewrite
- * Args:
- *   path (string): The path to the file folder to write to
- *   resultMessage (string): The result message
- *   exitCode (int): The exit code
- *   resultIndex (int): The index of the result
- * Returns:
- *   error: The error that occurred
- */
+// Check if the element is relevant for replay
+//
+// Parameter:
+//   - element analysis.TraceElement: element to check
+//
+// Returns:
+//   - true if relevant for replay, false if ignored in replay
+func isReplay(element analysis.TraceElement) bool {
+	t := element.GetObjType(false)
+	return !(t == analysis.ObjectTypeNew || t == analysis.ObjectTypeRoutineEnd)
+}
+
+// In path, create a file with the result message and the exit code for the rewrite
+//
+// Parameter:
+//   - path string: The path to the file folder to write to
+//   - resultMessage string: The result message
+//   - exitCode int: The exit code
+//   - resultIndex int: The index of the result
+//
+// Returns:
+//   - error: The error that occurred
 func WriteRewriteInfoFile(path string, bugType string, exitCode int, resultIndex int) error {
+	timer.Start(timer.Io)
+	defer timer.Stop(timer.Io)
+
 	fileName := path + "rewrite_info.log"
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {

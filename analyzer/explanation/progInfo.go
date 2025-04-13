@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: progInfo.go
 // Brief: Read the info required for running the program
@@ -17,6 +17,14 @@ import (
 	"strings"
 )
 
+// Read the program info from the output.log file
+//
+// Parameter:
+//   - path string: path to the folder containing the output.log file
+//
+// Returns:
+//   - map[string]string: information about the analyzed test, e.g. file/test name and header position info
+//   - error
 func readProgInfo(path string) (map[string]string, error) {
 	res := make(map[string]string)
 
@@ -38,17 +46,6 @@ func readProgInfo(path string) (map[string]string, error) {
 			continue
 		}
 
-		// if strings.Contains(lines[i], "unitTestheaderInserter") {
-		// 	if strings.Contains(lines[i], "-r true") {
-		// 		line := lines[i][:strings.LastIndex(lines[i], " ")]
-		// 		res["inserterReplay"] = line + " " + strconv.Itoa(index)
-		// 	} else {
-		// 		res["inserterRecord"] = lines[i]
-		// 	}
-		// } else if strings.Contains(lines[i], "unitTestheaderRemover") {
-		// 	res["remover"] = lines[i]
-		// } else if strings.Contains(lines[i], "-run") {
-		// 	res["run"] = lines[i]
 		if strings.Contains(lines[i], "FileName: ") {
 			res["file"] = strings.TrimPrefix(lines[i], "FileName: ")
 		} else if strings.Contains(lines[i], "TestName: ") {
@@ -66,16 +63,4 @@ func readProgInfo(path string) (map[string]string, error) {
 	res["headerLine"] = strings.TrimSpace(res["headerLine"])
 
 	return res, nil
-}
-
-func getProgInfo(info map[string]string, key string) string {
-	if _, ok := info[key]; !ok {
-		return "Failed to read command for " + key
-	}
-
-	if info[key] == "" {
-		return "Failed to read command for " + key
-	}
-
-	return info[key]
 }

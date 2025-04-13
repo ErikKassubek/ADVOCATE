@@ -1,15 +1,40 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_cond.go
+// Brief: Functionality for the conditional variables
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
 package runtime
+
+type AdvocateTraceCond struct {
+	tPre  int64
+	tPost int64
+	id    uint64
+	op    Operation
+	file  string
+	line  int
+}
 
 /*
  * AdvocateCondPre adds a cond wait to the trace
  * MARK: Pre
  * Args:
  * 	id: id of the cond
- * 	op: 0 for wait, 1 for signal, 2 for broadcast
+ * 	op: Operation
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateCondPre(id uint64, op int) int {
+func AdvocateCondPre(id uint64, op Operation) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 	_, file, line, _ := Caller(2)
 
@@ -17,20 +42,14 @@ func AdvocateCondPre(id uint64, op int) int {
 		return -1
 	}
 
-	var opC string
-	switch op {
-	case 0:
-		opC = "W"
-	case 1:
-		opC = "S"
-	case 2:
-		opC = "B"
-	default:
-		panic("Unknown cond operation")
+	elem := AdvocateTraceCond{
+		tPre: timer,
+		id:   id,
+		op:   op,
+		file: file,
+		line: line,
 	}
 
-	elem := "N," + uint64ToString(timer) + ",0," + uint64ToString(id) +
-		"," + opC + "," + file + ":" + uint64ToString(uint64(line))
 	return insertIntoTrace(elem)
 }
 
@@ -41,16 +60,35 @@ func AdvocateCondPre(id uint64, op int) int {
  * 	index: index of the operation in the trace
  */
 func AdvocateCondPost(index int) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutine().getElement(index)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceCond)
 
-	split := splitStringAtCommas(elem, []int{2, 3})
-	split[1] = uint64ToString(timer)
-
-	elem = mergeString(split)
+	elem.tPost = timer
 
 	currentGoRoutine().updateElement(index, elem)
+}
+
+func (elem AdvocateTraceCond) toString() string {
+	var opC string
+	switch elem.op {
+	case OperationCondWait:
+		opC = "W"
+	case OperationCondSignal:
+		opC = "S"
+	case OperationCondBroadcast:
+		opC = "B"
+	}
+
+	return buildTraceElemString("D", elem.tPre, elem.tPost, elem.id, opC, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceCond) getOperation() Operation {
+	return elem.op
 }

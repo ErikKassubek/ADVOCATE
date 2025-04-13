@@ -1,4 +1,27 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_select.go
+// Brief: Functionality for selects
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
 package runtime
+
+type AdvocateTraceSelect struct {
+	tPre     int64
+	tPost    int64
+	id       uint64
+	cases    []AdvocateTraceChannel
+	selIndex int
+	hasDef   bool
+	file     string
+	line     int
+}
 
 /*
  * AdvocateSelectPre adds a select to the trace
@@ -11,22 +34,20 @@ package runtime
  * 	index of the operation in the trace
  */
 func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, lockorder []uint16) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	if cases == nil {
 		return -1
 	}
 
-	// TODO: (advocate): if cases in the select are nil, scase and lockOrder will
-	// have different lengths. This will cause a panic in the next for loop.
-	// We can use counter instead of i (only advance if ca.c != nil)
-	// But this will still make a problem in AdvocateSelectPost with the
-	// chosenIndex. We need to find a way to fix this.
-
 	id := GetAdvocateObjectID()
-	caseElements := ""
+	caseElements := make([]AdvocateTraceChannel, 0)
 
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(3)
 	if AdvocateIgnore(file) {
 		return -1
 	}
@@ -34,68 +55,63 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 	i := 0
 
 	maxCasi := 0
-	caseElementMap := make(map[int]string)
+	caseElementMap := make(map[int]AdvocateTraceChannel)
 	for _, casei := range lockorder {
 		casi := int(casei)
 		cas := (*cases)[casi]
 		c := cas.c
 
-		if len(caseElements) > 0 {
-			caseElements += "~"
-		}
-
-		chanOp := "R"
+		chanOp := OperationChannelRecv
 		if casi < nsends {
-			chanOp = "S"
+			chanOp = OperationChannelSend
 		}
 
 		if c == nil { // ignore nil cases
-			caseElementMap[casi] = "C." + uint64ToString(timer) + ".0.*." + chanOp + ".f.0.0"
+			caseElementMap[casi] = AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
+				isNil: true,
+			}
 		} else {
 			i++
 
-			caseElementMap[casi] = "C." + uint64ToString(timer) + ".0." +
-				uint64ToString(c.id) + "." + chanOp + ".f.0." +
-				uint32ToString(uint32(c.dataqsiz))
+			caseElementMap[casi] = AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
+				id:    c.id,
+				qSize: c.dataqsiz,
+			}
 		}
 		maxCasi = max(maxCasi, casi)
 	}
 
-	for i := 0; i <= maxCasi; i++ {
-		if i != 0 {
-			caseElements += "~"
-		}
+	for i := 0; i < ncases; i++ {
 		if _, ok := caseElementMap[i]; ok {
-			caseElements += caseElementMap[i]
+			caseElements = append(caseElements, caseElementMap[i])
 		} else {
-			chanOp := "R"
+			chanOp := OperationChannelRecv
 			if i < nsends {
-				chanOp = "S"
+				chanOp = OperationChannelSend
 			}
-			caseElements += "C." + uint64ToString(timer) + ".0.*." + chanOp + ".f.0.0"
+			caseElements = append(caseElements, AdvocateTraceChannel{
+				tPre:  timer,
+				op:    chanOp,
+				isNil: true,
+			})
 		}
 	}
 
-	for i := maxCasi + 1; i < ncases; i++ {
-		if i > 0 {
-			caseElements += "~"
-		}
-		chanOp := "R"
-		if i < nsends {
-			chanOp = "S"
-		}
-		caseElements += "C." + uint64ToString(timer) + ".0.*." + chanOp + ".f.0.0"
+	elem := AdvocateTraceSelect{
+		tPre:  timer,
+		id:    id,
+		cases: caseElements,
+		file:  file,
+		line:  line,
 	}
 
 	if !block {
-		if i > 0 {
-			caseElements += "~"
-		}
-		caseElements += "d"
+		elem.hasDef = true
 	}
-
-	elem := "S," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		caseElements + ",0," + file + ":" + intToString(line)
 
 	return insertIntoTrace(elem)
 }
@@ -105,56 +121,44 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
  * Args:
  * 	index: index of the operation in the trace
  * 	c: channel of the chosen case
- * 	chosenIndex: index of the chosen case in the select
- * 	lockOrder: order of the locks
+ * 	selIndex: index of the chosen case in the select
  * 	rClosed: true if the channel was closed at another routine
  */
-func AdvocateSelectPost(index int, c *hchan, chosenIndex int, lockOrder []uint16, rClosed bool) {
+func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	if index == -1 {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceSelect)
+	elem.tPost = timer
+	elem.selIndex = selIndex
 
-	// split into S,[tpre] - [tPost] - [id] - [cases] - [chosenIndex] - [file:line]
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5, 6})
-
-	split[1] = uint64ToString(timer) // set tpost of select
-
-	cases := splitStringAtSeparator(split[3], '~', nil)
-
-	if chosenIndex == -1 { // default case
-		if cases[len(cases)-1] != "d" {
-			panic("default case on select without default")
-		}
-		cases[len(cases)-1] = "D"
-	} else {
+	if selIndex != -1 { // not default case
 		// set tpost and cl of chosen case
-
-		// split into C,[tpre] - [tPost] - [id] - [opC] - [cl] - [opID] - [qSize]
-		chosenCaseSplit := splitStringAtSeparator(cases[chosenIndex], '.', []int{2, 3, 4, 5, 6, 7})
-		chosenCaseSplit[1] = uint64ToString(timer)
+		chosenCase := elem.cases[selIndex]
+		chosenCase.tPost = timer
 		if rClosed {
-			chosenCaseSplit[4] = "t"
+			chosenCase.cl = true
 		}
 
 		// set oId
-		if chosenCaseSplit[3] == "S" {
+		if chosenCase.op == OperationChannelSend {
+			chosenCase.oId = c.numberSend
 			c.numberSend++
-			chosenCaseSplit[5] = uint64ToString(c.numberSend)
 		} else {
+			chosenCase.oId = c.numberRecv
 			c.numberRecv++
-			chosenCaseSplit[5] = uint64ToString(c.numberRecv)
 		}
+		chosenCase.qCount = uint(c.numberSend - c.numberRecv)
 
-		cases[chosenIndex] = mergeStringSep(chosenCaseSplit, ".")
+		elem.cases[selIndex] = chosenCase
 	}
-
-	split[3] = mergeStringSep(cases, "~")
-	split[4] = uint32ToString(uint32(chosenIndex))
-	elem = mergeString(split)
 
 	currentGoRoutine().updateElement(index, elem)
 }
@@ -171,22 +175,36 @@ func AdvocateSelectPost(index int, c *hchan, chosenIndex int, lockOrder []uint16
 * 	index of the operation in the trace
  */
 func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	id := GetAdvocateObjectID()
 
-	opChan := "R"
+	opChan := OperationChannelRecv
 	if send {
-		opChan = "S"
+		opChan = OperationChannelSend
 	}
 
-	caseElements := ""
+	var caseElem AdvocateTraceChannel
 
 	if c != nil {
-		caseElements = "C." + uint64ToString(timer) + ".0." + uint64ToString(c.id) +
-			"." + opChan + ".f.0." + uint32ToString(uint32(c.dataqsiz))
+		if c.id == 0 {
+			c.id = AdvocateChanMake(int(c.dataqsiz))
+		}
+		caseElem = AdvocateTraceChannel{
+			tPre:  timer,
+			id:    c.id,
+			op:    opChan,
+			qSize: c.dataqsiz,
+		}
 	} else {
-		caseElements = "C." + uint64ToString(timer) + ".0.*." + opChan + ".f.0.0"
+		caseElem = AdvocateTraceChannel{
+			tPre: timer,
+			op:   opChan,
+		}
 	}
 
 	_, file, line, _ := Caller(2)
@@ -194,8 +212,17 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 		return -1
 	}
 
-	elem := "S," + uint64ToString(timer) + ",0," + uint64ToString(id) + "," +
-		caseElements + "~d,0," + file + ":" + intToString(line)
+	cases := make([]AdvocateTraceChannel, 1)
+	cases[0] = caseElem
+
+	elem := AdvocateTraceSelect{
+		tPre:   timer,
+		id:     id,
+		cases:  cases,
+		hasDef: true,
+		file:   file,
+		line:   line,
+	}
 
 	return insertIntoTrace(elem)
 }
@@ -208,44 +235,65 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
  * 	res: true for channel, false for default
  */
 func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	if index == -1 {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceSelect)
 
-	// split into S,[tpre] - [tPost] - [id] - [cases] - [chosenIndex] - [file:line]
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5, 6})
+	elem.tPost = timer
 
-	// update tPost
-	split[1] = uint64ToString(timer)
-
-	// update cases
-	cases := splitStringAtSeparator(split[3], '~', nil)
 	if res { // channel case
-		// split into C,[tpre] - [tPost] - [id] - [opC] - [cl] - [opID] - [qSize]
-		chosenCaseSplit := splitStringAtSeparator(cases[0], '.', []int{2, 3, 4, 5, 6, 7})
-		chosenCaseSplit[1] = uint64ToString(timer)
-
-		if chosenCaseSplit[3] == "S" {
+		ca := elem.cases[0]
+		ca.tPost = timer
+		if ca.op == OperationChannelSend {
 			c.numberSend++
-			chosenCaseSplit[5] = uint64ToString(c.numberSend)
 		} else {
 			c.numberRecv++
-			chosenCaseSplit[5] = uint64ToString(c.numberRecv)
 		}
-		cases[0] = mergeStringSep(chosenCaseSplit, ".")
-		split[4] = "0"
-
+		ca.qCount = uint(c.numberSend - c.numberRecv)
+		elem.cases[0] = ca
+		elem.selIndex = 0
 	} else { // default case
-		cases[len(cases)-1] = "D" // can have only one element if c == nil
-		split[4] = "-1"
+		elem.selIndex = -1
 	}
-	split[3] = mergeStringSep(cases, "~")
-
-	elem = mergeString(split)
 
 	currentGoRoutine().updateElement(index, elem)
+}
+
+func (elem AdvocateTraceSelect) toString() string {
+	p1 := buildTraceElemString("S", elem.tPre, elem.tPost, elem.id)
+	p2 := buildTraceElemString(elem.selIndex, posToString(elem.file, elem.line))
+	cases := ""
+	for i, c := range elem.cases {
+		if i != 0 {
+			cases += "~"
+		}
+		cases += c.toStringForSelect()
+	}
+	if elem.hasDef {
+		if cases != "" {
+			cases += "~"
+		}
+		if elem.selIndex == -1 {
+			cases += "D"
+		} else {
+			cases += "d"
+		}
+	}
+
+	return buildTraceElemString(p1, cases, p2)
+}
+
+func (elem AdvocateTraceSelect) getOperation() Operation {
+	if elem.selIndex == -1 {
+		return OperationSelectDefault
+	}
+	return OperationSelectCase
 }

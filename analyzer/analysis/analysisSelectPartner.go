@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisSelectPartner.go
 // Brief: Trace analysis for detection of select cases without any possible partners
@@ -13,16 +13,18 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	"log"
+	"analyzer/timer"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
 
-/*
-* CheckForSelectCaseWithoutPartner checks for select cases without a valid
-* partner. Call when all elements have been processed.
- */
+// CheckForSelectCaseWithoutPartner checks for select cases without a valid
+// partner. Call when all elements have been processed.
 func CheckForSelectCaseWithoutPartner() {
+	timer.Start(timer.AnaSelWithoutPartner)
+	defer timer.Stop(timer.AnaSelWithoutPartner)
+
 	// check if not selected cases could be partners
 	for i, c1 := range selectCases {
 		for j := i + 1; j < len(selectCases); j++ {
@@ -32,7 +34,7 @@ func CheckForSelectCaseWithoutPartner() {
 			// 	continue
 			// }
 
-			if c1.chanID != c2.chanID || c1.vcTID.TID == c2.vcTID.TID || c1.send == c2.send {
+			if c1.chanID != c2.chanID || c1.elem.elem.GetTID() == c2.elem.elem.GetTID() || c1.send == c2.send {
 				continue
 			}
 
@@ -40,7 +42,7 @@ func CheckForSelectCaseWithoutPartner() {
 				c1, c2 = c2, c1
 			}
 
-			hb := clock.GetHappensBefore(c1.vcTID.Vc, c2.vcTID.Vc)
+			hb := clock.GetHappensBefore(c1.elem.vc, c2.elem.vc)
 			found := false
 			if c1.buffered && (hb == clock.Concurrent || hb == clock.After) {
 				found = true
@@ -51,8 +53,8 @@ func CheckForSelectCaseWithoutPartner() {
 			if found {
 				selectCases[i].partnerFound = true
 				selectCases[j].partnerFound = true
-				selectCases[i].partner = append(selectCases[i].partner, VectorClockTID3{selectCases[j].sel, selectCases[j].sel.GetVC(), 0})
-				selectCases[j].partner = append(selectCases[j].partner, VectorClockTID3{selectCases[i].sel, selectCases[i].sel.GetVC(), 0})
+				selectCases[i].partner = append(selectCases[i].partner, ElemWithVcVal{selectCases[j].sel, selectCases[j].sel.GetVC(), 0})
+				selectCases[j].partner = append(selectCases[j].partner, ElemWithVcVal{selectCases[i].sel, selectCases[i].sel.GetVC(), 0})
 			}
 		}
 	}
@@ -77,31 +79,34 @@ func CheckForSelectCaseWithoutPartner() {
 		partnerResult := make([]results.ResultElem, 0)
 
 		if c.partnerFound {
+			c.sel.casesWithPosPartner = append(c.sel.casesWithPosPartner, c.casi)
+			numberSelectCasesWithPartner++
+
 			if c.exec {
 				continue
 			}
 
-			file, line, tPre, err := infoFromTID(c.vcTID.TID)
-			if err != nil {
-				continue
-			}
+			// file, line, tPre, err := infoFromTID(c.vcTID.TID)
+			// if err != nil {
+			// 	continue
+			// }
 
-			sel := results.TraceElementResult{
-				RoutineID: c.vcTID.Routine,
-				ObjID:     c.sel.GetID(),
-				TPre:      tPre,
-				ObjType:   "SS",
-				File:      file,
-				Line:      line,
-			}
+			// sel := results.TraceElementResult{
+			// 	RoutineID: c.vcTID.Routine,
+			// 	ObjID:     c.sel.GetID(),
+			// 	TPre:      tPre,
+			// 	ObjType:   "SS",
+			// 	File:      file,
+			// 	Line:      line,
+			// }
 
-			ca := results.SelectCaseResult{
-				SelID:   c.sel.GetID(),
-				ObjID:   c.chanID,
-				ObjType: opjType,
-				Routine: c.vcTID.Routine,
-				Index:   cIndex,
-			}
+			// ca := results.SelectCaseResult{
+			// 	SelID:   c.sel.GetID(),
+			// 	ObjID:   c.chanID,
+			// 	ObjType: opjType,
+			// 	Routine: c.vcTID.Routine,
+			// 	Index:   cIndex,
+			// }
 
 			for _, p := range c.partner {
 				pos := strings.Split(p.Elem.GetPos(), ":")
@@ -126,29 +131,34 @@ func CheckForSelectCaseWithoutPartner() {
 				partnerResult = append(partnerResult, partner)
 			}
 
-			if len(partnerResult) == 0 {
-				continue
-			}
+			// if len(partnerResult) == 0 {
+			// 	continue
+			// }
 
-			results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
-				"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
+			// if analysisCases["selectWithoutPartner"] {
+			// 	results.Result(results.INFORMATION, results.SNotExecutedWithPartner,
+			// 		"select", []results.ResultElem{sel, ca}, "partner", partnerResult)
+			// }
 			continue
 		}
+
+		tid := c.elem.elem.GetTID()
+		routine := c.elem.elem.GetRoutine()
 
 		arg2 := results.SelectCaseResult{
 			SelID:   c.sel.GetID(),
 			ObjID:   c.chanID,
 			ObjType: opjType,
-			Routine: c.vcTID.Routine,
+			Routine: routine,
 			Index:   cIndex,
 		}
 
-		if _, ok := casesWithoutPartner[c.vcTID.TID]; !ok {
-			casesWithoutPartner[c.vcTID.TID] = make([]results.ResultElem, 0)
-			casesWithoutPartnerInfo[c.vcTID.TID] = []int{c.vcTID.Routine, c.sel.GetID()}
+		if _, ok := casesWithoutPartner[tid]; !ok {
+			casesWithoutPartner[tid] = make([]results.ResultElem, 0)
+			casesWithoutPartnerInfo[tid] = []int{routine, c.sel.GetID()}
 		}
 
-		casesWithoutPartner[c.vcTID.TID] = append(casesWithoutPartner[c.vcTID.TID], arg2)
+		casesWithoutPartner[tid] = append(casesWithoutPartner[tid], arg2)
 	}
 
 	for tID, cases := range casesWithoutPartner {
@@ -158,13 +168,13 @@ func CheckForSelectCaseWithoutPartner() {
 
 		info := casesWithoutPartnerInfo[tID]
 		if len(info) != 2 {
-			log.Print("info should have 2 elements: ", info)
+			utils.LogError("info should have 2 elements: ", info)
 			continue
 		}
 
 		file, line, tPre, err := infoFromTID(tID)
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			continue
 		}
 
@@ -177,39 +187,41 @@ func CheckForSelectCaseWithoutPartner() {
 			Line:      line,
 		}
 
-		results.Result(results.WARNING, results.ASelCaseWithoutPartner,
-			"select", []results.ResultElem{arg1}, "case", cases)
+		if analysisCases["selectWithoutPartner"] {
+			results.Result(results.WARNING, results.ASelCaseWithoutPartner,
+				"select", []results.ResultElem{arg1}, "case", cases)
+		}
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerSelect checks for select cases without a valid
-* partner. Call whenever a select is processed.
-* Args:
-*   se (*TraceElementSelect): The trace element
-*   ids ([]int): The ids of the channels
-*   bufferedInfo ([]bool): The buffer status of the channels
-*   sendInfo ([]bool): The send status of the channels
-*   vc (VectorClock): The vector clock
- */
-//  func CheckForSelectCaseWithoutPartnerSelect(routine int, selectID int, caseChanIds []int, bufferedInfo []bool,
-func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, caseChanIds []int, bufferedInfo []bool,
-	sendInfo []bool, vc clock.VectorClock) {
-	for i, id := range caseChanIds {
-		buffered := bufferedInfo[i]
-		send := sendInfo[i]
+// CheckForSelectCaseWithoutPartnerSelect checks for select cases without a valid
+// partner. Call whenever a select is processed.
+//
+// Parameter:
+//   - se *TraceElementSelect: The trace elemen
+//   - vc *VectorClock: The vector clock
+func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.VectorClock) {
+	timer.Start(timer.AnaSelWithoutPartner)
+	defer timer.Stop(timer.AnaSelWithoutPartner)
+
+	for casi, c := range se.cases {
+
+		id := c.id
+
+		buffered := (c.qSize > 0)
+		send := (c.opC == SendOp)
 
 		found := false
 		executed := false
-		var partner = make([]VectorClockTID3, 0)
+		var partner = make([]ElemWithVcVal, 0)
 
-		if i == se.chosenIndex && se.tPost != 0 {
+		if casi == se.chosenIndex && se.tPost != 0 {
 			// no need to check if the channel is the chosen case
 			executed = true
 			p := se.GetPartner()
 			if p != nil {
 				found = true
-				vcTID := VectorClockTID3{
+				vcTID := ElemWithVcVal{
 					p, p.vc.Copy(), 0,
 				}
 				partner = append(partner, vcTID)
@@ -246,31 +258,31 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, caseChanIds 
 		}
 
 		selectCases = append(selectCases,
-			allSelectCase{se, id, VectorClockTID{vc, se.GetTID(), se.routine}, send, buffered, found, partner, executed})
+			allSelectCase{se, id, elemWithVc{vc, se}, send, buffered, found, partner, executed, casi})
 
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerChannel checks for select cases without a valid
-* partner. Call whenever a channel operation is processed.
-* Args:
-*   id (int): The id of the channel
-*   vc (VectorClock): The vector clock
-*   tID (string): The position of the channel operation in the program
-*   send (bool): True if the operation is a send
-*   buffered (bool): True if the channel is buffered
-*   sel (bool): True if the operation is part of a select statement
- */
-func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc clock.VectorClock,
+// CheckForSelectCaseWithoutPartnerChannel checks for select cases without a valid
+// partner. Call whenever a channel operation is processed.
+//
+// Parameter:
+//   - id int: The id of the channel
+//   - vc VectorClock: The vector clock
+//   - send bool: True if the operation is a send
+//   - buffered bool: True if the channel is buffered
+func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorClock,
 	send bool, buffered bool) {
 
+	timer.Start(timer.AnaSelWithoutPartner)
+	defer timer.Stop(timer.AnaSelWithoutPartner)
+
 	for i, c := range selectCases {
-		if c.partnerFound || c.chanID != ch.GetID() || c.send == send || c.vcTID.TID == ch.GetTID() {
+		if c.partnerFound || c.chanID != ch.GetID() || c.send == send || c.elem.elem.GetTID() == ch.GetTID() {
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.vcTID.Vc)
+		hb := clock.GetHappensBefore(vc, c.elem.vc)
 		found := false
 		if send {
 			if buffered && (hb == clock.Concurrent || hb == clock.Before) {
@@ -288,25 +300,27 @@ func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc clock.VectorClo
 
 		if found {
 			selectCases[i].partnerFound = true
-			selectCases[i].partner = append(selectCases[i].partner, VectorClockTID3{ch, vc, 0})
+			selectCases[i].partner = append(selectCases[i].partner, ElemWithVcVal{ch, vc, 0})
 		}
 	}
 }
 
-/*
-* CheckForSelectCaseWithoutPartnerClose checks for select cases without a valid
-* partner. Call whenever a close operation is processed.
-* Args:
-*   id (int): The id of the channel
-*   vc (VectorClock): The vector clock
- */
-func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc clock.VectorClock) {
+// CheckForSelectCaseWithoutPartnerClose checks for select cases without a valid
+// partner. Call whenever a close operation is processed.
+//
+// Parameter:
+//   - id int: The id of the channel
+//   - vc VectorClock: The vector clock
+func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.VectorClock) {
+	timer.Start(timer.AnaSelWithoutPartner)
+	defer timer.Stop(timer.AnaSelWithoutPartner)
+
 	for i, c := range selectCases {
 		if c.partnerFound || c.chanID != cl.id || c.send {
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.vcTID.Vc)
+		hb := clock.GetHappensBefore(vc, c.elem.vc)
 		found := false
 		if c.buffered && (hb == clock.Concurrent || hb == clock.After) {
 			found = true
@@ -316,7 +330,29 @@ func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc clock.Vec
 
 		if found {
 			selectCases[i].partnerFound = true
-			selectCases[i].partner = append(selectCases[i].partner, VectorClockTID3{cl, vc, 0})
+			selectCases[i].partner = append(selectCases[i].partner, ElemWithVcVal{cl, vc, 0})
+		}
+	}
+}
+
+// GetNumberSelectCasesWithPartner returns the number of cases with possible partner
+//
+// Returns:
+//   - int: the total number of select cases with possible partner over all selects
+func GetNumberSelectCasesWithPartner() int {
+	return numberSelectCasesWithPartner
+}
+
+// Rerun the CheckForSelectCaseWithoutPartnerChannel for all channel. This
+// is needed to find potential communication partners for not executed
+// select cases, if the select was executed after the channel
+func rerunCheckForSelectCaseWithoutPartnerChannel() {
+	for _, trace := range MainTrace.traces {
+		for _, elem := range trace {
+			if e, ok := elem.(*TraceElementChannel); ok {
+				CheckForSelectCaseWithoutPartnerChannel(e, e.GetVC(),
+					e.Operation() == SendOp, e.IsBuffered())
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: select.go
 // Brief: Read all select cases in the program
@@ -17,12 +17,11 @@ import (
 var selects = make(map[string]map[int][]bool)       // file -> line -> []wasSelected
 var containsDefault = make(map[string]map[int]bool) // file -> line -> containsDefault
 
-/*
- * FoundSelect is called when a select statement is found.
- * It records the select statement.
- * Args:
- * 	elem: the select statement
- */
+// FoundSelect is called when a select statement is found.
+// It records the select statement.
+//
+// Parameter:
+//   - elem: the select statement
 func foundSelect(file string, line int, cases string) {
 	casesSplit := strings.Split(cases, "~")
 	for i, c := range casesSplit {
@@ -50,15 +49,14 @@ func foundSelect(file string, line int, cases string) {
 	}
 }
 
-/*
- * AddSelect is called to add a select case into selects.
- * It records the selected case.
- * Args:
- * 	file: the file in which the select statement is found
- * 	line: the line number of the select statement
- * 	numberCases: the number of cases in the select statement, including the default case
- * 	selected: the index of the selected case
- */
+// AddSelect is called to add a select case into selects.
+// It records the selected case.
+//
+// Parameter:
+//   - file: the file in which the select statement is found
+//   - line: the line number of the select statement
+//   - numberCases: the number of cases in the select statement, including the default case
+//   - selected: the index of the selected case
 func addSelect(file string, line int, numberCases int, selected int) {
 	// ignore definition of select in src/runtime/select.go
 	if strings.HasSuffix(file, "src/runtime/select.go") {
@@ -74,11 +72,10 @@ func addSelect(file string, line int, numberCases int, selected int) {
 	selects[file][line][selected] = true
 }
 
-/*
- * GetNotSelectedSelectCases returns the select cases that were not selected.
- * Returns:
- * 	map[string]map[int][]int: the not selected select cases, file -> line -> []caseIndex
- */
+// GetNotSelectedSelectCases returns the select cases that were not selected.
+//
+// Returns:
+//   - map[string]map[int][]int: the not selected select cases, file -> line -> []caseIndex
 func getNotSelectedSelectCases() map[string]map[int][]int {
 	res := make(map[string]map[int][]int)
 	for file, lines := range selects {

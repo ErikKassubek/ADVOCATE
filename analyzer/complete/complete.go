@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: complete.go
 // Brief: Functions to check if all program elements have been executed at least once
@@ -18,14 +18,14 @@ import (
 	"strings"
 )
 
-/*
- * Check if all program elements are in trace
- * Args:
- * 	resultFolderPath: path to the folder containing the trace files
- * 	progPath: path to the program file
- * Returns:
- * 	error: error if any
- */
+// Check if all program elements are in trace
+//
+// Parameter:
+//   - resultFolderPath: path to the folder containing the trace files
+//   - progPath: path to the program file
+//
+// Returns:
+//   - error: error if any
 func Check(resultFolderPath string, progPath string) error {
 	progElems, err := getProgramElements(progPath)
 	if err != nil {
@@ -42,11 +42,22 @@ func Check(resultFolderPath string, progPath string) error {
 	notInTrace := areAllProgElemInTrace(progElems, traceElems)
 	notSelectedSelectCase := getNotSelectedSelectCases()
 
-	err = printResultsToFiles(notInTrace, notSelectedSelectCase, resultFolderPath)
+	err = printNotExecutedToFiles(notInTrace, notSelectedSelectCase, resultFolderPath)
 
 	return err
 }
 
+// areAllProgElemInTrace takes all relevant element positions in the program
+// and all relevant element positions in the traces to determine if all
+// elements in the program have been executed at least once
+//
+// Parameter:
+//   - progElems (map[string][]int) positions (file -> []line) of all relevant elems in the program
+//   - traceElems (map[string][]int) positions (file -> []line) of all relevant elems in the traces
+//
+// Returns:
+//   - map[string][]int: all elems (file -> []line) from the program that have
+//     never been executed
 func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]int) map[string][]int {
 	res := map[string][]int{}
 
@@ -62,7 +73,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 		}
 
 		for _, line := range lines {
-			if !utils.ContainsInt(traceElems[file], line) {
+			if !utils.Contains(traceElems[file], line) {
 				if _, ok := res[file]; !ok {
 					res[file] = make([]int, 0)
 				}
@@ -75,14 +86,13 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 	return res
 }
 
-/*
- * GetNotSelectedSelectCases prints the elements and select cases that were not executed
- * into a file.
- * Args:
- * 	elements: the elements that were not executed
- * 	selects: the select cases that were not selected
- */
-func printResultsToFiles(elements map[string][]int, selects map[string]map[int][]int,
+// GetNotSelectedSelectCases prints the elements and select cases that were not executed
+// into a file.
+//
+// Parameter:
+//   - elements: the elements that were not executed
+//   - selects: the select cases that were not selected
+func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[int][]int,
 	path string) error {
 
 	path = fmt.Sprintf("%s/AdvocateNotExecuted", path)

@@ -17,34 +17,41 @@ import (
 	"math"
 )
 
-/*
- * Build a st graph for a wait group.
- * The graph has the following structure:
- * - a start node s
- * - a end node t
- * - edges from s to all done operations
- * - edges from all add operations to t
- * - edges from done to add if the add happens before the done
- * Args:
- *   increases (map[int][]*TraceElement): Operations that increase the "counter" (adds and locks)
- *   decreases (map[int][]*TraceElement): Operations that decrease the "counter" (dones and unlocks)
- * Returns:
- *   []Edge: The graph
- */
-func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[string][]string {
-	graph := make(map[string][]string, 0)
-	graph["s"] = []string{}
-	graph["t"] = []string{}
+var (
+	source = &TraceElementWait{id: -1}
+	drain  = &TraceElementWait{id: -2}
+)
+
+// TODO: change to graph of elems, not tID
+
+// Build a st graph for a wait group.
+// The graph has the following structure:
+// - a start node s
+// - a end node t
+// - edges from s to all done operations
+// - edges from all add operations to t
+// - edges from done to add if the add happens before the done
+//
+// Parameter:
+//   - increases map[int][]TraceElement: Operations that increase the "counter" (adds and locks)
+//   - decreases map[int][]TraceElement: Operations that decrease the "counter" (dones and unlocks)
+//
+// Returns:
+//   - []Edge: The graph
+func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[TraceElement][]TraceElement {
+	graph := make(map[TraceElement][]TraceElement, 0)
+	graph[source] = []TraceElement{}
+	graph[drain] = []TraceElement{}
 
 	// add edges from s to all done operations
 	for _, elem := range decreases {
-		graph[elem.GetTID()] = []string{}
-		graph["s"] = append(graph["s"], elem.GetTID())
+		graph[elem] = []TraceElement{}
+		graph[source] = append(graph[source], elem)
 	}
 
 	// add edges from all add operations to t
 	for _, elem := range increases {
-		graph[elem.GetTID()] = []string{"t"}
+		graph[elem] = []TraceElement{drain}
 
 	}
 
@@ -52,7 +59,7 @@ func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[
 	for _, elemDecrease := range decreases {
 		for _, elemIncrease := range increases {
 			if clock.GetHappensBefore(elemIncrease.GetVC(), elemDecrease.GetVC()) == clock.Before {
-				graph[elemDecrease.GetTID()] = append(graph[elemDecrease.GetTID()], elemIncrease.GetTID())
+				graph[elemDecrease] = append(graph[elemDecrease], elemIncrease)
 			}
 		}
 	}
@@ -60,14 +67,16 @@ func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[
 	return graph
 }
 
-/*
- * Calculate the maximum flow of a graph using the ford fulkerson algorithm
- * Args:
- *   graph ([]Edge): The graph
- * Returns:
- *   int: The maximum flow
- */
-func calculateMaxFlow(graph map[string][]string) (int, map[string][]string, error) {
+// Calculate the maximum flow of a graph using the ford fulkerson algorithm
+//
+// Parameter:
+//   - graph map[TraceElement][]TraceElement: The graph
+//
+// Returns:
+//   - int: The maximum flow
+//   - map[TraceElement][]TraceElement: The graph with max flow
+//   - error
+func calculateMaxFlow(graph map[TraceElement][]TraceElement) (int, map[TraceElement][]TraceElement, error) {
 	maxFlow := 0
 	maxNumberRounds := 0
 	for _, val := range graph {
@@ -91,31 +100,32 @@ func calculateMaxFlow(graph map[string][]string) (int, map[string][]string, erro
 	return maxFlow, graph, fmt.Errorf("To many rounds")
 }
 
-/*
- * Find a path in a graph using a breadth-first search
- * Args:
- *   graph ([]Edge): The graph
- * Returns:
- *   []string: The path
- *   int: The flow
- */
-func findPath(graph map[string][]string) ([]string, int) {
-	visited := make(map[string]bool, 0)
-	queue := []string{"s"}
-	visited["s"] = true
-	parents := make(map[string]string, 0)
+// Find a path in a graph using a breadth-fifoirst search
+//
+// Parameter:
+//   - map[TraceElement][]TraceElement
+//
+// Returns:
+//   - []TraceElement: The path
+//   - int: The flow
+func findPath(graph map[TraceElement][]TraceElement) ([]TraceElement, int) {
+	visited := make(map[TraceElement]bool, 0)
+
+	queue := []TraceElement{source}
+	visited[source] = true
+	parents := make(map[TraceElement]TraceElement, 0)
 
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
 
-		if node == "t" {
-			path := []string{}
-			for node != "s" {
+		if node.IsEqual(drain) {
+			path := []TraceElement{}
+			for !node.IsEqual(source) {
 				path = append(path, node)
 				node = parents[node]
 			}
-			path = append(path, "s")
+			path = append(path, source)
 
 			return path, 1
 		}
@@ -129,20 +139,20 @@ func findPath(graph map[string][]string) ([]string, int) {
 		}
 	}
 
-	return []string{}, 0
+	return []TraceElement{}, 0
 }
 
-/*
- * Remove an element from a list
- * Args:
- *   list ([]string): The list
- *   element (string): The element to remove
- * Returns:
- *   []string: The list without the element
- */
-func remove(list []string, element string) []string {
+// Remove an element from a list
+//
+// Parameter:
+//   - list []TraceElement: The list
+//   - element TraceElement: The element to remove
+//
+// Returns:
+//   - []string: The list without the element
+func remove(list []TraceElement, element TraceElement) []TraceElement {
 	for i, e := range list {
-		if e == element {
+		if element.IsEqual(e) {
 			list = append(list[:i], list[i+1:]...)
 			return list
 		}

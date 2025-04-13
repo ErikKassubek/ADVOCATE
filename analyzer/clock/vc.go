@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: vc.go
 // Brief: Struct and functions of vector clocks vc
@@ -11,100 +11,116 @@
 package clock
 
 import (
+	"analyzer/utils"
 	"fmt"
-	"log"
 	"runtime"
 	"strconv"
 )
 
-/*
- * vectorClock is a vector clock
- * Fields:
- *   size (int): The size of the vector clock
- *   clock ([]int): The vector clock
- */
+// vectorClock is a vector clock
+// Fields:
+//
+//   - size int: The size of the vector clock
+//   - clock []int: The vector clock
 type VectorClock struct {
 	size  int
-	clock map[int]int
+	clock map[uint32]uint32
 }
 
-/*
- * Create a new vector clock
- * Args:
- *   size (int): The size of the vector clock
- * Returns:
- *   (vectorClock): The new vector clock
- */
-func NewVectorClock(size int) VectorClock {
+// Create a new vector clock
+//
+// Parameter:
+//   - size int: The size of the vector clock
+//
+// Returns:
+//   - *VectorClock: The new vector clock
+func NewVectorClock(size int) *VectorClock {
 	if size < 0 {
 		size = 0
 	}
-	c := make(map[int]int)
-	for i := 1; i <= size; i++ {
-		c[i] = 0
-	}
-
-	return VectorClock{
+	c := make(map[uint32]uint32)
+	return &VectorClock{
 		size:  size,
 		clock: c,
 	}
 }
 
-/*
- * Create a new vector clock and set it
- * Args:
- *   size (int): The size of the vector clock
- *   cl (map[int]int): The vector clock
- */
-func NewVectorClockSet(size int, cl map[int]int) VectorClock {
-	clock := NewVectorClock(size)
+// Create a new vector clock and set it
+//
+// Parameter:
+//   - size int: The size of the vector clock
+//   - cl (map[uint32]iunt)32: The vector clock
+//
+// Returns:
+//   - *VectorClock: A Pointer to the new vector clock
+func NewVectorClockSet(size int, cl map[uint32]uint32) *VectorClock {
+	vc := NewVectorClock(size)
 
 	if cl == nil {
-		return clock
+		return vc
 	}
 
 	if size < 0 {
 		size = 0
 	}
 
-	for i := 1; i <= size; i++ {
-		if _, ok := cl[i]; !ok {
-			clock.clock[i] = 0
-		} else {
-			clock.clock[i] = cl[i]
+	for rout, val := range cl {
+		if rout > uint32(size) {
+			continue
 		}
+		vc.clock[rout] = val
 	}
 
-	return clock
+	return vc
 }
 
-/*
- * Get the size of the vector clock
- * Returns:
- *   (int): The size of the vector clock
- */
+// Get the size of the vector clock
+//
+// Returns:
+//   - int: The size of the vector clock
 func (vc VectorClock) GetSize() int {
-	return vc.size
+	return int(vc.size)
 }
 
-/*
- * Get the vector clock
- * Returns:
- *   (map[int]int): The vector clock
- */
-func (vc VectorClock) GetClock() map[int]int {
+// GetValue returns the value of the vector clock at a given index
+//
+// Parameter:
+//   - index int: the index to get the value for
+//
+// Returns:
+//   - uint32: the value at the given index
+func (vc *VectorClock) GetValue(index int) uint32 {
+	if val, ok := vc.clock[uint32(index)]; ok {
+		return val
+	}
+	return 0
+}
+
+// SetValue sets a value of the vector clock at a given index
+//
+// Parameter:
+//   - index int: the index to set the value for
+//   - value uint32: the new value
+func (vc *VectorClock) SetValue(index int, value uint32) {
+	vc.clock[uint32(index)] = value
+}
+
+// GetClock returns the vector clock
+//
+// Returns:
+//   - map[uint32]uint32: The vector clock
+func (vc *VectorClock) GetClock() map[uint32]uint32 {
 	return vc.clock
 }
 
-/*
- * Get a string representation of the vector clock
- * Returns:
- *   (string): The string representation of the vector clock
- */
-func (vc VectorClock) ToString() string {
+// ToString returns a string representation of the vector clock
+//
+// Returns:
+//   - string: The string representation of the vector clock
+func (vc *VectorClock) ToString() string {
 	str := "["
 	for i := 1; i <= vc.size; i++ {
-		str += fmt.Sprint(vc.clock[i])
+		str += fmt.Sprint(vc.GetValue(i))
 		if i <= vc.size-1 {
 			str += ", "
 		}
@@ -113,37 +129,42 @@ func (vc VectorClock) ToString() string {
 	return str
 }
 
-/*
- * Increment the vector clock at the given position
- * Args:
- *   routine (int): The routine to increment
- * Returns:
- *   (vectorClock): The vector clock
- */
-func (vc VectorClock) Inc(routine int) VectorClock {
-	if routine > vc.size {
-		return vc
+// Inc increments the vector clock at the given position
+//
+// Parameter:
+//   - routine int: The routine to increment
+func (vc *VectorClock) Inc(routine int) {
+	if routine > int(vc.size) {
+		return
 	}
 
 	if vc.clock == nil {
-		vc.clock = make(map[int]int)
+		vc.clock = make(map[uint32]uint32)
 	}
 
-	vc.clock[routine]++
-	return vc
+	vc.clock[uint32(routine)]++
 }
 
-/*
- * Update the vector clock with the received vector clock
- * Args:
- *   rec (vectorClock): The received vector clock
- * Returns:
- *   (vectorClock): The new vector clock
- */
-func (vc VectorClock) Sync(rec VectorClock) VectorClock {
+// Sync updates the vector clock with the received vector clock
+//
+// Parameter:
+//   - rec *VectorClock: The received vector clock
+//
+// Returns:
+//   - *VectorClock: The synced vc (not a copy)
+func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
+	if vc == nil {
+		vc = rec.Copy()
+		return vc
+	}
+
+	if rec == nil {
+		return vc
+	}
+
 	if vc.size == 0 && rec.size == 0 {
 		_, file, line, _ := runtime.Caller(1)
-		log.Print("Sync of empty vector clocks: " + file + ":" + strconv.Itoa(line))
+		utils.LogError("Sync of empty vector clocks: " + file + ":" + strconv.Itoa(line))
 	}
 
 	if vc.size == 0 {
@@ -151,42 +172,38 @@ func (vc VectorClock) Sync(rec VectorClock) VectorClock {
 	}
 
 	if rec.size == 0 {
-		return vc.Copy()
+		return vc
 	}
 
-	copy := rec.Copy()
 	for i := 1; i <= vc.size; i++ {
-		if vc.clock[i] > copy.clock[i] {
-			copy.clock[i] = vc.clock[i]
+		if rec.GetValue(i) > vc.GetValue(i) {
+			vc.SetValue(i, rec.GetValue(i))
 		}
 	}
 
-	return copy
+	return vc
 }
 
-/*
- * Create a copy of the vector clock
- * Returns:
- *   (vectorClock): The copy of the vector clock
- */
-func (vc VectorClock) Copy() VectorClock {
+// Create a copy of the vector clock
+//
+// Returns:
+//   - *VectorClock: The copy of the vector clock
+func (vc *VectorClock) Copy() *VectorClock {
 	newVc := NewVectorClock(vc.size)
-	for i := 1; i <= vc.size; i++ {
-		newVc.clock[i] = vc.clock[i]
+	for rout, val := range vc.clock {
+		newVc.clock[rout] = val
 	}
 	return newVc
 }
 
-/*
- * Check if the the arg cv2 is equal to the vc
- */
-func (vc VectorClock) IsEqual(vc2 VectorClock) bool {
+// Check if the the arg vc2 is equal to the vc
+func (vc *VectorClock) IsEqual(vc2 *VectorClock) bool {
 	if vc.size != vc2.size {
 		return false
 	}
 
 	for i := 1; i <= vc.size; i++ {
-		if vc.clock[i] != vc2.clock[i] {
+		if vc.GetValue(i) != vc2.GetValue(i) {
 			return false
 		}
 	}
@@ -194,7 +211,16 @@ func (vc VectorClock) IsEqual(vc2 VectorClock) bool {
 	return true
 }
 
-func IsMapVcEqual(v1 map[int]VectorClock, v2 map[int]VectorClock) bool {
+// IsMapVcEqual determines if two maps of vector clock are equal, meaning for
+// each key they have the same vector clock as vale
+//
+// Parameter:
+//   - v1 map[int]*VectorClock: vector clock 1
+//   - v2 map[int]*VectorClock: vector clock 2
+//
+// Returns:
+//   - bool: true if they are equal, false otherwise
+func IsMapVcEqual(v1 map[int]*VectorClock, v2 map[int]*VectorClock) bool {
 	if len(v1) != len(v2) {
 		return false
 	}

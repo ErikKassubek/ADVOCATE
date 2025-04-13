@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: replay.go
 // Brief: Read the info about the rewrite and replay of the bug
@@ -18,10 +18,19 @@ import (
 	"strings"
 )
 
+// Get the text for the rewrite and replay info for the explanation
+//
+// Parameter:
+//   - bugType string: bug code
+//   - code map[string]string: replay output codes
+//   - index int: index of the bug that is explained
+//
+// Returns:
+//   - map[string]string: Information for the rewrite/replay part of the explanation file
 func getRewriteInfo(bugType string, codes map[string]string, index string) map[string]string {
 	res := make(map[string]string)
 
-	rewPos := rewriteType[bugType]
+	rewType := getRewriteType(bugType)
 
 	res["description"] = ""
 	res["exitCode"] = ""
@@ -30,18 +39,18 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 
 	var err error
 
-	if rewPos == "Actual" {
+	if rewType == "Actual" {
 		res["description"] += "The bug is an actual bug. Therefore no rewrite is possibel."
 		codes[fmt.Sprint(index)] = "fail"
-	} else if rewPos == "Possible" {
+	} else if rewType == "Possible" {
 		res["description"] += "The bug is a potential bug.\n"
 		res["description"] += "The analyzer has tries to rewrite the trace in such a way, "
 		res["description"] += "that the bug will be triggered when replaying the trace."
-	} else if rewPos == "LeakPos" {
+	} else if rewType == "LeakPos" {
 		res["description"] += "The analyzer found a leak in the recorded trace.\n"
 		res["description"] += "The analyzer found a way to resolve the leak, meaning the "
 		res["description"] += "leak should not reappear in the rewritten trace."
-	} else if rewPos == "Leak" {
+	} else if rewType == "Leak" {
 		res["description"] += "The analyzer found a leak in the recorded trace.\n"
 		res["description"] += "The analyzer could not find a way to resolve the leak. "
 		res["description"] += "No rewritten trace was created. This does not need to mean, "
@@ -59,6 +68,36 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 
 }
 
+// From the bug code get wether the bug was actual, possible or a (possible) leak
+//
+// Parameter:
+//   - bugCode string: the bug code
+//
+// Returns:
+//   - string: Actual, Possible, Leak or Pos Leak
+func getRewriteType(bugCode string) string {
+	switch bugCode[:1] {
+	case "A":
+		return "Actual"
+	case "P":
+		return "Possible"
+	case "L":
+		res := "Leak"
+		if bugCode == "L01" || bugCode == "L03" || bugCode == "L06" ||
+			bugCode == "L08" || bugCode == "L09" || bugCode == "L10" {
+			res += "Pos"
+		}
+		return res
+	}
+	return ""
+}
+
+// Get the output codes from the output.log file
+//
+// Parameter:
+//   - path string: path to the folder containing the output.log file
+//
+// Returns: map[string]stringL exit codes
 func getOutputCodes(path string) map[string]string {
 	output := filepath.Join(path, "output.log")
 	if _, err := os.Stat(output); os.IsNotExist(err) {
@@ -78,7 +117,7 @@ func getOutputCodes(path string) map[string]string {
 	replayPos := make(map[string]bool)
 	replayCode := make(map[string]string)
 	bugrepPrefix := "Bugreport info: "
-	replayReadPrefix := "Reading trace from rewritten_trace_"
+	replayReadPrefix := "Reading trace from rewrittenTrace_"
 	exitCodePrefix := "Exit Replay with code"
 
 	lastReplayIndex := ""
@@ -107,9 +146,9 @@ func getOutputCodes(path string) map[string]string {
 				replayCode[lastReplayIndex] = "panic"
 			}
 			lastReplayIndex = strings.TrimPrefix(line, replayReadPrefix)
-			if !strings.Contains(lastReplayIndex, "_") {
-				lastReplayIndex = "0_" + lastReplayIndex
-			}
+			// if !strings.Contains(lastReplayIndex, "_") {
+			// 	lastReplayIndex = "0_" + lastReplayIndex
+			// }
 			lastReplayIndexInfoFound = false
 		} else if strings.HasPrefix(line, exitCodePrefix) {
 			line = strings.TrimPrefix(line, exitCodePrefix)
@@ -122,13 +161,24 @@ func getOutputCodes(path string) map[string]string {
 	return replayCode
 }
 
-func getReplayInfo(replayCode map[string]string, index string) (string, string, string, error) {
-	if _, ok := replayCode["AdvocateFailExplanationInfo"]; ok {
+// Get the text for the replay info for the explanation
+//
+// Parameter:
+//   - code map[string]string: replay output codes
+//   - index int: index of the bug that is explained
+//
+// Returns:
+//   - string: exit code
+//   - string: replay result explanation
+//   - string: replay success info
+//   - error
+func getReplayInfo(codes map[string]string, index string) (string, string, string, error) {
+	if _, ok := codes["AdvocateFailExplanationInfo"]; ok {
 		fmt.Println("Could not read")
-		return "", replayCode["AdvocateFailExplanationInfo"], replayCode["AdvocateFailResplaySucInfo"], fmt.Errorf("Could not read output file")
+		return "", codes["AdvocateFailExplanationInfo"], codes["AdvocateFailResplaySucInfo"], fmt.Errorf("Could not read output file")
 	}
 
-	exitCode := replayCode[index]
+	exitCode := codes[index]
 	replaySuc := "failed"
 	if exitCode == "double" {
 		replaySuc = "was already performed for this bug in another test"

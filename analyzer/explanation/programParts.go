@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: programParts.go
 // Brief: Read the program code at the positions of the bug
@@ -18,13 +18,13 @@ import (
 	"strings"
 )
 
-/*
- * Get the positions of the bug elements in the program
- * Args:
- *   traceElem1 (map[int]string): The trace elements of the bug
- * Returns:
- *   map[int][]string: Dict for the code snippets
- */
+// Get the positions of the bug elements in the program
+//
+// Parameter:
+//   - traceElem1 map[int]string: The trace elements of the bug
+//
+// Returns:
+//   - map[int][]string: Dict for the code snippets
 func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (map[int][]string, error) {
 	res := make(map[int][]string)
 
@@ -59,16 +59,16 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 	return res, nil
 }
 
-/*
- * Get the code snippet of a program file at a specific line
- * Args:
- *   file (string): The path to the file
- *   line (int): The line number
- *   numbers (bool): If line numbers should be included
- * Returns:
- *   string: The code snippet
- *   error: An error if the file could not be read
- */
+// Get the code snippet of a program file at a specific line
+//
+// Parameter:
+//   - file string: The path to the file
+//   - line int: The line number
+//   - numbers bool: If line numbers should be included
+//
+// Returns:
+//   - string: The code snippet
+//   - error: An error if the file could not be read
 func GetProgramCode(file string, line int, numbers bool) (string, error) {
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -107,7 +107,6 @@ func GetProgramCode(file string, line int, numbers bool) (string, error) {
 	}
 
 	// add line numbers
-	// TODO: fix <----- for selects
 	resWithLines := ""
 	for i, l := range strings.Split(res, "\n") {
 		if i == 0 || i == len(strings.Split(res, "\n"))-1 {

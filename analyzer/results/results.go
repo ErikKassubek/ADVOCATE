@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: results.go
 // Brief: Function for debug results and for results found bugs
@@ -11,12 +11,13 @@
 package results
 
 import (
+	"analyzer/utils"
 	"fmt"
 	"os"
 	"strconv"
-	"strings"
 )
 
+// resultLevel is an enum for the severity of a result
 type resultLevel int
 
 const (
@@ -26,23 +27,28 @@ const (
 	INFORMATION
 )
 
+// ResultType is an ID for a type of result
 type ResultType string
 
 const (
 	Empty ResultType = ""
 
 	// actual
-	ASendOnClosed          ResultType = "A01"
-	ARecvOnClosed          ResultType = "A02"
-	ACloseOnClosed         ResultType = "A03"
-	AConcurrentRecv        ResultType = "A04"
-	ASelCaseWithoutPartner ResultType = "A05"
+	ASendOnClosed           ResultType = "A01"
+	ARecvOnClosed           ResultType = "A02"
+	ACloseOnClosed          ResultType = "A03"
+	ACloseOnNilChannel      ResultType = "A04"
+	ANegWG                  ResultType = "A05"
+	AUnlockOfNotLockedMutex ResultType = "A06"
+	AConcurrentRecv         ResultType = "A07"
+	ASelCaseWithoutPartner  ResultType = "A08"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
 	PRecvOnClosed     ResultType = "P02"
 	PNegWG            ResultType = "P03"
 	PUnlockBeforeLock ResultType = "P04"
+	PCyclicDeadlock   ResultType = "P05"
 
 	// leaks
 	LWithoutBlock      = "L00"
@@ -57,21 +63,29 @@ const (
 	LWaitGroup         = "L09"
 	LCond              = "L10"
 
+	// recording
+	RUnknownPanic ResultType = "R01"
+	RTimeout      ResultType = "R02"
+
 	// not executed select
-	SNotExecutedWithPartner = "S00"
+	// SNotExecutedWithPartner = "S00"
 )
 
 var resultTypeMap = map[ResultType]string{
-	ARecvOnClosed:          "Found receive on closed channel:",
-	ASendOnClosed:          "Found send on closed channel:",
-	ACloseOnClosed:         "Found close on closed channel:",
-	AConcurrentRecv:        "Found concurrent Recv on same channel:",
-	ASelCaseWithoutPartner: "Found select case without partner or nil case",
+	ASendOnClosed:           "Actual Send on Closed Channel:",
+	ARecvOnClosed:           "Actual Receive on Closed Channel:",
+	ACloseOnClosed:          "Actual Close on Closed Channel:",
+	AConcurrentRecv:         "Concurrent Receive:",
+	ASelCaseWithoutPartner:  "Select Case without Partner",
+	ACloseOnNilChannel:      "Actual close on nil channel",
+	ANegWG:                  "Actual negative Wait Group",
+	AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 
 	PSendOnClosed:     "Possible send on closed channel:",
 	PRecvOnClosed:     "Possible receive on closed channel:",
 	PNegWG:            "Possible negative waitgroup counter:",
 	PUnlockBeforeLock: "Possible unlock of a not locked mutex:",
+	PCyclicDeadlock:   "Possible cyclic deadlock:",
 
 	LWithoutBlock:      "Leak on routine without any blocking operation",
 	LUnbufferedWith:    "Leak on unbuffered channel with possible partner:",
@@ -85,20 +99,25 @@ var resultTypeMap = map[ResultType]string{
 	LWaitGroup:         "Leak on wait group:",
 	LCond:              "Leak on conditional variable:",
 
-	SNotExecutedWithPartner: "Not executed select with potential partner",
+	RUnknownPanic: "Unknown Panic",
+	RTimeout:      "Timeout",
+
+	// SNotExecutedWithPartner: "Not executed select with potential partner",
 }
 
-var outputReadableFile string
-var outputMachineFile string
-var foundBug = false
-var resultsWarningReadable []string
-var resultsCriticalReadable []string
-var resultsWarningMachine []string
-var resultCriticalMachine []string
-var resultInformationMachine []string
+var (
+	outputReadableFile       string
+	outputMachineFile        string
+	foundBug                 = false
+	resultsWarningReadable   []string
+	resultsCriticalReadable  []string
+	resultsWarningMachine    []string
+	resultCriticalMachine    []string
+	resultInformationMachine []string
+	resultWithoutTime        []string
+)
 
-var resultWithoutTime []string
-
+// ResultElem declares an interface for a result elem
 type ResultElem interface {
 	isInvalid() bool
 	stringMachine() string
@@ -106,6 +125,9 @@ type ResultElem interface {
 	stringMachineShort() string
 }
 
+// TraceElementResult is a type to represent an element that is
+// part of a found bug
+// TODO: replace by pointer to actual element
 type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
@@ -115,22 +137,43 @@ type TraceElementResult struct {
 	Line      int
 }
 
+// stringMachineShort returns a short machine readable string representation
+// of a result element
+//
+// Returns:
+//   - string: the string representation
 func (t TraceElementResult) stringMachineShort() string {
 	return fmt.Sprintf("T:%d:%s:%s:%d", t.ObjID, t.ObjType, t.File, t.Line)
 }
 
+// stringMachine returns a machine readable string representation
+// of a result element
+//
+// Returns:
+//   - string: the string representation
 func (t TraceElementResult) stringMachine() string {
 	return fmt.Sprintf("T:%d:%d:%d:%s:%s:%d", t.RoutineID, t.ObjID, t.TPre, t.ObjType, t.File, t.Line)
 }
 
+// stringReadable returns a human readable string representation
+// of a result element
+//
+// Returns:
+//   - string: the string representation
 func (t TraceElementResult) stringReadable() string {
 	return fmt.Sprintf("%s:%d@%d", t.File, t.Line, t.TPre)
 }
 
+// isInvalid checks if the result element is not corrupted/empty
+//
+// Returns:
+//   - bool: true if valid, false otherwise
 func (t TraceElementResult) isInvalid() bool {
 	return t.ObjType == "" || t.Line == -1
 }
 
+// SelectCaseResult is a type to represent an select case that is
+// part of a found bug
 type SelectCaseResult struct {
 	SelID   int
 	ObjID   int
@@ -139,34 +182,50 @@ type SelectCaseResult struct {
 	Index   int
 }
 
+// stringMachineShort returns a short machine readable string representation
+// of a result select case
+//
+// Returns:
+//   - string: the string representation
 func (s SelectCaseResult) stringMachineShort() string {
 	return fmt.Sprintf("S:%d:%s:%d", s.ObjID, s.ObjType, s.Index)
 }
 
+// stringMachineShort returns a machine readable string representation
+// of a result select case
+//
+// Returns:
+//   - string: the string representation
 func (s SelectCaseResult) stringMachine() string {
 	return fmt.Sprintf("S:%d:%s:%d", s.ObjID, s.ObjType, s.Index)
 }
 
+// stringReadable returns a human readable string representation
+// of a result select case
+//
+// Returns:
+//   - string: the string representation
 func (s SelectCaseResult) stringReadable() string {
 	return fmt.Sprintf("%d:%s", s.ObjID, s.ObjType)
 }
 
+// isInvalid checks if the result select case is not corrupted/empty
+//
+// Returns:
+//   - bool: true if valid, false otherwise
 func (s SelectCaseResult) isInvalid() bool {
 	return s.ObjType == ""
 }
 
-func ignore(file string) bool {
-	return strings.Contains(file, "signal_unix.go") ||
-		strings.Contains(file, "src/advocate/advocate.go")
-
-}
-
-/*
- * Print a result message
- * Args:
- * 	level: level of the message
- *	message: message to print
- */
+// Result logs a found bug
+//
+// Parameter:
+//   - level resultLevel: level of the message (critical, warning, ...)
+//   - resType ResultType: type of bug that was found
+//   - argType1 string: description of the type of elements in arg1
+//   - arg1 []ResultElem]: elements directly involved in the bug (e.g. in send on closed the send)
+//   - argType2 string: description of the type of elements in arg2
+//   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
 	if len(arg1) == 0 {
 		return
@@ -180,9 +239,6 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 
 	for i, arg := range arg1 {
 		if arg.isInvalid() {
-			return
-		}
-		if ignore(arg.stringMachine()) {
 			return
 		}
 		if i != 0 {
@@ -202,9 +258,6 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 			if arg.isInvalid() {
 				return
 			}
-			if ignore(arg.stringMachine()) {
-				return
-			}
 			if i != 0 {
 				resultReadable += ";"
 				resultMachine += ";"
@@ -220,46 +273,47 @@ func Result(level resultLevel, resType ResultType, argType1 string, arg1 []Resul
 	resultMachine += "\n"
 
 	if level == WARNING {
-		if !stringInSlice(resultMachineShort, resultWithoutTime) {
+		if !utils.Contains(resultWithoutTime, resultMachineShort) {
 			resultsWarningReadable = append(resultsWarningReadable, resultReadable)
 			resultsWarningMachine = append(resultsWarningMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	} else if level == CRITICAL {
-		if !stringInSlice(resultMachineShort, resultWithoutTime) {
-			println(resultReadable)
+		if !utils.Contains(resultWithoutTime, resultMachineShort) {
 			resultsCriticalReadable = append(resultsCriticalReadable, resultReadable)
 			resultCriticalMachine = append(resultCriticalMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	} else if level == INFORMATION {
-		if !stringInSlice(resultMachineShort, resultWithoutTime) {
+		if !utils.Contains(resultWithoutTime, resultMachineShort) {
 			resultInformationMachine = append(resultInformationMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	}
 }
 
-/*
-* Initialize the debug
-* Args:
-*   outReadable: path to the output file, no output file if empty
-*   outMachine: path to the output file for the reordered trace, no output file if empty
- */
+// InitResults sets the output file paths and clears al previous results
+//
+// Parameter:
+//   - outReadable: path to the output file, no output file if empty
+//   - outMachine: path to the output file for the reordered trace, no output file if empty
 func InitResults(outReadable string, outMachine string) {
+	Reset()
 	outputReadableFile = outReadable
 	outputMachineFile = outMachine
 }
 
-/*
-* Print the summary of the analysis
-* Args:
-*   noWarning: if true, only critical errors will be shown
-*   noPrint: if true, no output will be printed to the terminal
-* Returns:
-*   int: number of bugs found
- */
-func PrintSummary(noWarning bool, noPrint bool) int {
+// CreateResultFiles writes out the results to the machine and human
+// readable result files nad print them to the terminal
+//
+// Parameter:
+//   - noWarning bool: if true, only critical errors will be shown
+//   - noPrint bool: if true, do not print the errors to the terminal
+//
+// Returns:
+//   - int: number of bugs found
+//   - error
+func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
 	counter := 1
 	resMachine := ""
 	resReadable := "```\n==================== Summary ====================\n\n"
@@ -292,6 +346,7 @@ func PrintSummary(noWarning bool, noPrint bool) int {
 			resMachine += result
 		}
 	}
+
 	if !noWarning {
 		if len(resultsWarningReadable) > 0 {
 			found = true
@@ -315,7 +370,6 @@ func PrintSummary(noWarning bool, noPrint bool) int {
 			}
 		}
 
-		println("RESULTINFO: ", len(resultInformationMachine))
 		for _, result := range resultInformationMachine {
 			resMachine += result
 		}
@@ -334,45 +388,63 @@ func PrintSummary(noWarning bool, noPrint bool) int {
 	// write output readable
 	if _, err := os.Stat(outputReadableFile); err == nil {
 		if err := os.Remove(outputReadableFile); err != nil {
-			panic(err)
+			return getNumberRes(noWarning), err
 		}
 	}
 
 	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		return getNumberRes(noWarning), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resReadable); err != nil {
-		panic(err)
+		return getNumberRes(noWarning), err
 	}
 
 	// write output machine
 	if _, err := os.Stat(outputMachineFile); err == nil {
 		if err := os.Remove(outputMachineFile); err != nil {
-			panic(err)
+			return getNumberRes(noWarning), err
 		}
 	}
 
 	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		panic(err)
+		return getNumberRes(noWarning), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resMachine); err != nil {
-		panic(err)
+		return getNumberRes(noWarning), err
 	}
 
+	return getNumberRes(noWarning), nil
+}
+
+// getNumberRes returns the number of found bugs
+//
+// Parameters:
+//   - noWarning bool: only get the number of
+func getNumberRes(noWarning bool) int {
+	if noWarning {
+		return len(resultCriticalMachine)
+	}
 	return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine)
 }
 
-func stringInSlice(a string, list []string) bool {
-	for _, b := range list {
-		if b == a {
-			return true
-		}
-	}
-	return false
+// Reset the global values storing the found results
+func Reset() {
+	resultsWarningReadable = make([]string, 0)
+	resultsCriticalReadable = make([]string, 0)
+	resultsWarningMachine = make([]string, 0)
+	resultCriticalMachine = make([]string, 0)
+	resultInformationMachine = make([]string, 0)
+
+	resultWithoutTime = make([]string, 0)
+
+	outputMachineFile = ""
+	outputReadableFile = ""
+
+	foundBug = false
 }

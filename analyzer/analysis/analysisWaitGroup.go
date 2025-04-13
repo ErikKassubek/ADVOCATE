@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisWaitGroup.go
 // Brief: Trace analysis for possible negative wait group counter
@@ -13,18 +13,19 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
+	"analyzer/timer"
 	"analyzer/utils"
-	"errors"
 	"fmt"
-	"log"
 )
 
-/*
- * Collect all adds and dones for the analysis
- * Args:
- *    wa *TraceElementWait: the trace wait or done element
- */
+// Collect all adds and dones for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace wait or done element
 func checkForDoneBeforeAddChange(wa *TraceElementWait) {
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
+
 	if wa.delta > 0 {
 		checkForDoneBeforeAddAdd(wa)
 	} else if wa.delta < 0 {
@@ -34,11 +35,10 @@ func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 	}
 }
 
-/*
- * Collect all adds for the analysis
- * Args:
- *    wa *TraceElementWait: the trace wait element
- */
+// Collect all adds for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace wait element
 func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 	// if necessary, create maps and lists
 	if _, ok := wgAdd[wa.id]; !ok {
@@ -51,11 +51,10 @@ func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 	}
 }
 
-/*
- * Collect all dones for the analysis
- * Args:
- *    wa *TraceElementWait: the trace done element
- */
+// Collect all dones for the analysis
+//
+// Parameter:
+//   - wa *TraceElementWait: the trace done element
 func checkForDoneBeforeAddDone(wa *TraceElementWait) {
 	// if necessary, create maps and lists
 	if _, ok := wgDone[wa.id]; !ok {
@@ -67,17 +66,15 @@ func checkForDoneBeforeAddDone(wa *TraceElementWait) {
 	wgDone[wa.id] = append(wgDone[wa.id], wa)
 }
 
-/*
- * Check if a wait group counter could become negative
- * For each done operation, build a bipartite st graph.
- * Use the Ford-Fulkerson algorithm to find the maximum flow.
- * If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
- */
+// Check if a wait group counter could become negative
+// For each done operation, build a bipartite st graph.
+// Use the Ford-Fulkerson algorithm to find the maximum flow.
+// If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
 func checkForDoneBeforeAdd() {
-	fmt.Println("Check for done before add")
-	defer fmt.Println("Finished check for done before add")
-	for id := range wgAdd { // for all waitgroups
+	timer.Start(timer.AnaWait)
+	defer timer.Stop(timer.AnaWait)
 
+	for id := range wgAdd { // for all waitgroups
 		graph := buildResidualGraph(wgAdd[id], wgDone[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
@@ -86,8 +83,8 @@ func checkForDoneBeforeAdd() {
 		}
 		nrDone := len(wgDone[id])
 
-		addsNegWg := []TraceElement{}
-		donesNegWg := []TraceElement{}
+		addsNegWg := make([]TraceElement, 0)
+		donesNegWg := make([]TraceElement, 0)
 
 		if maxFlow < nrDone {
 			// sort the adds and dones, that do not have a partner is such a way,
@@ -95,25 +92,21 @@ func checkForDoneBeforeAdd() {
 			// i-th done in the result message
 
 			for _, add := range wgAdd[id] {
-				if !utils.ContainsString(graph["t"], add.GetTID()) {
+				if !utils.Contains(graph[drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}
 			}
 
-			for _, dones := range graph["s"] {
-				doneVcTID, err := getDoneElemFromTID(id, dones)
-				if err != nil {
-					log.Print(err.Error())
-				} else {
-					donesNegWg = append(donesNegWg, doneVcTID)
-				}
+			for _, dones := range graph[source] {
+				donesNegWg = append(donesNegWg, dones)
 			}
 
 			addsNegWgSorted := make([]TraceElement, 0)
 			donesNEgWgSorted := make([]TraceElement, 0)
 
-			for i := 0; i < len(addsNegWg); i++ {
-				for j := 0; j < len(donesNegWg); j++ {
+			for i := 0; i < len(addsNegWg); {
+				removed := false
+				for j := 0; j < len(donesNegWg); {
 					if clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == clock.Concurrent {
 						addsNegWgSorted = append(addsNegWgSorted, addsNegWg[i])
 						donesNEgWgSorted = append(donesNEgWgSorted, donesNegWg[j])
@@ -121,9 +114,14 @@ func checkForDoneBeforeAdd() {
 						addsNegWg = append(addsNegWg[:i], addsNegWg[i+1:]...)
 						donesNegWg = append(donesNegWg[:j], donesNegWg[j+1:]...)
 						// fix the index
-						i--
-						j = 0
+						removed = true
+						break
+					} else {
+						j++
 					}
+				}
+				if !removed {
+					i++
 				}
 			}
 
@@ -136,7 +134,7 @@ func checkForDoneBeforeAdd() {
 				}
 				file, line, tPre, err := infoFromTID(done.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -156,7 +154,7 @@ func checkForDoneBeforeAdd() {
 				}
 				file, line, tPre, err := infoFromTID(add.GetTID())
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					continue
 				}
 
@@ -175,13 +173,4 @@ func checkForDoneBeforeAdd() {
 				"done", args1, "add", args2)
 		}
 	}
-}
-
-func getDoneElemFromTID(id int, tID string) (TraceElement, error) {
-	for _, done := range wgDone[id] {
-		if done.GetTID() == tID {
-			return done, nil
-		}
-	}
-	return nil, errors.New("Could not find done operation with tID " + tID)
 }

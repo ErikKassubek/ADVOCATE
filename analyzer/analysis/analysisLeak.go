@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisLeak.go
 // Brief: Trace analysis for routine leaks
@@ -13,23 +13,22 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	"log"
+	"analyzer/timer"
+	"analyzer/utils"
 	"strconv"
 	"strings"
 )
 
-/*
- * Run for channel operation without a post event. Check if the operation has
- * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
- * If so, add an error or warning to the result.
- * If not, add to leakingChannels, for later check.
- * MARK: Channel Stuck
- * Args:
- *   ch (*TraceElementChannel): The trace element
- *   vc (VectorClock): The vector clock of the operation
- */
-//  func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
-func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
+// Run for channel operation without a post event. Check if the operation has
+// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// If so, add an error or warning to the result.
+// If not, add to leakingChannels, for later check.
+//
+// Parameter:
+//   - ch *TraceElementChannel: The trace element
+//   - vc VectorClock: The vector clock of the operation
+//   - func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
+func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 	buffered := (ch.qSize != 0)
 
 	if ch.id == -1 {
@@ -44,7 +43,7 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 		file, line, tPre, err := infoFromTID(ch.GetTID())
 		if err != nil {
-			log.Print("Error in infoFromTID")
+			utils.LogError("Error in infoFromTID: ", err.Error())
 			return
 		}
 
@@ -72,12 +71,12 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 					file1, line1, tPre1, err := infoFromTID(ch.GetTID())
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)", ch.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", ch.GetTID())
 						return
 					}
 					file2, line2, tPre2, err := infoFromTID(mrr[ch.id].Elem.GetTID())
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)", mrr[ch.id].Elem.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", mrr[ch.id].Elem.GetTID())
 						return
 					}
 
@@ -105,12 +104,12 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 
 					file1, line1, tPre1, err1 := infoFromTID(ch.GetTID())
 					if err1 != nil {
-						log.Printf("Error in infoFromTID(%s)", ch.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", ch.GetTID())
 						return
 					}
 					file2, line2, tPre2, err2 := infoFromTID(mrs[ch.id].Elem.GetTID())
 					if err2 != nil {
-						log.Printf("Error in infoFromTID(%s)", mrs[ch.id].Elem.GetTID())
+						utils.LogErrorf("Error in infoFromTID(%s)\n", mrs[ch.id].Elem.GetTID())
 						return
 					}
 
@@ -134,20 +133,20 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc clock.VectorClock) {
 	}
 }
 
-/*
- * Run for channel operation with a post event. Check if the operation would be
- * possible communication partner for a stuck operation in leakingChannels.
- * If so, add an error or warning to the result and remove the stuck operation.
- * MARK: ChannelRun
- * Args:
- *   routineID (int): The routine id
- *   objID (int): The channel id
- *   vc (VectorClock): The vector clock of the operation
- *   tID (string): The trace id
- *   opType (int): An identifier for the type of the operation (send = 0, recv = 1, close = 2)
- *   buffered (bool): If the channel is buffered
- */
-func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opType int, buffered bool) bool {
+// Run for channel operation with a post event. Check if the operation would be
+// possible communication partner for a stuck operation in leakingChannels.
+// If so, add an error or warning to the result and remove the stuck operation.
+//
+// Parameter:
+//   - routineID int: The routine id
+//   - objID int: The channel id
+//   - vc VectorClock: The vector clock of the operation
+//   - opType int: An identifier for the type of the operation (send = 0, recv = 1, close = 2)
+//   - buffered bool: If the channel is buffered
+func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType int, buffered bool) bool {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	res := false
 	if opType == 0 || opType == 2 { // send or close
 		for i, vcTID2 := range leakingChannels[objID] {
@@ -155,7 +154,7 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.vc, vcTID.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
 				var bugType results.ResultType = results.LUnbufferedWith
 				if buffered {
 					bugType = results.LBufferedWith
@@ -163,14 +162,11 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)", vcTID2.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
-				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
-				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)", vcTID.TID)
-					return res
-				}
+
+				elem2 := elemVc.elem
 
 				objType := "C"
 				if opType == 0 {
@@ -182,7 +178,7 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 				arg1 := results.TraceElementResult{
 					RoutineID: routineID, ObjID: objID, TPre: tPre1, ObjType: "CR", File: file1, Line: line1}
 				arg2 := results.TraceElementResult{
-					RoutineID: vcTID2.routine, ObjID: objID, TPre: tPre2, ObjType: objType, File: file2, Line: line2}
+					RoutineID: vcTID2.routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: objType, File: elem2.GetFile(), Line: elem2.GetLine()}
 
 				results.Result(results.CRITICAL, bugType,
 					"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -212,7 +208,7 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.vc, vcTID.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
 
 				var bugType results.ResultType = results.LUnbufferedWith
 				if buffered {
@@ -221,19 +217,16 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)", vcTID2.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID2.tID)
 					return res
 				}
-				file2, line2, tPre2, err2 := infoFromTID(vcTID.TID) // partner
-				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)", vcTID.TID)
-					return res
-				}
+
+				elem2 := elemVc.elem
 
 				arg1 := results.TraceElementResult{
 					RoutineID: routineID, ObjID: objID, TPre: tPre1, ObjType: objType, File: file1, Line: line1}
 				arg2 := results.TraceElementResult{
-					RoutineID: vcTID2.routine, ObjID: objID, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
+					RoutineID: vcTID2.routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: "CR", File: elem2.GetFile(), Line: elem2.GetLine()}
 
 				results.Result(results.CRITICAL, bugType,
 					"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -256,11 +249,12 @@ func CheckForLeakChannelRun(routineID int, objID int, vcTID VectorClockTID, opTy
 	return res
 }
 
-/*
- * After all operations have been analyzed, check if there are still leaking
- * operations without a possible partner.
- */
+// After all operations have been analyzed, check if there are still leaking
+// operations without a possible partner.
 func checkForLeak() {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	// channel
 	for _, vcTIDs := range leakingChannels {
 		buffered := false
@@ -280,7 +274,7 @@ func checkForLeak() {
 					continue
 				}
 
-				hb := clock.GetHappensBefore(c.vcTID.Vc, vcTID.vc)
+				hb := clock.GetHappensBefore(c.elem.vc, vcTID.vc)
 				if hb == clock.Concurrent {
 					found = true
 					if c.buffered {
@@ -303,15 +297,14 @@ func checkForLeak() {
 			if found {
 				file1, line1, tPre1, err := infoFromTID(vcTID.tID)
 				if err != nil {
-					log.Printf("Error in infoFromTID(%s)", vcTID.tID)
+					utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 					continue
 				}
 
-				file2, line2, tPre2, err := infoFromTID(partner.vcTID.TID)
-				if err != nil {
-					log.Printf("Error in infoFromTID(%s)", partner.vcTID.TID)
-					continue
-				}
+				elem2 := partner.elem.elem
+				file2 := elem2.GetFile()
+				line2 := elem2.GetLine()
+				tPre2 := elem2.GetTPre()
 
 				if vcTID.sel {
 
@@ -319,7 +312,7 @@ func checkForLeak() {
 						RoutineID: vcTID.routine, ObjID: vcTID.id, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: partner.vcTID.Routine, ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					results.Result(results.CRITICAL, results.LSelectWith,
 						"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -340,7 +333,7 @@ func checkForLeak() {
 						RoutineID: vcTID.routine, ObjID: vcTID.id, TPre: tPre1, ObjType: obType, File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: partner.vcTID.Routine, ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					results.Result(results.CRITICAL, bugType,
 						"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -350,7 +343,7 @@ func checkForLeak() {
 				if vcTID.sel {
 					file, line, tPre, err := infoFromTID(vcTID.tID)
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)", vcTID.tID)
+						utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 						continue
 					}
 
@@ -370,7 +363,7 @@ func checkForLeak() {
 
 					file, line, tPre, err := infoFromTID(vcTID.tID)
 					if err != nil {
-						log.Printf("Error in infoFromTID(%s)", vcTID.tID)
+						utils.LogErrorf("Error in infoFromTID(%s)\n", vcTID.tID)
 						continue
 					}
 
@@ -390,31 +383,27 @@ func checkForLeak() {
 	}
 }
 
-/*
- * Run for select operation without a post event. Check if the operation has
- * a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
- * If so, add an error or warning to the result.
- * If not, add all elements to leakingChannels, for later check.
- * MARK: SelectStuck
- * Args:
- *   se (*TraceElementSelect): The trace element
- *   ids (int): The channel ids
- *   buffered ([]bool): If the channels are buffered
- *   vc (VectorClock): The vector clock of the operation
- *   tID (string): The trace id
- *   opTypes ([]int): An identifier for the type of the operations (send = 0, recv = 1)
- *   idSel (int): The id of the select operation
- *   tPre (int): The tpre of the select operations. Used to connect the operations of the
- *     same select statement in leakingChannels.
- *   objId (int): The id of the select
- */
-func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc clock.VectorClock, opTypes []int) {
+// Run for select operation without a post event. Check if the operation has
+// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// If so, add an error or warning to the result.
+// If not, add all elements to leakingChannels, for later check.
+//
+// Parameter:
+//   - se *TraceElementSelect: The trace element
+//   - ids int: The channel ids
+//   - buffered []bool: If the channels are buffered
+//   - vc *VectorClock: The vector clock of the operation
+//   - opTypes []int: An identifier for the type of the operations (send = 0, recv = 1)
+func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	foundPartner := false
 
 	if len(ids) == 0 {
 		file, line, _, err := infoFromTID(se.GetTID())
 		if err != nil {
-			log.Printf("Error in infoFromTID(%s)", se.GetTID())
+			utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 			return
 		}
 
@@ -434,12 +423,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 					if clock.GetHappensBefore(vc, mrr[id].Vc) == clock.Concurrent {
 						file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 						if err1 != nil {
-							log.Printf("Error in infoFromTID(%s)", se.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 							return
 						}
 						file2, line2, tPre2, err2 := infoFromTID(recv.Elem.GetTID()) // partner
 						if err2 != nil {
-							log.Printf("Error in infoFromTID(%s)", recv.Elem.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", recv.Elem.GetTID())
 							return
 						}
 
@@ -460,12 +449,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 					if clock.GetHappensBefore(vc, mrs[id].Vc) == clock.Concurrent {
 						file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 						if err1 != nil {
-							log.Printf("Error in infoFromTID(%s)", se.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 							return
 						}
 						file2, line2, tPre2, err2 := infoFromTID(send.Elem.GetTID()) // partner
 						if err2 != nil {
-							log.Printf("Error in infoFromTID(%s)", send.Elem.GetTID())
+							utils.LogErrorf("Error in infoFromTID(%s)\n", send.Elem.GetTID())
 							return
 						}
 
@@ -484,12 +473,12 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 			if cl, ok := closeData[id]; ok {
 				file1, line1, _, err1 := infoFromTID(se.GetTID()) // select
 				if err1 != nil {
-					log.Printf("Error in infoFromTID(%s)", se.GetTID())
+					utils.LogErrorf("Error in infoFromTID(%s)\n", se.GetTID())
 					return
 				}
 				file2, line2, tPre2, err2 := infoFromTID(cl.GetTID()) // partner
 				if err2 != nil {
-					log.Printf("Error in infoFromTID(%s)", cl.GetTID())
+					utils.LogErrorf("Error in infoFromTID(%s)\n", cl.GetTID())
 					return
 				}
 
@@ -514,24 +503,21 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 	}
 }
 
-/*
- * Run for mutex operation without a post event. Show an error in the results
- * MARK: Mutex
- * Args:
- *   mu (*TraceElementMutex): The trace element
- */
+// Run for mutex operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - mu *TraceElementMutex: The trace element
 func CheckForLeakMutex(mu *TraceElementMutex) {
-	file1, line1, tPre1, err := infoFromTID(mu.GetTID())
-	if err != nil {
-		log.Printf("Error in infoFromTID(%s)", mu.GetTID())
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
+	if _, ok := mostRecentAcquireTotal[mu.id]; !ok {
 		return
 	}
 
-	file2, line2, tPre2, err := infoFromTID(mostRecentAcquireTotal[mu.id].Elem.GetTID())
-	if err != nil {
-		log.Printf("Error in infoFromTID(%s)", mostRecentAcquireTotal[mu.id].Elem.GetTID())
-		return
-	}
+	elem := mostRecentAcquireTotal[mu.id].Elem
+
+	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
 
 	objType1 := "M"
 	if mu.opM == LockOp { // lock
@@ -556,7 +542,7 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: mu.routine, ObjID: mu.id, TPre: tPre1, ObjType: objType1, File: file1, Line: line1}
+		RoutineID: mu.routine, ObjID: mu.id, TPre: mu.GetTPre(), ObjType: objType1, File: mu.GetFile(), Line: mu.GetLine()}
 
 	arg2 := results.TraceElementResult{
 		RoutineID: mostRecentAcquireTotal[mu.id].Elem.GetRoutine(), ObjID: mu.id, TPre: tPre2, ObjType: objType2, File: file2, Line: line2}
@@ -565,27 +551,30 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 		"mutex", []results.ResultElem{arg1}, "last", []results.ResultElem{arg2})
 }
 
-/*
- * Add the most recent acquire operation for a mutex
- * Args:
- *   mu (*TraceElementMutex): The trace element
- *   vc (VectorClock): The vector clock of the operation
- *   op (int): The operation on the mutex
- */
-func addMostRecentAcquireTotal(mu *TraceElementMutex, vc clock.VectorClock, op int) {
-	mostRecentAcquireTotal[mu.id] = VectorClockTID3{Elem: mu, Vc: vc.Copy(), Val: op}
+// Add the most recent acquire operation for a mutex
+//
+// Parameter:
+//   - mu *TraceElementMutex: The trace element
+//   - vc VectorClock: The vector clock of the operation
+//   - op int: The operation on the mutex
+func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op int) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
+	mostRecentAcquireTotal[mu.id] = ElemWithVcVal{Elem: mu, Vc: vc.Copy(), Val: op}
 }
 
-/*
- * Run for wait group operation without a post event. Show an error in the results
- * MARK: WaitGroup
- * Args:
- *   wa (*TraceElementWait): The trace element
- */
+// Run for wait group operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - wa *TraceElementWait: The trace element
 func CheckForLeakWait(wa *TraceElementWait) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	file, line, tPre, err := infoFromTID(wa.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)", wa.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", wa.GetTID())
 		return
 	}
 
@@ -596,28 +585,35 @@ func CheckForLeakWait(wa *TraceElementWait) {
 		"wait", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
-/*
- * Run for conditional varable operation without a post event. Show an error in the results
- * MARK: Cond
- * Args:
- *   co (*TraceElementCond): The trace element
- */
+// Run for conditional varable operation without a post event. Show an error in the results
+//
+// Parameter:
+//   - co *TraceElementCond: The trace element
 func CheckForLeakCond(co *TraceElementCond) {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
 	file, line, tPre, err := infoFromTID(co.GetTID())
 	if err != nil {
-		log.Printf("Error in infoFromTID(%s)", co.GetTID())
+		utils.LogErrorf("Error in infoFromTID(%s)\n", co.GetTID())
 		return
 	}
 
 	arg := results.TraceElementResult{
-		RoutineID: co.routine, ObjID: co.id, TPre: tPre, ObjType: "NW", File: file, Line: line}
+		RoutineID: co.routine, ObjID: co.id, TPre: tPre, ObjType: "DW", File: file, Line: line}
 
 	results.Result(results.CRITICAL, results.LCond,
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
+// Iterate over all routines and check if the routines finished.
+// Only record leaking routines, that don't have a leaking element (tPost = 0)
+// as its last element, since they are recorded separately
 func checkForStuckRoutine() {
-	for routine, trace := range traces {
+	timer.Start(timer.AnaLeak)
+	defer timer.Stop(timer.AnaLeak)
+
+	for routine, trace := range MainTrace.traces {
 		if len(trace) < 1 {
 			continue
 		}
@@ -629,7 +625,7 @@ func checkForStuckRoutine() {
 		}
 
 		// do not record extra if a leak with a blocked operation is present
-		if len(trace) > 0 && trace[len(trace)-1].getTpost() == 0 {
+		if len(trace) > 0 && trace[len(trace)-1].GetTPost() == 0 {
 			continue
 		}
 
@@ -646,7 +642,7 @@ func checkForStuckRoutine() {
 
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
-			ObjType: "GE", File: file, Line: line,
+			ObjType: "RE", File: file, Line: line,
 		}
 
 		results.Result(results.CRITICAL, results.LWithoutBlock,

@@ -36,7 +36,7 @@ func main() {
 			fmt.Println(err)
 		}
 		for i := 1; i <= lineCount; i++ {
-			cmd := exec.Command(analyzerPath, "-e", "-t", advocateTraceFolder, "-i", strconv.Itoa(i))
+			cmd := exec.Command(analyzerPath, "-e", "-trace", advocateTraceFolder, "-i", strconv.Itoa(i))
 			err := cmd.Run()
 			if err != nil {
 				fmt.Println(err)

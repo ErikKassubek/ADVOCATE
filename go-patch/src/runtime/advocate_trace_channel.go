@@ -1,27 +1,54 @@
+// ADVOCATE-FILE_START
+
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_trace_channel.go
+// Brief: Functionality for the channel
+//
+// Author: Erik Kassubek
+// Created: 2024-02-16
+//
+// License: BSD-3-Clause
+
 package runtime
 
-var advocateCounterAtomic uint64
-
-var unbufferedChannelComSend = make(map[string]uint64) // id -> tpost
-var unbufferedChannelComRecv = make(map[string]uint64) // id -> tpost
+var unbufferedChannelComSend = make(map[uint64]int64) // id -> tpost
+var unbufferedChannelComRecv = make(map[uint64]int64) // id -> tpost
 var unbufferedChannelComSendMutex mutex
 var unbufferedChannelComRecvMutex mutex
+
+type AdvocateTraceChannel struct {
+	tPre   int64
+	tPost  int64
+	id     uint64
+	op     Operation
+	cl     bool
+	oId    uint64
+	qSize  uint
+	qCount uint
+	file   string
+	line   int
+	isNil  bool
+}
 
 // MARK: Pre
 
 /*
- * AdvocateChanSendPre adds a channel send to the trace.
- * If the channel send was created by an atomic
- * operation, add this to the trace as well
+ * AdvocateChanPre adds a channel send/receive to the trace.
  * Args:
  * 	id: id of the channel
+ * 	op: operation send/recv
  * 	opId: id of the operation
  * 	qSize: size of the channel, 0 for unbuffered
  * 	isNil: true if the channel is nil
  * Return:
  * 	index of the operation in the trace, return -1 if it is a atomic operation
  */
-func AdvocateChanSendPre(id uint64, opID uint64, qSize uint, isNil bool) int {
+func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil bool) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(3)
@@ -30,59 +57,17 @@ func AdvocateChanSendPre(id uint64, opID uint64, qSize uint, isNil bool) int {
 		return -1
 	}
 
-	elem := "C," + uint64ToString(timer) + ",0,"
-	if isNil {
-		elem += "*,S,f,0,0," + file + ":" + intToString(line)
-	} else {
-		elem += uint64ToString(id) + ",S,f," +
-			uint64ToString(opID) + "," + uint32ToString(uint32(qSize)) + "," +
-			file + ":" + intToString(line)
+	elem := AdvocateTraceChannel{
+		tPre:  timer,
+		id:    id,
+		op:    op,
+		oId:   opID,
+		qSize: qSize,
+		file:  file,
+		line:  line,
+		isNil: isNil,
 	}
 
-	return insertIntoTrace(elem)
-}
-
-/*
- * Helper function to check if a string ends with a suffix
- * Args:
- * 	s: string to check
- * 	suffix: suffix to check
- * Return:
- * 	true if s ends with suffix, false otherwise
- */
-func isSuffix(s, suffix string) bool {
-	if len(suffix) > len(s) {
-		return false
-	}
-	return s[len(s)-len(suffix):] == suffix
-}
-
-/*
- * AdvocateChanRecvPre adds a channel recv to the trace
- * Args:
- * 	id: id of the channel
- * 	opId: id of the operation
- * 	qSize: size of the channel
- * 	isNil: true if the channel is nil
- * Return:
- * 	index of the operation in the trace
- */
-func AdvocateChanRecvPre(id uint64, opID uint64, qSize uint, isNil bool) int {
-	timer := GetNextTimeStep()
-
-	_, file, line, _ := Caller(3)
-	if AdvocateIgnore(file) {
-		return -1
-	}
-
-	elem := "C," + uint64ToString(timer) + ",0,"
-	if isNil {
-		elem += "*,R,f,0,0," + file + ":" + intToString(line)
-	} else {
-		elem += uint64ToString(id) + ",R,f," +
-			uint64ToString(opID) + "," + uint32ToString(uint32(qSize)) + "," +
-			file + ":" + intToString(line)
-	}
 	return insertIntoTrace(elem)
 }
 
@@ -95,16 +80,28 @@ func AdvocateChanRecvPre(id uint64, opID uint64, qSize uint, isNil bool) int {
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateChanClose(id uint64, qSize uint) int {
-	timer := uint64ToString(GetNextTimeStep())
+func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
+	if advocateTracingDisabled {
+		return -1
+	}
+
+	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(2)
 	if AdvocateIgnore(file) {
 		return -1
 	}
 
-	elem := "C," + timer + "," + timer + "," + uint64ToString(id) + ",C,f,0," +
-		uint32ToString(uint32(qSize)) + "," + file + ":" + intToString(line)
+	elem := AdvocateTraceChannel{
+		tPre:   timer,
+		tPost:  timer,
+		id:     id,
+		op:     OperationChannelClose,
+		qSize:  qSize,
+		qCount: qCount,
+		file:   file,
+		line:   line,
+	}
 
 	return insertIntoTrace(elem)
 }
@@ -115,45 +112,45 @@ func AdvocateChanClose(id uint64, qSize uint) int {
  * AdvocateChanPost sets the operation as successfully finished
  * Args:
  * 	index: index of the operation in the trace
+ * 	qCount: number of elements in the queue after the operations has finished
  */
-func AdvocateChanPost(index int) {
+func AdvocateChanPost(index int, qCount uint) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	time := GetNextTimeStep()
 
 	if index == -1 {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceChannel)
 
-	split := splitStringAtCommas(elem, []int{2, 3, 4, 5, 7, 8})
-
-	id := split[2]
-	op := split[3]
-	qSize := split[5]
 	set := false
 
-	if qSize == "0" { // unbuffered channel
-		if op == "S" {
+	if elem.qSize == 0 { // unbuffered channel
+		if elem.op == OperationChannelSend {
 			lock(&unbufferedChannelComRecvMutex)
-			if tpost, ok := unbufferedChannelComRecv[id]; ok {
-				split[1] = uint64ToString(tpost - 1)
-				delete(unbufferedChannelComRecv, id)
+			if tpost, ok := unbufferedChannelComRecv[elem.id]; ok {
+				elem.tPost = tpost - 1
+				delete(unbufferedChannelComRecv, elem.id)
 			} else {
-				split[1] = uint64ToString(time)
+				elem.tPost = time
 				lock(&unbufferedChannelComSendMutex)
-				unbufferedChannelComSend[id] = time
+				unbufferedChannelComSend[elem.id] = time
 				unlock(&unbufferedChannelComSendMutex)
 			}
 			unlock(&unbufferedChannelComRecvMutex)
 			set = true
-		} else if op == "R" {
+		} else if elem.op == OperationChannelSend {
 			lock(&unbufferedChannelComSendMutex)
-			if tpost, ok := unbufferedChannelComSend[id]; ok {
-				split[1] = uint64ToString(tpost + 1)
-				delete(unbufferedChannelComSend, id)
+			if tpost, ok := unbufferedChannelComSend[elem.id]; ok {
+				elem.tPost = tpost + 1
+				delete(unbufferedChannelComSend, elem.id)
 			} else {
-				split[1] = uint64ToString(time)
-				unbufferedChannelComRecv[id] = time
+				elem.tPost = time
+				unbufferedChannelComRecv[elem.id] = time
 			}
 			unlock(&unbufferedChannelComSendMutex)
 			set = true
@@ -161,10 +158,9 @@ func AdvocateChanPost(index int) {
 	}
 
 	if !set {
-		split[1] = uint64ToString(time)
+		elem.tPost = time
 	}
-
-	elem = mergeString(split)
+	elem.qCount = qCount
 
 	currentGoRoutine().updateElement(index, elem)
 }
@@ -175,17 +171,62 @@ func AdvocateChanPost(index int) {
  * 	index: index of the operation in the trace
  */
 func AdvocateChanPostCausedByClose(index int) {
+	if advocateTracingDisabled {
+		return
+	}
+
 	time := GetNextTimeStep()
 
 	if index == -1 {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index)
-	split := splitStringAtCommas(elem, []int{2, 3, 5, 6})
-	split[1] = uint64ToString(time)
-	split[3] = "t"
-	elem = mergeString(split)
+	elem := currentGoRoutine().getElement(index).(AdvocateTraceChannel)
+
+	elem.tPost = time
+	elem.cl = true
 
 	currentGoRoutine().updateElement(index, elem)
+}
+
+func (elem AdvocateTraceChannel) toString() string {
+	opStr := ""
+	switch elem.op {
+	case OperationChannelSend:
+		opStr = "S"
+	case OperationChannelRecv:
+		opStr = "R"
+	case OperationChannelClose:
+		opStr = "C"
+	}
+
+	idStr := "*"
+	if !elem.isNil {
+		idStr = uint64ToString(elem.id)
+	}
+
+	return buildTraceElemString("C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount, posToString(elem.file, elem.line))
+}
+
+func (elem AdvocateTraceChannel) toStringForSelect() string {
+	opStr := ""
+	switch elem.op {
+	case OperationChannelSend:
+		opStr = "S"
+	case OperationChannelRecv:
+		opStr = "R"
+	case OperationChannelClose:
+		opStr = "C"
+	}
+
+	idStr := "*"
+	if !elem.isNil {
+		idStr = uint64ToString(elem.id)
+	}
+
+	return buildTraceElemStringSep(".", "C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount)
+}
+
+func (elem AdvocateTraceChannel) getOperation() Operation {
+	return elem.op
 }

@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: explanation.go
 // Brief: Create an explanation file for a found bug
@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"analyzer/utils"
 	"errors"
 	"fmt"
 	"os"
@@ -27,7 +28,6 @@ import (
 
 // It creates one file. This file has the following element:
 // - The type of bug found
-// - maybe an minimal example for the bug type
 // - The test/program, where the bug was found
 // - if possible, the command to run the program
 // - if possible, the command to replay the bug
@@ -35,30 +35,31 @@ import (
 // - code of the bug elements in the trace (+- 10 lines)
 // - info about replay (was it possible or not)
 
-/*
- * The function CreateOverview creates an overview over a bug found by the analyzer.
- * It reads the results of the analysis, the code of the bug elements and the replay info.
- * It then writes all this information into a file.
- * Args:
- *    path: the path to the folder, where the results of the analysis and the trace are stored
- *    index: the index of the bug in the results
- *    ignoreDouble: if true, only write one bug report for each bug
- * Returns:
- *    error: if an error occurred
- */
-func CreateOverview(path string, ignoreDouble bool) error {
+// The function CreateOverview creates an overview over a bug found by the analyzer.
+// It reads the results of the analysis, the code of the bug elements and the replay info.
+// It then writes all this information into a file.
+//
+// Parameter:
+//   - path: the path to the folder, where the results of the analysis and the trace are stored
+//   - index: the index of the bug in the results
+//   - ignoreDouble: if true, only write one bug report for each bug
+//
+// Returns:
+//   - error: if an error occurred
+func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
+	utils.LogInfo("Create bug reports")
 
 	replayCodes := getOutputCodes(path)
 
 	progInfo, err := readProgInfo(path)
 	if err != nil {
-		fmt.Println("Error reading prog info: ", err)
+		utils.LogError("Error reading prog info: ", err)
 	}
 
 	hl, err := strconv.Atoi(progInfo["headerLine"])
 	if err != nil {
-		fmt.Println("Cound not read header line: ", err)
+		utils.LogError("Cound not read header line: ", err)
 	}
 
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
@@ -92,7 +93,7 @@ func CreateOverview(path string, ignoreDouble bool) error {
 			// get the code of the bug elements
 			code, err := getBugPositions(bugPos, progInfo)
 			if err != nil {
-				fmt.Println("Error getting bug positions: ", err)
+				utils.LogError("Error getting bug positions: ", err)
 			}
 
 			// get the replay info
@@ -103,7 +104,7 @@ func CreateOverview(path string, ignoreDouble bool) error {
 			}
 
 			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
-				replay, progInfo)
+				replay, progInfo, fuzzing)
 		}
 	}
 
@@ -111,6 +112,19 @@ func CreateOverview(path string, ignoreDouble bool) error {
 
 }
 
+// Read an result machine file file and get one result
+//
+// Parameter:
+//   - path string: path to the result file
+//   - index int: index of the relevant bug in the file
+//   - fileWithHeader string: file that contains the header for the recording
+//   - headerLine int: line number of the first line of the header
+//
+// Returns:
+//   - string: bug type
+//   - map[int][]string: bug element positions
+//   - map[int]string: bug element types
+//   - error
 func readAnalysisResults(path string, index int, fileWithHeader string, headerLine int) (string, map[int][]string, map[int]string, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
@@ -181,18 +195,31 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 	return bugType, bugPos, bugElemType, nil
 }
 
+// writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
+// 	replay, progInfo, fuzzing)
+
+// Write an bug explanation file
+//
+// Parameter:
+//   - path string: path where the explanation file should be created
+//   - index int: index of the bug file (name is e.g. bug_[index])
+//   - description map[string]string: description of the bug, containing e.g. bug/diagnostics, name, explanation
+//   - positions map[int][]string: positions of the bug elements
+//   - bugElemType map[int]string: types of the bug elements
+//   - code map[int][]string: program codes that contains the bug elements
+//   - replay map[string]string: information about the replay
+//   - progInfo map[string]sting: Info about the prog, e.g. prog/test name
+//   - fuzzing int: Fuzzing run number
+//
+// Returns:
+//   - error
 func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
-	replay map[string]string, progInfo map[string]string) error {
-
-	res := ""
+	replay map[string]string, progInfo map[string]string, fuzzing int) error {
 
 	// write the bug type description
-	res += "# " + description["crit"] + ": " + description["name"] + "\n\n"
+	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
 	res += description["explanation"] + "\n\n"
-	res += "## Minimal Example\n"
-	res += "The following code is a minimal example to visualize the bug type. It is not the code where the bug was found.\n\n```go\n"
-	res += description["example"] + "\n```\n\n"
 
 	// write the positions of the bug
 	res += "## Test/Program\n"
@@ -208,27 +235,6 @@ func writeFile(path string, index string, description map[string]string,
 	} else {
 		res += "- File: unknown" + "\n\n"
 	}
-
-	/*
-		res += "## Commands\n"
-		res += "The following commands can be used to run and record the program:\n\n"
-
-		res += "```bash\n"
-		res += getProgInfo(progInfo, "inserterRecord") + "\n"
-		res += getProgInfo(progInfo, "run") + "\n"
-		res += getProgInfo(progInfo, "remover") + "\n"
-		res += "```\n\n"
-
-		res += "The following command can be used to replay the bug:\n\n"
-		res += "Be aware, that the folder rewritten_trace_" + fmt.Sprint(index) + " must exist "
-		res += "and contain the rewritten trace. It must be in the same folder as the recorded trace. The rewritten trace in this bug can be found in the `rewritten_trace` folder.\n\n"
-
-		res += "```bash\n"
-		res += getProgInfo(progInfo, "inserterReplay") + "\n"
-		res += getProgInfo(progInfo, "run") + "\n"
-		res += getProgInfo(progInfo, "remover") + "\n"
-		res += "```\n\n"
-	*/
 
 	// write the code of the bug elements
 	res += "## Bug Elements\n"
@@ -251,19 +257,21 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// write the info about the replay, if possible including the command to read the bug
-	res += "## Replay\n"
-	res += replay["description"] + "\n\n"
-
-	replayPossible := replay["replaySuc"] != "was not possible"
+	replayPossible := replay["replaySuc"] != "was not possible" && replay["replaySuc"] != "was not run"
 	replayDouble := replay["exitCode"] == "double"
+
+	res += "## Replay\n"
+	if replayPossible && !replayDouble {
+		res += replay["description"] + "\n\n"
+	}
 
 	if replayDouble {
 		res += "The replay was not performed, because the same bug had been found before."
 	} else {
 		res += "**Replaying " + replay["replaySuc"] + "**.\n\n"
 		if replayPossible {
-			res += "The replayed trace can be found in: "
-			res += "rewritten_trace_" + index + "\n\n"
+			// res += "The replayed trace can be found in: "
+			// res += "rewrittenTrace_" + index + "\n\n"
 			if replay["replaySuc"] == "panicked" {
 				res += "It panicked with the following message:\n\n"
 				res += replay["exitCode"] + "\n\n"
@@ -275,6 +283,10 @@ func writeFile(path string, index string, description map[string]string,
 				res += replay["exitCodeExplanation"] + "\n\n"
 			}
 		}
+	}
+
+	if description["crit"] == "Bug" {
+		utils.LogResultf("Found %s. Replay %s.", description["name"], replay["replaySuc"])
 	}
 
 	// if in path, the folder "bugs" does not exist, create it
@@ -294,7 +306,13 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// create the file
-	file, err := os.Create(folderName + "/bug_" + index + ".md")
+	fileName := ""
+	if fuzzing == -1 {
+		fileName = filepath.Join(folderName, strings.ToLower(description["crit"])) + "_" + index + ".md"
+	} else {
+		fileName = filepath.Join(folderName, fmt.Sprintf("%s_%d_%s.md", strings.ToLower(description["crit"]), fuzzing, index))
+	}
+	file, err := os.Create(fileName)
 	if err != nil {
 		return err
 	}

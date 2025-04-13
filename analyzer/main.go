@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: main.go
 // Brief: Main file and starting point for the analyzer
@@ -11,52 +11,130 @@
 package main
 
 import (
+	"bufio"
+	"errors"
 	"flag"
 	"fmt"
-	"log"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"analyzer/analysis"
 	"analyzer/bugs"
-	"analyzer/complete"
-	"analyzer/explanation"
+	"analyzer/fuzzing"
 	"analyzer/io"
+	"analyzer/memory"
 	"analyzer/results"
 	"analyzer/rewriter"
 	"analyzer/stats"
-	timemeasurement "analyzer/timeMeasurement"
+	"analyzer/timer"
+	"analyzer/toolchain"
 	"analyzer/utils"
-
-	"github.com/shirou/gopsutil/mem"
 )
 
-func main() {
-	help := flag.Bool("h", false, "Print this help")
-	pathTrace := flag.String("t", "", "Path to the trace folder to analyze or rewrite")
-	fifo := flag.Bool("f", false, "Assume a FIFO ordering for buffered channels (default false)")
-	ignoreCriticalSection := flag.Bool("c", false, "Ignore happens before relations of critical sections (default false)")
-	noRewrite := flag.Bool("x", false, "Do not rewrite the trace file (default false)")
-	noWarning := flag.Bool("w", false, "Do not print warnings (default false)")
-	noPrint := flag.Bool("p", false, "Do not print the results to the terminal (default false). Automatically set -x to true")
-	resultFolder := flag.String("r", "", "Path to where the result file should be saved.")
-	ignoreAtomics := flag.Bool("a", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-	resultFolderTool := flag.String("R", "", "Path where the advocateResult folder created by the pipeline is located")
-	programPath := flag.String("P", "", "Path to the program folder")
-	progName := flag.String("N", "", "Name of the program")
-	testName := flag.String("M", "", "Name of the test")
-	rewriteAll := flag.Bool("S", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
-		"If not set, only the first occurence is rewritten")
-	timeout := flag.Int("T", -1, "Set a timeout in seconds for the analysis")
-	outM := flag.String("outM", "results_machine", "Name for the result machine file")
-	outR := flag.String("outR", "results_readable", "Name for the result readable file")
-	outT := flag.String("outT", "rewritten_trace", "Name for the rewritten traces")
-	ignoreRewrite := flag.String("ignoreRew", "", "Path to a result machine file. If a found bug is already in this file, it will not be rewritten")
+var (
+	help bool
 
-	scenarios := flag.String("s", "", "Select which analysis scenario to run, e.g. -s srd for the option s, r and d."+
+	pathToAdvocate string
+
+	tracePath string
+	progPath  string
+
+	progName string
+	execName string
+
+	timeoutRecording int
+	timeoutReplay    int
+	recordTime       bool
+
+	resultFolder     string
+	resultFolderTool string
+	outM             string
+	outR             string
+	outT             string
+
+	noFifo                bool
+	ignoreCriticalSection bool
+	ignoreAtomics         bool
+	ignoreRewrite         string
+
+	rewriteAll bool
+
+	noRewrite    bool
+	keepTraces   bool
+	skipExisting bool
+
+	notExec    bool
+	statistics bool
+
+	scenarios         string
+	onlyAPanicAndLeak bool
+
+	fuzzingMode string
+
+	modeMain bool
+
+	noWarning bool
+
+	cont bool
+
+	noMemorySupervisor bool
+)
+
+const (
+	HBFuzzHBAna = 0
+	FuzzHBAna   = 1
+	HBFuzzNoAna = 2
+	FuzzNoAna   = 3
+)
+
+// Main function
+func main() {
+	flag.BoolVar(&help, "h", false, "Print help")
+
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
+	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+
+	flag.StringVar(&progName, "prog", "", "Name of the program")
+	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
+
+	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
+	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
+	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
+
+	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
+	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
+	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
+	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
+	flag.StringVar(&outT, "outT", "rewrittenTrace", "Name for the rewritten traces")
+
+	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
+	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
+	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
+
+	// TODO: !rewriteAll for now disabled, enable if it is implemented that only successful replays are considered previous replays
+	// If the first replay is not successful it may be successful on a later try. At the moment, the later tries would not be run
+
+	// flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
+	// 	"If not set, only the first occurence is rewritten")
+	rewriteAll = true
+
+	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
+	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	flag.BoolVar(&skipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
+
+	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
+	flag.BoolVar(&statistics, "stats", false, "Create statistics")
+
+	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
+
+	flag.BoolVar(&cont, "cont", false, "Continue a partial analysis of tests")
+
+	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
+
+	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
 		"\ts: Send on closed channel\n"+
@@ -66,145 +144,196 @@ func main() {
 		"\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tp: Select case without partner\n"+
-		"\tu: Unlock of unlocked mutex\n",
+		"\tu: Unlock of unlocked mutex\n"+
+		"\tc: Cyclic deadlock\n",
 	)
-	// "\tc: Cyclic deadlock\n",
 	// "\tm: Mixed deadlock\n"
 
-	go memorySupervisor() // panic if not enough ram
+	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
+
+	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
+		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
+
+	// partially implemented by may not work, therefore disables, enable again when fixed
+	// flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
 	flag.Parse()
 
 	var mode string
-	if len(os.Args) > 2 {
+	if len(os.Args) >= 2 {
 		mode = os.Args[1]
 		flag.CommandLine.Parse(os.Args[2:])
+		if help {
+			printHelpMode(mode)
+			return
+		}
 	} else {
-		fmt.Printf("No mode selected")
-		fmt.Printf("Select one mode from 'run', 'stats', 'explain' or 'check'")
-		printHelp()
-	}
-
-	if *help {
+		if help {
+			printHelp()
+			return
+		}
+		fmt.Println("No mode selected")
+		fmt.Println("Select one mode from 'run', 'stats', 'explain' or 'check'")
 		printHelp()
 		return
 	}
 
-	folderTrace, err := filepath.Abs(*pathTrace)
-	if err != nil {
-		panic(err)
+	timer.Init(recordTime, progPath)
+	timer.Start(timer.Total)
+	defer timer.Stop(timer.Total)
+
+	execPath, _ := os.Executable()
+	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
+
+	advocatePathSplit := strings.Split(pathToAdvocate, string(os.PathSeparator))
+	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
+		utils.LogError("Could not determine ADVOCATE folder. Keep the analyzer and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
+		return
 	}
 
-	// remove last folder from path
-	folderTrace = folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1]
+	if resultFolder == "" {
+		resultFolder, err := getFolderTrace(tracePath)
+		if err != nil {
+			utils.LogError("Could not get folder trace: ", err)
+			return
+		}
 
-	if *resultFolder == "" {
-		*resultFolder = folderTrace
-		if (*resultFolder)[len(*resultFolder)-1] != os.PathSeparator {
-			*resultFolder += string(os.PathSeparator)
+		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
+			resultFolder += string(os.PathSeparator)
 		}
 	}
 
-	outMachine := filepath.Join(*resultFolder, *outM) + ".log"
-	outReadable := filepath.Join(*resultFolder, *outR) + ".log"
-	newTrace := filepath.Join(*resultFolder, *outT)
-	if *ignoreRewrite != "" {
-		*ignoreRewrite = filepath.Join(*resultFolder, *ignoreRewrite)
+	if !noMemorySupervisor {
+		go memory.MemorySupervisor() // cancel analysis if not enough ram
 	}
+
+	// outMachine := filepath.Join(resultFolder, outM) + ".log"
+	// outReadable := filepath.Join(resultFolder, outR) + ".log"
+	// newTrace := filepath.Join(resultFolder, outT)
+	if ignoreRewrite != "" {
+		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
+	}
+
+	// don't run any HB Analysis for direct GFuzz and GoPie
+	if mode == "fuzzing" && (fuzzingMode == fuzzing.GFuzz || fuzzingMode == fuzzing.GoPie) {
+		scenarios = "-"
+		onlyAPanicAndLeak = true
+	}
+
+	analysisCases, err := parseAnalysisCases(scenarios)
+	if err != nil {
+		utils.LogError("Could not read analysis cases: ", err)
+		return
+	}
+
+	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
+		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
+		timeoutRecording, timeoutReplay)
+
+	// function injection to prevent circle import
+	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
 	switch mode {
-	case "stats":
-		modeStats(*pathTrace, *progName, *testName)
-	case "explain":
-		modeExplain(pathTrace, !*rewriteAll)
-	case "check":
-		modeCheck(resultFolderTool, programPath)
-	case "run":
-		modeRun(pathTrace, noPrint, noRewrite, scenarios, outReadable,
-			outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-			noWarning, rewriteAll, folderTrace, newTrace, timeout, ignoreRewrite)
+	case "analysis":
+		if modeMain {
+			modeToolchain("main", 0)
+		} else {
+			modeToolchain("test", 0)
+		}
+	// case "analyze":
+	// 	// here the parameter need to stay, because the function is used in the
+	// 	// toolchain package via function injection
+	// 	modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
+	// 		outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
+	// 		rewriteAll, newTrace, ignoreRewrite,
+	// 		-1, onlyAPanicAndLeak)
+	case "fuzzing":
+		modeFuzzing()
 	default:
-		fmt.Printf("Unknown mode %s", os.Args[1])
-		fmt.Printf("Select one mode from 'run', 'stats', 'explain' or 'check'")
+		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
+		utils.LogError("Select one mode from 'run', 'stats', 'explain' or 'check'")
 		printHelp()
 	}
+
+	numberErr, numberTimeout := utils.GetNumberErr()
+	if numberErr == 0 {
+		utils.LogInfo("Finished with 0 errors")
+	} else {
+		utils.LogErrorf("Finished with %d errors", numberErr)
+	}
+	if numberTimeout == 0 {
+		utils.LogInfo("No timeouts occur")
+	} else {
+		utils.LogErrorf("%d timeouts occurred", numberTimeout)
+	}
+	timer.UpdateTimeFileOverview(progName, "*Total*")
+	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
 }
 
-func modeStats(pathFolder string, progName string, testName string) {
-	// instead of the normal program, create statistics for the trace
-	if pathFolder == "" {
-		fmt.Println("Provide the path to the folder containing the results_machine file. Set with -t [path]")
-		return
-	}
-
+// Starting point for fuzzing
+func modeFuzzing() {
 	if progName == "" {
-		fmt.Println("Provide a name for the analyzed program. Set with -N [name]")
+		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
 		return
 	}
 
-	if testName == "" {
-		testName = progName
-	}
+	checkProgPath()
+	checkVersion()
 
-	stats.CreateStats(pathFolder, progName, testName)
-}
-
-func modeExplain(pathTrace *string, ignoreDouble bool) {
-	if *pathTrace == "" {
-		fmt.Println("Please provide a path to the trace files for the explanation. Set with -t [file]")
-		return
-	}
-
-	err := explanation.CreateOverview(*pathTrace, ignoreDouble)
+	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
+		ignoreAtomics, recordTime, notExec, statistics,
+		keepTraces, cont)
 	if err != nil {
-		log.Println("Error creating explanation: ", err.Error())
+		utils.LogError("Fuzzing Failed: ", err.Error())
 	}
 }
 
-func modeCheck(resultFolderTool, programPath *string) {
-	if *resultFolderTool == "" {
-		fmt.Println("Please provide the path to the advocateResult folder created by the pipeline. Set with -R [folder]")
-		return
-	}
-
-	if *programPath == "" {
-		fmt.Println("Please provide the path to the program folder. Set with -P [folder]")
-		return
-	}
-
-	err := complete.Check(*resultFolderTool, *programPath)
-
+// Start point for the toolchain
+// This will run, analyze and replay a given program or test
+func modeToolchain(mode string, numRerecorded int) {
+	checkProgPath()
+	checkVersion()
+	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
+		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, skipExisting, cont, 0, 0)
 	if err != nil {
-		panic(err.Error())
+		utils.LogError("Failed to run toolchain: ", err.Error())
+	}
+
+	if statistics {
+		err = stats.CreateStatsTotal(progPath, progName)
+		if err != nil {
+			utils.LogError("Failed to create stats total: ", err.Error())
+		}
 	}
 }
 
-func modeRun(pathTrace *string, noPrint *bool, noRewrite *bool,
-	scenarios *string, outReadable string, outMachine string,
-	ignoreAtomics *bool, fifo *bool, ignoreCriticalSection *bool,
-	noWarning *bool, rewriteAll *bool, folderTrace string, newTrace string, timeout *int, ignoreRewrite *string) {
-	// printHeader()
+// modeAnalyzer is the starting point to the analyzer.
+// This function will read the trace at a stored path, analyze it and,
+// if needed, rewrite the trace.
+//
+// Parameter:
+//   - pathTrace string: path to the trace to be analyzed
+//   - noRewrite bool: if set, rewrite is disabled
+//   - analysisCases map[string]bool: map of analysis cases to run
+//   - outReadable string: path to the readable result file
+//   - outMachine string: path to the machine result file
+//   - ignoreAtomics bool: if true, atomics are ignored for replay
+//   - fifo bool: assume, that the channels work as a fifo queue
+//   - ignoreCriticalSection bool: ignore the ordering of lock/unlock for the hb analysis
+//   - rewriteAll bool: rewrite bugs that have been rewritten before
+//   - newTrace string: path to where the rewritten trace should be created
+//   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
+//   - onlyAPanicAndLeak bool: only check for actual leaks and panics, do not calculate HB information
+//
+// Returns:
+//   - error
+func modeAnalyzer(pathTrace string, noRewrite bool,
+	analysisCases map[string]bool, outReadable string, outMachine string,
+	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
+	rewriteAll bool, newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
 
-	if *pathTrace == "" {
-		fmt.Println("Please provide a path to the trace file. Set with -t [file]")
-		return
-	}
-
-	if *noPrint {
-		*noRewrite = true
-	}
-
-	// set timeout
-	if timeout != nil && *timeout > 0 {
-		go func() {
-			<-time.After(time.Duration(*timeout) * time.Second)
-			os.Exit(1)
-		}()
-	}
-
-	analysisCases, err := parseAnalysisCases(*scenarios)
-	if err != nil {
-		panic(err)
+	if pathTrace == "" {
+		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
 	}
 
 	// run the analysis and, if requested, create a reordered trace file
@@ -212,242 +341,136 @@ func modeRun(pathTrace *string, noPrint *bool, noRewrite *bool,
 
 	results.InitResults(outReadable, outMachine)
 
-	// done and separate routine to implement timeout
-	done := make(chan bool)
-	numberOfRoutines := 0
-	containsElems := false
-	go func() {
-		defer func() { done <- true }()
+	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+	if err != nil {
+		fmt.Println("Could not open trace: ", err.Error())
+	}
 
-		numberOfRoutines, containsElems, err = io.CreateTraceFromFiles(*pathTrace, *ignoreAtomics)
-		if err != nil {
-			panic(err)
-		}
+	if numberElems == 0 {
+		utils.LogInfof("Trace at %s does not contain any elements", pathTrace)
+		return nil
+	} else {
+		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
+	}
 
-		if !containsElems {
-			fmt.Println("Trace does not contain any elem")
-			fmt.Println("Skip analysis")
-			return
-		}
+	analysis.SetNoRoutines(numberOfRoutines)
 
-		analysis.SetNumberOfRoutines(numberOfRoutines)
-
-		if analysisCases["all"] {
-			fmt.Println("Start Analysis for all scenarios")
-		} else {
-			fmt.Println("Start Analysis for the following scenarios:")
-			for key, value := range analysisCases {
-				if value {
-					fmt.Println("\t", key)
-				}
+	if onlyAPanicAndLeak {
+		utils.LogInfo("Start Analysis for actual panics and leaks")
+	} else if analysisCases["all"] {
+		utils.LogInfo("Start Analysis for all scenarios")
+	} else {
+		info := "Start Analysis for the following scenarios: "
+		for key, value := range analysisCases {
+			if value {
+				info += (key + ",")
 			}
 		}
+		utils.LogInfo(info)
+	}
 
-		timemeasurement.Start("analysis")
-		analysis.RunAnalysis(*fifo, *ignoreCriticalSection, analysisCases)
-		timemeasurement.End("analysis")
+	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-		timemeasurement.Print()
-	}()
-
-	if timeout != nil && *timeout > 0 {
-		select {
-		case <-done:
-			fmt.Print("Analysis finished\n\n")
-		case <-time.After(time.Duration(*timeout) * time.Second):
-			fmt.Printf("Analysis ended by timeout after %d seconds\n\n", *timeout)
+	if memory.WasCanceled() {
+		// analysis.LogSizes()
+		analysis.Clear()
+		if memory.WasCanceledRAM() {
+			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
+		} else {
+			return fmt.Errorf("Analysis was canceled due to unexpected panic")
 		}
 	} else {
-		<-done
+		utils.LogInfo("Analysis finished")
 	}
 
-	numberOfResults := results.PrintSummary(*noWarning, *noPrint)
+	numberOfResults, err := results.CreateResultFiles(noWarning, true)
+	if err != nil {
+		utils.LogError("Error in printing summary: ", err.Error())
+	}
 
-	if !*noRewrite {
-		numberRewrittenTrace := 0
-		failedRewrites := 0
-		notNeededRewrites := 0
-		println("\n\nStart rewriting trace file ", *pathTrace)
-		originalTrace := analysis.CopyCurrentTrace()
+	// collect the required data to decide whether run is interesting
+	// and to create the mutations
+	if fuzzingRun >= 0 {
+		fuzzing.ParseTrace(&analysis.MainTrace)
+	}
 
-		analysis.ClearData()
+	if noRewrite {
+		utils.LogInfo("Skip rewrite")
+		return nil
+	}
 
-		rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
+	numberRewrittenTrace := 0
+	failedRewrites := 0
+	notNeededRewrites := 0
+	utils.LogInfo("Start rewriting")
 
-		addAlreadyProcessed(rewrittenBugs, *ignoreRewrite)
+	if err != nil {
+		utils.LogError("Failed to rewrite: ", err)
+		return nil
+	}
 
-		file := filepath.Base(*pathTrace)
-		rewriteNr := "0"
-		spl := strings.Split(file, "_")
-		if len(spl) > 1 {
-			rewriteNr = spl[len(spl)-1]
-		}
+	if memory.WasCanceled() {
+		utils.LogError("Could not run rewrite: Not enough RAM")
+	}
 
-		for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
-			needed, double, err := rewriteTrace(outMachine,
-				newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !*rewriteAll)
+	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
 
-			if !needed {
-				println("Trace can not be rewritten.")
-				notNeededRewrites++
-				if double {
-					fmt.Printf("Bugreport info: %s_%d,double", rewriteNr, resultIndex+1)
-				} else {
-					fmt.Printf("Bugreport info: %s_%d,fail", rewriteNr, resultIndex+1)
-				}
-			} else if err != nil {
-				println("Failed to rewrite trace: ", err.Error())
-				failedRewrites++
-				analysis.SetTrace(originalTrace)
-				fmt.Printf("Bugreport info: %s_%d,fail", rewriteNr, resultIndex+1)
-			} else { // needed && err == nil
-				numberRewrittenTrace++
-				analysis.SetTrace(originalTrace)
-				fmt.Printf("Bugreport info: %s_%d,suc", rewriteNr, resultIndex+1)
+	file := filepath.Base(pathTrace)
+	rewriteNr := "0"
+	spl := strings.Split(file, "_")
+	if len(spl) > 1 {
+		rewriteNr = spl[len(spl)-1]
+	}
+
+	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
+		needed, double, err := rewriteTrace(outMachine,
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
+
+		if !needed {
+			notNeededRewrites++
+			if double {
+				fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
+			} else {
+				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 			}
-
-			print("\n\n")
+		} else if err != nil {
+			failedRewrites++
+			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
+		} else { // needed && err == nil
+			numberRewrittenTrace++
+			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 
-		println("Finished Rewrite")
-		println("\n\n\tNumber Results: ", numberOfResults)
-		println("\tSuccessfully rewrites: ", numberRewrittenTrace)
-		println("\tNo need/not possible to rewrite: ", notNeededRewrites)
-		if failedRewrites > 0 {
-			println("\tFailed rewrites: ", failedRewrites)
-		} else {
-			println("\tFailed rewrites: ", failedRewrites)
+		if memory.WasCanceled() {
+			failedRewrites += max(0, numberOfResults-resultIndex-1)
+			break
 		}
 	}
+	if memory.WasCanceledRAM() {
+		utils.LogError("Rewrite Canceled: Not enough RAM")
+	} else {
+		utils.LogInfo("Finished Rewrite")
+	}
+	utils.LogInfo("Number Results: ", numberOfResults)
+	utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
+	utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
+	if failedRewrites > 0 {
+		utils.LogInfo("Failed rewrites: ", failedRewrites)
+	} else {
+		utils.LogInfo("Failed rewrites: ", failedRewrites)
+	}
 
-	print("\n\n\n")
+	return nil
 }
 
-func addAlreadyProcessed(alreadyProcessed map[bugs.ResultType][]string, ignoreRewrite string) {
-	if ignoreRewrite == "" {
-		return
-	}
-
-	data, err := os.ReadFile(ignoreRewrite)
-	if err != nil {
-		return
-	}
-	for _, bugStr := range strings.Split(string(data), "\n") {
-		_, bug, err := bugs.ProcessBug(bugStr)
-		if err != nil {
-			continue
-		}
-
-		if _, ok := alreadyProcessed[bug.Type]; !ok {
-			alreadyProcessed[bug.Type] = make([]string, 0)
-		} else {
-			if utils.ContainsString(alreadyProcessed[bug.Type], bugStr) {
-				continue
-			}
-		}
-		alreadyProcessed[bug.Type] = append(alreadyProcessed[bug.Type], bugStr)
-	}
-}
-
-func memorySupervisor() {
-	thresholdRAM := uint64(1 * 1024 * 1024 * 1024) // 1GB
-	thresholdSwap := uint64(200 * 1024 * 1024)     // 200mb
-	for {
-		// Get the memory stats
-		v, err := mem.VirtualMemory()
-		if err != nil {
-			log.Fatalf("Error getting memory info: %v", err)
-		}
-
-		// Get the swap stats
-		s, err := mem.SwapMemory()
-		if err != nil {
-			log.Fatalf("Error getting swap info: %v", err)
-		}
-
-		// fmt.Printf("Available RAM: %v MB, Available Swap: %v MB\n", v.Available/1024/1024, s.Free/1024/1024)
-
-		// Panic if available RAM or swap is below the threshold
-		if v.Available < thresholdRAM {
-			log.Panicf("Available RAM is below threshold! Available: %v MB, Threshold: %v MB", v.Available/1024/1024, thresholdRAM/1024/1024)
-		}
-
-		if s.Free < thresholdSwap {
-			log.Panicf("Available Swap is below threshold! Available: %v MB, Threshold: %v MB", s.Free/1024/1024, thresholdSwap/1024/1024)
-		}
-
-		// Sleep for a while before checking again
-		time.Sleep(5 * time.Second)
-	}
-}
-
-/*
- * Rewrite the trace file based on given analysis results
- * Args:
- *   outMachine (string): The path to the analysis result file
- *   newTrace (string): The path where the new traces folder will be created
- *   resultIndex (int): The index of the result to use for the reordered trace file
- *   numberOfRoutines (int): The number of routines in the trace
- *   rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
- * Returns:
- *   bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
- *   bool: true if rewrite was skipped because of double
- *   error: An error if the trace file could not be created
- */
-func rewriteTrace(outMachine string, newTrace string, resultIndex int,
-	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
-
-	actual, bug, err := io.ReadAnalysisResults(outMachine, resultIndex)
-	if err != nil {
-		return false, false, err
-	}
-
-	if rewriteOnce {
-		bugString := bug.GetBugString()
-		println(resultIndex, bugString)
-		if _, ok := (*rewrittenTrace)[bug.Type]; !ok {
-			(*rewrittenTrace)[bug.Type] = make([]string, 0)
-		} else {
-			if utils.ContainsString((*rewrittenTrace)[bug.Type], bugString) {
-				fmt.Println("Bug was already rewritten before")
-				fmt.Println("Skip rewrite")
-				return false, true, nil
-			}
-		}
-		(*rewrittenTrace)[bug.Type] = append((*rewrittenTrace)[bug.Type], bugString)
-	}
-
-	if actual {
-		return false, false, nil
-	}
-
-	rewriteNeeded, code, err := rewriter.RewriteTrace(bug, 0)
-
-	if err != nil {
-		return rewriteNeeded, false, err
-	}
-
-	err = io.WriteTrace(newTrace, numberOfRoutines)
-	if err != nil {
-		return rewriteNeeded, false, err
-	}
-
-	err = io.WriteRewriteInfoFile(newTrace, string(bug.Type), code, resultIndex)
-	if err != nil {
-		return rewriteNeeded, false, err
-	}
-
-	return rewriteNeeded, false, nil
-}
-
-/*
- * Parse the given analysis cases
- * Args:
- *   cases (string): The string of analysis cases to parse
- * Returns:
- *   map[string]bool: A map of the analysis cases and if they are set
- *   error: An error if the cases could not be parsed
- */
+// Parse the given analysis cases
+//
+// Parameter:
+//   - cases string: The string of analysis cases to parse
+//
+// Returns:
+//   - map[string]bool: A map of the analysis cases and if they are set
+//   - error: An error if the cases could not be parsed
 func parseAnalysisCases(cases string) (map[string]bool, error) {
 	analysisCases := map[string]bool{
 		"all":                  false, // all cases enabled
@@ -458,22 +481,25 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		"concurrentRecv":       false,
 		"leak":                 false,
 		"selectWithoutPartner": false,
-		"cyclicDeadlock":       false,
+		"unlockBeforeLock":     false,
 		"mixedDeadlock":        false,
+		"resourceDeadlock":     false,
+	}
+
+	if cases == "-" {
+		return analysisCases, nil
 	}
 
 	if cases == "" {
-		analysisCases["all"] = true
-		analysisCases["sendOnClosed"] = true
-		analysisCases["receiveOnClosed"] = true
-		analysisCases["doneBeforeAdd"] = true
-		analysisCases["closeOnClosed"] = true
-		analysisCases["concurrentRecv"] = true
-		analysisCases["leak"] = true
-		analysisCases["selectWithoutPartner"] = true
-		analysisCases["unlockBeforeLock"] = true
-		// analysisCases["cyclicDeadlock"] = true
-		// analysisCases["mixedDeadlock"] = true
+		for c := range analysisCases {
+			analysisCases[c] = true
+		}
+
+		// takes to long, only take out for tests
+		analysisCases["resourceDeadlock"] = false
+
+		// remove when implemented
+		analysisCases["mixedDeadlock"] = false
 
 		return analysisCases, nil
 	}
@@ -496,8 +522,8 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 			analysisCases["selectWithoutPartner"] = true
 		case 'u':
 			analysisCases["unlockBeforeLock"] = true
-		// case 'c':
-		// 	analysisCases["cyclicDeadlock"] = true
+		case 'c':
+			analysisCases["resourceDeadlock"] = true
 		// case 'm':
 		// analysisCases["mixedDeadlock"] = true
 		default:
@@ -507,86 +533,201 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 	return analysisCases, nil
 }
 
-func printHeader() {
-	fmt.Print("\n")
-	fmt.Println(" $$$$$$\\  $$$$$$$\\  $$\\    $$\\  $$$$$$\\   $$$$$$\\   $$$$$$\\ $$$$$$$$\\ $$$$$$$$\\ ")
-	fmt.Println("$$  __$$\\ $$  __$$\\ $$ |   $$ |$$  __$$\\ $$  __$$\\ $$  __$$\\\\__$$  __|$$  _____|")
-	fmt.Println("$$ /  $$ |$$ |  $$ |$$ |   $$ |$$ /  $$ |$$ /  \\__|$$ /  $$ |  $$ |   $$ |      ")
-	fmt.Println("$$$$$$$$ |$$ |  $$ |\\$$\\  $$  |$$ |  $$ |$$ |      $$$$$$$$ |  $$ |   $$$$$\\    ")
-	fmt.Println("$$  __$$ |$$ |  $$ | \\$$\\$$  / $$ |  $$ |$$ |      $$  __$$ |  $$ |   $$  __|   ")
-	fmt.Println("$$ |  $$ |$$ |  $$ |  \\$$$  /  $$ |  $$ |$$ |  $$\\ $$ |  $$ |  $$ |   $$ |      ")
-	fmt.Println("$$ |  $$ |$$$$$$$  |   \\$  /    $$$$$$  |\\$$$$$$  |$$ |  $$ |  $$ |   $$$$$$$$\\ ")
-	fmt.Println("\\__|  \\__|\\_______/     \\_/     \\______/  \\______/ \\__|  \\__|  \\__|   \\________|")
+// Rewrite the trace file based on given analysis results
+//
+// Parameter:
+//   - outMachine string: The path to the analysis result file
+//   - newTrace string: The path where the new traces folder will be created
+//   - resultIndex int: The index of the result to use for the reordered trace file
+//   - numberOfRoutines int: The number of routines in the trace
+//   - rewrittenTrace *map[string][]string: set of bugs that have been already rewritten
+//
+// Returns:
+//   - bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
+//   - bool: true if rewrite was skipped because of double
+//   - error: An error if the trace file could not be created
+func rewriteTrace(outMachine string, newTrace string, resultIndex int,
+	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
+	timer.Start(timer.Rewrite)
+	defer timer.Stop(timer.Rewrite)
 
-	headerInfo := "\n\n\n" +
-		"Welcome to the trace analyzer and rewriter.\n" +
-		"This program analyzes a trace file and detects common concurrency bugs in Go programs.\n" +
-		"It can also create a reordered trace file based on the analysis results.\n" +
-		"Be aware, that the analysis is based on the trace file and may not be complete.\n" +
-		"Be aware, that the analysis may contain false positives and false negatives.\n" +
-		"\n" +
-		"If the rewrite of a trace file does not create the expected result, it can help to run the\n" +
-		"analyzer with the -c flag to ignore the happens before relations of critical sections (mutex lock/unlock operations).\n" +
-		"For the first analysis this is not recommended, because it increases the likelihood of false positives." +
-		"\n\n\n"
+	actual, bug, err := io.ReadAnalysisResults(outMachine, resultIndex)
+	if err != nil {
+		return false, false, err
+	}
 
-	fmt.Print(headerInfo)
+	if actual {
+		return false, false, nil
+	}
+
+	traceCopy := analysis.CopyMainTrace()
+
+	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace, rewriteOnce)
+
+	if err != nil {
+		return rewriteNeeded, false, err
+	}
+
+	if skip {
+		return rewriteNeeded, skip, err
+	}
+
+	err = io.WriteTrace(&traceCopy, newTrace, true)
+	if err != nil {
+		return rewriteNeeded, false, err
+	}
+
+	err = io.WriteRewriteInfoFile(newTrace, string(bug.Type), code, resultIndex)
+	if err != nil {
+		return rewriteNeeded, false, err
+	}
+
+	return rewriteNeeded, false, nil
 }
 
+// getFolderTrace returns the path to the folder containing the trace, given the
+// path to the trace
+//
+// Parameter:
+//   - pathTrace string: path to the traces
+//
+// Returns:
+//   - string: path to the folder containing the trace folder
+//   - error
+func getFolderTrace(pathTrace string) (string, error) {
+	folderTrace, err := filepath.Abs(pathTrace)
+	if err != nil {
+		return "", err
+	}
+
+	// remove last folder from path
+	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
+}
+
+// printHelp prints the usage help. Can be called with -h
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
-	println("There are four modes of operation:")
-	println("1. Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
-	println("2. Create an explanation for a found bug")
-	println("3. Check if all concurrency elements of the program have been executed at least once")
-	println("4. Create statistics about a program\n\n")
-	println("1. Analyze a trace file and create a reordered trace file based on the analysis results (Default)")
-	println("This mode is the default mode and analyzes a trace file and creates a reordered trace file based on the analysis results.")
-	println("Usage: ./analyzer run [options]")
-	println("It has the following options:")
-	println("  -t [file]   Path to the trace folder to analyze or rewrite (required)")
-	println("  -d [level]  Debug Level, 0 = silent, 1 = errors, 2 = info, 3 = debug (default 1)")
-	println("  -f          Assume a FIFO ordering for buffered channels (default false)")
-	println("  -c          Ignore happens before relations of critical sections (default false)")
-	println("  -x          Do not rewrite the trace file (default false)")
-	println("  -w          Do not print warnings (default false)")
-	println("  -p          Do not print the results to the terminal (default false). Automatically set -x to true")
-	println("  -r [folder] Path to where the result file should be saved. (default parallel to -t)")
-	println("  -a          Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-	println("  -S          If the same bug is detected multiple times, run the replay for each of them. If not set, only the first occurence is rewritten")
-	println("  -T [second] Set a timeout in seconds for the analysis")
-	println("  -s [cases]  Select which analysis scenario to run, e.g. -s srd for the option s, r and d.")
-	println("              If it is not set, all scenarios are run")
-	println("              Options:")
-	println("                  s: Send on closed channel")
-	println("                  r: Receive on closed channel")
-	println("                  w: Done before add on waitGroup")
-	println("                  n: Close of closed channel")
-	println("                  b: Concurrent receive on channel")
-	println("                  l: Leaking routine")
-	println("                  u: Select case without partner")
-	// println("                  c: Cyclic deadlock")
-	// println("                  m: Mixed deadlock")
+	println("There are two different modes of operation:")
+	println("1. Analysis")
+	println("2. Fuzzing")
 	println("\n\n")
-	println("2. Create an explanation for a found bug")
-	println("Usage: ./analyzer explain [options]")
-	println("This mode creates an explanation for a found bug in the trace file.")
-	println("It has the following options:")
-	println("  -t [file]   Path to the folder containing the machine readable result file (required)")
-	println("\n\n")
-	println("3. Check if all concurrency elements of the program have been executed at least once")
-	println("Usage: ./analyzer check [options]")
-	println("This mode checks if all concurrency elements of the program have been executed at least once.")
-	println("It has the following options:")
-	println("  -R [folder] Path where the advocateResult folder created by the pipeline is located (required)")
-	println("  -P [folder] Path to the program folder (required)")
-	println("\n\n")
-	println("4. Create statistics about a program")
-	println("This creates some statistics about the program and the trace")
-	println("Usage: ./analyzer stats [options]")
-	// println("  -P [folder] Path to the program folder (required)")
-	println("  -t [file]   Path to the folder containing the results_machine file (required)")
-	println("  -N [name]   Name of the program")
-	println("  -M [name]   Name of the test")
-	println("\n")
+	printHelpMode("analysis")
+	printHelpMode("fuzzing")
+}
+
+// printHelpMode prints the help for one mode
+//
+// Parameter:
+//   - mode string: the mode (analysis or fuzzing)
+func printHelpMode(mode string) {
+	switch mode {
+	case "analysis":
+		println("Mode: analysis")
+		println("Analyze tests")
+		println("This runs the analysis on tests")
+		println("Usage: ./analyzer analysis [options]")
+		// println("  -main                  Run on the main function instead on tests")
+		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
+		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
+		println("  -prog [name]           Name of the program (used for statistics)")
+		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
+		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
+		println("  -ignoreAtomics         Set to ignore atomics in replay")
+		println("  -recordTime            Set to record runtimes")
+		println("  -notExec               Set to determine never executed operations")
+		println("  -stats                 Set to create statistics")
+		println("  -keepTrace             Do not delete the trace files after analysis finished")
+	case "fuzzing":
+		println("Mode: fuzzing")
+		println("Create runs for fuzzing")
+		println("This creates and updates the information required for the fuzzing runs as well as executes the fuzzing runs")
+		println("Usage: ./analyzer fuzzing [options]")
+		// println("  -main                  Run on the main function instead on tests")
+		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
+		println("  -prog [name]           Name of the program")
+		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
+		println("  -fuzzingMode [mode]    Mode of fuzzing:")
+		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
+
+		println("Additionally, the tags from mode analysis can be used")
+	default:
+		println("Mode: unknown")
+		printHelp()
+	}
+}
+
+// checkProgPath checks if the provided path to the program that should
+// be run/analyzed exists. If not, it panics.
+func checkProgPath() {
+	_, err := os.Stat(progPath)
+	if err != nil && errors.Is(err, fs.ErrNotExist) {
+		utils.LogErrorf("Could not find path %s", progPath)
+		panic(err)
+	}
+}
+
+// checkVersion checks the version of the program to be analyzed.
+// Advocate is implemented in and for go1.24. It the analyzed program has another
+// version, especially if the other version is also installed on the machine,
+// this can lead to problems. checkVersion therefore reads the version of the
+// analyzed program and if its not 1.24, a warning and information is printed
+// to the terminal
+func checkVersion() {
+	var goModPath string
+
+	if progPath == "" {
+		return
+	}
+
+	// Search for go.mod
+	err := filepath.WalkDir(progPath, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.Name() == "go.mod" {
+			goModPath = path
+			return filepath.SkipAll // Stop searching after finding the first one
+		}
+		return nil
+	})
+
+	if goModPath == "" {
+		utils.LogError("Could not find go.mod")
+		return
+	}
+
+	// Open and read go.mod
+	file, err := os.Open(goModPath)
+	if err != nil {
+		utils.LogError("Could not find go.mod")
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if strings.HasPrefix(line, "go ") {
+			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
+
+			versionSplit := strings.Split(version, ".")
+
+			if len(versionSplit) < 2 {
+				utils.LogError("Invalid go version")
+			}
+
+			if versionSplit[0] != "1" || versionSplit[1] != "24" {
+				errString := "ADVOCATE is implemented for go version 1.24. "
+				errString += fmt.Sprintf("Found version %s. ", version)
+				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
+				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."
+				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
+				utils.LogImportant(errString)
+			}
+
+			return
+		}
+	}
+
+	utils.LogError("Could not determine go version")
 }

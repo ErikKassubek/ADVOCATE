@@ -1,4 +1,4 @@
-// Copyrigth (c) 2024 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisClose.go
 // Brief: Trace analysis for send, receive and close on closed channel
@@ -13,23 +13,22 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/results"
-	timemeasurement "analyzer/timeMeasurement"
-	"log"
+	"analyzer/timer"
+	"analyzer/utils"
 )
 
-/*
- * Check if a send or receive on a closed channel is possible
- * It it is possible, print a warning or error
- * Args:
- *   ch (*TraceElementChannel): The trace element
- */
+// checkForCommunicationOnClosedChannel checks if a send or receive on a
+// closed channel is possible.
+// It it is possible, print a warning or error.
+//
+// Parameter:
+//   - ch *TraceElementChannel: The trace element
 func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
-	// check if there is an earlier send, that could happen concurrently to close
-	// println("Check for possible send on closed channel ", analysisCases["sendOnClosed"], hasSend[id])
-	if analysisCases["sendOnClosed"] && hasSend[ch.id] {
-		timemeasurement.Start("panic")
-		defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
+	// check if there is an earlier send, that could happen concurrently to close
+	if analysisCases["sendOnClosed"] && hasSend[ch.id] {
 		for routine, mrs := range mostRecentSend {
 			happensBefore := clock.GetHappensBefore(mrs[ch.id].Vc, closeData[ch.id].vc)
 
@@ -37,13 +36,13 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 
 				file1, line1, tPre1, err := infoFromTID(mrs[ch.id].Elem.GetTID()) // send
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
 				file2, line2, tPre2, err := infoFromTID(ch.GetTID()) // close
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -72,22 +71,19 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 	}
 	// check if there is an earlier receive, that could happen concurrently to close
 	if analysisCases["receiveOnClosed"] && hasReceived[ch.id] {
-		timemeasurement.Start("other")
-		defer timemeasurement.End("other")
-
 		for routine, mrr := range mostRecentReceive {
 			happensBefore := clock.GetHappensBefore(closeData[ch.id].vc, mrr[ch.id].Vc)
 			if mrr[ch.id].Elem != nil && mrr[ch.id].Elem.GetTID() != "" && (happensBefore == clock.Concurrent || happensBefore == clock.Before) {
 
 				file1, line1, tPre1, err := infoFromTID(mrr[ch.id].Elem.GetTID()) // recv
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
 				file2, line2, tPre2, err := infoFromTID(ch.GetTID()) // close
 				if err != nil {
-					log.Print(err.Error())
+					utils.LogError(err.Error())
 					return
 				}
 
@@ -118,55 +114,45 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 
 }
 
-/*
- * Lock a found actual send on closed
- * Args:
- *  routineID (int): id of the routine where the send happened
- *  id (int): id of the channel
- *  posSend (string): code location of the send
- *  actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
- */
-func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+// foundSendOnClosedChannel is called, id an actual send on closed was found.
+//
+// Parameter:
+//   - elem TraceElement: the send/select elem
+//   - id int: id of the channel
+//   - actual bool: set actual to true it the panic occurred, set to false if it is in an not triggered select case
+func foundSendOnClosedChannel(elem TraceElement, actual bool) {
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
+
+	id := elem.GetID()
 
 	if _, ok := closeData[id]; !ok {
 		return
 	}
 
-	posClose := closeData[id].GetTID()
-	if posClose == "" || posSend == "" || posClose == "\n" || posSend == "\n" {
-		return
-	}
+	closeElem := closeData[id]
+	fileSend := elem.GetFile()
 
-	file1, line1, tPre1, err := infoFromTID(posSend)
-	if err != nil {
-		log.Print(err.Error())
-		return
-	}
-
-	file2, line2, tPre2, err := infoFromTID(posClose)
-	if err != nil {
-		log.Print(err.Error())
+	if fileSend == "" || fileSend == "\n" {
 		return
 	}
 
 	arg1 := results.TraceElementResult{ // send
-		RoutineID: routineID,
+		RoutineID: elem.GetRoutine(),
 		ObjID:     id,
-		TPre:      tPre1,
+		TPre:      elem.GetTPre(),
 		ObjType:   "CS",
-		File:      file1,
-		Line:      line1,
+		File:      fileSend,
+		Line:      elem.GetLine(),
 	}
 
 	arg2 := results.TraceElementResult{ // close
 		RoutineID: closeData[id].routine,
 		ObjID:     id,
-		TPre:      tPre2,
+		TPre:      closeElem.tPre,
 		ObjType:   "CC",
-		File:      file2,
-		Line:      line2,
+		File:      closeElem.GetFile(),
+		Line:      closeElem.GetLine(),
 	}
 
 	if actual {
@@ -179,14 +165,13 @@ func foundSendOnClosedChannel(routineID int, id int, posSend string, actual bool
 
 }
 
-/*
- * Log the detection of an actual receive on a closed channel
- * Args:
- *  ch (*TraceElementChannel): The trace element
- */
+// foundReceiveOnClosedChannel log the detection of an actual receive on a closed channel
+//
+// Parameter:
+//   - ch *TraceElementChannel: The trace element
 func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
 	if _, ok := closeData[ch.id]; !ok {
 		return
@@ -199,13 +184,13 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 
 	file1, line1, tPre1, err := infoFromTID(ch.GetTID())
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
 	file2, line2, tPre2, err := infoFromTID(posClose)
 	if err != nil {
-		log.Print(err.Error())
+		utils.LogError(err.Error())
 		return
 	}
 
@@ -236,15 +221,14 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 	}
 }
 
-/*
- * Check for a close on a closed channel.
- * Must be called, before the current close operation is added to closePos
- * Args:
- *  ch (*TraceElementChannel): The trace element
- */
+// checkForClosedOnClosed checks for a close on a closed channel.
+// Must be called, before the current close operation is added to closePos
+//
+// Parameter:
+//   - ch *TraceElementChannel: The trace element
 func checkForClosedOnClosed(ch *TraceElementChannel) {
-	timemeasurement.Start("panic")
-	defer timemeasurement.End("panic")
+	timer.Start(timer.AnaClose)
+	defer timer.Stop(timer.AnaClose)
 
 	if oldClose, ok := closeData[ch.id]; ok {
 		if oldClose.GetTID() == "" || oldClose.GetTID() == "\n" || ch.GetTID() == "" || ch.GetTID() == "\n" {
@@ -253,13 +237,13 @@ func checkForClosedOnClosed(ch *TraceElementChannel) {
 
 		file1, line1, tPre1, err := infoFromTID(oldClose.GetTID())
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			return
 		}
 
 		file2, line2, tPre2, err := infoFromTID(oldClose.GetTID())
 		if err != nil {
-			log.Print(err.Error())
+			utils.LogError(err.Error())
 			return
 		}
 
@@ -280,6 +264,8 @@ func checkForClosedOnClosed(ch *TraceElementChannel) {
 			File:      file2,
 			Line:      line2,
 		}
+
+		utils.LogError("Found Close on Close: ", ch.ToString())
 
 		results.Result(results.CRITICAL, results.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})

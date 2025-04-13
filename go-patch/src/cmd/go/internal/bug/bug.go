@@ -86,7 +86,7 @@ func printGoVersion(w io.Writer) {
 	fmt.Fprintf(w, "### What version of Go are you using (`go version`)?\n\n")
 	fmt.Fprintf(w, "<pre>\n")
 	fmt.Fprintf(w, "$ go version\n")
-	fmt.Fprintf(w, "go version %s %s/%s\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
+	fmt.Fprintf(w, "go version %s %s/%s ADVOCATE\n", runtime.Version(), runtime.GOOS, runtime.GOARCH)
 	fmt.Fprintf(w, "</pre>\n")
 	fmt.Fprintf(w, "\n")
 }
@@ -106,7 +106,7 @@ func printGoEnv(w io.Writer) {
 	env := envcmd.MkEnv()
 	env = append(env, envcmd.ExtraEnvVars()...)
 	env = append(env, envcmd.ExtraEnvVarsCostly()...)
-	envcmd.PrintEnv(w, env)
+	envcmd.PrintEnv(w, env, false)
 }
 
 func printGoDetails(w io.Writer) {

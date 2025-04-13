@@ -212,8 +212,8 @@ var (
 // SetExitInfo stores the exit code and exit position of a run
 //
 // Parameter:
-//   - code (int): the exit code
-//   - pos (string): the exit position
+//   - code int: the exit code
+//   - pos string: the exit position
 func SetExitInfo(code int, pos string) {
 	exitCode = code
 	exitPos = pos
@@ -224,14 +224,14 @@ func SetExitInfo(code int, pos string) {
 //
 // Parameter:
 //
-//   - oldest (int): the timer when the the replay released the oldest waiting
+//   - oldest int: the timer when the the replay released the oldest waiting
 //
 //     or the current next for the first time, if never it should be 0
 //
-//   - disabled (int): the timer when the the replay was so stuck, that the
+//   - disabled int: the timer when the the replay was so stuck, that the
 //     replay had to be disabled for the first time, if never it should be 0
 //
-//   - ack (int): the timer when the the replay timed out on an acknowledgement,
+//   - ack int: the timer when the the replay timed out on an acknowledgement,
 //     if never it should be 0
 func SetReplayTimeoutInfo(oldest, disabled, ack int) {
 	replayTimeoutOldest = oldest
@@ -251,7 +251,7 @@ func GetTimeoutHappened() bool {
 // SetRuntimeDurationSec is a setter for durationInSeconds
 //
 // Parameter:
-//   - sec (int): the runtime duration of a run in second
+//   - sec int: the runtime duration of a run in second
 func SetRuntimeDurationSec(sec int) {
 	durationInSeconds = sec
 }
@@ -267,7 +267,7 @@ func GetRuntimeDurationInSec() int {
 // InitAnalysis initializes the analysis by setting the analysis cases and fuzzing
 //
 // Parameters:
-//   - analysisCasesMap (map[string]bool): map with information about which
+//   - analysisCasesMap map[string]bool: map with information about which
 //     analysis parts should be run
 //   - anaFuzzing bool: true if fuzzing, false otherwise
 func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
@@ -285,8 +285,8 @@ func SetMainTraceToNewTrace() {
 // AddElementToTrace adds an element to the main trace
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - element (TraceElement): The element to add
+//   - routine int: The routine id
+//   - element TraceElement: The element to add
 func AddElementToTrace(element TraceElement) {
 	MainTrace.AddElement(element)
 }
@@ -295,7 +295,7 @@ func AddElementToTrace(element TraceElement) {
 // in trace, given the tID
 //
 // Parameter:
-//   - tID (string): The tID of the element
+//   - tID string: The tID of the element
 //
 // Returns:
 //   - TraceElement: The element
@@ -308,7 +308,7 @@ func GetTraceElementFromTID(tID string) (TraceElement, error) {
 // to the element in a bug argument.
 //
 // Parameter:
-//   - bugArg (string): The bug info from the machine readable result file
+//   - bugArg string: The bug info from the machine readable result file
 //
 // Returns:
 //   - *TraceElement: The element
@@ -320,8 +320,8 @@ func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 // ShortenTrace shortens the trace by removing all elements after the given time
 //
 // Parameter:
-//   - time (int): The time to shorten the trace to
-//   - incl (bool): True if an element with the same time should stay included in the trace
+//   - time int: The time to shorten the trace to
+//   - incl bool: True if an element with the same time should stay included in the trace
 func ShortenTrace(time int, incl bool) {
 	MainTrace.ShortenTrace(time, incl)
 }
@@ -329,7 +329,7 @@ func ShortenTrace(time int, incl bool) {
 // RemoveElementFromTrace removes the element with the given tID from the trace
 //
 // Parameter:
-//   - tID (string): The tID of the element to remove
+//   - tID string: The tID of the element to remove
 func RemoveElementFromTrace(tID string) {
 	MainTrace.RemoveElementFromTrace(tID)
 }
@@ -338,8 +338,8 @@ func RemoveElementFromTrace(tID string) {
 // elements after and equal the given time
 //
 // Parameter:
-//   - routine (int): The routine to shorten
-//   - time (int): The time to shorten the trace to
+//   - routine int: The routine to shorten
+//   - time int: The time to shorten the trace to
 func ShortenRoutine(routine int, time int) {
 	MainTrace.ShortenRoutine(routine, time)
 }
@@ -347,7 +347,7 @@ func ShortenRoutine(routine int, time int) {
 // GetRoutineTrace returns the trace of the given routine
 //
 // Parameter:
-//   - id (int): The id of the routine
+//   - id int: The id of the routine
 //
 // Returns:
 //   - []traceElement: The trace of the routine
@@ -358,9 +358,9 @@ func GetRoutineTrace(id int) []TraceElement {
 // ShortenRoutineIndex a given a routine to index
 //
 // Parameter:
-//   - routine (int): the routine to shorten
-//   - index (int): the index to which it should be shortened
-//   - incl (bool): if true, the value a index will remain in the routine, otherwise it will be removed
+//   - routine int: the routine to shorten
+//   - index int: the index to which it should be shortened
+//   - incl bool: if true, the value a index will remain in the routine, otherwise it will be removed
 func ShortenRoutineIndex(routine, index int, incl bool) {
 	MainTrace.ShortenRoutineIndex(routine, index, incl)
 }
@@ -368,7 +368,7 @@ func ShortenRoutineIndex(routine, index int, incl bool) {
 // SetNoRoutines is a setter for the number of routines
 //
 // Parameter:
-//   - n (int): The number of routines
+//   - n int: The number of routines
 func SetNoRoutines(n int) {
 	MainTrace.SetNoRoutines(n)
 }
@@ -376,7 +376,7 @@ func SetNoRoutines(n int) {
 // GetNoRoutines is a getter for the number of routines
 //
 // Returns:
-//   - (int): The number of routines
+//   - int: The number of routines
 func GetNoRoutines() int {
 	return MainTrace.GetNoRoutines()
 }
@@ -403,8 +403,8 @@ func getLastElemPerRout() []TraceElement {
 // executed before a given time.
 //
 // Parameter:
-//   - wgID (int): The id of the waitgroup
-//   - waitTime (int): The time to check
+//   - wgID int: The id of the waitgroup
+//   - waitTime int: The time to check
 //
 // Returns:
 //   - int: The number of add operations
@@ -417,8 +417,8 @@ func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 // Only shift forward
 //
 // Parameter:
-//   - startTPre (int): The time to start shifting
-//   - shift (int): The shift
+//   - startTPre int: The time to start shifting
+//   - shift int: The shift
 func ShiftTrace(startTPre int, shift int) bool {
 	return MainTrace.ShiftTrace(startTPre, shift)
 }
@@ -427,7 +427,7 @@ func ShiftTrace(startTPre int, shift int) bool {
 // that they are after the element without changing the order of these elements
 //
 // Parameter:
-//   - element (traceElement): The element
+//   - element traceElement: The element
 func ShiftConcurrentOrAfterToAfter(element TraceElement) {
 	MainTrace.ShiftConcurrentOrAfterToAfter(element)
 }
@@ -437,8 +437,8 @@ func ShiftConcurrentOrAfterToAfter(element TraceElement) {
 // Only shift elements that are after start
 //
 // Parameter:
-//   - element (traceElement): The element
-//   - start (traceElement): The time to start shifting (not including)
+//   - element traceElement: The element
+//   - start traceElement: The time to start shifting (not including)
 func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
 	MainTrace.ShiftConcurrentOrAfterToAfterStartingFromElement(element, start)
 }
@@ -446,7 +446,7 @@ func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, star
 // Shift the element to be after all elements, that are concurrent to it
 //
 // Parameter:
-//   - element (traceElement): The element
+//   - element traceElement: The element
 func ShiftConcurrentToBefore(element TraceElement) {
 	MainTrace.ShiftConcurrentToBefore(element)
 }
@@ -454,7 +454,7 @@ func ShiftConcurrentToBefore(element TraceElement) {
 // Remove all elements that are concurrent to the element and have time greater or equal to tmin
 //
 // Parameter:
-//   - element (traceElement): The element
+//   - element traceElement: The element
 func RemoveConcurrent(element TraceElement, tmin int) {
 	MainTrace.RemoveConcurrent(element, tmin)
 }
@@ -462,7 +462,7 @@ func RemoveConcurrent(element TraceElement, tmin int) {
 // Remove all elements that are concurrent to the element or must happen after the element
 //
 // Parameter:
-//   - element (traceElement): The element
+//   - element traceElement: The element
 func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 	MainTrace.RemoveConcurrentOrAfter(element, tmin)
 }
@@ -470,7 +470,7 @@ func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 // For each routine, get the earliest element that is concurrent to the element
 //
 // Parameter:
-//   - element (traceElement): The element
+//   - element traceElement: The element
 //
 // Returns:
 //   - map[int]traceElement: The earliest concurrent element for each routine
@@ -481,7 +481,7 @@ func GetConcurrentEarliest(element TraceElement) map[int]TraceElement {
 // Remove all elements that have a later tPost that the given tPost
 //
 // Parameter:
-//   - tPost (int): Remove elements after tPost
+//   - tPost int: Remove elements after tPost
 func RemoveLater(tPost int) {
 	MainTrace.RemoveLater(tPost)
 }
@@ -490,9 +490,9 @@ func RemoveLater(tPost int) {
 // Only shift back
 //
 // Parameter:
-//   - routine (int): The routine to shift
-//   - startTSort (int): The time to start shifting
-//   - shift (int): The shift
+//   - routine int: The routine to shift
+//   - startTSort int: The time to start shifting
+//   - shift int: The shift
 //
 // Returns:
 //   - bool: True if the shift was successful, false otherwise (shift <= 0)
@@ -503,8 +503,8 @@ func ShiftRoutine(routine int, startTSort int, shift int) bool {
 // Get the partial trace of all element between startTime and endTime incluseve.
 //
 // Parameter:
-//   - startTime (int): The start time
-//   - endTime (int): The end time
+//   - startTime int: The start time
+//   - endTime int: The end time
 //
 // Returns:
 //   - map[int][]TraceElement: The partial trace
@@ -528,7 +528,7 @@ func CopyMainTrace() Trace {
 // Set the main trace
 //
 // Parameter:
-//   - trace (Trace): The trace
+//   - trace Trace: The trace
 func SetTrace(trace Trace) {
 	MainTrace = trace
 }
@@ -549,7 +549,7 @@ func HBWasCalc() bool {
 // Return how many elements are in a given routine of the main trace
 //
 // Parameter:
-//   - routine (int): routine to check for
+//   - routine int: routine to check for
 //
 // Returns:
 //   - number of elements in routine

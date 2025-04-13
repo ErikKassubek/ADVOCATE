@@ -35,8 +35,8 @@ import (
 // Rewrite a trace where a leaking unbuffered channel/select with possible partner was found.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -67,8 +67,8 @@ func rewriteUnbufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // if both elements are channel operations.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -131,8 +131,8 @@ func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
 // if a channel is stuck and a select is a possible partner
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -205,8 +205,8 @@ func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
 // if a select is stuck and a channel is a possible partner
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -279,8 +279,8 @@ func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
 // if both elements are select operations.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -372,8 +372,8 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace for a leaking buffered channel
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -437,8 +437,8 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // guided replay.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -475,8 +475,8 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace where a leaking waitgroup was found.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
@@ -507,8 +507,8 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace where a leaking cond was found.
 //
 // Parameter:
-//   - trace (*analysis.Trace): The trace to rewrite
-//   - bug (Bug): The bug to create a trace for
+//   - trace *analysis.Trace: The trace to rewrite
+//   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created

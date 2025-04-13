@@ -19,6 +19,16 @@ import (
 	"strings"
 )
 
+// getTraceElements passes all trace files in resultFolderPath and
+// extracts the position of all elements
+//
+// Parameter:
+//   - resultFolderPath string: path to the dir containing the trace files
+//
+// Returns:
+//   - map[string][]int: map containing all relevant lines in the form
+//     file -> []lines
+//   - error
 func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 	res := make(map[string][]int)
 
@@ -136,6 +146,14 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 	return res, nil
 }
 
+// getSubfolders returns the path to all subfolders in a given dir
+//
+// Parameter:
+//   - path string: the path to the main folder
+//
+// Returns:
+//   - []string: list of all subfolders in path
+//   - error
 func getSubfolders(path string) ([]string, error) {
 	var subfolders []string
 
@@ -163,6 +181,17 @@ func getSubfolders(path string) ([]string, error) {
 	return subfolders, nil
 }
 
+// readCommandFile reads to output.log file to determine the position of the
+// inserted header.
+//
+// Parameter:
+//   - path string: path to the output.log file
+//
+// Returns:
+//   - string: path to the file containing the header
+//   - int: line of "import advocate"
+//   - int: starting line of the header
+//   - error
 func readCommandFile(path string) (string, int, int, error) {
 	importLine := -1
 	headerLine := -1

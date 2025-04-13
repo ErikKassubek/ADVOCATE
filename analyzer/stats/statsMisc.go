@@ -39,7 +39,7 @@ var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibl
 // Collect miscellaneous statistics about the run
 //
 // Parameter:
-//   - dataPath (string): path to the result folder
+//   - dataPath string: path to the result folder
 //
 // Returns:
 //   - map[string]int: map with the stats

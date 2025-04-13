@@ -23,8 +23,8 @@ const (
 // Create the mutations for a GoPie chain
 //
 // Parameter:
-//   - c (chain): The scheduling chain to mutate
-//   - energy (int): Determines how many mutations are created
+//   - c chain: The scheduling chain to mutate
+//   - energy int: Determines how many mutations are created
 //
 // Returns:
 //   - map[string]chain: Set of mutations
@@ -113,7 +113,7 @@ func mutate(c chain, energy int) map[string]chain {
 // first or the last element has been removed
 //
 // Parameter:
-//   - c (chain): the chain to mutate
+//   - c chain: the chain to mutate
 //
 // Returns:
 //   - chain: a copy of the chain with the first element removed
@@ -131,7 +131,7 @@ func abridge(c chain) (chain, chain) {
 // new chain is created where those two elements are flipped
 //
 // Parameter:
-//   - c (chain): the chain to mutate
+//   - c chain: the chain to mutate
 //
 // Returns:
 //   - []chain: the list of mutated chains
@@ -153,7 +153,7 @@ func flip(c chain) []chain {
 // routine. This new element can not be in the chain already
 //
 // Parameter:
-//   - c (chain): the chain to mutate
+//   - c chain: the chain to mutate
 //
 // Returns:
 //   - []chain: the list of mutated chains
@@ -178,7 +178,7 @@ func substitute(c chain) []chain {
 // this element is added at the end.
 //
 // Parameter:
-//   - c (chain): the chain to mutate
+//   - c chain: the chain to mutate
 //
 // Returns:
 //   - []chain: the list of mutated chains

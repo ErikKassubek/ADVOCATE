@@ -19,10 +19,10 @@ import (
 // TraceElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
 //
-//   - index (int): Index in the routine
-//   - routine (int): The routine id
-//   - tpost (int): The timestamp at the end of the event
-//   - vc (clock.VectorClock): The vector clock
+//   - index int: Index in the routine
+//   - routine int: The routine id
+//   - tpost int: The timestamp at the end of the event
+//   - vc clock.VectorClock: The vector clock
 type TraceElementRoutineEnd struct {
 	index   int
 	routine int
@@ -34,10 +34,10 @@ type TraceElementRoutineEnd struct {
 // End a routine
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the new routine
-//   - pos (string): The position of the trace element in the file
+//   - routine int: The routine id
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the new routine
+//   - pos string: The position of the trace element in the file
 func AddTraceElementRoutineEnd(routine int, tPost string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -156,7 +156,7 @@ func (fo *TraceElementRoutineEnd) GetwVc() *clock.VectorClock {
 // Get the string representation of the object type
 //
 // Parameter:
-//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
@@ -170,7 +170,7 @@ func (re *TraceElementRoutineEnd) GetObjType(operation bool) string {
 // Given a trace element, check if it is equal to this element
 //
 // Parameter:
-//   - elem (TraceElement): The element to check against
+//   - elem TraceElement: The element to check against
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
@@ -190,7 +190,7 @@ func (re *TraceElementRoutineEnd) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (re *TraceElementRoutineEnd) SetT(time int) {
 	re.tPost = time
 }
@@ -198,7 +198,7 @@ func (re *TraceElementRoutineEnd) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (re *TraceElementRoutineEnd) SetTPre(tPre int) {
 	re.tPost = tPre
 }
@@ -206,7 +206,7 @@ func (re *TraceElementRoutineEnd) SetTPre(tPre int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (re *TraceElementRoutineEnd) SetTSort(tpost int) {
 	re.SetTPre(tpost)
 	re.tPost = tpost
@@ -216,7 +216,7 @@ func (re *TraceElementRoutineEnd) SetTSort(tpost int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (re *TraceElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
 	re.SetTPre(tSort)
 	if re.tPost != 0 {

@@ -30,13 +30,16 @@ const (
 
 // TraceElementNew is a trace element for the creation of an object / new
 // Fields:
-//   - index (int): Index in the routine
-//   - routine (int): The routine id
-//   - tPost (int): The timestamp of the new
-//   - id (int): The id of the underlying operation
-//   - elemType (newOpType): The type of the created object
-//   - num (int): Variable field for additional information
-//   - file (string), line (int): The position of the new
+//   - index int: Index in the routine
+//   - routine int: The routine id
+//   - tPost int: The timestamp of the new
+//   - id int: The id of the underlying operation
+//   - elemType newOpType: The type of the created object
+//   - num int: Variable field for additional information
+//   - file string: The file of the new
+//   - line int: The line of the new
+//   - vc *clock.VectorClock: The vector clock of the operation
+//   - wVc *clock.VectorClock: The weak vector clock of the operation
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type TraceElementNew struct {
@@ -55,12 +58,12 @@ type TraceElementNew struct {
 // Create a new trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the channel
-//   - elemType (string): Type of the created primitive
-//   - num (string): Variable field for additional information
-//   - pos (string): position
+//   - routine int: The routine id
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the channel
+//   - elemType string: Type of the created primitive
+//   - num string: Variable field for additional information
+//   - pos string: position
 func AddTraceElementNew(routine int, tPost string, id string, elemType string, num string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -182,7 +185,7 @@ func (n *TraceElementNew) GetTID() string {
 // Get the string representation of the object type
 //
 // Parameter:
-//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
@@ -253,7 +256,7 @@ func (n *TraceElementNew) ToString() string {
 // Given a trace element, check if it is equal to this element
 //
 // Parameter:
-//   - elem (TraceElement): The element to check against
+//   - elem TraceElement: The element to check against
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
@@ -264,7 +267,7 @@ func (n *TraceElementNew) IsEqual(elem TraceElement) bool {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (n *TraceElementNew) SetTPre(tSort int) {
 	n.tPost = tSort
 }
@@ -272,7 +275,7 @@ func (n *TraceElementNew) SetTPre(tSort int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (n *TraceElementNew) SetT(tSort int) {
 	n.tPost = tSort
 }
@@ -280,7 +283,7 @@ func (n *TraceElementNew) SetT(tSort int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (n *TraceElementNew) SetTSort(tSort int) {
 	n.tPost = tSort
 }
@@ -289,7 +292,7 @@ func (n *TraceElementNew) SetTSort(tSort int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (n *TraceElementNew) SetTWithoutNotExecuted(tSort int) {
 	if n.tPost == 0 {
 		return

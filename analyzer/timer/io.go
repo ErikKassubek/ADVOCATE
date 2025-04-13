@@ -24,9 +24,9 @@ var (
 // Function to write the time information to a file
 //
 // Parameter:
-//   - progName (string): name of the program
-//   - testName (string): name of the test
-//   - numberReplay (int): number of replay
+//   - progName string: name of the program
+//   - testName string: name of the test
+//   - numberReplay int: number of replay
 func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 	if !measureTime {
 		return
@@ -66,8 +66,8 @@ func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 // If time measurement is enabled, write the current timer values to a file
 //
 // Parameter:
-//   - progName (string): name of the prog
-//   - testName (string): name of the test
+//   - progName string: name of the prog
+//   - testName string: name of the test
 func UpdateTimeFileOverview(progName string, testName string) {
 	if !measureTime {
 		return

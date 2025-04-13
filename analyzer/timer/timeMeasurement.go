@@ -51,8 +51,8 @@ var (
 // Init time measurement
 //
 // Parameter:
-//   - mt (bool): if true, time is print into a time file
-//   - progPath (string):  path to the result folder
+//   - mt bool: if true, time is print into a time file
+//   - progPath string:  path to the result folder
 func Init(mt bool, progPath string) {
 	measureTime = mt
 

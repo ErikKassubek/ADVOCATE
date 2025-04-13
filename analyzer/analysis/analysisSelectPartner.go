@@ -198,8 +198,8 @@ func CheckForSelectCaseWithoutPartner() {
 // partner. Call whenever a select is processed.
 //
 // Parameter:
-//   - se (*TraceElementSelect): The trace elemen
-//   - vc (VectorClock): The vector clock
+//   - se *TraceElementSelect: The trace elemen
+//   - vc *VectorClock: The vector clock
 func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
@@ -267,10 +267,10 @@ func CheckForSelectCaseWithoutPartnerSelect(se *TraceElementSelect, vc *clock.Ve
 // partner. Call whenever a channel operation is processed.
 //
 // Parameter:
-//   - id (int): The id of the channel
-//   - vc (VectorClock): The vector clock
-//   - send (bool): True if the operation is a send
-//   - buffered (bool): True if the channel is buffered
+//   - id int: The id of the channel
+//   - vc VectorClock: The vector clock
+//   - send bool: True if the operation is a send
+//   - buffered bool: True if the channel is buffered
 func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorClock,
 	send bool, buffered bool) {
 
@@ -309,8 +309,8 @@ func CheckForSelectCaseWithoutPartnerChannel(ch TraceElement, vc *clock.VectorCl
 // partner. Call whenever a close operation is processed.
 //
 // Parameter:
-//   - id (int): The id of the channel
-//   - vc (VectorClock): The vector clock
+//   - id int: The id of the channel
+//   - vc VectorClock: The vector clock
 func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
@@ -335,7 +335,10 @@ func CheckForSelectCaseWithoutPartnerClose(cl *TraceElementChannel, vc *clock.Ve
 	}
 }
 
-// Get number of cases with possible partner
+// GetNumberSelectCasesWithPartner returns the number of cases with possible partner
+//
+// Returns:
+//   - int: the total number of select cases with possible partner over all selects
 func GetNumberSelectCasesWithPartner() int {
 	return numberSelectCasesWithPartner
 }

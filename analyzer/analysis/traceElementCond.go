@@ -29,13 +29,13 @@ const (
 // TraceElementCond is a trace element for a condition variable
 // Fields:
 //
-//   - routine (int): The routine id
-//   - tpre (int): The timestamp at the start of the event
-//   - tpost (int): The timestamp at the end of the event
-//   - id (int): The id of the condition variable
-//   - opC (opCond): The operation on the condition variable
-//   - file (string), line(int): The position of the condition variable operation in the code
-//   - tID (string): The id of the trace element, contains the position and the tpre
+//   - routine int: The routine id
+//   - tpre int: The timestamp at the start of the event
+//   - tpost int: The timestamp at the end of the event
+//   - id int: The id of the condition variable
+//   - opC opCond: The operation on the condition variable
+//   - file string, lineint: The position of the condition variable operation in the code
+//   - tID string: The id of the trace element, contains the position and the tpre
 type TraceElementCond struct {
 	index   int
 	routine int
@@ -54,12 +54,12 @@ type TraceElementCond struct {
 // Create a new condition variable trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPre (string): The timestamp at the start of the event
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the condition variable
-//   - opC (string): The operation on the condition variable
-//   - pos (string): The position of the condition variable operation in the code
+//   - routine int: The routine id
+//   - tPre string: The timestamp at the start of the event
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the condition variable
+//   - opC string: The operation on the condition variable
+//   - pos string: The position of the condition variable operation in the code
 func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
@@ -120,7 +120,7 @@ func (co *TraceElementCond) GetID() int {
 // Get the routine of the element
 //
 // Returns:
-//   - (int): The routine id
+//   - int: The routine id
 func (co *TraceElementCond) GetRoutine() int {
 	return co.routine
 }
@@ -144,7 +144,7 @@ func (co *TraceElementCond) GetTPost() int {
 // Get the timer, that is used for sorting the trace
 //
 // Returns:
-//   - (int): The timer of the element
+//   - int: The timer of the element
 func (co *TraceElementCond) GetTSort() int {
 	t := co.tPre
 	if co.opC == WaitCondOp {
@@ -188,7 +188,7 @@ func (co *TraceElementCond) GetTID() string {
 // Get the operation of the element
 //
 // Returns:
-//   - (OpCond): The operation of the element
+//   - OpCond: The operation of the element
 func (co *TraceElementCond) GetOpCond() OpCond {
 	return co.opC
 }
@@ -237,7 +237,7 @@ func (co *TraceElementCond) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (co *TraceElementCond) SetT(time int) {
 	co.tPre = time
 	co.tPost = time
@@ -246,7 +246,7 @@ func (co *TraceElementCond) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (co *TraceElementCond) SetTPre(tPre int) {
 	co.tPre = tPre
 	if co.tPost != 0 && co.tPost < tPre {
@@ -257,7 +257,7 @@ func (co *TraceElementCond) SetTPre(tPre int) {
 // Set the timer that is used for sorting the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (co *TraceElementCond) SetTSort(tSort int) {
 	co.SetTPre(tSort)
 	if co.opC == WaitCondOp {
@@ -269,7 +269,7 @@ func (co *TraceElementCond) SetTSort(tSort int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (co *TraceElementCond) SetTWithoutNotExecuted(tSort int) {
 	co.SetTPre(tSort)
 	if co.opC == WaitCondOp {
@@ -287,7 +287,7 @@ func (co *TraceElementCond) SetTWithoutNotExecuted(tSort int) {
 // Get the string representation of the element
 //
 // Returns:
-//   - (string): The string representation of the element
+//   - string: The string representation of the element
 func (co *TraceElementCond) ToString() string {
 	res := "D,"
 	res += strconv.Itoa(co.tPre) + "," + strconv.Itoa(co.tPost) + ","
@@ -323,7 +323,7 @@ func (co *TraceElementCond) updateVectorClock() {
 // Copy the element
 //
 // Returns:
-//   - (TraceElement): The copy of the element
+//   - TraceElement: The copy of the element
 func (co *TraceElementCond) Copy() TraceElement {
 	return &TraceElementCond{
 		index:   co.index,
@@ -346,8 +346,8 @@ func (co *TraceElementCond) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
-//   - pos (int): before (0) or after (1)
+//   - elem TraceElement: elem to add
+//   - pos int: before (0) or after (1)
 func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -358,7 +358,7 @@ func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
 // Add an element to the rel2 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
+//   - elem TraceElement: elem to add
 func (co *TraceElementCond) AddRel2(elem TraceElement) {
 	co.rel2 = append(co.rel2, elem)
 }

@@ -26,8 +26,8 @@ import (
 // Create the trace from all files in a folder.
 //
 // Parameter:
-//   - filePath (string): The path to the folder
-//   - ignoreAtomics (bool): If atomic operations should be ignored
+//   - filePath string: The path to the folder
+//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - int: The number of routines
@@ -80,6 +80,13 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 	return numberRoutines, elemCounter, nil
 }
 
+// getTraceInfoFromFile reads in the information from a the trace_info.log file
+//
+// Parameter:
+//   - filePath string: the path to the trace_info.log file
+//
+// Returns:
+//   - error
 func getTraceInfoFromFile(filePath string) error {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -134,9 +141,9 @@ func getTraceInfoFromFile(filePath string) error {
 // Read and build the trace from a file
 //
 // Parameter:
-//   - filePath (string): The path to the log file
-//   - routine (int): The routine id
-//   - ignoreAtomics (bool): If atomic operations should be ignored
+//   - filePath string: The path to the log file
+//   - routine int: The routine id
+//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - - int: number of elements
@@ -168,9 +175,9 @@ func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int,
 // Process one element from the log file.
 //
 // Parameter:
-//   - element (string): The element to process
-//   - routine (int): The routine id, equal to the line number
-//   - ignoreAtomics (bool): If atomic operations should be ignored
+//   - element string: The element to process
+//   - routine int: The routine id, equal to the line number
+//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - error: An error if the element could not be processed
@@ -249,6 +256,15 @@ func processElement(element string, routine int, ignoreAtomics bool) error {
 	return nil
 }
 
+// getRoutineFromFileName extracts the file ID from a trace file. Trace files
+// always have the name trace_[ID]
+//
+// Parameter:
+//   - fileName string: name of the trace file
+//
+// Returns:
+//   - int: if fileName is valid the trace id, otherwise 0
+//   - error
 func getRoutineFromFileName(fileName string) (int, error) {
 	// the file name is "trace_routineID.log"
 	// remove the .log at the end

@@ -27,7 +27,7 @@ import (
 // primitives and operation on those primitives
 //
 // Parameter:
-//   - progPath (string): path to the project
+//   - progPath string: path to the project
 //
 // Returns:
 //   - map[string][]int: all lines in the code that contain relevant operations.
@@ -86,7 +86,7 @@ func getProgramElements(progPath string) (map[string][]int, error) {
 // Given a directory, recursively collect all go files
 //
 // Parameter:
-//   - dir (sting): path to the directory
+//   - dir string: path to the directory
 //
 // Returns:
 //   - []string: paths to all go file in dir
@@ -120,7 +120,7 @@ func collectGoFiles(dir string) ([]string, error) {
 // analyzeFiles type-checks a package and returns the resulting package object
 //
 // Parameter:
-//   - files ([]string): list of files to analyze
+//   - files []string: list of files to analyze
 //
 // Returns:
 //   - *types.Package: the resulting types package
@@ -145,6 +145,17 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	return pkg, nil
 }
 
+// getElemsFromContent passes the ast tree and for a given file, finds the
+// line numbers of all relevant elements
+//
+// Parameter:
+//   - path string: the path to the analyzed file
+//   - content string: the content of the file
+//   - pkg *types.Package: The type information for the ast
+//
+// Returns:
+//   - []int: the line numbers containing relevant operations
+//   - error
 func getElemsFromContent(path string, content string, pkg *types.Package) ([]int, error) {
 	fset := token.NewFileSet()
 	node, err := parser.ParseFile(fset, path, content, parser.ParseComments)
@@ -184,6 +195,15 @@ type visitor struct {
 	elements    []int // line numbers
 }
 
+// Visit is called for each node when passing the ast. It determines if the
+// node represents a relevant operations and if so records the line number
+// of the element
+//
+// Parameter:
+//   - n ast.Node: the currently visited node
+//
+// Returns:
+//   - ast.Visitor
 func (v *visitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return nil
@@ -270,6 +290,11 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 	return v
 }
 
+// recordElement stores the line of a node in the visitor
+//
+// Parameter:
+//   - pos (token.Position): the code position of the node for which the
+//     function is called
 func (v *visitor) recordElement(pos token.Position) {
 	v.elements = append(v.elements, pos.Line)
 }

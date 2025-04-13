@@ -115,10 +115,10 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 // Read an result machine file file and get one result
 //
 // Parameter:
-//   - path (string): path to the result file
-//   - index (int): index of the relevant bug in the file
-//   - fileWithHeader (string): file that contains the header for the recording
-//   - headerLine (int): line number of the first line of the header
+//   - path string: path to the result file
+//   - index int: index of the relevant bug in the file
+//   - fileWithHeader string: file that contains the header for the recording
+//   - headerLine int: line number of the first line of the header
 //
 // Returns:
 //   - string: bug type
@@ -201,15 +201,15 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 // Write an bug explanation file
 //
 // Parameter:
-//   - path (string): path where the explanation file should be created
-//   - index (int): index of the bug file (name is e.g. bug_[index])
-//   - description (map[string]string): description of the bug, containing e.g. bug/diagnostics, name, explanation
-//   - positions (map[int][]string): positions of the bug elements
-//   - bugElemType (map[int]string): types of the bug elements
-//   - code (map[int][]string): program codes that contains the bug elements
-//   - replay (map[string]string): information about the replay
-//   - progInfo (map[string]sting): Info about the prog, e.g. prog/test name
-//   - fuzzing (int): Fuzzing run number
+//   - path string: path where the explanation file should be created
+//   - index int: index of the bug file (name is e.g. bug_[index])
+//   - description map[string]string: description of the bug, containing e.g. bug/diagnostics, name, explanation
+//   - positions map[int][]string: positions of the bug elements
+//   - bugElemType map[int]string: types of the bug elements
+//   - code map[int][]string: program codes that contains the bug elements
+//   - replay map[string]string: information about the replay
+//   - progInfo map[string]sting: Info about the prog, e.g. prog/test name
+//   - fuzzing int: Fuzzing run number
 //
 // Returns:
 //   - error

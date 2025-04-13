@@ -18,8 +18,8 @@ import (
 // createMutationsGFuzz creates the new mutations for a trace based on GFuzz
 //
 // Parameter:
-//   - numberMutation (int): number of mutation to create
-//   - flipChance (float64): probability that for a given select the preferred case is changed
+//   - numberMutation int: number of mutation to create
+//   - flipChance float64: probability that for a given select the preferred case is changed
 //
 // Returns:
 //   - int: number of added mutations
@@ -48,7 +48,7 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 // createMutation creates one new mutation
 //
 // Parameter:
-//   - flipChance (float64): probability that a select changes its preferred case
+//   - flipChance float64: probability that a select changes its preferred case
 //
 // Returns:
 //   - map[string][]fuzzingSelect: the new mutation

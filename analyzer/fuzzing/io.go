@@ -20,8 +20,8 @@ import (
 // Write a given mutation to a mutation file. These files are used to run the mutation
 //
 // Parameter:
-//   - pathToFolder (string): path to where the mutation should be created
-//   - mut (mutation): the mutation to write
+//   - pathToFolder string: path to where the mutation should be created
+//   - mut mutation: the mutation to write
 //
 // Returns:
 //   - error
@@ -77,10 +77,10 @@ func writeMutationToFile(pathToFolder string, mut mutation) error {
 // path to the dir the file is in
 //
 // Parameter:
-//   - path (string): path
+//   - path string: path
 //
 // Returns:
-//   - (string): path to the dir
+//   - string: path to the dir
 func getPath(path string) string {
 	info, err := os.Stat(path)
 	if err != nil {

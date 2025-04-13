@@ -18,8 +18,8 @@ import (
 // Struct to save an atomic event in the trace
 // Fields:
 //
-//   - tpost (int): The timestamp of the event
-//   - exitCode (int): expected exit code
+//   - tpost int: The timestamp of the event
+//   - exitCode int: expected exit code
 type TraceElementReplay struct {
 	tPost    int
 	exitCode int
@@ -28,8 +28,8 @@ type TraceElementReplay struct {
 // Create an end of replay event
 //
 // Parameter:
-//   - t (string): The timestamp of the event
-//   - exitCode (int): The exit code of the event
+//   - t string: The timestamp of the event
+//   - exitCode int: The exit code of the event
 func AddTraceElementReplay(t int, exitCode int) error {
 	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
@@ -133,7 +133,7 @@ func (er *TraceElementReplay) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (mu *TraceElementReplay) SetT(time int) {
 	mu.tPost = time
 }
@@ -141,7 +141,7 @@ func (mu *TraceElementReplay) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (mu *TraceElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
 	mu.tPost = tPre
@@ -150,7 +150,7 @@ func (mu *TraceElementReplay) SetTPre(tPre int) {
 // Set the timer, ther is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (er *TraceElementReplay) SetTSort(tSort int) {
 	tSort = max(1, tSort)
 	er.SetTPre(tSort)
@@ -161,7 +161,7 @@ func (er *TraceElementReplay) SetTSort(tSort int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
 	er.SetTPre(tSort)

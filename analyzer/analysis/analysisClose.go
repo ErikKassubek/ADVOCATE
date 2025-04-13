@@ -22,7 +22,7 @@ import (
 // It it is possible, print a warning or error.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
+//   - ch *TraceElementChannel: The trace element
 func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -117,9 +117,9 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 // foundSendOnClosedChannel is called, id an actual send on closed was found.
 //
 // Parameter:
-//   - elem (TraceElement): the send/select elem
-//   - id (int): id of the channel
-//   - actual (bool): set actual to true it the panic occurred, set to false if it is in an not triggered select case
+//   - elem TraceElement: the send/select elem
+//   - id int: id of the channel
+//   - actual bool: set actual to true it the panic occurred, set to false if it is in an not triggered select case
 func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -168,7 +168,7 @@ func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 // foundReceiveOnClosedChannel log the detection of an actual receive on a closed channel
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
+//   - ch *TraceElementChannel: The trace element
 func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
@@ -225,7 +225,7 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 // Must be called, before the current close operation is added to closePos
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
+//   - ch *TraceElementChannel: The trace element
 func checkForClosedOnClosed(ch *TraceElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)

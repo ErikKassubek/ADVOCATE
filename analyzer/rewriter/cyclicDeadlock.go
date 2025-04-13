@@ -22,8 +22,8 @@ import (
 // trigger the cyclic/resource deadlock described in the bug
 //
 // Parameter:
-//   - trace (*analysis.Trace): the trace to rewrite
-//   - bug (bugs.Bug): the bug that should be triggered by the rewrite
+//   - trace *analysis.Trace: the trace to rewrite
+//   - bug bugs.Bug: the bug that should be triggered by the rewrite
 func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 	if len(bug.TraceElement2) == 0 {
 		return errors.New("no trace elements in bug")
@@ -124,7 +124,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 // findLastTime returns the latest time stamp from the bug elements
 //
 // Parameters:
-//   - bugElements ([]analysis.TraceElement): the bug element to search through
+//   - bugElements []analysis.TraceElement: the bug element to search through
 //
 // Returns:
 //   - int: the highest tPost from the bug elements

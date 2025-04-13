@@ -32,21 +32,22 @@ const (
 
 // TraceElementChannel is a trace element for a channel
 // Fields:
-//   - index (int): Index in the routine
-//   - routine (int): The routine id
-//   - tpre (int): The timestamp at the start of the event
-//   - tpost (int): The timestamp at the end of the event
-//   - id (int): The id of the channel
-//   - opC (int, enum): The operation on the channel
-//   - cl (bool): Whether the channel has closed
-//   - oId (int): The id of the other communication
-//   - qSize (int): The size of the channel queue
-//   - qCount (int): The number of elements in the queue after the operation
-//   - file (string), line(int): The position of the channel operation in the code
-//   - sel (*traceElementSelect): The select operation, if the channel operation
+//   - index int: Index in the routine
+//   - routine int: The routine id
+//   - tpre int: The timestamp at the start of the event
+//   - tpost int: The timestamp at the end of the event
+//   - id int: The id of the channel
+//   - opC OpChannel: The operation on the channel
+//   - cl bool: Whether the channel has closed
+//   - oId int: The id of the other communication
+//   - qSize int: The size of the channel queue
+//   - qCount int: The number of elements in the queue after the operation
+//   - file string: The file of the channel operation in the code
+//   - line int: The line of the channel operation
+//   - sel *traceElementSelect: The select operation, if the channel operation
 //     is part of a select, otherwise nil
-//   - partner (*TraceElementChannel): The partner of the channel operation
-//   - tID (string): The id of the trace element, contains the position and the tpre
+//   - partner *TraceElementChannel: The partner of the channel operation
+//   - tID string: The id of the trace element, contains the position and the tpre
 type TraceElementChannel struct {
 	index   int
 	routine int
@@ -71,16 +72,16 @@ type TraceElementChannel struct {
 // Create a new channel trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPre (string): The timestamp at the start of the event
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the channel
-//   - opC (string): The operation on the channel
-//   - cl (string): Whether the channel was finished because it was closed
-//   - oId (string): The id of the other communication
-//   - qSize (string): The size of the channel queue
-//   - qCount (string): The number of elements in the queue
-//   - pos (string): The position of the channel operation in the code
+//   - routine int: The routine id
+//   - tPre string: The timestamp at the start of the event
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the channel
+//   - opC string: The operation on the channel
+//   - cl string: Whether the channel was finished because it was closed
+//   - oId string: The id of the other communication
+//   - qSize string: The size of the channel queue
+//   - qCount string: The number of elements in the queue
+//   - pos string: The position of the channel operation in the code
 //
 // Returns:
 //   - error
@@ -315,7 +316,7 @@ func (ch *TraceElementChannel) GetTPost() int {
 // Get the string representation of the object type
 //
 // Parameter:
-//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
@@ -354,7 +355,7 @@ func (ch *TraceElementChannel) GetSelect() *TraceElementSelect {
 // Given a trace element, check if it is equal to this element
 //
 // Parameter:
-//   - elem (TraceElement): The element to check against
+//   - elem TraceElement: The element to check against
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
@@ -374,7 +375,7 @@ func (ch *TraceElementChannel) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-// - time (int): The tPre and tPost of the element
+// - time int: The tPre and tPost of the element
 func (ch *TraceElementChannel) SetT(time int) {
 	ch.tPre = time
 	ch.tPost = time
@@ -383,7 +384,7 @@ func (ch *TraceElementChannel) SetT(time int) {
 // Set the partner of the channel operation
 //
 // Parameter:
-//   - partner (*TraceElementChannel): The partner of the channel operation
+//   - partner *TraceElementChannel: The partner of the channel operation
 func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
 	ch.partner = partner
 }
@@ -391,7 +392,7 @@ func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (ch *TraceElementChannel) SetTPre(tPre int) {
 	ch.tPre = tPre
 	if ch.tPost != 0 && ch.tPost < tPre {
@@ -406,7 +407,7 @@ func (ch *TraceElementChannel) SetTPre(tPre int) {
 // Set the tpre of the element. Do not set the tpre of the select operation
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (ch *TraceElementChannel) SetTPre2(tPre int) {
 	ch.tPre = tPre
 	if ch.tPost != 0 && ch.tPost < tPre {
@@ -417,7 +418,7 @@ func (ch *TraceElementChannel) SetTPre2(tPre int) {
 // Set the tpost of the element.
 //
 // Parameter:
-//   - tPost (int): The tpost of the element
+//   - tPost int: The tpost of the element
 func (ch *TraceElementChannel) SetTPost(tPost int) {
 	ch.tPost = tPost
 	if ch.sel != nil {
@@ -428,7 +429,7 @@ func (ch *TraceElementChannel) SetTPost(tPost int) {
 // Set the tpost of the element. Do not set the tpost of the select operation
 //
 // Parameter:
-//   - tPost (int): The tpost of the element
+//   - tPost int: The tpost of the element
 func (ch *TraceElementChannel) SetTPost2(tPost int) {
 	ch.tPost = tPost
 }
@@ -436,7 +437,7 @@ func (ch *TraceElementChannel) SetTPost2(tPost int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (ch *TraceElementChannel) SetTSort(tpost int) {
 	ch.SetTPre(tpost)
 	ch.tPost = tpost
@@ -449,7 +450,7 @@ func (ch *TraceElementChannel) SetTSort(tpost int) {
 // Set the timer, that is used for the sorting of the trace. Do not set the tpost of the select operation
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (ch *TraceElementChannel) SetTSort2(tpost int) {
 	ch.SetTPre(tpost)
 	ch.tPost = tpost
@@ -459,7 +460,7 @@ func (ch *TraceElementChannel) SetTSort2(tpost int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
 	ch.SetTPre(tSort)
 	if ch.tPost != 0 {
@@ -475,7 +476,7 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
 // value was not 0. Do not set the tpost of the select operation
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
 	ch.SetTPre(tSort)
 	if ch.tPost != 0 {
@@ -486,7 +487,7 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
 // Set the oID of the element
 //
 // Parameter:
-//   - oID (int): The oID of the element
+//   - oID int: The oID of the element
 func (ch *TraceElementChannel) SetOID(oID int) {
 	ch.oID = oID
 }
@@ -502,8 +503,8 @@ func (ch *TraceElementChannel) ToString() string {
 // Get the simple string representation of the element
 //
 // Parameter:
-//   - sep (string): The separator between the values
-//   - pos (bool): Whether the position should be included
+//   - sep string: The separator between the values
+//   - pos bool: Whether the position should be included
 //
 // Returns:
 //   - string: The simple string representation of the element
@@ -706,8 +707,8 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
-//   - pos (int): before (0) or after (1)
+//   - elem TraceElement: elem to add
+//   - pos int: before (0) or after (1)
 func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -718,7 +719,7 @@ func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 // Add an element to the rel2 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
+//   - elem TraceElement: elem to add
 func (ch *TraceElementChannel) AddRel2(elem TraceElement) {
 	ch.rel2 = append(ch.rel2, elem)
 }

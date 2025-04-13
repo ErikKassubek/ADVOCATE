@@ -23,8 +23,8 @@ import (
 // (not split by test/run)
 //
 // Parameter:
-//   - pathFolder (string): path the where the stat files should be created
-//   - progName (string): name of the analyzed program
+//   - pathFolder string: path the where the stat files should be created
+//   - progName string: name of the analyzed program
 func CreateStatsTotal(pathFolder, progName string) error {
 	resultPath := filepath.Join(pathFolder, "advocateResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
@@ -144,7 +144,7 @@ func CreateStatsTotal(pathFolder, progName string) error {
 // Parse a program to measure the number of files, and number of lines
 //
 // Parameter:
-//   - programPath (string): path to the folder containing the program
+//   - programPath string: path to the folder containing the program
 //
 // Returns:
 //   - map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
@@ -183,7 +183,7 @@ func statsProgram(programPath string) (map[string]int, error) {
 // Parse one program file to measure the number of lines
 //
 // Parameter:
-//   - programPath (string): path to the file
+//   - programPath string: path to the file
 //
 // Returns:
 //   - map[string]int: map with numberLines, numberNonEmptyLines

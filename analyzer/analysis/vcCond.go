@@ -17,7 +17,7 @@ import (
 // Update and calculate the vector clocks given a wait operation
 //
 // Parameter:
-//   - co (*TraceElementCond): The trace element
+//   - co *TraceElementCond: The trace element
 func CondWait(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -35,7 +35,7 @@ func CondWait(co *TraceElementCond) {
 // Update and calculate the vector clocks given a signal operation
 //
 // Parameter:
-//   - co (*TraceElementCond): The trace element
+//   - co *TraceElementCond: The trace element
 func CondSignal(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -53,7 +53,7 @@ func CondSignal(co *TraceElementCond) {
 // Update and calculate the vector clocks given a broadcast operation
 //
 // Parameter:
-//   - co (*TraceElementCond): The trace element
+//   - co *TraceElementCond: The trace element
 func CondBroadcast(co *TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

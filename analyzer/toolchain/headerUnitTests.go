@@ -23,13 +23,13 @@ import (
 // Add the header into a unit test
 //
 // Parameter:
-//   - fileName (string): path to the file containing the the test
-//   - testName (string): name of the test
-//   - replay (bool): true for replay, false for only recording
-//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
-//   - replayInfo (string): path of the fuzzing trace or if the replay trace
-//   - timeoutReplay (int): timeout for replay
-//   - record (bool): true to rerecord the leaks
+//   - fileName string: path to the file containing the the test
+//   - testName string: name of the test
+//   - replay bool: true for replay, false for only recording
+//   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - replayInfo string: path of the fuzzing trace or if the replay trace
+//   - timeoutReplay int: timeout for replay
+//   - record bool: true to rerecord the leaks
 //
 // Returns:
 //   - error
@@ -53,8 +53,8 @@ func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, rep
 // Remove all headers from a unit test file
 //
 // Parameter:
-//   - fileName (string): path to the file containing the the test
-//   - testName (string): name of the test
+//   - fileName string: path to the file containing the the test
+//   - testName string: name of the test
 //
 // Returns:
 //   - error
@@ -73,8 +73,8 @@ func headerRemoverUnit(fileName string) error {
 // Check if a test exists
 //
 // Parameter:
-//   - fileName (string): path to the file
-//   - testName (string): name of the test
+//   - fileName string: path to the file
+//   - testName string: name of the test
 //
 // Returns:
 //   - bool: true if the test exists, false otherwise
@@ -112,12 +112,12 @@ func testExists(fileName string, testName string) (bool, error) {
 // test exists.
 //
 // Parameter:
-//   - fileName (string): path to the file
-//   - testName (string): name of the test
-//   - replay (bool): true for replay, false for only recording
-//   - replayInfo (string): path of the fuzzing trace or if the replay trace
-//   - timeoutReplay (int): timeout for replay
-//   - record (bool): true to rerecord the trace
+//   - fileName string: path to the file
+//   - testName string: name of the test
+//   - replay bool: true for replay, false for only recording
+//   - replayInfo string: path of the fuzzing trace or if the replay trace
+//   - timeoutReplay int: timeout for replay
+//   - record bool: true to rerecord the trace
 //
 // Returns:
 //   - error
@@ -205,7 +205,7 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 // test exists.
 //
 // Parameter:
-//   - fileName (string): path to the file
+//   - fileName string: path to the file
 //
 // Returns:
 //   - error

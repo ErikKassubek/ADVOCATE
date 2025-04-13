@@ -21,10 +21,10 @@ import (
 // Create a new trace from the given bug
 //
 // Parameter:
-//   - trace (*analysis.Trace): Pointer to the trace to rewrite
-//   - bug (Bug): The bug to create a trace for
-//   - rewrittenBugs (*map[bugs.ResultType][]string): map of already rewritten bugs
-//   - retwriteOnce (bool): skip double bugs
+//   - trace *analysis.Trace: Pointer to the trace to rewrite
+//   - bug Bug: The bug to create a trace for
+//   - rewrittenBugs *map[bugs.ResultType][]string: map of already rewritten bugs
+//   - retwriteOnce bool: skip double bugs
 //
 // Returns:
 //   - bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)

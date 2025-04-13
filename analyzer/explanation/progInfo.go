@@ -20,7 +20,7 @@ import (
 // Read the program info from the output.log file
 //
 // Parameter:
-//   - path (string): path to the folder containing the output.log file
+//   - path string: path to the folder containing the output.log file
 //
 // Returns:
 //   - map[string]string: information about the analyzed test, e.g. file/test name and header position info

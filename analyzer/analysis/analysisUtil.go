@@ -21,7 +21,7 @@ import (
 // Get the info from a TID
 //
 // Parameter:
-//   - tID (string): The TID
+//   - tID string: The TID
 //
 // Returns:
 //   - string: the file

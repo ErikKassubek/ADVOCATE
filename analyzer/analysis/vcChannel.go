@@ -31,11 +31,11 @@ type bufferedVC struct {
 // channel.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
-//   - routSend (int): the route of the sender
-//   - routRecv (int): the route of the receiver
-//   - tID_send (string): the position of the send in the program
-//   - tID_recv (string): the position of the receive in the program
+//   - ch *TraceElementChannel: The trace element
+//   - routSend int: the route of the sender
+//   - routRecv int: the route of the receiver
+//   - tID_send string: the position of the send in the program
+//   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender TraceElement, recv TraceElement) {
 	if analysisCases["concurrentRecv"] || analysisFuzzing { // or fuzzing
 		switch r := recv.(type) {
@@ -120,10 +120,10 @@ type holdObj struct {
 // Update and calculate the vector clocks given a send on a buffered channel.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
-//   - vc (map[int]*VectorClock): the current vector clocks
-//   - wVc (map[int]*VectorClock): the current weak vector clocks
-//   - fifo (bool): true if the channel buffer is assumed to be fifo
+//   - ch *TraceElementChannel: The trace element
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
+//   - fifo bool: true if the channel buffer is assumed to be fifo
 func Send(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -205,10 +205,10 @@ func Send(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 // Update and calculate the vector clocks given a receive on a buffered channel.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
-//   - vc (map[int]*VectorClock): the current vector clocks
-//   - wVc (map[int]*VectorClock): the current weak vector clocks
-//   - fifo (bool): true if the channel buffer is assumed to be fifo
+//   - ch *TraceElementChannel: The trace element
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
+//   - fifo bool: true if the channel buffer is assumed to be fifo
 func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -295,9 +295,9 @@ func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 // Update and calculate the vector clocks for a stuck channel element
 //
 // Parameter:
-//   - routint (int): the route of the operation
-//   - vc (map[int]*VectorClock): the current vector clocks
-//   - wVc (map[int]VectorClock): the current weak vector clocks
+//   - routint int: the route of the operation
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -309,9 +309,9 @@ func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
 // Update and calculate the vector clocks given a close on a channel.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
-//   - vc (map[int]VectorClock): the current vector clocks
-//   - wVc (map[int]VectorClock): the current weakvector clocks
+//   - ch *TraceElementChannel: The trace element
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weakvector clocks
 func Close(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	if ch.tPost == 0 {
 		return
@@ -354,10 +354,10 @@ func SendC(ch *TraceElementChannel) {
 // Update and calculate the vector clocks given a receive on a closed channel.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): The trace element
-//   - vc (map[int]VectorClock): the current vector clocks
-//   - wVc (map[int]VectorClock): the current weakvector clocks
-//   - buffered (bool): true if the channel is buffered
+//   - ch *TraceElementChannel: The trace element
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weakvector clocks
+//   - buffered bool: true if the channel is buffered
 func RecvC(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, buffered bool) {
 	if ch.tPost == 0 {
 		return
@@ -394,9 +394,9 @@ func RecvC(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, buffered
 // bufferedVCs.
 //
 // Parameter:
-//   - id (int): the id of the channel
-//   - qSize (int): the buffer qSize of the channel
-//   - numRout (int): the number of routines
+//   - id int: the id of the channel
+//   - qSize int: the buffer qSize of the channel
+//   - numRout int: the number of routines
 func newBufferedVCs(id int, qSize int, numRout int) {
 	if _, ok := bufferedVCs[id]; !ok {
 		bufferedVCs[id] = make([]bufferedVC, 1)
@@ -410,10 +410,10 @@ func newBufferedVCs(id int, qSize int, numRout int) {
 // Used for not executed select send
 //
 // Parameter:
-//   - id (int): the id of the channel
-//   - routine (int): the route of the operation
-//   - vc (VectorClock): the vector clock of the operation
-//   - tID (string): the position of the send in the program
+//   - id int: the id of the channel
+//   - routine int: the route of the operation
+//   - vc VectorClock: the vector clock of the operation
+//   - tID string: the position of the send in the program
 func SetChannelAsLastSend(c TraceElement) {
 	if mostRecentSend[c.GetRoutine()] == nil {
 		mostRecentSend[c.GetRoutine()] = make(map[int]ElemWithVcVal)
@@ -426,10 +426,10 @@ func SetChannelAsLastSend(c TraceElement) {
 // Used for not executed select recv
 //
 // Parameter:
-//   - id (int): the id of the channel
-//   - rout (int): the route of the operation
-//   - vc (VectorClock): the vector clock of the operation
-//   - tID (string): the position of the recv in the program
+//   - id int: the id of the channel
+//   - rout int: the route of the operation
+//   - vc VectorClock: the vector clock of the operation
+//   - tID string: the position of the recv in the program
 func SetChannelAsLastReceive(c TraceElement) {
 	if mostRecentReceive[c.GetRoutine()] == nil {
 		mostRecentReceive[c.GetRoutine()] = make(map[int]ElemWithVcVal)

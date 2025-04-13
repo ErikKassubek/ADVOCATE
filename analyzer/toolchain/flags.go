@@ -25,7 +25,7 @@ var (
 	createStats      bool
 
 	noRewriteFlag             bool
-	analyisCasesFlag          map[string]bool
+	analysisCasesFlag         map[string]bool
 	ignoreAtomicsFlag         bool
 	fifoFlag                  bool
 	ignoreCriticalSectionFlag bool
@@ -33,13 +33,26 @@ var (
 	onlyAPanicAndLeakFlag     bool
 )
 
-func SetFlags(noRewrite bool, analyisCases map[string]bool, ignoreAtomics,
+// SetFlags makes the relevant command line arguments given to the analyzer
+// locally available for the toolchain
+//
+// Parameter:
+//   - noRewrite bool: do not rewrite found bugs
+//   - analysisCases map[string]bool: set which analysis scenarios should be run
+//   - ignoreAtomics bool: if true atomics are ignored for replay
+//   - fifo bool: assume that channels work as fifo queue
+//   - ignoreCriticalSection bool: ignore order of lock/unlock
+//   - rewriteAll bool: rewrite bugs that have been confirmed before
+//   - onlyAPanicAndLeak bool: do not run a HB analysis, but only detect actually occurring bugs
+//   - timeoutRec int: timeout of recording in seconds
+//   - timeoutRepl int: timeout of replay in seconds
+func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
 	timeoutRec, timeoutRepl int) {
 
 	noRewriteFlag = noRewrite
 
-	analyisCasesFlag = analyisCases
+	analysisCasesFlag = analysisCases
 
 	ignoreAtomicsFlag = ignoreAtomics
 	fifoFlag = fifo

@@ -55,7 +55,7 @@ var (
 	outR             string
 	outT             string
 
-	fifo                  bool
+	noFifo                bool
 	ignoreCriticalSection bool
 	ignoreAtomics         bool
 	ignoreRewrite         string
@@ -110,7 +110,7 @@ func main() {
 	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
 	flag.StringVar(&outT, "outT", "rewrittenTrace", "Name for the rewritten traces")
 
-	flag.BoolVar(&fifo, "fifo", false, "Assume a FIFO ordering for buffered channels (default false)")
+	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
@@ -223,7 +223,7 @@ func main() {
 	}
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
-		fifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
+		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
 		timeoutRecording, timeoutReplay)
 
 	// function injection to prevent circle import
@@ -308,18 +308,18 @@ func modeToolchain(mode string, numRerecorded int) {
 // if needed, rewrite the trace.
 //
 // Parameter:
-//   - pathTrace (string): path to the trace to be analyzed
-//   - noRewrite (bool): if set, rewrite is disabled
-//   - analysisCases (map[string]bool): map of analysis cases to run
-//   - outReadable (string): path to the readable result file
-//   - outMachine (string): path to the machine result file
-//   - ignoreAtomics (bool): if true, atomics are ignored for replay
-//   - fifo (bool): assume, that the channels work as a fifo queue
-//   - ignoreCriticalSection (bool): ignore the ordering of lock/unlock for the hb analysis
-//   - rewriteAll (bool): rewrite bugs that have been rewritten before
-//   - newTrace (string): path to where the rewritten trace should be created
-//   - fuzzingRun (int): number of fuzzing run (0 for recording, then always add 1)
-//   - onlyAPanicAndLeak (bool): only check for actual leaks and panics, do not calculate HB information
+//   - pathTrace string: path to the trace to be analyzed
+//   - noRewrite bool: if set, rewrite is disabled
+//   - analysisCases map[string]bool: map of analysis cases to run
+//   - outReadable string: path to the readable result file
+//   - outMachine string: path to the machine result file
+//   - ignoreAtomics bool: if true, atomics are ignored for replay
+//   - fifo bool: assume, that the channels work as a fifo queue
+//   - ignoreCriticalSection bool: ignore the ordering of lock/unlock for the hb analysis
+//   - rewriteAll bool: rewrite bugs that have been rewritten before
+//   - newTrace string: path to where the rewritten trace should be created
+//   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
+//   - onlyAPanicAndLeak bool: only check for actual leaks and panics, do not calculate HB information
 //
 // Returns:
 //   - error
@@ -462,7 +462,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 // Parse the given analysis cases
 //
 // Parameter:
-//   - cases (string): The string of analysis cases to parse
+//   - cases string: The string of analysis cases to parse
 //
 // Returns:
 //   - map[string]bool: A map of the analysis cases and if they are set
@@ -532,11 +532,11 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 // Rewrite the trace file based on given analysis results
 //
 // Parameter:
-//   - outMachine (string): The path to the analysis result file
-//   - newTrace (string): The path where the new traces folder will be created
-//   - resultIndex (int): The index of the result to use for the reordered trace file
-//   - numberOfRoutines (int): The number of routines in the trace
-//   - rewrittenTrace (*map[string][]string): set of bugs that have been already rewritten
+//   - outMachine string: The path to the analysis result file
+//   - newTrace string: The path where the new traces folder will be created
+//   - resultIndex int: The index of the result to use for the reordered trace file
+//   - numberOfRoutines int: The number of routines in the trace
+//   - rewrittenTrace *map[string][]string: set of bugs that have been already rewritten
 //
 // Returns:
 //   - bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
@@ -585,7 +585,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 // path to the trace
 //
 // Parameter:
-//   - pathTrace (string): path to the traces
+//   - pathTrace string: path to the traces
 //
 // Returns:
 //   - string: path to the folder containing the trace folder
@@ -614,7 +614,7 @@ func printHelp() {
 // printHelpMode prints the help for one mode
 //
 // Parameter:
-//   - mode (string): the mode (analysis or fuzzing)
+//   - mode string: the mode (analysis or fuzzing)
 func printHelpMode(mode string) {
 	switch mode {
 	case "analysis":

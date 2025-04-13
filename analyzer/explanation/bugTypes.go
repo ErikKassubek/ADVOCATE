@@ -255,7 +255,7 @@ var objectTypes = map[string]string{
 // Get the code key from the description
 //
 // Parameter:
-//   - description (string): bug description
+//   - description string: bug description
 //
 // Returns:
 //   - string: code if exists, otherwise empty string
@@ -269,7 +269,7 @@ func GetCodeFromDescription(description string) string {
 // Get the bug type descriptions from the bug type codes
 //
 // Parameter:
-//   - bugType (string): bug type code
+//   - bugType string: bug type code
 //
 // Returns:
 //   - map[string]string: bug type descriptions

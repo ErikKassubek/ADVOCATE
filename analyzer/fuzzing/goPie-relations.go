@@ -53,7 +53,7 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 // For each element in a routine trace, add it to the map from id to operation
 //
 // Parameter:
-//   - elem (analysis.TraceElement): Element to add
+//   - elem analysis.TraceElement: Element to add
 func calculateRelRule2AddElem(elem analysis.TraceElement) {
 	if !isGoPieElem(elem) && !useHBInfoFuzzing {
 		return

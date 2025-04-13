@@ -35,22 +35,22 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 // Main function for the toolchain
 //
 // Parameter:
-//   - mode (string): mode of the toolchain (main or test or explain)
-//   - advocate (string): path to the root ADVOCATE folder.
-//   - pathToMainFileOrTestDir (string): if mode is main, path to main file, if mode test, path to test folder
-//   - execName (string): name of the executable, only needed for mode main
-//   - progName (string): name of the program, used for stats
-//   - test (string): which test to run, if empty run all tests
-//   - numRerecorded (int): limit of number of rerecordings
-//   - fuzzing (int): -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
-//   - fuzzingTrace (string): path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
-//   - replayAt (bool): replay atomics
-//   - meaTime (bool): measure runtime
-//   - notExec (bool): find never executed operations
-//   - stats (bool): create statistics
-//   - keepTraces (bool): keep the traces after analysis
-//   - firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
-//   - cont (bool): continue an already started run
+//   - mode string: mode of the toolchain (main or test or explain)
+//   - advocate string: path to the root ADVOCATE folder.
+//   - pathToMainFileOrTestDir string: if mode is main, path to main file, if mode test, path to test folder
+//   - execName string: name of the executable, only needed for mode main
+//   - progName string: name of the program, used for stats
+//   - test string: which test to run, if empty run all tests
+//   - numRerecorded int: limit of number of rerecordings
+//   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - replayAt bool: replay atomics
+//   - meaTime bool: measure runtime
+//   - notExec bool: find never executed operations
+//   - stats bool: create statistics
+//   - keepTraces bool: keep the traces after analysis
+//   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//   - cont bool: continue an already started run
 func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName, test string,
 	numRerecorded, fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool, firstRun, cont bool, fileNumber, testNumber int) error {

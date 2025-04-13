@@ -17,8 +17,8 @@ import (
 // Update the vector clocks given a fork operation
 //
 // Parameter:
-//   - oldRout (int): The id of the old routine
-//   - newRout (int): The id of the new routine
+//   - oldRout int: The id of the old routine
+//   - newRout int: The id of the new routine
 func Fork(fo *TraceElementFork) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

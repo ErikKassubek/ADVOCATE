@@ -66,7 +66,7 @@ func addElemToChain(elem analysis.TraceElement) {
 // Add a new element to the chain
 //
 // Parameter:
-//   - elem (analysis.TraceElement): Element to add
+//   - elem analysis.TraceElement: Element to add
 func (ch *chain) add(elem analysis.TraceElement) {
 	if elem == nil {
 		return
@@ -78,8 +78,8 @@ func (ch *chain) add(elem analysis.TraceElement) {
 // replace replaces the element at a given index in a chain with another element
 //
 // Parameter:
-//   - index (int): index to change at
-//   - elem (analysis.TraceElement): element to set at index
+//   - index int: index to change at
+//   - elem analysis.TraceElement: element to set at index
 func (ch *chain) replace(index int, elem analysis.TraceElement) {
 	if elem == nil {
 		return
@@ -94,7 +94,7 @@ func (ch *chain) replace(index int, elem analysis.TraceElement) {
 // Returns if the chain contains a specific element
 //
 // Parameter:
-//   - elem (analysis.TraceElement): the element to check for
+//   - elem analysis.TraceElement: the element to check for
 //
 // Returns:
 //   - bool: true if the chain contains elem, false otherwise
@@ -134,8 +134,8 @@ func (ch *chain) lastElem() analysis.TraceElement {
 // If at least on index is not in the chain, nothing is done
 //
 // Parameter:
-//   - i (int): index of the first element
-//   - j (int): index of the second element
+//   - i int: index of the first element
+//   - j int: index of the second element
 func (ch *chain) swap(i, j int) {
 	if i >= 0 && i < len(ch.elems) && j >= 0 && j < len(ch.elems) {
 		ch.elems[i], ch.elems[j] = ch.elems[j], ch.elems[i]

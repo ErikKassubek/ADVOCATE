@@ -87,8 +87,8 @@ type fuzzingPair struct {
 // Merge the close information for a channel from a trace into the internal
 //
 // Parameter:
-//   - trace (closeInfo): info from the last recorded run
-//   - file (closeInfo): stored close info
+//   - trace closeInfo: info from the last recorded run
+//   - file closeInfo: stored close info
 //
 // Returns:
 //   - closeInfo: the new close info for the channel

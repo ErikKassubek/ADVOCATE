@@ -15,7 +15,6 @@ import (
 	"analyzer/results"
 	"analyzer/timer"
 	"analyzer/utils"
-	"errors"
 	"fmt"
 )
 
@@ -174,20 +173,4 @@ func checkForDoneBeforeAdd() {
 				"done", args1, "add", args2)
 		}
 	}
-}
-
-// getDoneElemFromTID returns the done element from wgDone with the given tID
-//
-// Parameter:
-//   - id (int): the id of the wait group
-//   - tID (string): the tID of the element
-//
-// Returns:
-func getDoneElemFromTID(id int, tID string) (TraceElement, error) {
-	for _, done := range wgDone[id] {
-		if done.GetTID() == tID {
-			return done, nil
-		}
-	}
-	return nil, errors.New("Could not find done operation with tID " + tID)
 }

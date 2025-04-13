@@ -49,9 +49,9 @@ import (
 //   - T1 ++ T2' ++ [X, c, a, X']
 //
 // Parameter:
-//   - trace (*analysis.Trace): Pointer to the trace to rewrite
-//   - bug (Bug): The bug to create a trace for
-//   - exitCode (int): The exit code to use for the stop marker
+//   - trace *analysis.Trace: Pointer to the trace to rewrite
+//   - bug Bug: The bug to create a trace for
+//   - exitCode int: The exit code to use for the stop marker
 //
 // Returns:
 //   - error: An error if the trace could not be created

@@ -21,7 +21,7 @@ import (
 // Get the positions of the bug elements in the program
 //
 // Parameter:
-//   - traceElem1 (map[int]string): The trace elements of the bug
+//   - traceElem1 map[int]string: The trace elements of the bug
 //
 // Returns:
 //   - map[int][]string: Dict for the code snippets
@@ -62,9 +62,9 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 // Get the code snippet of a program file at a specific line
 //
 // Parameter:
-//   - file (string): The path to the file
-//   - line (int): The line number
-//   - numbers (bool): If line numbers should be included
+//   - file string: The path to the file
+//   - line int: The line number
+//   - numbers bool: If line numbers should be included
 //
 // Returns:
 //   - string: The code snippet

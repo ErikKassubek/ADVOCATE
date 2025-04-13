@@ -30,7 +30,7 @@ var numberTimeout = 0
 // Printed in base color
 //
 // Parameter:
-//   - v (...any): the content of the log
+//   - v ...any: the content of the log
 func LogInfo(v ...any) {
 	log.Println(v...)
 }
@@ -39,8 +39,8 @@ func LogInfo(v ...any) {
 // Printed in base color
 //
 // Parameter:
-//   - format (string): the format (e.g. "%s")
-//   - v (...any): the content of the log
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
 func LogInfof(format string, v ...any) {
 	log.Printf(format, v...)
 }
@@ -49,7 +49,7 @@ func LogInfof(format string, v ...any) {
 // Printed in yellow
 //
 // Parameter:
-//   - v (...any): the content of the log
+//   - v ...any: the content of the log
 func LogImportant(v ...any) {
 	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
 }
@@ -58,8 +58,8 @@ func LogImportant(v ...any) {
 // Printed in yellow
 //
 // Parameter:
-//   - format (string): the format (e.g. "%s")
-//   - v (...any): the content of the log
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
 func LogImportantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
 }
@@ -68,7 +68,7 @@ func LogImportantf(format string, v ...any) {
 // Printed in green
 //
 // Parameter:
-//   - v (...any): the content of the log
+//   - v ...any: the content of the log
 func LogResult(v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
 }
@@ -77,8 +77,8 @@ func LogResult(v ...any) {
 // Printed in green
 //
 // Parameter:
-//   - format (string): the format (e.g. "%s")
-//   - v (...any): the content of the log
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
 func LogResultf(format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
 }
@@ -88,7 +88,7 @@ func LogResultf(format string, v ...any) {
 // Counts number of timeouts
 //
 // Parameter:
-//   - v (...any): the content of the log
+//   - v ...any: the content of the log
 func LogTimeout(v ...any) {
 	log.Print(Purple, fmt.Sprint(v...), Reset, "\n")
 	numberTimeout++
@@ -99,8 +99,8 @@ func LogTimeout(v ...any) {
 // Counts number of timeouts
 //
 // Parameter:
-//   - format (string): the format (e.g. "%s")
-//   - v (...any): the content of the log
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
 func LogTimeoutf(format string, v ...any) {
 	log.Printf(Purple+format+Reset, v...)
 	numberTimeout++
@@ -111,7 +111,7 @@ func LogTimeoutf(format string, v ...any) {
 // Counts number of error
 //
 // Parameter:
-//   - v (...any): the content of the log
+//   - v ...any: the content of the log
 func LogError(v ...any) {
 	log.Print(Red, fmt.Sprint(v...), Reset, "\n")
 	numberErr++
@@ -122,8 +122,8 @@ func LogError(v ...any) {
 // Counts number of error
 //
 // Parameter:
-//   - format (string): the format (e.g. "%s")
-//   - v (...any): the content of the log
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
 func LogErrorf(format string, v ...any) {
 	log.Printf(Red+format+Reset, v...)
 	numberErr++

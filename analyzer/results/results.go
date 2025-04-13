@@ -220,12 +220,12 @@ func (s SelectCaseResult) isInvalid() bool {
 // Result logs a found bug
 //
 // Parameter:
-//   - level (resultLevel): level of the message (critical, warning, ...)
-//   - resType (ResultType): type of bug that was found
-//   - argType1 (string): description of the type of elements in arg1
-//   - arg1 ([]ResultElem]): elements directly involved in the bug (e.g. in send on closed the send)
-//   - argType2 (string): description of the type of elements in arg2
-//   - arg2 ([]ResultElem]): elements indirectly involved in the bug (e.g. in send on closed the close)
+//   - level resultLevel: level of the message (critical, warning, ...)
+//   - resType ResultType: type of bug that was found
+//   - argType1 string: description of the type of elements in arg1
+//   - arg1 []ResultElem]: elements directly involved in the bug (e.g. in send on closed the send)
+//   - argType2 string: description of the type of elements in arg2
+//   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
 	if len(arg1) == 0 {
 		return
@@ -307,8 +307,8 @@ func InitResults(outReadable string, outMachine string) {
 // readable result files nad print them to the terminal
 //
 // Parameter:
-//   - noWarning (bool): if true, only critical errors will be shown
-//   - noPrint (bool): if true, do not print the errors to the terminal
+//   - noWarning bool: if true, only critical errors will be shown
+//   - noPrint bool: if true, do not print the errors to the terminal
 //
 // Returns:
 //   - int: number of bugs found
@@ -425,7 +425,7 @@ func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
 // getNumberRes returns the number of found bugs
 //
 // Parameters:
-//   - noWarning (bool): only get the number of
+//   - noWarning bool: only get the number of
 func getNumberRes(noWarning bool) int {
 	if noWarning {
 		return len(resultCriticalMachine)

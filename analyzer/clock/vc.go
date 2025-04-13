@@ -20,8 +20,8 @@ import (
 // vectorClock is a vector clock
 // Fields:
 //
-//   - size (int): The size of the vector clock
-//   - clock ([]int): The vector clock
+//   - size int: The size of the vector clock
+//   - clock []int: The vector clock
 type VectorClock struct {
 	size  int
 	clock map[uint32]uint32
@@ -30,10 +30,10 @@ type VectorClock struct {
 // Create a new vector clock
 //
 // Parameter:
-//   - size (int): The size of the vector clock
+//   - size int: The size of the vector clock
 //
 // Returns:
-//   - (vectorClock): The new vector clock
+//   - *VectorClock: The new vector clock
 func NewVectorClock(size int) *VectorClock {
 	if size < 0 {
 		size = 0
@@ -48,7 +48,7 @@ func NewVectorClock(size int) *VectorClock {
 // Create a new vector clock and set it
 //
 // Parameter:
-//   - size (int): The size of the vector clock
+//   - size int: The size of the vector clock
 //   - cl (map[uint32]iunt)32: The vector clock
 //
 // Returns:
@@ -77,11 +77,18 @@ func NewVectorClockSet(size int, cl map[uint32]uint32) *VectorClock {
 // Get the size of the vector clock
 //
 // Returns:
-//   - (int): The size of the vector clock
+//   - int: The size of the vector clock
 func (vc VectorClock) GetSize() int {
 	return int(vc.size)
 }
 
+// GetValue returns the value of the vector clock at a given index
+//
+// Parameter:
+//   - index int: the index to get the value for
+//
+// Returns:
+//   - uint32: the value at the given index
 func (vc *VectorClock) GetValue(index int) uint32 {
 	if val, ok := vc.clock[uint32(index)]; ok {
 		return val
@@ -89,22 +96,27 @@ func (vc *VectorClock) GetValue(index int) uint32 {
 	return 0
 }
 
+// SetValue sets a value of the vector clock at a given index
+//
+// Parameter:
+//   - index int: the index to set the value for
+//   - value uint32: the new value
 func (vc *VectorClock) SetValue(index int, value uint32) {
 	vc.clock[uint32(index)] = value
 }
 
-// Get the vector clock
+// GetClock returns the vector clock
 //
 // Returns:
-//   - (map[uint32]uint32): The vector clock
+//   - map[uint32]uint32: The vector clock
 func (vc *VectorClock) GetClock() map[uint32]uint32 {
 	return vc.clock
 }
 
-// Get a string representation of the vector clock
+// ToString returns a string representation of the vector clock
 //
 // Returns:
-//   - (string): The string representation of the vector clock
+//   - string: The string representation of the vector clock
 func (vc *VectorClock) ToString() string {
 	str := "["
 	for i := 1; i <= vc.size; i++ {
@@ -117,10 +129,10 @@ func (vc *VectorClock) ToString() string {
 	return str
 }
 
-// Increment the vector clock at the given position
+// Inc increments the vector clock at the given position
 //
 // Parameter:
-//   - routine (int): The routine to increment
+//   - routine int: The routine to increment
 func (vc *VectorClock) Inc(routine int) {
 	if routine > int(vc.size) {
 		return
@@ -133,13 +145,13 @@ func (vc *VectorClock) Inc(routine int) {
 	vc.clock[uint32(routine)]++
 }
 
-// Update the vector clock with the received vector clock
+// Sync updates the vector clock with the received vector clock
 //
 // Parameter:
-//   - rec (vectorClock): The received vector clock
+//   - rec *VectorClock: The received vector clock
 //
 // Returns:
-//   - (vectorClock): The synced vc (not a copy)
+//   - *VectorClock: The synced vc (not a copy)
 func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 	if vc == nil {
 		vc = rec.Copy()
@@ -175,7 +187,7 @@ func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 // Create a copy of the vector clock
 //
 // Returns:
-//   - (vectorClock): The copy of the vector clock
+//   - *VectorClock: The copy of the vector clock
 func (vc *VectorClock) Copy() *VectorClock {
 	newVc := NewVectorClock(vc.size)
 	for rout, val := range vc.clock {
@@ -199,6 +211,15 @@ func (vc *VectorClock) IsEqual(vc2 *VectorClock) bool {
 	return true
 }
 
+// IsMapVcEqual determines if two maps of vector clock are equal, meaning for
+// each key they have the same vector clock as vale
+//
+// Parameter:
+//   - v1 map[int]*VectorClock: vector clock 1
+//   - v2 map[int]*VectorClock: vector clock 2
+//
+// Returns:
+//   - bool: true if they are equal, false otherwise
 func IsMapVcEqual(v1 map[int]*VectorClock, v2 map[int]*VectorClock) bool {
 	if len(v1) != len(v2) {
 		return false

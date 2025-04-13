@@ -24,9 +24,9 @@ import (
 // Write the trace to a file
 //
 // Parameter:
-//   - traceToWrite (*analysis.Trace): Pointer to the trace to write
-//   - path (string): The path to the file to write to
-//   - replay (bool): If true, write only the elements relevant for replay
+//   - traceToWrite *analysis.Trace: Pointer to the trace to write
+//   - path string: The path to the file to write to
+//   - replay bool: If true, write only the elements relevant for replay
 func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
@@ -95,7 +95,7 @@ func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
 // Check if the element is relevant for replay
 //
 // Parameter:
-//   - element (analysis.TraceElement): element to check
+//   - element analysis.TraceElement: element to check
 //
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
@@ -107,10 +107,10 @@ func isReplay(element analysis.TraceElement) bool {
 // In path, create a file with the result message and the exit code for the rewrite
 //
 // Parameter:
-//   - path (string): The path to the file folder to write to
-//   - resultMessage (string): The result message
-//   - exitCode (int): The exit code
-//   - resultIndex (int): The index of the result
+//   - path string: The path to the file folder to write to
+//   - resultMessage string: The result message
+//   - exitCode int: The exit code
+//   - resultIndex int: The index of the result
 //
 // Returns:
 //   - error: The error that occurred

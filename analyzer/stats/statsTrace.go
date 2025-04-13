@@ -23,8 +23,8 @@ import (
 // Collect stats about the traces
 //
 // Parameter:
-//   - dataPath (string): path to the result folder
-//   - traceID (int): name of trace folder is datapath_traceId
+//   - dataPath string: path to the result folder
+//   - traceID int: name of trace folder is datapath_traceId
 //
 // Returns:
 //   - map[string]int: map with the stats
@@ -100,9 +100,9 @@ func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 // parseTraceFile parses a trace file to get all relevant stats information
 //
 // Parameter:
-//   - tracePath (string): Path the the trace file
-//   - stats (*map[string]int): Map to store the information in
-//   - known (*map[string][]string): Information about primitives that have already been
+//   - tracePath string: Path the the trace file
+//   - stats *map[string]int: Map to store the information in
+//   - known *map[string][]string: Information about primitives that have already been
 //   - seem in other trace files
 //
 // Returns:

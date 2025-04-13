@@ -58,8 +58,8 @@ func getNewDataMapMap() map[string]map[string]int {
 // Parse the analyzer and replay output to collect the corresponding information
 //
 // Parameter:
-//   - pathToResults (string): path to the advocateResult folder
-//   - fuzzing (int): number of fuzzing run, -1 for not fuzzing
+//   - pathToResults string: path to the advocateResult folder
+//   - fuzzing int: number of fuzzing run, -1 for not fuzzing
 //
 // Returns:
 //   - map[string]int: map with total information
@@ -130,10 +130,10 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 // Used to count number of unique bugs
 // Properties:
 //
-//   - paths ([]struct): list of paths to each element involved in the bug
-//   - bugType (string): ID of the bug type
-//   - replayWritten (bool): true if a replay trace was created for the bug
-//   - replaySuc (bool): true if the replay of the bug was successful
+//   - paths []string: list of paths to each element involved in the bug
+//   - bugType string: ID of the bug type
+//   - replayWritten bool: true if a replay trace was created for the bug
+//   - replaySuc bool: true if the replay of the bug was successful
 type processedBug struct {
 	paths         []string
 	bugType       string
@@ -156,9 +156,9 @@ func (pb *processedBug) getKey() string {
 // Parse a bug file to get the information
 //
 // Parameter:
-//   - filePath (string): path to the bug file
-//   - resTotal (map[string]map[string]int): total results
-//   - resUnique (map[string]map[string]int): unique results
+//   - filePath string: path to the bug file
+//   - resTotal map[string]map[string]int: total results
+//   - resUnique map[string]map[string]int: unique results
 //
 // Returns:
 //   - error

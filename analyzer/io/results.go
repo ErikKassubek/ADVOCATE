@@ -23,8 +23,8 @@ import (
 // Extract the needed information to create a trace to replay the selected error
 //
 // Parameter:
-//   - filePath (string): The path to the file containing the analysis results
-//   - index (int): The index of the result to create a trace for (0 based)
+//   - filePath string: The path to the file containing the analysis results
+//   - index int: The index of the result to create a trace for (0 based)
 //
 // Returns:
 //   - bool: true, if the bug was not a possible, but an actually occuring bug

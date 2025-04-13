@@ -18,8 +18,8 @@ import (
 // Check if a slice of strings contains an element
 //
 // Parameter:
-//   - s ([]T comparable): slice to check
-//   - e (T comparable): element to check
+//   - s []T comparable) slice to check
+//   - e T comparable: element to check
 //
 // Returns:
 //   - bool: true is e in s, false otherwise
@@ -35,8 +35,8 @@ func Contains[T comparable](s []T, e T) bool {
 // Split the string into two parts at the last occurrence of the separator
 //
 // Parameter:
-//   - str (string): string to split
-//   - sep (string): separator to split at
+//   - str string: string to split
+//   - sep string: separator to split at
 //
 // Returns:
 //   - []string: If sep in string: list with two elements split at the sep,
@@ -56,8 +56,8 @@ func SplitAtLast(str string, sep string) []string {
 // Add an element to a list, if it does not contain the element
 //
 // Parameter:
-//   - l ([]T comparable): The list
-//   - e (T comparable): The element
+//   - l []T comparable: The list
+//   - e T comparable: The element
 func AddIfNotContains[T comparable](l []T, e T) []T {
 	if !Contains(l, e) {
 		l = append(l, e)
@@ -69,8 +69,8 @@ func AddIfNotContains[T comparable](l []T, e T) []T {
 // lists. The resulting list does not contain duplicated.
 //
 // Parameter:
-//   - l1 ([]T comparable): list 1
-//   - l2 ([]T comparable): list 2
+//   - l1 []T comparable: list 1
+//   - l2 []T comparable: list 2
 func MergeLists[T comparable](l1, l2 []T) []T {
 	uniqueMap := make(map[T]bool)
 	res := []T{}
@@ -95,7 +95,7 @@ func MergeLists[T comparable](l1, l2 []T) []T {
 // Given a global path, make it local, by adding a ./ at the beginning it has non
 //
 // Parameter:
-//   - path (string): path
+//   - path string: path
 //
 // Returns:
 //   - string: path starting with ./

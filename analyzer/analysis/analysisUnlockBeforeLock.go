@@ -161,8 +161,8 @@ func checkForUnlockBeforeLock() {
 // for a given mutex
 //
 // Parameter:
-//   - id (int): id of the mutex
-//   - tID (int): tID of the unlock operation
+//   - id int: id of the mutex
+//   - tID int: tID of the unlock operation
 //
 // Returns:
 //   - TraceElement: if found the element, otherwise nil

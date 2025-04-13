@@ -65,9 +65,9 @@ const (
 // Type to store a specific id in a select
 //
 // Parameter:
-//   - ID (int): id of the involved channel
-//   - ObjType (string): object type
-//   - Index (int): internal index of the select int the case
+//   - ID int: id of the involved channel
+//   - ObjType string: object type
+//   - Index int: internal index of the select int the case
 type BugElementSelectCase struct {
 	ID      int
 	ObjType string
@@ -77,7 +77,7 @@ type BugElementSelectCase struct {
 // GetBugElementSelectCase builds a BugElementSelectCase from a string
 //
 // Parameter:
-//   - arg (string): the string representing the case
+//   - arg string: the string representing the case
 //
 // Returns:
 //   - BugElementSelectCase: the bug select as a BugElementSelectCase
@@ -99,10 +99,10 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 // Bug is a type to describe and store a found bug
 //
 // Parameter:
-//   - Type (ResultType): The type of the bug
-//   - TraceElement1 ([]analysis.TraceElement): first list of trace element involved in the bug
+//   - Type ResultType: The type of the bug
+//   - TraceElement1 []analysis.TraceElement: first list of trace element involved in the bug
 //     normally the elements that actually cause the bug, e.g. for send on close the send
-//   - TraceElement2 ([]analysis.TraceElement): second list of trace element involved in the bug
+//   - TraceElement2 []analysis.TraceElement: second list of trace element involved in the bug
 //     normally the elements indirectly involved or elements to solve the bug (possible partner),
 //     e.g. for send on close the close
 type Bug struct {

@@ -47,6 +47,17 @@ func Check(resultFolderPath string, progPath string) error {
 	return err
 }
 
+// areAllProgElemInTrace takes all relevant element positions in the program
+// and all relevant element positions in the traces to determine if all
+// elements in the program have been executed at least once
+//
+// Parameter:
+//   - progElems (map[string][]int) positions (file -> []line) of all relevant elems in the program
+//   - traceElems (map[string][]int) positions (file -> []line) of all relevant elems in the traces
+//
+// Returns:
+//   - map[string][]int: all elems (file -> []line) from the program that have
+//     never been executed
 func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]int) map[string][]int {
 	res := map[string][]int{}
 

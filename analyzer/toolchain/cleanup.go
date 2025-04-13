@@ -21,10 +21,10 @@ import (
 // Function to move results files from the package directory to the destination directory
 //
 // Parameter:
-//   - progPath (string): path to the program
-//   - packagePath (string): path to the package directory
-//   - destination (string): path to the destination directory
-//   - total (bool): merge all already created logs into total log, for fuzzing
+//   - progPath string: path to the program
+//   - packagePath string: path to the package directory
+//   - destination string: path to the destination directory
+//   - total bool: merge all already created logs into total log, for fuzzing
 func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{
 		"advocateTrace",
@@ -105,7 +105,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 // Remove all traces, both recorded and rewritten from the path
 //
 // Parameter:
-//   - path (string): path to the folder containing the traces
+//   - path string: path to the folder containing the traces
 func removeTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
@@ -156,8 +156,8 @@ func removeLogs(path string) {
 // Remove the fuzzing trace folder
 //
 // Parameter:
-//   - path (string): path to the folder containing the fuzzing traces
-//   - keepTrace (bool): if true move fuzzingTraces into the result folder, otherwise remove it
+//   - path string: path to the folder containing the fuzzing traces
+//   - keepTrace bool: if true move fuzzingTraces into the result folder, otherwise remove it
 func ClearFuzzingTrace(path string, keepTrace bool) {
 	fuzzingPath := filepath.Join(path, "fuzzingTraces")
 

@@ -24,10 +24,12 @@ func Clear() {
 	memory.Reset()
 }
 
+// ClearTrace sets the main trace to a new empty trace
 func ClearTrace() {
 	SetMainTraceToNewTrace()
 }
 
+// ClearData resets all data structures used in th analysis
 func ClearData() {
 	closeData = make(map[int]*TraceElementChannel)
 	lastSendRoutine = make(map[int]map[int]elemWithVc)

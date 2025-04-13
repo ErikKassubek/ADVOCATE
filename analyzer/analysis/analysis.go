@@ -21,11 +21,11 @@ import (
 // RunAnalysis starts the analysis of the main trace
 //
 // Parameter:
-//   - assume_fifo (bool): True to assume fifo ordering in buffered channels
-//   - ignoreCriticalSections (bool): True to ignore critical sections when updating vector clocks
-//   - analysisCasesMap (map[string]bool): The analysis cases to run
-//   - fuzzing (bool): true if run with fuzzing
-//   - onlyAPanicAndLeak (bool): only test for actual panics and leaks
+//   - assume_fifo bool: True to assume fifo ordering in buffered channels
+//   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
+//   - analysisCasesMap map[string]bool: The analysis cases to run
+//   - fuzzing bool: true if run with fuzzing
+//   - onlyAPanicAndLeak bool: only test for actual panics and leaks
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
@@ -52,7 +52,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 // runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
 //
 // Parameter:
-//   - all (bool): If true, check for all, else only check for the once, that are not detected by the full analysis
+//   - all bool: If true, check for all, else only check for the once, that are not detected by the full analysis
 func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
@@ -159,10 +159,10 @@ func checkForLeakSimple() {
 // RunHBAnalysis runs the full analysis happens before based analysis
 //
 // Parameter:
-//   - assume_fifo (bool): True to assume fifo ordering in buffered channels
-//   - ignoreCriticalSections (bool): True to ignore critical sections when updating vector clocks
-//   - analysisCasesMap (map[string]bool): The analysis cases to run
-//   - fuzzing (bool): true if run with fuzzing
+//   - assume_fifo bool: True to assume fifo ordering in buffered channels
+//   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
+//   - analysisCasesMap map[string]bool: The analysis cases to run
+//   - fuzzing bool: true if run with fuzzing
 func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
 	fifo = assumeFifo
 	modeIsFuzzing = fuzzing
@@ -309,7 +309,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 // it will look for a possible way to resolve the leak
 //
 // Parameter:
-//   - elem (TraceElement): Element to check
+//   - elem TraceElement: Element to check
 func checkLeak(elem TraceElement) {
 	switch e := elem.(type) {
 	case *TraceElementChannel:

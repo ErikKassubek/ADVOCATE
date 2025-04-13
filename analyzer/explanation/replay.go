@@ -21,9 +21,9 @@ import (
 // Get the text for the rewrite and replay info for the explanation
 //
 // Parameter:
-//   - bugType (string): bug code
-//   - code (map[string]string): replay output codes
-//   - index (int): index of the bug that is explained
+//   - bugType string: bug code
+//   - code map[string]string: replay output codes
+//   - index int: index of the bug that is explained
 //
 // Returns:
 //   - map[string]string: Information for the rewrite/replay part of the explanation file
@@ -71,7 +71,7 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 // From the bug code get wether the bug was actual, possible or a (possible) leak
 //
 // Parameter:
-//   - bugCode (string): the bug code
+//   - bugCode string: the bug code
 //
 // Returns:
 //   - string: Actual, Possible, Leak or Pos Leak
@@ -95,7 +95,7 @@ func getRewriteType(bugCode string) string {
 // Get the output codes from the output.log file
 //
 // Parameter:
-//   - path (string): path to the folder containing the output.log file
+//   - path string: path to the folder containing the output.log file
 //
 // Returns: map[string]stringL exit codes
 func getOutputCodes(path string) map[string]string {
@@ -164,8 +164,8 @@ func getOutputCodes(path string) map[string]string {
 // Get the text for the replay info for the explanation
 //
 // Parameter:
-//   - code (map[string]string): replay output codes
-//   - index (int): index of the bug that is explained
+//   - code map[string]string: replay output codes
+//   - index int: index of the bug that is explained
 //
 // Returns:
 //   - string: exit code

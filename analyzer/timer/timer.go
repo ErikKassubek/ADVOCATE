@@ -17,9 +17,9 @@ import (
 // Implementation of a timer that can be started and stopped
 //
 // Parameter:
-//   - startTime (time.Time): time of the last start
-//   - elapsedTime (time.Duration): total elapsed time
-//   - running (bool): true if running, false if stopped
+//   - startTime time.Time: time of the last start
+//   - elapsedTime time.Duration: total elapsed time
+//   - running bool: true if running, false if stopped
 type Timer struct {
 	startTime time.Time
 	elapsed   time.Duration

@@ -19,8 +19,8 @@ import (
 // Create a new relW and relR if needed
 //
 // Parameter:
-//   - index (int): The id of the atomic variable
-//   - nRout (int): The number of routines in the trace
+//   - index int: The id of the atomic variable
+//   - nRout int: The number of routines in the trace
 func newRel(index int, nRout int) {
 	if _, ok := relW[index]; !ok {
 		relW[index] = clock.NewVectorClock(nRout)
@@ -33,7 +33,7 @@ func newRel(index int, nRout int) {
 // Update and calculate the vector clocks given a lock operation
 //
 // Parameter:
-//   - mu (*TraceElementMutex): The trace element
+//   - mu *TraceElementMutex: The trace element
 func Lock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -66,7 +66,7 @@ func Lock(mu *TraceElementMutex) {
 // Update and calculate the vector clocks given a unlock operation
 //
 // Parameter:
-//   - mu (*TraceElementMutex): The trace element
+//   - mu *TraceElementMutex: The trace element
 func Unlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -93,10 +93,10 @@ func Unlock(mu *TraceElementMutex) {
 // Update and calculate the vector clocks given a rlock operation
 //
 // Parameter:
-//   - mu (*TraceElementMutex): The trace element
+//   - mu *TraceElementMutex: The trace element
 //
 // Returns:
-//   - (vectorClock): The new vector clock
+//   - *VectorClock: The new vector clock
 func RLock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
@@ -129,7 +129,7 @@ func RLock(mu *TraceElementMutex) {
 // Update and calculate the vector clocks given a runlock operation
 //
 // Parameter:
-//   - mu (*TraceElementMutex): The trace element
+//   - mu *TraceElementMutex: The trace element
 func RUnlock(mu *TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

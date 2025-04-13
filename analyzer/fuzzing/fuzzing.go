@@ -63,19 +63,19 @@ var (
 // Create the fuzzing data
 //
 // Parameter:
-//   - modeMain (bool): if true, run fuzzing on main function, otherwise on test
-//   - fm (bool): the mode used for fuzzing
-//   - advocate (string): path to advocate
-//   - progPath (string): path to the folder containing the prog/test
-//   - progName (string): name of the program
-//   - name (string): If modeMain, name of the executable, else name of the test
-//   - ignoreAtomic (bool): if true, ignore atomics for replay
-//   - meaTime (bool): measure runtime
-//   - notExec (bool): find never executed operations
-//   - stats (bool): create statistics
-//   - keepTraces (bool): keep the traces after analysis
-//   - skipExisting (bool): skip existing runs
-//   - cont (bool): continue partial fuzzing
+//   - modeMain bool: if true, run fuzzing on main function, otherwise on test
+//   - fm bool: the mode used for fuzzing
+//   - advocate string: path to advocate
+//   - progPath string: path to the folder containing the prog/test
+//   - progName string: name of the program
+//   - name string: If modeMain, name of the executable, else name of the test
+//   - ignoreAtomic bool: if true, ignore atomics for replay
+//   - meaTime bool: measure runtime
+//   - notExec bool: find never executed operations
+//   - stats bool: create statistics
+//   - keepTraces bool: keep the traces after analysis
+//   - skipExisting bool: skip existing runs
+//   - cont bool: continue partial fuzzing
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, cont bool) error {
 
@@ -191,20 +191,20 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 // Run Fuzzing on one program/test
 //
 // Parameter:
-//   - modeMain (bool): if true, run fuzzing on main function, otherwise on test
-//   - advocate (string): path to advocate
-//   - progName (string): name of the program
-//   - testPath (string): path to the test file
-//   - name (string): If modeMain, name of the executable, else name of the test
-//   - ignoreAtomic (bool): if true, ignore atomics for replay
-//   - hBInfoFuzzing (bool): whether to us HB info in fuzzing
-//   - meaTime (bool): measure runtime
-//   - notExec (bool): find never executed operations
-//   - createStats (bool): create statistics
-//   - keepTraces (bool): keep the traces after analysis
-//   - skipExisting (bool): skip existing runs
-//   - firstRun (bool): this is the first run, only set to false for fuzzing (except for the first fuzzing)
-//   - cont (bool): continue with an already started run
+//   - modeMain bool: if true, run fuzzing on main function, otherwise on test
+//   - advocate string: path to advocate
+//   - progName string: name of the program
+//   - testPath string: path to the test file
+//   - name string: If modeMain, name of the executable, else name of the test
+//   - ignoreAtomic bool: if true, ignore atomics for replay
+//   - hBInfoFuzzing bool: whether to us HB info in fuzzing
+//   - meaTime bool: measure runtime
+//   - notExec bool: find never executed operations
+//   - createStats bool: create statistics
+//   - keepTraces bool: keep the traces after analysis
+//   - skipExisting bool: skip existing runs
+//   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//   - cont bool: continue with an already started run
 func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 

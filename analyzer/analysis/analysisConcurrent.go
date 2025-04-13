@@ -24,7 +24,7 @@ import (
 // in fuzzingFlowSend. This is used for fuzzing.
 //
 // Parameter:
-//   - sender (*TraceElementChannel): Send trace element
+//   - sender *TraceElementChannel: Send trace element
 func getConcurrentSendForFuzzing(sender *TraceElementChannel) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
@@ -68,7 +68,7 @@ func getConcurrentSendForFuzzing(sender *TraceElementChannel) {
 // in fuzzingFlowRecv.
 //
 // Parameter:
-//   - ch (*TraceElementChannel): recv trace element
+//   - ch *TraceElementChannel: recv trace element
 func checkForConcurrentRecv(ch *TraceElementChannel, vc map[int]*clock.VectorClock) {
 	if analysisFuzzing {
 		timer.Start(timer.FuzzingAna)
@@ -206,7 +206,7 @@ func GetConcurrentInfoForFuzzing() (*[]ConcurrentEntry, *[]ConcurrentEntry, *[]C
 // primitive how often an operation has been executed on the primitive before.
 //
 // Parameter:
-//   - te (TraceElement): The trace element to get the counter for
+//   - te TraceElement: The trace element to get the counter for
 //
 // Returns:
 //   - int: the current fuzzing counter for the element
@@ -227,7 +227,7 @@ func getFuzzingCounter(te TraceElement) int {
 // incFuzzingCounter increases the fuzzing counter of a given element
 //
 // Parameter:
-//   - te (TraceElement): The element to increase the counter for
+//   - te TraceElement: The element to increase the counter for
 func incFuzzingCounter(te TraceElement) {
 	id := te.GetID()
 	pos := te.GetPos()

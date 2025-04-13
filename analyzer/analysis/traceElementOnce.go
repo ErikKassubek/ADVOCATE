@@ -22,12 +22,12 @@ import (
 // traceElementMutex is a trace element for a once
 // Fields:
 //
-//   - routine (int): The routine id
-//   - tpre (int): The timestamp at the start of the event
-//   - tpost (int): The timestamp at the end of the event
-//   - id (int): The id of the mutex
-//   - suc (bool): Whether the operation was successful
-//   - file (string), line (int): The position of the mutex operation in the code
+//   - routine int: The routine id
+//   - tpre int: The timestamp at the start of the event
+//   - tpost int: The timestamp at the end of the event
+//   - id int: The id of the mutex
+//   - suc bool: Whether the operation was successful
+//   - file (string), line int: The position of the mutex operation in the code
 type TraceElementOnce struct {
 	index   int
 	routine int
@@ -46,12 +46,12 @@ type TraceElementOnce struct {
 // Create a new mutex trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPre (string): The timestamp at the start of the event
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the mutex
-//   - suc (string): Whether the operation was successful (only for trylock else always true)
-//   - pos (string): The position of the mutex operation in the code
+//   - routine int: The routine id
+//   - tPre string: The timestamp at the start of the event
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the mutex
+//   - suc string: Whether the operation was successful (only for trylock else always true)
+//   - pos string: The position of the mutex operation in the code
 func AddTraceElementOnce(routine int, tPre string,
 	tPost string, id string, suc string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
@@ -202,7 +202,7 @@ func (on *TraceElementOnce) GetwVc() *clock.VectorClock {
 // Get the string representation of the object type
 //
 // Parameter:
-//   - operation (bool): if true get the operation code, otherwise only the primitive code
+//   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
@@ -228,7 +228,7 @@ func (on *TraceElementOnce) GetSuc() bool {
 // Given a trace element, check if it is equal to this element
 //
 // Parameter:
-//   - elem (TraceElement): The element to check against
+//   - elem TraceElement: The element to check against
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
@@ -248,7 +248,7 @@ func (on *TraceElementOnce) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (on *TraceElementOnce) SetT(time int) {
 	on.tPre = time
 	on.tPost = time
@@ -257,7 +257,7 @@ func (on *TraceElementOnce) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (on *TraceElementOnce) SetTPre(tPre int) {
 	on.tPre = tPre
 	if on.tPost != 0 && on.tPost < tPre {
@@ -268,7 +268,7 @@ func (on *TraceElementOnce) SetTPre(tPre int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (on *TraceElementOnce) SetTSort(tSort int) {
 	on.SetTPre(tSort)
 	on.tPost = tSort
@@ -278,7 +278,7 @@ func (on *TraceElementOnce) SetTSort(tSort int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (on *TraceElementOnce) SetTWithoutNotExecuted(tSort int) {
 	on.SetTPre(tSort)
 	if on.tPost != 0 {
@@ -343,8 +343,8 @@ func (on *TraceElementOnce) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   elem (TraceElement): elem to add
-//   pos (int): before (0) or after (1)
+//   elem TraceElement: elem to add
+//   pos int: before (0) or after (1)
 
 func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
@@ -356,7 +356,7 @@ func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
 // Add an element to the rel2 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
+//   - elem TraceElement: elem to add
 func (on *TraceElementOnce) AddRel2(elem TraceElement) {
 	on.rel2 = append(on.rel2, elem)
 }

@@ -17,7 +17,7 @@ import (
 // Parse the trace and record all relevant data
 //
 // Parameter:
-//   - trace (*trace *analysis.Trace): The trace to parse
+//   - trace *trace *analysis.Trace: The trace to parse
 func ParseTrace(trace *analysis.Trace) {
 	// clear current order for gFuzz
 	selectInfoTrace = make(map[string][]fuzzingSelect)
@@ -78,7 +78,7 @@ func ParseTrace(trace *analysis.Trace) {
 // With improvements those are all not ignored fuzzing elements
 //
 // Parameter:
-//   - elem (analysis.TraceElement): Element to check
+//   - elem analysis.TraceElement: Element to check
 //
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
@@ -95,7 +95,7 @@ func canBeAddedToChain(elem analysis.TraceElement) bool {
 // correspond to relevant operations. Those are , replay, routineEnd
 //
 // Parameter:
-//   - elem (*analysis.TraceElementFork): The element to check
+//   - elem *analysis.TraceElementFork: The element to check
 //
 // Returns:
 //   - True if the element is of one of those types, false otherwise
@@ -185,7 +185,7 @@ func parseChannelOp(elem *analysis.TraceElementChannel, selID int) {
 // Parse a select operation in the trace for fuzzing
 //
 // Parameter:
-//   - elem (*analysis.TraceElementSelect): the select element
+//   - elem *analysis.TraceElementSelect: the select element
 func parseSelectOp(elem *analysis.TraceElementSelect) {
 	if fuzzingModeGFuzz {
 		addFuzzingSelect(elem)

@@ -22,19 +22,19 @@ import (
 // TraceElementSelect is a trace element for a select statement
 // Fields:
 //
-//   - index (int): Index in the routine
-//   - routine (int): The routine id
-//   - tpre (int): The timestamp at the start of the event
-//   - tpost (int): The timestamp at the end of the event
-//   - id (int): The id of the select statement
-//   - cases ([]traceElementSelectCase): The cases of the select statement, ordered by casi starting from 0
-//   - chosenIndex (int): The internal index of chosen case
-//   - containsDefault (bool): Whether the select statement contains a default case
-//   - chosenCase (traceElementSelectCase): The chosen case, nil if default case chosen
-//   - chosenDefault (bool): if the default case was chosen
-//   - file (string), line(int): The position of the select statement in the code
-//   - posPartner ([]bool): For each case state, wether a possible partner exists
-//   - casesWithPosPartner ([]int): Casis of cases with possible partner based on HB
+//   - index int: Index in the routine
+//   - routine int: The routine id
+//   - tpre int: The timestamp at the start of the event
+//   - tpost int: The timestamp at the end of the event
+//   - id int: The id of the select statement
+//   - cases []traceElementSelectCase: The cases of the select statement, ordered by casi starting from 0
+//   - chosenIndex int: The internal index of chosen case
+//   - containsDefault bool: Whether the select statement contains a default case
+//   - chosenCase traceElementSelectCase: The chosen case, nil if default case chosen
+//   - chosenDefault bool: if the default case was chosen
+//   - file string, lineint: The position of the select statement in the code
+//   - posPartner []bool: For each case state, wether a possible partner exists
+//   - casesWithPosPartner []int: Casis of cases with possible partner based on HB
 type TraceElementSelect struct {
 	index               int
 	routine             int
@@ -58,13 +58,13 @@ type TraceElementSelect struct {
 // Add a new select statement trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPre (string): The timestamp at the start of the event
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the select statement
-//   - cases (string): The cases of the select statement
-//   - chosenIndex (string): The internal index of chosen case
-//   - pos (string): The position of the select statement in the code
+//   - routine int: The routine id
+//   - tPre string: The timestamp at the start of the event
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the select statement
+//   - cases string: The cases of the select statement
+//   - chosenIndex string: The internal index of chosen case
+//   - pos string: The position of the select statement in the code
 func AddTraceElementSelect(routine int, tPre string,
 	tPost string, id string, cases string, chosenIndex string, pos string) error {
 
@@ -360,7 +360,7 @@ func (se *TraceElementSelect) GetPartner() *TraceElementChannel {
 // Get the string representation of the object type
 //
 // Parameter:
-//   - operations (bool): if true, the operation id contains the operations, otherwise just that it is select
+//   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
 //
 // Returns:
 //   - the object type
@@ -404,7 +404,7 @@ func (se *TraceElementSelect) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (se *TraceElementSelect) SetT(time int) {
 	se.tPre = time
 	se.tPost = time
@@ -419,7 +419,7 @@ func (se *TraceElementSelect) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (se *TraceElementSelect) SetTPre(tPre int) {
 	se.tPre = tPre
 	if se.tPost != 0 && se.tPost < tPre {
@@ -434,7 +434,7 @@ func (se *TraceElementSelect) SetTPre(tPre int) {
 // Set the tpre of the element. Do not update the chosen case
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (se *TraceElementSelect) SetTPre2(tPre int) {
 	se.tPre = tPre
 	if se.tPost != 0 && se.tPost < tPre {
@@ -467,7 +467,7 @@ func (se *TraceElementSelect) SetChosenCase(index int) error {
 // Set tPost
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (se *TraceElementSelect) SetTPost(tPost int) {
 	se.tPost = tPost
 	se.chosenCase.SetTPost2(tPost)
@@ -476,7 +476,7 @@ func (se *TraceElementSelect) SetTPost(tPost int) {
 // Set tPost. Do not update the chosen case
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (se *TraceElementSelect) SetTPost2(tPost int) {
 	se.tPost = tPost
 }
@@ -484,7 +484,7 @@ func (se *TraceElementSelect) SetTPost2(tPost int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (se *TraceElementSelect) SetTSort(tSort int) {
 	se.SetTPre(tSort)
 	se.tPost = tSort
@@ -493,7 +493,7 @@ func (se *TraceElementSelect) SetTSort(tSort int) {
 // Set the timer, that is used for the sorting of the trace. Do not update the chosen case
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (se *TraceElementSelect) SetTSort2(tSort int) {
 	se.SetTPre2(tSort)
 	se.tPost = tSort
@@ -502,7 +502,7 @@ func (se *TraceElementSelect) SetTSort2(tSort int) {
 // Set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
-// Parameter: tSort (int): The timer of the element
+// Parameter: tSort int: The timer of the element
 func (se *TraceElementSelect) SetTWithoutNotExecuted(tSort int) {
 	se.SetTPre(tSort)
 	if se.tPost != 0 {
@@ -514,7 +514,7 @@ func (se *TraceElementSelect) SetTWithoutNotExecuted(tSort int) {
 // Set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0. Do not update the chosen case
 //
-// Parameter: tSort (int): The timer of the element
+// Parameter: tSort int: The timer of the element
 func (se *TraceElementSelect) SetTWithoutNotExecuted2(tSort int) {
 	se.SetTPre2(tSort)
 	if se.tPost != 0 {
@@ -700,8 +700,8 @@ func (se *TraceElementSelect) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
-//   - pos (int): before (0) or after (1)
+//   - elem TraceElement: elem to add
+//   - pos int: before (0) or after (1)
 func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
 	if se.chosenIndex == -1 { // default
 		return
@@ -713,7 +713,7 @@ func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
 // Add an element to the rel2 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
+//   - elem TraceElement: elem to add
 func (se *TraceElementSelect) AddRel2(elem TraceElement) {
 	if se.chosenIndex == -1 { // default
 		return

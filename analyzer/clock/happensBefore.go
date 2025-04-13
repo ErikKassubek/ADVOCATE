@@ -10,6 +10,7 @@
 
 package clock
 
+// HappensBefore provides an enum for possible happens before relations
 type HappensBefore int
 
 const (
@@ -22,8 +23,8 @@ const (
 // Check if vc1 is a cause of vc2
 //
 // Parameter:
-//   - vc1 (*vectorClock): The first vector clock
-//   - vc2 (*vectorClock): The second vector clock
+//   - vc1 *VectorClock: The first vector clock
+//   - vc2 *VectorClock: The second vector clock
 //
 // Returns:
 //   - bool: True if vc1 is a cause of vc2, false otherwise
@@ -43,8 +44,8 @@ func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
 // vector clocks
 //
 // Parameter:
-//   - vc1 (*vectorClock): The first vector clock
-//   - vc2 (*vectorClock): The second vector clock
+//   - vc1 *VectorClock: The first vector clock
+//   - vc2 *VectorClock: The second vector clock
 //
 // Returns:
 //   - happensBefore: The happens before relation between the two vector clocks

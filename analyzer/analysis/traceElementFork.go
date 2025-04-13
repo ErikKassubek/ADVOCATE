@@ -20,11 +20,11 @@ import (
 // TraceElementFork is a trace element for a go statement
 // Fields:
 //
-//   - index (int): Index in the routine
-//   - routine (int): The routine id
-//   - tpost (int): The timestamp at the end of the event
-//   - id (int): The id of the new go statement
-//   - file (string), line(int): The position of the trace element in the file
+//   - index int: Index in the routine
+//   - routine int: The routine id
+//   - tpost int: The timestamp at the end of the event
+//   - id int: The id of the new go statement
+//   - file (string), lineint: The position of the trace element in the file
 type TraceElementFork struct {
 	index   int
 	routine int
@@ -41,10 +41,10 @@ type TraceElementFork struct {
 // Create a new go statement trace element
 //
 // Parameter:
-//   - routine (int): The routine id
-//   - tPost (string): The timestamp at the end of the event
-//   - id (string): The id of the new routine
-//   - pos (string): The position of the trace element in the file
+//   - routine int: The routine id
+//   - tPost string: The timestamp at the end of the event
+//   - id string: The id of the new routine
+//   - pos string: The position of the trace element in the file
 func AddTraceElementFork(routine int, tPost string, id string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -184,7 +184,7 @@ func (fo *TraceElementFork) GetObjType(operation bool) string {
 // Given a trace element, check if it is equal to this element
 //
 // Parameter:
-//   - elem (TraceElement): The element to check against
+//   - elem TraceElement: The element to check against
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
@@ -204,7 +204,7 @@ func (fo *TraceElementFork) GetTraceIndex() (int, int) {
 // Set the tPre and tPost of the element
 //
 // Parameter:
-//   - time (int): The tPre and tPost of the element
+//   - time int: The tPre and tPost of the element
 func (fo *TraceElementFork) SetT(time int) {
 	fo.tPost = time
 }
@@ -212,7 +212,7 @@ func (fo *TraceElementFork) SetT(time int) {
 // Set the tpre of the element.
 //
 // Parameter:
-//   - tPre (int): The tpre of the element
+//   - tPre int: The tpre of the element
 func (fo *TraceElementFork) SetTPre(tPre int) {
 	fo.tPost = tPre
 }
@@ -220,7 +220,7 @@ func (fo *TraceElementFork) SetTPre(tPre int) {
 // Set the timer, that is used for the sorting of the trace
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (fo *TraceElementFork) SetTSort(tpost int) {
 	fo.SetTPre(tpost)
 	fo.tPost = tpost
@@ -230,7 +230,7 @@ func (fo *TraceElementFork) SetTSort(tpost int) {
 // value was not 0
 //
 // Parameter:
-//   - tSort (int): The timer of the element
+//   - tSort int: The timer of the element
 func (fo *TraceElementFork) SetTWithoutNotExecuted(tSort int) {
 	fo.SetTPre(tSort)
 	if fo.tPost != 0 {
@@ -279,8 +279,8 @@ func (fo *TraceElementFork) Copy() TraceElement {
 // Add an element to the rel1 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
-//   - pos (int): before (0) or after (1)
+//   - elem TraceElement: elem to add
+//   - pos int: before (0) or after (1)
 func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
@@ -291,7 +291,7 @@ func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 // Add an element to the rel2 set of the element
 //
 // Parameter:
-//   - elem (TraceElement): elem to add
+//   - elem TraceElement: elem to add
 func (fo *TraceElementFork) AddRel2(elem TraceElement) {
 	fo.rel2 = append(fo.rel2, elem)
 }

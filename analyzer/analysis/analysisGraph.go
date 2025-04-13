@@ -33,8 +33,8 @@ var (
 // - edges from done to add if the add happens before the done
 //
 // Parameter:
-//   - increases (map[int][]TraceElement): Operations that increase the "counter" (adds and locks)
-//   - decreases (map[int][]TraceElement): Operations that decrease the "counter" (dones and unlocks)
+//   - increases map[int][]TraceElement: Operations that increase the "counter" (adds and locks)
+//   - decreases map[int][]TraceElement: Operations that decrease the "counter" (dones and unlocks)
 //
 // Returns:
 //   - []Edge: The graph
@@ -70,7 +70,7 @@ func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[
 // Calculate the maximum flow of a graph using the ford fulkerson algorithm
 //
 // Parameter:
-//   - graph (map[TraceElement][]TraceElement): The graph
+//   - graph map[TraceElement][]TraceElement: The graph
 //
 // Returns:
 //   - int: The maximum flow
@@ -145,8 +145,8 @@ func findPath(graph map[TraceElement][]TraceElement) ([]TraceElement, int) {
 // Remove an element from a list
 //
 // Parameter:
-//   - list ([]TraceElement): The list
-//   - element (TraceElement): The element to remove
+//   - list []TraceElement: The list
+//   - element TraceElement: The element to remove
 //
 // Returns:
 //   - []string: The list without the element

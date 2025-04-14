@@ -188,7 +188,7 @@ func CheckForSelectCaseWithoutPartner() {
 		}
 
 		if analysisCases["selectWithoutPartner"] {
-			results.Result(results.WARNING, results.ASelCaseWithoutPartner,
+			results.Result(results.WARNING, utils.ASelCaseWithoutPartner,
 				"select", []results.ResultElem{arg1}, "case", cases)
 		}
 	}

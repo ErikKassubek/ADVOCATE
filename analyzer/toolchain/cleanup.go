@@ -83,7 +83,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		dest := filepath.Join(destination, file)
 
 		if file == "advocateTrace" {
-			movedTraces += 1
+			movedTraces++
 			dest += "_" + strconv.Itoa(movedTraces)
 		}
 
@@ -157,7 +157,7 @@ func removeLogs(path string) {
 	}
 }
 
-// Remove the fuzzing trace folder
+// ClearFuzzingTrace removes the fuzzing trace folder
 //
 // Parameter:
 //   - path string: path to the folder containing the fuzzing traces

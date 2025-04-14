@@ -64,7 +64,7 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 					Line:      line2,
 				}
 
-				results.Result(results.CRITICAL, results.PSendOnClosed,
+				results.Result(results.CRITICAL, utils.PSendOnClosed,
 					"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 			}
 		}
@@ -105,7 +105,7 @@ func checkForCommunicationOnClosedChannel(ch *TraceElementChannel) {
 					Line:      line2,
 				}
 
-				results.Result(results.WARNING, results.PRecvOnClosed,
+				results.Result(results.WARNING, utils.PRecvOnClosed,
 					"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 			}
 		}
@@ -156,10 +156,10 @@ func foundSendOnClosedChannel(elem TraceElement, actual bool) {
 	}
 
 	if actual {
-		results.Result(results.CRITICAL, results.ASendOnClosed,
+		results.Result(results.CRITICAL, utils.ASendOnClosed,
 			"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	} else {
-		results.Result(results.CRITICAL, results.PSendOnClosed,
+		results.Result(results.CRITICAL, utils.PSendOnClosed,
 			"send", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	}
 
@@ -213,10 +213,10 @@ func foundReceiveOnClosedChannel(ch *TraceElementChannel, actual bool) {
 	}
 
 	if actual {
-		results.Result(results.WARNING, results.ARecvOnClosed,
+		results.Result(results.WARNING, utils.ARecvOnClosed,
 			"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	} else {
-		results.Result(results.WARNING, results.PRecvOnClosed,
+		results.Result(results.WARNING, utils.PRecvOnClosed,
 			"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	}
 }
@@ -267,7 +267,7 @@ func checkForClosedOnClosed(ch *TraceElementChannel) {
 
 		utils.LogError("Found Close on Close: ", ch.ToString())
 
-		results.Result(results.CRITICAL, results.ACloseOnClosed,
+		results.Result(results.CRITICAL, utils.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	}
 }

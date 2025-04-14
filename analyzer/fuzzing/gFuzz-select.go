@@ -19,7 +19,7 @@ import (
 // Struct to handle the selects for fuzzing
 //
 //   - id string: replay id
-//   - t int: tpost of the select execution, used for order
+//   - t int: tPost of the select execution, used for order
 //   - chosenCase int: id of the chosen case, -1 for default
 //   - numberCases int: number of cases not including default
 //   - containsDefault bool: true if contains default case, otherwise false

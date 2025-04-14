@@ -366,7 +366,7 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 		}
 	}
 
-	return errors.New("Could not establish communication between two selects. Cannot rewrite trace.")
+	return errors.New("could not establish communication between two selects. Cannot rewrite trace")
 }
 
 // Rewrite a trace for a leaking buffered channel
@@ -451,7 +451,7 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 
 	hb := clock.GetHappensBefore(lockOp.GetVC(), lastLockOp.GetVC())
 	if hb != clock.Concurrent {
-		return errors.New("The stuck mutex lock is not concurrent with the prior lock. Cannot rewrite trace.")
+		return errors.New("the stuck mutex lock is not concurrent with the prior lock. Cannot rewrite trace")
 	}
 
 	// remove T_3 -> T_1 + [l'] + T_2 + [l]
@@ -461,7 +461,7 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	// -> T_1' + T_2' + [l]
 	trace.RemoveConcurrent(bug.TraceElement1[0], 0)
 
-	// set tpost of l to non zero
+	// set tPost of l to non zero
 	lockOp.SetT(lockOp.GetTPre())
 
 	// add the start and stop signal after l -> T_1' + T_2' + [X_s, l, X_e]
@@ -486,7 +486,7 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	wait := bug.TraceElement1[0]
 
 	if len(bug.TraceElement2) == 0 {
-		return errors.New("No possible partner to move. Cannot rewrite trace.")
+		return errors.New("no possible partner to move. Cannot rewrite trace")
 	}
 
 	trace.ShiftConcurrentOrAfterToAfter(wait)
@@ -496,7 +496,7 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	nrAdd, nrDone := trace.GetNrAddDoneBeforeTime(wait.GetID(), wait.GetTSort())
 
 	if nrAdd != nrDone {
-		return errors.New("The waitgroup is not balanced. Cannot rewrite trace.")
+		return errors.New("the wait group is not balanced. Cannot rewrite trace")
 	}
 
 	return nil
@@ -519,7 +519,7 @@ func rewriteCondLeak(trace *analysis.Trace, bug bugs.Bug) error {
 
 	wait := bug.TraceElement1[0]
 
-	res := trace.GetConcurrentWaitgroups(wait)
+	res := trace.GetConcurrentWaitGroups(wait)
 
 	// possible signals to release the wait
 	if len(res["signal"]) > 0 {

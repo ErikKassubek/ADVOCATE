@@ -19,7 +19,7 @@ import (
 	"os"
 )
 
-// Read the fail containing the output of the analysis
+// ReadAnalysisResults read the file containing the output of the analysis
 // Extract the needed information to create a trace to replay the selected error
 //
 // Parameter:

@@ -21,6 +21,7 @@ import "analyzer/analysis"
 // Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
 // Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
+// constants to distinguish between the previous and next elem in the scheduling chain
 const (
 	Before = 0
 	After  = 1

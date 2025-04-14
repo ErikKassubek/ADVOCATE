@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"analyzer/analysis"
-	"analyzer/bugs"
 	"analyzer/fuzzing"
 	"analyzer/io"
 	"analyzer/memory"
@@ -81,13 +80,6 @@ var (
 	cont bool
 
 	noMemorySupervisor bool
-)
-
-const (
-	HBFuzzHBAna = 0
-	FuzzHBAna   = 1
-	HBFuzzNoAna = 2
-	FuzzNoAna   = 3
 )
 
 // Main function
@@ -204,7 +196,7 @@ func main() {
 	}
 
 	if !noMemorySupervisor {
-		go memory.MemorySupervisor() // cancel analysis if not enough ram
+		go memory.Supervisor() // cancel analysis if not enough ram
 	}
 
 	// outMachine := filepath.Join(resultFolder, outM) + ".log"
@@ -349,9 +341,9 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	if numberElems == 0 {
 		utils.LogInfof("Trace at %s does not contain any elements", pathTrace)
 		return nil
-	} else {
-		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 	}
+
+	utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
 	analysis.SetNoRoutines(numberOfRoutines)
 
@@ -376,12 +368,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		analysis.Clear()
 		if memory.WasCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
-		} else {
-			return fmt.Errorf("Analysis was canceled due to unexpected panic")
 		}
-	} else {
-		utils.LogInfo("Analysis finished")
+		return fmt.Errorf("Analysis was canceled due to unexpected panic")
 	}
+	utils.LogInfo("Analysis finished")
 
 	numberOfResults, err := results.CreateResultFiles(noWarning, true)
 	if err != nil {
@@ -413,7 +403,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		utils.LogError("Could not run rewrite: Not enough RAM")
 	}
 
-	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
+	rewrittenBugs := make(map[utils.ResultType][]string) // bugtype -> paths string
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"
@@ -423,16 +413,12 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
-		needed, double, err := rewriteTrace(outMachine,
-			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
+		needed, err := rewriteTrace(outMachine,
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs)
 
 		if !needed {
 			notNeededRewrites++
-			if double {
-				fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
-			} else {
-				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
-			}
+			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 		} else if err != nil {
 			failedRewrites++
 			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
@@ -495,9 +481,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 			analysisCases[c] = true
 		}
 
-		// takes to long, only take out for tests
-		analysisCases["resourceDeadlock"] = false
-
 		// remove when implemented
 		analysisCases["mixedDeadlock"] = false
 
@@ -540,49 +523,44 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 //   - newTrace string: The path where the new traces folder will be created
 //   - resultIndex int: The index of the result to use for the reordered trace file
 //   - numberOfRoutines int: The number of routines in the trace
-//   - rewrittenTrace *map[string][]string: set of bugs that have been already rewritten
+//   - rewrittenTrace *map[utils.ResultType][]string: set of bugs that have been already rewritten
 //
 // Returns:
-//   - bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
-//   - bool: true if rewrite was skipped because of double
+//   - bool: true, if a rewrite was necessary, false if not (e.g. actual bug, warning)
 //   - error: An error if the trace file could not be created
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
-	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
+	numberOfRoutines int, rewrittenTrace *map[utils.ResultType][]string) (bool, error) {
 	timer.Start(timer.Rewrite)
 	defer timer.Stop(timer.Rewrite)
 
 	actual, bug, err := io.ReadAnalysisResults(outMachine, resultIndex)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	if actual {
-		return false, false, nil
+		return false, nil
 	}
 
 	traceCopy := analysis.CopyMainTrace()
 
-	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace, rewriteOnce)
+	rewriteNeeded, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
 
 	if err != nil {
-		return rewriteNeeded, false, err
-	}
-
-	if skip {
-		return rewriteNeeded, skip, err
+		return rewriteNeeded, err
 	}
 
 	err = io.WriteTrace(&traceCopy, newTrace, true)
 	if err != nil {
-		return rewriteNeeded, false, err
+		return rewriteNeeded, err
 	}
 
 	err = io.WriteRewriteInfoFile(newTrace, string(bug.Type), code, resultIndex)
 	if err != nil {
-		return rewriteNeeded, false, err
+		return rewriteNeeded, err
 	}
 
-	return rewriteNeeded, false, nil
+	return rewriteNeeded, nil
 }
 
 // getFolderTrace returns the path to the folder containing the trace, given the

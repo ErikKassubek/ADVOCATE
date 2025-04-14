@@ -14,7 +14,7 @@ import (
 	"analyzer/timer"
 )
 
-// Update the vector clocks given a fork operation
+// Fork updates the vector clocks given a fork operation
 //
 // Parameter:
 //   - oldRout int: The id of the old routine

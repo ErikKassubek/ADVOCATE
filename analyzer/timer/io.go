@@ -21,7 +21,7 @@ var (
 	resultFolder = ""
 )
 
-// Function to write the time information to a file
+// UpdateTimeFileDetail writes the time information to a file
 //
 // Parameter:
 //   - progName string: name of the program
@@ -63,7 +63,8 @@ func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 	}
 }
 
-// If time measurement is enabled, write the current timer values to a file
+// UpdateTimeFileOverview write the current timer values to a file
+// if time measurement is enabled,
 //
 // Parameter:
 //   - progName string: name of the prog

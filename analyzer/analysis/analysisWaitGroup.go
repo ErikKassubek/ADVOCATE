@@ -169,7 +169,7 @@ func checkForDoneBeforeAdd() {
 
 			}
 
-			results.Result(results.CRITICAL, results.PNegWG,
+			results.Result(results.CRITICAL, utils.PNegWG,
 				"done", args1, "add", args2)
 		}
 	}

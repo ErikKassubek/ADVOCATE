@@ -27,7 +27,7 @@ func newWg(index int, nRout int) {
 	}
 }
 
-// Calculate the new vector clock for a add or done operation and update cv
+// Change calculate the new vector clock for a add or done operation and update cv
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
@@ -48,7 +48,7 @@ func Change(wa *TraceElementWait) {
 	}
 }
 
-// Calculate the new vector clock for a wait operation and update cv
+// Wait calculates the new vector clock for a wait operation and update cv
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element

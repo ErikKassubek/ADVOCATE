@@ -50,7 +50,7 @@ func NewTrace() Trace {
 	}
 }
 
-// Add an element to the trace
+// AddElement adds an element to the trace
 //
 // Parameter:
 //   - elem TraceElement: Element to add
@@ -60,7 +60,7 @@ func (t *Trace) AddElement(elem TraceElement) {
 	t.numberElemsInTrace[routine]++
 }
 
-// Add an replay end element to a trace
+// AddTraceElementReplay adds an replay end element to a trace
 //
 // Parameter:
 //   - ts string: The timestamp of the event
@@ -93,7 +93,7 @@ func (a sortByTSort) Less(i, j int) bool {
 	return a[i].GetTSort() < a[j].GetTSort()
 }
 
-// Sort each routine of the trace by tpost
+// Sort each routine of the trace by tPost
 func (t *Trace) Sort() {
 	for routine, trace := range t.traces {
 		sort.Sort(sortByTSort(trace))
@@ -101,7 +101,7 @@ func (t *Trace) Sort() {
 	}
 }
 
-// Sort each routine of the trace by tpost
+// SortRoutines sort each routine of the trace by tPost
 //
 // Parameter:
 //   - routines []int: List of routines to sort. For routines that are not in the trace, do nothing
@@ -114,7 +114,7 @@ func (t *Trace) SortRoutines(routines []int) {
 	}
 }
 
-// Get the traces
+// GetTraces returns the traces
 //
 // Returns:
 //   - map[int][]traceElement: The traces
@@ -122,7 +122,7 @@ func (t *Trace) GetTraces() map[int][]TraceElement {
 	return t.traces
 }
 
-// Return the number of TraceElement with cap and len
+// GetTraceSize returns the number of TraceElement with cap and len
 func (t *Trace) GetTraceSize() (int, int) {
 	capTot := 0
 	lenTot := 0
@@ -133,7 +133,7 @@ func (t *Trace) GetTraceSize() (int, int) {
 	return capTot, lenTot
 }
 
-// Get the trace of the given routine
+// GetRoutineTrace returns the trace of the given routine
 //
 // Parameter:
 //   - id int: The id of the routine
@@ -144,8 +144,8 @@ func (t *Trace) GetRoutineTrace(id int) []TraceElement {
 	return t.traces[id]
 }
 
-// Given the file and line info, return the routine and index of the element
-// in trace.
+// GetTraceElementFromTID returns the routine and index of the element
+// in trace, given the file and line info.
 //
 // Parameter:
 //   - tID string: The tID of the element
@@ -168,8 +168,8 @@ func (t *Trace) GetTraceElementFromTID(tID string) (TraceElement, error) {
 	return nil, errors.New("Element " + tID + " does not exist")
 }
 
-// Given the bug info from the machine readable result file, return the element
-// in the trace.
+// GetTraceElementFromBugArg returns the element in the trace,
+// given the bug info from the machine readable result file.
 //
 // Parameter:
 //   - bugArg string: The bug info from the machine readable result file
@@ -215,7 +215,7 @@ func (t *Trace) GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
 	return nil, fmt.Errorf("Element %s not in trace", bugArg)
 }
 
-// Shorten the trace by removing all elements after the given time
+// ShortenTrace shortens the trace by removing all elements after the given time
 //
 // Parameter:
 //   - time int: The time to shorten the trace to
@@ -235,7 +235,7 @@ func (t *Trace) ShortenTrace(time int, incl bool) {
 	}
 }
 
-// Remove the element with the given tID from the trace
+// RemoveElementFromTrace removes the element with the given tID from the trace
 //
 // Parameter:
 //   - tID string: The tID of the element to remove
@@ -250,7 +250,8 @@ func (t *Trace) RemoveElementFromTrace(tID string) {
 	}
 }
 
-// Shorten the trace of the given routine by removing all elements after and equal the given time
+// ShortenRoutine shorten the trace of the given routine by removing all
+// elements after and equal the given time
 //
 // Parameter:
 //   - routine int: The routine to shorten
@@ -264,7 +265,7 @@ func (t *Trace) ShortenRoutine(routine int, time int) {
 	}
 }
 
-// Shorten a given a routine to index
+// ShortenRoutineIndex shorten a given a routine to index
 //
 // Parameter:
 //   - routine int: the routine to shorten
@@ -278,7 +279,7 @@ func (t *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
 	}
 }
 
-// Set the number of routines
+// SetNoRoutines sets the number of routines
 //
 // Parameter:
 //   - n int: The number of routines
@@ -286,7 +287,7 @@ func (t *Trace) SetNoRoutines(n int) {
 	t.numberOfRoutines = n
 }
 
-// Get the number of routines
+// GetNoRoutines returns the number of routines
 //
 // Returns:
 //   - int: The number of routines
@@ -302,7 +303,7 @@ func (t *Trace) GetNoRoutines() int {
 //   - has not been returned yet
 func (t *Trace) getNextElement() TraceElement {
 	// find the local trace, where the element on which currentIndex points to
-	// has the smallest tpost
+	// has the smallest tPost
 	minTSort := -1
 	minRoutine := -1
 	for routine, trace := range t.traces {
@@ -364,11 +365,11 @@ func (t *Trace) increaseIndex(routine int) {
 	}
 }
 
-// For a given waitgroup id, get the number of add and done operations that were
-// executed before a given time.
+// GetNrAddDoneBeforeTime returns the number of add and done operations that were
+// executed on a given wait group, before a given time.
 //
 // Parameter:
-//   - wgID int: The id of the waitgroup
+//   - wgID int: The id of the wait group
 //   - waitTime int: The time to check
 //
 // Returns:
@@ -399,7 +400,7 @@ func (t *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	return nrAdd, nrDone
 }
 
-// Shift all elements with time greater or equal to startTSort by shift
+// ShiftTrace shifts all elements with time greater or equal to startTSort by shift
 // Only shift forward
 //
 // Parameter:
@@ -421,8 +422,9 @@ func (t *Trace) ShiftTrace(startTPre int, shift int) bool {
 	return true
 }
 
-// Shift all elements that are concurrent or HB-later than the element such
-// that they are after the element without changing the order of these elements
+// ShiftConcurrentOrAfterToAfter shifts all elements that are concurrent or
+// HB-later than the element such that they are after the element without
+// changing the order of these elements
 //
 // Parameter:
 //   - element traceElement: The element
@@ -453,8 +455,9 @@ func (t *Trace) ShiftConcurrentOrAfterToAfter(element TraceElement) {
 	}
 }
 
-// Shift all elements that are concurrent or HB-later than the element such
-// that they are after the element without changeing the order of these elements
+// ShiftConcurrentOrAfterToAfterStartingFromElement shifts all elements that
+// are concurrent or HB-later than the element such
+// that they are after the element without changing the order of these elements
 // Only shift elements that are after start
 //
 // Parameter:
@@ -501,7 +504,8 @@ func (t *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceEl
 
 }
 
-// Shift the element to be after all elements, that are concurrent to it
+// ShiftConcurrentToBefore shifts the element to be after all elements, that
+// are concurrent to it
 //
 // Parameter:
 //   - element traceElement: The element
@@ -509,15 +513,16 @@ func (t *Trace) ShiftConcurrentToBefore(element TraceElement) {
 	t.ShiftConcurrentOrAfterToAfterStartingFromElement(element, 0)
 }
 
-// Remove all elements that are concurrent to the element and have time greater or equal to tmin
+// RemoveConcurrent removes all elements that are concurrent to the element
+// and have time greater or equal to tMin
 //
 // Parameter:
 //   - element traceElement: The element
-func (t *Trace) RemoveConcurrent(element TraceElement, tmin int) {
+func (t *Trace) RemoveConcurrent(element TraceElement, tMin int) {
 	for routine, trace := range t.traces {
 		result := make([]TraceElement, 0)
 		for _, elem := range trace {
-			if elem.GetTSort() < tmin {
+			if elem.GetTSort() < tMin {
 				result = append(result, elem)
 				continue
 			}
@@ -535,15 +540,16 @@ func (t *Trace) RemoveConcurrent(element TraceElement, tmin int) {
 	}
 }
 
-// Remove all elements that are concurrent to the element or must happen after the element
+// RemoveConcurrentOrAfter removes all elements that are concurrent to the
+// element or must happen after the element
 //
 // Parameter:
 //   - element traceElement: The element
-func (t *Trace) RemoveConcurrentOrAfter(element TraceElement, tmin int) {
+func (t *Trace) RemoveConcurrentOrAfter(element TraceElement, tMin int) {
 	for routine, trace := range t.traces {
 		result := make([]TraceElement, 0)
 		for _, elem := range trace {
-			if elem.GetTSort() < tmin {
+			if elem.GetTSort() < tMin {
 				result = append(result, elem)
 				continue
 			}
@@ -561,7 +567,7 @@ func (t *Trace) RemoveConcurrentOrAfter(element TraceElement, tmin int) {
 	}
 }
 
-// For each routine, get the earliest element that is concurrent to the element
+// GetConcurrentEarliest returns the earliest element that is concurrent to the element
 //
 // Parameter:
 //   - element traceElement: The element
@@ -584,7 +590,7 @@ func (t *Trace) GetConcurrentEarliest(element TraceElement) map[int]TraceElement
 	return concurrent
 }
 
-// Remove all elements that have a later tPost that the given tPost
+// RemoveLater removes all elements that have a later tPost that the given tPost
 //
 // Parameter:
 //   - tPost int: Remove elements after tPost
@@ -598,13 +604,13 @@ func (t *Trace) RemoveLater(tPost int) {
 	}
 }
 
-// Shift all elements with time greater or equal to startTSort by shift
-// Only shift back
+// ShiftRoutine shifts all elements in a routine with time greater or equal to
+// startTSort by shift. Only shift back (shift > 0).
 //
 // Parameter:
 //   - routine int: The routine to shift
 //   - startTSort int: The time to start shifting
-//   - shift int: The shift
+//   - shift int: The shift, must be > 0
 //
 // Returns:
 //   - bool: True if the shift was successful, false otherwise (shift <= 0)
@@ -622,7 +628,8 @@ func (t *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 	return true
 }
 
-// Get the partial trace of all element between startTime and endTime incluseve.
+// GetPartialTrace returns the partial trace of all element between startTime
+// and endTime inclusive.
 //
 // Parameter:
 //   - startTime int: The start time
@@ -647,7 +654,7 @@ func (t *Trace) GetPartialTrace(startTime int, endTime int) map[int][]TraceEleme
 	return result
 }
 
-// Deep copy a trace
+// Copy returns a deep copy a trace
 //
 // Returns:
 //   - The copy of the trace
@@ -679,12 +686,12 @@ func (t *Trace) Copy() Trace {
 	}
 }
 
-// Print the trace sorted by tPost
+// PrintTrace prints the trace sorted by tPost
 func (t *Trace) PrintTrace() {
 	t.PrintTraceArgs([]string{}, false)
 }
 
-// Print the trace sorted by tPost
+// PrintTraceArgs print the elements of given types sorted by tPost
 //
 // Parameter:
 //   - types: types of the elements to print. If empty, all elements will be printed
@@ -707,7 +714,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 					thread int
 					vc     *clock.VectorClock
 					wVc    *clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetwVc()})
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVc()})
 			}
 		}
 	}
@@ -728,7 +735,8 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	}
 }
 
-// Get all to element concurrent wait, broadcast and signal operations on the same condition variable
+// GetConcurrentWaitGroups returns all to element concurrent wait, broadcast
+// and signal operations on the same condition variable
 //
 // Parameter:
 //   - element traceElement: The element
@@ -736,7 +744,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 //
 // Returns:
 //   - []*traceElement: The concurrent elements
-func (t *Trace) GetConcurrentWaitgroups(element TraceElement) map[string][]TraceElement {
+func (t *Trace) GetConcurrentWaitGroups(element TraceElement) map[string][]TraceElement {
 	res := make(map[string][]TraceElement)
 	res["broadcast"] = make([]TraceElement, 0)
 	res["signal"] = make([]TraceElement, 0)
@@ -774,7 +782,7 @@ func (t *Trace) GetConcurrentWaitgroups(element TraceElement) map[string][]Trace
 	return res
 }
 
-// Set the tSort for an element given by its index
+// SetTSortAtIndex sets the tSort for an element given by its index
 //
 // Parameter:
 //   - tSort int: the new tSort

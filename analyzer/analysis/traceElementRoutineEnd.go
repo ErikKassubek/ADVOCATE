@@ -21,7 +21,7 @@ import (
 //
 //   - index int: Index in the routine
 //   - routine int: The routine id
-//   - tpost int: The timestamp at the end of the event
+//   - tPost int: The timestamp at the end of the event
 //   - vc clock.VectorClock: The vector clock
 type TraceElementRoutineEnd struct {
 	index   int
@@ -31,7 +31,7 @@ type TraceElementRoutineEnd struct {
 	wVc     *clock.VectorClock
 }
 
-// End a routine
+// AddTraceElementRoutineEnd add a routine and element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
@@ -41,7 +41,7 @@ type TraceElementRoutineEnd struct {
 func AddTraceElementRoutineEnd(routine int, tPost string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
-		return errors.New("tpre is not an integer")
+		return errors.New("tPre is not an integer")
 	}
 
 	elem := TraceElementRoutineEnd{
@@ -57,7 +57,7 @@ func AddTraceElementRoutineEnd(routine int, tPost string) error {
 	return nil
 }
 
-// Dummy function for traceElement
+// GetID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
@@ -65,7 +65,7 @@ func (re *TraceElementRoutineEnd) GetID() int {
 	return 0
 }
 
-// Get the routine of the element
+// GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
@@ -73,23 +73,23 @@ func (re *TraceElementRoutineEnd) GetRoutine() int {
 	return re.routine
 }
 
-// Get the tpre of the element. For atomic elements, tpre and tpost are the same
+// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
-//   - int: The tpre of the element
+//   - int: The tPre of the element
 func (re *TraceElementRoutineEnd) GetTPre() int {
 	return re.tPost
 }
 
-// Get the tpost of the element. For atomic elements, tpre and tpost are the same
+// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (re *TraceElementRoutineEnd) GetTPost() int {
 	return re.tPost
 }
 
-// Get the timer, that is used for the sorting of the trace
+// GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
@@ -97,7 +97,7 @@ func (re *TraceElementRoutineEnd) GetTSort() int {
 	return re.tPost
 }
 
-// Dummy function for traceElement
+// GetPos is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
@@ -105,7 +105,7 @@ func (re *TraceElementRoutineEnd) GetPos() string {
 	return ""
 }
 
-// Dummy function for traceElement
+// GetReplayID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
@@ -113,7 +113,7 @@ func (re *TraceElementRoutineEnd) GetReplayID() string {
 	return ""
 }
 
-// Dummy function for traceElement
+// GetFile is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
@@ -121,7 +121,7 @@ func (re *TraceElementRoutineEnd) GetFile() string {
 	return ""
 }
 
-// Dummy function for traceElement
+// GetLine is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
@@ -129,7 +129,8 @@ func (re *TraceElementRoutineEnd) GetLine() int {
 	return 0
 }
 
-// Get the tID of the element.
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
@@ -137,7 +138,7 @@ func (re *TraceElementRoutineEnd) GetTID() string {
 	return ""
 }
 
-// Get the vector clock of the element
+// GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
@@ -145,15 +146,15 @@ func (re *TraceElementRoutineEnd) GetVC() *clock.VectorClock {
 	return re.vc
 }
 
-// Get the weak vector clock of the element
+// GetWVc returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (fo *TraceElementRoutineEnd) GetwVc() *clock.VectorClock {
-	return fo.wVc
+func (re *TraceElementRoutineEnd) GetWVc() *clock.VectorClock {
+	return re.wVc
 }
 
-// Get the string representation of the object type
+// GetObjType returns the string representation of the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
@@ -167,7 +168,7 @@ func (re *TraceElementRoutineEnd) GetObjType(operation bool) string {
 	return ObjectTypeRoutineEnd
 }
 
-// Given a trace element, check if it is equal to this element
+// IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
 //   - elem TraceElement: The element to check against
@@ -178,7 +179,7 @@ func (re *TraceElementRoutineEnd) IsEqual(elem TraceElement) bool {
 	return re.routine == elem.GetRoutine() && re.ToString() == elem.ToString()
 }
 
-// Get the trace local index of the element in the trace
+// GetTraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
@@ -187,7 +188,7 @@ func (re *TraceElementRoutineEnd) GetTraceIndex() (int, int) {
 	return re.routine, re.index
 }
 
-// Set the tPre and tPost of the element
+// SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
@@ -195,24 +196,24 @@ func (re *TraceElementRoutineEnd) SetT(time int) {
 	re.tPost = time
 }
 
-// Set the tpre of the element.
+// SetTPre sets the tPre of the element.
 //
 // Parameter:
-//   - tPre int: The tpre of the element
+//   - tPre int: The tPre of the element
 func (re *TraceElementRoutineEnd) SetTPre(tPre int) {
 	re.tPost = tPre
 }
 
-// Set the timer, that is used for the sorting of the trace
+// SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (re *TraceElementRoutineEnd) SetTSort(tpost int) {
-	re.SetTPre(tpost)
-	re.tPost = tpost
+func (re *TraceElementRoutineEnd) SetTSort(tPost int) {
+	re.SetTPre(tPost)
+	re.tPost = tPost
 }
 
-// Set the timer, that is used for the sorting of the trace, only if the original
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
 // Parameter:
@@ -224,7 +225,7 @@ func (re *TraceElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
-// Get the simple string representation of the element
+// ToString returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
@@ -252,22 +253,22 @@ func (re *TraceElementRoutineEnd) Copy() TraceElement {
 	}
 }
 
-// Dummy function for traceElement
+// AddRel1 is a dummy function to implement the traceElement interface
 func (re *TraceElementRoutineEnd) AddRel1(_ TraceElement, _ int) {
 	return
 }
 
-// Dummy function for traceElement
+// AddRel2 is a dummy function to implement the traceElement interface
 func (re *TraceElementRoutineEnd) AddRel2(_ TraceElement) {
 	return
 }
 
-// Dummy function for traceElement
+// GetRel1 is a dummy function to implement the traceElement interface
 func (re *TraceElementRoutineEnd) GetRel1() []TraceElement {
 	return make([]TraceElement, 0)
 }
 
-// Dummy function for traceElement
+// GetRel2 is a dummy function to implement the traceElement interface
 func (re *TraceElementRoutineEnd) GetRel2() []TraceElement {
 	return make([]TraceElement, 0)
 }

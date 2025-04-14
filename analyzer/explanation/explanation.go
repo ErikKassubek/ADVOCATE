@@ -35,7 +35,7 @@ import (
 // - code of the bug elements in the trace (+- 10 lines)
 // - info about replay (was it possible or not)
 
-// The function CreateOverview creates an overview over a bug found by the analyzer.
+// CreateOverview creates an overview over a bug found by the analyzer.
 // It reads the results of the analysis, the code of the bug elements and the replay info.
 // It then writes all this information into a file.
 //
@@ -242,7 +242,7 @@ func writeFile(path string, index string, description map[string]string,
 	res += strings.ToLower(description["crit"])
 	res += " are located at the following positions:\n\n"
 
-	for key, _ := range positions {
+	for key := range positions {
 		res += "###  "
 		res += bugElemType[key] + "\n"
 

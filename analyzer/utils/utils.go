@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-// Check if a slice of strings contains an element
+// Contains checks if a slice of strings contains an element
 //
 // Parameter:
 //   - s []T comparable) slice to check
@@ -32,7 +32,7 @@ func Contains[T comparable](s []T, e T) bool {
 	return false
 }
 
-// Split the string into two parts at the last occurrence of the separator
+// SplitAtLast splits the string into two parts at the last occurrence of the separator
 //
 // Parameter:
 //   - str string: string to split
@@ -53,7 +53,7 @@ func SplitAtLast(str string, sep string) []string {
 	return []string{str[:i], str[i+1:]}
 }
 
-// Add an element to a list, if it does not contain the element
+// AddIfNotContains adds an element to a list, if it does not contain the element
 //
 // Parameter:
 //   - l []T comparable: The list
@@ -65,7 +65,7 @@ func AddIfNotContains[T comparable](l []T, e T) []T {
 	return l
 }
 
-// Given two lists, return a list containing all the elements from both
+// MergeLists takes two lists and returns a list containing all the elements from both
 // lists. The resulting list does not contain duplicated.
 //
 // Parameter:
@@ -92,7 +92,7 @@ func MergeLists[T comparable](l1, l2 []T) []T {
 	return res
 }
 
-// Given a global path, make it local, by adding a ./ at the beginning it has non
+// MakePathLocal transforms a path into a local path by adding a ./ at the beginning it has non
 //
 // Parameter:
 //   - path string: path

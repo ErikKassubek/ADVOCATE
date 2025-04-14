@@ -49,7 +49,7 @@ import (
 // Returns:
 //   - error
 func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
-	measureTime, notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int) error {
+	notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -220,7 +220,7 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 	return nil
 }
 
-// Function to find all _test.go files in the specified directory
+// FindTestFiles finds all _test.go files in the specified directory
 //
 // Parameter:
 //   - dir string: folder to search in
@@ -337,7 +337,7 @@ func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
 	return res, maxFileNum, nil
 }
 
-// Function to find all test function in the specified file
+// FindTestFunctions find all test function in the specified file
 //
 // Parameter:
 //   - file string: file to search in
@@ -434,10 +434,8 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 	if measureTime && fuzzing < 1 {
 		err := unitTestRun(pkg, file, testName)
 		if err != nil {
-			if err != nil {
-				if checkForTimeout(output) {
-					utils.LogTimeout("Running T0 timed out")
-				}
+			if checkForTimeout(output) {
+				utils.LogTimeout("Running T0 timed out")
 			}
 		}
 	}
@@ -631,7 +629,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 		// record := getRerecord(trace)
 		record := false
 
-		// limit the number of rerecordings
+		// limit the number of re-recordings
 		if numberRerecord != -1 {
 			if record {
 				rerecordCounter++

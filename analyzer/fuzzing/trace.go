@@ -14,7 +14,7 @@ import (
 	"analyzer/analysis"
 )
 
-// Parse the trace and record all relevant data
+// ParseTrace parses the trace and record all relevant data
 //
 // Parameter:
 //   - trace *trace *analysis.Trace: The trace to parse

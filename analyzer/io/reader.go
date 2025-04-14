@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-// Create the trace from all files in a folder.
+// CreateTraceFromFiles creates the trace from all files in a folder.
 //
 // Parameter:
 //   - filePath string: The path to the folder

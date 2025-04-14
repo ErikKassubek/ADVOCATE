@@ -19,8 +19,9 @@ import (
 	"strings"
 )
 
-// Run for channel operation without a post event. Check if the operation has
-// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// CheckForLeakChannelStuck is run for channel operation without a post event.
+// It checks if the operation has a possible communication partner in
+// mostRecentSend, mostRecentReceive or closeData.
 // If so, add an error or warning to the result.
 // If not, add to leakingChannels, for later check.
 //
@@ -50,7 +51,7 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 		arg1 := results.TraceElementResult{
 			RoutineID: ch.routine, ObjID: ch.id, TPre: tPre, ObjType: objType, File: file, Line: line}
 
-		results.Result(results.CRITICAL, results.LNilChan,
+		results.Result(results.CRITICAL, utils.LNilChan,
 			"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 
 		return
@@ -64,9 +65,9 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 			if _, ok := mrr[ch.id]; ok {
 				if clock.GetHappensBefore(mrr[ch.id].Vc, vc) == clock.Concurrent {
 
-					var bugType results.ResultType = results.LUnbufferedWith
+					var bugType utils.ResultType = utils.LUnbufferedWith
 					if buffered {
-						bugType = results.LBufferedWith
+						bugType = utils.LBufferedWith
 					}
 
 					file1, line1, tPre1, err := infoFromTID(ch.GetTID())
@@ -97,9 +98,9 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 			if _, ok := mrs[ch.id]; ok {
 				if clock.GetHappensBefore(mrs[ch.id].Vc, vc) == clock.Concurrent {
 
-					var bugType results.ResultType = results.LUnbufferedWith
+					var bugType = utils.LUnbufferedWith
 					if buffered {
-						bugType = results.LBufferedWith
+						bugType = utils.LBufferedWith
 					}
 
 					file1, line1, tPre1, err1 := infoFromTID(ch.GetTID())
@@ -133,8 +134,9 @@ func CheckForLeakChannelStuck(ch *TraceElementChannel, vc *clock.VectorClock) {
 	}
 }
 
-// Run for channel operation with a post event. Check if the operation would be
-// possible communication partner for a stuck operation in leakingChannels.
+// CheckForLeakChannelRun is run for channel operation with a post event.
+// It checks if the operation would be possible communication partner for a
+// stuck operation in leakingChannels.
 // If so, add an error or warning to the result and remove the stuck operation.
 //
 // Parameter:
@@ -155,9 +157,9 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 			}
 
 			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
-				var bugType results.ResultType = results.LUnbufferedWith
+				var bugType = utils.LUnbufferedWith
 				if buffered {
-					bugType = results.LBufferedWith
+					bugType = utils.LBufferedWith
 				}
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
@@ -210,9 +212,9 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc elemWithVc, opType 
 
 			if clock.GetHappensBefore(vcTID2.vc, elemVc.vc) == clock.Concurrent {
 
-				var bugType results.ResultType = results.LUnbufferedWith
+				var bugType = utils.LUnbufferedWith
 				if buffered {
-					bugType = results.LBufferedWith
+					bugType = utils.LBufferedWith
 				}
 
 				file1, line1, tPre1, err1 := infoFromTID(vcTID2.tID) // leaking
@@ -314,7 +316,7 @@ func checkForLeak() {
 					arg2 := results.TraceElementResult{ // select
 						RoutineID: elem2.GetRoutine(), ObjID: partner.sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
-					results.Result(results.CRITICAL, results.LSelectWith,
+					results.Result(results.CRITICAL, utils.LSelectWith,
 						"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
 				} else {
 					obType := "C"
@@ -324,9 +326,9 @@ func checkForLeak() {
 						obType += "R"
 					}
 
-					var bugType results.ResultType = results.LUnbufferedWith
+					var bugType utils.ResultType = utils.LUnbufferedWith
 					if buffered {
-						bugType = results.LBufferedWith
+						bugType = utils.LBufferedWith
 					}
 
 					arg1 := results.TraceElementResult{ // channel
@@ -350,7 +352,7 @@ func checkForLeak() {
 					arg1 := results.TraceElementResult{
 						RoutineID: vcTID.routine, ObjID: vcTID.selID, TPre: tPre, ObjType: "SS", File: file, Line: line}
 
-					results.Result(results.CRITICAL, results.LSelectWithout,
+					results.Result(results.CRITICAL, utils.LSelectWithout,
 						"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 
 				} else {
@@ -370,9 +372,9 @@ func checkForLeak() {
 					arg1 := results.TraceElementResult{
 						RoutineID: vcTID.routine, ObjID: vcTID.id, TPre: tPre, ObjType: objType, File: file, Line: line}
 
-					var bugType results.ResultType = results.LUnbufferedWithout
+					var bugType utils.ResultType = utils.LUnbufferedWithout
 					if buffered {
-						bugType = results.LBufferedWithout
+						bugType = utils.LBufferedWithout
 					}
 
 					results.Result(results.CRITICAL, bugType,
@@ -383,8 +385,9 @@ func checkForLeak() {
 	}
 }
 
-// Run for select operation without a post event. Check if the operation has
-// a possible communication partner in mostRecentSend, mostRecentReceive or closeData.
+// CheckForLeakSelectStuck is run for select operation without a post event.
+// It checks if the operation has a possible communication partner in
+// mostRecentSend, mostRecentReceive or closeData.
 // If so, add an error or warning to the result.
 // If not, add all elements to leakingChannels, for later check.
 //
@@ -410,7 +413,7 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 		arg1 := results.TraceElementResult{
 			RoutineID: se.routine, ObjID: se.id, TPre: se.tPre, ObjType: "SS", File: file, Line: line}
 
-		results.Result(results.CRITICAL, results.LSelectWithout,
+		results.Result(results.CRITICAL, utils.LSelectWithout,
 			"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 
 		return
@@ -437,7 +440,7 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 						arg2 := results.TraceElementResult{
 							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
 
-						results.Result(results.CRITICAL, results.LSelectWith,
+						results.Result(results.CRITICAL, utils.LSelectWith,
 							"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
 						foundPartner = true
 					}
@@ -463,7 +466,7 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 						arg2 := results.TraceElementResult{
 							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
 
-						results.Result(results.CRITICAL, results.LSelectWith,
+						results.Result(results.CRITICAL, utils.LSelectWith,
 							"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
 
 						foundPartner = true
@@ -487,7 +490,7 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 				arg2 := results.TraceElementResult{
 					RoutineID: cl.routine, ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
 
-				results.Result(results.CRITICAL, results.LSelectWith,
+				results.Result(results.CRITICAL, utils.LSelectWith,
 					"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
 
 				foundPartner = true
@@ -503,7 +506,8 @@ func CheckForLeakSelectStuck(se *TraceElementSelect, ids []int, buffered []bool,
 	}
 }
 
-// Run for mutex operation without a post event. Show an error in the results
+// CheckForLeakMutex is run for mutex operation without a post event.
+// It adds a found leak to the results
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
@@ -547,7 +551,7 @@ func CheckForLeakMutex(mu *TraceElementMutex) {
 	arg2 := results.TraceElementResult{
 		RoutineID: mostRecentAcquireTotal[mu.id].Elem.GetRoutine(), ObjID: mu.id, TPre: tPre2, ObjType: objType2, File: file2, Line: line2}
 
-	results.Result(results.CRITICAL, results.LMutex,
+	results.Result(results.CRITICAL, utils.LMutex,
 		"mutex", []results.ResultElem{arg1}, "last", []results.ResultElem{arg2})
 }
 
@@ -564,7 +568,8 @@ func addMostRecentAcquireTotal(mu *TraceElementMutex, vc *clock.VectorClock, op 
 	mostRecentAcquireTotal[mu.id] = ElemWithVcVal{Elem: mu, Vc: vc.Copy(), Val: op}
 }
 
-// Run for wait group operation without a post event. Show an error in the results
+// CheckForLeakWait is run for wait group operation without a post event.
+// It adds an error to the results
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
@@ -581,11 +586,12 @@ func CheckForLeakWait(wa *TraceElementWait) {
 	arg := results.TraceElementResult{
 		RoutineID: wa.routine, ObjID: wa.id, TPre: tPre, ObjType: "WW", File: file, Line: line}
 
-	results.Result(results.CRITICAL, results.LWaitGroup,
+	results.Result(results.CRITICAL, utils.LWaitGroup,
 		"wait", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
-// Run for conditional varable operation without a post event. Show an error in the results
+// CheckForLeakCond is run for conditional variable operation without a post
+// event. It adds a leak to the results
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
@@ -602,7 +608,7 @@ func CheckForLeakCond(co *TraceElementCond) {
 	arg := results.TraceElementResult{
 		RoutineID: co.routine, ObjID: co.id, TPre: tPre, ObjType: "DW", File: file, Line: line}
 
-	results.Result(results.CRITICAL, results.LCond,
+	results.Result(results.CRITICAL, utils.LCond,
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
@@ -645,7 +651,7 @@ func checkForStuckRoutine() {
 			ObjType: "RE", File: file, Line: line,
 		}
 
-		results.Result(results.CRITICAL, results.LWithoutBlock,
+		results.Result(results.CRITICAL, utils.LWithoutBlock,
 			"fork", []results.ResultElem{arg}, "", []results.ResultElem{})
 	}
 }

@@ -231,8 +231,8 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 
 	writeStatsFile(fileAllPath, headerDetails, dataDetails)
 
-	miscData := make([]string, len(MiscStats))
-	for i, header := range MiscStats {
+	miscData := make([]string, len(miscStats))
+	for i, header := range miscStats {
 		if header == TestName {
 			miscData[i] = testName
 			continue
@@ -244,7 +244,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		}
 	}
 
-	writeStatsFile(fileMiscPath, strings.Join(MiscStats, ","), strings.Join(miscData, ","))
+	writeStatsFile(fileMiscPath, strings.Join(miscStats, ","), strings.Join(miscData, ","))
 
 	return nil
 }

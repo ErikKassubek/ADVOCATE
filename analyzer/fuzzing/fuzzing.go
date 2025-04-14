@@ -28,6 +28,7 @@ type mutation struct {
 	mutPie  string
 }
 
+// Possible values for fuzzing mode
 const (
 	GFuzz       = "GFuzz"       // only GFuzz
 	GFuzzHB     = "GFuzzHB"     // GFuzz with use of hb info
@@ -35,11 +36,14 @@ const (
 	Flow        = "Flow"        // only flow mutation
 	GoPie       = "GoPie"       // only goPie
 	GoPieHB     = "GoPieHB"     // goPie with HB relation
+)
 
+const (
 	mutSelType  = 0
 	mutPiType   = 1
 	mutFlowType = 2
 )
+
 const (
 	maxNumberRuns = 20
 	maxTime       = 60 * time.Minute
@@ -60,7 +64,7 @@ var (
 	fuzzingModeFlow  = false
 )
 
-// Create the fuzzing data
+// Fuzzing creates the fuzzing data and runs the fuzzing executions
 //
 // Parameter:
 //   - modeMain bool: if true, run fuzzing on main function, otherwise on test

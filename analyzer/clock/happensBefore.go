@@ -13,6 +13,7 @@ package clock
 // HappensBefore provides an enum for possible happens before relations
 type HappensBefore int
 
+// Possible values for the HappensBefore enum
 const (
 	Before HappensBefore = iota
 	After
@@ -40,7 +41,7 @@ func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
 	return atLeastOneSmaller
 }
 
-// Get the happens before relation between two operations given there
+// GetHappensBefore returns the happens before relation between two operations given there
 // vector clocks
 //
 // Parameter:

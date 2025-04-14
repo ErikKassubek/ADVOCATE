@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-// Implementation of a timer that can be started and stopped
+// Timer is a timer that can be started and stopped
 //
 // Parameter:
 //   - startTime time.Time: time of the last start
@@ -46,7 +46,7 @@ func (t *Timer) Stop() {
 	return
 }
 
-// Get the elapsed time of the timer
+// GetTime returns the elapsed time of the timer
 //
 // Returns:
 //   - time.Duration: current elapsed time of timer

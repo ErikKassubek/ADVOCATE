@@ -21,7 +21,7 @@ import (
 	"sync"
 )
 
-// Write the trace to a file
+// WriteTrace writes a trace to a file
 //
 // Parameter:
 //   - traceToWrite *analysis.Trace: Pointer to the trace to write
@@ -104,7 +104,7 @@ func isReplay(element analysis.TraceElement) bool {
 	return !(t == analysis.ObjectTypeNew || t == analysis.ObjectTypeRoutineEnd)
 }
 
-// In path, create a file with the result message and the exit code for the rewrite
+// WriteRewriteInfoFile create a file with the result message and the exit code for the rewrite
 //
 // Parameter:
 //   - path string: The path to the file folder to write to

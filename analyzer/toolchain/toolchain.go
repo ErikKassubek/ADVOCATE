@@ -41,7 +41,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 //   - execName string: name of the executable, only needed for mode main
 //   - progName string: name of the program, used for stats
 //   - test string: which test to run, if empty run all tests
-//   - numRerecorded int: limit of number of rerecordings
+//   - numRerecorded int: limit of number of re-recordings
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - replayAt bool: replay atomics
@@ -96,7 +96,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 		if (stats || measureTime) && progName == "" {
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
-		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName, measureTime,
+		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName,
 			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces, firstRun, skipExisting, cont, fileNumber, testNumber)
 	case "explain":
 		if pathToAdvocate == "" {

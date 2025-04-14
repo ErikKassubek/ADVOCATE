@@ -106,11 +106,9 @@ func main() {
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
-	// TODO: !rewriteAll for now disabled, enable if it is implemented that only successful replays are considered previous replays
-	// If the first replay is not successful it may be successful on a later try. At the moment, the later tries would not be run
 
-	// flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
-	// 	"If not set, only the first occurence is rewritten")
+	flag.BoolVar(&rewriteAll, "replayAll", false, "If the instance of a bug was already confirmed, a later occurrence will normally not be replayed. Setting replayAll will force the replay for
+	all occurrences of a bug, even if it has been confirmed before")
 	rewriteAll = true
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
@@ -555,7 +553,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return rewriteNeeded, err
 	}
 
-	err = io.WriteRewriteInfoFile(newTrace, string(bug.Type), code, resultIndex)
+	err = io.WriteRewriteInfoFile(newTrace, bug, code, resultIndex)
 	if err != nil {
 		return rewriteNeeded, err
 	}

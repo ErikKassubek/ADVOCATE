@@ -69,7 +69,7 @@ type Bug struct {
 	TraceElement2 []analysis.TraceElement
 }
 
-// GetBugString Convert the bug to a string. Mostly used internally
+// GetBugString Convert the bug to a unique string. Mostly used internally
 //
 // Returns:
 //   - string: The bug as a string

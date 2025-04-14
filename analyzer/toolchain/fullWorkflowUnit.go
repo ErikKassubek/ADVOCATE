@@ -14,6 +14,7 @@ package toolchain
 import (
 	"analyzer/analysis"
 	"analyzer/complete"
+	"analyzer/results"
 	"analyzer/stats"
 	"analyzer/timer"
 	"analyzer/utils"
@@ -455,7 +456,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 		return 0, true, nil
 	}
 
-	numberReplay := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName)
+	numberReplay := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output)
 
 	return numberReplay, true, nil
 }
@@ -599,10 +600,11 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 //   - pkg string: path to the package containing the test, global path should be dir/pkg
 //   - file string: path to the file containing the test function
 //   - testName string: name of the test function to run
+//   - output string: path to the output file
 //
 // Returns:
 //   - int: number of executed replays
-func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName string) int {
+func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
@@ -623,20 +625,16 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 	}
 	timeoutReplString := fmt.Sprintf("%ds", int(timeoutRepl.Seconds()))
 
-	rerecordCounter := 0
 	for i, trace := range rewrittenTraces {
-		traceNum := extractTraceNumber(trace)
+		traceNum, bugString := extractTraceNumber(trace)
 		// record := getRerecord(trace)
 		record := false
 
-		// limit the number of re-recordings
-		if numberRerecord != -1 {
-			if record {
-				rerecordCounter++
-				if rerecordCounter > numberRerecord {
-					continue
-				}
-			}
+		// we do not need to replay a bug that has already been replayed by
+		// another replay
+		if !replayAllFlag && results.WasAlreadyConfirmed(bugString) {
+			// TODO: check if the report are still working with this
+			continue
 		}
 
 		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
@@ -648,6 +646,12 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
 		utils.LogInfof("Finished replay %d/%d", i+1, len(rewrittenTraces))
 
+		if wasReplaySuc(output) {
+			results.AddBug(bugString, true)
+		} else {
+			results.AddBug(bugString, false)
+		}
+
 		os.Unsetenv("GOROOT")
 
 		// Remove reorder header
@@ -656,39 +660,3 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 	return len(rewrittenTraces)
 }
-
-// func unitTestReanalyzeLeaks(pathToGoRoot, pathToPatchedGoRuntime, pathToAnalyzer, dir, pkg, file, testName, output string, resTimes map[string]time.Duration) (int, int) {
-// 	pathPkg := filepath.Join(dir, pkg)
-// 	rerecordedTraces, _ := filepath.Glob(filepath.Join(pathPkg, "advocateTraceReplay_*"))
-// 	fmt.Printf("\nFound %d rerecorded traces\n\n", len(rerecordedTraces))
-
-// 	for _, trace := range rerecordedTraces {
-// 		number := extractTraceNumber(trace)
-// 		traceName := filepath.Base(trace)
-// 		unitTestAnalyzer(pathToAnalyzer, dir, pkg, traceName, output, resTimes, number)
-// 	}
-// 	numberRerecord = 0
-// 	recorded := false // for now do not rerecord
-// 	nrRewTrace := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, resTimes, recorded)
-
-// 	return nrRewTrace, len(rerecordedTraces)
-// }
-// func getRerecord(trace string) bool {
-// 	data, err := os.ReadFile(filepath.Join(trace, "rewrite_info.log"))
-// 	if err != nil {
-// 		return false
-// 	}
-
-// 	elems := strings.Split(string(data), "#")
-// 	if len(elems) != 3 {
-// 		return false
-// 	}
-
-// 	if len(elems[1]) == 0 {
-// 		return false
-// 	}
-
-// 	return string([]rune(elems[1])[0]) == "S"
-// 	// return string([]rune(elems[1])[0]) == "L"
-
-// }

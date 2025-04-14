@@ -63,7 +63,7 @@ func runAnalysisOnExitCodes(all bool) {
 	}
 
 	switch exitCode {
-	case ExitCodeCloseClose: // close on closed
+	case utils.ExitCodeCloseClose: // close on closed
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -74,7 +74,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeCloseNil: // close on nil
+	case utils.ExitCodeCloseNil: // close on nil
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -85,7 +85,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeNegativeWG: // negative wg counter
+	case utils.ExitCodeNegativeWG: // negative wg counter
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -96,7 +96,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeUnlockBeforeLock: // unlock of not locked mutex
+	case utils.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -107,7 +107,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodePanic: // unknown panic
+	case utils.ExitCodePanic: // unknown panic
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,

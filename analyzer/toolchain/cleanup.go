@@ -35,7 +35,6 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	pattersToMove := []string{
 		"rewrittenTrace*",
-		"advocateTraceReplay_*",
 	}
 
 	logsToCollect := []string{
@@ -110,7 +109,6 @@ func removeTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",
-		"advocateTraceReplay_*",
 		"fuzzingData.log",
 		// "fuzzingTrace_*",
 	}

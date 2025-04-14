@@ -57,3 +57,30 @@ const (
 	// not executed select
 	// SNotExecutedWithPartner = "S00"
 )
+
+// file names
+const (
+	RewrittenInfo = "rewrite_info.log"
+)
+
+// Values for the possible program exit codes
+const (
+	ExitCodeNone             = -1
+	ExitCodePanic            = 3
+	ExitCodeTimeout          = 10
+	ExitCodeLeakUnbuf        = 20
+	ExitCodeLeakBuf          = 21
+	ExitCodeLeakMutex        = 22
+	ExitCodeLeakCond         = 23
+	ExitCodeLeakWG           = 24
+	ExitCodeSendClose        = 30
+	ExitCodeRecvClose        = 31
+	ExitCodeCloseClose       = 32
+	ExitCodeCloseNil         = 33
+	ExitCodeNegativeWG       = 34
+	ExitCodeUnlockBeforeLock = 35
+	ExitCodeCyclic           = 41
+)
+
+// minimum exit code for successful replay
+const MinExitCodeSuc = ExitCodeLeakUnbuf

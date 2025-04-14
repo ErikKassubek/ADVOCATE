@@ -14,6 +14,7 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/clock"
+	"analyzer/utils"
 	"errors"
 	"fmt"
 )
@@ -109,7 +110,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 		}
 	}
 
-	analysis.AddTraceElementReplay(lastTime+1, analysis.ExitCodeCyclic)
+	analysis.AddTraceElementReplay(lastTime+1, utils.ExitCodeCyclic)
 
 	// fmt.Println("Rewritten Trace:")
 	// analysis.PrintTrace()

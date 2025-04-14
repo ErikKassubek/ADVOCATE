@@ -31,6 +31,7 @@ var (
 	ignoreCriticalSectionFlag bool
 	rewriteAllFlag            bool
 	onlyAPanicAndLeakFlag     bool
+	replayAllFlag             bool
 )
 
 // SetFlags makes the relevant command line arguments given to the analyzer
@@ -48,7 +49,7 @@ var (
 //   - timeoutRepl int: timeout of replay in seconds
 func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
-	timeoutRec, timeoutRepl int) {
+	timeoutRec, timeoutRepl int, replayAll bool) {
 
 	noRewriteFlag = noRewrite
 
@@ -63,4 +64,5 @@ func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	timeoutRecording = timeoutRec
 	timeoutReplay = timeoutRepl
 
+	replayAllFlag = replayAll
 }

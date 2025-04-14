@@ -106,9 +106,7 @@ func main() {
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
-
-	flag.BoolVar(&rewriteAll, "replayAll", false, "If the instance of a bug was already confirmed, a later occurrence will normally not be replayed. Setting replayAll will force the replay for
-	all occurrences of a bug, even if it has been confirmed before")
+	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
@@ -218,7 +216,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
-		timeoutRecording, timeoutReplay)
+		timeoutRecording, timeoutReplay, rewriteAll)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -537,6 +535,13 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	}
 
 	if actual {
+		return false, nil
+	}
+
+	// the same bug was found and confirmed by replay in an earlier run,
+	// either in fuzzing or in another test
+	// It is therefore not needed to rewrite it again
+	if !rewriteAll && results.WasAlreadyConfirmed(bug.GetBugString()) {
 		return false, nil
 	}
 

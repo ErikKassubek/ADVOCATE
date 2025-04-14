@@ -1,7 +1,6 @@
 # A Trace Simplification Technique for Effective Debugging of Concurrent Programs
 
-[N. Jalbert and K. Sen, “A trace simplification technique for effective debugging of concur-
-rent programs,” Nov. 2010, pp. 57–66. doi: 10.1145/1882291.1882302](https://people.eecs.berkeley.edu/~ksen/papers/thrille.pdf)
+[N. Jalbert and K. Sen, “A trace simplification technique for effective debugging of concurrent programs,” in Proceedings of the Eighteenth ACM SIGSOFT International Symposium on Foundations of Software Engineering, ser. FSE ’10, Santa Fe, New Mexico, USA: Association for Computing Machinery, 2010, pp. 57–66, isbn: 9781605587912. doi: 10.1145/1882291.1882302. [Online]. Available: https://doi.org/10.1145/1882291.1882302.](https://people.eecs.berkeley.edu/~ksen/papers/thrille.pdf)
 
 ## Summary
 

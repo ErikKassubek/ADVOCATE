@@ -3,7 +3,7 @@
 [Z. Jiang, M. Wen, Y. Yang, C. Peng, P. Yang and H. Jin, "Effective Concurrency Testing for Go via Directional Primitive-Constrained Interleaving Exploration," 2023 38th IEEE/ACM International Conference on Automated Software Engineering (ASE), Luxembourg, Luxembourg, 2023, pp. 1364-1376, doi: 10.1109/ASE56229.2023.00086.](https://dl.acm.org/doi/10.1109/ASE56229.2023.00086)
 
 ## Summary
-The main idea of this paper is to extend [GFuzz](./gfuzz.md). Instead of just
+The main idea of this paper is to extend [GFuzz](./GFuzz.md). Instead of just
 influencing the select, it tries to influence the interleaving of all concurrent
 operations in order to detect new bugs. The implemented tool GoPie modifies fork, channel and mutex operations.
 

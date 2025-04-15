@@ -59,6 +59,7 @@ type allSelectCase struct {
 // ConcurrentEntryType is an enum type used in ConcurrentEntry
 type ConcurrentEntryType int
 
+// Possible values for ConcurrentEntryType
 const (
 	CEOnce ConcurrentEntryType = iota
 	CEMutex
@@ -73,24 +74,6 @@ type ConcurrentEntry struct {
 	Counter int
 	Type    ConcurrentEntryType
 }
-
-const (
-	ExitCodeNone             = -1
-	ExitCodePanic            = 3
-	ExitCodeTimeout          = 10
-	ExitCodeLeakUnbuf        = 20
-	ExitCodeLeakBuf          = 21
-	ExitCodeLeakMutex        = 22
-	ExitCodeLeakCond         = 23
-	ExitCodeLeakWG           = 24
-	ExitCodeSendClose        = 30
-	ExitCodeRecvClose        = 31
-	ExitCodeCloseClose       = 32
-	ExitCodeCloseNil         = 33
-	ExitCodeNegativeWG       = 34
-	ExitCodeUnlockBeforeLock = 35
-	ExitCodeCyclic           = 41
-)
 
 var (
 	// trace data
@@ -137,7 +120,7 @@ var (
 	bufferedVCsCount = make(map[int]int)
 	bufferedVCsSize  = make(map[int]int)
 
-	// add/dones on waitGroup
+	// add/done on waitGroup
 	wgAdd  = make(map[int][]TraceElement) // id  -> []TraceElement
 	wgDone = make(map[int][]TraceElement) // id -> []TraceElement
 	// wait on waitGroup
@@ -399,11 +382,11 @@ func getLastElemPerRout() []TraceElement {
 	return MainTrace.getLastElemPerRout()
 }
 
-// For a given waitgroup id, get the number of add and done operations that were
-// executed before a given time.
+// GetNrAddDoneBeforeTime returns the number of add and done operations that were
+// executed before a given time for a given wait group id,
 //
 // Parameter:
-//   - wgID int: The id of the waitgroup
+//   - wgID int: The id of the wait group
 //   - waitTime int: The time to check
 //
 // Returns:
@@ -413,7 +396,7 @@ func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	return MainTrace.GetNrAddDoneBeforeTime(wgID, waitTime)
 }
 
-// Shift all elements with time greater or equal to startTSort by shift
+// ShiftTrace shifts all elements with time greater or equal to startTSort by shift
 // Only shift forward
 //
 // Parameter:
@@ -423,8 +406,9 @@ func ShiftTrace(startTPre int, shift int) bool {
 	return MainTrace.ShiftTrace(startTPre, shift)
 }
 
-// Shift all elements that are concurrent or HB-later than the element such
-// that they are after the element without changing the order of these elements
+// ShiftConcurrentOrAfterToAfter shifts all elements that are concurrent or
+// HB-later than the element such that they are after the element without
+// changing the order of these elements
 //
 // Parameter:
 //   - element traceElement: The element
@@ -432,8 +416,9 @@ func ShiftConcurrentOrAfterToAfter(element TraceElement) {
 	MainTrace.ShiftConcurrentOrAfterToAfter(element)
 }
 
-// Shift all elements that are concurrent or HB-later than the element such
-// that they are after the element without changeing the order of these elements
+// ShiftConcurrentOrAfterToAfterStartingFromElement shifts all elements that
+// are concurrent or HB-later than the element such
+// that they are after the element without changing the order of these elements
 // Only shift elements that are after start
 //
 // Parameter:
@@ -443,7 +428,8 @@ func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, star
 	MainTrace.ShiftConcurrentOrAfterToAfterStartingFromElement(element, start)
 }
 
-// Shift the element to be after all elements, that are concurrent to it
+// ShiftConcurrentToBefore shifts the element to be after all elements,
+// that are concurrent to it
 //
 // Parameter:
 //   - element traceElement: The element
@@ -451,23 +437,28 @@ func ShiftConcurrentToBefore(element TraceElement) {
 	MainTrace.ShiftConcurrentToBefore(element)
 }
 
-// Remove all elements that are concurrent to the element and have time greater or equal to tmin
+// RemoveConcurrent removes all elements that are concurrent to the element
+// and have time greater or equal to tMin
 //
 // Parameter:
 //   - element traceElement: The element
-func RemoveConcurrent(element TraceElement, tmin int) {
-	MainTrace.RemoveConcurrent(element, tmin)
+//   - tMin int: the minimum time
+func RemoveConcurrent(element TraceElement, tMin int) {
+	MainTrace.RemoveConcurrent(element, tMin)
 }
 
-// Remove all elements that are concurrent to the element or must happen after the element
+// RemoveConcurrentOrAfter removes all elements that are concurrent to the
+// element or must happen after the element
 //
 // Parameter:
 //   - element traceElement: The element
-func RemoveConcurrentOrAfter(element TraceElement, tmin int) {
-	MainTrace.RemoveConcurrentOrAfter(element, tmin)
+//   - tMin int: the minimum time
+func RemoveConcurrentOrAfter(element TraceElement, tMin int) {
+	MainTrace.RemoveConcurrentOrAfter(element, tMin)
 }
 
-// For each routine, get the earliest element that is concurrent to the element
+// GetConcurrentEarliest returns for each routine the earliest element that
+// is concurrent to the parameter element
 //
 // Parameter:
 //   - element traceElement: The element
@@ -478,7 +469,7 @@ func GetConcurrentEarliest(element TraceElement) map[int]TraceElement {
 	return MainTrace.GetConcurrentEarliest(element)
 }
 
-// Remove all elements that have a later tPost that the given tPost
+// RemoveLater removes all elements that have a later tPost that the given tPost
 //
 // Parameter:
 //   - tPost int: Remove elements after tPost
@@ -486,7 +477,7 @@ func RemoveLater(tPost int) {
 	MainTrace.RemoveLater(tPost)
 }
 
-// Shift all elements with time greater or equal to startTSort by shift
+// ShiftRoutine shifts all elements with time greater or equal to startTSort by shift
 // Only shift back
 //
 // Parameter:
@@ -500,7 +491,8 @@ func ShiftRoutine(routine int, startTSort int, shift int) bool {
 	return MainTrace.ShiftRoutine(routine, startTSort, shift)
 }
 
-// Get the partial trace of all element between startTime and endTime incluseve.
+// GetPartialTrace returns the partial trace of all element between startTime
+// and endTime inclusive.
 //
 // Parameter:
 //   - startTime int: The start time
@@ -512,12 +504,12 @@ func GetPartialTrace(startTime int, endTime int) map[int][]TraceElement {
 	return MainTrace.GetPartialTrace(startTime, endTime)
 }
 
-// Sort each routine of the trace by tpost
+// SortTrace sorts each routine of the trace by tPost
 func SortTrace() {
 	MainTrace.Sort()
 }
 
-// Copy the current main trace
+// CopyMainTrace returns a copy of the current main trace
 //
 // Returns:
 //   - Trace: The copy of the trace
@@ -525,7 +517,7 @@ func CopyMainTrace() Trace {
 	return MainTrace.Copy()
 }
 
-// Set the main trace
+// SetTrace sets the main trace
 //
 // Parameter:
 //   - trace Trace: The trace
@@ -533,12 +525,12 @@ func SetTrace(trace Trace) {
 	MainTrace = trace
 }
 
-// Print the main trace sorted by tPost
+// PrintTrace prints the main trace sorted by tPost
 func PrintTrace() {
 	MainTrace.PrintTrace()
 }
 
-// Return if the hb vector clocks have been calculated for the current trace
+// HBWasCalc returns if the hb vector clocks have been calculated for the current trace
 //
 // Returns:
 //   - hbWasCalc of the main trace
@@ -546,7 +538,7 @@ func HBWasCalc() bool {
 	return MainTrace.hbWasCalc
 }
 
-// Return how many elements are in a given routine of the main trace
+// numberElemsInTrace returns how many elements are in a given routine of the main trace
 //
 // Parameter:
 //   - routine int: routine to check for

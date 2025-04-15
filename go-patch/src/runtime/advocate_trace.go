@@ -55,6 +55,8 @@ const (
 	OperationAtomicAnd
 	OperationAtomicOr
 
+	OperationNewChan
+
 	OperationReplayEnd
 )
 
@@ -69,6 +71,13 @@ var advocateTracingDisabled = true
 
 // var advocateTraceWritingDisabled = false
 
+// Given an Operation enum, return a string representation
+//
+// Parameter:
+//   - op Operation: the operation
+//
+// Return:
+//   - string: the string representation
 func getOperationObjectString(op Operation) string {
 	switch op {
 	case OperationNone:
@@ -97,16 +106,16 @@ func getOperationObjectString(op Operation) string {
 	return "Unknown"
 }
 
+// Interface to define an trace element
 type traceElem interface {
 	toString() string
 	getOperation() Operation
 }
 
-/*
- * Return a string representation of the trace
- * Return:
- * 	string representation of the trace
- */
+// Return a string representation of the trace of the current go routine
+//
+// Returns:
+//   - string representation of the trace
 func CurrentTraceToString() string {
 	res := ""
 	for i, elem := range currentGoRoutine().Trace {
@@ -119,13 +128,13 @@ func CurrentTraceToString() string {
 	return res
 }
 
-/*
- * Return a string representation of the trace
- * Args:
- * 	trace: trace to convert to string
- * Return:
- * 	string representation of the trace
- */
+// Return a string representation of a given routine local trace
+//
+// Parameter:
+//   - trace: trace to convert to string
+//
+// Returns:
+//   - string: string representation of the trace
 func traceToString(trace *[]traceElem) string {
 	res := ""
 
@@ -139,33 +148,31 @@ func traceToString(trace *[]traceElem) string {
 	return res
 }
 
-/*
- * Add an operation to the trace
- * Args:
- *  elem: element to add to the trace
- * Return:
- * 	index of the element in the trace
- */
+// Add an operation to the trace
+//
+// Parameter:
+//   - elem: element to add to the trace
+//
+// Returns:
+//   - index of the element in the trace
 func insertIntoTrace(elem traceElem) int {
 	return currentGoRoutine().addToTrace(elem)
 }
 
-/*
- * Print the trace of the current routines
- */
+// Print the trace of the current routines
 func PrintTrace() {
 	routineID := GetRoutineID()
 	println("Routine", routineID, ":", CurrentTraceToString())
 }
 
-/*
- * Return the trace of the routine with id 'id'
- * Args:
- * 	id: id of the routine
- * Return:
- * 	string representation of the trace of the routine
- * 	bool: true if the routine exists, false otherwise
- */
+// Return the trace of the routine by id
+//
+// Parameter:
+//   - id: id of the routine
+//
+// Returns:
+//   - string representation of the trace of the routine
+//   - bool: true if the routine exists, false otherwise
 func TraceToStringByID(id uint64) (string, bool) {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
@@ -175,13 +182,13 @@ func TraceToStringByID(id uint64) (string, bool) {
 	return "", false
 }
 
-/*
- * Return whether the trace of a routine' is empty
- * Args:
- * 	routine: id of the routine
- * Return:
- * 	true if the trace is empty, false otherwise
- */
+// Return whether the trace of a routine' is empty
+//
+// Parameter:
+//   - routine: id of the routine
+//
+// Returns:
+//   - true if the trace is empty, false otherwise
 func TraceIsEmptyByRoutine(routine int) bool {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
@@ -191,15 +198,14 @@ func TraceIsEmptyByRoutine(routine int) bool {
 	return true
 }
 
-/*
- * Get the trace of the routine with id 'id'.
- * To minimized the needed ram the trace is sent to the channel 'c' in chunks
- * of 1000 elements.
- * Args:
- * 	id: id of the routine
- * 	c: channel to send the trace to
- *  atomic: it true, the atomic trace is returned
- */
+// Get the trace of the routine with id 'id'.
+// To minimized the needed ram the trace is sent to the channel 'c' in chunks
+// of 1000 elements.
+//
+// Parameter:
+//   - id: id of the routine
+//   - c: channel to send the trace to
+//   - atomic: it true, the atomic trace is returned
 func TraceToStringByIDChannel(id int, c chan<- string) {
 	lock(&AdvocateRoutinesLock)
 
@@ -224,11 +230,9 @@ func TraceToStringByIDChannel(id int, c chan<- string) {
 	}
 }
 
-/*
- * Return the trace of all traces
- * Return:
- * 	string representation of the trace of all routines
- */
+// Return a string representation of all routine
+// Return:
+//   - string representation of the trace of all routines
 func AllTracesToString() string {
 	// write warning if projectPath is empty
 	res := ""
@@ -247,29 +251,57 @@ func AllTracesToString() string {
 	return res
 }
 
-/*
-* PrintAllTraces prints the trace of all routines
- */
+// Given a list of element, return a string representation of the elements
+// separated by ,
+//
+// Parameter:
+//   - values ...any: the elements
+//
+// Returns:
+//   - a concatenated string representation of all values separated by ,
+func buildTraceElemString(values ...any) string {
+	return buildTraceElemStringSep(",", values...)
+}
+
+// Given a list of element, return a string representation of the elements
+// separated by a given separator
+//
+// Parameter:
+//   - values ...any: the elements
+//   - sep string: the separator
+//
+// Returns:
+//   - a concatenated string representation of all values separated by the separator
+func buildTraceElemStringSep(sep string, values ...any) string {
+	res := ""
+	for i, v := range values {
+		if i != 0 {
+			res += ","
+		}
+
+		res += convToString(v)
+	}
+	return res
+}
+
+// PrintAllTraces prints all traces
 func PrintAllTraces() {
 	print(AllTracesToString())
 }
 
-/*
- * GetNumberOfRoutines returns the number of routines in the trace
- * Return:
- *	number of routines in the trace
- */
+// GetNumberOfRoutines returns the number of routines in the trace
+//
+// Returns:
+//   - number of routines in the trace
 func GetNumberOfRoutines() int {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
 	return len(AdvocateRoutines)
 }
 
-/*
- * DeleteTrace removes all trace elements from the trace
- * Do not remove the routine objects them self
- * Make sure to call BlockTrace(), before calling this function
- */
+// DeleteTrace removes all trace elements from the trace
+// It does not remove the routine objects them self
+// Make sure to call BlockTrace(), before calling this function
 func DeleteTrace() {
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
@@ -278,21 +310,19 @@ func DeleteTrace() {
 	}
 }
 
-// ====================== Ignore =========================
-
-/*
- * Some operations, like garbage collection and internal operations, can
- * cause the replay to get stuck or are not needed.
- * For this reason, we ignore them.
- * Arguments:
- * 	operation: operation that is about to be executed
- * 	file: file in which the operation is executed
- * 	line: line number of the operation
- * Return:
- * 	bool: true if the operation should be ignored, false otherwise
- */
+// We are only interested in the behaviour of the actual program, not the details
+// of the internal implementation.
+// Additionally, some operations, like garbage collection and internal operations, can
+// cause the replay to get stuck or are not needed.
+// For this reason, we ignore all internal operations
+//
+// Parameter:
+//   - file: file in which the operation is executed
+//
+// Returns:
+//   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnore(file string) bool {
-	return contains(file, "go-patch/src/")
+	return containsStr(file, "go-patch/src/")
 }
 
 // ADVOCATE-FILE-END

@@ -30,7 +30,7 @@ func newRel(index int, nRout int) {
 	}
 }
 
-// Update and calculate the vector clocks given a lock operation
+// Lock updates and calculates the vector clocks given a lock operation
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
@@ -63,7 +63,7 @@ func Lock(mu *TraceElementMutex) {
 	incFuzzingCounter(mu)
 }
 
-// Update and calculate the vector clocks given a unlock operation
+// Unlock updates and calculates the vector clocks given a unlock operation
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
@@ -90,7 +90,7 @@ func Unlock(mu *TraceElementMutex) {
 	currentlyHoldLock[mu.id] = nil
 }
 
-// Update and calculate the vector clocks given a rlock operation
+// RLock updates and calculates the vector clocks given a rlock operation
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
@@ -126,7 +126,7 @@ func RLock(mu *TraceElementMutex) {
 	incFuzzingCounter(mu)
 }
 
-// Update and calculate the vector clocks given a runlock operation
+// RUnlock updates and calculates the vector clocks given a runlock operation
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element

@@ -1,8 +1,6 @@
 # Partial Order Aware Concurrency Sampling
 
-[X. Yuan, J. Yang, and R. Gu, “Partial order aware concurrency sampling,” in Computer
-Aided Verification, H. Chockler and G. Weissenbacher, Eds., Cham: Springer International
-Publishing, 2018, pp. 317–335, isbn: 978-3-319-96142-2.](https://www.cs.columbia.edu/~rgu/publications/cav18-yuan.pdf)
+[X. Yuan, J. Yang, and R. Gu, “Partial order aware concurrency sampling,” in Computer Aided Verification, H. Chockler and G. Weissenbacher, Eds., Cham: Springer International Publishing, 2018, pp. 317–335, isbn: 978-3-319-96142-2.](https://www.cs.columbia.edu/~rgu/publications/cav18-yuan.pdf)
 
 # Summary
 

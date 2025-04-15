@@ -16,15 +16,13 @@ import (
 	"unsafe"
 )
 
-// MARK: INT -> STR
-
-/*
- * Get a string representation of an uint64
- * Args:
- * 	n: int to convert
- * Return:
- * 	string representation of the int
- */
+// Get a string representation of an uint64
+//
+// Parameter:
+//   - n: int to convert
+//
+// Returns:
+//   - string representation of the int
 func uint64ToString(n uint64) string {
 	if n < 10 {
 		return string(rune(n + '0'))
@@ -33,6 +31,14 @@ func uint64ToString(n uint64) string {
 	}
 }
 
+// Given a pointer, return the value of the address of this pointer as string
+//
+// Parameter:
+//   - ptr *T: the pointer
+//   - size bool: if true, the output is reduced to a size of at most 9 digits
+//
+// Returns:
+//   - string: the string address value of the pointer
 func pointerAddressAsString[T any](ptr *T, size bool) string {
 	address := uintptr(unsafe.Pointer(ptr))
 
@@ -66,21 +72,13 @@ func pointerAddressAsString[T any](ptr *T, size bool) string {
 	return str
 }
 
-func pointerAddressAsUint32[T any](ptr *T, size bool) uint32 {
-	return stringToUint32(pointerAddressAsString(ptr, size))
-}
-
-func pointerAddressAsUint64[T any](ptr *T, size bool) uint64 {
-	return stringToUint64(pointerAddressAsString(ptr, size))
-}
-
-/*
- * Get a string representation of an int64
- * Args:
- * 	n: int to convert
- * Return:
- * 	string representation of the int
- */
+// Get a string representation of an int64
+//
+// Parameter:
+//   - n int64: int64 to convert
+//
+// Returns:
+//   - string: string representation of the int64
 func int64ToString(n int64) string {
 	if n < 0 {
 		return "-" + int64ToString(-n)
@@ -93,13 +91,13 @@ func int64ToString(n int64) string {
 	return int64ToString(n/10) + string(rune(n%10+'0'))
 }
 
-/*
- * Get a string representation of an int32
- * Args:
- * 	n: int to convert
- * Return:
- * 	string representation of the int
- */
+// Get a string representation of an int32
+//
+// Parameter:
+//   - n int32: int32 to convert
+//
+// Returns:
+//   - string: string representation of the int32
 func int32ToString(n int32) string {
 	if n < 0 {
 		return "-" + int32ToString(-n)
@@ -111,13 +109,13 @@ func int32ToString(n int32) string {
 	}
 }
 
-/*
- * Get a string representation of an uint32
- * Args:
- * 	n: int to convert
- * Return:
- * 	string representation of the int
- */
+// Get a string representation of an uint32
+//
+// Parameter:
+//   - n uint32: uint32 to convert
+//
+// Returns:
+//   - string representation of the uint32
 func uint32ToString(n uint32) string {
 	if n < 10 {
 		return string(rune(n + '0'))
@@ -126,13 +124,13 @@ func uint32ToString(n uint32) string {
 	}
 }
 
-/*
- * Get a string representation of an int
- * Args:
- * 	n: int to convert
- * Return:
- * 	string representation of the int
- */
+// Get a string representation of an int
+//
+// Parameter:
+//   - n int : int to convert
+//
+// Returns:
+//   - string representation of the int
 func intToString(n int) string {
 	if n < 0 {
 		return "-" + intToString(-n)
@@ -145,11 +143,13 @@ func intToString(n int) string {
 	}
 }
 
-// MARK: STR -> INT
-/*
- * Convert a string to an integer
- * Works only with positive integers
- */
+// Convert a string to an integer. If not possible, this panics
+//
+// Parameter:
+//   - s string: the string to convert
+//
+// Returns:
+//   - int: the int representation
 func stringToInt(s string) int {
 	var result int
 	sign := 1
@@ -165,23 +165,35 @@ func stringToInt(s string) int {
 	return result * sign
 }
 
+// Convert a string to an uint32. If not possible, this panics
+//
+// Parameter:
+//   - s string: the string to convert
+//
+// Returns:
+//   - uint32: the uint32 representation
 func stringToUint32(s string) uint32 {
 	return uint32(stringToInt(s))
 }
 
+// Convert a string to an uint64. If not possible, this panics
+//
+// Parameter:
+//   - s string: the string to convert
+//
+// Returns:
+//   - int: the uint64 representation
 func stringToUint64(s string) uint64 {
 	return uint64(stringToInt(s))
 }
 
-// MARK: BOOL -> STR
-
-/*
- * Get a string representation of a bool
- * Args:
- * 	b: bool to convert
- * Return:
- * 	string representation of the bool (true: "t", false: "f")
- */
+// Get a string representation of a bool
+//
+// Parameter:
+//   - b: bool to convert
+//
+// Returns:
+//   - string representation of the bool (true: "t", false: "f")
 func boolToString(b bool) string {
 	if b {
 		return "t"
@@ -189,31 +201,13 @@ func boolToString(b bool) string {
 	return "f"
 }
 
-// String
-func buildTraceElemString(values ...any) string {
-	res := ""
-	for i, v := range values {
-		if i != 0 {
-			res += ","
-		}
-
-		res += convToString(v)
-	}
-	return res
-}
-
-func buildTraceElemStringSep(sep string, values ...any) string {
-	res := ""
-	for i, v := range values {
-		if i != 0 {
-			res += sep
-		}
-
-		res += convToString(v)
-	}
-	return res
-}
-
+// Given a value of a number or bool, convert it into its string representation
+//
+// Parameter:
+//   - val any: the value to convert
+//
+// Returns:
+//   - string: the string representation of the value or "" if it was not able to convert
 func convToString(val any) string {
 	switch v := val.(type) {
 	case string:
@@ -239,19 +233,27 @@ func convToString(val any) string {
 	return ""
 }
 
+// Given a file and line, return a position
+//
+// Parameter:
+//   - file string: the file
+//   - line int: the line number
+//
+// Returns:
+//   - string: [file]:[line]
 func posToString(file string, line int) string {
 	return file + ":" + intToString(line)
 }
 
-/*
- * Check if a list of integers contains an element
- * Args:
- * 	list: list of integers
- * 	elem: element to check
- * Return:
- * 	true if the list contains the element, false otherwise
- */
-func containsInt(list []int, elem int) bool {
+// Check if a list contains an element
+//
+// Parameter:
+//   - list []T: list of values
+//   - elem T: element to check
+//
+// Returns:
+//   - true if the list contains the element, false otherwise
+func containsList[T comparable](list []T, elem T) bool {
 	for _, e := range list {
 		if e == elem {
 			return true
@@ -260,7 +262,15 @@ func containsInt(list []int, elem int) bool {
 	return false
 }
 
-func contains(s, sub string) bool {
+// Check if a string s contains a substring sub
+//
+// Parameter:
+//   - s: the long string
+//   - sub: the sub string
+//
+// Returns:
+//   - bool: true if s contains sub as a substring, false otherwise
+func containsStr(s, sub string) bool {
 	// Get the lengths of both the main string and the substring
 	lenS := len(s)
 	lenSub := len(sub)
@@ -290,14 +300,38 @@ func contains(s, sub string) bool {
 	return false
 }
 
+// Check if a string s has a prefix
+//
+// Parameter:
+//   - s: the string
+//   - sub: the prefix
+//
+// Returns:
+//   - bool: true if prefix is a prefix of s, false otherwise
 func hasPrefix(s, prefix string) bool {
 	return len(s) >= len(prefix) && s[:len(prefix)] == prefix
 }
 
+// Check if a string s has a suffix
+//
+// Parameter:
+//   - s: the string
+//   - sub: the suffix
+//
+// Returns:
+//   - bool: true if suffix is a suffix of s, false otherwise
 func hasSuffix(s, suffix string) bool {
 	return len(s) >= len(suffix) && s[len(s)-len(suffix):] == suffix
 }
 
+// Given a string, split it by a separator
+//
+// Parameter:
+//   - s string: the string to split
+//   - sep rune: the separator
+//
+// Returns:
+//   - []string: the list of strings
 func split(s string, sep rune) []string {
 	var res []string
 	var current string

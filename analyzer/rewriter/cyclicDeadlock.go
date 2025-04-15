@@ -14,6 +14,7 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/clock"
+	"analyzer/utils"
 	"errors"
 	"fmt"
 )
@@ -84,7 +85,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 							// Move the as much of the routine of the deadlocking element as possible behind this unlock!
 							var concurrentStartElem analysis.TraceElement = nil
 							for _, possibleStart := range analysis.GetRoutineTrace(lockElem.GetRoutine()) {
-								if clock.GetHappensBefore(possibleStart.GetwVc(), (*unlock).GetwVc()) == clock.Concurrent {
+								if clock.GetHappensBefore(possibleStart.GetWVc(), (*unlock).GetWVc()) == clock.Concurrent {
 									// fmt.Println("Concurrent to", possibleStart.GetTID(), possibleStart.GetTPre(), possibleStart.GetTPost(), possibleStart.GetRoutine(), possibleStart.GetID())
 									concurrentStartElem = possibleStart
 									break
@@ -109,7 +110,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 		}
 	}
 
-	analysis.AddTraceElementReplay(lastTime+1, analysis.ExitCodeCyclic)
+	analysis.AddTraceElementReplay(lastTime+1, utils.ExitCodeCyclic)
 
 	// fmt.Println("Rewritten Trace:")
 	// analysis.PrintTrace()

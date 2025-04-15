@@ -28,7 +28,7 @@ func newOSuc(index int, nRout int) {
 	}
 }
 
-// Update and calculate the vector clocks given a successful do operation
+// DoSuc updates and calculates the vector clocks given a successful do operation
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element
@@ -43,7 +43,7 @@ func DoSuc(on *TraceElementOnce) {
 	currentWVC[on.routine].Inc(on.routine)
 }
 
-// Update and calculate the vector clocks given a unsuccessful do operation
+// DoFail updates and calculates the vector clocks given a unsuccessful do operation
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element

@@ -59,7 +59,7 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 	return res, nil
 }
 
-// Get the code snippet of a program file at a specific line
+// GetProgramCode returns the code snippet of a program file at a specific line
 //
 // Parameter:
 //   - file string: The path to the file

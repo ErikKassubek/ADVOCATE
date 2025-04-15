@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementReplayStop.go
-// Brief: Struct and functions for replay controll elements in the trace
+// Brief: Struct and functions for replay control elements in the trace
 //
 // Author: Erik Kassubek
 // Created: 2024-04-03
@@ -15,17 +15,17 @@ import (
 	"strconv"
 )
 
-// Struct to save an atomic event in the trace
+// TraceElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
 //
-//   - tpost int: The timestamp of the event
+//   - tPost int: The timestamp of the event
 //   - exitCode int: expected exit code
 type TraceElementReplay struct {
 	tPost    int
 	exitCode int
 }
 
-// Create an end of replay event
+// AddTraceElementReplay adds an end of replay event to the main trace
 //
 // Parameter:
 //   - t string: The timestamp of the event
@@ -34,7 +34,7 @@ func AddTraceElementReplay(t int, exitCode int) error {
 	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
 
-// Get the id of the element
+// GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
@@ -42,7 +42,7 @@ func (er *TraceElementReplay) GetID() int {
 	return 0
 }
 
-// Get the routine of the element
+// GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
@@ -50,22 +50,22 @@ func (er *TraceElementReplay) GetRoutine() int {
 	return 1
 }
 
-// Get the tpost of the element.
+// GetTPre returns the tPre of the element.
 //
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (er *TraceElementReplay) GetTPre() int {
 	return er.tPost
 }
 
-// Get the tpost of the element.
+// GetTPost returns the tPost of the element.
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (er *TraceElementReplay) GetTPost() int {
 	return er.tPost
 }
 
-// Get the timer, ther is used for the sorting of the trace
+// GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
@@ -73,7 +73,7 @@ func (er *TraceElementReplay) GetTSort() int {
 	return er.tPost
 }
 
-// Get the position of the operation.
+// GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The file of the element
@@ -105,7 +105,9 @@ func (er *TraceElementReplay) GetLine() int {
 	return 0
 }
 
-// Get the tID of the element.
+// GetTID returns the tID of the element.
+// The tID is normally a string of form [file]:[line]@[tPre]
+// Since the replay element is not used for any analysis, it returns an empty string
 //
 // Returns:
 //   - string: The tID of the element
@@ -113,7 +115,7 @@ func (er *TraceElementReplay) GetTID() string {
 	return ""
 }
 
-// Dummy function to implement the interface
+// GetVC is a dummy function to implement the TraceElement interface
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
@@ -121,12 +123,12 @@ func (er *TraceElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
-// GetwVc implements TraceElement.
-func (at *TraceElementReplay) GetwVc() *clock.VectorClock {
+// GetWVc is a dummy function to implement the TraceElement interface
+func (er *TraceElementReplay) GetWVc() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
-// Get the string representation of the object type
+// GetObjType returns the string representation of the object type
 func (er *TraceElementReplay) GetObjType(operation bool) string {
 	if operation {
 		return ObjectTypeReplay + "R"
@@ -134,7 +136,7 @@ func (er *TraceElementReplay) GetObjType(operation bool) string {
 	return ObjectTypeReplay
 }
 
-// Given a trace element, check if it is equal to this element
+// IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
 //   - elem TraceElement: The element to check against
@@ -154,24 +156,24 @@ func (er *TraceElementReplay) GetTraceIndex() (int, int) {
 	return -1, -1
 }
 
-// Set the tPre and tPost of the element
+// SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (mu *TraceElementReplay) SetT(time int) {
-	mu.tPost = time
+func (er *TraceElementReplay) SetT(time int) {
+	er.tPost = time
 }
 
-// Set the tpre of the element.
+// SetTPre sets the tPre of the element.
 //
 // Parameter:
-//   - tPre int: The tpre of the element
-func (mu *TraceElementReplay) SetTPre(tPre int) {
+//   - tPre int: The tPre of the element
+func (er *TraceElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
-	mu.tPost = tPre
+	er.tPost = tPre
 }
 
-// Set the timer, ther is used for the sorting of the trace
+// SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
@@ -181,7 +183,7 @@ func (er *TraceElementReplay) SetTSort(tSort int) {
 	er.tPost = tSort
 }
 
-// Set the timer, ther is used for the sorting of the trace, only if the original
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
 // Parameter:
@@ -192,7 +194,7 @@ func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 	er.tPost = tSort
 }
 
-// Get the simple string representation of the element.
+// ToString returns the simple string representation of the element.
 //
 // Returns:
 //   - string: The simple string representation of the element
@@ -206,7 +208,7 @@ func (er *TraceElementReplay) updateVectorClock() {
 	// nothing to do
 }
 
-// Create a copy of the element
+// Copy creates a copy of the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
@@ -217,22 +219,22 @@ func (er *TraceElementReplay) Copy() TraceElement {
 	}
 }
 
-// Dummy function for traceElement
+// AddRel1 is a dummy function to implement the traceElement interface
 func (er *TraceElementReplay) AddRel1(_ TraceElement, _ int) {
 	return
 }
 
-// Dummy function for traceElement
+// AddRel2 is a dummy function to implement the traceElement interface
 func (er *TraceElementReplay) AddRel2(_ TraceElement) {
 	return
 }
 
-// Dummy function for traceElement
+// GetRel1 is a dummy function to implement the traceElement interface
 func (er *TraceElementReplay) GetRel1() []TraceElement {
 	return make([]TraceElement, 0)
 }
 
-// Dummy function for traceElement
+// GetRel2 is a dummy function to implement the traceElement interface
 func (er *TraceElementReplay) GetRel2() []TraceElement {
 	return make([]TraceElement, 0)
 }

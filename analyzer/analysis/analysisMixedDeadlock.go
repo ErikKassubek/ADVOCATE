@@ -82,9 +82,7 @@ func lockSetRemoveLock(routine int, lock int) {
 // Parameter:
 //   - routineSend int: The routine id of the send operation
 //   - routineRevc int: The routine id of the receive operation
-//   - tIDSend string: The trace id of the channel send
-//   - tIDSend string: The trace id of the channel recv
-func checkForMixedDeadlock(routineSend int, routineRevc int, tIDSend string, tIDRecv string) {
+func checkForMixedDeadlock(routineSend int, routineRevc int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 

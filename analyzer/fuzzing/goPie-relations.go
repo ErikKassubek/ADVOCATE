@@ -10,7 +10,10 @@
 
 package fuzzing
 
-import "analyzer/analysis"
+import (
+	"analyzer/analysis"
+	"analyzer/utils"
+)
 
 // We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
 // We define <c, c'> in CPOP2, if c and c' are operations in different routines
@@ -21,6 +24,7 @@ import "analyzer/analysis"
 // Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
 // Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
+// constants to distinguish between the previous and next elem in the scheduling chain
 const (
 	Before = 0
 	After  = 1
@@ -39,7 +43,7 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 	var prevValid analysis.TraceElement
 
 	for i := range routineTrace {
-		if isGoPieElem(routineTrace[i]) || useHBInfoFuzzing {
+		if isGoPieElem(routineTrace[i]) {
 			if prevValid != nil {
 				prevValid.AddRel1(routineTrace[i], After)
 				routineTrace[i].AddRel1(prevValid, Before)
@@ -55,7 +59,7 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
 func calculateRelRule2AddElem(elem analysis.TraceElement) {
-	if !isGoPieElem(elem) && !useHBInfoFuzzing {
+	if !isGoPieElem(elem) {
 		return
 	}
 
@@ -121,17 +125,24 @@ func calculateRelRule3And4() {
 }
 
 // GoPie only looks at fork, mutex, rwmutex and channel (and select)
-// Return if the elem is one of them
+// GoPieHB uses all repayable elements
+//
+// Parameter:
+//   - elem analysis.TraceElement: the element to check
+//
+// Returns:
+//   - bool: true if elem should be used in chains, false if not
 func isGoPieElem(elem analysis.TraceElement) bool {
-	validTypes := []string{"R", "M", "C", "S"}
 	elemTypeShort := elem.GetObjType(false)
-	for _, t := range validTypes {
-		if elemTypeShort == elemTypeShort {
-			if t == "R" && elem.GetObjType(false) == "RE" { // only fork, not end
-				return false
-			}
-			return true
-		}
+
+	if !useHBInfoFuzzing {
+		validTypes := []string{analysis.ObjectTypeFork,
+			analysis.ObjectTypeMutex, analysis.ObjectTypeChannel,
+			analysis.ObjectTypeSelect}
+		return utils.Contains(validTypes, elemTypeShort)
 	}
-	return false
+
+	invalidTypes := []string{analysis.ObjectTypeNew,
+		analysis.ObjectTypeReplay, analysis.ObjectTypeRoutineEnd}
+	return !utils.Contains(invalidTypes, elemTypeShort)
 }

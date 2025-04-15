@@ -35,7 +35,6 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	pattersToMove := []string{
 		"rewrittenTrace*",
-		"advocateTraceReplay_*",
 	}
 
 	logsToCollect := []string{
@@ -83,7 +82,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		dest := filepath.Join(destination, file)
 
 		if file == "advocateTrace" {
-			movedTraces += 1
+			movedTraces++
 			dest += "_" + strconv.Itoa(movedTraces)
 		}
 
@@ -110,7 +109,6 @@ func removeTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",
-		"advocateTraceReplay_*",
 		"fuzzingData.log",
 		// "fuzzingTrace_*",
 	}
@@ -157,7 +155,7 @@ func removeLogs(path string) {
 	}
 }
 
-// Remove the fuzzing trace folder
+// ClearFuzzingTrace removes the fuzzing trace folder
 //
 // Parameter:
 //   - path string: path to the folder containing the fuzzing traces

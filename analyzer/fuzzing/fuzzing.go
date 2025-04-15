@@ -28,6 +28,7 @@ type mutation struct {
 	mutPie  string
 }
 
+// Possible values for fuzzing mode
 const (
 	GFuzz       = "GFuzz"       // only GFuzz
 	GFuzzHB     = "GFuzzHB"     // GFuzz with use of hb info
@@ -35,13 +36,16 @@ const (
 	Flow        = "Flow"        // only flow mutation
 	GoPie       = "GoPie"       // only goPie
 	GoPieHB     = "GoPieHB"     // goPie with HB relation
+)
 
+const (
 	mutSelType  = 0
 	mutPiType   = 1
 	mutFlowType = 2
 )
+
 const (
-	maxNumberRuns = 20
+	maxNumberRuns = 100
 	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
 
@@ -60,7 +64,7 @@ var (
 	fuzzingModeFlow  = false
 )
 
-// Create the fuzzing data
+// Fuzzing creates the fuzzing data and runs the fuzzing executions
 //
 // Parameter:
 //   - modeMain bool: if true, run fuzzing on main function, otherwise on test
@@ -240,7 +244,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
-			0, numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber)
+			numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

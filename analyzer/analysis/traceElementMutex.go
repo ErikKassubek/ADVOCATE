@@ -20,9 +20,10 @@ import (
 	"analyzer/utils"
 )
 
-// enum for opM
+// OpMutex is an enum for opM
 type OpMutex int
 
+// Values for the opMutex enum
 const (
 	LockOp OpMutex = iota
 	RLockOp
@@ -37,8 +38,8 @@ const (
 //
 //   - index int: Index in the routine
 //   - routine int: The routine id
-//   - tpre int: The timestamp at the start of the event
-//   - tpost int: The timestamp at the end of the event
+//   - tPre int: The timestamp at the start of the event
+//   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the mutex
 //   - rw bool: Whether the mutex is a read-noWarningrite mutex
 //   - opM opMutex: The operation on the mutex
@@ -66,7 +67,7 @@ type TraceElementMutex struct {
 	rel2    []TraceElement
 }
 
-// Create a new mutex trace element
+// AddTraceElementMutex adds a new mutex element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
@@ -82,12 +83,12 @@ func AddTraceElementMutex(routine int, tPre string,
 	pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
-		return errors.New("tpre is not an integer")
+		return errors.New("tPre is not an integer")
 	}
 
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
-		return errors.New("tpost is not an integer")
+		return errors.New("tPost is not an integer")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -149,7 +150,7 @@ func AddTraceElementMutex(routine int, tPre string,
 	return nil
 }
 
-// Get the id of the element
+// GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
@@ -157,7 +158,7 @@ func (mu *TraceElementMutex) GetID() int {
 	return mu.id
 }
 
-// Get the routine of the element
+// GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
@@ -165,23 +166,23 @@ func (mu *TraceElementMutex) GetRoutine() int {
 	return mu.routine
 }
 
-// Get the tpre of the element.
+// GetTPre returns the tPre of the element.
 //
 // Returns:
-//   - int: The tpre of the element
+//   - int: The tPre of the element
 func (mu *TraceElementMutex) GetTPre() int {
 	return mu.tPre
 }
 
-// Get the tpost of the element.
+// GetTPost returns the tPost of the element.
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (mu *TraceElementMutex) GetTPost() int {
 	return mu.tPost
 }
 
-// Get the timer, that is used for the sorting of the trace
+// GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
@@ -193,7 +194,7 @@ func (mu *TraceElementMutex) GetTSort() int {
 	return mu.tPost
 }
 
-// Get the position of the operation.
+// GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
@@ -201,7 +202,7 @@ func (mu *TraceElementMutex) GetPos() string {
 	return fmt.Sprintf("%s:%d", mu.file, mu.line)
 }
 
-// Get the replay id of the element
+// GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
@@ -209,7 +210,7 @@ func (mu *TraceElementMutex) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", mu.routine, mu.file, mu.line)
 }
 
-// Get the file of the element
+// GetFile returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
@@ -217,7 +218,7 @@ func (mu *TraceElementMutex) GetFile() string {
 	return mu.file
 }
 
-// Get the line of the element
+// GetLine returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
@@ -225,7 +226,8 @@ func (mu *TraceElementMutex) GetLine() int {
 	return mu.line
 }
 
-// Get the tID of the element.
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
@@ -233,7 +235,7 @@ func (mu *TraceElementMutex) GetTID() string {
 	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
-// Get the operation of the element
+// GetOperation returns the operation of the element
 //
 // Returns:
 //   - OpMutex: The operation of the element
@@ -241,7 +243,7 @@ func (mu *TraceElementMutex) GetOperation() OpMutex {
 	return mu.opM
 }
 
-// Get if the element is a lock operation
+// IsLock returns if the element is a lock operation
 //
 // Returns:
 //   - bool: If the element is a lock operation
@@ -249,7 +251,7 @@ func (mu *TraceElementMutex) IsLock() bool {
 	return mu.opM == LockOp || mu.opM == RLockOp || mu.opM == TryLockOp || mu.opM == TryRLockOp
 }
 
-// Get the vector clock of the element
+// GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
@@ -257,15 +259,15 @@ func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
 	return mu.vc
 }
 
-// Get the weak vector clock of the element
+// GetWVc returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (mu *TraceElementMutex) GetwVc() *clock.VectorClock {
+func (mu *TraceElementMutex) GetWVc() *clock.VectorClock {
 	return mu.wVc
 }
 
-// Get the string representation of the object type
+// GetObjType returns the string representation of the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
@@ -294,7 +296,7 @@ func (mu *TraceElementMutex) GetObjType(operation bool) string {
 	return ObjectTypeMutex
 }
 
-// Get wether the locking was successful of the element
+// IsSuc returns whether the locking was successful of the element
 //
 // Returns:
 //   - For trylock wether it was successful, otherwise always true
@@ -302,7 +304,7 @@ func (mu *TraceElementMutex) IsSuc() bool {
 	return mu.suc
 }
 
-// Given a trace element, check if it is equal to this element
+// IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
 //   - elem TraceElement: The element to check against
@@ -313,7 +315,7 @@ func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
 	return mu.routine == elem.GetRoutine() && mu.ToString() == elem.ToString()
 }
 
-// Get the trace local index of the element in the trace
+// GetTraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
@@ -322,7 +324,7 @@ func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
 	return mu.routine, mu.index
 }
 
-// Set the tPre and tPost of the element
+// SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
@@ -331,10 +333,10 @@ func (mu *TraceElementMutex) SetT(time int) {
 	mu.tPost = time
 }
 
-// Set the tpre of the element.
+// SetTPre sets the tPre of the element.
 //
 // Parameter:
-//   - tPre int: The tpre of the element
+//   - tPre int: The tPre of the element
 func (mu *TraceElementMutex) SetTPre(tPre int) {
 	mu.tPre = tPre
 	if mu.tPost != 0 && mu.tPost < tPre {
@@ -342,7 +344,7 @@ func (mu *TraceElementMutex) SetTPre(tPre int) {
 	}
 }
 
-// Set the timer, that is used for the sorting of the trace
+// SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
@@ -351,7 +353,7 @@ func (mu *TraceElementMutex) SetTSort(tSort int) {
 	mu.tPost = tSort
 }
 
-// Set the timer, that is used for the sorting of the trace, only if the original
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
 // Parameter:
@@ -363,7 +365,7 @@ func (mu *TraceElementMutex) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
-// Get the simple string representation of the element
+// ToString returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
@@ -482,7 +484,7 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 
 // ========= For GoPie fuzzing ===========
 
-// Add an element to the rel1 set of the element
+// AddRel1 adds an element to the rel1 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
@@ -491,18 +493,29 @@ func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if mu.IsEqual(elem) {
+		return
+	}
+
 	mu.rel1[pos] = elem
 }
 
-// Add an element to the rel2 set of the element
+// AddRel2 adds an element to the rel2 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
 func (mu *TraceElementMutex) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if mu.IsEqual(elem) {
+		return
+	}
+
 	mu.rel2 = append(mu.rel2, elem)
 }
 
-// Return the rel1 set
+// GetRel1 returns the rel1 set
 //
 // Returns:
 //   - []*TraceElement: the rel1 set
@@ -510,7 +523,7 @@ func (mu *TraceElementMutex) GetRel1() []TraceElement {
 	return mu.rel1
 }
 
-// Return the rel2 set
+// GetRel2 returns the rel2 set
 //
 // Returns:
 //   - []*TraceElement: the rel1 set

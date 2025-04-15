@@ -12,19 +12,27 @@
 
 package runtime
 
+// Struct to store an operation on an atomic variable
+//
+// Fields
+//   - timer int64: time when the operation was executed
+//   - id string: id of the atomic, address of the atomic
+//   - op Operation: operation type
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceAtomic struct {
 	timer int64
-	index string
+	id    string
 	op    Operation
 	file  string
 	line  int
 }
 
-/*
- * Add an atomic operation to the trace
- * Args:
- * 	index: index of the atomic event in advocateAtomicMap
- */
+// Add an atomic operation to the trace
+// Args:
+//   - addr *T: memory address of the atomic
+//   - op Operation: the operation type
+//   - skip iny: skip for Caller
 func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 	if advocateTracingDisabled {
 		return
@@ -38,11 +46,11 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 		return
 	}
 
-	index := pointerAddressAsString(addr, true)
+	id := pointerAddressAsString(addr, true)
 
 	elem := AdvocateTraceAtomic{
 		timer: timer,
-		index: index,
+		id:    id,
 		op:    op,
 		file:  file,
 		line:  line,
@@ -51,6 +59,11 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 	insertIntoTrace(elem)
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation of the form
+//     U,[timer],[id],[operation],[file],[line]
 func (elem AdvocateTraceAtomic) toString() string {
 	opStr := "U"
 	switch elem.op {
@@ -70,9 +83,13 @@ func (elem AdvocateTraceAtomic) toString() string {
 		opStr = "O"
 	}
 
-	return buildTraceElemString("A", elem.timer, elem.index, opStr, posToString(elem.file, elem.line))
+	return buildTraceElemString("A", elem.timer, elem.id, opStr, posToString(elem.file, elem.line))
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceAtomic) getOperation() Operation {
 	return elem.op
 }

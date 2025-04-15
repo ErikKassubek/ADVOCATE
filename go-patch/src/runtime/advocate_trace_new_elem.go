@@ -2,8 +2,8 @@
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_channel.go
-// Brief: Functionality for the channel
+// File: advocate_trace_new_elem.go
+// Brief: Functionality to record a make
 //
 // Author: Erik Kassubek
 // Created: 2024-02-16
@@ -12,6 +12,17 @@
 
 package runtime
 
+// Struct to store an make
+// For now only channel makes are recorded
+//
+// Fields
+//   - tPost int64: time when the operation finished
+//   - id string: id of the channel
+//   - elemType string: type of created primitive, for now only "NC" for channel
+//   - num int: additional numerical field
+//     for channel: qSize
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceNewElem struct {
 	tPost    int64
 	id       uint64
@@ -22,7 +33,6 @@ type AdvocateTraceNewElem struct {
 	op       Operation
 }
 
-// MARK: Make
 /*
  * AdvocateChanMake adds a channel make to the trace.
  * Args:
@@ -53,6 +63,7 @@ func AdvocateChanMake(qSize int) uint64 {
 		num:      qSize,
 		file:     file,
 		line:     line,
+		op:       OperationNewChan,
 	}
 
 	insertIntoTrace(elem)
@@ -60,10 +71,28 @@ func AdvocateChanMake(qSize int) uint64 {
 	return id
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation
 func (elem AdvocateTraceNewElem) toString() string {
-	return buildTraceElemString("N", elem.tPost, elem.id, elem.elemType, elem.num, posToString(elem.file, elem.line))
+	operationType := "NC"
+	return buildTraceElemString("N", elem.tPost, elem.id, operationType, elem.num, posToString(elem.file, elem.line))
 }
 
+// Get the string representation for the primitive type
+// For now always return "NC"
+//
+// Returns:
+//   - string representation of the primitive type
+func (elem AdvocateTraceNewElem) getOpStr() string {
+	return "NC"
+}
+
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceNewElem) getOperation() Operation {
-	return OperationNone
+	return elem.op
 }

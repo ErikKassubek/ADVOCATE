@@ -21,6 +21,7 @@ import (
 // OpCond provides an enum for the operation of a conditional variable
 type OpCond int
 
+// Values for the OpCount enum
 const (
 	WaitCondOp OpCond = iota
 	SignalOp
@@ -31,12 +32,13 @@ const (
 // Fields:
 //
 //   - routine int: The routine id
-//   - tpre int: The timestamp at the start of the event
-//   - tpost int: The timestamp at the end of the event
+//   - tPre int: The timestamp at the start of the event
+//   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the condition variable
 //   - opC opCond: The operation on the condition variable
-//   - file string, lineint: The position of the condition variable operation in the code
-//   - tID string: The id of the trace element, contains the position and the tpre
+//   - file string, The file of the condition variable operation in the code
+//   - line int, The line of the condition variable operation in the code
+//   - tID string: The id of the trace element, contains the position and the tPre
 type TraceElementCond struct {
 	index   int
 	routine int
@@ -52,7 +54,7 @@ type TraceElementCond struct {
 	rel2    []TraceElement
 }
 
-// Create a new condition variable trace element
+// AddTraceElementCond adds a new condition variable element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
@@ -64,11 +66,11 @@ type TraceElementCond struct {
 func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
-		return errors.New("tpre is not an integer")
+		return errors.New("tPre is not an integer")
 	}
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
-		return errors.New("tpost is not an integer")
+		return errors.New("tPost is not an integer")
 	}
 	idInt, err := strconv.Atoi(id)
 	if err != nil {
@@ -110,7 +112,7 @@ func AddTraceElementCond(routine int, tPre string, tPost string, id string, opN 
 	return nil
 }
 
-// Get the id of the element
+// GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
@@ -118,7 +120,7 @@ func (co *TraceElementCond) GetID() int {
 	return co.id
 }
 
-// Get the routine of the element
+// GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine id
@@ -126,23 +128,23 @@ func (co *TraceElementCond) GetRoutine() int {
 	return co.routine
 }
 
-// Get the tpre of the element.
+// GetTPre returns the tPre of the element.
 //
 // Returns:
-//   - int: The tpre of the element
+//   - int: The tPre of the element
 func (co *TraceElementCond) GetTPre() int {
 	return co.tPre
 }
 
-// Get the tpost of the element.
+// GetTPost returns the tPost of the element.
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (co *TraceElementCond) GetTPost() int {
 	return co.tPost
 }
 
-// Get the timer, that is used for sorting the trace
+// GetTSort returns the timer, that is used for sorting the trace
 //
 // Returns:
 //   - int: The timer of the element
@@ -158,7 +160,7 @@ func (co *TraceElementCond) GetTSort() int {
 	return t
 }
 
-// Get the position of the operation.
+// GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
@@ -190,7 +192,8 @@ func (co *TraceElementCond) GetLine() int {
 	return co.line
 }
 
-// Get the tID of the element.
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
@@ -198,7 +201,7 @@ func (co *TraceElementCond) GetTID() string {
 	return co.GetPos() + "@" + strconv.Itoa(co.tPre)
 }
 
-// Get the operation of the element
+// GetOpCond returns the operation of the element
 //
 // Returns:
 //   - OpCond: The operation of the element
@@ -206,7 +209,7 @@ func (co *TraceElementCond) GetOpCond() OpCond {
 	return co.opC
 }
 
-// Get the vector clock of the element
+// GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
@@ -214,15 +217,15 @@ func (co *TraceElementCond) GetVC() *clock.VectorClock {
 	return co.vc
 }
 
-// Get the vector clock of the element for the weak must happens before relation
+// GetWVc returns the vector clock of the element for the weak must happens before relation
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (co *TraceElementCond) GetwVc() *clock.VectorClock {
+func (co *TraceElementCond) GetWVc() *clock.VectorClock {
 	return co.wVc
 }
 
-// Get the string representation of the object type
+// GetObjType returns the string representation of the object type
 func (co *TraceElementCond) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeCond
@@ -239,7 +242,7 @@ func (co *TraceElementCond) GetObjType(operation bool) string {
 	return ObjectTypeCond
 }
 
-// Given a trace element, check if it is equal to this element
+// IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
 //   - elem TraceElement: The element to check against
@@ -250,7 +253,7 @@ func (co *TraceElementCond) IsEqual(elem TraceElement) bool {
 	return co.routine == elem.GetRoutine() && co.ToString() == elem.ToString()
 }
 
-// Get the trace local index of the element in the trace
+// GetTraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
@@ -259,7 +262,7 @@ func (co *TraceElementCond) GetTraceIndex() (int, int) {
 	return co.routine, co.index
 }
 
-// Set the tPre and tPost of the element
+// SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
@@ -268,10 +271,10 @@ func (co *TraceElementCond) SetT(time int) {
 	co.tPost = time
 }
 
-// Set the tpre of the element.
+// SetTPre sets the tPre of the element.
 //
 // Parameter:
-//   - tPre int: The tpre of the element
+//   - tPre int: The tPre of the element
 func (co *TraceElementCond) SetTPre(tPre int) {
 	co.tPre = tPre
 	if co.tPost != 0 && co.tPost < tPre {
@@ -279,7 +282,7 @@ func (co *TraceElementCond) SetTPre(tPre int) {
 	}
 }
 
-// Set the timer that is used for sorting the trace
+// SetTSort sets the timer that is used for sorting the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
@@ -290,7 +293,7 @@ func (co *TraceElementCond) SetTSort(tSort int) {
 	}
 }
 
-// Set the timer, that is used for the sorting of the trace, only if the original
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
 // Parameter:
@@ -309,7 +312,7 @@ func (co *TraceElementCond) SetTWithoutNotExecuted(tSort int) {
 	return
 }
 
-// Get the string representation of the element
+// ToString returns the string representation of the element
 //
 // Returns:
 //   - string: The string representation of the element
@@ -368,7 +371,7 @@ func (co *TraceElementCond) Copy() TraceElement {
 
 // ========= For GoPie fuzzing ===========
 
-// Add an element to the rel1 set of the element
+// AddRel1 adds an element to the rel1 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
@@ -377,18 +380,28 @@ func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+	// do not add yourself
+	if co.IsEqual(elem) {
+		return
+	}
+
 	co.rel1[pos] = elem
 }
 
-// Add an element to the rel2 set of the element
+// AddRel2 adds an element to the rel2 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
 func (co *TraceElementCond) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if co.IsEqual(elem) {
+		return
+	}
+
 	co.rel2 = append(co.rel2, elem)
 }
 
-// Return the rel1 set
+// GetRel1 returns the rel1 set
 //
 // Returns:
 //   - []*TraceElement: the rel1 set
@@ -396,7 +409,7 @@ func (co *TraceElementCond) GetRel1() []TraceElement {
 	return co.rel1
 }
 
-// Return the rel2 set
+// GetRel2 returns the rel2 set
 //
 // Returns:
 //   - []*TraceElement: the rel2 set

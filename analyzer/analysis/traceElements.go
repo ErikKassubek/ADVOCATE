@@ -12,21 +12,22 @@ package analysis
 
 import "analyzer/clock"
 
+// Values possible primitive types
 const (
 	ObjectTypeAtomic     = "A"
 	ObjectTypeChannel    = "C"
 	ObjectTypeCond       = "D"
-	ObjectTypeFork       = "R"
+	ObjectTypeFork       = "G"
 	ObjectTypeMutex      = "M"
 	ObjectTypeNew        = "N"
 	ObjectTypeOnce       = "O"
-	ObjectTypeReplay     = "R"
+	ObjectTypeReplay     = "X"
 	ObjectTypeRoutineEnd = "E"
 	ObjectTypeSelect     = "S"
 	ObjectTypeWait       = "W"
 )
 
-// Interface for trace elements
+// TraceElement is an interface for the elements in a trace
 type TraceElement interface {
 	GetID() int
 	GetTPre() int
@@ -48,7 +49,7 @@ type TraceElement interface {
 	ToString() string
 	updateVectorClock()
 	GetVC() *clock.VectorClock
-	GetwVc() *clock.VectorClock
+	GetWVc() *clock.VectorClock
 	Copy() TraceElement
 	AddRel1(elem TraceElement, pos int)
 	AddRel2(elem TraceElement)

@@ -20,6 +20,15 @@ import (
 )
 
 // TODO: for each test get the number of unique bugs
+
+// CreateStatsFuzzing creates statistics about fuzzing runs
+//
+// Parameter:
+//   - pathFolder string: path to where the stats files should be created
+//   - progName string: name of the analyzed program
+//
+// Returns:
+//   - error
 func CreateStatsFuzzing(pathFolder, progName string) error {
 	// collect the info from the analyzer
 	resultPath := filepath.Join(pathFolder, "advocateResult")

@@ -20,6 +20,7 @@ import (
 // resultLevel is an enum for the severity of a result
 type resultLevel int
 
+// values for the resultLevel enum
 const (
 	NONE resultLevel = iota
 	CRITICAL
@@ -27,80 +28,36 @@ const (
 	INFORMATION
 )
 
-// ResultType is an ID for a type of result
-type ResultType string
+var resultTypeMap = map[utils.ResultType]string{
+	utils.ASendOnClosed:           "Actual Send on Closed Channel:",
+	utils.ARecvOnClosed:           "Actual Receive on Closed Channel:",
+	utils.ACloseOnClosed:          "Actual Close on Closed Channel:",
+	utils.AConcurrentRecv:         "Concurrent Receive:",
+	utils.ASelCaseWithoutPartner:  "Select Case without Partner",
+	utils.ACloseOnNilChannel:      "Actual close on nil channel",
+	utils.ANegWG:                  "Actual negative Wait Group",
+	utils.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 
-const (
-	Empty ResultType = ""
+	utils.PSendOnClosed:     "Possible send on closed channel:",
+	utils.PRecvOnClosed:     "Possible receive on closed channel:",
+	utils.PNegWG:            "Possible negative waitgroup counter:",
+	utils.PUnlockBeforeLock: "Possible unlock of a not locked mutex:",
+	utils.PCyclicDeadlock:   "Possible cyclic deadlock:",
 
-	// actual
-	ASendOnClosed           ResultType = "A01"
-	ARecvOnClosed           ResultType = "A02"
-	ACloseOnClosed          ResultType = "A03"
-	ACloseOnNilChannel      ResultType = "A04"
-	ANegWG                  ResultType = "A05"
-	AUnlockOfNotLockedMutex ResultType = "A06"
-	AConcurrentRecv         ResultType = "A07"
-	ASelCaseWithoutPartner  ResultType = "A08"
+	utils.LWithoutBlock:      "Leak on routine without any blocking operation",
+	utils.LUnbufferedWith:    "Leak on unbuffered channel with possible partner:",
+	utils.LUnbufferedWithout: "Leak on unbuffered channel without possible partner:",
+	utils.LBufferedWith:      "Leak on buffered channel with possible partner:",
+	utils.LBufferedWithout:   "Leak on unbuffered channel without possible partner:",
+	utils.LNilChan:           "Leak on nil channel:",
+	utils.LSelectWith:        "Leak on select with possible partner:",
+	utils.LSelectWithout:     "Leak on select without partner or nil case",
+	utils.LMutex:             "Leak on mutex:",
+	utils.LWaitGroup:         "Leak on wait group:",
+	utils.LCond:              "Leak on conditional variable:",
 
-	// possible
-	PSendOnClosed     ResultType = "P01"
-	PRecvOnClosed     ResultType = "P02"
-	PNegWG            ResultType = "P03"
-	PUnlockBeforeLock ResultType = "P04"
-	PCyclicDeadlock   ResultType = "P05"
-
-	// leaks
-	LWithoutBlock      = "L00"
-	LUnbufferedWith    = "L01"
-	LUnbufferedWithout = "L02"
-	LBufferedWith      = "L03"
-	LBufferedWithout   = "L04"
-	LNilChan           = "L05"
-	LSelectWith        = "L06"
-	LSelectWithout     = "L07"
-	LMutex             = "L08"
-	LWaitGroup         = "L09"
-	LCond              = "L10"
-
-	// recording
-	RUnknownPanic ResultType = "R01"
-	RTimeout      ResultType = "R02"
-
-	// not executed select
-	// SNotExecutedWithPartner = "S00"
-)
-
-var resultTypeMap = map[ResultType]string{
-	ASendOnClosed:           "Actual Send on Closed Channel:",
-	ARecvOnClosed:           "Actual Receive on Closed Channel:",
-	ACloseOnClosed:          "Actual Close on Closed Channel:",
-	AConcurrentRecv:         "Concurrent Receive:",
-	ASelCaseWithoutPartner:  "Select Case without Partner",
-	ACloseOnNilChannel:      "Actual close on nil channel",
-	ANegWG:                  "Actual negative Wait Group",
-	AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
-
-	PSendOnClosed:     "Possible send on closed channel:",
-	PRecvOnClosed:     "Possible receive on closed channel:",
-	PNegWG:            "Possible negative waitgroup counter:",
-	PUnlockBeforeLock: "Possible unlock of a not locked mutex:",
-	PCyclicDeadlock:   "Possible cyclic deadlock:",
-
-	LWithoutBlock:      "Leak on routine without any blocking operation",
-	LUnbufferedWith:    "Leak on unbuffered channel with possible partner:",
-	LUnbufferedWithout: "Leak on unbuffered channel without possible partner:",
-	LBufferedWith:      "Leak on buffered channel with possible partner:",
-	LBufferedWithout:   "Leak on unbuffered channel without possible partner:",
-	LNilChan:           "Leak on nil channel:",
-	LSelectWith:        "Leak on select with possible partner:",
-	LSelectWithout:     "Leak on select without partner or nil case",
-	LMutex:             "Leak on mutex:",
-	LWaitGroup:         "Leak on wait group:",
-	LCond:              "Leak on conditional variable:",
-
-	RUnknownPanic: "Unknown Panic",
-	RTimeout:      "Timeout",
+	utils.RUnknownPanic: "Unknown Panic",
+	utils.RTimeout:      "Timeout",
 
 	// SNotExecutedWithPartner: "Not executed select with potential partner",
 }
@@ -226,7 +183,7 @@ func (s SelectCaseResult) isInvalid() bool {
 //   - arg1 []ResultElem]: elements directly involved in the bug (e.g. in send on closed the send)
 //   - argType2 string: description of the type of elements in arg2
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
-func Result(level resultLevel, resType ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
+func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
 	if len(arg1) == 0 {
 		return
 	}

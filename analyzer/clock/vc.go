@@ -17,7 +17,7 @@ import (
 	"strconv"
 )
 
-// vectorClock is a vector clock
+// VectorClock is a vector clock
 // Fields:
 //
 //   - size int: The size of the vector clock
@@ -27,7 +27,7 @@ type VectorClock struct {
 	clock map[uint32]uint32
 }
 
-// Create a new vector clock
+// NewVectorClock creates and returns a new, empty vector clock
 //
 // Parameter:
 //   - size int: The size of the vector clock
@@ -45,7 +45,7 @@ func NewVectorClock(size int) *VectorClock {
 	}
 }
 
-// Create a new vector clock and set it
+// NewVectorClockSet creates a new vector clock and set it
 //
 // Parameter:
 //   - size int: The size of the vector clock
@@ -74,7 +74,7 @@ func NewVectorClockSet(size int, cl map[uint32]uint32) *VectorClock {
 	return vc
 }
 
-// Get the size of the vector clock
+// GetSize returns the size of the vector clock
 //
 // Returns:
 //   - int: The size of the vector clock
@@ -184,7 +184,7 @@ func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 	return vc
 }
 
-// Create a copy of the vector clock
+// Copy creates a copy of the vector clock
 //
 // Returns:
 //   - *VectorClock: The copy of the vector clock
@@ -196,7 +196,7 @@ func (vc *VectorClock) Copy() *VectorClock {
 	return newVc
 }
 
-// Check if the the arg vc2 is equal to the vc
+// IsEqual checks if the the parameter vc2 is equal to the vc
 func (vc *VectorClock) IsEqual(vc2 *VectorClock) bool {
 	if vc.size != vc2.size {
 		return false

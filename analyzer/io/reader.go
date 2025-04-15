@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-// Create the trace from all files in a folder.
+// CreateTraceFromFiles creates the trace from all files in a folder.
 //
 // Parameter:
 //   - filePath string: The path to the folder
@@ -118,7 +118,7 @@ func getTraceInfoFromFile(filePath string) error {
 			}
 		case "ExitCode":
 			ec, err := strconv.Atoi(lineSplit[1])
-			if err != nil {
+			if err == nil {
 				exitCode = ec
 			}
 		case "ExitPosition":

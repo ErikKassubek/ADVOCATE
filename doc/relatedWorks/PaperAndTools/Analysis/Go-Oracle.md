@@ -1,7 +1,6 @@
 # Go-Oracle: Automated Test Oracle for Go Concurrency Bugs
 
-[Tsimpourlas, C. Peng, C. Rosuero, P. Yang, and A. Rajan, Go-oracle: Automated test oracle for go concurrency bugs, 2024. arXiv: 2412 . 08061 [cs.SE]. [Online]. Available:
-https://arxiv.org/abs/2412.08061.](https://arxiv.org/abs/2412.08061)
+[F. Tsimpourlas, C. Peng, C. Rosuero, P. Yang, and A. Rajan, Go-oracle: Automated test oracle for go concurrency bugs, 2024. arXiv: 2412 . 08061 [cs.SE]. [Online]. Available:https://arxiv.org/abs/2412.08061.](https://arxiv.org/abs/2412.08061)
 
 ## Summary
 

@@ -252,7 +252,7 @@ var objectTypes = map[string]string{
 	"DC": "Mutex: Part of deadlock",
 }
 
-// Get the code key from the description
+// GetCodeFromDescription returns the code key from the description
 //
 // Parameter:
 //   - description string: bug description

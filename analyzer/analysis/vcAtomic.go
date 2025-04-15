@@ -26,7 +26,7 @@ func newLw(index int, nRout int) {
 	}
 }
 
-// Calculate the new vector clock for a write operation and update cv
+// Write calculates the new vector clock for a write operation and update cv
 //
 // Parameter:
 //   - at *TraceElementAtomic: The trace element
@@ -41,7 +41,7 @@ func Write(at *TraceElementAtomic) {
 	currentWVC[at.routine].Inc(at.routine)
 }
 
-// Calculate the new vector clock for a read operation and update cv
+// Read calculates the new vector clock for a read operation and update cv
 //
 // Parameter:
 //   - at *TraceElementAtomic: The trace element
@@ -60,7 +60,7 @@ func Read(at *TraceElementAtomic, sync bool) {
 	currentWVC[at.routine].Inc(at.routine)
 }
 
-// Calculate the new vector clock for a swap operation and update cv. A swap
+// Swap calculate the new vector clock for a swap operation and update cv. A swap
 // operation is a read and a write.
 //
 // Parameter:

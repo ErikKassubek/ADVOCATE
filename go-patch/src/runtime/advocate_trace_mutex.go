@@ -12,6 +12,16 @@
 
 package runtime
 
+// Struct to store an operation on a mutex
+//
+// Fields
+//   - tPre int64: time when the operation started
+//   - tPost int64: time when the operation finished
+//   - id uint64: id of the mutex
+//   - op Operation: operation type
+//   - suc bool: false if a trymutex did not manage to lock the mutex, true otherwise
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceMutex struct {
 	tPre  int64
 	tPost int64
@@ -22,20 +32,17 @@ type AdvocateTraceMutex struct {
 	line  int
 }
 
-// MARK: Pre
-
 var lastRWOp = make(map[uint64]int64) // routine -> tPost
 var lastRWOpLock mutex
 
-/*
- * AdvocateMutexPre adds a mutex lock to the trace
- * Args:
- * 	id: id of the mutex
- *  rw: true if it is a rwmutex
- *  r: true if it is a rlock operation
- * Return:
- * 	index of the operation in the trace
- */
+// AdvocateMutexPre adds a mutex lock to the trace
+//
+// Parameter:
+//   - id uint64: id of the mutex
+//   - op Operation: type of operation
+//
+// Returns:
+//   - index of the operation in the trace
 func AdvocateMutexPre(id uint64, op Operation) int {
 	if advocateTracingDisabled {
 		return -1
@@ -61,16 +68,12 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 	return insertIntoTrace(elem)
 }
 
-// MARK: Post
-
-/*
- * AdvocateMutexPost adds the end counter to an operation of the trace.
- * For try use AdvocateMutexTryPost.
- * Also used for wait group
- * Args:
- * 	index: index of the operation in the trace
- * 	suc: wether the lock was successfull for try, otherwise true
- */
+// AdvocateMutexPost adds the end counter to an operation of the trace.
+// For try use AdvocateMutexTryPost.
+//
+// Parameters:
+//   - index: index of the operation in the trace
+//   - suc: wether the lock was successfull for try, otherwise true
 func AdvocateMutexPost(index int, suc bool) {
 	if advocateTracingDisabled {
 		return
@@ -110,6 +113,10 @@ func AdvocateMutexPost(index int, suc bool) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
+// Check if the mutex is a rw mutex
+//
+// Returns:
+//   - bool: true if it is a rwMutex, false otherwise
 func (elem AdvocateTraceMutex) isRw() bool {
 	if elem.op == OperationMutexLock || elem.op == OperationMutexUnlock || elem.op == OperationMutexTryLock {
 		return false
@@ -117,12 +124,21 @@ func (elem AdvocateTraceMutex) isRw() bool {
 	return true
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation
 func (elem AdvocateTraceMutex) toString() string {
 	opStr, rw := elem.opRwToString()
 
 	return buildTraceElemString("M", elem.tPre, elem.tPost, elem.id, rw, opStr, elem.suc, posToString(elem.file, elem.line))
 }
 
+// Get the string representations for the operation and rw fields
+//
+// Returns:
+//   - string: the operation string representation
+//   - string: the rw string representation
 func (elem AdvocateTraceMutex) opRwToString() (string, string) {
 	opStr := ""
 	rw := "f"
@@ -156,6 +172,10 @@ func (elem AdvocateTraceMutex) opRwToString() (string, string) {
 	return opStr, rw
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceMutex) getOperation() Operation {
 	return elem.op
 }

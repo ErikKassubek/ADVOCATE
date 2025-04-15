@@ -45,6 +45,11 @@ func newChain() chain {
 func addElemToChain(elem analysis.TraceElement) {
 	routine := elem.GetRoutine()
 
+	// if the element is already in the chain, it is not added again
+	if currentChain.contains(elem) {
+		return
+	}
+
 	// add elem if the last routine is different from the routine of the elem
 	// if the current routine is empty, lastRoutine is -1 and this is always true
 	if lastRoutine != routine {
@@ -174,7 +179,7 @@ func (ch *chain) len() int {
 func (ch *chain) toString() string {
 	res := ""
 	for _, e := range ch.elems {
-		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
+		res += fmt.Sprintf("%d:%s&", e.GetRoutine(), e.GetPos())
 	}
 	return res
 }
@@ -193,7 +198,7 @@ func (ch *chain) isValid() bool {
 	}
 
 	for i := range ch.len() - 1 {
-		hb := clock.GetHappensBefore(ch.elems[i].GetwVc(), ch.elems[i+1].GetwVc())
+		hb := clock.GetHappensBefore(ch.elems[i].GetWVc(), ch.elems[i+1].GetWVc())
 		if hb == clock.After {
 			return false
 		}

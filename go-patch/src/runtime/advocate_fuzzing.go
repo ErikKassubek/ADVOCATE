@@ -82,7 +82,7 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 		return false, 0, selectPreferredTimeoutSec
 	}
 
-	routine := GetReplayRoutineId()
+	routine := GetRoutineID()
 
 	_, file, line, _ := Caller(skip)
 	if AdvocateIgnore(file) {
@@ -113,7 +113,7 @@ func FuzzingFlowWait(skip int) {
 		return
 	}
 
-	routine := getg().advocateRoutineInfo.replayRoutine
+	routine := GetRoutineID()
 
 	_, file, line, _ := Caller(skip)
 	if AdvocateIgnore(file) {

@@ -27,7 +27,7 @@ type bufferedVC struct {
 	tID         string
 }
 
-// Update and calculate the vector clocks given a send/receive pair on a unbuffered
+// Unbuffered updates and calculates the vector clocks given a send/receive pair on a unbuffered
 // channel.
 //
 // Parameter:
@@ -96,7 +96,7 @@ func Unbuffered(sender TraceElement, recv TraceElement) {
 	}
 
 	if analysisCases["mixedDeadlock"] {
-		checkForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine(), sender.GetTID(), recv.GetTID())
+		checkForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())
 	}
 
 	if analysisCases["selectWithoutPartner"] || modeIsFuzzing {
@@ -205,7 +205,7 @@ func Send(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 
 }
 
-// Update and calculate the vector clocks given a receive on a buffered channel.
+// Recv updates and calculates the vector clocks given a receive on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -256,7 +256,6 @@ func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 	}
 	v := bufferedVCs[ch.id][0].vc
 	routSend := bufferedVCs[ch.id][0].routineSend
-	tIDSend := bufferedVCs[ch.id][0].tID
 
 	vc[ch.routine] = vc[ch.routine].Sync(v)
 
@@ -280,7 +279,7 @@ func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 	}
 
 	if analysisCases["mixedDeadlock"] {
-		checkForMixedDeadlock(routSend, ch.routine, tIDSend, ch.GetTID())
+		checkForMixedDeadlock(routSend, ch.routine)
 	}
 	if analysisCases["leak"] {
 		CheckForLeakChannelRun(ch.routine, ch.id, elemWithVc{vc[ch.routine].Copy(), ch}, 1, true)
@@ -295,10 +294,10 @@ func Recv(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool
 	}
 }
 
-// Update and calculate the vector clocks for a stuck channel element
+// StuckChan updates and calculates the vector clocks for a stuck channel element
 //
 // Parameter:
-//   - routint int: the route of the operation
+//   - routine int: the route of the operation
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
@@ -309,12 +308,12 @@ func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
 	wVc[routine].Inc(routine)
 }
 
-// Update and calculate the vector clocks given a close on a channel.
+// Close updates and calculates the vector clocks given a close on a channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 //   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weakvector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 func Close(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	if ch.tPost == 0 {
 		return
@@ -355,12 +354,12 @@ func SendC(ch *TraceElementChannel) {
 	}
 }
 
-// Update and calculate the vector clocks given a receive on a closed channel.
+// RecvC updates and calculates the vector clocks given a receive on a closed channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 //   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weakvector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - buffered bool: true if the channel is buffered
 func RecvC(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, buffered bool) {
 	if ch.tPost == 0 {
@@ -386,7 +385,7 @@ func RecvC(ch *TraceElementChannel, vc, wVc map[int]*clock.VectorClock, buffered
 	}
 
 	if analysisCases["mixedDeadlock"] {
-		checkForMixedDeadlock(closeData[ch.id].routine, ch.routine, closeData[ch.id].GetTID(), ch.GetTID())
+		checkForMixedDeadlock(closeData[ch.id].routine, ch.routine)
 	}
 
 	if analysisCases["leak"] {
@@ -410,7 +409,7 @@ func newBufferedVCs(id int, qSize int, numRout int) {
 	}
 }
 
-// Set the channel as the last send operation.
+// SetChannelAsLastSend sets the channel as the last send operation.
 // Used for not executed select send
 //
 // Parameter:
@@ -426,7 +425,7 @@ func SetChannelAsLastSend(c TraceElement) {
 	hasSend[c.GetID()] = true
 }
 
-// Set the channel as the last recv operation.
+// SetChannelAsLastReceive sets the channel as the last recv operation.
 // Used for not executed select recv
 //
 // Parameter:

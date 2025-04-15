@@ -2,8 +2,7 @@
 
 [P. Joshi, C.-S. Park, K. Sen, and M. Naik, “A randomized dynamic program analysis
 technique for detecting real deadlocks,” SIGPLAN Not., vol. 44, no. 6, pp. 110–120, Jun.
-2009, issn: 0362-1340. doi: 10.1145/1543135.1542489. [Online]. Available: https://doi.
-org/10.1145/1543135.1542489](https://doi.org/10.1145/1543135.1542489)
+2009, issn: 0362-1340. doi: 10.1145/1543135.1542489. [Online]. Available: https://doi.org/10.1145/1543135.1542489](https://doi.org/10.1145/1543135.1542489)
 
 ## Summary
 

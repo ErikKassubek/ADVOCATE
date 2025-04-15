@@ -11,7 +11,6 @@
 package fuzzing
 
 import (
-	"analyzer/analysis"
 	"analyzer/utils"
 	"math"
 )
@@ -79,22 +78,4 @@ func isInterestingSelect() bool {
 	}
 
 	return false
-}
-
-// A run is interesting vor interleaving mutation, if during the run,
-// the schedule chain was actually scheduled and no timeouts occurred and the
-// whole recording did not extend a predefined maximal runtime
-func isInterestingInterleaving() bool {
-	// timeouts
-	if analysis.GetTimeoutHappened() {
-		return false
-	}
-
-	// exceeded maximal recording time
-	rt := analysis.GetRuntimeDurationInSec()
-	if rt > maxRuntimeRecordingSec {
-		return false
-	}
-
-	return true
 }

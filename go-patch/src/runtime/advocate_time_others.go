@@ -18,11 +18,9 @@ import "internal/runtime/atomic"
 
 var advocateGlobalCounter atomic.Int64
 
-/*
- * GetAdvocateCounter will update the timer and return the new value
- * Return:
- * 	new time value
- */
+// GetAdvocateCounter will update the timer and return the new value
+// Return:
+//   - new time value
 func GetNextTimeStep() int64 {
 	return advocateGlobalCounter.Add(2)
 }

@@ -21,6 +21,7 @@ import (
 // enum for operation
 type opAtomic int
 
+// Values for the opAtomic enum
 const (
 	LoadOp opAtomic = iota
 	StoreOp
@@ -31,12 +32,12 @@ const (
 	OrOp
 )
 
-// Struct to save an atomic event in the trace
+// TraceElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
 //   - index int: index in the routine
 //   - routine int: The routine id
-//   - tpost int: The timestamp of the event
+//   - tPost int: The timestamp of the event
 //   - id int: The id of the atomic variable
 //   - opA opAtomic: The operation on the atomic variable
 //   - vc *clock.VectorClock: The vector clock of the operation
@@ -59,19 +60,19 @@ type TraceElementAtomic struct {
 	rel2    []TraceElement
 }
 
-// Create a new atomic trace element
+// AddTraceElementAtomic adds a new atomic trace element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
-//   - tpost string: The timestamp of the event
+//   - tPost string: The timestamp of the event
 //   - id string: The id of the atomic variable
 //   - operation string: The operation on the atomic variable
 //   - pos string: The position of the atomic
-func AddTraceElementAtomic(routine int, tpost string,
+func AddTraceElementAtomic(routine int, tPost string,
 	id string, operation string, pos string) error {
-	tPostInt, err := strconv.Atoi(tpost)
+	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
-		return errors.New("tpost is not an integer")
+		return errors.New("tPost is not an integer")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -122,7 +123,7 @@ func AddTraceElementAtomic(routine int, tpost string,
 	return nil
 }
 
-// Get the id of the element
+// GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
@@ -130,7 +131,7 @@ func (at *TraceElementAtomic) GetID() int {
 	return at.id
 }
 
-// Get the routine of the element
+// GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
@@ -138,23 +139,23 @@ func (at *TraceElementAtomic) GetRoutine() int {
 	return at.routine
 }
 
-// Get the tpost of the element. For atomic elements, tpre and tpost are the same
+// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (at *TraceElementAtomic) GetTPre() int {
 	return at.tPost
 }
 
-// Get the tpost of the element. For atomic elements, tpre and tpost are the same
+// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
-//   - int: The tpost of the element
+//   - int: The tPost of the element
 func (at *TraceElementAtomic) GetTPost() int {
 	return at.tPost
 }
 
-// Get the timer, that is used for the sorting of the trace
+// GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
@@ -162,7 +163,7 @@ func (at *TraceElementAtomic) GetTSort() int {
 	return at.tPost
 }
 
-// Get the position of the operation. For atomic elements, the position is always empty
+// GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The file of the element
@@ -170,7 +171,7 @@ func (at *TraceElementAtomic) GetPos() string {
 	return fmt.Sprintf("%s:%d", at.file, at.line)
 }
 
-// Get the replay id of the element
+// GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
@@ -178,7 +179,7 @@ func (at *TraceElementAtomic) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", at.routine, at.file, at.line)
 }
 
-// Get the file of the element
+// GetFile returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
@@ -186,7 +187,7 @@ func (at *TraceElementAtomic) GetFile() string {
 	return at.file
 }
 
-// Get the rline of the element
+// GetLine returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
@@ -194,7 +195,8 @@ func (at *TraceElementAtomic) GetLine() int {
 	return at.line
 }
 
-// Get the tID of the element. For atomic elements, the tID is always empty
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
@@ -202,7 +204,7 @@ func (at *TraceElementAtomic) GetTID() string {
 	return at.GetPos() + "@" + strconv.Itoa(at.tPost)
 }
 
-// Get the vector clock of the element
+// GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
@@ -210,15 +212,15 @@ func (at *TraceElementAtomic) GetVC() *clock.VectorClock {
 	return at.vc
 }
 
-// Get the weak vector clock of the element
+// GetWVc returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (at *TraceElementAtomic) GetwVc() *clock.VectorClock {
+func (at *TraceElementAtomic) GetWVc() *clock.VectorClock {
 	return at.wVc
 }
 
-// Get the string representation of the object type
+// GetObjType returns the string representation of the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
@@ -246,7 +248,7 @@ func (at *TraceElementAtomic) GetObjType(operation bool) string {
 	return ObjectTypeAtomic
 }
 
-// Given a trace element, check if it is equal to this element
+// IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
 //   - elem TraceElement: The element to check against
@@ -257,7 +259,7 @@ func (at *TraceElementAtomic) IsEqual(elem TraceElement) bool {
 	return at.routine == elem.GetRoutine() && at.ToString() == elem.ToString()
 }
 
-// Get the trace local index of the element in the trace
+// GetTraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
@@ -266,7 +268,7 @@ func (at *TraceElementAtomic) GetTraceIndex() (int, int) {
 	return at.routine, at.index
 }
 
-// Set the tPre and tPost of the element
+// SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
@@ -274,15 +276,15 @@ func (at *TraceElementAtomic) SetT(time int) {
 	at.tPost = time
 }
 
-// Set the tpre of the element.
+// SetTPre sets the tPre of the element.
 //
 // Parameter:
-//   - tPre int: The tpost of the element
+//   - tPre int: The tPost of the element
 func (at *TraceElementAtomic) SetTPre(tPre int) {
 	at.tPost = tPre
 }
 
-// Set the timer, that is used for the sorting of the trace
+// SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
@@ -290,7 +292,7 @@ func (at *TraceElementAtomic) SetTSort(tSort int) {
 	at.tPost = tSort
 }
 
-// Set the timer, that is used for the sorting of the trace, only if the original
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
 // value was not 0
 //
 // Parameter:
@@ -301,7 +303,7 @@ func (at *TraceElementAtomic) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
-// Get the simple string representation of the element.
+// ToString returns the simple string representation of the element.
 //
 // Returns:
 //   - string: The simple string representation of the element
@@ -382,7 +384,7 @@ func (at *TraceElementAtomic) Copy() TraceElement {
 
 // ========= For GoPie fuzzing ===========
 
-// Add an element to the rel1 set of the element
+// AddRel1 adds an element to the rel1 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
@@ -391,18 +393,29 @@ func (at *TraceElementAtomic) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if at.IsEqual(elem) {
+		return
+	}
+
 	at.rel1[pos] = elem
 }
 
-// Add an element to the rel2 set of the element
+// AddRel2 adds an element to the rel2 set of the element
 //
 // Parameter:
 //   - elem TraceElement: elem to add
 func (at *TraceElementAtomic) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if at.IsEqual(elem) {
+		return
+	}
+
 	at.rel2 = append(at.rel2, elem)
 }
 
-// Return the rel1 set
+// GetRel1 returns the rel1 set
 //
 // Returns:
 //   - []TraceElement: the rel1 set
@@ -410,7 +423,7 @@ func (at *TraceElementAtomic) GetRel1() []TraceElement {
 	return at.rel1
 }
 
-// Return the rel2 set
+// GetRel2 returns the rel2 set
 //
 // Returns:
 //   - []TraceElement: the rel2 set

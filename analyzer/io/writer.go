@@ -12,6 +12,7 @@ package io
 
 import (
 	"analyzer/analysis"
+	"analyzer/bugs"
 	"analyzer/timer"
 	"analyzer/utils"
 	"os"
@@ -21,7 +22,7 @@ import (
 	"sync"
 )
 
-// Write the trace to a file
+// WriteTrace writes a trace to a file
 //
 // Parameter:
 //   - traceToWrite *analysis.Trace: Pointer to the trace to write
@@ -104,28 +105,28 @@ func isReplay(element analysis.TraceElement) bool {
 	return !(t == analysis.ObjectTypeNew || t == analysis.ObjectTypeRoutineEnd)
 }
 
-// In path, create a file with the result message and the exit code for the rewrite
+// WriteRewriteInfoFile create a file with the result message and the exit code for the rewrite
 //
 // Parameter:
 //   - path string: The path to the file folder to write to
-//   - resultMessage string: The result message
+//   - bug bugs.Bug: The rewritten bug
 //   - exitCode int: The exit code
 //   - resultIndex int: The index of the result
 //
 // Returns:
 //   - error: The error that occurred
-func WriteRewriteInfoFile(path string, bugType string, exitCode int, resultIndex int) error {
+func WriteRewriteInfoFile(path string, bug bugs.Bug, exitCode int, resultIndex int) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
-	fileName := path + "rewrite_info.log"
+	fileName := filepath.Join(path, utils.RewrittenInfo)
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}
 	defer file.Close()
 
-	if _, err := file.WriteString(strconv.Itoa(resultIndex+1) + "#" + bugType + "#" + strconv.Itoa(exitCode)); err != nil {
+	if _, err := file.WriteString(strconv.Itoa(resultIndex+1) + "#" + bug.GetBugString() + "#" + strconv.Itoa(exitCode)); err != nil {
 		return err
 	}
 

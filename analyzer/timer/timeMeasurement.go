@@ -20,6 +20,7 @@ import (
 
 const numberTimer = 20
 
+// provided timers
 const (
 	Total                int = iota // total runtime of everything
 	TotalTest                       // total runtime for each test
@@ -80,7 +81,7 @@ func Stop(t int) {
 	timer[t].Stop()
 }
 
-// Get the current time from a specified counter
+// GetTime returns the current time from a specified counter
 //
 // Parameter:
 //   - t int: the timer to start
@@ -91,28 +92,28 @@ func GetTime(t int) time.Duration {
 	return timer[t].GetTime()
 }
 
-// Reset all counter to zero
+// ResetAll resets all counter to zero
 func ResetAll() {
 	for i := range numberTimer {
 		timer[i].Reset()
 	}
 }
 
-// Reset all counter to zero that are test specific
+// ResetTest resets all counter to zero that are test specific
 func ResetTest() {
 	for i := 1; i < numberTimer; i++ {
 		timer[i].Reset()
 	}
 }
 
-// Reset all counter to zero that are specific for each fuzzing run
+// ResetFuzzing resets all counter to zero that are specific for each fuzzing run
 func ResetFuzzing() {
 	for i := 3; i < numberTimer; i++ {
 		timer[i].Reset()
 	}
 }
 
-// Get a string representation of test specific timer values
+// ToString returns a string representation of test specific timer values
 //
 // Returns:
 //   - string: representation of test specific timer values

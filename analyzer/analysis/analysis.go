@@ -63,7 +63,7 @@ func runAnalysisOnExitCodes(all bool) {
 	}
 
 	switch exitCode {
-	case ExitCodeCloseClose: // close on closed
+	case utils.ExitCodeCloseClose: // close on closed
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -72,9 +72,9 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.ACloseOnClosed,
+		results.Result(results.CRITICAL, utils.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeCloseNil: // close on nil
+	case utils.ExitCodeCloseNil: // close on nil
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -83,9 +83,9 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.ACloseOnNilChannel,
+		results.Result(results.CRITICAL, utils.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeNegativeWG: // negative wg counter
+	case utils.ExitCodeNegativeWG: // negative wg counter
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -94,9 +94,9 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.ANegWG,
+		results.Result(results.CRITICAL, utils.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodeUnlockBeforeLock: // unlock of not locked mutex
+	case utils.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -105,9 +105,9 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.AUnlockOfNotLockedMutex,
+		results.Result(results.CRITICAL, utils.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case ExitCodePanic: // unknown panic
+	case utils.ExitCodePanic: // unknown panic
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -116,15 +116,15 @@ func runAnalysisOnExitCodes(all bool) {
 			File:      file,
 			Line:      line,
 		}
-		results.Result(results.CRITICAL, results.RUnknownPanic,
+		results.Result(results.CRITICAL, utils.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	case 7: // timeout
-		results.Result(results.CRITICAL, results.RTimeout,
+		results.Result(results.CRITICAL, utils.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
-		if exitCode == 1 { // send on closed
+		if exitCode == utils.ExitCodeSendClose { // send on closed
 			arg1 := results.TraceElementResult{ // send
 				RoutineID: 0,
 				ObjID:     0,
@@ -133,7 +133,7 @@ func runAnalysisOnExitCodes(all bool) {
 				File:      file,
 				Line:      line,
 			}
-			results.Result(results.CRITICAL, results.ASendOnClosed,
+			results.Result(results.CRITICAL, utils.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
 		}
 	}

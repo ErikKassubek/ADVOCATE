@@ -61,6 +61,8 @@ var (
 	tPostWhenFirstTimeout    = 0
 	tPostWhenReplayDisabled  = 0
 	tPostWhenAckFirstTimeout = 0
+
+	releasedFork = 0
 )
 
 func SetReplayAtomic(repl bool) {
@@ -235,7 +237,7 @@ func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 		if _, ok := traceElementPositions[e.File]; !ok {
 			traceElementPositions[e.File] = make([]int, 0)
 		}
-		if !containsInt(traceElementPositions[e.File], e.Line) {
+		if !containsList(traceElementPositions[e.File], e.Line) {
 			traceElementPositions[e.File] = append(traceElementPositions[e.File], e.Line)
 		}
 	}
@@ -619,7 +621,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil
 	}
 
-	routine := getg().advocateRoutineInfo.replayRoutine
+	routine := GetRoutineID()
 
 	// routine := GetRoutineID()
 	key := buildReplayKey(routine, file, line)
@@ -825,6 +827,7 @@ func ExitReplayWithCode(code int) {
 	} else {
 		println("Exit code already returned")
 	}
+
 	if replayForceExit && ExitCodeNames[code] != "" {
 		// if !advocateTracingDisabled { // do not exit if recording is enabled
 		// 	return
@@ -865,16 +868,11 @@ func ExitReplayPanic(msg any) {
 		finishTracingFunc()
 	}
 
-	if !IsReplayEnabled() {
-		return
-	}
+	// if !IsReplayEnabled() {
+	// 	return
+	// }
 
-	if expectedExitCode == ExitCodeDefault || expectedExitCode == advocateExitCode {
-		ExitReplayWithCode(advocateExitCode)
-	}
-
-	// should be unreachable
-	ExitReplayWithCode(ExitCodePanic)
+	ExitReplayWithCode(advocateExitCode)
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.
@@ -893,7 +891,7 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 		return true
 	}
 
-	if contains(file, "go/pkg/mod/") {
+	if containsStr(file, "go/pkg/mod/") {
 		return true
 	}
 

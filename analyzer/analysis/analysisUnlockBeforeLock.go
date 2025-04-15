@@ -15,7 +15,6 @@ import (
 	"analyzer/results"
 	"analyzer/timer"
 	"analyzer/utils"
-	"errors"
 	"fmt"
 )
 
@@ -151,27 +150,8 @@ func checkForUnlockBeforeLock() {
 				})
 			}
 
-			results.Result(results.CRITICAL, results.PUnlockBeforeLock, "unlock",
+			results.Result(results.CRITICAL, utils.PUnlockBeforeLock, "unlock",
 				args1, "lock", args2)
 		}
 	}
-}
-
-// getUnlockElemFromTID returns the element from allUnlocks with the given tID
-// for a given mutex
-//
-// Parameter:
-//   - id int: id of the mutex
-//   - tID int: tID of the unlock operation
-//
-// Returns:
-//   - TraceElement: if found the element, otherwise nil
-//   - error
-func getUnlockElemFromTID(id int, tID string) (TraceElement, error) {
-	for _, u := range allUnlocks[id] {
-		if u.GetTID() == tID {
-			return u, nil
-		}
-	}
-	return nil, errors.New("Could not find unlock operation with tID " + tID)
 }

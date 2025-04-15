@@ -15,6 +15,7 @@ import (
 	"log"
 )
 
+// Color codes for the logging output
 const (
 	Reset  = "\033[0m"
 	Red    = "\033[31m"
@@ -25,8 +26,10 @@ const (
 
 var numberErr = 0
 var numberTimeout = 0
+var numberResults = 0
+var numberResultsConf = 0
 
-// Log function for information
+// LogInfo logs an information to the terminal
 // Printed in base color
 //
 // Parameter:
@@ -35,7 +38,7 @@ func LogInfo(v ...any) {
 	log.Println(v...)
 }
 
-// Formatted log function for information
+// LogInfof logs an information to the terminal
 // Printed in base color
 //
 // Parameter:
@@ -45,7 +48,7 @@ func LogInfof(format string, v ...any) {
 	log.Printf(format, v...)
 }
 
-// Log function for important information
+// LogImportant logs an important information to the terminal
 // Printed in yellow
 //
 // Parameter:
@@ -54,7 +57,7 @@ func LogImportant(v ...any) {
 	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
 }
 
-// Formatted log function for important information
+// LogImportantf logs an important information to the terminal
 // Printed in yellow
 //
 // Parameter:
@@ -64,26 +67,36 @@ func LogImportantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
 }
 
-// Log function for results
+// LogResult logs a result to the terminal
 // Printed in green
 //
 // Parameter:
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - v ...any: the content of the log
-func LogResult(v ...any) {
+func LogResult(confirmed bool, v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
+	numberResults++
+	if confirmed {
+		numberResultsConf++
+	}
 }
 
-// Formatted log function for results
+// LogResultf logs a result to the terminal
 // Printed in green
 //
 // Parameter:
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
-func LogResultf(format string, v ...any) {
+func LogResultf(confirmed bool, format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
+	numberResults++
+	if confirmed {
+		numberResultsConf++
+	}
 }
 
-// Log function for timeout
+// LogTimeout logs a timeout to the terminal
 // Printed in purple
 // Counts number of timeouts
 //
@@ -94,7 +107,7 @@ func LogTimeout(v ...any) {
 	numberTimeout++
 }
 
-// Formatted log function for timeout
+// LogTimeoutf logs a timeout to the terminal
 // Printed in purple
 // Counts number of timeouts
 //
@@ -106,7 +119,7 @@ func LogTimeoutf(format string, v ...any) {
 	numberTimeout++
 }
 
-// Log function for errors
+// LogError logs an error to the terminal
 // Printed in red
 // Counts number of error
 //
@@ -117,7 +130,7 @@ func LogError(v ...any) {
 	numberErr++
 }
 
-// Formatted log function for errors
+// LogErrorf logs an error to the terminal
 // Printed in red
 // Counts number of error
 //
@@ -129,11 +142,13 @@ func LogErrorf(format string, v ...any) {
 	numberErr++
 }
 
-// GetNumberErr returns the number of errors and timeouts
+// GetLoggingNumbers returns the number of results, errors and timeouts
 //
 // Returns:
+//   - int: number of results
+//   - int: number of confirmed results
 //   - int: number of errors
 //   - int: number of timeouts
-func GetNumberErr() (int, int) {
-	return numberErr, numberTimeout
+func GetLoggingNumbers() (int, int, int, int) {
+	return numberResults, numberResultsConf, numberErr, numberTimeout
 }

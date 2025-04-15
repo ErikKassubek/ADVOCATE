@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"analyzer/analysis"
-	"analyzer/bugs"
 	"analyzer/fuzzing"
 	"analyzer/io"
 	"analyzer/memory"
@@ -83,13 +82,6 @@ var (
 	noMemorySupervisor bool
 )
 
-const (
-	HBFuzzHBAna = 0
-	FuzzHBAna   = 1
-	HBFuzzNoAna = 2
-	FuzzNoAna   = 3
-)
-
 // Main function
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
@@ -114,11 +106,7 @@ func main() {
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
-	// TODO: !rewriteAll for now disabled, enable if it is implemented that only successful replays are considered previous replays
-	// If the first replay is not successful it may be successful on a later try. At the moment, the later tries would not be run
-
-	// flag.BoolVar(&rewriteAll, "rewriteAll", false, "If a the same position is flagged multiple times, run the replay for each of them. "+
-	// 	"If not set, only the first occurence is rewritten")
+	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
 
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
@@ -155,7 +143,7 @@ func main() {
 		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
-	// flag.BoolVar(&modeMain, "main", false, "set to run on main function")
+	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
 	flag.Parse()
 
@@ -178,7 +166,21 @@ func main() {
 		return
 	}
 
-	timer.Init(recordTime, progPath)
+	// If -main is set, the path needs to be the path to the main file
+	// If the given path is to a folder, check if a main.go file exists in this folder
+	// If so, fix the path. Otherwise return error and finish
+	if modeMain {
+		var err error
+		progPath, err = utils.GetMainPath(progPath)
+		if err != nil {
+			utils.LogError("Could not find main file. If -main is set, -path should point to the main file.")
+			utils.LogError(err)
+			return
+		}
+	}
+
+	progPathDir := utils.GetDirectory(progPath)
+	timer.Init(recordTime, progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
 
@@ -204,7 +206,7 @@ func main() {
 	}
 
 	if !noMemorySupervisor {
-		go memory.MemorySupervisor() // cancel analysis if not enough ram
+		go memory.Supervisor() // cancel analysis if not enough ram
 	}
 
 	// outMachine := filepath.Join(resultFolder, outM) + ".log"
@@ -228,7 +230,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
-		timeoutRecording, timeoutReplay)
+		timeoutRecording, timeoutReplay, rewriteAll)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -236,17 +238,10 @@ func main() {
 	switch mode {
 	case "analysis":
 		if modeMain {
-			modeToolchain("main", 0)
+			modeToolchain("main")
 		} else {
-			modeToolchain("test", 0)
+			modeToolchain("test")
 		}
-	// case "analyze":
-	// 	// here the parameter need to stay, because the function is used in the
-	// 	// toolchain package via function injection
-	// 	modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
-	// 		outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-	// 		rewriteAll, newTrace, ignoreRewrite,
-	// 		-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
 	default:
@@ -255,7 +250,7 @@ func main() {
 		printHelp()
 	}
 
-	numberErr, numberTimeout := utils.GetNumberErr()
+	numberResults, numberResultsConf, numberErr, numberTimeout := utils.GetLoggingNumbers()
 	if numberErr == 0 {
 		utils.LogInfo("Finished with 0 errors")
 	} else {
@@ -265,6 +260,12 @@ func main() {
 		utils.LogInfo("No timeouts occur")
 	} else {
 		utils.LogErrorf("%d timeouts occurred", numberTimeout)
+	}
+	if numberResults == 0 {
+		utils.LogInfo("No bugs have been found/indicated")
+	} else {
+		utils.LogResultf(false, "%d bugs have been indicated", numberResults)
+		utils.LogResultf(false, "%d bugs have been confirmed", numberResultsConf)
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
@@ -278,7 +279,7 @@ func modeFuzzing() {
 	}
 
 	checkProgPath()
-	checkVersion()
+	checkGoMod()
 
 	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
 		ignoreAtomics, recordTime, notExec, statistics,
@@ -290,11 +291,16 @@ func modeFuzzing() {
 
 // Start point for the toolchain
 // This will run, analyze and replay a given program or test
-func modeToolchain(mode string, numRerecorded int) {
+//
+// Parameter:
+//   - mode string: main for main function, test for test function
+func modeToolchain(mode string) {
 	checkProgPath()
-	checkVersion()
+	checkGoMod()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
-		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, skipExisting, cont, 0, 0)
+		-1, "", ignoreAtomics, recordTime,
+		notExec, statistics,
+		keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}
@@ -349,9 +355,9 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	if numberElems == 0 {
 		utils.LogInfof("Trace at %s does not contain any elements", pathTrace)
 		return nil
-	} else {
-		utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 	}
+
+	utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
 	analysis.SetNoRoutines(numberOfRoutines)
 
@@ -376,12 +382,10 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		analysis.Clear()
 		if memory.WasCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
-		} else {
-			return fmt.Errorf("Analysis was canceled due to unexpected panic")
 		}
-	} else {
-		utils.LogInfo("Analysis finished")
+		return fmt.Errorf("Analysis was canceled due to unexpected panic")
 	}
+	utils.LogInfo("Analysis finished")
 
 	numberOfResults, err := results.CreateResultFiles(noWarning, true)
 	if err != nil {
@@ -413,7 +417,7 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 		utils.LogError("Could not run rewrite: Not enough RAM")
 	}
 
-	rewrittenBugs := make(map[bugs.ResultType][]string) // bugtype -> paths string
+	rewrittenBugs := make(map[utils.ResultType][]string) // bugtype -> paths string
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"
@@ -423,16 +427,12 @@ func modeAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
-		needed, double, err := rewriteTrace(outMachine,
-			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs, !rewriteAll)
+		needed, err := rewriteTrace(outMachine,
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs)
 
 		if !needed {
 			notNeededRewrites++
-			if double {
-				fmt.Printf("Bugreport info: %s_%d,double\n", rewriteNr, resultIndex+1)
-			} else {
-				fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
-			}
+			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
 		} else if err != nil {
 			failedRewrites++
 			fmt.Printf("Bugreport info: %s_%d,fail\n", rewriteNr, resultIndex+1)
@@ -495,9 +495,6 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 			analysisCases[c] = true
 		}
 
-		// takes to long, only take out for tests
-		analysisCases["resourceDeadlock"] = false
-
 		// remove when implemented
 		analysisCases["mixedDeadlock"] = false
 
@@ -540,49 +537,51 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 //   - newTrace string: The path where the new traces folder will be created
 //   - resultIndex int: The index of the result to use for the reordered trace file
 //   - numberOfRoutines int: The number of routines in the trace
-//   - rewrittenTrace *map[string][]string: set of bugs that have been already rewritten
+//   - rewrittenTrace *map[utils.ResultType][]string: set of bugs that have been already rewritten
 //
 // Returns:
-//   - bool: true, if a rewrite was nessesary, false if not (e.g. actual bug, warning)
-//   - bool: true if rewrite was skipped because of double
+//   - bool: true, if a rewrite was necessary, false if not (e.g. actual bug, warning)
 //   - error: An error if the trace file could not be created
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
-	numberOfRoutines int, rewrittenTrace *map[bugs.ResultType][]string, rewriteOnce bool) (bool, bool, error) {
+	numberOfRoutines int, rewrittenTrace *map[utils.ResultType][]string) (bool, error) {
 	timer.Start(timer.Rewrite)
 	defer timer.Stop(timer.Rewrite)
 
 	actual, bug, err := io.ReadAnalysisResults(outMachine, resultIndex)
 	if err != nil {
-		return false, false, err
+		return false, err
 	}
 
 	if actual {
-		return false, false, nil
+		return false, nil
+	}
+
+	// the same bug was found and confirmed by replay in an earlier run,
+	// either in fuzzing or in another test
+	// It is therefore not needed to rewrite it again
+	if !rewriteAll && results.WasAlreadyConfirmed(bug.GetBugString()) {
+		return false, nil
 	}
 
 	traceCopy := analysis.CopyMainTrace()
 
-	rewriteNeeded, skip, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace, rewriteOnce)
+	rewriteNeeded, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
 
 	if err != nil {
-		return rewriteNeeded, false, err
-	}
-
-	if skip {
-		return rewriteNeeded, skip, err
+		return rewriteNeeded, err
 	}
 
 	err = io.WriteTrace(&traceCopy, newTrace, true)
 	if err != nil {
-		return rewriteNeeded, false, err
+		return rewriteNeeded, err
 	}
 
-	err = io.WriteRewriteInfoFile(newTrace, string(bug.Type), code, resultIndex)
+	err = io.WriteRewriteInfoFile(newTrace, bug, code, resultIndex)
 	if err != nil {
-		return rewriteNeeded, false, err
+		return rewriteNeeded, err
 	}
 
-	return rewriteNeeded, false, nil
+	return rewriteNeeded, nil
 }
 
 // getFolderTrace returns the path to the folder containing the trace, given the
@@ -648,8 +647,13 @@ func printHelpMode(mode string) {
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
 		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
-
-		println("Additionally, the tags from mode analysis can be used")
+		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
+		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
+		println("  -ignoreAtomics         Set to ignore atomics in replay")
+		println("  -recordTime            Set to record runtimes")
+		println("  -notExec               Set to determine never executed operations")
+		println("  -stats                 Set to create statistics")
+		println("  -keepTrace             Do not delete the trace files after analysis finished")
 	default:
 		println("Mode: unknown")
 		printHelp()
@@ -666,13 +670,16 @@ func checkProgPath() {
 	}
 }
 
-// checkVersion checks the version of the program to be analyzed.
+// checkGoMod checks the version of the program to be analyzed.
 // Advocate is implemented in and for go1.24. It the analyzed program has another
 // version, especially if the other version is also installed on the machine,
-// this can lead to problems. checkVersion therefore reads the version of the
+// this can lead to problems. checkGoMod therefore reads the version of the
 // analyzed program and if its not 1.24, a warning and information is printed
 // to the terminal
-func checkVersion() {
+// Additionally it reads the module name from the go.mod file.
+// If -main is set, but -exec is not set it will try to set the
+// execname value. If no module value is found, the program will panic
+func checkGoMod() {
 	var goModPath string
 
 	if progPath == "" {
@@ -680,7 +687,7 @@ func checkVersion() {
 	}
 
 	// Search for go.mod
-	err := filepath.WalkDir(progPath, func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(utils.GetDirectory(progPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -692,14 +699,14 @@ func checkVersion() {
 	})
 
 	if goModPath == "" {
-		utils.LogError("Could not find go.mod")
+		utils.LogInfo("Could not find go.mod")
 		return
 	}
 
 	// Open and read go.mod
 	file, err := os.Open(goModPath)
 	if err != nil {
-		utils.LogError("Could not find go.mod")
+		utils.LogInfo("Could not find go.mod")
 		return
 	}
 	defer file.Close()
@@ -707,6 +714,19 @@ func checkVersion() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
+
+		// check for module name
+		if modeMain && execName == "" && strings.HasPrefix(line, "module") {
+			s := strings.Split(line, " ")
+			if len(s) < 2 {
+				continue
+			}
+
+			execName = s[1]
+			continue
+		}
+
+		// check for version
 		if strings.HasPrefix(line, "go ") {
 			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
 

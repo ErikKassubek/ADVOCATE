@@ -14,7 +14,7 @@ import (
 	"analyzer/timer"
 )
 
-// Update and calculate the vector clocks given a wait operation
+// CondWait updates and calculates the vector clocks given a wait operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
@@ -32,7 +32,7 @@ func CondWait(co *TraceElementCond) {
 	currentWVC[co.routine].Inc(co.routine)
 }
 
-// Update and calculate the vector clocks given a signal operation
+// CondSignal updates and calculates the vector clocks given a signal operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
@@ -50,7 +50,7 @@ func CondSignal(co *TraceElementCond) {
 	currentWVC[co.routine].Inc(co.routine)
 }
 
-// Update and calculate the vector clocks given a broadcast operation
+// CondBroadcast updates and calculates the vector clocks given a broadcast operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element

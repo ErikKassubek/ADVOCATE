@@ -19,6 +19,7 @@ import (
 	"strings"
 )
 
+// collected information
 const (
 	TestName                      = "TestName"
 	NumDeadlocksInfeasible        = "NoDeadlocksInfeasible"
@@ -34,7 +35,7 @@ const (
 	NumUnlockInOtherThreadUnique  = "NoUnlockInOtherThreadUnique"
 )
 
-var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibleUnique, NumGuardLock, NumGuardLockUnique, ReplayDeadlockStuck, ReplayDeadlockNumStuckMutexes, NumIgnoreConcurrent, NumIgnoreConcurrentUnique, ReplayDeadlockReachedEnd, NumUnlockInOtherThread, NumUnlockInOtherThreadUnique}
+var miscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibleUnique, NumGuardLock, NumGuardLockUnique, ReplayDeadlockStuck, ReplayDeadlockNumStuckMutexes, NumIgnoreConcurrent, NumIgnoreConcurrentUnique, ReplayDeadlockReachedEnd, NumUnlockInOtherThread, NumUnlockInOtherThreadUnique}
 
 // Collect miscellaneous statistics about the run
 //
@@ -46,7 +47,7 @@ var MiscStats = []string{TestName, NumDeadlocksInfeasible, NumDeadlocksInfeasibl
 //   - error
 func statsMisc(dataPath, testName string) (map[string]int, error) {
 	stats := map[string]int{}
-	for _, v := range MiscStats {
+	for _, v := range miscStats {
 		stats[v] = 0
 	}
 
@@ -63,7 +64,7 @@ func statsMisc(dataPath, testName string) (map[string]int, error) {
 		scanner := bufio.NewScanner(file)
 
 		// Check if correct test
-		scanner.Scan() // TODO UGLY!
+		scanner.Scan() // skip the first line
 		scanner.Scan()
 		line := scanner.Text()
 		if !strings.HasSuffix(line, " "+testName) {

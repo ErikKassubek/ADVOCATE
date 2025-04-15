@@ -12,6 +12,15 @@
 
 package runtime
 
+// Struct to store an operation on a conditional variable
+//
+// Fields
+//   - tPre int64: time when the operation started
+//   - tPost int64: time when the operation finished
+//   - id string: id of the channel
+//   - op Operation: operation type
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
 type AdvocateTraceCond struct {
 	tPre  int64
 	tPost int64
@@ -23,7 +32,6 @@ type AdvocateTraceCond struct {
 
 /*
  * AdvocateCondPre adds a cond wait to the trace
- * MARK: Pre
  * Args:
  * 	id: id of the cond
  * 	op: Operation
@@ -55,7 +63,6 @@ func AdvocateCondPre(id uint64, op Operation) int {
 
 /*
  * AdvocateCondPost adds the end counter to an operation of the trace
- * MARK: Post
  * Args:
  * 	index: index of the operation in the trace
  */
@@ -75,6 +82,10 @@ func AdvocateCondPost(index int) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation
 func (elem AdvocateTraceCond) toString() string {
 	var opC string
 	switch elem.op {
@@ -89,6 +100,10 @@ func (elem AdvocateTraceCond) toString() string {
 	return buildTraceElemString("D", elem.tPre, elem.tPost, elem.id, opC, posToString(elem.file, elem.line))
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceCond) getOperation() Operation {
 	return elem.op
 }

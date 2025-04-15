@@ -41,7 +41,6 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 //   - execName string: name of the executable, only needed for mode main
 //   - progName string: name of the program, used for stats
 //   - test string: which test to run, if empty run all tests
-//   - numRerecorded int: limit of number of rerecordings
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - replayAt bool: replay atomics
@@ -52,7 +51,7 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - cont bool: continue an already started run
 func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName, test string,
-	numRerecorded, fuzzing int, fuzzingTrace string,
+	fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool, firstRun, cont bool, fileNumber, testNumber int) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
@@ -61,8 +60,6 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 	executableName = execName
 	programName = progName
 	testName = test
-
-	numberRerecord = numRerecorded
 
 	replayAtomic = !ignoreAtomic
 	measureTime = meaTime
@@ -96,7 +93,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 		if (stats || measureTime) && progName == "" {
 			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
 		}
-		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName, measureTime,
+		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName,
 			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces, firstRun, skipExisting, cont, fileNumber, testNumber)
 	case "explain":
 		if pathToAdvocate == "" {

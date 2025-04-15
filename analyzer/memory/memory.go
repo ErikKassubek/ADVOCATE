@@ -20,13 +20,13 @@ import (
 
 var (
 	wasCanceled    atomic.Bool
-	wasCanceledRam atomic.Bool
+	wasCanceledRAM atomic.Bool
 )
 
-// The MemorySupervisor periodically checks the used and free memory
+// Supervisor periodically checks the used and free memory
 // If the trace is to big and the available RAM to small, this can lead
 // to problems. In this case we abort the analysis
-func MemorySupervisor() {
+func Supervisor() {
 	// Get the memory stats
 	v, err := mem.VirtualMemory()
 	if err != nil {
@@ -81,11 +81,11 @@ func Cancel() {
 // Cancel the analysis if not enough ram is available
 func cancelRAM() {
 	wasCanceled.Store(true)
-	wasCanceledRam.Store(true)
+	wasCanceledRAM.Store(true)
 	utils.LogError("Not enough RAM")
 }
 
-// CheckCanceled returns if the analysis was canceled
+// WasCanceled returns if the analysis was canceled
 //
 // Returns:
 //   - bool: true if the analysis was canceled
@@ -93,16 +93,16 @@ func WasCanceled() bool {
 	return wasCanceled.Load()
 }
 
-// CheckCanceled returns if the analysis was canceled because of insufficient ram
+// WasCanceledRAM returns if the analysis was canceled because of insufficient ram
 //
 // Returns:
 //   - bool: true if the analysis was canceled because of insufficient ram*
 func WasCanceledRAM() bool {
-	return wasCanceledRam.Load()
+	return wasCanceledRAM.Load()
 }
 
 // Reset the cancel values to false
 func Reset() {
 	wasCanceled.Store(false)
-	wasCanceledRam.Store(false)
+	wasCanceledRAM.Store(false)
 }

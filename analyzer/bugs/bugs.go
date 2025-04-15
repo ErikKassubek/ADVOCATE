@@ -19,50 +19,7 @@ import (
 	"strings"
 )
 
-// ResultType is a type for the possible type of a fond bug including its id
-type ResultType string
-
-const (
-	Empty ResultType = ""
-
-	// actual
-	ASendOnClosed           ResultType = "A01"
-	ARecvOnClosed           ResultType = "A02"
-	ACloseOnClosed          ResultType = "A03"
-	ACloseOnNil             ResultType = "A04"
-	ANegWG                  ResultType = "A05"
-	AUnlockOfNotLockedMutex ResultType = "A06"
-	AConcurrentRecv         ResultType = "A07"
-	ASelCaseWithoutPartner  ResultType = "A08"
-
-	// possible
-	PSendOnClosed     ResultType = "P01"
-	PRecvOnClosed     ResultType = "P02"
-	PNegWG            ResultType = "P03"
-	PUnlockBeforeLock ResultType = "P04"
-	PCyclicDeadlock   ResultType = "P05"
-
-	// leaks
-	LWithoutBlock      = "L00"
-	LUnbufferedWith    = "L01"
-	LUnbufferedWithout = "L02"
-	LBufferedWith      = "L03"
-	LBufferedWithout   = "L04"
-	LNilChan           = "L05"
-	LSelectWith        = "L06"
-	LSelectWithout     = "L07"
-	LMutex             = "L08"
-	LWaitGroup         = "L09"
-	LCond              = "L10"
-
-	// problems during recording
-	RUnknownPanic ResultType = "R01"
-	RTimeout      ResultType = "R02"
-
-	// SNotExecutedWithPartner = "S00"
-)
-
-// Type to store a specific id in a select
+// BugElementSelectCase is a type to store a specific id in a select
 //
 // Parameter:
 //   - ID int: id of the involved channel
@@ -106,13 +63,13 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 //     normally the elements indirectly involved or elements to solve the bug (possible partner),
 //     e.g. for send on close the close
 type Bug struct {
-	Type          ResultType
+	Type          utils.ResultType
 	TraceElement1 []analysis.TraceElement
 	// TraceElement1Sel []BugElementSelectCase
 	TraceElement2 []analysis.TraceElement
 }
 
-// GetBugString Convert the bug to a string. Mostly used internally
+// GetBugString Convert the bug to a unique string. Mostly used internally
 //
 // Returns:
 //   - string: The bug as a string
@@ -144,99 +101,99 @@ func (b Bug) ToString() string {
 	arg1Str := ""
 	arg2Str := ""
 	switch b.Type {
-	case RUnknownPanic:
+	case utils.RUnknownPanic:
 		typeStr = "Unknown Panic:"
 		arg1Str = "Panic: "
-	case RTimeout:
+	case utils.RTimeout:
 		typeStr = "Timeout"
-	case ASendOnClosed:
+	case utils.ASendOnClosed:
 		typeStr = "Actual Send on Closed Channel:"
 		arg1Str = "send: "
 		arg2Str = "close: "
-	case ARecvOnClosed:
+	case utils.ARecvOnClosed:
 		typeStr = "Actual Receive on Closed Channel:"
 		arg1Str = "recv: "
 		arg2Str = "close: "
-	case ACloseOnClosed:
+	case utils.ACloseOnClosed:
 		typeStr = "Actual Close on Closed Channel:"
 		arg1Str = "close: "
 		arg2Str = "close: "
-	case ACloseOnNil:
+	case utils.ACloseOnNilChannel:
 		typeStr = "Actual close on nil channel:"
 		arg1Str = "close: "
 		arg2Str = "close: "
-	case AConcurrentRecv:
+	case utils.AConcurrentRecv:
 		typeStr = "Concurrent Receive:"
 		arg1Str = "recv: "
 		arg2Str = "recv: "
-	case ASelCaseWithoutPartner:
+	case utils.ASelCaseWithoutPartner:
 		typeStr = "Select Case without Partner:"
 		arg1Str = "select: "
 		arg2Str = "case: "
-	case ANegWG:
+	case utils.ANegWG:
 		typeStr = "Actual negative Wait Group:"
 		arg1Str = "done: "
-	case AUnlockOfNotLockedMutex:
+	case utils.AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
-	case PSendOnClosed:
+	case utils.PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
 		arg1Str = "send: "
 		arg2Str = "close: "
-	case PRecvOnClosed:
+	case utils.PRecvOnClosed:
 		typeStr = "Possible receive on closed channel:"
 		arg1Str = "recv: "
 		arg2Str = "close: "
-	case PNegWG:
+	case utils.PNegWG:
 		typeStr = "Possible negative waitgroup counter:"
 		arg1Str = "done: "
 		arg2Str = "add: "
-	case PUnlockBeforeLock:
+	case utils.PUnlockBeforeLock:
 		typeStr = "Possible unlock of a not locked mutex:"
 		arg1Str = "unlocks: "
 		arg2Str = "locks: "
-	case PCyclicDeadlock:
+	case utils.PCyclicDeadlock:
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
-	case LWithoutBlock:
+	case utils.LWithoutBlock:
 		typeStr = "Leak on routine without any blocking operation"
 		arg1Str = "fork: "
-	case LUnbufferedWith:
+	case utils.LUnbufferedWith:
 		typeStr = "Leak on unbuffered channel with possible partner:"
 		arg1Str = "channel: "
 		arg2Str = "partner: "
-	case LUnbufferedWithout:
+	case utils.LUnbufferedWithout:
 		typeStr = "Leak on unbuffered channel without possible partner:"
 		arg1Str = "channel: "
-	case LBufferedWith:
+	case utils.LBufferedWith:
 		typeStr = "Leak on buffered channel with possible partner:"
 		arg1Str = "channel: "
 		arg2Str = "partner: "
-	case LBufferedWithout:
+	case utils.LBufferedWithout:
 		typeStr = "Leak on buffered channel without possible partner:"
 		arg1Str = "channel: "
-	case LNilChan:
+	case utils.LNilChan:
 		typeStr = "Leak on nil channel:"
 		arg1Str = "channel: "
-	case LSelectWith:
+	case utils.LSelectWith:
 		typeStr = "Leak on select with possible partner:"
 		arg1Str = "select: "
 		arg2Str = "partner: "
-	case LSelectWithout:
+	case utils.LSelectWithout:
 		typeStr = "Leak on select without partner:"
 		arg1Str = "select: "
-	case LMutex:
+	case utils.LMutex:
 		typeStr = "Leak on mutex:"
 		arg1Str = "mutex: "
 		arg2Str = "last: "
-	case LWaitGroup:
+	case utils.LWaitGroup:
 		typeStr = "Leak on wait group:"
 		arg1Str = "waitgroup: "
-	case LCond:
+	case utils.LCond:
 		typeStr = "Leak on conditional variable:"
 		arg1Str = "cond: "
-	// case SNotExecutedWithPartner:
+	// case utils.SNotExecutedWithPartner:
 	// 	typeStr = "Not executed select with potential partner"
 	// 	arg1Str = "select: "
 	// 	arg2Str = "partner: "
@@ -272,12 +229,12 @@ func (b Bug) ToString() string {
 	return res
 }
 
-// Print the bug
+// Println prints the bug
 func (b Bug) Println() {
 	println(b.ToString())
 }
 
-// Process the bug that was selected from the analysis results
+// ProcessBug processes the bug that was selected from the analysis results
 //
 // Parameter:
 //   - bugStr: The bug that was selected
@@ -302,75 +259,75 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 
 	switch bugType {
 	case "R01":
-		bug.Type = RUnknownPanic
+		bug.Type = utils.RUnknownPanic
 		actual = true
 	case "R02":
-		bug.Type = RTimeout
+		bug.Type = utils.RTimeout
 		actual = true
 	case "A01":
-		bug.Type = ASendOnClosed
+		bug.Type = utils.ASendOnClosed
 		actual = true
 	case "A02":
-		bug.Type = ARecvOnClosed
+		bug.Type = utils.ARecvOnClosed
 		actual = true
 	case "A03":
-		bug.Type = ACloseOnClosed
+		bug.Type = utils.ACloseOnClosed
 		actual = true
 	case "A04":
-		bug.Type = ACloseOnNil
+		bug.Type = utils.ACloseOnNil
 		actual = true
 	case "A05":
-		bug.Type = ANegWG
+		bug.Type = utils.ANegWG
 		actual = true
 	case "A06":
-		bug.Type = AUnlockOfNotLockedMutex
+		bug.Type = utils.AUnlockOfNotLockedMutex
 		actual = true
 	case "A07":
-		bug.Type = AConcurrentRecv
+		bug.Type = utils.AConcurrentRecv
 		actual = true
 	case "A08":
-		bug.Type = ASelCaseWithoutPartner
+		bug.Type = utils.ASelCaseWithoutPartner
 		actual = true
 	case "P01":
-		bug.Type = PSendOnClosed
+		bug.Type = utils.PSendOnClosed
 	case "P02":
-		bug.Type = PRecvOnClosed
+		bug.Type = utils.PRecvOnClosed
 	case "P03":
-		bug.Type = PNegWG
+		bug.Type = utils.PNegWG
 	case "P04":
-		bug.Type = PUnlockBeforeLock
+		bug.Type = utils.PUnlockBeforeLock
 	case "P05":
-		bug.Type = PCyclicDeadlock
+		bug.Type = utils.PCyclicDeadlock
 	// case "P06":
 	// 	bug.Type = MixedDeadlock
 	case "L00":
 		containsArg1 = false
-		bug.Type = LWithoutBlock
+		bug.Type = utils.LWithoutBlock
 	case "L01":
-		bug.Type = LUnbufferedWith
+		bug.Type = utils.LUnbufferedWith
 	case "L02":
-		bug.Type = LUnbufferedWithout
+		bug.Type = utils.LUnbufferedWithout
 		containsArg2 = false
 	case "L03":
-		bug.Type = LBufferedWith
+		bug.Type = utils.LBufferedWith
 	case "L04":
-		bug.Type = LBufferedWithout
+		bug.Type = utils.LBufferedWithout
 		containsArg2 = false
 	case "L05":
-		bug.Type = LNilChan
+		bug.Type = utils.LNilChan
 		containsArg2 = false
 	case "L06":
-		bug.Type = LSelectWith
+		bug.Type = utils.LSelectWith
 	case "L07":
-		bug.Type = LSelectWithout
+		bug.Type = utils.LSelectWithout
 		containsArg2 = false
 	case "L08":
-		bug.Type = LMutex
+		bug.Type = utils.LMutex
 	case "L09":
-		bug.Type = LWaitGroup
+		bug.Type = utils.LWaitGroup
 		containsArg2 = false
 	case "L10":
-		bug.Type = LCond
+		bug.Type = utils.LCond
 		containsArg2 = false
 	// case "S00":
 	// 	bug.Type = SNotExecutedWithPartner

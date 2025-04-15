@@ -17,6 +17,20 @@ var unbufferedChannelComRecv = make(map[uint64]int64) // id -> tpost
 var unbufferedChannelComSendMutex mutex
 var unbufferedChannelComRecvMutex mutex
 
+// Struct to store an operation on a channel variable
+//
+// Fields
+//   - tPre int64: time when the operation started
+//   - tPost int64: time when the operation finished
+//   - id string: id of the channel
+//   - op Operation: operation type
+//   - cl bool: true if the recv was executed because the channel is closed
+//   - oId uint64: operation id, communicating send and recv have the same oID
+//   - qSize uint: size of the channel buffer
+//   - qCount uint: number of element in the buffer after the operation finished
+//   - file string: file where the operation occurred
+//   - line int: line where the operation occurred
+//   - isNil bool: true if the channel is nil
 type AdvocateTraceChannel struct {
 	tPre   int64
 	tPost  int64
@@ -31,19 +45,17 @@ type AdvocateTraceChannel struct {
 	isNil  bool
 }
 
-// MARK: Pre
-
-/*
- * AdvocateChanPre adds a channel send/receive to the trace.
- * Args:
- * 	id: id of the channel
- * 	op: operation send/recv
- * 	opId: id of the operation
- * 	qSize: size of the channel, 0 for unbuffered
- * 	isNil: true if the channel is nil
- * Return:
- * 	index of the operation in the trace, return -1 if it is a atomic operation
- */
+// AdvocateChanPre adds a channel send/receive to the trace.
+//
+// Parameters:
+//   - id uint64: id of the channel
+//   - op Operation: operation send/recv
+//   - opId opID: id of the operation
+//   - qSize uint: size of the channel, 0 for unbuffered
+//   - isNil bool: true if the channel is nil
+//
+// Returns:
+//   - int: index of the operation in the trace, return -1 if it is a atomic operation
 func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil bool) int {
 	if advocateTracingDisabled {
 		return -1
@@ -71,15 +83,15 @@ func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil boo
 	return insertIntoTrace(elem)
 }
 
-// MARK: Close
-
-/*
- * AdvocateChanClose adds a channel close to the trace
- * Args:
- * 	id: id of the channel
- * Return:
- * 	index of the operation in the trace
- */
+// AdvocateChanClose adds a channel close to the trace
+//
+// Parameter:
+//   - id uint64: id of the channel
+//   - qSize uint: size of the buffer
+//   - qCount uint: number of messages in the buffer
+//
+// Returns:
+//   - index of the operation in the trace
 func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 	if advocateTracingDisabled {
 		return -1
@@ -106,14 +118,11 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 	return insertIntoTrace(elem)
 }
 
-// MARK: Post
-
-/*
- * AdvocateChanPost sets the operation as successfully finished
- * Args:
- * 	index: index of the operation in the trace
- * 	qCount: number of elements in the queue after the operations has finished
- */
+// AdvocateChanPost sets the operation as successfully finished
+//
+// Parameters:
+//   - index: index of the operation in the trace
+//   - qCount: number of elements in the queue after the operations has finished
 func AdvocateChanPost(index int, qCount uint) {
 	if advocateTracingDisabled {
 		return
@@ -165,11 +174,9 @@ func AdvocateChanPost(index int, qCount uint) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
-/*
- * AdvocateChanPostCausedByClose sets the operation as successfully finished
- * Args:
- * 	index: index of the operation in the trace
- */
+// AdvocateChanPostCausedByClose sets the operation as successfully finished
+// Args:
+//   - index: index of the operation in the trace
 func AdvocateChanPostCausedByClose(index int) {
 	if advocateTracingDisabled {
 		return
@@ -189,6 +196,11 @@ func AdvocateChanPostCausedByClose(index int) {
 	currentGoRoutine().updateElement(index, elem)
 }
 
+// Get a string representation of the trace element
+//
+// Returns:
+//   - string: the string representation of the form
+//     C,[tPre],[tPost],[id],[operation],[cl],[oId],[qSize],[qCount],[file],[line]
 func (elem AdvocateTraceChannel) toString() string {
 	opStr := ""
 	switch elem.op {
@@ -208,6 +220,11 @@ func (elem AdvocateTraceChannel) toString() string {
 	return buildTraceElemString("C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount, posToString(elem.file, elem.line))
 }
 
+// Get a string representation for the channel if it is used as a select case
+//
+// Returns:
+//   - string: the string representation of the form
+//     C,[tPre].[tPost].[id].[operation].[cl].[oId].[qSize].[qCount]
 func (elem AdvocateTraceChannel) toStringForSelect() string {
 	opStr := ""
 	switch elem.op {
@@ -227,6 +244,10 @@ func (elem AdvocateTraceChannel) toStringForSelect() string {
 	return buildTraceElemStringSep(".", "C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount)
 }
 
+// getOperation is a getter for the operation
+//
+// Returns:
+//   - Operation: the operation
 func (elem AdvocateTraceChannel) getOperation() Operation {
 	return elem.op
 }

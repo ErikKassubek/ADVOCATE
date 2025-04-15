@@ -118,7 +118,7 @@ func getTraceInfoFromFile(filePath string) error {
 			}
 		case "ExitCode":
 			ec, err := strconv.Atoi(lineSplit[1])
-			if err != nil {
+			if err == nil {
 				exitCode = ec
 			}
 		case "ExitPosition":

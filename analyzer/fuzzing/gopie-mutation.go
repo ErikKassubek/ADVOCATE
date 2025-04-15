@@ -35,6 +35,10 @@ func mutate(c chain, energy int) map[string]chain {
 
 	res := make(map[string]chain)
 
+	if energy == 0 {
+		return res
+	}
+
 	if c.len() == 0 {
 		return res
 	}

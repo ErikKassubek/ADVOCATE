@@ -404,6 +404,12 @@ func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if wa.IsEqual(elem) {
+		return
+	}
+
 	wa.rel1[pos] = elem
 }
 
@@ -412,6 +418,11 @@ func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (wa *TraceElementWait) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if wa.IsEqual(elem) {
+		return
+	}
+
 	wa.rel2 = append(wa.rel2, elem)
 }
 

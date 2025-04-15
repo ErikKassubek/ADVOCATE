@@ -351,6 +351,11 @@ func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if on.IsEqual(elem) {
+		return
+	}
 	on.rel1[pos] = elem
 }
 
@@ -359,6 +364,11 @@ func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (on *TraceElementOnce) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if on.IsEqual(elem) {
+		return
+	}
+
 	on.rel2 = append(on.rel2, elem)
 }
 

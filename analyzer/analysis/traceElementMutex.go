@@ -493,6 +493,12 @@ func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if mu.IsEqual(elem) {
+		return
+	}
+
 	mu.rel1[pos] = elem
 }
 
@@ -501,6 +507,11 @@ func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (mu *TraceElementMutex) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if mu.IsEqual(elem) {
+		return
+	}
+
 	mu.rel2 = append(mu.rel2, elem)
 }
 

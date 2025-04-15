@@ -718,6 +718,12 @@ func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if ch.IsEqual(elem) {
+		return
+	}
+
 	ch.rel1[pos] = elem
 }
 
@@ -726,6 +732,11 @@ func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (ch *TraceElementChannel) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if ch.IsEqual(elem) {
+		return
+	}
+
 	ch.rel2 = append(ch.rel2, elem)
 }
 

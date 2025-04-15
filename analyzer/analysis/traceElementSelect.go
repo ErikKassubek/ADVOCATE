@@ -707,9 +707,19 @@ func (se *TraceElementSelect) Copy() TraceElement {
 //   - elem TraceElement: elem to add
 //   - pos int: before (0) or after (1)
 func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
+	// do not add yourself
+	if se.IsEqual(elem) {
+		return
+	}
+
+	if pos < 0 || pos > 1 {
+		return
+	}
+
 	if se.chosenIndex == -1 { // default
 		return
 	}
+
 	se.chosenCase.AddRel1(elem, pos)
 
 }
@@ -719,6 +729,11 @@ func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (se *TraceElementSelect) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if se.IsEqual(elem) {
+		return
+	}
+
 	if se.chosenIndex == -1 { // default
 		return
 	}

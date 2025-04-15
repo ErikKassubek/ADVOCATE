@@ -393,6 +393,12 @@ func (at *TraceElementAtomic) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if at.IsEqual(elem) {
+		return
+	}
+
 	at.rel1[pos] = elem
 }
 
@@ -401,6 +407,11 @@ func (at *TraceElementAtomic) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (at *TraceElementAtomic) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if at.IsEqual(elem) {
+		return
+	}
+
 	at.rel2 = append(at.rel2, elem)
 }
 

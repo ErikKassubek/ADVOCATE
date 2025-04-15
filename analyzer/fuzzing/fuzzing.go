@@ -45,7 +45,7 @@ const (
 )
 
 const (
-	maxNumberRuns = 20
+	maxNumberRuns = 100
 	maxTime       = 60 * time.Minute
 	maxRunPerMut  = 2
 

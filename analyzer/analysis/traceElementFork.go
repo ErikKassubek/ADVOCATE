@@ -286,6 +286,12 @@ func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+
+	// do not add yourself
+	if fo.IsEqual(elem) {
+		return
+	}
+
 	fo.rel1[pos] = elem
 }
 
@@ -294,6 +300,11 @@ func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (fo *TraceElementFork) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if fo.IsEqual(elem) {
+		return
+	}
+
 	fo.rel2 = append(fo.rel2, elem)
 }
 

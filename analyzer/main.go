@@ -629,8 +629,13 @@ func printHelpMode(mode string) {
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
 		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
-
-		println("Additionally, the tags from mode analysis can be used")
+		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
+		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
+		println("  -ignoreAtomics         Set to ignore atomics in replay")
+		println("  -recordTime            Set to record runtimes")
+		println("  -notExec               Set to determine never executed operations")
+		println("  -stats                 Set to create statistics")
+		println("  -keepTrace             Do not delete the trace files after analysis finished")
 	default:
 		println("Mode: unknown")
 		printHelp()

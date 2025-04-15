@@ -825,6 +825,7 @@ func ExitReplayWithCode(code int) {
 	} else {
 		println("Exit code already returned")
 	}
+
 	if replayForceExit && ExitCodeNames[code] != "" {
 		// if !advocateTracingDisabled { // do not exit if recording is enabled
 		// 	return
@@ -865,16 +866,11 @@ func ExitReplayPanic(msg any) {
 		finishTracingFunc()
 	}
 
-	if !IsReplayEnabled() {
-		return
-	}
+	// if !IsReplayEnabled() {
+	// 	return
+	// }
 
-	if expectedExitCode == ExitCodeDefault || expectedExitCode == advocateExitCode {
-		ExitReplayWithCode(advocateExitCode)
-	}
-
-	// should be unreachable
-	ExitReplayWithCode(ExitCodePanic)
+	ExitReplayWithCode(advocateExitCode)
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.

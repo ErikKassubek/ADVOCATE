@@ -380,6 +380,11 @@ func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
 	if pos < 0 || pos > 1 {
 		return
 	}
+	// do not add yourself
+	if co.IsEqual(elem) {
+		return
+	}
+
 	co.rel1[pos] = elem
 }
 
@@ -388,6 +393,11 @@ func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
 // Parameter:
 //   - elem TraceElement: elem to add
 func (co *TraceElementCond) AddRel2(elem TraceElement) {
+	// do not add yourself
+	if co.IsEqual(elem) {
+		return
+	}
+
 	co.rel2 = append(co.rel2, elem)
 }
 

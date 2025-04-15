@@ -1,8 +1,5 @@
 # Tracing and Replay
 
-The challenge of reproducing and debugging nondeterministic behavior in
-concurrent programs has led to a rich body of work on record and replay systems across various concurrency models and programming paradigms. Existing approaches differ in their assumptions, overhead, and generality, with many focusing on specific memory models or concurrency abstractions.
-
 The Go tracer [^1] is a built-in tool provided by the Go programming language for capturing and analyzing runtime events such as goroutine scheduling, system calls, garbage collection, and network blocking. It enables fine-grained performance profiling and concurrency visualization, making it particularly useful for diagnosing bottlenecks and understanding the behavior of concurrent Go programs.
 
 "Capturing High-level Nondeterminism in Concurrent Programs

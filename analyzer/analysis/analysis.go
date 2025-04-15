@@ -62,8 +62,6 @@ func runAnalysisOnExitCodes(all bool) {
 		return
 	}
 
-	utils.LogImportantf("Read exit code: %d %d", all, exitCode)
-
 	switch exitCode {
 	case utils.ExitCodeCloseClose: // close on closed
 		arg1 := results.TraceElementResult{

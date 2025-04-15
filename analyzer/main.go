@@ -243,7 +243,7 @@ func main() {
 		printHelp()
 	}
 
-	numberErr, numberTimeout := utils.GetNumberErr()
+	numberResults, numberResultsConf, numberErr, numberTimeout := utils.GetLoggingNumbers()
 	if numberErr == 0 {
 		utils.LogInfo("Finished with 0 errors")
 	} else {
@@ -253,6 +253,12 @@ func main() {
 		utils.LogInfo("No timeouts occur")
 	} else {
 		utils.LogErrorf("%d timeouts occurred", numberTimeout)
+	}
+	if numberResults == 0 {
+		utils.LogInfo("No bugs have been found/indicated")
+	} else {
+		utils.LogResultf(false, "%d bugs have been indicated", numberResults)
+		utils.LogResultf(false, "%d bugs have been confirmed", numberResultsConf)
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))

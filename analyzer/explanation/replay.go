@@ -40,7 +40,7 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 	var err error
 
 	if rewType == "Actual" {
-		res["description"] += "The bug is an actual bug. Therefore no rewrite is possibel."
+		res["description"] += "The bug is an actual bug. Therefore no rewrite is possible."
 		codes[fmt.Sprint(index)] = "fail"
 	} else if rewType == "Possible" {
 		res["description"] += "The bug is a potential bug.\n"

@@ -26,6 +26,8 @@ const (
 
 var numberErr = 0
 var numberTimeout = 0
+var numberResults = 0
+var numberResultsConf = 0
 
 // LogInfo logs an information to the terminal
 // Printed in base color
@@ -69,19 +71,29 @@ func LogImportantf(format string, v ...any) {
 // Printed in green
 //
 // Parameter:
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - v ...any: the content of the log
-func LogResult(v ...any) {
+func LogResult(confirmed bool, v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
+	numberResults++
+	if confirmed {
+		numberResultsConf++
+	}
 }
 
 // LogResultf logs a result to the terminal
 // Printed in green
 //
 // Parameter:
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
-func LogResultf(format string, v ...any) {
+func LogResultf(confirmed bool, format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
+	numberResults++
+	if confirmed {
+		numberResultsConf++
+	}
 }
 
 // LogTimeout logs a timeout to the terminal
@@ -130,11 +142,13 @@ func LogErrorf(format string, v ...any) {
 	numberErr++
 }
 
-// GetNumberErr returns the number of errors and timeouts
+// GetLoggingNumbers returns the number of results, errors and timeouts
 //
 // Returns:
+//   - int: number of results
+//   - int: number of confirmed results
 //   - int: number of errors
 //   - int: number of timeouts
-func GetNumberErr() (int, int) {
-	return numberErr, numberTimeout
+func GetLoggingNumbers() (int, int, int, int) {
+	return numberResults, numberResultsConf, numberErr, numberTimeout
 }

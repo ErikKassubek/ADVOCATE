@@ -68,7 +68,8 @@ func mutate(c chain, energy int) map[string]chain {
 			}
 
 			// Rule 3 -> substitute
-			if ch.len() <= bound && rand.Int()%2 == 1 {
+			// if ch.len() <= bound && rand.Int()%2 == 1 {
+			if rand.Int()%2 == 1 {
 				newChs := substitute(ch)
 				for _, newCh := range newChs {
 					tset[newCh.toString()] = newCh

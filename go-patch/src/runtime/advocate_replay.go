@@ -61,6 +61,8 @@ var (
 	tPostWhenFirstTimeout    = 0
 	tPostWhenReplayDisabled  = 0
 	tPostWhenAckFirstTimeout = 0
+
+	releasedFork = 0
 )
 
 func SetReplayAtomic(repl bool) {
@@ -619,7 +621,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil
 	}
 
-	routine := getg().advocateRoutineInfo.replayRoutine
+	routine := GetRoutineID()
 
 	// routine := GetRoutineID()
 	key := buildReplayKey(routine, file, line)

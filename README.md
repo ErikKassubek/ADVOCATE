@@ -103,18 +103,24 @@ It can be run with
 
 The following arg is required:
 
-- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder
+- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file or the folder containing the `main.go` file. Note: the program to analyzer cannot be inside the ADVOCATE folder
 
-<!-- If the main function is analyzed, the following arg is also required:
+If the main function should be analyzed instead of the unit tests, the following arg must be set (we recommend applying the analysis to the tests and not the main function):
 
-- `-exec [path]`: Name of the executable of the program when building with `go build` (For programs that cannot simply be build with `go build` only the tests can be analyzed). -->
+- `-main`
+
+For the analysis of the main function to work, the program must be buildable with `go build`. For programs that cannot simply be build with `go build` only the tests can be analyzed.
+
+If `-main` is set and the `go.mod` file is not in the same directory as the `main.go` file, the following argument is required
+
+- `-exec [path]`: Name of the executable of the program when building with `go build`.
 
 If only a single test should be analyzed, this can be set with
 
 - `-exec [testName]`
 
-If not set, all tests will be analyzed. Be aware, that this will run all tests
-with this name, meaning if multiple tests have the same name, they will all be run
+If not set, and `-main` is not set, all tests will be analyzed. Be aware, that this will run all tests
+with this name, meaning if multiple tests have the same name, they will all be run.
 
 To set timeouts, you can set
 
@@ -142,7 +148,7 @@ The created statistic and time files can also be found in the `advocateResult` f
 An example command would be
 
 ```shell
-./analyzer analysis  -path ~/pathToProg/progDir/ -prog progName
+./analyzer analysis -path ~/pathToProg/progDir/ -prog progName
 ```
 
 #### Mode: fuzzing

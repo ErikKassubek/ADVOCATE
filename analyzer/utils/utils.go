@@ -11,7 +11,9 @@
 package utils
 
 import (
+	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -114,4 +116,57 @@ func MakePathLocal(path string) string {
 
 	// path
 	return "." + pathSep + path
+}
+
+// GetDirectory returns the folder a file is in from the path
+//
+// Parameter:
+//   - path string: the path to the file
+//
+// Returns:
+//   - string: if path points to file, the folder it is in, if it points to a folder, the path
+func GetDirectory(path string) string {
+	info, err := os.Stat(path)
+	if err != nil {
+		return path
+	}
+
+	if info.IsDir() {
+		// Already a directory
+		return filepath.Clean(path)
+	}
+
+	// It's a file, return its directory
+	return filepath.Dir(path)
+}
+
+// GetMainPath takes a path. If the path points to a file, it will return the path.
+// If not it will check if the folder it points to contains a main.go file.
+// If it does, it will return the path to the file
+//
+// Parameter:
+//   - path string: path
+//
+// Returns:
+//   - string: path to the main file
+//   - error
+func GetMainPath(path string) (string, error) {
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", err
+	}
+
+	if info.IsDir() {
+		mainPath := filepath.Join(path, "main.go")
+		if _, err := os.Stat(mainPath); err == nil {
+			return mainPath, nil
+		} else if os.IsNotExist(err) {
+			return "", fmt.Errorf("main.go not found in directory %s", path)
+		} else {
+			return "", err
+		}
+	}
+
+	// It's a file, return the path as is
+	return filepath.Clean(path), nil
 }

@@ -143,7 +143,7 @@ func main() {
 		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
-	// flag.BoolVar(&modeMain, "main", false, "set to run on main function")
+	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
 	flag.Parse()
 
@@ -166,7 +166,21 @@ func main() {
 		return
 	}
 
-	timer.Init(recordTime, progPath)
+	// If -main is set, the path needs to be the path to the main file
+	// If the given path is to a folder, check if a main.go file exists in this folder
+	// If so, fix the path. Otherwise return error and finish
+	if modeMain {
+		var err error
+		progPath, err = utils.GetMainPath(progPath)
+		if err != nil {
+			utils.LogError("Could not find main file. If -main is set, -path should point to the main file.")
+			utils.LogError(err)
+			return
+		}
+	}
+
+	progPathDir := utils.GetDirectory(progPath)
+	timer.Init(recordTime, progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
 
@@ -224,17 +238,10 @@ func main() {
 	switch mode {
 	case "analysis":
 		if modeMain {
-			modeToolchain("main", 0)
+			modeToolchain("main")
 		} else {
-			modeToolchain("test", 0)
+			modeToolchain("test")
 		}
-	// case "analyze":
-	// 	// here the parameter need to stay, because the function is used in the
-	// 	// toolchain package via function injection
-	// 	modeAnalyzer(tracePath, noRewrite, analysisCases, outReadable,
-	// 		outMachine, ignoreAtomics, fifo, ignoreCriticalSection,
-	// 		rewriteAll, newTrace, ignoreRewrite,
-	// 		-1, onlyAPanicAndLeak)
 	case "fuzzing":
 		modeFuzzing()
 	default:
@@ -272,7 +279,7 @@ func modeFuzzing() {
 	}
 
 	checkProgPath()
-	checkVersion()
+	checkGoMod()
 
 	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
 		ignoreAtomics, recordTime, notExec, statistics,
@@ -284,11 +291,16 @@ func modeFuzzing() {
 
 // Start point for the toolchain
 // This will run, analyze and replay a given program or test
-func modeToolchain(mode string, numRerecorded int) {
+//
+// Parameter:
+//   - mode string: main for main function, test for test function
+func modeToolchain(mode string) {
 	checkProgPath()
-	checkVersion()
+	checkGoMod()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
-		numRerecorded, -1, "", ignoreAtomics, recordTime, notExec, statistics, keepTraces, true, skipExisting, cont, 0, 0)
+		-1, "", ignoreAtomics, recordTime,
+		notExec, statistics,
+		keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}
@@ -658,13 +670,16 @@ func checkProgPath() {
 	}
 }
 
-// checkVersion checks the version of the program to be analyzed.
+// checkGoMod checks the version of the program to be analyzed.
 // Advocate is implemented in and for go1.24. It the analyzed program has another
 // version, especially if the other version is also installed on the machine,
-// this can lead to problems. checkVersion therefore reads the version of the
+// this can lead to problems. checkGoMod therefore reads the version of the
 // analyzed program and if its not 1.24, a warning and information is printed
 // to the terminal
-func checkVersion() {
+// Additionally it reads the module name from the go.mod file.
+// If -main is set, but -exec is not set it will try to set the
+// execname value. If no module value is found, the program will panic
+func checkGoMod() {
 	var goModPath string
 
 	if progPath == "" {
@@ -672,7 +687,7 @@ func checkVersion() {
 	}
 
 	// Search for go.mod
-	err := filepath.WalkDir(progPath, func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(utils.GetDirectory(progPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -684,14 +699,14 @@ func checkVersion() {
 	})
 
 	if goModPath == "" {
-		utils.LogError("Could not find go.mod")
+		utils.LogInfo("Could not find go.mod")
 		return
 	}
 
 	// Open and read go.mod
 	file, err := os.Open(goModPath)
 	if err != nil {
-		utils.LogError("Could not find go.mod")
+		utils.LogInfo("Could not find go.mod")
 		return
 	}
 	defer file.Close()
@@ -699,6 +714,19 @@ func checkVersion() {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
+
+		// check for module name
+		if modeMain && execName == "" && strings.HasPrefix(line, "module") {
+			s := strings.Split(line, " ")
+			if len(s) < 2 {
+				continue
+			}
+
+			execName = s[1]
+			continue
+		}
+
+		// check for version
 		if strings.HasPrefix(line, "go ") {
 			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
 

@@ -5067,9 +5067,8 @@ func newproc(fn *funcval) {
 	file, line := funcline(f, tracepc)
 
 	wait, ch, ack := WaitForReplayPath(OperationSpawn, file, int(line), true)
-	var elem ReplayElement
 	if wait {
-		elem = <-ch
+		_ = <-ch
 		defer func() { ack <- struct{}{} }()
 	}
 	// ADVOCATE-END
@@ -5078,15 +5077,6 @@ func newproc(fn *funcval) {
 		newg := newproc1(fn, gp, pc, false, waitReasonZero)
 
 		newg.advocateRoutineInfo = newAdvocateRoutine(newg)
-		newg.advocateRoutineInfo.replayRoutine = elem.Index
-
-		// for the main routine no fork exists, the elem.Routine is therefore 0
-		// The same is true for all internal routines that are created before the
-		// main function is called
-		// To fix this, we need to manually set the replay routine to 6
-		if newg.advocateRoutineInfo.replayRoutine == 0 {
-			newg.advocateRoutineInfo.replayRoutine = 6
-		}
 
 		if gp != nil && gp.advocateRoutineInfo != nil {
 			AdvocateSpawnCaller(gp.advocateRoutineInfo, newg.advocateRoutineInfo.id, file, line)

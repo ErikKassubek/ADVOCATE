@@ -244,7 +244,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
-			0, numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber)
+			numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {

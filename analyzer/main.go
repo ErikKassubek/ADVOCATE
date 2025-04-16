@@ -48,7 +48,6 @@ var (
 	timeoutReplay    int
 	recordTime       bool
 
-	resultFolder     string
 	resultFolderTool string
 	outM             string
 	outR             string
@@ -57,7 +56,6 @@ var (
 	noFifo                bool
 	ignoreCriticalSection bool
 	ignoreAtomics         bool
-	ignoreRewrite         string
 
 	rewriteAll bool
 
@@ -86,7 +84,6 @@ var (
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
 	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
 
 	flag.StringVar(&progName, "prog", "", "Name of the program")
@@ -96,7 +93,6 @@ func main() {
 	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
-	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
 	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
 	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
 	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
@@ -105,6 +101,8 @@ func main() {
 	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
+
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
 
 	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
@@ -193,27 +191,8 @@ func main() {
 		return
 	}
 
-	if resultFolder == "" {
-		resultFolder, err := getFolderTrace(tracePath)
-		if err != nil {
-			utils.LogError("Could not get folder trace: ", err)
-			return
-		}
-
-		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
-			resultFolder += string(os.PathSeparator)
-		}
-	}
-
 	if !noMemorySupervisor {
 		go memory.Supervisor() // cancel analysis if not enough ram
-	}
-
-	// outMachine := filepath.Join(resultFolder, outM) + ".log"
-	// outReadable := filepath.Join(resultFolder, outR) + ".log"
-	// newTrace := filepath.Join(resultFolder, outT)
-	if ignoreRewrite != "" {
-		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
 
 	// don't run any HB Analysis for direct GFuzz and GoPie
@@ -235,22 +214,19 @@ func main() {
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
+	modeMainTest := "test"
+	if modeMain {
+		modeMainTest = "main"
+	}
+
 	switch mode {
 	case "analysis":
-		if modeMain {
-			modeToolchain("main", false)
-		} else {
-			modeToolchain("test", false)
-		}
+		modeToolchain(modeMainTest, false)
 	case "fuzzing":
 		modeFuzzing()
 	case "record":
 		keepTraces = true
-		if modeMain {
-			modeToolchain("main", true)
-		} else {
-			modeToolchain("test", true)
-		}
+		modeToolchain("modeMainTest", true)
 	default:
 		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
 		utils.LogError("Select one mode from  'analysis', 'fuzzing' or 'record'")

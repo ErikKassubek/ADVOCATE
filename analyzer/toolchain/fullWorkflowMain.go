@@ -34,11 +34,13 @@ import (
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
+//   - onlyRecord bool: if true, only record th trace, but do not run any analysis
 //
 // Returns:
 //   - error
 func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
-	keepTraces bool, fuzzing int, fuzzingTrace string, firstRun bool) error {
+	keepTraces bool, fuzzing int, fuzzingTrace string, firstRun bool,
+	onlyRecord bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
@@ -68,7 +70,11 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		removeLogs(dir)
 	}
 
-	utils.LogInfo("Run program and analysis...")
+	if onlyRecord {
+		utils.LogInfo("Run program...")
+	} else {
+		utils.LogInfo("Run program and analysis...")
+	}
 
 	output := "output.log"
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -145,6 +151,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		return fmt.Errorf("Error removing header: %v", err)
 	}
 
+	resultPath := filepath.Join(dir, "advocateResult")
+	if onlyRecord {
+		collect(dir, dir, resultPath, false)
+
+		return nil
+	}
+
 	// Apply analyzer
 	analyzerOutput := filepath.Join(dir, "advocateTrace")
 
@@ -197,8 +210,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		}
 	}
 	timer.Stop(timer.Replay)
-
-	resultPath := filepath.Join(dir, "advocateResult")
 
 	if !keepTraces {
 		removeTraces(dir)

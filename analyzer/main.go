@@ -48,7 +48,6 @@ var (
 	timeoutReplay    int
 	recordTime       bool
 
-	resultFolder     string
 	resultFolderTool string
 	outM             string
 	outR             string
@@ -57,7 +56,6 @@ var (
 	noFifo                bool
 	ignoreCriticalSection bool
 	ignoreAtomics         bool
-	ignoreRewrite         string
 
 	rewriteAll bool
 
@@ -86,7 +84,6 @@ var (
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
 
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
 	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
 
 	flag.StringVar(&progName, "prog", "", "Name of the program")
@@ -96,7 +93,6 @@ func main() {
 	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
-	flag.StringVar(&resultFolder, "out", "", "Path to where the result file should be saved.")
 	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
 	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
 	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
@@ -105,6 +101,8 @@ func main() {
 	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
+
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
 
 	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
@@ -161,7 +159,7 @@ func main() {
 			return
 		}
 		fmt.Println("No mode selected")
-		fmt.Println("Select one mode from 'run', 'stats', 'explain' or 'check'")
+		fmt.Println("Select one mode from 'analysis', 'fuzzing' or 'recording'")
 		printHelp()
 		return
 	}
@@ -193,27 +191,8 @@ func main() {
 		return
 	}
 
-	if resultFolder == "" {
-		resultFolder, err := getFolderTrace(tracePath)
-		if err != nil {
-			utils.LogError("Could not get folder trace: ", err)
-			return
-		}
-
-		if (resultFolder)[len(resultFolder)-1] != os.PathSeparator {
-			resultFolder += string(os.PathSeparator)
-		}
-	}
-
 	if !noMemorySupervisor {
 		go memory.Supervisor() // cancel analysis if not enough ram
-	}
-
-	// outMachine := filepath.Join(resultFolder, outM) + ".log"
-	// outReadable := filepath.Join(resultFolder, outR) + ".log"
-	// newTrace := filepath.Join(resultFolder, outT)
-	if ignoreRewrite != "" {
-		ignoreRewrite = filepath.Join(resultFolder, ignoreRewrite)
 	}
 
 	// don't run any HB Analysis for direct GFuzz and GoPie
@@ -235,18 +214,22 @@ func main() {
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
 
+	modeMainTest := "test"
+	if modeMain {
+		modeMainTest = "main"
+	}
+
 	switch mode {
 	case "analysis":
-		if modeMain {
-			modeToolchain("main")
-		} else {
-			modeToolchain("test")
-		}
+		modeToolchain(modeMainTest, false)
 	case "fuzzing":
 		modeFuzzing()
+	case "record":
+		keepTraces = true
+		modeToolchain("modeMainTest", true)
 	default:
 		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
-		utils.LogError("Select one mode from 'run', 'stats', 'explain' or 'check'")
+		utils.LogError("Select one mode from  'analysis', 'fuzzing' or 'record'")
 		printHelp()
 	}
 
@@ -261,11 +244,13 @@ func main() {
 	} else {
 		utils.LogErrorf("%d timeouts occurred", numberTimeout)
 	}
-	if numberResults == 0 {
-		utils.LogInfo("No bugs have been found/indicated")
-	} else {
-		utils.LogResultf(false, "%d bugs have been indicated", numberResults)
-		utils.LogResultf(false, "%d bugs have been confirmed", numberResultsConf)
+	if mode == "analysis" || mode == "fuzzing" {
+		if numberResults == 0 {
+			utils.LogInfo("No bugs have been found/indicated")
+		} else {
+			utils.LogResultf(false, "%d bugs have been indicated", numberResults)
+			utils.LogResultf(false, "%d bugs have been confirmed", numberResultsConf)
+		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
 	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
@@ -294,18 +279,19 @@ func modeFuzzing() {
 //
 // Parameter:
 //   - mode string: main for main function, test for test function
-func modeToolchain(mode string) {
+//   - onlyRecoding bool: if true, the toolchain will only run the recording but now analysis or replay
+func modeToolchain(mode string, onlyRecording bool) {
 	checkProgPath()
 	checkGoMod()
 	err := toolchain.Run(mode, pathToAdvocate, progPath, "", execName, progName, execName,
 		-1, "", ignoreAtomics, recordTime,
 		notExec, statistics,
-		keepTraces, skipExisting, true, cont, 0, 0)
+		keepTraces, skipExisting, true, cont, 0, 0, onlyRecording)
 	if err != nil {
 		utils.LogError("Failed to run toolchain: ", err.Error())
 	}
 
-	if statistics {
+	if statistics && !onlyRecording {
 		err = stats.CreateStatsTotal(progPath, progName)
 		if err != nil {
 			utils.LogError("Failed to create stats total: ", err.Error())
@@ -606,12 +592,14 @@ func getFolderTrace(pathTrace string) (string, error) {
 // printHelp prints the usage help. Can be called with -h
 func printHelp() {
 	println("Usage: ./analyzer [mode] [options]\n")
-	println("There are two different modes of operation:")
+	println("There are different modes of operation:")
 	println("1. Analysis")
 	println("2. Fuzzing")
+	println("3. Record")
 	println("\n\n")
 	printHelpMode("analysis")
 	printHelpMode("fuzzing")
+	printHelpMode("record")
 }
 
 // printHelpMode prints the help for one mode
@@ -625,7 +613,7 @@ func printHelpMode(mode string) {
 		println("Analyze tests")
 		println("This runs the analysis on tests")
 		println("Usage: ./analyzer analysis [options]")
-		// println("  -main                  Run on the main function instead on tests")
+		println("  -main                  Run on the main function instead on tests")
 		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -prog [name]           Name of the program (used for statistics)")
@@ -638,10 +626,10 @@ func printHelpMode(mode string) {
 		println("  -keepTrace             Do not delete the trace files after analysis finished")
 	case "fuzzing":
 		println("Mode: fuzzing")
-		println("Create runs for fuzzing")
-		println("This creates and updates the information required for the fuzzing runs as well as executes the fuzzing runs")
+		println("Run fuzzing")
+		println("This creates and updates the information required for as well as executes the fuzzing runs and analysis")
 		println("Usage: ./analyzer fuzzing [options]")
-		// println("  -main                  Run on the main function instead on tests")
+		println("  -main                  Run on the main function instead on tests")
 		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
@@ -654,6 +642,18 @@ func printHelpMode(mode string) {
 		println("  -notExec               Set to determine never executed operations")
 		println("  -stats                 Set to create statistics")
 		println("  -keepTrace             Do not delete the trace files after analysis finished")
+	case "record":
+		println("Mode: record")
+		println("Record traces")
+		println("This records program or test traces without running any analysis")
+		println("Usage: ./analyzer record [options]")
+		println("  -main                  Run on the main function instead on tests")
+		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
+		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
+		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
+		println("  -recordTime            Set to record runtimes")
+		println("  -notExec               Set to determine never executed operations")
+		println("  -stats                 Set to create statistics")
 	default:
 		println("Mode: unknown")
 		printHelp()

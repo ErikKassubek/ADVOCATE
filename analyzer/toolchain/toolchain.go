@@ -50,9 +50,11 @@ func InitFuncAnalyzer(funcAnalyzer func(pathTrace string,
 //   - keepTraces bool: keep the traces after analysis
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - cont bool: continue an already started run
+//   - onlyRecording: if true, it only records tge trace without running any analysis
 func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName, test string,
 	fuzzing int, fuzzingTrace string,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool, firstRun, cont bool, fileNumber, testNumber int) error {
+	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
+	firstRun, cont bool, fileNumber, testNumber int, onlyRecording bool) error {
 	home, _ := os.UserHomeDir()
 	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
 	pathToFileOrDir = strings.Replace(pathToMainFileOrTestDir, "~", home, -1)
@@ -80,9 +82,10 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 			return fmt.Errorf("Name of the executable required")
 		}
 		if (stats || measureTime) && progName == "" {
-			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
+			return fmt.Errorf("If -stats or -recordTime is set, -prog [name] must be set as well")
 		}
-		return runWorkflowMain(pathToAdvocate, pathToFileOrDir, executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
+		return runWorkflowMain(pathToAdvocate, pathToFileOrDir,
+			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun, onlyRecording)
 	case "test", "tests":
 		if pathToAdvocate == "" {
 			return fmt.Errorf("Path to advocate required")
@@ -91,21 +94,12 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 			return fmt.Errorf("Path to test folder required for mode main")
 		}
 		if (stats || measureTime) && progName == "" {
-			return fmt.Errorf("If -scen or -trace is set, -prog [name] must be set as well")
+			return fmt.Errorf("If -stats or -recordTime is set, -prog [name] must be set as well")
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, pathToTest, progName,
-			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces, firstRun, skipExisting, cont, fileNumber, testNumber)
-	case "explain":
-		if pathToAdvocate == "" {
-			return fmt.Errorf("Path to advocate required")
-		}
-		if pathToFileOrDir == "" {
-			fmt.Println("Path to test folder required for mode main")
-		}
-		generateBugReports(pathToFileOrDir, fuzzing)
+			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces,
+			firstRun, skipExisting, cont, fileNumber, testNumber, onlyRecording)
 	default:
 		return fmt.Errorf("Choose one mode from 'main' or 'test' or 'explain'")
 	}
-
-	return nil
 }

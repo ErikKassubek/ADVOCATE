@@ -46,11 +46,14 @@ import (
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - skipExisting bool: do not overwrite existing results, skip those tests
 //   - cont bool: continue an already started run
+//   - onlyRecord bool: if true, run only the recording without any analysis
 //
 // Returns:
 //   - error
 func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
-	notExecuted, createStats bool, fuzzing int, fuzzingTrace string, keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int) error {
+	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
+	keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int,
+	onlyRecord bool) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -152,7 +155,9 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 			}
 
 			// Execute full workflow
-			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate, dir, testFunc, adjustedPackagePath, file, fuzzing, fuzzingTrace)
+			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate,
+				dir, testFunc, adjustedPackagePath, file, fuzzing,
+				fuzzingTrace, onlyRecord)
 
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
 
@@ -375,12 +380,15 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - pkg string: adjusted package path
 //   - file string: file with the test
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
+//   - fuzzingTrace string: the path to the fuzzing trace
+//   - onlyRecord bool: if true, run only the recording without any analysis
 //
 // Returns:
 //   - int: number of run replays
 //   - bool: true if analysis passed without error
 //   - error
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzing int, fuzzingTrace string) (int, bool, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string,
+	fuzzing int, fuzzingTrace string, onlyRecord bool) (int, bool, error) {
 	output := "output.log"
 
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -444,6 +452,10 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string, fuzzi
 	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, fuzzingTrace, output)
 	if err != nil {
 		utils.LogError("Recording failed: ", err.Error())
+	}
+
+	if onlyRecord {
+		return 0, true, nil
 	}
 
 	pkgPath := filepath.Join(dir, pkg)

@@ -218,8 +218,8 @@ func (elem *ReplayElement) key() string {
 //   - file string: code position file of the element
 //   - line int: code position line of the element
 func buildReplayKey(routine int, file string, line int) string {
-	// return intToString(routine) + ":" + file + ":" + intToString(line)
-	return file + ":" + intToString(line)
+	return intToString(routine) + ":" + file + ":" + intToString(line)
+	// return file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
@@ -342,6 +342,9 @@ func DisableReplay() {
 
 	replayEnabled = false
 
+	// wait for ops that have called WaitForReplay, but have not finished it yet
+	sleep(0.2)
+
 	lock(&waitingOpsMutex)
 	for _, replCh := range waitingOps {
 		replCh.chWait <- ReplayElement{Blocked: false}
@@ -405,22 +408,12 @@ func ReleaseWaits() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 
-	defer DisableReplay()
-	defer println("RELEASE WAIT BREAK")
-
-	counter := 0
 	for {
-		counter++
-		if counter%5000 == 0 {
-			println(counter)
-		}
 		// wait for acknowledgement of element that was directly
 		// released when it was called, because it was the next element
 		if waitForAck.waitForAck {
-			println("WAIT")
 			releaseElement(waitForAck.replayC, waitForAck.replayE, false, true)
 			waitForAck.waitForAck = false
-			println("WAITDONE")
 		}
 
 		routine, replayElem := getNextReplayElement()

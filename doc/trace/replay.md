@@ -13,24 +13,27 @@ it would most likely get stuck, because the run was altered by the rewrite.
 ## Trace element
 To signal the end of the rewritten trace, the following element is added.
 ```
-X,[tpost],[exitCode],[tPreLast]
+X,[tpost],[info]
 ```
-where `X` identifies the element as an replay control element.\
-- [tpost] $\in \mathbb N$: This is the time. It is replaced by the int value of the global counter at the moment when it is supposed to be run
-- [exitCode]: If enabled, the replay will end with this exit code. The exit code can have to following values:
-  - 0: The replay finished without being able to confirm the predicted bug
-  - 3: The replay paniced unexpectadly
-  - 10: Timeout
-  - 20: Leak: Leaking unbuffered channel or select was unstuck
-  - 21: Leak: Leaking buffered channel or select was unstuck
-  - 22: Leak: Leaking Mutex was unstuck
-  - 23: Leak: Leaking Cond was unstuck
-  - 24: Leak: Leaking WaitGroup was unstuck
-  - 30: Send on close
-  - 31: Receive on close
-  - 32: Close on close
-  - 33: Negative WaitGroup counter
-  - 34: Unlock before lock
-  - 41: Cyclic Deadlock
-- tPreLast $\in \mathbb N$ is the tPre of the last element in the replay, e.g. the tPre of the stuck element in a leak. Only used to detect if leak replay was successful
+where `X` identifies the element as an replay control element.
 
+- [tpost] $\in \mathbb N$: This is the time. It is replaced by the int value of the global counter at the moment when it is supposed to be run
+- [info]: This field can be either a letter or a number. If it is a letter,
+  it changes the type of replay. If it is a number, it disables the replay and may
+  contain an expected replay code. The possible values are:
+    - P: switch to partial strict replay mode
+      - in partial strict mode, only operations that are in the remaining trace
+        are considered in replay. All other operations are directly executed
+    - 0: The replay finished without any special incidents (no expected exit code)
+    - 20: Leak: Leaking unbuffered channel or select was unstuck
+    - 21: Leak: Leaking buffered channel or select was unstuck
+    - 22: Leak: Leaking Mutex was unstuck
+    - 23: Leak: Leaking Cond was unstuck
+    - 24: Leak: Leaking WaitGroup was unstuck
+    - 30: Send on close
+    - 31: Receive on close
+    - 32: Close on close
+    - 33: Close of nil pointer
+    - 34: Negative WaitGroup counter
+    - 35: Unlock before lock
+    - 41: Cyclic Deadlock

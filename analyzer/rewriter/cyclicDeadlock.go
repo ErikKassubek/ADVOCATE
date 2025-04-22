@@ -110,7 +110,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 		}
 	}
 
-	analysis.AddTraceElementReplay(lastTime+1, utils.ExitCodeCyclic)
+	analysis.AddTraceElementReplayExitCode(lastTime+1, utils.ExitCodeCyclic)
 
 	// fmt.Println("Rewritten Trace:")
 	// analysis.PrintTrace()

@@ -170,3 +170,17 @@ func GetMainPath(path string) (string, error) {
 	// It's a file, return the path as is
 	return filepath.Clean(path), nil
 }
+
+// BoolToStr returns the string value of the input bool value
+//
+// Parameter
+//   - value bool: the value to convert
+//
+// Returns
+//   - string: 'true' if value == treu, 'false' otherwise
+func BoolToStr(value bool) string {
+	if value {
+		return "true"
+	}
+	return "false"
+}

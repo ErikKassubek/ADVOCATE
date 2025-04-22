@@ -26,7 +26,9 @@ var isFuzzing = false
 // Parameter:
 //   - tracePath string: For fuzzing approaches that use trace, add the path to the
 //     trace, otherwise set to ""
-func InitFuzzing(tracePath string) {
+//   - allowImprecise bool: if true, the the replay will skip trace elements
+//     or release longest waiting elements when it senses that it is stuck
+func InitFuzzing(tracePath string, allowImprecise bool) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
@@ -40,16 +42,16 @@ func InitFuzzing(tracePath string) {
 			println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
 			panic(err)
 		}
-		runtime.InitFuzzingDelay(prefSel, prefFlow)
+		runtime.InitReplaySimple(prefSel, prefFlow)
 	} else { // GoPie
 		runtime.InitFuzzingReplay(FinishFuzzing)
 		tracePathRewritten = tracePath
 		runtime.SetReplayAtomic(true)
-		startReplay(20)
+		startReplay(20, allowImprecise)
 	}
 }
 
-// Run when fuzzing is finished (normally as defer)
+// FinishFuzzing is run when fuzzing is finished (normally as defer)
 // This records the traces and some additional info
 func FinishFuzzing() {
 	FinishTracing()

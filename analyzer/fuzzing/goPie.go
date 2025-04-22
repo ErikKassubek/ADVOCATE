@@ -18,7 +18,6 @@ import (
 	"math"
 	"os"
 	"path/filepath"
-	"sort"
 )
 
 // store all created mutations to avoid doubling
@@ -55,38 +54,30 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 	}
 
 	for _, mut := range mutations {
+		if mut.len() == 0 {
+			continue
+		}
+
 		traceCopy := analysis.CopyMainTrace()
 
-		tPosts := make([]int, len(mut.elems))
-		routines := make(map[int]struct{})
+		// remove all elements that are in the chain and all elements with a
+		// tPost that is greater the smallest tPost in the chain
+
+		minTPost := mut.earliestTPost()
+
+		traceCopy.RemoveLater(minTPost - 1)
+
+		// add the control element to the trace. This will switch the replay mode
+		// from strict to partial
+
+		traceCopy.AddTraceElementReplayControlCode(minTPost, analysis.ControlCodePartial)
+
+		// set the tPosts of the chain elements to the correct order
+		// and add them to the trace
 		for i, elem := range mut.elems {
-			tPosts[i] = elem.GetTPost()
-			routines[elem.GetRoutine()] = struct{}{}
+			elem.SetTSort(minTPost + 2*(i+1))
+			traceCopy.AddElement(elem)
 		}
-
-		sort.Ints(tPosts)
-
-		changedRoutinesMap := make(map[int]struct{})
-
-		for i, elem := range mut.elems {
-			routine, index := elem.GetTraceIndex()
-			traceCopy.SetTSortAtIndex(tPosts[i], routine, index)
-			changedRoutinesMap[routine] = struct{}{}
-		}
-
-		changedRoutines := make([]int, 0, len(changedRoutinesMap))
-		for k := range changedRoutinesMap {
-			changedRoutines = append(changedRoutines, k)
-		}
-
-		traceCopy.SortRoutines(changedRoutines)
-
-		// remove all elements after the last elem in the chain
-		lastTPost := tPosts[len(tPosts)-1]
-		traceCopy.RemoveLater(lastTPost + 1)
-
-		// add a replayEndElem
-		traceCopy.AddTraceElementReplay(lastTPost+2, 0)
 
 		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++

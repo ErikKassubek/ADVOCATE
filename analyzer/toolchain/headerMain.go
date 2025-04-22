@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"analyzer/utils"
 	"bufio"
 	"errors"
 	"fmt"
@@ -200,9 +201,10 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
   // ======= Preamble End =======`, replayNumber, replayTimeout, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", false, %d, %s)
+  advocate.InitReplay("%s", false, %d, %s, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayNumber, replayTimeout, atomicReplayStr))
+  // ======= Preamble End =======`, replayNumber, replayTimeout, atomicReplayStr,
+						utils.BoolToStr(allowImpreciseFlag)))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======

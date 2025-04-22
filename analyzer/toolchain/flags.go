@@ -32,6 +32,7 @@ var (
 	rewriteAllFlag            bool
 	onlyAPanicAndLeakFlag     bool
 	replayAllFlag             bool
+	allowImpreciseFlag        bool
 )
 
 // SetFlags makes the relevant command line arguments given to the analyzer
@@ -47,9 +48,10 @@ var (
 //   - onlyAPanicAndLeak bool: do not run a HB analysis, but only detect actually occurring bugs
 //   - timeoutRec int: timeout of recording in seconds
 //   - timeoutRepl int: timeout of replay in seconds
+//   - strictReplay bool: if true, we do not allow the release or skip of stuck elements
 func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
-	timeoutRec, timeoutRepl int, replayAll bool) {
+	timeoutRec, timeoutRepl int, replayAll bool, strictReplay bool) {
 
 	noRewriteFlag = noRewrite
 
@@ -65,4 +67,6 @@ func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	timeoutReplay = timeoutRepl
 
 	replayAllFlag = replayAll
+
+	allowImpreciseFlag = !strictReplay
 }

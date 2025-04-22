@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"analyzer/utils"
 	"bufio"
 	"errors"
 	"fmt"
@@ -169,15 +170,16 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
   // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", false, %d, %s)
+  advocate.InitReplay("%s", false, %d, %s, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr,
+						utils.BoolToStr(allowImpreciseFlag)))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s")
+  advocate.InitFuzzing("%s", %s)
   defer advocate.FinishFuzzing()
-  // ======= Preamble End =======`, replayInfo))
+  // ======= Preamble End =======`, replayInfo, utils.BoolToStr(allowImpreciseFlag)))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()

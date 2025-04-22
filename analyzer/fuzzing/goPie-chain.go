@@ -206,3 +206,20 @@ func (ch *chain) isValid() bool {
 
 	return true
 }
+
+// Give a chain, return the smallest tPost of the elements in the chain
+// This only depends on the tPost and therefore the recorded trace, but
+// not the order of the chain
+//
+// Returns:
+//   - int: the minimum tPost of the elements in the chain
+func (ch *chain) earliestTPost() int {
+	minTPost := 0
+	for _, elem := range ch.elems {
+		tPost := elem.GetTPost()
+		if minTPost == 0 || minTPost > tPost {
+			minTPost = tPost
+		}
+	}
+	return minTPost
+}

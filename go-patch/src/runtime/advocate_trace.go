@@ -57,7 +57,7 @@ const (
 
 	OperationNewChan
 
-	OperationReplayControl
+	OperationReplayEnd
 )
 
 type prePost int // enum for pre/post
@@ -100,7 +100,7 @@ func getOperationObjectString(op Operation) string {
 		return "Cond"
 	case OperationAtomicLoad, OperationAtomicStore, OperationAtomicAdd, OperationAtomicSwap, OperationAtomicCompareAndSwap, OperationAtomicAnd, OperationAtomicOr:
 		return "Atomic"
-	case OperationReplayControl:
+	case OperationReplayEnd:
 		return "Replay"
 	}
 	return "Unknown"
@@ -324,8 +324,5 @@ func DeleteTrace() {
 func AdvocateIgnore(file string) bool {
 	return containsStr(file, "go-patch/src/")
 }
-
-// Check if a replay element is in the remaining trace
-//
 
 // ADVOCATE-FILE-END

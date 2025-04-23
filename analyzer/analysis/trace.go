@@ -21,11 +21,6 @@ import (
 	"strings"
 )
 
-// control codes
-const (
-	ControlCodePartial = "P"
-)
-
 // Trace is a struct to represent a trace
 // Fields:
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
@@ -65,7 +60,7 @@ func (t *Trace) AddElement(elem TraceElement) {
 	t.numberElemsInTrace[routine]++
 }
 
-// AddTraceElementReplayExitCode adds an replay end element to a trace
+// AddTraceElementReplay adds an replay end element to a trace
 //
 // Parameter:
 //   - ts string: The timestamp of the event
@@ -73,30 +68,10 @@ func (t *Trace) AddElement(elem TraceElement) {
 //
 // Returns:
 //   - error
-func (t *Trace) AddTraceElementReplayExitCode(ts int, exitCode int) error {
-	controlCode := strconv.Itoa(exitCode)
+func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := TraceElementReplay{
-		tPost:       ts,
-		controlCode: controlCode,
-	}
-
-	t.AddElement(&elem)
-
-	return nil
-}
-
-// AddTraceElementReplayControlCode adds an replay end element to a trace
-//
-// Parameter:
-//   - ts string: The timestamp of the event
-//   - controlCode string: The replay control code
-//
-// Returns:
-//   - error
-func (t *Trace) AddTraceElementReplayControlCode(ts int, controlCode string) error {
-	elem := TraceElementReplay{
-		tPost:       ts,
-		controlCode: controlCode,
+		tPost:    ts,
+		exitCode: exitCode,
 	}
 
 	t.AddElement(&elem)
@@ -624,7 +599,6 @@ func (t *Trace) RemoveLater(tPost int) {
 		for i, elem := range trace {
 			if elem.GetTPost() > tPost {
 				t.traces[routine] = t.traces[routine][:i]
-				break
 			}
 		}
 	}
@@ -750,14 +724,12 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 		return elements[i].time < elements[j].time
 	})
 
-	utils.LogInfof("Trace with %d element:", len(elements))
-
 	for _, elem := range elements {
 		if clocks {
-			// utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
+			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
 			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
 		} else {
-			// utils.LogInfo(elem.thread, elem.string)
+			utils.LogInfo(elem.thread, elem.string)
 			fmt.Println(elem.thread, elem.string)
 		}
 	}

@@ -1,10 +1,32 @@
 # Replay
 
-Here we will explain the strict replay, that forces the program to exactly follow a given trace.
+Replay allows us to force the execution of a program to follow a given trace.
 
-We have also implemented some more relaxed execution path
-influencing systems, used mainly for the different fuzzing
-approaches. You can find these, [here](./fuzzing/Flow.md#implementations) and [here](./fuzzing/GFuzz.md#implementation).
+Here we explain the exact replay used in the replay of rewritten traces and
+the GoPie fuzzing. For the explanation of the simplified replay used for
+flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
+
+First we will look how the replay is used in the [toolchain](#toolchain). Then we will give a description of how the replay mechanism works and how it is implemented ([here](#Implementation)). <!-- At the end, we will look at some problems, that can cause the replay mechanism to [fail](#things-that-can-go-wrong). -->
+
+## Toolchain
+
+The replay is run, if the test of main function starts with the following header:
+
+  ```go
+  advocate.InitReplay(index, exitCode, timeout, atomic)
+  defer advocate.FinishReplay()
+  ```
+
+The parameters are as follows:
+
+- `index` $\in \mathbb{N}$: The replay expects the name of the folder containing the trace to be called `advocateTrace`, in this case set `index = 0` or `rewritten_trace_[index]`, meaning if the trace folder is called `rewritten_trace_2`, set `index = 2`
+- `exitCode` $\in \mathbb B$: currently always `false`<!-- TODO: currently always set to false, maybe remove -->
+- `timeout` $\in \mathbb{N}$: If you want to cancel the replay with a timeout after a given time, set this value to the timeout in seconds. Otherwise set to `0`.
+- `atomic`: If set to `true`, the replay will force the correct order of atomic events. If atomic operations should be ignored for the replay, set this to `false`.
+
+When using the toolchain to run replays, this header is automatically added.
+
+
 
 ## Implementation
 The following is a description of the implementation of the trace replay.
@@ -64,7 +86,7 @@ func operation(op) {
 		ackDir()  // (E6)
 	} else {
 		sig = suspend(op)  // (E4)
-			waitMap[op] = sig
+	    waitMap[op] = sig
 		if sig.ok {  // (E5)
 			execute(op)
 			ack()  // (E6)
@@ -92,7 +114,7 @@ signal to release it and remove the operation
 from the waitMap.
 See (M3)
 
-If it is not a channel communication or select, wait for the operation
+If it is not a channel communication, select or once.Do, wait for the operation
 to fully execute (wait for ack).
 See (M4)
 
@@ -114,7 +136,7 @@ func replayManager() {
 			release(sig)
 			delete waitMap[evt]
 
-			if !isChannelCom(evt) {  // (M4)
+			if !isChannelComOrOnceDo(evt) {  // (M4)
 				waitAck()
 			}
 
@@ -166,7 +188,6 @@ go func() {
 <- c
 ```
 If we would wait for the send to fully execute and send an acknowledgement before we release the receive, the program would get stuck, because the send and the receive need to execute at the same time. We therefore do not wait for acknowledgements on channel communication operations and selects (M4).
-
 ### Detail
 
 The code for the replay is mainly in [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
@@ -185,11 +206,9 @@ execute, it informs the replay manager that it wants to execute. It will then wa
 in which they appear in the trace. In most cases, the manager will then wait
 for an acknowledgement from the operation, that it has finished executing.
 For channel send/recv we do not wait for an acknowledgement, since here multiple
-operation need to be executed at the same time. For the `Do` in a once,
-we do not wait for the full operation to be executed to return the
-acknowledgement. Instead, we send it after the `Do` has decided whether it will
-execute its parameter function, but before this function is executed (if it is
-executed). The is necessary because of the following situation:
+operation need to be executed at the same time. We also do not wait for the
+`Do` on a once to fully execute. The `Do` first executes its parameter function.
+Let's assume we have the following code:
 
 ```go
 o := sync.Once{}
@@ -284,10 +303,8 @@ a too long time. In this case, the replay will trigger the timeout mechanism.
 In this, either the oldest element in `waitOps` is released
 or the next element in the trace is skipped. We choose one of them at random.
 We hope that this will clear the
-blockage, so that the replay can continue to be executed. This can be disabled
-by setting the `-strictRep` flag in the toolchain.
-
-If no element has been cleared regularly
+blockage, so that the replay can continue to be executed.
+Additionally, if no element has been cleared regularly
 for a certain time, the replay will assume that it is stuck and cannot be
 brought back by releasing the oldest waiting elements and will therefore
 disable the replay completely, meaning the program will continue without
@@ -370,7 +387,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 	}
 
 	// original gopark implementation
-	...
+  ...
 }
 ```
 The additionally routine will wake the sleeping routine if the timer
@@ -399,10 +416,6 @@ directly into the implementation of those operations, this was not
 possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
-
-### Partial Replay
-In some cases, e.g. [GoPie](./fuzzing/GoPie.md#order-enforcement),
-we want to only enforce the order of certain elements, but let all other elements run freely. To implement this, we implemented an option for a partial replay. If this partial replay is activated, we will check for each operations when it calls the `WaitForReplay` function, if the operations is in the remaining trace. If it is, it will be treated like in the standard replay. If it is not, it will directly be released, without waiting for it to be the operations turn and without requiring an acknowledgement.
 
 ### Things that can go wrong
 

@@ -73,7 +73,7 @@ func (o *Once) Do(f func()) {
 	// the o.done.Store must be delayed until after f returns.
 
 	// ADVOCATE-START
-	wait, ch, ack := runtime.WaitForReplay(runtime.OperationOnceDo, 2, true)
+	wait, ch, _ := runtime.WaitForReplay(runtime.OperationOnceDo, 2, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
@@ -91,43 +91,31 @@ func (o *Once) Do(f func()) {
 		o.id = runtime.GetAdvocateObjectID()
 	}
 	index := runtime.AdvocateOncePre(o.id)
+	res := false
 	// ADVOCATE-END
 
 	if o.done.Load() == 0 {
 		// Outlined slow-path to allow inlining of the fast-path.
 		// ADVOCATE-START
-		o.doSlow(f, index, wait, ack)
-	} else {
-		// ADVOCATE-START
-		runtime.AdvocateOncePost(index, false)
+		res = o.doSlow(f)
 		// ADVOCATE-END
-		if wait {
-			ack <- struct{}{}
-		}
 	}
+
+	// ADVOCATE-START
+	runtime.AdvocateOncePost(index, res)
+	// ADVOCATE-END
 }
 
 // ADVOCATE-START
-func (o *Once) doSlow(f func(), index int, wait bool, ack chan struct{}) {
+func (o *Once) doSlow(f func()) bool {
 	o.m.Lock()
 	defer o.m.Unlock()
-
-	if wait {
-		ack <- struct{}{}
-	}
-
 	if o.done.Load() == 0 {
 		defer o.done.Store(1)
-		// ADVOCATE-START
-		// must be before f()
-		runtime.AdvocateOncePost(index, true)
-		// ADVOCATE-END
 		f()
-		return
+		return true
 	}
-	// ADVOCATE-START
-	runtime.AdvocateOncePost(index, false)
-	// ADVOCATE-END
+	return false
 }
 
 // ADVOCATE-END

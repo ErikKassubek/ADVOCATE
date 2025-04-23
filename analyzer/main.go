@@ -78,8 +78,6 @@ var (
 	cont bool
 
 	noMemorySupervisor bool
-
-	strictReplay bool
 )
 
 // Main function
@@ -112,8 +110,6 @@ func main() {
 	flag.BoolVar(&noRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
 	flag.BoolVar(&skipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
-
-	flag.BoolVar(&strictReplay, "strictRep", false, "Do not allow the replay to skip or release stuck operations during replay")
 
 	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
 	flag.BoolVar(&statistics, "stats", false, "Create statistics")
@@ -213,8 +209,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
-		timeoutRecording, timeoutReplay, rewriteAll,
-		strictReplay)
+		timeoutRecording, timeoutReplay, rewriteAll)
 
 	// function injection to prevent circle import
 	toolchain.InitFuncAnalyzer(modeAnalyzer)
@@ -629,7 +624,6 @@ func printHelpMode(mode string) {
 		println("  -notExec               Set to determine never executed operations")
 		println("  -stats                 Set to create statistics")
 		println("  -keepTrace             Do not delete the trace files after analysis finished")
-		println("  -strictRep             Do not allow the replay to skip or release stuck operations")
 	case "fuzzing":
 		println("Mode: fuzzing")
 		println("Run fuzzing")
@@ -648,7 +642,6 @@ func printHelpMode(mode string) {
 		println("  -notExec               Set to determine never executed operations")
 		println("  -stats                 Set to create statistics")
 		println("  -keepTrace             Do not delete the trace files after analysis finished")
-		println("  -strictRep             Do not allow the replay to skip or release stuck operations")
 	case "record":
 		println("Mode: record")
 		println("Record traces")

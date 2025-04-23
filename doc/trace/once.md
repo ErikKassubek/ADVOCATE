@@ -15,9 +15,8 @@ fields are
 
 - [tpre] $\in\mathbb N$: This is the value of the global counter when the operation starts
   the execution of the lock or unlock function
-- [tpost] $\in\mathbb N$: This is the value of the global counter when the `Do`
-  has chosen to execute or not execute its parameter function, but before the
-  parameter function has been executed.
+- [tpost] $\in\mathbb N$: This is the value of the global counter when the operation has finished
+  its operation.
 - [id] $\in\mathbb N$: This is the unique id identifying this once
 - [suc] $\in \{t, f\}$ records, whether the function in the once was
   executed (`t`) or not (`f`). Exactly on trace element per once must be `t`.

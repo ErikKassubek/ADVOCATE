@@ -1011,7 +1011,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 		advocateIndex = AdvocateSelectPreOneNonDef(c, true)
 	}
 
-	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateFuzzingGetPreferredCase(2)
 
 	res := false
 	if !fuzzingEnabled {
@@ -1079,7 +1079,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 		advocateIndex = AdvocateSelectPreOneNonDef(c, false)
 	}
 
-	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateFuzzingGetPreferredCase(2)
 
 	res := false
 	recv := false

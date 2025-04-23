@@ -19,28 +19,19 @@ import (
 // Fields:
 //
 //   - tPost int: The timestamp of the event
-//   - controlCode string: control code or expected exit code
+//   - exitCode int: expected exit code
 type TraceElementReplay struct {
-	tPost       int
-	controlCode string
+	tPost    int
+	exitCode int
 }
 
-// AddTraceElementReplayExitCode adds an end of replay event to the main trace
+// AddTraceElementReplay adds an end of replay event to the main trace
 //
 // Parameter:
 //   - t string: The timestamp of the event
-//   - exitCode int: The exit code
-func AddTraceElementReplayExitCode(t int, exitCode int) error {
-	return MainTrace.AddTraceElementReplayExitCode(t, exitCode)
-}
-
-// AddTraceElementReplayControlCode adds an end of replay event to the main trace
-//
-// Parameter:
-//   - t string: The timestamp of the event
-//   - controlCode string: The control code
-func AddTraceElementReplayControlCode(t int, controlCode string) error {
-	return MainTrace.AddTraceElementReplayControlCode(t, controlCode)
+//   - exitCode int: The exit code of the event
+func AddTraceElementReplay(t int, exitCode int) error {
+	return MainTrace.AddTraceElementReplay(t, exitCode)
 }
 
 // GetID returns the ID of the primitive on which the operation was executed
@@ -208,7 +199,7 @@ func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (er *TraceElementReplay) ToString() string {
-	res := "X," + strconv.Itoa(er.tPost) + "," + er.controlCode
+	res := "X," + strconv.Itoa(er.tPost) + "," + strconv.Itoa(er.exitCode)
 	return res
 }
 
@@ -223,8 +214,8 @@ func (er *TraceElementReplay) updateVectorClock() {
 //   - TraceElement: The copy of the element
 func (er *TraceElementReplay) Copy() TraceElement {
 	return &TraceElementReplay{
-		tPost:       er.tPost,
-		controlCode: er.controlCode,
+		tPost:    er.tPost,
+		exitCode: er.exitCode,
 	}
 }
 

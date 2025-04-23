@@ -33,9 +33,7 @@ var tracePathRewritten = "rewrittenTrace_"
 //   - exitCode bool: Whether the program should exit after the important replay part passed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
-//   - allowImprecise bool: if true, the the replay will skip trace elements
-//     or release longest waiting elements when it senses that it is stuck
-func InitReplay(index string, exitCode bool, timeout int, atomic bool, allowImprecise bool) {
+func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
 	// use first as default
 	runtime.SetForceExit(exitCode)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
@@ -46,7 +44,7 @@ func InitReplay(index string, exitCode bool, timeout int, atomic bool, allowImpr
 		tracePathRewritten = tracePathRewritten + index
 	}
 
-	startReplay(timeout, allowImprecise)
+	startReplay(timeout)
 }
 
 // startReplay reads the trace from the files. It also start the timeout for
@@ -54,9 +52,7 @@ func InitReplay(index string, exitCode bool, timeout int, atomic bool, allowImpr
 //
 // Parameter:
 //   - timeout int: timeout in seconds
-//   - allowImprecise bool: if true, the the replay will skip trace elements
-//     or release longest waiting elements when it senses that it is stuck
-func startReplay(timeout int, allowImprecise bool) {
+func startReplay(timeout int) {
 	println("Reading trace from " + tracePathRewritten)
 
 	// if trace folder does not exist, panic
@@ -107,7 +103,7 @@ func startReplay(timeout int, allowImprecise bool) {
 		}()
 	}
 
-	runtime.EnableReplayStrict(allowImprecise)
+	runtime.EnableReplay()
 }
 
 // Import the trace.
@@ -157,32 +153,19 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 		var op runtime.Operation
 		var file string
 		var line int
+		var pFile string
+		var pLine int
 		var blocked = false
 		var suc = true
 		var index int
-		var cms = false
-
 		fields := strings.Split(elem, ",")
 		time, _ = strconv.Atoi(fields[1])
 		tPre, _ := strconv.Atoi(fields[1])
 		switch fields[0] {
-		case "X": // control replay
-			op = runtime.OperationReplayControl
-			valid := false
-			if isCM(fields[2]) {
-				cms = true
-				file = fields[2] // misuse the file field for the mode switch code
-				valid = true
-			} else {
-				if c, ok := isExitCode(fields[2]); ok {
-					line = c // misuse the line field for the exit code
-					runtime.SetExpectedExitCode(c)
-					valid = true
-				}
-			}
-			if !valid {
-				panic("Invalid replay control element: " + elem)
-			}
+		case "X": // disable replay
+			op = runtime.OperationReplayEnd
+			line, _ = strconv.Atoi(fields[2]) // misuse the line for the exit code
+			runtime.SetExpectedExitCode(line)
 		case "G":
 			op = runtime.OperationSpawn
 			// time, _ = strconv.Atoi(fields[1])
@@ -208,15 +191,15 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			pos := strings.Split(fields[9], ":")
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
-			// if !blocked && (op == runtime.OperationChannelSend || op == runtime.OperationChannelRecv) {
-			// 	index := findReplayPartner(fields[3], fields[6], len(replayData), chanWithoutPartner)
-			// 	if index != -1 && index < len(replayData) {
-			// 		pFile = replayData[index].File
-			// 		pLine = replayData[index].Line
-			// 		replayData[index].PFile = file
-			// 		replayData[index].PLine = line
-			// 	}
-			// }
+			if !blocked && (op == runtime.OperationChannelSend || op == runtime.OperationChannelRecv) {
+				index := findReplayPartner(fields[3], fields[6], len(replayData), chanWithoutPartner)
+				if index != -1 && index < len(replayData) {
+					pFile = replayData[index].File
+					pLine = replayData[index].Line
+					replayData[index].PFile = file
+					replayData[index].PLine = line
+				}
+			}
 		case "M":
 			rw := false
 			if fields[4] == "R" {
@@ -364,8 +347,8 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 		if op != runtime.OperationNone && !runtime.AdvocateIgnoreReplay(op, file) {
 			replayData = append(replayData, runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
-				Blocked: blocked, Suc: suc, // PFile: pFile, PLine: pLine,
-				Index: index, ControlModeSwitch: cms})
+				Blocked: blocked, Suc: suc, PFile: pFile, PLine: pLine,
+				Index: index})
 
 		}
 	}
@@ -393,16 +376,17 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 // Returns:
 //   - int: The function returns the index of the partner operation.
 //     If the partner operation is not found, the function returns -1.
-// func findReplayPartner(cID string, oID string, index int, chanWithoutPartner *map[string]int) int {
-// 	opString := cID + ":" + oID
-// 	if ind, ok := (*chanWithoutPartner)[opString]; ok {
-// 		delete((*chanWithoutPartner), opString)
-// 		return ind
-// 	}
+func findReplayPartner(cID string, oID string, index int, chanWithoutPartner *map[string]int) int {
+	opString := cID + ":" + oID
+	if ind, ok := (*chanWithoutPartner)[opString]; ok {
+		delete((*chanWithoutPartner), opString)
+		return ind
+	}
 
-// 	(*chanWithoutPartner)[opString] = index
-// 	return -1
-// }
+	(*chanWithoutPartner)[opString] = index
+	return -1
+
+}
 
 // Sort the replay data structure by time.
 //
@@ -431,44 +415,62 @@ func FinishReplay() {
 	runtime.ExitReplayWithCode(runtime.ExitCodeDefault)
 }
 
-// Check if the given code is a replay mode control character
-//
-// Parameter:
-//   - code string: the code to check
-//
-// Returns:
-//   - bool: true if it i a valid code, false otherwise
-func isCM(code string) bool {
-	modes := runtime.GetPosReplayMode()
-	for _, mode := range modes {
-		if code == mode {
-			return true
-		}
-	}
-	return false
-}
+// func InitReplayTracing(index string, exitCode bool, timeout int, atomic bool) {
+// 	if index == "-1" {
+// 		InitTracing()
+// 		return
+// 	}
 
-// Check if the given code represents a valid exit code
-//
-// Parameter:
-//   - code string: the code to check
-//
-// Returns:
-//   - int: the int value of the code if valid, otherwise 0
-//   - bool: true if the code is valid, false if not
-func isExitCode(code string) (int, bool) {
-	c, err := strconv.Atoi(code)
-	if err != nil {
-		return 0, false
-	}
+// 	tracePathRecorded = "advocateTraceReplay_" + index
 
-	posExitCodes := runtime.GetPosExitCodes()
+// 	// if the program panics, but is not in the main routine, no trace is written
+// 	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
+// 	blocked := make(chan struct{})
+// 	writingDone := make(chan struct{})
+// 	runtime.GetAdvocatePanicChannels(blocked, writingDone)
+// 	go func() {
+// 		<-blocked
+// 		FinishReplayTracing()
+// 		writingDone <- struct{}{}
+// 	}()
 
-	for _, pos := range posExitCodes {
-		if c == pos {
-			return c, true
-		}
-	}
+// 	// if the program is terminated by the user, the defer in the header
+// 	// is not executed. Therefore capture the signal and write the trace.
+// 	interuptSignal := make(chan os.Signal, 1)
+// 	signal.Notify(interuptSignal, os.Interrupt)
+// 	go func() {
+// 		<-interuptSignal
+// 		println("\nCancel Run. Write trace. Cancel again to force exit.")
+// 		go func() {
+// 			<-interuptSignal
+// 			os.Exit(1)
+// 		}()
+// 		if runtime.IsTracingEnabled() {
+// 			FinishReplayTracing()
+// 		}
+// 		os.Exit(1)
+// 	}()
 
-	return 0, false
-}
+// 	// go writeTraceIfFull()
+// 	// go removeAtomicsIfFull()
+// 	runtime.InitTracing(FinishTracing)
+
+// 	InitReplay(index, exitCode, timeout, atomic)
+// }
+
+// func FinishReplayTracing() {
+// 	if !runtime.IsReplayEnabled() {
+// 		FinishTracing()
+// 		return
+// 	}
+
+// 	if r := recover(); r != nil {
+// 		println("Replay failed.")
+// 	}
+
+// 	runtime.WaitForReplayFinish(false)
+
+// 	// runtime.DisableReplay()
+
+// 	FinishTracing()
+// }

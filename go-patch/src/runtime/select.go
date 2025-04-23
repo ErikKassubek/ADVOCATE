@@ -124,7 +124,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 	var replayElem ReplayElement
 	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
 
-	fuzzingEnabled, fuzzingIndex, timeout := AdvocateGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
 
 	ai := -1
 

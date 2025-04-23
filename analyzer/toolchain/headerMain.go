@@ -208,9 +208,9 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s", %s)
+  advocate.InitFuzzing("%s")
   defer advocate.FinishTracing()
-  // ======= Preamble End =======`, fuzzingTrace, utils.BoolToStr(allowImpreciseFlag)))
+  // ======= Preamble End =======`, fuzzingTrace))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()

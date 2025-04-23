@@ -18,7 +18,7 @@ package runtime
 // Return:
 //   - new time value
 func GetNextTimeStep() int64 {
-	return nanotime()
+	return (nanotime() - tracingStartNano)
 }
 
 // ADVOCATE-FILE-END

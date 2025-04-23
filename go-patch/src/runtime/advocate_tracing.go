@@ -14,6 +14,8 @@ package runtime
 
 var finishTracingFunc func()
 
+var tracingStartNano int64
+
 // InitTracing enables the collection of the trace
 //
 // Parameter:
@@ -21,6 +23,10 @@ var finishTracingFunc func()
 func InitTracing(finishFuzzing func()) {
 	advocateTracingDisabled = false
 	finishTracingFunc = finishFuzzing
+
+	if tracingStartNano == 0 {
+		tracingStartNano = nanotime()
+	}
 }
 
 // DisableTracing disables the trace recording

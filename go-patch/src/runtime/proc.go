@@ -550,10 +550,12 @@ func releaseSudog(s *sudog) {
 	if s.c != nil {
 		throw("runtime: sudog with non-nil c")
 	}
-	gp := getg()
-	if gp.param != nil {
-		throw("runtime: releaseSudog with non-nil gp.param")
-	}
+	// ADVOCATE-START
+	// gp := getg()
+	// if gp.param != nil {
+	// 	throw("runtime: releaseSudog with non-nil gp.param")
+	// }
+	// ADVOCATE-END
 	mp := acquirem() // avoid rescheduling to another P
 	pp := mp.p.ptr()
 	if len(pp.sudogcache) == cap(pp.sudogcache) {

@@ -3,14 +3,13 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: advocate_time.go
-// Brief: Get the timer for non linux systems
+// Brief: Get the timer
 //
 // Author: Erik Kassubek
 // Created: 2024-12-04
 //
 // License: BSD-3-Clause
 
-//go:build !linux
 
 package runtime
 

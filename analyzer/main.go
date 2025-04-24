@@ -75,6 +75,8 @@ var (
 
 	noWarning bool
 
+	noInfo bool
+
 	cont bool
 
 	noMemorySupervisor bool
@@ -120,6 +122,8 @@ func main() {
 
 	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
+	flag.BoolVar(&noInfo, "noInfo", false, "Do not show infos in the terminal (will only show results, errors and important)")
+
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
@@ -138,7 +142,7 @@ func main() {
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
+		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPie+\n\tGoPieHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
@@ -177,6 +181,8 @@ func main() {
 		}
 	}
 
+	utils.LogInit(noInfo)
+
 	progPathDir := utils.GetDirectory(progPath)
 	timer.Init(recordTime, progPathDir)
 	timer.Start(timer.Total)
@@ -195,8 +201,9 @@ func main() {
 		go memory.Supervisor() // cancel analysis if not enough ram
 	}
 
-	// don't run any HB Analysis for direct GFuzz and GoPie
-	if mode == "fuzzing" && (fuzzingMode == fuzzing.GFuzz || fuzzingMode == fuzzing.GoPie) {
+	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+
+	if mode == "fuzzing" && (fuzzingMode == fuzzing.GFuzz ||
+		fuzzingMode == fuzzing.GoPie || fuzzingMode == fuzzing.GoPiePlus) {
 		scenarios = "-"
 		onlyAPanicAndLeak = true
 	}
@@ -266,8 +273,8 @@ func modeFuzzing() {
 	checkProgPath()
 	checkGoMod()
 
-	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath, progName, execName,
-		ignoreAtomics, recordTime, notExec, statistics,
+	err := fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath,
+		progName, execName, ignoreAtomics, recordTime, notExec, statistics,
 		keepTraces, cont)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())
@@ -634,7 +641,7 @@ func printHelpMode(mode string) {
 		println("  -prog [name]           Name of the program")
 		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
 		println("  -fuzzingMode [mode]    Mode of fuzzing:")
-		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPieHB")
+		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPie+\n\tGoPieHB")
 		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
 		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")
@@ -663,6 +670,7 @@ func printHelpMode(mode string) {
 // checkProgPath checks if the provided path to the program that should
 // be run/analyzed exists. If not, it panics.
 func checkProgPath() {
+	progPath = utils.CleanPathHome(progPath)
 	_, err := os.Stat(progPath)
 	if err != nil && errors.Is(err, fs.ErrNotExist) {
 		utils.LogErrorf("Could not find path %s", progPath)

@@ -59,11 +59,14 @@ func mutate(c chain, energy int) map[string]chain {
 				tset[newCh2.toString()] = newCh2
 			}
 
-			// Rule 2 -> flip (not in original implementation)
-			if ch.len() >= 2 {
-				newChs := flip(ch)
-				for _, newCh := range newChs {
-					tset[newCh.toString()] = newCh
+			// Rule 2 -> flip (not in original implementation, not in GoPie,
+			// but in GoPie+ and GoPieHB)
+			if fuzzingMode != GoPie {
+				if ch.len() >= 2 {
+					newChs := flip(ch)
+					for _, newCh := range newChs {
+						tset[newCh.toString()] = newCh
+					}
 				}
 			}
 

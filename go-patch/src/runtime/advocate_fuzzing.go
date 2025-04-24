@@ -88,7 +88,7 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
 	if AdvocateIgnore(file) {
 		return false, 0, selectPreferredTimeoutSec
 	}
-	key := buildReplayKey(routine, file, line)
+	key := BuildReplayKey(routine, file, line)
 
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]
@@ -120,7 +120,7 @@ func FuzzingFlowWait(skip int) {
 		return
 	}
 
-	pos := buildReplayKey(routine, file, line)
+	pos := BuildReplayKey(routine, file, line)
 
 	if countList, ok := fuzzingFlowData[pos]; ok {
 		dataCounter := fuzzingFlowDataCounter[pos]

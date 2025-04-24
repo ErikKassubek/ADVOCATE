@@ -150,8 +150,6 @@ func (ro Operation) ToString() string {
 //     for other operations always true
 //     for once: true if the once was chosen (was the first), false otherwise
 //     for others: always true
-//   - PFile: file of the partner (mainly for channel/select)
-//   - PLine: line of the partner (mainly for channel/select)
 //   - Index: Index of the select case (only for select) or index of the new routine (only for spawn), otherwise 0
 type ReplayElement struct {
 	Routine int
@@ -162,8 +160,6 @@ type ReplayElement struct {
 	Line    int
 	Blocked bool
 	Suc     bool
-	PFile   string
-	PLine   int
 	Index   int
 }
 
@@ -172,7 +168,7 @@ type ReplayElement struct {
 // Returns:
 //   - the key of elem
 func (elem *ReplayElement) key() string {
-	return buildReplayKey(elem.Routine, elem.File, elem.Line)
+	return BuildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 
 // Build the key (id) of a replay element
@@ -181,7 +177,7 @@ func (elem *ReplayElement) key() string {
 //   - routine int: replay routine of the element
 //   - file string: code position file of the element
 //   - line int: code position line of the element
-func buildReplayKey(routine int, file string, line int) string {
+func BuildReplayKey(routine int, file string, line int) string {
 	return intToString(routine) + ":" + file + ":" + intToString(line)
 	// return file + ":" + intToString(line)
 }
@@ -195,13 +191,19 @@ var (
 	replayDone     int
 	replayDoneLock mutex
 
+	// only run partial replay based on active
+	partialReplay        bool
+	partialReplayCounter = make(map[string]int)
+
+	// detection of deadlock
 	waitDeadlockDetect     bool
 	waitDeadlockDetectLock mutex
 
-	// read trace
+	// replay info
 	replayData            = make(AdvocateReplayTraces, 0)
 	numberElementsInTrace int
 	traceElementPositions = make(map[string][]int) // file -> []line
+	active                map[string][]int
 
 	replayIndex = make(map[uint64]int)
 
@@ -237,7 +239,7 @@ func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
 		if _, ok := traceElementPositions[e.File]; !ok {
 			traceElementPositions[e.File] = make([]int, 0)
 		}
-		if !containsList(traceElementPositions[e.File], e.Line) {
+		if !isInSlice(traceElementPositions[e.File], e.Line) {
 			traceElementPositions[e.File] = append(traceElementPositions[e.File], e.Line)
 		}
 	}
@@ -256,6 +258,21 @@ func (t AdvocateReplayTrace) Print() {
 	for _, e := range t {
 		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
 	}
+}
+
+// AddActiveTrace adds the set of active trace elements to the trace
+// and sets the replay to be partial
+//
+// Parameter
+//   - active map[string][int]: the map of active operations where the map
+//     key is equal to the replay element key (buildReplayKey) and value is the
+//     list of occurrences when the replay should be active for the element,
+//     e.g. if the value is [3, 4], the operation in the key is scheduled by
+//     the replay if it is executed the 3rd and 4th time, but not for the
+//     1st and 2nd time.
+func AddActiveTrace(activeMap map[string][]int) {
+	active = activeMap
+	partialReplay = true
 }
 
 // Enable the replay by starting the replay manager
@@ -624,7 +641,24 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	routine := GetRoutineID()
 
 	// routine := GetRoutineID()
-	key := buildReplayKey(routine, file, line)
+	key := BuildReplayKey(routine, file, line)
+
+	// ignore not active operations if partial replay is active
+	if partialReplay {
+		// the operation is never active
+		c, ok := active[key]
+		if !ok {
+			return false, nil, nil
+		}
+
+		partialReplayCounter[key] += 1
+		currentCounter := partialReplayCounter[key]
+
+		// the operation is sometimes active, but not this time
+		if !isInSlice(c, currentCounter) {
+			return false, nil, nil
+		}
+	}
 
 	if printDebug {
 		println("Wait: ", key)

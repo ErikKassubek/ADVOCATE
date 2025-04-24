@@ -83,12 +83,13 @@ func ParseTrace(trace *analysis.Trace) {
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
 func canBeAddedToChain(elem analysis.TraceElement) bool {
-	if useHBInfoFuzzing {
-		return !ignoreFuzzing(elem)
+	if fuzzingMode == GoPie {
+		// for standard GoPie, only mutex, channel and select operations are considered
+		t := elem.GetObjType(false)
+		return t == analysis.ObjectTypeMutex || t == analysis.ObjectTypeChannel || t == analysis.ObjectTypeSelect
 	}
 
-	t := elem.GetObjType(false)
-	return t == analysis.ObjectTypeMutex || t == analysis.ObjectTypeChannel || t == analysis.ObjectTypeSelect
+	return !ignoreFuzzing(elem)
 }
 
 // For the creation of mutations we ignore all elements that do not directly

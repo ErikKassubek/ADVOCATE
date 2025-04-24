@@ -88,15 +88,21 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		// add a replayEndElem
 		traceCopy.AddTraceElementReplay(lastTPost+2, 0)
 
-		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
+		fuzzingTracePath := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
 		numberOfWrittenGoPieMuts++
 
-		err := io.WriteTrace(&traceCopy, fileName, true)
+		err := io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 		if err != nil {
 			utils.LogError("Could not create pie mutation: ", err.Error())
+			continue
 		}
 
-		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: fileName})
+		// write the active map to a "rewrite_active.log"
+		if fuzzingMode == GoPie {
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut)
+		}
+
+		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: fuzzingTracePath})
 	}
 }
 
@@ -115,14 +121,14 @@ func addFuzzingTraceFolder(path string) {
 // Calculate the energy for a schedule. This determines how many mutations
 // are created
 func getEnergy() int {
-	numberSchedulChains := len(schedulingChains)
+	numberScheduleChains := len(schedulingChains)
 
 	// not interesting
-	if analysis.GetTimeoutHappened() || numberSchedulChains == 0 {
+	if analysis.GetTimeoutHappened() || numberScheduleChains == 0 {
 		return 0
 	}
 
-	score := counterCPOP1 + int(math.Log(float64(counterCPOP2))) + 10*numberSchedulChains
+	score := counterCPOP1 + int(math.Log(float64(counterCPOP2))) + 10*numberScheduleChains
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

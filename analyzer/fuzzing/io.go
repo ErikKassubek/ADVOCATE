@@ -11,6 +11,7 @@
 package fuzzing
 
 import (
+	"analyzer/analysis"
 	"analyzer/timer"
 	"fmt"
 	"os"
@@ -92,4 +93,40 @@ func getPath(path string) string {
 	}
 
 	return filepath.Dir(path)
+}
+
+// writeMutActive writes the element in the chain into a rewriteActive.log
+// file for use in GoPie (only in original, not in GoPi+ or GoPieHB)
+//
+// Parameter
+//   - fuzzingTracePath string: path to the trace folder
+//   - mut *chain: chain to write
+func writeMutActive(fuzzingTracePath string, trace *analysis.Trace, mut *chain) {
+	activePath := filepath.Join(fuzzingTracePath, "rewriteActive.log")
+
+	f, err := os.Create(activePath)
+	if err != nil {
+		return
+	}
+
+	defer f.Close()
+
+	// find the counter for all elements in the mut
+	mutCounter := make(map[analysis.TraceElement]int)
+	for _, elem := range mut.elems {
+		mutCounter[elem] = 0
+	}
+
+	traceIter := trace.AsIterator()
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		if _, ok := mutCounter[elem]; ok { // is in chain
+			mutCounter[elem]++
+		}
+	}
+
+	for _, elem := range mut.elems {
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), elem.GetTPre(), mutCounter[elem])
+		f.WriteString(key)
+	}
 }

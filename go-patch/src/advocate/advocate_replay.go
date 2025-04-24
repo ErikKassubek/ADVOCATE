@@ -14,11 +14,16 @@ import (
 	"bufio"
 	"math"
 	"os"
+	"path/filepath"
 	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+)
+
+const (
+	activeFile = "rewriteActive.log"
 )
 
 var timeout = false
@@ -60,13 +65,18 @@ func startReplay(timeout int) {
 		panic("Trace folder " + tracePathRewritten + " does not exist.")
 	}
 
+	// check for and if exists, read the rewrite_active.log file
+	active, activeTPre := readRewriteActive(tracePathRewritten)
+
+	if active != nil {
+		runtime.AddActiveTrace(active)
+	}
+
 	// traverse all files in the trace folder
 	files, err := os.ReadDir(tracePathRewritten)
 	if err != nil {
 		panic(err)
 	}
-
-	chanWithoutPartner := make(map[string]int)
 
 	foundTraceFiles := false
 	for _, file := range files {
@@ -79,9 +89,11 @@ func startReplay(timeout int) {
 			continue
 		}
 
-		// if the file is a log file, read the trace
-		if strings.HasSuffix(file.Name(), ".log") && file.Name() != "rewrite_info.log" {
-			routineID, trace := readTraceFile(tracePathRewritten+"/"+file.Name(), &chanWithoutPartner)
+		// if the file is a trace file, read the trace
+		if strings.HasSuffix(file.Name(), ".log") &&
+			file.Name() != "rewrite_info.log" &&
+			file.Name() != activeFile {
+			routineID, trace := readTraceFile(tracePathRewritten+"/"+file.Name(), activeTPre)
 			runtime.AddReplayTrace(uint64(routineID), trace)
 			foundTraceFiles = true
 		}
@@ -106,6 +118,61 @@ func startReplay(timeout int) {
 	runtime.EnableReplay()
 }
 
+// readRewriteActive checks if a rewrite_active.log file exists in the path
+// if not, it just returns
+// If the file exists, it is read and the replay is set to partial replay
+//
+// Parameter
+//   - tracePathRewritten string: the path to the trace folder
+//
+// Returns
+//   - map[string][]int: the map from key to counter for the active elements
+//   - map[int]struct{}: the map containing the tPre of all elements that are active
+func readRewriteActive(tracePathRewritten string) (map[string][]int, map[int]struct{}) {
+	file, err := os.Open(filepath.Join(tracePathRewritten, activeFile))
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		panic(err)
+	}
+
+	active := make(map[string][]int)
+	activeTPre := make(map[int]struct{})
+
+	// The elements in the active file should be separated by new line and have
+	// the following form:
+	// routine:file:line,tPre,count
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		elem := scanner.Text()
+		if elem == "" {
+			continue
+		}
+
+		fields := strings.Split(elem, ",")
+		if len(fields) != 3 {
+			continue
+		}
+
+		counter, err := strconv.Atoi(fields[2])
+		if err != nil {
+			continue
+		}
+
+		tPre, err := strconv.Atoi(fields[1])
+		if err != nil {
+			continue
+		}
+
+		active[fields[0]] = append(active[fields[0]], counter)
+
+		activeTPre[tPre] = struct{}{}
+	}
+
+	return active, activeTPre
+}
+
 // Import the trace.
 // The function creates the replay data structure, that is used to replay the trace.
 // We only store the information that is needed to replay the trace.
@@ -121,13 +188,12 @@ func startReplay(timeout int) {
 //
 // Parameter:
 //   - fileName string: The name of the file that contains the trace.
-//   - chanWithoutPartner *map[string]int: pointer to map which stores channel
-//     communication for which no partner has been read in yet
+//   - active map[int]struct{}: map with all active tPre, or nil if all are active
 //
 // Returns:
 //   - int The routine id
 //   - runtime.AdvocateReplayTrace: The trace for this routine
-func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, runtime.AdvocateReplayTrace) {
+func readTraceFile(fileName string, activeTPre map[int]struct{}) (int, runtime.AdvocateReplayTrace) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -149,18 +215,33 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			continue
 		}
 
+		fields := strings.Split(elem, ",")
+
+		tPre, err := strconv.Atoi(fields[1])
+		if err != nil {
+			panic("Invalid tPre " + fields[0] + " in line " + elem + " in file " + fileName + ".")
+		}
+
+		// do not add element to the trace if it is not active
+		if activeTPre != nil {
+			if _, ok := activeTPre[tPre]; !ok {
+				continue
+			}
+		}
+
 		var time int
 		var op runtime.Operation
 		var file string
 		var line int
-		var pFile string
-		var pLine int
 		var blocked = false
 		var suc = true
 		var index int
-		fields := strings.Split(elem, ",")
-		time, _ = strconv.Atoi(fields[1])
-		tPre, _ := strconv.Atoi(fields[1])
+
+		// for some elements, the tPre and tPost are the same
+		// we here set the time value as the tPre as a default. If the element
+		// has a separate tPost, this will be set later
+		time = tPre
+
 		switch fields[0] {
 		case "X": // disable replay
 			op = runtime.OperationReplayEnd
@@ -191,15 +272,6 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 			pos := strings.Split(fields[9], ":")
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
-			if !blocked && (op == runtime.OperationChannelSend || op == runtime.OperationChannelRecv) {
-				index := findReplayPartner(fields[3], fields[6], len(replayData), chanWithoutPartner)
-				if index != -1 && index < len(replayData) {
-					pFile = replayData[index].File
-					pLine = replayData[index].Line
-					replayData[index].PFile = file
-					replayData[index].PLine = line
-				}
-			}
 		case "M":
 			rw := false
 			if fields[4] == "R" {
@@ -344,10 +416,11 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 		if blocked || time == 0 {
 			time = math.MaxInt
 		}
+
 		if op != runtime.OperationNone && !runtime.AdvocateIgnoreReplay(op, file) {
 			replayData = append(replayData, runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
-				Blocked: blocked, Suc: suc, PFile: pFile, PLine: pLine,
+				Blocked: blocked, Suc: suc,
 				Index: index})
 
 		}
@@ -361,31 +434,6 @@ func readTraceFile(fileName string, chanWithoutPartner *map[string]int) (int, ru
 	sortReplayDataByTime(replayData)
 
 	return routineID, replayData
-}
-
-// Find the partner of a channel operation.
-// The partner is the operation that is executed on the other side of the channel.
-//
-// Parameter:
-//   - cID string: channel id
-//   - oID string: operation id
-//   - index int: index of the operation in the replay data structure.
-//   - chanWithoutPartner *map[string]int: pointer to map which stores channel
-//     communication for which no partner has been read in yet
-//
-// Returns:
-//   - int: The function returns the index of the partner operation.
-//     If the partner operation is not found, the function returns -1.
-func findReplayPartner(cID string, oID string, index int, chanWithoutPartner *map[string]int) int {
-	opString := cID + ":" + oID
-	if ind, ok := (*chanWithoutPartner)[opString]; ok {
-		delete((*chanWithoutPartner), opString)
-		return ind
-	}
-
-	(*chanWithoutPartner)[opString] = index
-	return -1
-
 }
 
 // Sort the replay data structure by time.

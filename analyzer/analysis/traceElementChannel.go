@@ -603,7 +603,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				}
 				Unbuffered(ch, ch.partner)
 				// advance index of receive routine, send routine is already advanced
-				MainTrace.increaseIndex(ch.partner.routine)
+				MainTraceIter.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
 					SendC(ch)
@@ -617,7 +617,7 @@ func (ch *TraceElementChannel) updateVectorClock() {
 				ch.partner.vc = currentVC[ch.partner.routine].Copy()
 				Unbuffered(ch.partner, ch)
 				// advance index of receive routine, send routine is already advanced
-				MainTrace.increaseIndex(ch.partner.routine)
+				MainTraceIter.increaseIndex(ch.partner.routine)
 			} else {
 				if ch.cl { // recv on closed channel
 					RecvC(ch, currentVC, currentWVC, false)
@@ -645,36 +645,36 @@ func (ch *TraceElementChannel) findPartner() int {
 		return -1
 	}
 
+	// find partner has already been applied to the partner and the communication
+	// was fund. An repeated search is not necessary
+	if ch.partner != nil {
+		return ch.partner.routine
+	}
+
 	for routine, trace := range MainTrace.traces {
-		if MainTrace.currentIndex[routine] == -1 {
-			continue
-		}
-		// if routine == ch.routine {
-		// 	continue
-		// }
-		elem := trace[MainTrace.currentIndex[routine]]
-
-		if elem.ToString() == ch.ToString() {
-			continue
-		}
-
-		switch e := elem.(type) {
-		case *TraceElementChannel:
-			if e.id == ch.id && e.oID == ch.oID {
-				ch.partner = e
-				e.partner = ch
-				return routine
+		for _, elem := range trace {
+			if ch.IsEqual(elem) {
+				continue
 			}
-		case *TraceElementSelect:
-			if e.chosenCase.tPost != 0 &&
-				e.chosenCase.id == ch.id &&
-				e.chosenCase.oID == ch.oID {
-				ch.partner = &e.chosenCase
-				e.chosenCase.partner = ch
-				return routine
+
+			switch e := elem.(type) {
+			case *TraceElementChannel:
+				if e.id == ch.id && e.oID == ch.oID {
+					ch.partner = e
+					e.partner = ch
+					return routine
+				}
+			case *TraceElementSelect:
+				if e.chosenCase.tPost != 0 &&
+					e.chosenCase.id == ch.id &&
+					e.chosenCase.oID == ch.oID {
+					ch.partner = &e.chosenCase
+					e.chosenCase.partner = ch
+					return routine
+				}
+			default:
+				continue
 			}
-		default:
-			continue
 		}
 	}
 	return -1

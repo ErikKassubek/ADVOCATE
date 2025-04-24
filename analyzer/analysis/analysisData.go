@@ -80,7 +80,8 @@ var (
 
 	// MainTrace is the trace that is created and the trace on which most
 	// normal operations and the analysis is performed
-	MainTrace Trace
+	MainTrace     Trace
+	MainTraceIter TraceIterator
 
 	// current happens before vector clocks
 	currentVC = make(map[int]*clock.VectorClock)
@@ -261,6 +262,7 @@ func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
 // SetMainTraceToNewTrace sets the main analysis trace to a new, empty trace
 func SetMainTraceToNewTrace() {
 	MainTrace = NewTrace()
+	MainTraceIter = MainTrace.AsIterator()
 }
 
 // ===========  Helper function for trace operations on the main trace ==========
@@ -362,16 +364,6 @@ func SetNoRoutines(n int) {
 //   - int: The number of routines
 func GetNoRoutines() int {
 	return MainTrace.GetNoRoutines()
-}
-
-// Get the next element from a trace
-// Update the current index of the trace
-//
-// Returns:
-//   - (TraceElement) The element in the trace with the smallest TSort that
-//   - has not been returned yet
-func getNextElement() TraceElement {
-	return MainTrace.getNextElement()
 }
 
 // Get the last elements in each routine

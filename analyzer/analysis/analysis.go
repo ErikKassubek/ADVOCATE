@@ -184,7 +184,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 
 	utils.LogInfo("Start HB analysis")
 
-	for elem := getNextElement(); elem != nil; elem = getNextElement() {
+	traceIter := MainTrace.AsIterator()
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		switch e := elem.(type) {
 		case *TraceElementAtomic:
 			if ignoreCriticalSections {

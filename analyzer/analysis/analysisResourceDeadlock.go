@@ -407,26 +407,26 @@ func CheckForResourceDeadlock() {
 		utils.LogError("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
 	}
-	for i, t := range currentState.threads {
-		debugLog("Found", len(t.lockDependencies), "dependencies in Thread", i)
-	}
+	// for i, t := range currentState.threads {
+	// 	debugLog("Found", len(t.lockDependencies), "dependencies in Thread", i)
+	// }
 
 	getCycles(&currentState)
 
-	debugLog("Found", len(currentState.cycles), "cycles")
+	// debugLog("Found", len(currentState.cycles), "cycles")
 
 	for _, cycle := range currentState.cycles {
 		var cycleElements []results.ResultElem
 		var request = findEarliestRequest(cycle)
 
-		debugLog("Found cycle with the following entries:", cycle)
+		// debugLog("Found cycle with the following entries:", cycle)
 		for i := 0; i < len(cycle); i++ {
-			debugLog("Entry in routine", cycle[i].thread, ":")
-			debugLog("\tLockset:", cycle[i].lockset)
-			debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
-			for i, r := range cycle[i].requests {
-				debugLog("\t\tLock request", i, ":", r)
-			}
+			// 	debugLog("Entry in routine", cycle[i].thread, ":")
+			// 	debugLog("\tLockset:", cycle[i].lockset)
+			// 	debugLog("\tAmount of different lock requests that might block it:", len(cycle[i].requests))
+			// 	for i, r := range cycle[i].requests {
+			// 		debugLog("\t\tLock request", i, ":", r)
+			// 	}
 
 			for _, r := range cycle[i].requests {
 				if clock.GetHappensBefore(request.vectorClock, r.vectorClock) == clock.Concurrent {
@@ -492,9 +492,9 @@ func findEarliestRequest(cycle []LockDependency) LockEvent {
 
 // Debug logging.
 
-func debugLog(v ...any) {
-	log.Println(v...)
-}
+// func debugLog(v ...any) {
+// 	log.Println(v...)
+// }
 
 func logAbortReason(reason ...any) {
 	r := []any{"No Deadlock:"}

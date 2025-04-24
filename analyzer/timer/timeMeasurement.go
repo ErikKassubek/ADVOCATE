@@ -12,9 +12,7 @@ package timer
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
-	"strings"
 	"time"
 )
 
@@ -57,8 +55,7 @@ var (
 func Init(mt bool, progPath string) {
 	measureTime = mt
 
-	home, _ := os.UserHomeDir()
-	resultFolder = filepath.Join(strings.Replace(progPath, "~", home, -1), "advocateResult")
+	resultFolder = filepath.Join(progPath, "advocateResult")
 
 	for i := range numberTimer {
 		timer[i] = Timer{}

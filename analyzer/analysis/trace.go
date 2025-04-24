@@ -27,13 +27,11 @@ import (
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - numberOfRoutines int: total number of routines
 //   - numberElemsInTrace map[int]int: per routine number of elems in trace, routineId -> number
-//   - currentIndex map[int]int: current index for each routine on analysis pass
 type Trace struct {
 	traces             map[int][]TraceElement
 	hbWasCalc          bool
 	numberOfRoutines   int
 	numberElemsInTrace map[int]int
-	currentIndex       map[int]int
 }
 
 // NewTrace creates a new empty trace structure
@@ -46,7 +44,6 @@ func NewTrace() Trace {
 		hbWasCalc:          false,
 		numberOfRoutines:   0,
 		numberElemsInTrace: make(map[int]int),
-		currentIndex:       make(map[int]int),
 	}
 }
 
@@ -295,45 +292,6 @@ func (t *Trace) GetNoRoutines() int {
 	return t.numberOfRoutines
 }
 
-// Get the next element from a trace
-// Update the current index of the trace
-//
-// Returns:
-//   - (TraceElement) The element in the trace with the smallest TSort that
-//   - has not been returned yet
-func (t *Trace) getNextElement() TraceElement {
-	// find the local trace, where the element on which currentIndex points to
-	// has the smallest tPost
-	minTSort := -1
-	minRoutine := -1
-	for routine, trace := range t.traces {
-		// no more elements in the routine trace
-		if t.currentIndex[routine] == -1 {
-			continue
-		}
-		// ignore non executed operations
-		tSort := trace[t.currentIndex[routine]].GetTSort()
-		if tSort == 0 || tSort == math.MaxInt {
-			continue
-		}
-		if minTSort == -1 || trace[t.currentIndex[routine]].GetTSort() < minTSort {
-			minTSort = trace[t.currentIndex[routine]].GetTSort()
-			minRoutine = routine
-		}
-	}
-
-	// all elements have been processed
-	if minRoutine == -1 {
-		return nil
-	}
-
-	// return the element and increase the index
-	element := t.traces[minRoutine][t.currentIndex[minRoutine]]
-	t.increaseIndex(minRoutine)
-
-	return element
-}
-
 // Get the last elements in each routine
 // Returns
 //
@@ -349,20 +307,6 @@ func (t *Trace) getLastElemPerRout() []TraceElement {
 	}
 
 	return res
-}
-
-// Update the currentIndex value of a trace for a routine
-//
-// Parameter:
-//   - routine int: the routine to update
-func (t *Trace) increaseIndex(routine int) {
-	if t.currentIndex[routine] == -1 {
-		utils.LogError("Tried to increase index of -1 at routine ", routine)
-	}
-	t.currentIndex[routine]++
-	if t.currentIndex[routine] >= len(t.traces[routine]) {
-		t.currentIndex[routine] = -1
-	}
 }
 
 // GetNrAddDoneBeforeTime returns the number of add and done operations that were
@@ -672,17 +616,11 @@ func (t *Trace) Copy() Trace {
 		numberElemsInTraceCopy[routine] = elem
 	}
 
-	currentIndexCopy := make(map[int]int)
-	for routine, elem := range t.currentIndex {
-		currentIndexCopy[routine] = elem
-	}
-
 	return Trace{
 		traces:             tracesCopy,
 		hbWasCalc:          t.hbWasCalc,
 		numberOfRoutines:   t.numberOfRoutines,
 		numberElemsInTrace: numberElemsInTraceCopy,
-		currentIndex:       currentIndexCopy,
 	}
 }
 
@@ -793,4 +731,76 @@ func (t *Trace) SetTSortAtIndex(tPost, routine, index int) {
 		return
 	}
 	t.traces[routine][index].SetTSort(tPost)
+}
+
+// TraceIterator is an iterator to iterate over the element in the trace
+// sorted by tSort
+type TraceIterator struct {
+	t            *Trace
+	currentIndex map[int]int
+}
+
+// AsIterator returns a new iterator for a trace
+//
+// Returns:
+//   - the iterator
+func (t *Trace) AsIterator() TraceIterator {
+	return TraceIterator{t, make(map[int]int)}
+}
+
+// Next returns the next element from the iterator. If all elements have been returned
+// already, return nul
+//
+// Returns:
+//   - TraceElement: the next element, or nil if no element are left
+func (ti *TraceIterator) Next() TraceElement {
+	// find the local trace, where the element on which currentIndex points to
+	// has the smallest tPost
+	minTSort := -1
+	minRoutine := -1
+	for routine, trace := range ti.t.traces {
+		// no more elements in the routine trace
+		if ti.currentIndex[routine] == -1 {
+			continue
+		}
+		// ignore non executed operations
+		tSort := trace[ti.currentIndex[routine]].GetTSort()
+		if tSort == 0 || tSort == math.MaxInt {
+			continue
+		}
+		if minTSort == -1 || trace[ti.currentIndex[routine]].GetTSort() < minTSort {
+			minTSort = trace[ti.currentIndex[routine]].GetTSort()
+			minRoutine = routine
+		}
+	}
+
+	// all elements have been processed
+	if minRoutine == -1 {
+		return nil
+	}
+
+	// return the element and increase the index
+	element := ti.t.traces[minRoutine][ti.currentIndex[minRoutine]]
+	ti.increaseIndex(minRoutine)
+
+	return element
+}
+
+// Reset resets the iterator
+func (ti *TraceIterator) Reset() {
+	ti.currentIndex = make(map[int]int)
+}
+
+// Update the currentIndex value of a trace for a routine
+//
+// Parameter:
+//   - routine int: the routine to update
+func (ti *TraceIterator) increaseIndex(routine int) {
+	if ti.currentIndex[routine] == -1 {
+		utils.LogError("Tried to increase index of -1 at routine ", routine)
+	}
+	ti.currentIndex[routine]++
+	if ti.currentIndex[routine] >= len(ti.t.traces[routine]) {
+		ti.currentIndex[routine] = -1
+	}
 }

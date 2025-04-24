@@ -82,5 +82,5 @@ const (
 	ExitCodeCyclic           = 41
 )
 
-// minimum exit code for successful replay
+// MinExitCodeSuc is the minimum exit code for successful replay
 const MinExitCodeSuc = ExitCodeLeakUnbuf

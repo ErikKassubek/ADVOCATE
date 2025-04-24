@@ -35,6 +35,7 @@ const (
 	GFuzzHBFlow = "GFuzzHBFlow" // GFuzz with use of hb info and flow mutation
 	Flow        = "Flow"        // only flow mutation
 	GoPie       = "GoPie"       // only goPie
+	GoPiePlus   = "GoPie+"      // improved goPie without HB
 	GoPieHB     = "GoPieHB"     // goPie with HB relation
 )
 
@@ -93,7 +94,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	fuzzingMode = fm
-	fuzzingModeGoPie = (fuzzingMode == GoPie || fuzzingMode == GoPieHB)
+	fuzzingModeGoPie = (fuzzingMode == GoPie || fuzzingMode == GoPiePlus || fuzzingMode == GoPieHB)
 	fuzzingModeGFuzz = (fuzzingMode == GFuzz || fuzzingMode == GFuzzHBFlow || fuzzingMode == GFuzzHB)
 	fuzzingModeFlow = (fuzzingMode == Flow || fuzzingMode == GFuzzHBFlow)
 	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzHBFlow || fuzzingMode == Flow || fuzzingMode == GoPieHB)

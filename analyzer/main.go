@@ -233,7 +233,7 @@ func main() {
 		modeFuzzing()
 	case "record":
 		keepTraces = true
-		modeToolchain("modeMainTest", true)
+		modeToolchain(modeMainTest, true)
 	default:
 		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
 		utils.LogError("Select one mode from  'analysis', 'fuzzing' or 'record'")

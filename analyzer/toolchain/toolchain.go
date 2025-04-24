@@ -100,6 +100,6 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest, execName, progName
 			notExecuted, stats, fuzzing, fuzzingTrace, keepTraces,
 			firstRun, skipExisting, cont, fileNumber, testNumber, onlyRecording)
 	default:
-		return fmt.Errorf("Choose one mode from 'main' or 'test' or 'explain'")
+		return fmt.Errorf("Choose one mode from 'main' or 'test'")
 	}
 }

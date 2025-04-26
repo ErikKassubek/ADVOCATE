@@ -11,6 +11,7 @@
 package fuzzing
 
 import (
+	"analyzer/analysis"
 	"analyzer/stats"
 	"analyzer/timer"
 	"analyzer/toolchain"
@@ -244,11 +245,17 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if modeMain {
 			mode = "main"
 		}
-		err := toolchain.Run(mode, advocate, progPath, testPath, name, progName, name,
-			numberFuzzingRuns, fuzzingPath, ignoreAtomic, meaTime, notExec, createStats, keepTraces, false, firstRun, cont, fileNumber, testNumber, false)
+		err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
+			name, progName, name, numberFuzzingRuns, fuzzingPath, ignoreAtomic,
+			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
+			fileNumber, testNumber)
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
+			// collect the required data to decide whether run is interesting
+			// and to create the mutations
+			ParseTrace(&analysis.MainTrace)
+
 			utils.LogInfof("Create mutations")
 			if fuzzingModeGFuzz {
 				utils.LogInfof("Create GFuzz mutations")

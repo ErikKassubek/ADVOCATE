@@ -42,9 +42,9 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 	// fmt.Println("Last time:", lastTime)
 
 	// remove tail after lastTime and the last lock
-	analysis.ShortenTrace(lastTime, true)
+	trace.ShortenTrace(lastTime, true)
 	for _, elem := range bug.TraceElement2 {
-		analysis.ShortenRoutine(elem.GetRoutine(), elem.GetTSort())
+		trace.ShortenRoutine(elem.GetRoutine(), elem.GetTSort())
 	}
 
 	var locksetElements []analysis.TraceElement
@@ -53,8 +53,8 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 	for i, elem := range bug.TraceElement2 {
 		// This is one is guranteed to be in the lockset of elem
 		prevElement := bug.TraceElement2[(i+len(bug.TraceElement2)-1)%len(bug.TraceElement2)]
-		for j := len(analysis.GetRoutineTrace(elem.GetRoutine())) - 1; j >= 0; j-- {
-			locksetElement := analysis.GetRoutineTrace(elem.GetRoutine())[j]
+		for j := len(trace.GetRoutineTrace(elem.GetRoutine())) - 1; j >= 0; j-- {
+			locksetElement := trace.GetRoutineTrace(elem.GetRoutine())[j]
 			if locksetElement.GetID() != prevElement.GetID() {
 				continue
 			}
@@ -68,8 +68,8 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 
 	// If there are any unlocks in the remaining traces, try to ensure that those can happen before we run into the deadlock!
 	for _, relevantRoutineElem := range bug.TraceElement2 {
-		routine := relevantRoutineElem.GetRoutine()                // Iterate through all relevant routines
-		for _, unlock := range analysis.GetRoutineTrace(routine) { // Iterate through all remaining elements in the routine
+		routine := relevantRoutineElem.GetRoutine()             // Iterate through all relevant routines
+		for _, unlock := range trace.GetRoutineTrace(routine) { // Iterate through all remaining elements in the routine
 			switch unlock := unlock.(type) {
 			case *analysis.TraceElementMutex:
 				if !(*unlock).IsLock() { // Find Unlock elements
@@ -84,7 +84,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 
 							// Move the as much of the routine of the deadlocking element as possible behind this unlock!
 							var concurrentStartElem analysis.TraceElement = nil
-							for _, possibleStart := range analysis.GetRoutineTrace(lockElem.GetRoutine()) {
+							for _, possibleStart := range trace.GetRoutineTrace(lockElem.GetRoutine()) {
 								if clock.GetHappensBefore(possibleStart.GetWVc(), (*unlock).GetWVc()) == clock.Concurrent {
 									// fmt.Println("Concurrent to", possibleStart.GetTID(), possibleStart.GetTPre(), possibleStart.GetTPost(), possibleStart.GetRoutine(), possibleStart.GetID())
 									concurrentStartElem = possibleStart
@@ -97,12 +97,12 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 								break
 							}
 
-							routineEndElem := analysis.GetRoutineTrace(lockElem.GetRoutine())[len(analysis.GetRoutineTrace(lockElem.GetRoutine()))-1]
-							analysis.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTPre(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
+							routineEndElem := trace.GetRoutineTrace(lockElem.GetRoutine())[len(trace.GetRoutineTrace(lockElem.GetRoutine()))-1]
+							trace.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTPre(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
 							if routineEndElem.GetTPost() > lastTime {
 								lastTime = routineEndElem.GetTPost()
 							}
-							analysis.ShiftConcurrentOrAfterToAfter(unlock)
+							trace.ShiftConcurrentOrAfterToAfter(unlock)
 						}
 					}
 				}
@@ -110,7 +110,7 @@ func rewriteCyclicDeadlock(trace *analysis.Trace, bug bugs.Bug) error {
 		}
 	}
 
-	analysis.AddTraceElementReplay(lastTime+1, utils.ExitCodeCyclic)
+	trace.AddTraceElementReplay(lastTime+1, utils.ExitCodeCyclic)
 
 	// fmt.Println("Rewritten Trace:")
 	// analysis.PrintTrace()

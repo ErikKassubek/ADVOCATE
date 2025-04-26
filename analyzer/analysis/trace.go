@@ -662,12 +662,16 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 		return elements[i].time < elements[j].time
 	})
 
+	if len(elements) == 0 {
+		utils.LogInfo("Trace contains no elements")
+	} else {
+		utils.LogInfof("Trace contains %d elements", len(elements))
+	}
+
 	for _, elem := range elements {
 		if clocks {
-			utils.LogInfo(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
 			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
 		} else {
-			utils.LogInfo(elem.thread, elem.string)
 			fmt.Println(elem.thread, elem.string)
 		}
 	}

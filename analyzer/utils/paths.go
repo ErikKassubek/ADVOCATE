@@ -11,7 +11,9 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -99,4 +101,30 @@ func GetMainPath(path string) (string, error) {
 func CleanPathHome(path string) string {
 	home, _ := os.UserHomeDir()
 	return strings.Replace(path, "~", home, -1)
+}
+
+// CheckPath checks if the provided path to the program that should
+// be run/analyzed exists. If not, it panics.
+//
+// Parameter:
+//   - path string: path to check
+//
+// Returns:
+//   - error: error if path not exists, nil otherwise
+func CheckPath(path string) error {
+	if path == "" {
+		return fmt.Errorf("Path cannot be empty")
+	}
+
+	progPath := CleanPathHome(path)
+	_, err := os.Stat(progPath)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return fmt.Errorf("Path %s does not exists", progPath)
+		} else {
+			return err
+		}
+	}
+
+	return nil
 }

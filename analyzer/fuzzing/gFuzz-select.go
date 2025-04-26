@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"analyzer/analysis"
+	"analyzer/trace"
 	"math/rand"
 	"sort"
 )
@@ -36,8 +36,8 @@ type fuzzingSelect struct {
 // Add a select to selectInfoTrace
 //
 // Parameter:
-//   - e *analysis.TraceElementSelect: the select trace element to add
-func addFuzzingSelect(e *analysis.TraceElementSelect) {
+//   - e *trace.TraceElementSelect: the select trace element to add
+func addFuzzingSelect(e *trace.TraceElementSelect) {
 	fs := fuzzingSelect{
 		id:              e.GetReplayID(),
 		t:               e.GetTPost(),

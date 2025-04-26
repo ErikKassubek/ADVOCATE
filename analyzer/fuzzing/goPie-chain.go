@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"analyzer/analysis"
 	"analyzer/clock"
+	"analyzer/trace"
 	"fmt"
 )
 
@@ -26,14 +27,14 @@ var (
 // A chain is an ordered list of adjacent element from the trace,
 // where two neighboring elements must be from different routines
 type chain struct {
-	elems []analysis.TraceElement
+	elems []trace.TraceElement
 }
 
 // Create a new, empty chain
 //
 // Returns: chain: the new chain
 func newChain() chain {
-	elems := make([]analysis.TraceElement, 0)
+	elems := make([]trace.TraceElement, 0)
 	return chain{elems}
 }
 
@@ -42,7 +43,7 @@ func newChain() chain {
 // is always the segment of maximum length, such that
 // to neighboring elements in the chain are neighbors in the global trace
 // and two neighboring elements in the chain are not in the same routine
-func addElemToChain(elem analysis.TraceElement) {
+func addElemToChain(elem trace.TraceElement) {
 	routine := elem.GetRoutine()
 
 	// if the element is already in the chain, it is not added again
@@ -72,7 +73,7 @@ func addElemToChain(elem analysis.TraceElement) {
 //
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
-func (ch *chain) add(elem analysis.TraceElement) {
+func (ch *chain) add(elem trace.TraceElement) {
 	if elem == nil {
 		return
 	}
@@ -85,7 +86,7 @@ func (ch *chain) add(elem analysis.TraceElement) {
 // Parameter:
 //   - index int: index to change at
 //   - elem analysis.TraceElement: element to set at index
-func (ch *chain) replace(index int, elem analysis.TraceElement) {
+func (ch *chain) replace(index int, elem trace.TraceElement) {
 	if elem == nil {
 		return
 	}
@@ -103,7 +104,7 @@ func (ch *chain) replace(index int, elem analysis.TraceElement) {
 //
 // Returns:
 //   - bool: true if the chain contains elem, false otherwise
-func (ch *chain) contains(elem analysis.TraceElement) bool {
+func (ch *chain) contains(elem trace.TraceElement) bool {
 	if elem == nil {
 		return false
 	}
@@ -131,7 +132,7 @@ func (ch *chain) removeTail() {
 //
 // Returns:
 //   - analysis.TraceElement: the last element in the chain
-func (ch *chain) lastElem() analysis.TraceElement {
+func (ch *chain) lastElem() trace.TraceElement {
 	return ch.elems[len(ch.elems)-1]
 }
 
@@ -152,7 +153,7 @@ func (ch *chain) swap(i, j int) {
 // Returns:
 //   - chain: a copy of the chain
 func (ch *chain) copy() chain {
-	newElems := make([]analysis.TraceElement, len(ch.elems))
+	newElems := make([]trace.TraceElement, len(ch.elems))
 
 	for i, elem := range ch.elems {
 		newElems[i] = elem

@@ -14,6 +14,8 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/timer"
+	"analyzer/trace"
+	"analyzer/utils"
 )
 
 // Create a new wg if needed
@@ -27,19 +29,41 @@ func newWg(index int, nRout int) {
 	}
 }
 
+// UpdateVCWait updates and stores the vector clock of the element
+// Parameter:
+//   - wa *TraceElementWait: the wait trace element
+func UpdateVCWait(wa *trace.TraceElementWait) {
+	routine := wa.GetRoutine()
+	wa.SetVc(currentVC[routine])
+	wa.SetWVc(currentWVC[routine])
+
+	switch wa.GetOpW() {
+	case trace.ChangeOp:
+		Change(wa)
+	case trace.WaitOp:
+		Wait(wa)
+	default:
+		err := "Unknown operation on wait group: " + wa.ToString()
+		utils.LogError(err)
+	}
+}
+
 // Change calculate the new vector clock for a add or done operation and update cv
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
-func Change(wa *TraceElementWait) {
+func Change(wa *trace.TraceElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newWg(wa.id, currentVC[wa.id].GetSize())
-	lastChangeWG[wa.id].Sync(currentVC[wa.routine])
+	id := wa.GetID()
+	routine := wa.GetRoutine()
 
-	currentVC[wa.routine].Inc(wa.routine)
-	currentWVC[wa.routine].Inc(wa.routine)
+	newWg(id, currentVC[id].GetSize())
+	lastChangeWG[id].Sync(currentVC[routine])
+
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
@@ -52,16 +76,19 @@ func Change(wa *TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
-func Wait(wa *TraceElementWait) {
+func Wait(wa *trace.TraceElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newWg(wa.id, currentVC[wa.id].GetSize())
+	id := wa.GetID()
+	routine := wa.GetRoutine()
 
-	if wa.tPost != 0 {
-		currentVC[wa.routine].Sync(lastChangeWG[wa.id])
+	newWg(id, currentVC[id].GetSize())
+
+	if wa.GetTPost() != 0 {
+		currentVC[routine].Sync(lastChangeWG[id])
 	}
 
-	currentVC[wa.routine].Inc(wa.routine)
-	currentWVC[wa.routine].Inc(wa.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }

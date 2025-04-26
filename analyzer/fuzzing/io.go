@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	"analyzer/analysis"
 	"analyzer/timer"
+	"analyzer/trace"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -100,8 +100,9 @@ func getPath(path string) string {
 //
 // Parameter
 //   - fuzzingTracePath string: path to the trace folder
+//   - tr *trace.Trace: the trace to write
 //   - mut *chain: chain to write
-func writeMutActive(fuzzingTracePath string, trace *analysis.Trace, mut *chain) {
+func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain) {
 	activePath := filepath.Join(fuzzingTracePath, "rewriteActive.log")
 
 	f, err := os.Create(activePath)
@@ -112,12 +113,12 @@ func writeMutActive(fuzzingTracePath string, trace *analysis.Trace, mut *chain) 
 	defer f.Close()
 
 	// find the counter for all elements in the mut
-	mutCounter := make(map[analysis.TraceElement]int)
+	mutCounter := make(map[trace.TraceElement]int)
 	for _, elem := range mut.elems {
 		mutCounter[elem] = 0
 	}
 
-	traceIter := trace.AsIterator()
+	traceIter := tr.AsIterator()
 
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		if _, ok := mutCounter[elem]; ok { // is in chain

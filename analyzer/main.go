@@ -73,6 +73,8 @@ var (
 	cont bool
 
 	noMemorySupervisor bool
+
+	alwaysPanic bool
 )
 
 // Main function
@@ -116,6 +118,8 @@ func main() {
 	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
 	flag.BoolVar(&noInfo, "noInfo", false, "Do not show infos in the terminal (will only show results, errors and important)")
+
+	flag.BoolVar(&alwaysPanic, "panic", false, "Panic if the analysis panics")
 
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
@@ -174,7 +178,7 @@ func main() {
 		}
 	}
 
-	utils.LogInit(noInfo)
+	utils.LogInit(noInfo, !alwaysPanic)
 
 	progPathDir := utils.GetDirectory(progPath)
 	timer.Init(recordTime, progPathDir)

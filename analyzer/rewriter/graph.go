@@ -11,8 +11,8 @@
 package rewriter
 
 import (
-	"analyzer/analysis"
 	"analyzer/bugs"
+	"analyzer/trace"
 	"analyzer/utils"
 )
 
@@ -22,7 +22,7 @@ import (
 //   - trace *analysis.Trace: Trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //   - expectedErrorCode int: For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
-func rewriteGraph(trace *analysis.Trace, bug bugs.Bug, expectedErrorCode int) error {
+func rewriteGraph(tr *trace.Trace, bug bugs.Bug, expectedErrorCode int) error {
 	if bug.Type == utils.PNegWG {
 		utils.LogInfo("Start rewriting trace for negative waitgroup counter...")
 	} else if bug.Type == utils.PUnlockBeforeLock {
@@ -35,7 +35,7 @@ func rewriteGraph(trace *analysis.Trace, bug bugs.Bug, expectedErrorCode int) er
 	for i := range bug.TraceElement2 {
 		elem1 := bug.TraceElement1[i] // done/unlock
 
-		trace.ShiftConcurrentOrAfterToAfter(elem1)
+		tr.ShiftConcurrentOrAfterToAfter(elem1)
 
 		if minTime == -1 || elem1.GetTPre() < minTime {
 			minTime = elem1.GetTPre()
@@ -48,7 +48,7 @@ func rewriteGraph(trace *analysis.Trace, bug bugs.Bug, expectedErrorCode int) er
 
 	// add start and end
 	if !(minTime == -1 && maxTime == -1) {
-		trace.AddTraceElementReplay(maxTime+1, expectedErrorCode)
+		tr.AddTraceElementReplay(maxTime+1, expectedErrorCode)
 	}
 
 	return nil

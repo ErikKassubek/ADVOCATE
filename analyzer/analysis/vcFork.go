@@ -12,19 +12,33 @@ package analysis
 
 import (
 	"analyzer/timer"
+	"analyzer/trace"
 )
+
+// UpdateVCFork update and calculate the vector clock of the element
+//
+// Parameter:
+//   - fo *TraceElementFork: the fork element
+func UpdateVCFork(fo *trace.TraceElementFork) {
+	routine := fo.GetRoutine()
+
+	fo.SetVc(currentVC[routine])
+	fo.SetWVc(currentWVC[routine])
+
+	Fork(fo)
+}
 
 // Fork updates the vector clocks given a fork operation
 //
 // Parameter:
 //   - oldRout int: The id of the old routine
 //   - newRout int: The id of the new routine
-func Fork(fo *TraceElementFork) {
+func Fork(fo *trace.TraceElementFork) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	oldRout := fo.routine
-	newRout := fo.id
+	oldRout := fo.GetRoutine()
+	newRout := fo.GetID()
 
 	currentVC[newRout] = currentVC[oldRout].Copy()
 	currentVC[oldRout].Inc(oldRout)
@@ -34,5 +48,5 @@ func Fork(fo *TraceElementFork) {
 	currentWVC[oldRout].Inc(oldRout)
 	currentWVC[newRout].Inc(newRout)
 
-	allForks[fo.id] = fo
+	allForks[fo.GetID()] = fo
 }

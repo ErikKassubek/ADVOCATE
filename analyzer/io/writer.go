@@ -11,9 +11,9 @@
 package io
 
 import (
-	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 	"os"
 	"path/filepath"
@@ -28,7 +28,7 @@ import (
 //   - traceToWrite *analysis.Trace: Pointer to the trace to write
 //   - path string: The path to the file to write to
 //   - replay bool: If true, write only the elements relevant for replay
-func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
+func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -96,13 +96,13 @@ func WriteTrace(traceToWrite *analysis.Trace, path string, replay bool) error {
 // Check if the element is relevant for replay
 //
 // Parameter:
-//   - element analysis.TraceElement: element to check
+//   - element trace.TraceElement: element to check
 //
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
-func isReplay(element analysis.TraceElement) bool {
+func isReplay(element trace.TraceElement) bool {
 	t := element.GetObjType(false)
-	return !(t == analysis.ObjectTypeNew || t == analysis.ObjectTypeRoutineEnd)
+	return !(t == trace.ObjectTypeNew || t == trace.ObjectTypeRoutineEnd)
 }
 
 // WriteRewriteInfoFile create a file with the result message and the exit code for the rewrite

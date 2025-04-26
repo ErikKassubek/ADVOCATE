@@ -105,7 +105,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	defer os.Unsetenv("GOROOT")
 
 	if runRecord {
-		utils.LogImportant("Run Recording")
+		utils.LogInfo("Run Recording")
 
 		// Remove header
 		if err := headerRemoverMain(pathToFile); err != nil {

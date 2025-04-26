@@ -12,8 +12,8 @@
 package rewriter
 
 import (
-	"analyzer/analysis"
 	"analyzer/bugs"
+	"analyzer/trace"
 	"analyzer/utils"
 	"errors"
 )
@@ -21,7 +21,7 @@ import (
 // RewriteTrace creates a new trace from the given bug
 //
 // Parameter:
-//   - trace *analysis.Trace: Pointer to the trace to rewrite
+//   - tr *trace.Trace: Pointer to the trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //   - rewrittenBugs *map[bugs.ResultType][]string: map of already rewritten bugs
 //
@@ -29,7 +29,7 @@ import (
 //   - bool: true if rewrite was needed, false otherwise (e.g. actual bug, warning)
 //   - code: expected exit code
 //   - error: An error if the trace could not be created
-func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[utils.ResultType][]string) (rewriteNeeded bool, code int, err error) {
+func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[utils.ResultType][]string) (rewriteNeeded bool, code int, err error) {
 	rewriteNeeded = false
 	code = utils.ExitCodeNone
 	switch bug.Type {
@@ -52,36 +52,36 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[utils.R
 	case utils.PSendOnClosed:
 		code = utils.ExitCodeSendClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(trace, bug, utils.ExitCodeSendClose)
+		err = rewriteClosedChannel(tr, bug, utils.ExitCodeSendClose)
 	case utils.PRecvOnClosed:
 		code = utils.ExitCodeRecvClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(trace, bug, utils.ExitCodeRecvClose)
+		err = rewriteClosedChannel(tr, bug, utils.ExitCodeRecvClose)
 	case utils.PNegWG:
 		code = utils.ExitCodeNegativeWG
 		rewriteNeeded = true
-		err = rewriteGraph(trace, bug, code)
+		err = rewriteGraph(tr, bug, code)
 	case utils.PUnlockBeforeLock:
 		code = utils.ExitCodeUnlockBeforeLock
 		rewriteNeeded = true
-		err = rewriteGraph(trace, bug, code)
+		err = rewriteGraph(tr, bug, code)
 	// case bugs.MixedDeadlock:
 	// 	err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
 	case utils.PCyclicDeadlock:
 		rewriteNeeded = true
-		err = rewriteCyclicDeadlock(trace, bug)
+		err = rewriteCyclicDeadlock(tr, bug)
 	case utils.LWithoutBlock:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case utils.LUnbufferedWith:
 		code = utils.ExitCodeLeakUnbuf
 		rewriteNeeded = true
-		err = rewriteUnbufChanLeak(trace, bug)
+		err = rewriteUnbufChanLeak(tr, bug)
 	case utils.LUnbufferedWithout:
 		err = errors.New("No possible partner for stuck channel found. Cannot rewrite trace")
 	case utils.LBufferedWith:
 		code = utils.ExitCodeLeakBuf
 		rewriteNeeded = true
-		err = rewriteBufChanLeak(trace, bug)
+		err = rewriteBufChanLeak(tr, bug)
 	case utils.LBufferedWithout:
 		err = errors.New("No possible partner for stuck channel found. Cannot rewrite trace")
 	case utils.LNilChan:
@@ -90,13 +90,13 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[utils.R
 		code = utils.ExitCodeLeakUnbuf
 		rewriteNeeded = true
 		switch b := bug.TraceElement2[0].(type) {
-		case *analysis.TraceElementSelect:
-			err = rewriteUnbufChanLeak(trace, bug)
-		case *analysis.TraceElementChannel:
+		case *trace.TraceElementSelect:
+			err = rewriteUnbufChanLeak(tr, bug)
+		case *trace.TraceElementChannel:
 			if b.IsBuffered() {
-				err = rewriteBufChanLeak(trace, bug)
+				err = rewriteBufChanLeak(tr, bug)
 			} else {
-				err = rewriteUnbufChanLeak(trace, bug)
+				err = rewriteUnbufChanLeak(tr, bug)
 			}
 		default:
 			rewriteNeeded = false
@@ -109,15 +109,15 @@ func RewriteTrace(trace *analysis.Trace, bug bugs.Bug, rewrittenBugs map[utils.R
 	case utils.LMutex:
 		rewriteNeeded = true
 		code = utils.ExitCodeLeakMutex
-		err = rewriteMutexLeak(trace, bug)
+		err = rewriteMutexLeak(tr, bug)
 	case utils.LWaitGroup:
 		rewriteNeeded = true
 		code = utils.ExitCodeLeakWG
-		err = rewriteWaitGroupLeak(trace, bug)
+		err = rewriteWaitGroupLeak(tr, bug)
 	case utils.LCond:
 		rewriteNeeded = true
 		code = utils.ExitCodeLeakCond
-		err = rewriteCondLeak(trace, bug)
+		err = rewriteCondLeak(tr, bug)
 		// case bugs.SNotExecutedWithPartner:
 		// 	rewriteNeeded = false
 		// 	err = errors.New("Rewrite for select not exec with partner not available")

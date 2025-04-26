@@ -14,7 +14,72 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/timer"
+	"analyzer/trace"
+	"analyzer/utils"
 )
+
+// UpdateVCMutex store and update the vector clock of the trace and element
+//
+// Parameter:
+//   - mu *trace.TraceElementMutex: the mutex trace element
+func UpdateVCMutex(mu *trace.TraceElementMutex) {
+	routine := mu.GetRoutine()
+	mu.SetVc(currentVC[routine])
+	mu.SetWVc(currentWVC[routine])
+
+	switch mu.GetOpM() {
+	case trace.LockOp:
+		Lock(mu)
+		if analysisCases["unlockBeforeLock"] {
+			checkForUnlockBeforeLockLock(mu)
+		}
+	case trace.RLockOp:
+		RLock(mu)
+		if analysisCases["unlockBeforeLock"] {
+			checkForUnlockBeforeLockLock(mu)
+		}
+	case trace.TryLockOp:
+		if mu.IsSuc() {
+			if analysisCases["unlockBeforeLock"] {
+				checkForUnlockBeforeLockLock(mu)
+			}
+			Lock(mu)
+		}
+	case trace.TryRLockOp:
+		if mu.IsSuc() {
+			RLock(mu)
+			if analysisCases["unlockBeforeLock"] {
+				checkForUnlockBeforeLockLock(mu)
+			}
+		}
+	case trace.UnlockOp:
+		Unlock(mu)
+		if analysisCases["unlockBeforeLock"] {
+			checkForUnlockBeforeLockUnlock(mu)
+		}
+	case trace.RUnlockOp:
+		if analysisCases["unlockBeforeLock"] {
+			checkForUnlockBeforeLockUnlock(mu)
+		}
+		RUnlock(mu)
+	default:
+		err := "Unknown mutex operation: " + mu.ToString()
+		utils.LogError(err)
+	}
+}
+
+// UpdateVectorClockAlt stores and updates the vector clock of the trace and element
+// if the ignoreCriticalSections flag is set
+//
+// Parameter:
+//   - mu *trace.TraceElementMutex: the mutex trace element
+func UpdateVCMutexAlt(mu *trace.TraceElementMutex) {
+	routine := mu.GetRoutine()
+	mu.SetVc(currentVC[routine])
+
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
+}
 
 // Create a new relW and relR if needed
 //
@@ -34,32 +99,35 @@ func newRel(index int, nRout int) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func Lock(mu *TraceElementMutex) {
+func Lock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if mu.tPost == 0 {
-		currentVC[mu.routine].Inc(mu.routine)
-		currentWVC[mu.routine].Inc(mu.routine)
+	id := mu.GetID()
+	routine := mu.GetRoutine()
+
+	if mu.GetTPost() == 0 {
+		currentVC[routine].Inc(routine)
+		currentWVC[routine].Inc(routine)
 		return
 	}
 
-	currentVC[mu.routine].Sync(relW[mu.id])
-	currentVC[mu.routine].Sync(relR[mu.id])
+	currentVC[routine].Sync(relW[id])
+	currentVC[routine].Sync(relR[id])
 
-	currentVC[mu.routine].Inc(mu.routine)
-	currentWVC[mu.routine].Inc(mu.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
 	if analysisCases["leak"] {
-		addMostRecentAcquireTotal(mu, currentVC[mu.routine], 0)
+		addMostRecentAcquireTotal(mu, currentVC[routine], 0)
 	}
 
-	lockSetAddLock(mu, currentWVC[mu.routine])
+	lockSetAddLock(mu, currentWVC[routine])
 
 	// for fuzzing
-	currentlyHoldLock[mu.id] = mu
+	currentlyHoldLock[id] = mu
 	incFuzzingCounter(mu)
 }
 
@@ -67,27 +135,30 @@ func Lock(mu *TraceElementMutex) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func Unlock(mu *TraceElementMutex) {
+func Unlock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if mu.tPost == 0 {
+	if mu.GetTPost() == 0 {
 		return
 	}
 
-	newRel(mu.id, currentVC[mu.routine].GetSize())
-	relW[mu.id] = currentVC[mu.routine].Copy()
-	relR[mu.id] = currentVC[mu.routine].Copy()
+	id := mu.GetID()
+	routine := mu.GetRoutine()
 
-	currentVC[mu.routine].Inc(mu.routine)
-	currentWVC[mu.routine].Inc(mu.routine)
+	newRel(id, currentVC[routine].GetSize())
+	relW[id] = currentVC[routine].Copy()
+	relR[id] = currentVC[routine].Copy()
+
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
-	lockSetRemoveLock(mu.routine, mu.id)
+	lockSetRemoveLock(routine, id)
 
 	// for fuzzing
-	currentlyHoldLock[mu.id] = nil
+	currentlyHoldLock[id] = nil
 }
 
 // RLock updates and calculates the vector clocks given a rlock operation
@@ -97,32 +168,35 @@ func Unlock(mu *TraceElementMutex) {
 //
 // Returns:
 //   - *VectorClock: The new vector clock
-func RLock(mu *TraceElementMutex) {
+func RLock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if mu.tPost == 0 {
-		currentVC[mu.routine].Inc(mu.routine)
-		currentWVC[mu.routine].Inc(mu.routine)
+	id := mu.GetID()
+	routine := mu.GetRoutine()
+
+	if mu.GetTPost() == 0 {
+		currentVC[routine].Inc(routine)
+		currentWVC[routine].Inc(routine)
 		return
 	}
 
-	newRel(mu.id, currentVC[mu.routine].GetSize())
-	currentVC[mu.routine].Sync(relW[mu.id])
+	newRel(id, currentVC[routine].GetSize())
+	currentVC[routine].Sync(relW[id])
 
-	currentVC[mu.routine].Inc(mu.routine)
-	currentWVC[mu.routine].Inc(mu.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
 	if analysisCases["leak"] {
-		addMostRecentAcquireTotal(mu, currentVC[mu.routine], 1)
+		addMostRecentAcquireTotal(mu, currentVC[routine], 1)
 	}
 
-	lockSetAddLock(mu, currentWVC[mu.routine])
+	lockSetAddLock(mu, currentWVC[routine])
 
 	// for fuzzing
-	currentlyHoldLock[mu.id] = mu
+	currentlyHoldLock[id] = mu
 	incFuzzingCounter(mu)
 }
 
@@ -130,25 +204,28 @@ func RLock(mu *TraceElementMutex) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func RUnlock(mu *TraceElementMutex) {
+func RUnlock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if mu.tPost == 0 {
-		currentVC[mu.routine].Inc(mu.routine)
-		currentWVC[mu.routine].Inc(mu.routine)
+	id := mu.GetID()
+	routine := mu.GetRoutine()
+
+	if mu.GetTPost() == 0 {
+		currentVC[routine].Inc(routine)
+		currentWVC[routine].Inc(routine)
 		return
 	}
 
-	newRel(mu.id, currentVC[mu.routine].GetSize())
-	relR[mu.id].Sync(currentVC[mu.routine])
+	newRel(id, currentVC[routine].GetSize())
+	relR[id].Sync(currentVC[routine])
 
-	currentVC[mu.routine].Inc(mu.routine)
-	currentWVC[mu.routine].Inc(mu.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
-	lockSetRemoveLock(mu.routine, mu.id)
+	lockSetRemoveLock(routine, id)
 	// for fuzzing
-	currentlyHoldLock[mu.id] = nil
+	currentlyHoldLock[id] = nil
 }

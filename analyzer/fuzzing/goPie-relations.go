@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"analyzer/analysis"
+	"analyzer/trace"
 	"analyzer/utils"
 )
 
@@ -39,8 +39,8 @@ var (
 //
 // Parameter:
 //   - routineTrace []analysis.TraceElement: the list of elems in the same trace
-func calculateRelRule1(routineTrace []analysis.TraceElement) {
-	var prevValid analysis.TraceElement
+func calculateRelRule1(routineTrace []trace.TraceElement) {
+	var prevValid trace.TraceElement
 
 	for i := range routineTrace {
 		if isGoPieElem(routineTrace[i]) {
@@ -58,14 +58,14 @@ func calculateRelRule1(routineTrace []analysis.TraceElement) {
 //
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
-func calculateRelRule2AddElem(elem analysis.TraceElement) {
+func calculateRelRule2AddElem(elem trace.TraceElement) {
 	if !isGoPieElem(elem) {
 		return
 	}
 
 	id := elem.GetID()
 	if _, ok := elemsByID[id]; ok {
-		elemsByID[id] = make([]analysis.TraceElement, 0)
+		elemsByID[id] = make([]trace.TraceElement, 0)
 	}
 	elemsByID[id] = append(elemsByID[id], elem)
 	counterCPOP2++
@@ -132,17 +132,17 @@ func calculateRelRule3And4() {
 //
 // Returns:
 //   - bool: true if elem should be used in chains, false if not
-func isGoPieElem(elem analysis.TraceElement) bool {
+func isGoPieElem(elem trace.TraceElement) bool {
 	elemTypeShort := elem.GetObjType(false)
 
 	if !useHBInfoFuzzing {
-		validTypes := []string{analysis.ObjectTypeFork,
-			analysis.ObjectTypeMutex, analysis.ObjectTypeChannel,
-			analysis.ObjectTypeSelect}
+		validTypes := []string{trace.ObjectTypeFork,
+			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
+			trace.ObjectTypeSelect}
 		return utils.Contains(validTypes, elemTypeShort)
 	}
 
-	invalidTypes := []string{analysis.ObjectTypeNew,
-		analysis.ObjectTypeReplay, analysis.ObjectTypeRoutineEnd}
+	invalidTypes := []string{trace.ObjectTypeNew,
+		trace.ObjectTypeReplay, trace.ObjectTypeRoutineEnd}
 	return !utils.Contains(invalidTypes, elemTypeShort)
 }

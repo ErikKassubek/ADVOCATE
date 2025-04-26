@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/memory"
 	"analyzer/results"
+	"analyzer/trace"
 )
 
 // Clear the data structures used for the analysis
@@ -31,7 +32,7 @@ func ClearTrace() {
 
 // ClearData resets all data structures used in th analysis
 func ClearData() {
-	closeData = make(map[int]*TraceElementChannel)
+	closeData = make(map[int]*trace.TraceElementChannel)
 	lastSendRoutine = make(map[int]map[int]elemWithVc)
 	lastRecvRoutine = make(map[int]map[int]elemWithVc)
 	hasSend = make(map[int]bool)
@@ -39,10 +40,10 @@ func ClearData() {
 	hasReceived = make(map[int]bool)
 	mostRecentReceive = make(map[int]map[int]ElemWithVcVal)
 	bufferedVCs = make(map[int][]bufferedVC)
-	wgAdd = make(map[int][]TraceElement)
-	wgDone = make(map[int][]TraceElement)
-	allLocks = make(map[int][]TraceElement)
-	allUnlocks = make(map[int][]TraceElement)
+	wgAdd = make(map[int][]trace.TraceElement)
+	wgDone = make(map[int][]trace.TraceElement)
+	allLocks = make(map[int][]trace.TraceElement)
+	allUnlocks = make(map[int][]trace.TraceElement)
 	lockSet = make(map[int]map[int]string)
 	mostRecentAcquire = make(map[int]map[int]elemWithVc)
 	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)
@@ -52,7 +53,7 @@ func ClearData() {
 	currentlyWaiting = make(map[int][]int)
 	leakingChannels = make(map[int][]VectorClockTID2)
 	selectCases = make([]allSelectCase, 0)
-	allForks = make(map[int]*TraceElementFork)
+	allForks = make(map[int]*trace.TraceElementFork)
 	exitCode = 0
 	exitPos = ""
 	replayTimeoutOldest = 0
@@ -77,6 +78,6 @@ func ClearData() {
 
 	numberSelectCasesWithPartner = 0
 
-	waitingReceive = make([]*TraceElementChannel, 0)
+	waitingReceive = make([]*trace.TraceElementChannel, 0)
 	maxOpID = make(map[int]int)
 }

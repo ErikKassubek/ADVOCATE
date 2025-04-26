@@ -72,8 +72,6 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
-	analysis.SetNoRoutines(numberOfRoutines)
-
 	if onlyAPanicAndLeak {
 		utils.LogInfo("Start Analysis for actual panics and leaks")
 	} else if analysisCases["all"] {

@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 	"fmt"
 	"log"
@@ -370,7 +371,7 @@ func ResetState() {
 	}
 }
 
-func HandleMutexEventForRessourceDeadlock(element TraceElementMutex) {
+func HandleMutexEventForRessourceDeadlock(element trace.TraceElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
@@ -382,20 +383,20 @@ func HandleMutexEventForRessourceDeadlock(element TraceElementMutex) {
 		threadID:    ThreadID(element.GetRoutine()),
 		traceID:     element.GetTID(),
 		lockID:      element.GetID(),
-		vectorClock: element.wVc.Copy(),
+		vectorClock: element.GetVC().Copy(),
 	}
 
-	switch element.opM {
-	case LockOp:
+	switch element.GetOpM() {
+	case trace.LockOp:
 		acquire(&currentState, false, event)
-	case TryLockOp:
+	case trace.TryLockOp:
 		// We do not check event.suc because that could led to false negatives
 		acquire(&currentState, false, event)
-	case RLockOp:
+	case trace.RLockOp:
 		acquire(&currentState, true, event)
-	case UnlockOp:
+	case trace.UnlockOp:
 		release(&currentState, false, event)
-	case RUnlockOp:
+	case trace.RUnlockOp:
 		release(&currentState, true, event)
 	}
 }
@@ -440,7 +441,7 @@ func CheckForResourceDeadlock() {
 				break
 			}
 
-			file, line, tPre, err := infoFromTID(request.traceID)
+			file, line, tPre, err := trace.InfoFromTID(request.traceID)
 			if err != nil {
 				utils.LogError(err.Error())
 				break
@@ -469,14 +470,14 @@ func CheckForResourceDeadlock() {
 // Finds the earliest request in a cycle.
 func findEarliestRequest(cycle []LockDependency) LockEvent {
 	earliest := cycle[0].requests[0]
-	_, _, earliestTime, err := infoFromTID(earliest.traceID)
+	_, _, earliestTime, err := trace.InfoFromTID(earliest.traceID)
 	if err != nil {
 		utils.LogError(err.Error())
 		return earliest
 	}
 	for _, c := range cycle {
 		for _, r := range c.requests {
-			_, _, requestTime, err := infoFromTID(r.traceID)
+			_, _, requestTime, err := trace.InfoFromTID(r.traceID)
 			if err != nil {
 				utils.LogError(err.Error())
 				return earliest

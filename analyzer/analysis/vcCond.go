@@ -12,57 +12,87 @@ package analysis
 
 import (
 	"analyzer/timer"
+	"analyzer/trace"
 )
+
+// UpdateVCCond updates the vector clock of the trace for a conditional variables
+//
+// Parameter
+//   - co *trace.TraceElementCond: the conditional trace operation
+func UpdateVCCond(co *trace.TraceElementCond) {
+	routine := co.GetRoutine()
+	co.SetVc(currentVC[routine])
+	co.SetWVc(currentWVC[routine])
+
+	switch co.GetOpC() {
+	case trace.WaitCondOp:
+		CondWait(co)
+	case trace.SignalOp:
+		CondSignal(co)
+	case trace.BroadcastOp:
+		CondBroadcast(co)
+	}
+
+}
 
 // CondWait updates and calculates the vector clocks given a wait operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondWait(co *TraceElementCond) {
+func CondWait(co *trace.TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if co.tPost != 0 { // not leak
-		if _, ok := currentlyWaiting[co.id]; !ok {
-			currentlyWaiting[co.id] = make([]int, 0)
+	id := co.GetID()
+	routine := co.GetRoutine()
+
+	if co.GetTPost() != 0 { // not leak
+		if _, ok := currentlyWaiting[id]; !ok {
+			currentlyWaiting[id] = make([]int, 0)
 		}
-		currentlyWaiting[co.id] = append(currentlyWaiting[co.id], co.routine)
+		currentlyWaiting[id] = append(currentlyWaiting[id], routine)
 	}
-	currentVC[co.routine].Inc(co.routine)
-	currentWVC[co.routine].Inc(co.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }
 
 // CondSignal updates and calculates the vector clocks given a signal operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondSignal(co *TraceElementCond) {
+func CondSignal(co *trace.TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	if len(currentlyWaiting[co.id]) != 0 {
-		tWait := currentlyWaiting[co.id][0]
-		currentlyWaiting[co.id] = currentlyWaiting[co.id][1:]
-		currentVC[tWait].Sync(currentVC[co.routine])
+	id := co.GetID()
+	routine := co.GetRoutine()
+
+	if len(currentlyWaiting[id]) != 0 {
+		tWait := currentlyWaiting[id][0]
+		currentlyWaiting[id] = currentlyWaiting[id][1:]
+		currentVC[tWait].Sync(currentVC[routine])
 	}
 
-	currentVC[co.routine].Inc(co.routine)
-	currentWVC[co.routine].Inc(co.routine)
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }
 
 // CondBroadcast updates and calculates the vector clocks given a broadcast operation
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondBroadcast(co *TraceElementCond) {
+func CondBroadcast(co *trace.TraceElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	for _, wait := range currentlyWaiting[co.id] {
-		currentVC[wait].Sync(currentVC[co.routine])
-	}
-	currentlyWaiting[co.id] = make([]int, 0)
+	id := co.GetID()
+	routine := co.GetRoutine()
 
-	currentVC[co.routine].Inc(co.routine)
-	currentWVC[co.routine].Inc(co.routine)
+	for _, wait := range currentlyWaiting[id] {
+		currentVC[wait].Sync(currentVC[routine])
+	}
+	currentlyWaiting[id] = make([]int, 0)
+
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }

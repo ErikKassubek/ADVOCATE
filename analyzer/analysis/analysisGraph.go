@@ -13,13 +13,14 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/trace"
 	"fmt"
 	"math"
 )
 
 var (
-	source = &TraceElementWait{id: -1}
-	drain  = &TraceElementWait{id: -2}
+	source = &trace.TraceElementWait{ID: -1}
+	drain  = &trace.TraceElementWait{ID: -2}
 )
 
 // TODO: change to graph of elems, not tID
@@ -38,20 +39,20 @@ var (
 //
 // Returns:
 //   - []Edge: The graph
-func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[TraceElement][]TraceElement {
-	graph := make(map[TraceElement][]TraceElement, 0)
-	graph[source] = []TraceElement{}
-	graph[drain] = []TraceElement{}
+func buildResidualGraph(increases []trace.TraceElement, decreases []trace.TraceElement) map[trace.TraceElement][]trace.TraceElement {
+	graph := make(map[trace.TraceElement][]trace.TraceElement, 0)
+	graph[source] = []trace.TraceElement{}
+	graph[drain] = []trace.TraceElement{}
 
 	// add edges from s to all done operations
 	for _, elem := range decreases {
-		graph[elem] = []TraceElement{}
+		graph[elem] = []trace.TraceElement{}
 		graph[source] = append(graph[source], elem)
 	}
 
 	// add edges from all add operations to t
 	for _, elem := range increases {
-		graph[elem] = []TraceElement{drain}
+		graph[elem] = []trace.TraceElement{drain}
 
 	}
 
@@ -76,7 +77,7 @@ func buildResidualGraph(increases []TraceElement, decreases []TraceElement) map[
 //   - int: The maximum flow
 //   - map[TraceElement][]TraceElement: The graph with max flow
 //   - error
-func calculateMaxFlow(graph map[TraceElement][]TraceElement) (int, map[TraceElement][]TraceElement, error) {
+func calculateMaxFlow(graph map[trace.TraceElement][]trace.TraceElement) (int, map[trace.TraceElement][]trace.TraceElement, error) {
 	maxFlow := 0
 	maxNumberRounds := 0
 	for _, val := range graph {
@@ -108,19 +109,19 @@ func calculateMaxFlow(graph map[TraceElement][]TraceElement) (int, map[TraceElem
 // Returns:
 //   - []TraceElement: The path
 //   - int: The flow
-func findPath(graph map[TraceElement][]TraceElement) ([]TraceElement, int) {
-	visited := make(map[TraceElement]bool, 0)
+func findPath(graph map[trace.TraceElement][]trace.TraceElement) ([]trace.TraceElement, int) {
+	visited := make(map[trace.TraceElement]bool, 0)
 
-	queue := []TraceElement{source}
+	queue := []trace.TraceElement{source}
 	visited[source] = true
-	parents := make(map[TraceElement]TraceElement, 0)
+	parents := make(map[trace.TraceElement]trace.TraceElement, 0)
 
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
 
 		if node.IsEqual(drain) {
-			path := []TraceElement{}
+			path := []trace.TraceElement{}
 			for !node.IsEqual(source) {
 				path = append(path, node)
 				node = parents[node]
@@ -139,7 +140,7 @@ func findPath(graph map[TraceElement][]TraceElement) ([]TraceElement, int) {
 		}
 	}
 
-	return []TraceElement{}, 0
+	return []trace.TraceElement{}, 0
 }
 
 // Remove an element from a list
@@ -150,7 +151,7 @@ func findPath(graph map[TraceElement][]TraceElement) ([]TraceElement, int) {
 //
 // Returns:
 //   - []string: The list without the element
-func remove(list []TraceElement, element TraceElement) []TraceElement {
+func remove(list []trace.TraceElement, element trace.TraceElement) []trace.TraceElement {
 	for i, e := range list {
 		if element.IsEqual(e) {
 			list = append(list[:i], list[i+1:]...)

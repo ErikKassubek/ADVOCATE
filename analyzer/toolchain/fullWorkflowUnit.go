@@ -481,7 +481,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output)
+		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output, runAnalysis)
 	}
 
 	return numberReplay, true, nil
@@ -627,10 +627,12 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 //   - file string: path to the file containing the test function
 //   - testName string: name of the test function to run
 //   - output string: path to the output file
+//   - runAnalysis bool: whether the rewritten traces from the analysis or the
+//     given trace path should be used
 //
 // Returns:
 //   - int: number of executed replays
-func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string) int {
+func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string, fromAnalysis bool) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
@@ -638,7 +640,13 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 	pathPkg := filepath.Join(dir, pkg)
 
-	rewrittenTraces, _ := filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
+	rewrittenTraces := make([]string, 0)
+
+	if fromAnalysis {
+		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
+	} else {
+		rewrittenTraces = append(rewrittenTraces, tracePathFlag)
+	}
 
 	utils.LogInfof("Found %d rewritten traces", len(rewrittenTraces))
 

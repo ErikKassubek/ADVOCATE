@@ -16,6 +16,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -162,16 +163,24 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 
 		if strings.Contains(line, "func "+testName) {
 			if replay { // replay
+				replayPath := ""
+				if replayInfo != "" {
+					replayPath = "rewrittenTrace_" + replayInfo
+				} else if tracePathFlag != "" {
+					replayPath = filepath.Base(tracePathFlag)
+				} else {
+					replayPath = "advocateTrace"
+				}
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplayTracing("%s", false, %d, %s)
   defer advocate.FinishReplayTracing()
-  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplay("%s", false, %d, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayInfo, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======

@@ -76,6 +76,7 @@ func GetDirectory(path string) string {
 //   - string: path to the main file
 //   - error
 func GetMainPath(path string) (string, error) {
+	path = CleanPathHome(path)
 	info, err := os.Stat(path)
 	if err != nil {
 		return "", err
@@ -83,12 +84,13 @@ func GetMainPath(path string) (string, error) {
 
 	if info.IsDir() {
 		mainPath := filepath.Join(path, "main.go")
-		if _, err := os.Stat(mainPath); err == nil {
-			return mainPath, nil
-		} else if os.IsNotExist(err) {
-			return "", fmt.Errorf("main.go not found in directory %s", path)
-		} else {
-			return "", err
+
+		if _, err := os.Stat(mainPath); err != nil {
+			if os.IsNotExist(err) {
+				return "", fmt.Errorf("main.go not found in directory %s", path)
+			} else {
+				return "", err
+			}
 		}
 	}
 
@@ -110,21 +112,23 @@ func CleanPathHome(path string) string {
 //   - path string: path to check
 //
 // Returns:
+//   - string: the cleaned path
 //   - error: error if path not exists, nil otherwise
-func CheckPath(path string) error {
+func CheckPath(path string) (string, error) {
 	if path == "" {
-		return fmt.Errorf("Path cannot be empty")
+		return "", fmt.Errorf("Path cannot be empty")
 	}
 
 	progPath := CleanPathHome(path)
+
 	_, err := os.Stat(progPath)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
-			return fmt.Errorf("Path %s does not exists", progPath)
+			return progPath, fmt.Errorf("Path %s does not exists", progPath)
 		} else {
-			return err
+			return progPath, err
 		}
 	}
 
-	return nil
+	return progPath, nil
 }

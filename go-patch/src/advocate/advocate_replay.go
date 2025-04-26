@@ -27,27 +27,25 @@ const (
 )
 
 var timeout = false
-var tracePathRewritten = "rewrittenTrace_"
+var tracePathRewritten = ""
 
 // InitReplay reads the trace from the trace folder.
 // The function reads all files in the trace folder and adds the trace to the runtime.
 // The trace is added to the runtime by calling the AddReplayTrace function.
 //
 // Parameter:
-//   - index string: The index of the replay case
+//   - tracePath string: The path to the rewritten trace, relative the the dir where advocateResult is placed
 //   - exitCode bool: Whether the program should exit after the important replay part passed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
-func InitReplay(index string, exitCode bool, timeout int, atomic bool) {
+func InitReplay(tracePath string, exitCode bool, timeout int, atomic bool) {
 	// use first as default
 	runtime.SetForceExit(exitCode)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
-	if index == "0" {
-		tracePathRewritten = "advocateTrace"
-	} else {
-		tracePathRewritten = tracePathRewritten + index
-	}
+	println("Tracepath: ", tracePath)
+
+	tracePathRewritten = tracePath
 
 	startReplay(timeout)
 }
@@ -62,7 +60,7 @@ func startReplay(timeout int) {
 
 	// if trace folder does not exist, panic
 	if _, err := os.Stat(tracePathRewritten); os.IsNotExist(err) {
-		panic("Trace folder " + tracePathRewritten + " does not exist.")
+		panic("Trace folder '" + tracePathRewritten + "' does not exist.")
 	}
 
 	// check for and if exists, read the rewrite_active.log file
@@ -79,13 +77,14 @@ func startReplay(timeout int) {
 	}
 
 	foundTraceFiles := false
+	replayData := runtime.GetReplayTrace()
 	for _, file := range files {
 		// if the file is a directory, ignore it
 		if file.IsDir() {
 			continue
 		}
 
-		if file.Name() == "times.log" {
+		if file.Name() == "times.log" || file.Name() == "trace_info.log" {
 			continue
 		}
 
@@ -93,8 +92,7 @@ func startReplay(timeout int) {
 		if strings.HasSuffix(file.Name(), ".log") &&
 			file.Name() != "rewrite_info.log" &&
 			file.Name() != activeFile {
-			routineID, trace := readTraceFile(tracePathRewritten+"/"+file.Name(), activeTPre)
-			runtime.AddReplayTrace(uint64(routineID), trace)
+			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTPre, replayData)
 			foundTraceFiles = true
 		}
 	}
@@ -102,6 +100,11 @@ func startReplay(timeout int) {
 	if !foundTraceFiles {
 		panic("Could not find trace files for replay")
 	}
+
+	// sort data by time
+	sort.Slice(*replayData, func(i, j int) bool {
+		return (*replayData)[i].Time < (*replayData)[j].Time
+	})
 
 	if timeout > 0 {
 		// start time timeout
@@ -189,18 +192,13 @@ func readRewriteActive(tracePathRewritten string) (map[string][]int, map[int]str
 // Parameter:
 //   - fileName string: The name of the file that contains the trace.
 //   - active map[int]struct{}: map with all active tPre, or nil if all are active
-//
-// Returns:
-//   - int The routine id
-//   - runtime.AdvocateReplayTrace: The trace for this routine
-func readTraceFile(fileName string, activeTPre map[int]struct{}) (int, runtime.AdvocateReplayTrace) {
+//   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
+func readTraceFile(fileName string, activeTPre map[int]struct{}, replayData *runtime.AdvocateReplayTrace) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
 		panic(err)
 	}
-
-	replayData := make(runtime.AdvocateReplayTrace, 0)
 
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -418,7 +416,7 @@ func readTraceFile(fileName string, activeTPre map[int]struct{}) (int, runtime.A
 		}
 
 		if op != runtime.OperationNone && !runtime.AdvocateIgnoreReplay(op, file) {
-			replayData = append(replayData, runtime.ReplayElement{
+			*replayData = append(*replayData, runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
 				Blocked: blocked, Suc: suc,
 				Index: index})
@@ -429,25 +427,6 @@ func readTraceFile(fileName string, activeTPre map[int]struct{}) (int, runtime.A
 	if err := scanner.Err(); err != nil {
 		panic(err)
 	}
-
-	// sort data by tpre
-	sortReplayDataByTime(replayData)
-
-	return routineID, replayData
-}
-
-// Sort the replay data structure by time.
-//
-// Parameter:
-//   - replayData runtime.AdvocateReplayTrace: the data tp sport
-//
-// Returns:
-//   - runtime.AdvocateReplayTrace: the sorted data
-func sortReplayDataByTime(replayData runtime.AdvocateReplayTrace) runtime.AdvocateReplayTrace {
-	sort.Slice(replayData, func(i, j int) bool {
-		return replayData[i].Time < replayData[j].Time
-	})
-	return replayData
 }
 
 // FinishReplay waits for the replay to finish.

@@ -178,18 +178,15 @@ func (elem *ReplayElement) key() string {
 //   - file string: code position file of the element
 //   - line int: code position line of the element
 func BuildReplayKey(routine int, file string, line int) string {
-	return intToString(routine) + ":" + file + ":" + intToString(line)
-	// return file + ":" + intToString(line)
+	// return intToString(routine) + ":" + file + ":" + intToString(line)
+	return file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
-type AdvocateReplayTraces map[uint64]AdvocateReplayTrace // routine -> trace
 
 var (
 	replayEnabled  bool // replay is on
 	replayLock     mutex
-	replayDone     int
-	replayDoneLock mutex
 
 	// only run partial replay based on active
 	partialReplay        bool
@@ -200,12 +197,11 @@ var (
 	waitDeadlockDetectLock mutex
 
 	// replay info
-	replayData            = make(AdvocateReplayTraces, 0)
+	replayData            = make(AdvocateReplayTrace, 0)
 	numberElementsInTrace int
-	traceElementPositions = make(map[string][]int) // file -> []line
 	active                map[string][]int
 
-	replayIndex = make(map[uint64]int)
+	replayIndex = 0
 
 	// exit code
 	replayForceExit  bool
@@ -224,34 +220,11 @@ var (
 // Add a routine local replay trace to the replay data.
 //
 // Parameters:
-//   - routine uint64: the routine id
 //   - trace trace: the replay trace
-func AddReplayTrace(routine uint64, trace AdvocateReplayTrace) {
-	if _, ok := replayData[routine]; ok {
-		panic("Routine already exists")
-	}
-	replayData[routine] = trace
-	replayIndex[routine] = 0
-
-	numberElementsInTrace += len(trace)
-
-	for _, e := range trace {
-		if _, ok := traceElementPositions[e.File]; !ok {
-			traceElementPositions[e.File] = make([]int, 0)
-		}
-		if !isInSlice(traceElementPositions[e.File], e.Line) {
-			traceElementPositions[e.File] = append(traceElementPositions[e.File], e.Line)
-		}
-	}
+func GetReplayTrace() *AdvocateReplayTrace {
+	return &replayData
 }
 
-// Print the replay data.
-func (t AdvocateReplayTraces) Print() {
-	for id, trace := range t {
-		println("\nRoutine: ", id)
-		trace.Print()
-	}
-}
 
 // Print the replay trace for one routine.
 func (t AdvocateReplayTrace) Print() {
@@ -259,6 +232,7 @@ func (t AdvocateReplayTrace) Print() {
 		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
 	}
 }
+
 
 // AddActiveTrace adds the set of active trace elements to the trace
 // and sets the replay to be partial
@@ -277,6 +251,15 @@ func AddActiveTrace(activeMap map[string][]int) {
 
 // Enable the replay by starting the replay manager
 func EnableReplay() {
+	numberElementsInTrace = len(replayData)
+
+	if printDebug {
+		println("\nTrace\n")
+		replayData.Print()
+		println("\n\n")
+	}
+
+
 	go ReleaseWaits()
 
 	replayEnabled = true
@@ -309,14 +292,14 @@ func DisableReplay() {
  * the program to terminate before the trace is finished.
  */
 func WaitForReplayFinish(exit bool) {
+	if printDebug {
+		println("Wait for replay finish")
+	}
 	if IsReplayEnabled() { // Is this correct?
 		for {
-			lock(&replayDoneLock)
-			if replayDone >= numberElementsInTrace {
-				unlock(&replayDoneLock)
+			if replayIndex >= numberElementsInTrace {
 				break
 			}
-			unlock(&replayDoneLock)
 
 			if !replayEnabled {
 				break
@@ -343,6 +326,7 @@ func WaitForReplayFinish(exit bool) {
 
 		sleep(0.001)
 	}
+
 
 	if stuckReplayExecutedSuc {
 		ExitReplayWithCode(expectedExitCode)
@@ -385,7 +369,7 @@ func ReleaseWaits() {
 			sleep(0.5)
 
 			DisableReplay()
-			// foundReplayElement(routine)
+			// foundReplayElement()
 			sleep(0.1)
 
 			// Check if a deadlock has been reached
@@ -419,8 +403,11 @@ func ReleaseWaits() {
 
 		key := replayElem.key()
 
-		if key == lastKey {
+		if false && key == lastKey {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
+				if printDebug {
+					println("TIMEOUT")
+				}
 				if tPostWhenFirstTimeout == 0 {
 					tPostWhenAckFirstTimeout = replayElem.Time
 				}
@@ -431,7 +418,7 @@ func ReleaseWaits() {
 				// otherwise we choose either option with a prop of 0.5 (we use nanotime()%2 == 0 as a quasi random number generator from {0,1})
 				if len(waitingOps) == 0 || nanotime()%2 == 0 {
 					// skip the next element in the trace
-					foundReplayElement(replayElem.Routine)
+					foundReplayElement()
 				} else {
 					// release the currently waiting element
 					var oldest = replayChan{nil, nil, -1, false, 0, "", 0, false}
@@ -451,10 +438,6 @@ func ReleaseWaits() {
 						releaseOldestWait--
 					}
 
-					lock(&replayDoneLock)
-					replayDone++
-					unlock(&replayDoneLock)
-
 					lock(&waitingOpsMutex)
 					if printDebug && suc {
 						println("Release Oldes: ", oldestKey)
@@ -471,11 +454,7 @@ func ReleaseWaits() {
 		}
 
 		if AdvocateIgnoreReplay(replayElem.Op, replayElem.File) {
-			foundReplayElement(routine)
-
-			lock(&replayDoneLock)
-			replayDone++
-			unlock(&replayDoneLock)
+			foundReplayElement()
 			continue
 		}
 
@@ -496,10 +475,6 @@ func ReleaseWaits() {
 			unlock(&waitingOpsMutex)
 
 			releaseElement(waitOp, replayElem, true, true)
-
-			lock(&replayDoneLock)
-			replayDone++
-			unlock(&replayDoneLock)
 
 			lock(&waitingOpsMutex)
 			delete(waitingOps, key)
@@ -682,8 +657,9 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 				replayE:    nextElem,
 				waitForAck: true,
 			}
+		} else {
+			foundReplayElement()
 		}
-		// foundReplayElement(nextElem.Routine)
 	} else {
 		// add to waiting list
 		lock(&waitingOpsMutex)
@@ -707,7 +683,6 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 //
 // Returns:
 //   - bool: true if the element was released, false if not, especially if it already has been released before
-
 func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) bool {
 	if elem.released {
 		if printDebug {
@@ -751,7 +726,7 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	if next {
 		lastTimeWithoutOldest = currentTime()
 		releaseOldestWait = releaseOldestWaitLastMax
-		foundReplayElement(elemReplay.Routine)
+		foundReplayElement()
 	} else {
 		releasedElementOldest(elemReplay.key())
 	}
@@ -775,36 +750,21 @@ func getNextReplayElement() (int, ReplayElement) {
 	lock(&replayLock)
 	defer unlock(&replayLock)
 
-	routine := -1
-	// set mintTime to max int
-	var minTime = -1
-
-	for id, trace := range replayData {
-		if replayIndex[id] >= len(trace) {
-			continue
-		}
-		elem := trace[replayIndex[id]]
-		if minTime == -1 || elem.Time < minTime {
-			minTime = elem.Time
-			routine = int(id)
-		}
-	}
-
-	if routine == -1 {
+	if replayIndex >= numberElementsInTrace{
 		return -1, ReplayElement{}
 	}
 
-	elem := replayData[uint64(routine)][replayIndex[uint64(routine)]]
+	elem := replayData[replayIndex]
 
 	// if the elem was already executed as an oldest before, do not get again
 	elemKey := elem.key()
 	if val, ok := alreadyExecutedAsOldest[elemKey]; ok && val > 0 {
-		foundReplayElement(elem.Routine)
+		foundReplayElement()
 		alreadyExecutedAsOldest[elemKey]--
 		return getNextReplayElement()
 	}
 
-	return routine, elem
+	return elem.Routine, elem
 }
 
 // Release an element as the oldest element event if it is not the operations turn
@@ -818,15 +778,12 @@ func releasedElementOldest(key string) {
 // foundReplayElement is executed if an operation has been executed.
 // It advances the index of the replay trace to the next values, such
 // that the next element is returned as the next element to be replayed
-//
-// Parameter:
-//   - routine int: routine in which an operation was executed
-func foundReplayElement(routine int) {
+func foundReplayElement() {
 	lock(&replayLock)
 	defer unlock(&replayLock)
-	replayIndex[uint64(routine)]++
+	replayIndex++
 	if printDebug {
-		println("Advance: ", routine, replayIndex[uint64(routine)])
+		println("Advance: ", replayIndex)
 	}
 }
 
@@ -901,6 +858,8 @@ func ExitReplayPanic(msg any) {
 	} else if IsTracingEnabled() {
 		finishTracingFunc()
 	}
+
+
 
 	// if !IsReplayEnabled() {
 	// 	return

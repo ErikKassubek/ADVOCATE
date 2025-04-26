@@ -51,7 +51,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
 
-	utils.LogInfo("Run full workflow on main")
+	utils.LogInfo("Run main")
 
 	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
 
@@ -172,13 +172,19 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		}
 	}
 
-	var rewrittenTraces []string
+	rewrittenTraces := make([]string, 0)
 	if runReplay {
 		utils.LogInfo("Run replay")
 		// Find rewrittenTrace directories
-		rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
-		if err != nil {
-			return fmt.Errorf("Error finding rewritten traces: %v", err)
+		if runAnalysis {
+			rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
+			if err != nil {
+				return fmt.Errorf("Error finding rewritten traces: %v", err)
+			}
+		} else {
+			if tracePathFlag != "" {
+				rewrittenTraces = append(rewrittenTraces, tracePathFlag)
+			}
 		}
 
 		// Apply replay header and run tests for each trace

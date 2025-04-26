@@ -99,7 +99,7 @@ func main() {
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to analyze or rewrite")
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay or analyze")
 
 	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
@@ -213,7 +213,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
-		timeoutRecording, timeoutReplay, rewriteAll, noWarning)
+		timeoutRecording, timeoutReplay, rewriteAll, noWarning, tracePath)
 
 	modeMainTest := "test"
 	if modeMain {
@@ -268,7 +268,7 @@ func modeFuzzing() {
 		return
 	}
 
-	err := utils.CheckPath(progPath)
+	progPath, err := utils.CheckPath(progPath)
 	if err != nil {
 		utils.LogError("Error on checking prog path: ", err)
 		panic(err)
@@ -295,7 +295,7 @@ func modeFuzzing() {
 // Note:
 //   - If recording is false, but analysis or replay is set, -trace must be set
 func modeToolchain(mode string, record bool, analysis bool, replay bool) {
-	err := utils.CheckPath(progPath)
+	progPath, err := utils.CheckPath(progPath)
 	if err != nil {
 		utils.LogError("Error on checking prog path: ", err)
 		panic(err)
@@ -304,7 +304,7 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	checkGoMod()
 
 	if !record && (analysis || replay) {
-		err = utils.CheckPath(tracePath)
+		tracePath, err = utils.CheckPath(tracePath)
 		if err != nil {
 			utils.LogError("Error on checking trace path: ", err)
 			panic(err)

@@ -21,7 +21,7 @@ import (
 
 // TraceElementSelect is a trace element for a select statement
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
@@ -35,8 +35,11 @@ import (
 //   - file string: The file of the select statement in the code
 //   - line int: The line of the select statement in the code
 //   - posPartner []bool: For each case state, wether a possible partner exists
+//   - vc *clock.VectorClock: the vector clock of the element
+//   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
 type TraceElementSelect struct {
+	traceID             int
 	index               int
 	routine             int
 	tPre                int
@@ -52,8 +55,6 @@ type TraceElementSelect struct {
 	vc                  *clock.VectorClock
 	wVc                 *clock.VectorClock
 	casesWithPosPartner []int
-	rel1                []TraceElement
-	rel2                []TraceElement
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -628,6 +629,22 @@ func (se *TraceElementSelect) ToString() string {
 	return res
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (se *TraceElementSelect) GetTraceID() int {
+	return se.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (se *TraceElementSelect) setTraceID(ID int) {
+	se.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
@@ -641,6 +658,7 @@ func (se *TraceElementSelect) Copy() TraceElement {
 	chosenCase := *se.chosenCase.Copy().(*TraceElementChannel)
 
 	return &TraceElementSelect{
+		traceID:         se.traceID,
 		index:           se.index,
 		routine:         se.routine,
 		tPre:            se.tPre,
@@ -656,68 +674,4 @@ func (se *TraceElementSelect) Copy() TraceElement {
 		vc:              se.vc.Copy(),
 		wVc:             se.wVc.Copy(),
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (se *TraceElementSelect) AddRel1(elem TraceElement, pos int) {
-	// do not add yourself
-	if se.IsEqual(elem) {
-		return
-	}
-
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	if se.chosenIndex == -1 { // default
-		return
-	}
-
-	se.chosenCase.AddRel1(elem, pos)
-
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (se *TraceElementSelect) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if se.IsEqual(elem) {
-		return
-	}
-
-	if se.chosenIndex == -1 { // default
-		return
-	}
-	se.chosenCase.AddRel2(elem)
-
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []TraceElement: the rel1 set
-func (se *TraceElementSelect) GetRel1() []TraceElement {
-	if se.chosenIndex == -1 { // default
-		return make([]TraceElement, 0)
-	}
-	return se.chosenCase.GetRel1()
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []TraceElement: the rel2 set
-func (se *TraceElementSelect) GetRel2() []TraceElement {
-	if se.chosenIndex == -1 { // default
-		return make([]TraceElement, 0)
-	}
-	return se.chosenCase.GetRel1()
 }

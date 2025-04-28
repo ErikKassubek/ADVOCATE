@@ -69,6 +69,26 @@ func addElemToChain(elem trace.TraceElement) {
 	lastRoutine = routine
 }
 
+// randomChain returns a chain consisting of a
+// pair of operations (only of channel, select or mutex)
+// that are in a rel2 relation
+//
+// Returns:
+//   - the chain, or an empty chain if pair exists
+func randomChain() chain {
+	res := newChain()
+
+	for elem1, rel := range rel2 {
+		for elem2 := range rel {
+			res.add(elem1)
+			res.add(elem2)
+			return res
+		}
+	}
+
+	return res
+}
+
 // Add a new element to the chain
 //
 // Parameter:

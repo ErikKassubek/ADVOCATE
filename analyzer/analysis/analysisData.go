@@ -275,6 +275,14 @@ func SetMainTrace(t *trace.Trace) {
 	MainTraceIter = MainTrace.AsIterator()
 }
 
+// GetMainTrace returns a pointer to the main trace
+//
+// Returns:
+//   - *trace.Trace: pointer to the main trace
+func GetMainTrace() *trace.Trace {
+	return &MainTrace
+}
+
 // ===========  Helper function for trace operations on the main trace ==========
 
 // GetTraceElementFromTID returns the routine and index of the element

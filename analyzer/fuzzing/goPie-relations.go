@@ -24,15 +24,12 @@ import (
 // Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
 // Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
-// constants to distinguish between the previous and next elem in the scheduling chain
-const (
-	Before = 0
-	After  = 1
-)
-
 var (
 	counterCPOP1 = 0
 	counterCPOP2 = 0
+
+	rel1 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	rel2 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
 )
 
 // For each element in a routine trace, store the rule 1 information
@@ -40,16 +37,24 @@ var (
 // Parameter:
 //   - routineTrace []analysis.TraceElement: the list of elems in the same trace
 func calculateRelRule1(routineTrace []trace.TraceElement) {
-	var prevValid trace.TraceElement
-
-	for i := range routineTrace {
-		if isGoPieElem(routineTrace[i]) {
-			if prevValid != nil {
-				prevValid.AddRel1(routineTrace[i], After)
-				routineTrace[i].AddRel1(prevValid, Before)
-				counterCPOP1++
+	for i := 0; i < len(routineTrace)-1; i++ {
+		elem1 := routineTrace[i]
+		if !isGoPieElem(elem1) {
+			continue
+		}
+		for j := i + 1; j < len(routineTrace); j++ {
+			elem2 := routineTrace[j]
+			if !isGoPieElem(elem2) {
+				continue
 			}
-			prevValid = routineTrace[i]
+			if _, ok := rel1[elem1]; !ok {
+				rel1[elem1] = make(map[trace.TraceElement]struct{})
+			}
+			if _, ok := rel1[elem2]; !ok {
+				rel1[elem2] = make(map[trace.TraceElement]struct{})
+			}
+			rel1[elem1][elem2] = struct{}{}
+			rel1[elem2][elem1] = struct{}{}
 		}
 	}
 }
@@ -64,7 +69,7 @@ func calculateRelRule2AddElem(elem trace.TraceElement) {
 	}
 
 	id := elem.GetID()
-	if _, ok := elemsByID[id]; ok {
+	if _, ok := elemsByID[id]; !ok {
 		elemsByID[id] = make([]trace.TraceElement, 0)
 	}
 	elemsByID[id] = append(elemsByID[id], elem)
@@ -75,12 +80,19 @@ func calculateRelRule2AddElem(elem trace.TraceElement) {
 func calculateRelRule2() {
 	for _, elems := range elemsByID {
 		for i := 0; i < len(elems)-1; i++ {
-			for j := i + 1; i < len(elems)-1; i++ {
+			for j := i + 1; i < len(elems); i++ {
 				elem1 := elems[i]
 				elem2 := elems[j]
 				if elem1.GetRoutine() != elem2.GetRoutine() {
-					elem1.AddRel2(elem2)
-					elem2.AddRel2(elem1)
+					if _, ok := rel2[elem1]; !ok {
+						rel2[elem1] = make(map[trace.TraceElement]struct{})
+					}
+					if _, ok := rel2[elem2]; !ok {
+						rel2[elem2] = make(map[trace.TraceElement]struct{})
+					}
+
+					rel2[elem1][elem2] = struct{}{}
+					rel2[elem2][elem1] = struct{}{}
 				}
 			}
 		}
@@ -94,34 +106,42 @@ func calculateRelRule3And4() {
 	for hasChanged {
 		hasChanged = false
 
-		for _, elems := range elemsByID {
-			for _, elem := range elems {
-				// Rule 3
-				c1 := elem.GetRel1()
-				for _, c1Elem := range c1 {
-					if c1Elem == nil {
+		// Rule3
+		for c, rel := range rel1 {
+			for c1 := range rel {
+				for c2 := range rel2[c1] {
+					if c.GetTraceID() == c2.GetTraceID() {
 						continue
 					}
-					c2 := c1Elem.GetRel2()
-					for _, c2Elem := range c2 {
-						elem.AddRel2(c2Elem)
+					if _, ok := rel2[c]; !ok {
+						rel2[c] = make(map[trace.TraceElement]struct{})
+					}
+					if _, ok := rel2[c][c2]; !ok {
 						hasChanged = true
 					}
+					rel2[c][c2] = struct{}{}
 				}
+			}
+		}
 
-				// Rule 4
-				c1 = elem.GetRel2()
-				for _, c1Elem := range c1 {
-					c2 := c1Elem.GetRel2()
-					for _, c2Elem := range c2 {
-						elem.AddRel2(c2Elem)
+		// rule4
+		for c, rel := range rel2 {
+			for c1 := range rel {
+				for c2 := range rel2[c1] {
+					if c.GetTraceID() == c2.GetTraceID() {
+						continue
+					}
+					if _, ok := rel2[c]; !ok {
+						rel2[c] = make(map[trace.TraceElement]struct{})
+					}
+					if _, ok := rel2[c][c2]; !ok {
 						hasChanged = true
 					}
+					rel2[c][c2] = struct{}{}
 				}
 			}
 		}
 	}
-
 }
 
 // GoPie only looks at fork, mutex, rwmutex and channel (and select)
@@ -135,8 +155,8 @@ func calculateRelRule3And4() {
 func isGoPieElem(elem trace.TraceElement) bool {
 	elemTypeShort := elem.GetObjType(false)
 
-	if !useHBInfoFuzzing {
-		validTypes := []string{trace.ObjectTypeFork,
+	if fuzzingMode == GoPie {
+		validTypes := []string{
 			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
 			trace.ObjectTypeSelect}
 		return utils.Contains(validTypes, elemTypeShort)

@@ -103,7 +103,7 @@ func getPath(path string) string {
 //   - tr *trace.Trace: the trace to write
 //   - mut *chain: chain to write
 func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain) {
-	activePath := filepath.Join(fuzzingTracePath, "rewriteActive.log")
+	activePath := filepath.Join(fuzzingTracePath, "replay_active.log")
 
 	f, err := os.Create(activePath)
 	if err != nil {
@@ -113,21 +113,29 @@ func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain) {
 	defer f.Close()
 
 	// find the counter for all elements in the mut
-	mutCounter := make(map[trace.TraceElement]int)
+	mutCounter := make(map[int]int)
+	posCounter := make(map[string]int)
+	mutTPre := make(map[int]int)
 	for _, elem := range mut.elems {
-		mutCounter[elem] = 0
+		mutCounter[elem.GetTraceID()] = 0
 	}
 
 	traceIter := tr.AsIterator()
 
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
-		if _, ok := mutCounter[elem]; ok { // is in chain
-			mutCounter[elem]++
+		traceID := elem.GetTraceID()
+		pos := elem.GetPos()
+		posCounter[pos]++
+		if _, ok := mutCounter[traceID]; ok { // is in chain
+			mutCounter[traceID] = posCounter[pos]
+			mutTPre[traceID] = elem.GetTPre()
 		}
 	}
 
 	for _, elem := range mut.elems {
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), elem.GetTPre(), mutCounter[elem])
+		traceID := elem.GetTraceID()
+		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
+		key := fmt.Sprintf("%s,%d,%d\n", elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
 		f.WriteString(key)
 	}
 }

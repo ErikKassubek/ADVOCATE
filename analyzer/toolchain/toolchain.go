@@ -13,9 +13,8 @@ package toolchain
 
 import (
 	"analyzer/analysis"
+	"analyzer/utils"
 	"fmt"
-	"os"
-	"strings"
 )
 
 var (
@@ -51,9 +50,8 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 	execName, progName, test string, fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
 	firstRun, cont bool, fileNumber, testNumber int) error {
-	home, _ := os.UserHomeDir()
-	pathToAdvocate = strings.Replace(advocate, "~", home, -1)
-	pathToFileOrDir = strings.Replace(pathToMainFileOrTestDir, "~", home, -1)
+	pathToAdvocate = utils.CleanPathHome(advocate)
+	pathToFileOrDir = utils.CleanPathHome(pathToMainFileOrTestDir)
 
 	executableName = execName
 	programName = progName

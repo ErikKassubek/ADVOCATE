@@ -30,6 +30,7 @@ const (
 // TraceElementWait is a trace element for a wait group statement
 //
 // Fields:
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
@@ -41,9 +42,8 @@ const (
 //   - line int: The line of the wait group in the code
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - the rel1 set for GoPie fuzzing
-//   - the rel2 set for GoPie fuzzing
 type TraceElementWait struct {
+	traceID int
 	index   int
 	routine int
 	tPre    int
@@ -56,8 +56,6 @@ type TraceElementWait struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -123,8 +121,6 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 		line:    line,
 		vc:      nil,
 		wVc:     nil,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -376,12 +372,29 @@ func (wa *TraceElementWait) ToString() string {
 	return res
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (wa *TraceElementWait) GetTraceID() int {
+	return wa.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (wa *TraceElementWait) setTraceID(ID int) {
+	wa.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (wa *TraceElementWait) Copy() TraceElement {
 	return &TraceElementWait{
+		traceID: wa.traceID,
 		index:   wa.index,
 		routine: wa.routine,
 		tPre:    wa.tPre,
@@ -394,57 +407,5 @@ func (wa *TraceElementWait) Copy() TraceElement {
 		line:    wa.line,
 		vc:      wa.vc.Copy(),
 		wVc:     wa.wVc.Copy(),
-		rel1:    wa.rel1,
-		rel2:    wa.rel1,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//
-//	elem TraceElement: elem to add
-//	pos int: before (0) or after (1)
-func (wa *TraceElementWait) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if wa.IsEqual(elem) {
-		return
-	}
-
-	wa.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (wa *TraceElementWait) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if wa.IsEqual(elem) {
-		return
-	}
-
-	wa.rel2 = append(wa.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (wa *TraceElementWait) GetRel1() []TraceElement {
-	return wa.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel2 set
-func (wa *TraceElementWait) GetRel2() []TraceElement {
-	return wa.rel1
 }

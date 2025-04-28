@@ -34,6 +34,7 @@ const (
 // TraceElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
+//   - traceID: id of the element, should never be changed
 //   - index int: index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp of the event
@@ -43,9 +44,8 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - file string: the file of the operation
 //   - line int: the line of the operation
-//   - the rel1 set for GoPie fuzzing
-//   - the rel2 set for GoPie fuzzing
 type TraceElementAtomic struct {
+	traceID int
 	index   int
 	routine int
 	tPost   int
@@ -55,8 +55,6 @@ type TraceElementAtomic struct {
 	wVc     *clock.VectorClock
 	file    string
 	line    int
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -114,8 +112,6 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		line:    line,
 		vc:      nil,
 		wVc:     nil,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -351,12 +347,29 @@ func (at *TraceElementAtomic) ToString() string {
 	return fmt.Sprintf("A,%d,%d,%s,%s", at.tPost, at.id, opString, at.GetPos())
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (at *TraceElementAtomic) GetTraceID() int {
+	return at.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (at *TraceElementAtomic) setTraceID(ID int) {
+	at.traceID = ID
+}
+
 // Copy the atomic element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (at *TraceElementAtomic) Copy() TraceElement {
 	return &TraceElementAtomic{
+		traceID: at.traceID,
 		index:   at.index,
 		routine: at.routine,
 		tPost:   at.tPost,
@@ -364,56 +377,5 @@ func (at *TraceElementAtomic) Copy() TraceElement {
 		opA:     at.opA,
 		vc:      at.vc.Copy(),
 		wVc:     at.wVc.Copy(),
-		rel1:    at.rel1,
-		rel2:    at.rel1,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (at *TraceElementAtomic) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if at.IsEqual(elem) {
-		return
-	}
-
-	at.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (at *TraceElementAtomic) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if at.IsEqual(elem) {
-		return
-	}
-
-	at.rel2 = append(at.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []TraceElement: the rel1 set
-func (at *TraceElementAtomic) GetRel1() []TraceElement {
-	return at.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []TraceElement: the rel2 set
-func (at *TraceElementAtomic) GetRel2() []TraceElement {
-	return at.rel2
 }

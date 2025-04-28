@@ -17,10 +17,11 @@ import (
 
 // TraceElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - tPost int: The timestamp of the event
 //   - exitCode int: expected exit code
 type TraceElementReplay struct {
+	traceID  int
 	tPost    int
 	exitCode int
 }
@@ -227,9 +228,25 @@ func (er *TraceElementReplay) ToString() string {
 	return res
 }
 
-// Update and calculate the vector clock of the element
+// UpdateVectorClock update and stores the vector clock of the element
 func (er *TraceElementReplay) UpdateVectorClock() {
 	// nothing to do
+}
+
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (er *TraceElementReplay) GetTraceID() int {
+	return er.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (er *TraceElementReplay) setTraceID(ID int) {
+	er.traceID = ID
 }
 
 // Copy creates a copy of the element
@@ -238,27 +255,8 @@ func (er *TraceElementReplay) UpdateVectorClock() {
 //   - TraceElement: The copy of the element
 func (er *TraceElementReplay) Copy() TraceElement {
 	return &TraceElementReplay{
+		traceID:  er.traceID,
 		tPost:    er.tPost,
 		exitCode: er.exitCode,
 	}
-}
-
-// AddRel1 is a dummy function to implement the traceElement interface
-func (er *TraceElementReplay) AddRel1(_ TraceElement, _ int) {
-	return
-}
-
-// AddRel2 is a dummy function to implement the traceElement interface
-func (er *TraceElementReplay) AddRel2(_ TraceElement) {
-	return
-}
-
-// GetRel1 is a dummy function to implement the traceElement interface
-func (er *TraceElementReplay) GetRel1() []TraceElement {
-	return make([]TraceElement, 0)
-}
-
-// GetRel2 is a dummy function to implement the traceElement interface
-func (er *TraceElementReplay) GetRel2() []TraceElement {
-	return make([]TraceElement, 0)
 }

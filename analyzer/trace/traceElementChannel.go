@@ -31,7 +31,9 @@ const (
 )
 
 // TraceElementChannel is a trace element for a channel
+//
 // Fields:
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
@@ -39,7 +41,7 @@ const (
 //   - id int: The id of the channel
 //   - opC OpChannel: The operation on the channel
 //   - cl bool: Whether the channel has closed
-//   - oId int: The id of the other communication
+//   - oID int: The id of the other communication
 //   - qSize int: The size of the channel queue
 //   - qCount int: The number of elements in the queue after the operation
 //   - file string: The file of the channel operation in the code
@@ -47,8 +49,10 @@ const (
 //   - sel *traceElementSelect: The select operation, if the channel operation
 //     is part of a select, otherwise nil
 //   - partner *TraceElementChannel: The partner of the channel operation
-//   - tID string: The id of the trace element, contains the position and the tPre
+//   - vc *clock.VectorClock: the vector clock of the element
+//   - wVc *clock.VectorClock: the weak vector clock of the element
 type TraceElementChannel struct {
+	traceID int
 	index   int
 	routine int
 	tPre    int
@@ -65,8 +69,6 @@ type TraceElementChannel struct {
 	partner *TraceElementChannel
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -159,8 +161,6 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		line:    line,
 		vc:      nil,
 		wVc:     nil,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -572,12 +572,29 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%s%d%s%d%s%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (ch *TraceElementChannel) GetTraceID() int {
+	return ch.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (ch *TraceElementChannel) setTraceID(ID int) {
+	ch.traceID = ID
+}
+
 // Copy creates a copy of the channel element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (ch *TraceElementChannel) Copy() TraceElement {
 	newCh := TraceElementChannel{
+		traceID: ch.traceID,
 		index:   ch.index,
 		routine: ch.routine,
 		tPre:    ch.tPre,
@@ -593,57 +610,6 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		partner: ch.partner,
 		vc:      ch.vc.Copy(),
 		wVc:     ch.wVc.Copy(),
-		rel1:    ch.rel1,
-		rel2:    ch.rel1,
 	}
 	return &newCh
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (ch *TraceElementChannel) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if ch.IsEqual(elem) {
-		return
-	}
-
-	ch.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (ch *TraceElementChannel) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if ch.IsEqual(elem) {
-		return
-	}
-
-	ch.rel2 = append(ch.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (ch *TraceElementChannel) GetRel1() []TraceElement {
-	return ch.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel2 set
-func (ch *TraceElementChannel) GetRel2() []TraceElement {
-	return ch.rel2
 }

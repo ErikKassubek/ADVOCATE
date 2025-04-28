@@ -111,15 +111,14 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	numberRewrittenTrace := 0
 	failedRewrites := 0
 	notNeededRewrites := 0
-	utils.LogInfo("Start rewriting")
 
-	if err != nil {
-		utils.LogError("Failed to rewrite: ", err)
-		return nil
+	if numberOfResults != 0 {
+		utils.LogInfo("Start rewriting")
 	}
 
-	if memory.WasCanceled() {
-		utils.LogError("Could not run rewrite: Not enough RAM")
+	if err != nil {
+		utils.LogError("Failed to create result files: ", err)
+		return nil
 	}
 
 	rewrittenBugs := make(map[utils.ResultType][]string) // bugtype -> paths string

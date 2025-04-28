@@ -171,6 +171,8 @@ func (elem *ReplayElement) key() string {
 	return BuildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 
+// TODO (Erik): fix replay routine, if fixed also add routine in active key
+
 // Build the key (id) of a replay element
 //
 // Parameters:
@@ -626,6 +628,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 			return false, nil, nil
 		}
 
+
 		partialReplayCounter[key] += 1
 		currentCounter := partialReplayCounter[key]
 
@@ -865,7 +868,7 @@ func ExitReplayPanic(msg any) {
 	// 	return
 	// }
 
-	ExitReplayWithCode(advocateExitCode)
+	// ExitReplayWithCode(advocateExitCode)
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.

@@ -23,7 +23,7 @@ import (
 )
 
 const (
-	activeFile = "rewriteActive.log"
+	activeFile = "replay_active.log"
 )
 
 var timeout = false
@@ -64,10 +64,13 @@ func startReplay(timeout int) {
 	}
 
 	// check for and if exists, read the rewrite_active.log file
-	active, activeTPre := readRewriteActive(tracePathRewritten)
+	active, activeTPre := readReplayActive(tracePathRewritten)
 
 	if active != nil {
+		println("Active enabled")
 		runtime.AddActiveTrace(active)
+	} else {
+		println("Active disabled")
 	}
 
 	// traverse all files in the trace folder
@@ -121,7 +124,7 @@ func startReplay(timeout int) {
 	runtime.EnableReplay()
 }
 
-// readRewriteActive checks if a rewrite_active.log file exists in the path
+// readReplayActive checks if a rewrite_active.log file exists in the path
 // if not, it just returns
 // If the file exists, it is read and the replay is set to partial replay
 //
@@ -131,7 +134,7 @@ func startReplay(timeout int) {
 // Returns
 //   - map[string][]int: the map from key to counter for the active elements
 //   - map[int]struct{}: the map containing the tPre of all elements that are active
-func readRewriteActive(tracePathRewritten string) (map[string][]int, map[int]struct{}) {
+func readReplayActive(tracePathRewritten string) (map[string][]int, map[int]struct{}) {
 	file, err := os.Open(filepath.Join(tracePathRewritten, activeFile))
 	if err != nil {
 		if os.IsNotExist(err) {

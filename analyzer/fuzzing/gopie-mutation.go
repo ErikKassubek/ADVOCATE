@@ -61,7 +61,7 @@ func mutate(c chain, energy int) map[string]chain {
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
 			// but in GoPie+ and GoPieHB)
-			if fuzzingMode != GoPie {
+			if true || fuzzingMode != GoPie {
 				if ch.len() >= 2 {
 					newChs := flip(ch)
 					for _, newCh := range newChs {
@@ -169,7 +169,7 @@ func substitute(c chain) []chain {
 	res := make([]chain, 0)
 
 	for i, elem := range c.elems {
-		for _, rel := range elem.GetRel1() {
+		for rel := range rel1[elem] {
 			if res != nil && !c.contains(rel) {
 				nc := c.copy()
 				nc.replace(i, rel)
@@ -193,8 +193,7 @@ func substitute(c chain) []chain {
 func augment(c chain) []chain {
 	res := make([]chain, 0)
 
-	rels := c.lastElem().GetRel2()
-	for _, rel := range rels {
+	for rel := range rel2[c.lastElem()] {
 		if c.contains(rel) {
 			continue
 		}

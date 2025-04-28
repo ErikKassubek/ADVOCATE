@@ -33,6 +33,7 @@ const (
 
 // TraceElementNew is a trace element for the creation of an object / new
 // Fields:
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp of the new
@@ -46,6 +47,7 @@ const (
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type TraceElementNew struct {
+	traceID  int
 	index    int
 	routine  int
 	tPost    int
@@ -320,12 +322,29 @@ func (n *TraceElementNew) SetTWithoutNotExecuted(tSort int) {
 	n.tPost = tSort
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (n *TraceElementNew) GetTraceID() int {
+	return n.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (n *TraceElementNew) setTraceID(ID int) {
+	n.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (n *TraceElementNew) Copy() TraceElement {
 	return &TraceElementNew{
+		traceID:  n.traceID,
 		index:    n.index,
 		routine:  n.routine,
 		tPost:    n.tPost,
@@ -336,24 +355,4 @@ func (n *TraceElementNew) Copy() TraceElement {
 		vc:       n.vc.Copy(),
 		wVc:      n.wVc.Copy(),
 	}
-}
-
-// AddRel1 is a dummy function to implement the  traceElement interface
-func (n *TraceElementNew) AddRel1(_ TraceElement, _ int) {
-	return
-}
-
-// AddRel2 is a dummy function to implement the  traceElement interface
-func (n *TraceElementNew) AddRel2(_ TraceElement) {
-	return
-}
-
-// GetRel1 is a dummy function to implement the  traceElement interface
-func (n *TraceElementNew) GetRel1() []TraceElement {
-	return make([]TraceElement, 0)
-}
-
-// GetRel2 is a dummy function to implement the  traceElement interface
-func (n *TraceElementNew) GetRel2() []TraceElement {
-	return make([]TraceElement, 0)
 }

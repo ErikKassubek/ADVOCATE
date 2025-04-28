@@ -189,6 +189,10 @@ func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
 // Returns:
 //   - *VectorClock: The copy of the vector clock
 func (vc *VectorClock) Copy() *VectorClock {
+	if vc == nil {
+		return nil
+	}
+
 	newVc := NewVectorClock(vc.size)
 	for rout, val := range vc.clock {
 		newVc.clock[rout] = val

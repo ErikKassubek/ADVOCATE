@@ -18,6 +18,7 @@ import (
 	"analyzer/utils"
 	"fmt"
 	"math"
+	"path/filepath"
 	"time"
 )
 
@@ -26,7 +27,7 @@ type mutation struct {
 	mutType int
 	mutSel  map[string][]fuzzingSelect
 	mutFlow map[string]int
-	mutPie  string
+	mutPie  int
 }
 
 // Possible values for fuzzing mode
@@ -89,7 +90,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow")
 	}
 
-	modes := []string{GoPie, GoPieHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
+	modes := []string{GoPie, GoPiePlus, GoPieHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
 	if !utils.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
@@ -225,10 +226,13 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 
 		fuzzingPath := ""
+		var order mutation
 		if numberFuzzingRuns != 0 {
-			order := popMutation()
+			order = popMutation()
 			if order.mutType == mutPiType {
-				fuzzingPath = order.mutPie
+				fuzzingPath = filepath.Join(fuzzingPath,
+					filepath.Join("fuzzingTraces",
+						fmt.Sprintf("fuzzingTrace_%d", order.mutPie)))
 			} else {
 				err := writeMutationToFile(progDir, order)
 				if err != nil {
@@ -271,7 +275,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// add mutations based on GoPie
 			if fuzzingModeGoPie {
 				utils.LogInfof("Create GoPie mutations")
-				createGoPieMut(progDir, numberFuzzingRuns)
+				createGoPieMut(progDir, numberFuzzingRuns, order.mutPie)
 			}
 
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))

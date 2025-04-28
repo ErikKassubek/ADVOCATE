@@ -21,14 +21,17 @@ import (
 
 // TraceElementOnce is a trace element for a once
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the mutex
 //   - suc bool: Whether the operation was successful
 //   - file (string), line int: The position of the mutex operation in the code
+//   - vc *clock.VectorClock: the vector clock of the element
+//   - wVc *clock.VectorClock: the weak vector clock of the element
 type TraceElementOnce struct {
+	traceID int
 	index   int
 	routine int
 	tPre    int
@@ -39,8 +42,6 @@ type TraceElementOnce struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementOnce adds a new mutex trace element to the main trace
@@ -90,8 +91,6 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 		line:    line,
 		vc:      nil,
 		wVc:     nil,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -321,12 +320,29 @@ func (on *TraceElementOnce) ToString() string {
 	return res
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (on *TraceElementOnce) GetTraceID() int {
+	return on.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (on *TraceElementOnce) setTraceID(ID int) {
+	on.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (on *TraceElementOnce) Copy() TraceElement {
 	return &TraceElementOnce{
+		traceID: on.traceID,
 		index:   on.index,
 		routine: on.routine,
 		tPre:    on.tPre,
@@ -337,56 +353,5 @@ func (on *TraceElementOnce) Copy() TraceElement {
 		line:    on.line,
 		vc:      on.vc.Copy(),
 		wVc:     on.wVc.Copy(),
-		rel1:    on.rel1,
-		rel2:    on.rel1,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//
-//	elem TraceElement: elem to add
-//	pos int: before (0) or after (1)
-func (on *TraceElementOnce) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if on.IsEqual(elem) {
-		return
-	}
-	on.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (on *TraceElementOnce) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if on.IsEqual(elem) {
-		return
-	}
-
-	on.rel2 = append(on.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (on *TraceElementOnce) GetRel1() []TraceElement {
-	return on.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel2 set
-func (on *TraceElementOnce) GetRel2() []TraceElement {
-	return on.rel2
 }

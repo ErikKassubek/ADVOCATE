@@ -52,8 +52,6 @@ type TraceElement interface {
 	GetVC() *clock.VectorClock
 	GetWVc() *clock.VectorClock
 	Copy() TraceElement
-	AddRel1(elem TraceElement, pos int)
-	AddRel2(elem TraceElement)
-	GetRel1() []TraceElement
-	GetRel2() []TraceElement
+	setTraceID(ID int)
+	GetTraceID() int
 }

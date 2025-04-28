@@ -30,7 +30,7 @@ const (
 
 // TraceElementCond is a trace element for a condition variable
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
@@ -38,8 +38,9 @@ const (
 //   - opC opCond: The operation on the condition variable
 //   - file string, The file of the condition variable operation in the code
 //   - line int, The line of the condition variable operation in the code
-//   - tID string: The id of the trace element, contains the position and the tPre
+
 type TraceElementCond struct {
+	traceID int
 	index   int
 	routine int
 	tPre    int
@@ -50,8 +51,6 @@ type TraceElementCond struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementCond adds a new condition variable element to the main trace
@@ -104,8 +103,6 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 		line:    line,
 		vc:      nil,
 		wVc:     nil,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -348,12 +345,29 @@ func (co *TraceElementCond) ToString() string {
 	return res
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (co *TraceElementCond) GetTraceID() int {
+	return co.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (co *TraceElementCond) setTraceID(ID int) {
+	co.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (co *TraceElementCond) Copy() TraceElement {
 	return &TraceElementCond{
+		traceID: co.traceID,
 		index:   co.index,
 		routine: co.routine,
 		tPre:    co.tPre,
@@ -364,55 +378,5 @@ func (co *TraceElementCond) Copy() TraceElement {
 		line:    co.line,
 		vc:      co.vc.Copy(),
 		wVc:     co.wVc.Copy(),
-		rel1:    co.rel1,
-		rel2:    co.rel1,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (co *TraceElementCond) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-	// do not add yourself
-	if co.IsEqual(elem) {
-		return
-	}
-
-	co.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (co *TraceElementCond) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if co.IsEqual(elem) {
-		return
-	}
-
-	co.rel2 = append(co.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (co *TraceElementCond) GetRel1() []TraceElement {
-	return co.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel2 set
-func (co *TraceElementCond) GetRel2() []TraceElement {
-	return co.rel2
 }

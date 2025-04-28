@@ -33,8 +33,9 @@ const (
 )
 
 // TraceElementMutex is a trace element for a mutex
-// Fields:
 //
+// Fields:
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
@@ -47,9 +48,8 @@ const (
 //   - line int: The line of the mutex operation in the code
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - the rel1 set for GoPie fuzzing
-//   - the rel2 set for GoPie fuzzing
 type TraceElementMutex struct {
+	traceID int
 	index   int
 	routine int
 	tPre    int
@@ -62,8 +62,6 @@ type TraceElementMutex struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementMutex adds a new mutex element to the main trace
@@ -139,8 +137,6 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 		suc:     sucBool,
 		file:    file,
 		line:    line,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 		vc:      nil,
 		wVc:     nil,
 	}
@@ -427,12 +423,29 @@ func (mu *TraceElementMutex) ToString() string {
 	return res
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (mu *TraceElementMutex) GetTraceID() int {
+	return mu.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (mu *TraceElementMutex) setTraceID(ID int) {
+	mu.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (mu *TraceElementMutex) Copy() TraceElement {
 	return &TraceElementMutex{
+		traceID: mu.traceID,
 		index:   mu.index,
 		routine: mu.routine,
 		tPre:    mu.tPre,
@@ -445,56 +458,5 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 		line:    mu.line,
 		vc:      mu.vc.Copy(),
 		wVc:     mu.wVc.Copy(),
-		rel1:    mu.rel1,
-		rel2:    mu.rel1,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (mu *TraceElementMutex) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if mu.IsEqual(elem) {
-		return
-	}
-
-	mu.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (mu *TraceElementMutex) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if mu.IsEqual(elem) {
-		return
-	}
-
-	mu.rel2 = append(mu.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (mu *TraceElementMutex) GetRel1() []TraceElement {
-	return mu.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (mu *TraceElementMutex) GetRel2() []TraceElement {
-	return mu.rel2
 }

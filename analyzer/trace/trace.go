@@ -30,6 +30,7 @@ type Trace struct {
 	traces             map[int][]TraceElement
 	hbWasCalc          bool
 	numberElemsInTrace map[int]int
+	minTraceID         int
 }
 
 // TODO: update numberElemsInTrace on trace modification
@@ -43,6 +44,7 @@ func NewTrace() Trace {
 		traces:             make(map[int][]TraceElement),
 		hbWasCalc:          false,
 		numberElemsInTrace: make(map[int]int),
+		minTraceID:         0,
 	}
 }
 
@@ -52,6 +54,10 @@ func NewTrace() Trace {
 //   - elem TraceElement: Element to add
 func (t *Trace) AddElement(elem TraceElement) {
 	routine := elem.GetRoutine()
+
+	t.minTraceID++
+	elem.setTraceID(t.minTraceID)
+
 	t.traces[routine] = append(t.traces[routine], elem)
 	t.numberElemsInTrace[routine]++
 }
@@ -637,6 +643,7 @@ func (t *Trace) Copy() Trace {
 		traces:             tracesCopy,
 		hbWasCalc:          t.hbWasCalc,
 		numberElemsInTrace: numberElemsInTraceCopy,
+		minTraceID:         t.minTraceID,
 	}
 }
 

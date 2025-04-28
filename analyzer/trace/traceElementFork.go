@@ -19,13 +19,16 @@ import (
 
 // TraceElementFork is a trace element for a go statement
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the new go statement
-//   - file (string), lineint: The position of the trace element in the file
+//   - file (string), line int: The position of the trace element in the file
+//   - vc *clock.VectorClock: the vector clock of the element
+//   - wVc *clock.VectorClock: the weak vector clock of the element
 type TraceElementFork struct {
+	traceID int
 	index   int
 	routine int
 	tPost   int
@@ -34,8 +37,6 @@ type TraceElementFork struct {
 	line    int
 	vc      *clock.VectorClock
 	wVc     *clock.VectorClock
-	rel1    []TraceElement
-	rel2    []TraceElement
 }
 
 // AddTraceElementFork adds a new go statement element to the main trace
@@ -68,8 +69,6 @@ func (t *Trace) AddTraceElementFork(routine int, tPost string, id string, pos st
 		id:      idInt,
 		file:    file,
 		line:    line,
-		rel1:    make([]TraceElement, 2),
-		rel2:    make([]TraceElement, 0),
 		vc:      nil,
 		wVc:     nil,
 	}
@@ -265,12 +264,29 @@ func (fo *TraceElementFork) ToString() string {
 		"," + fo.GetPos()
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (fo *TraceElementFork) GetTraceID() int {
+	return fo.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (fo *TraceElementFork) setTraceID(ID int) {
+	fo.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (fo *TraceElementFork) Copy() TraceElement {
 	return &TraceElementFork{
+		traceID: fo.traceID,
 		index:   fo.index,
 		routine: fo.routine,
 		tPost:   fo.tPost,
@@ -279,56 +295,5 @@ func (fo *TraceElementFork) Copy() TraceElement {
 		line:    fo.line,
 		vc:      fo.vc.Copy(),
 		wVc:     fo.wVc.Copy(),
-		rel1:    fo.rel1,
-		rel2:    fo.rel2,
 	}
-}
-
-// ========= For GoPie fuzzing ===========
-
-// AddRel1 adds an element to the rel1 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-//   - pos int: before (0) or after (1)
-func (fo *TraceElementFork) AddRel1(elem TraceElement, pos int) {
-	if pos < 0 || pos > 1 {
-		return
-	}
-
-	// do not add yourself
-	if fo.IsEqual(elem) {
-		return
-	}
-
-	fo.rel1[pos] = elem
-}
-
-// AddRel2 adds an element to the rel2 set of the element
-//
-// Parameter:
-//   - elem TraceElement: elem to add
-func (fo *TraceElementFork) AddRel2(elem TraceElement) {
-	// do not add yourself
-	if fo.IsEqual(elem) {
-		return
-	}
-
-	fo.rel2 = append(fo.rel2, elem)
-}
-
-// GetRel1 returns the rel1 set
-//
-// Returns:
-//   - []*TraceElement: the rel1 set
-func (fo *TraceElementFork) GetRel1() []TraceElement {
-	return fo.rel1
-}
-
-// GetRel2 returns the rel2 set
-//
-// Returns:
-//   - []*TraceElement: the rel2 set
-func (fo *TraceElementFork) GetRel2() []TraceElement {
-	return fo.rel2
 }

@@ -18,12 +18,13 @@ import (
 
 // TraceElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
-//
+//   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp at the end of the event
 //   - vc clock.VectorClock: The vector clock
 type TraceElementRoutineEnd struct {
+	traceID int
 	index   int
 	routine int
 	tPost   int
@@ -249,36 +250,33 @@ func (re *TraceElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(re.tPost)
 }
 
+// GetTraceID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (re *TraceElementRoutineEnd) GetTraceID() int {
+	return re.traceID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (re *TraceElementRoutineEnd) setTraceID(ID int) {
+	re.traceID = ID
+}
+
 // Copy the element
 //
 // Returns:
 //   - TraceElement: The copy of the element
 func (re *TraceElementRoutineEnd) Copy() TraceElement {
 	return &TraceElementRoutineEnd{
+		traceID: re.traceID,
 		index:   re.index,
 		routine: re.routine,
 		tPost:   re.tPost,
 		vc:      re.vc.Copy(),
 		wVc:     re.wVc.Copy(),
 	}
-}
-
-// AddRel1 is a dummy function to implement the traceElement interface
-func (re *TraceElementRoutineEnd) AddRel1(_ TraceElement, _ int) {
-	return
-}
-
-// AddRel2 is a dummy function to implement the traceElement interface
-func (re *TraceElementRoutineEnd) AddRel2(_ TraceElement) {
-	return
-}
-
-// GetRel1 is a dummy function to implement the traceElement interface
-func (re *TraceElementRoutineEnd) GetRel1() []TraceElement {
-	return make([]TraceElement, 0)
-}
-
-// GetRel2 is a dummy function to implement the traceElement interface
-func (re *TraceElementRoutineEnd) GetRel2() []TraceElement {
-	return make([]TraceElement, 0)
 }

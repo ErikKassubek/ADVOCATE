@@ -41,11 +41,6 @@ var (
 	timeoutReplay    int
 	recordTime       bool
 
-	resultFolderTool string
-	outM             string
-	outR             string
-	outT             string
-
 	noFifo                bool
 	ignoreCriticalSection bool
 	ignoreAtomics         bool
@@ -86,20 +81,15 @@ func main() {
 	flag.StringVar(&progName, "prog", "", "Name of the program")
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay or analyze")
+
 	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
 	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
-	flag.StringVar(&resultFolderTool, "resultTool", "", "Path where the advocateResult folder created by the pipeline is located")
-	flag.StringVar(&outM, "outM", "results_machine", "Name for the result machine file")
-	flag.StringVar(&outR, "outR", "results_readable", "Name for the result readable file")
-	flag.StringVar(&outT, "outT", "rewrittenTrace", "Name for the rewritten traces")
-
 	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
-
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay or analyze")
 
 	flag.BoolVar(&rewriteAll, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	rewriteAll = true
@@ -108,7 +98,7 @@ func main() {
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
 	flag.BoolVar(&skipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
-	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations, *notExec, *stats")
+	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations")
 	flag.BoolVar(&statistics, "stats", false, "Create statistics")
 
 	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
@@ -445,9 +435,9 @@ func printHelpMode(mode string) {
 		println("This runs the analysis on tests")
 		println("Usage: ./analyzer analysis [options]")
 		println("  -main                  Run on the main function instead on tests")
-		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function")
-		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
-		println("  -prog [name]           Name of the program (used for statistics)")
+		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function (required)")
+		println("  -exec [name]           For tests, name of the test to run (do not set to run all tests). For main name of the executable (only required if fo.mod cannot be found)")
+		println("  -prog [name]           Name of the program (required if -recordTime, -notExec or -stats is set)")
 		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
 		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
 		println("  -ignoreAtomics         Set to ignore atomics in replay")

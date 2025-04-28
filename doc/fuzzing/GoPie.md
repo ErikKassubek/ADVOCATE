@@ -28,6 +28,9 @@ Additionally, two consecutive triples in a chain must belong to different routin
 we only mutation the runs at positions, where the execution changes the routine. To build them, we traverse the trace in order of tPost and create sets of maximal length of consecutive operations, where two neighboring operations (we only look at the operations that are used for GoPie) are not in the same routine.
 
 ### Relations
+
+TODO: Neighboring elements in scheduling chain do not need to be consecutive in the execution. They just need to be in different routines
+
 We say $\langle c, c'\rangle \in CPOP_1$ is $c$ and $c_1$ are neighboring operations in the same routine. We say $\langle c, c' \rangle \in CPOP_2$ if $c$ and $c'$ are operations on the same primitive but in different routines.
 
 To see which mutations on a chain are possible, GoPie defines two Relation between operations. Those relations are defined by the following rules:
@@ -48,6 +51,10 @@ we only calculate those when needed $\to$ The transitive inference seems to make
 that all $Rel_{1/2}$ are calculated up front).
 
 ### Mutation
+
+TODO: how to choose scheduling chains
+TODO: in original, only based on rel2, -> goPie/01 cannot be found
+
 Given such a scheduling chain, it can be mutated with the following rules:
 
 1. Abridge: This removes an item from the $SC$ (either from head or tail) if there
@@ -73,7 +80,7 @@ for {
       tset[newCh2.toString()] = newCh2
     }
 
-    // Rule 2 -> flip (not in original implementation)
+    // Rule 2 -> flip (in paper, but not in original implementation)
     if ch.len() >= 2 {
       newChs := flip(ch)
       for _, newCh := range newChs {
@@ -131,6 +138,8 @@ or if not then with a probability of 50% (Why?)
 For the order enforcement, we use the order enforcement implemented for the [replay](../replay.md) mechanism. This means we write a trace file and replay it. For now, the replay files are created as follows: For each modified scheduling chain, we create one replay trace. For each of them, we reorder the elements in the recorded trace that correspond to the elements in the scheduling chain, to follow the order from the chain. We then remove all elements after the last element in the modified scheduling chain and add a replay end trace element. This allows us to force the program to execute the scheduling chain and then run without any guidance, hopefully executing new code.
 
 ## Improvements
+
+TODO: GoPie+ vs GoPieHB
 
 We merge the GoPie approach with our HB analysis. With this, we are able to
 reduce the number of runs the fuzzing needs to execute to trigger

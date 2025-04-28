@@ -15,11 +15,15 @@ import (
 	"analyzer/trace"
 )
 
+var currentTrace *trace.Trace
+
 // ParseTrace parses the trace and record all relevant data
 //
 // Parameter:
 //   - tr *trace *analysis.Trace: The trace to parse
 func ParseTrace(tr *trace.Trace) {
+	currentTrace = tr
+
 	// clear current order for gFuzz
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 
@@ -40,7 +44,13 @@ func ParseTrace(tr *trace.Trace) {
 
 			if fuzzingModeGoPie && canBeAddedToChain(elem) {
 				calculateRelRule2AddElem(elem)
-				addElemToChain(elem)
+
+				//  original GoPie does not mutate all chains, but only a random
+				// chain if its the first round or the original chain in all
+				// other round. We therefore do not need to collect all chains
+				if fuzzingMode != GoPie {
+					addElemToChain(elem)
+				}
 			}
 
 			if elem.GetTPost() == 0 {

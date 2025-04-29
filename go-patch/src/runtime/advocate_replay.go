@@ -56,7 +56,7 @@ var ExitCodeNames = map[int]string{
 var (
 	hasReturnedExitCode = false
 	ignoreAtomicsReplay = true
-	printDebug          = false
+	printDebug          = true
 
 	tPostWhenFirstTimeout    = 0
 	tPostWhenReplayDisabled  = 0
@@ -187,8 +187,8 @@ func BuildReplayKey(routine int, file string, line int) string {
 type AdvocateReplayTrace []ReplayElement
 
 var (
-	replayEnabled  bool // replay is on
-	replayLock     mutex
+	replayEnabled bool // replay is on
+	replayLock    mutex
 
 	// only run partial replay based on active
 	partialReplay        bool
@@ -202,6 +202,7 @@ var (
 	replayData            = make(AdvocateReplayTrace, 0)
 	numberElementsInTrace int
 	active                map[string][]int
+	startTimeActive       = -1
 
 	replayIndex = 0
 
@@ -227,7 +228,6 @@ func GetReplayTrace() *AdvocateReplayTrace {
 	return &replayData
 }
 
-
 // Print the replay trace for one routine.
 func (t AdvocateReplayTrace) Print() {
 	for _, e := range t {
@@ -235,20 +235,28 @@ func (t AdvocateReplayTrace) Print() {
 	}
 }
 
-
 // AddActiveTrace adds the set of active trace elements to the trace
 // and sets the replay to be partial
 //
 // Parameter
+//   - startTime int: switch to active replay if the element with time startTime
+//     has been replayed. If 0, start with active from the beginning,
+//     if -1 never switch to active replay
 //   - active map[string][int]: the map of active operations where the map
 //     key is equal to the replay element key (buildReplayKey) and value is the
 //     list of occurrences when the replay should be active for the element,
 //     e.g. if the value is [3, 4], the operation in the key is scheduled by
 //     the replay if it is executed the 3rd and 4th time, but not for the
 //     1st and 2nd time.
-func AddActiveTrace(activeMap map[string][]int) {
+func AddActiveTrace(startTime int, activeMap map[string][]int) {
 	active = activeMap
-	partialReplay = true
+	startTimeActive = startTime
+	if printDebug {
+		println("Add active with start time ", startTimeActive, " and ", len(active), " active elements")
+	}
+	if startTime == 0 {
+		partialReplay = true
+	}
 }
 
 // Enable the replay by starting the replay manager
@@ -260,7 +268,6 @@ func EnableReplay() {
 		replayData.Print()
 		println("\n\n")
 	}
-
 
 	go ReleaseWaits()
 
@@ -328,7 +335,6 @@ func WaitForReplayFinish(exit bool) {
 
 		sleep(0.001)
 	}
-
 
 	if stuckReplayExecutedSuc {
 		ExitReplayWithCode(expectedExitCode)
@@ -628,7 +634,6 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 			return false, nil, nil
 		}
 
-
 		partialReplayCounter[key] += 1
 		currentCounter := partialReplayCounter[key]
 
@@ -721,6 +726,36 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 		}
 	}
 
+	// switch to replay that only looks for active elements
+	println("Check for partial replay ", elemReplay.Time, startTimeActive)
+	if !partialReplay && startTimeActive != -1 && elemReplay.Time >= startTimeActive {
+		if printDebug {
+			println("Switch to active replay")
+		}
+		partialReplay = true
+		lock(&waitingOpsMutex)
+		for key, ops := range waitingOps {
+			// the operation is never active
+			c, ok := active[key]
+			if !ok {
+				ops.chWait <- ReplayElement{Blocked: false}
+				delete(waitingOps, key)
+				return true
+			}
+
+			partialReplayCounter[key] += 1
+			currentCounter := partialReplayCounter[key]
+
+			// the operation is sometimes active, but not this time
+			if !isInSlice(c, currentCounter) {
+				ops.chWait <- ReplayElement{Blocked: false}
+				delete(waitingOps, key)
+				return true
+			}
+		}
+		unlock(&waitingOpsMutex)
+	}
+
 	if printDebug {
 		println("Complete: ", elemReplay.key())
 	}
@@ -753,7 +788,7 @@ func getNextReplayElement() (int, ReplayElement) {
 	lock(&replayLock)
 	defer unlock(&replayLock)
 
-	if replayIndex >= numberElementsInTrace{
+	if replayIndex >= numberElementsInTrace {
 		return -1, ReplayElement{}
 	}
 
@@ -862,13 +897,11 @@ func ExitReplayPanic(msg any) {
 		finishTracingFunc()
 	}
 
-
-
 	// if !IsReplayEnabled() {
 	// 	return
 	// }
 
-	// ExitReplayWithCode(advocateExitCode)
+	ExitReplayWithCode(advocateExitCode)
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.

@@ -551,7 +551,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	}
 
 	// Run the test
-	utils.LogInfo("Run Recording")
+	utils.LogInfo("Execute Test")
 
 	// Set GOROOT
 	os.Setenv("GOROOT", pathToGoRoot)

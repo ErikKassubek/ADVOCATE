@@ -38,36 +38,31 @@ func newChain() chain {
 	return chain{elems}
 }
 
-// Traverse all elements in the trace in order of execution.
-// From this build the scheduling chains. A scheduling chain
-// is always the segment of maximum length, such that
-// to neighboring elements in the chain are neighbors in the global trace
-// and two neighboring elements in the chain are not in the same routine
-func addElemToChain(elem trace.TraceElement) {
-	routine := elem.GetRoutine()
+// func addElemToChain(elem trace.TraceElement) {
+// 	routine := elem.GetRoutine()
 
-	// if the element is already in the chain, it is not added again
-	if currentChain.contains(elem) {
-		return
-	}
+// 	// if the element is already in the chain, it is not added again
+// 	if currentChain.contains(elem) {
+// 		return
+// 	}
 
-	// add elem if the last routine is different from the routine of the elem
-	// if the current routine is empty, lastRoutine is -1 and this is always true
-	if lastRoutine != routine {
-		currentChain.add(elem.Copy())
-	} else {
-		// if the routine is the same as the last routine, we need to start a new
-		// chain. In this case, store the current chain as a scheduling chains
-		// and start a new routine with the current element
-		if currentChain.len() > 1 {
-			schedulingChains = append(schedulingChains, currentChain)
-		}
-		currentChain = newChain()
-		currentChain.add(elem.Copy())
-	}
+// 	// add elem if the last routine is different from the routine of the elem
+// 	// if the current routine is empty, lastRoutine is -1 and this is always true
+// 	if lastRoutine != routine {
+// 		currentChain.add(elem.Copy())
+// 	} else {
+// 		// if the routine is the same as the last routine, we need to start a new
+// 		// chain. In this case, store the current chain as a scheduling chains
+// 		// and start a new routine with the current element
+// 		if currentChain.len() > 1 {
+// 			schedulingChains = append(schedulingChains, currentChain)
+// 		}
+// 		currentChain = newChain()
+// 		currentChain.add(elem.Copy())
+// 	}
 
-	lastRoutine = routine
-}
+// 	lastRoutine = routine
+// }
 
 // randomChain returns a chain consisting of a
 // pair of operations (only of channel, select or mutex)
@@ -148,11 +143,25 @@ func (ch *chain) removeTail() {
 	ch.elems = ch.elems[:len(ch.elems)-1]
 }
 
+// Return the first element of a chain
+//
+// Returns:
+//   - analysis.TraceElement: the first element in the chain, or nil if chain is empty
+func (ch *chain) firstElement() trace.TraceElement {
+	if ch.len() == 0 {
+		return nil
+	}
+	return ch.elems[0]
+}
+
 // Return the last element of a chain
 //
 // Returns:
-//   - analysis.TraceElement: the last element in the chain
+//   - analysis.TraceElement: the last element in the chain, or nil if chain is empty
 func (ch *chain) lastElem() trace.TraceElement {
+	if ch.len() == 0 {
+		return nil
+	}
 	return ch.elems[len(ch.elems)-1]
 }
 

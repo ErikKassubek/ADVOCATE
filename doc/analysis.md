@@ -14,6 +14,7 @@ We try to find
 - [cyclick deadlocks](analysis/cyclicDeadlock.md)
 - [leaks](analysis/leak.md)
 - [concurrent recv on the same channel](analysis/concurrentReceive.md)
+- [actual panics](analysis/panics.md)
 
 To get an overview about possible bugs and how they are represented
 in the results, see [here](analysis/results.md)

@@ -44,13 +44,6 @@ func ParseTrace(tr *trace.Trace) {
 
 			if fuzzingModeGoPie && canBeAddedToChain(elem) {
 				calculateRelRule2AddElem(elem)
-
-				//  original GoPie does not mutate all chains, but only a random
-				// chain if its the first round or the original chain in all
-				// other round. We therefore do not need to collect all chains
-				if fuzzingMode != GoPie {
-					addElemToChain(elem)
-				}
 			}
 
 			if elem.GetTPost() == 0 {

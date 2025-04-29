@@ -43,14 +43,15 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 	// If no SC is given, it creates a new one consisting of two random
 	// operations that are in rel2 relation. Otherwise it always mutates the
 	// original SC, not newly recorded once
+	schedulingChains = []chain{}
 	if fuzzingMode == GoPie {
 		if c, ok := chainFiles[mutNumber]; ok {
 			schedulingChains = []chain{c}
-		} else {
-			schedulingChains = []chain{}
-			for range maxSCStart {
-				schedulingChains = append(schedulingChains, randomChain())
-			}
+		}
+	}
+	if len(schedulingChains) == 0 {
+		for range maxSCStart {
+			schedulingChains = append(schedulingChains, randomChain())
 		}
 	}
 
@@ -64,7 +65,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 			if fuzzingMode != GoPie && mut.len() <= 1 {
 				continue
 			}
-			if _, ok := allGoPieMutations[key]; !ok {
+			if _, ok := allGoPieMutations[key]; fuzzingMode == GoPie || !ok {
 				// only add if not invalidated by hb
 				if !useHBInfoFuzzing || mut.isValid() {
 					mutations[key] = mut
@@ -125,7 +126,9 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 
 		// write the active map to a "replay_active.log"
 		if fuzzingMode == GoPie {
-			writeMutActive(fuzzingTracePath, &traceCopy, &mut)
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+		} else {
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTSort())
 		}
 
 		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: numberWrittenGoPieMuts})
@@ -147,14 +150,13 @@ func addFuzzingTraceFolder(path string) {
 // Calculate the energy for a schedule. This determines how many mutations
 // are created
 func getEnergy() int {
-	numberScheduleChains := len(schedulingChains)
 
 	// not interesting
-	if analysis.GetTimeoutHappened() || numberScheduleChains == 0 {
+	if analysis.GetTimeoutHappened() {
 		return 0
 	}
 
-	score := counterCPOP1 + int(math.Log(float64(counterCPOP2))) + 10*numberScheduleChains
+	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

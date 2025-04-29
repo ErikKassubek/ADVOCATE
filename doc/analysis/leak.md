@@ -36,6 +36,7 @@ result.
 
 
 ## Analysis scenario: Non blocking Goroutine leak
+
 In some cases it can happen, that a routine is still running at the end,
 without it being blocked by one of the recorded operations. This can be
 a desired behavior, but can also be a sign for undesired behavior.

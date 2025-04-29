@@ -55,6 +55,7 @@ func calculateRelRule1(routineTrace []trace.TraceElement) {
 			}
 			rel1[elem1][elem2] = struct{}{}
 			rel1[elem2][elem1] = struct{}{}
+			counterCPOP1++
 		}
 	}
 }
@@ -93,6 +94,7 @@ func calculateRelRule2() {
 
 					rel2[elem1][elem2] = struct{}{}
 					rel2[elem2][elem1] = struct{}{}
+					counterCPOP2++
 				}
 			}
 		}
@@ -120,6 +122,7 @@ func calculateRelRule3And4() {
 						hasChanged = true
 					}
 					rel2[c][c2] = struct{}{}
+					counterCPOP2++
 				}
 			}
 		}
@@ -138,6 +141,7 @@ func calculateRelRule3And4() {
 						hasChanged = true
 					}
 					rel2[c][c2] = struct{}{}
+					counterCPOP2++
 				}
 			}
 		}

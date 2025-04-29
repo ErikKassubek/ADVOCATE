@@ -57,6 +57,7 @@ cannot be changed for some reason, the waiting operation will continue its
 execution, therefore continuing the program without the possibility of it getting stuck.
 
 ## Comparison to GoPie
+
 Lets look at the following example:
 
 ```go

@@ -26,7 +26,7 @@ The parameters are as follows:
 
 When using the toolchain to run replays, this header is automatically added.
 
-
+TODO: active replay
 
 ## Implementation
 The following is a description of the implementation of the trace replay.
@@ -477,3 +477,4 @@ To not get completely stuck if such operations occur, the replay mechanism
 is able to release waiting elements without them being the next trace element
 or to completely disable the replay, if it senses, that it is stuck (as
 described in the [details](#detail) section).
+

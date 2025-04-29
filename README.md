@@ -163,11 +163,12 @@ To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
 The available modes are:
 
 - `GFuzz`: Run the [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing
-- `GFuzzHB`: Run the improved [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing using happens-before information
+- `GFuzzHB`: Run the improved [GFuzz](doc/fuzzing/GFuzz.md#improvement-over-original-gfuzz) based fuzzing using happens-before information
 - `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
-- `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md) based fuzzing
-- `GoPieHB`: Run the improved [GoPie](doc/fuzzing/GoPie.md) based fuzzing using happens-before information
+- `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
+- `GoPie+`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
+- `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
 
 All other required and additional tags as well as the output files are the same as for the tool mode.
 

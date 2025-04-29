@@ -102,7 +102,10 @@ func getPath(path string) string {
 //   - fuzzingTracePath string: path to the trace folder
 //   - tr *trace.Trace: the trace to write
 //   - mut *chain: chain to write
-func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain) {
+//   - partTime int: if 0, the replay will partial replay from the beginning
+//     otherwise it will switch to partial replay when the element with this
+//     time is the next element to be replayed
+func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain, partTime int) {
 	activePath := filepath.Join(fuzzingTracePath, "replay_active.log")
 
 	f, err := os.Create(activePath)
@@ -111,6 +114,8 @@ func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain) {
 	}
 
 	defer f.Close()
+
+	f.WriteString(fmt.Sprintf("%d\n", partTime))
 
 	// find the counter for all elements in the mut
 	mutCounter := make(map[int]int)

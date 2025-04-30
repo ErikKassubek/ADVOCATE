@@ -55,7 +55,7 @@ Before Advocate can be used, it must first be build.
 First you need to build the [analyzer](analyzer).
 It can be build using the standard
 
-```shell
+```
 go build
 ```
 
@@ -65,13 +65,13 @@ command.
 Additionally, the modified go runtime must be build. The runtime can be found in [go-patch](go-patch).
 To build it run the
 
-```shell
+```
 ./src/make.bash
 ```
 
 or
 
-```shell
+```
 ./src/make.bat
 ```
 
@@ -95,7 +95,7 @@ to confirm the bug.
 
 It can be run with
 
-```shell
+```
 ./analyzer analysis [args]
 ```
 
@@ -119,6 +119,32 @@ If only a single test should be analyzed, this can be set with
 
 If not set, and `-main` is not set, all tests will be analyzed. Be aware, that this will run all tests
 with this name, meaning if multiple tests have the same name, they will all be run.
+
+The default behavior is to run all analysis scenarios. You can select to run
+only certain scenarios to by setting
+
+- `-scen [scenarios]`
+
+with the following possible scenarios:
+
+- `s`: Send on closed channel
+- `r`: Receive on closed channel
+- `w`: Done before add on waitGroup
+- `n`: Close of closed channel
+- `b`: Concurrent receive on channel
+- `l`: Leaking routine
+- `p`: Select case without partner
+- `u`: Unlock of unlocked mutex
+- `c`: Cyclic deadlock (resource deadlocks)
+
+To select multiple by adding them together, e.g.
+
+```
+  -scen sc
+```
+
+to run the analysis for send on closed and cyclic (resource) deadlocks.\
+If `-scen` is not set, all scenarios will be searched for.
 
 To set timeouts, you can set
 
@@ -145,15 +171,24 @@ The created statistic and time files can also be found in the `advocateResult` f
 
 An example command would be
 
-```shell
-./analyzer analysis -path ~/pathToProg/progDir/ -prog progName
 ```
+./analyzer analysis -path ~/pathToProg/progDir/main.go -prog progName -main
+```
+
+to run the analysis on the main function of a program, or
+
+```
+./analyzer analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
+```
+
+to analyze the test `TestOne` in the given path, only checking for cyclic (resource) deadlocks.
+
 
 #### Mode: fuzzing
 
 To run the fuzzing as described [here](doc/fuzzing.md), the following command can be used:
 
-```shell
+```
 ./analyzer fuzzing [args]
 ```
 
@@ -172,7 +207,7 @@ All other required and additional tags as well as the output files are the same 
 
 An example command would therefore be
 
-```shell
+```
 ./analyzer fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
 
@@ -185,7 +220,7 @@ available.
 
 To create a trace from a program or test, you can run
 
-```shell
+```
 ./analyzer record [args]
 ```
 
@@ -195,7 +230,7 @@ mentioned above can also be used.
 
 To replay a trace, you can run
 
-```shell
+```
 ./analyzer replay [args]
 ```
 

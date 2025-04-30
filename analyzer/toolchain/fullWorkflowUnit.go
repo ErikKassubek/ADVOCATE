@@ -34,6 +34,10 @@ import (
 // Parameter:
 //   - pathToAdvocate string: pathToAdvocate
 //   - dir string: path to the folder containing the unit tests
+//   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
+//     set the trace at tracePath is used
+//   - runAnalysis bool: run the analysis on a path
+//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - pathToTest string: path to the test file, should be set if exec is set
 //   - progName string: name of the analyzed program
 //   - measureTime bool: if true, measure the time for all steps. This
@@ -50,10 +54,11 @@ import (
 //
 // Returns:
 //   - error
-func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
+func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runReplay bool,
+	pathToTest, progName string,
 	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
-	keepTraces, firstRun, skipExisting, cont bool, fileNumber, testNumber int,
-	onlyRecord bool) error {
+	keepTraces, firstRun, skipExisting, cont bool, fileNumber,
+	testNumber int) error {
 	// Validate required inputs
 	if pathToAdvocate == "" {
 		return errors.New("Path to advocate is empty")
@@ -156,8 +161,8 @@ func runWorkflowUnit(pathToAdvocate, dir, pathToTest, progName string,
 
 			// Execute full workflow
 			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate,
-				dir, testFunc, adjustedPackagePath, file, fuzzing,
-				fuzzingTrace, onlyRecord)
+				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
+				fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
 
@@ -375,6 +380,10 @@ func FindTestFunctions(file string) ([]string, error) {
 // Parameter:
 //   - pathToAdvocate string: path to advocate
 //   - dir string: path to the package to test
+//   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
+//     set the trace at tracePath is used
+//   - runAnalysis bool: run the analysis on a path
+//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - progName string: name of the program
 //   - testName string: name of the test
 //   - pkg string: adjusted package path
@@ -387,8 +396,10 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - int: number of run replays
 //   - bool: true if analysis passed without error
 //   - error
-func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string,
-	fuzzing int, fuzzingTrace string, onlyRecord bool) (int, bool, error) {
+func unitTestFullWorkflow(pathToAdvocate, dir string,
+	runRecord, runAnalysis, runReplay bool,
+	testName, pkg, file string,
+	fuzzing int, fuzzingTrace string) (int, bool, error) {
 	output := "output.log"
 
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -440,35 +451,38 @@ func unitTestFullWorkflow(pathToAdvocate, dir, testName, pkg, file string,
 
 	pkg = strings.TrimPrefix(pkg, dir)
 
-	if measureTime && fuzzing < 1 {
-		err := unitTestRun(pkg, file, testName)
-		if err != nil {
-			if checkForTimeout(output) {
-				utils.LogTimeout("Running T0 timed out")
+	if runRecord {
+		if measureTime && fuzzing < 1 {
+			err := unitTestRun(pkg, file, testName)
+			if err != nil {
+				if checkForTimeout(output) {
+					utils.LogTimeout("Running T0 timed out")
+				}
 			}
+		}
+
+		err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, fuzzingTrace, output)
+		if err != nil {
+			utils.LogError("Recording failed: ", err.Error())
 		}
 	}
 
-	err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, fuzzingTrace, output)
-	if err != nil {
-		utils.LogError("Recording failed: ", err.Error())
+	if runAnalysis {
+		pkgPath := filepath.Join(dir, pkg)
+		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
+		if err != nil {
+			return 0, false, err
+		}
+
+		if onlyAPanicAndLeakFlag {
+			return 0, true, nil
+		}
 	}
 
-	if onlyRecord {
-		return 0, true, nil
+	numberReplay := 0
+	if runReplay {
+		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output, runAnalysis)
 	}
-
-	pkgPath := filepath.Join(dir, pkg)
-	err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
-	if err != nil {
-		return 0, false, err
-	}
-
-	if onlyAPanicAndLeakFlag {
-		return 0, true, nil
-	}
-
-	numberReplay := unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output)
 
 	return numberReplay, true, nil
 }
@@ -537,7 +551,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	}
 
 	// Run the test
-	utils.LogInfo("Run Recording")
+	utils.LogInfo("Execute Test")
 
 	// Set GOROOT
 	os.Setenv("GOROOT", pathToGoRoot)
@@ -613,10 +627,12 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 //   - file string: path to the file containing the test function
 //   - testName string: name of the test function to run
 //   - output string: path to the output file
+//   - runAnalysis bool: whether the rewritten traces from the analysis or the
+//     given trace path should be used
 //
 // Returns:
 //   - int: number of executed replays
-func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string) int {
+func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string, fromAnalysis bool) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
@@ -624,7 +640,13 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 	pathPkg := filepath.Join(dir, pkg)
 
-	rewrittenTraces, _ := filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
+	rewrittenTraces := make([]string, 0)
+
+	if fromAnalysis {
+		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
+	} else {
+		rewrittenTraces = append(rewrittenTraces, tracePathFlag)
+	}
 
 	utils.LogInfof("Found %d rewritten traces", len(rewrittenTraces))
 

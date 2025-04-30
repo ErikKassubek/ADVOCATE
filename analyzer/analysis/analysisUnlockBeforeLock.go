@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 	"fmt"
 )
@@ -22,30 +23,34 @@ import (
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
-func checkForUnlockBeforeLockLock(mu *TraceElementMutex) {
+func checkForUnlockBeforeLockLock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	if _, ok := allLocks[mu.id]; !ok {
-		allLocks[mu.id] = make([]TraceElement, 0)
+	id := mu.GetID()
+
+	if _, ok := allLocks[id]; !ok {
+		allLocks[id] = make([]trace.TraceElement, 0)
 	}
 
-	allLocks[mu.id] = append(allLocks[mu.id], mu)
+	allLocks[id] = append(allLocks[id], mu)
 }
 
 // Collect all unlocks for the analysis
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
-func checkForUnlockBeforeLockUnlock(mu *TraceElementMutex) {
+func checkForUnlockBeforeLockUnlock(mu *trace.TraceElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	if _, ok := allLocks[mu.id]; !ok {
-		allUnlocks[mu.id] = make([]TraceElement, 0)
+	id := mu.GetID()
+
+	if _, ok := allLocks[id]; !ok {
+		allUnlocks[id] = make([]trace.TraceElement, 0)
 	}
 
-	allUnlocks[mu.id] = append(allUnlocks[mu.id], mu)
+	allUnlocks[id] = append(allUnlocks[id], mu)
 }
 
 // Check if we can get a unlock of a not locked mutex
@@ -58,7 +63,7 @@ func checkForUnlockBeforeLock() {
 
 	for id := range allUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
-		if sameRoutine(allLocks[id], allUnlocks[id]) {
+		if trace.SameRoutine(allLocks[id], allUnlocks[id]) {
 			continue
 		}
 
@@ -71,8 +76,8 @@ func checkForUnlockBeforeLock() {
 
 		nrUnlock := len(allUnlocks)
 
-		locks := make([]TraceElement, 0)
-		unlocks := make([]TraceElement, 0)
+		locks := make([]trace.TraceElement, 0)
+		unlocks := make([]trace.TraceElement, 0)
 
 		if maxFlow < nrUnlock {
 			for _, l := range allLocks[id] {
@@ -85,8 +90,8 @@ func checkForUnlockBeforeLock() {
 				unlocks = append(unlocks, u)
 			}
 
-			locksSorted := make([]TraceElement, 0)
-			unlockSorted := make([]TraceElement, 0)
+			locksSorted := make([]trace.TraceElement, 0)
+			unlockSorted := make([]trace.TraceElement, 0)
 
 			for i := 0; i < len(locks); {
 				removed := false
@@ -114,7 +119,7 @@ func checkForUnlockBeforeLock() {
 				if u.GetTID() == "\n" {
 					continue
 				}
-				file, line, tPre, err := infoFromTID(u.GetTID())
+				file, line, tPre, err := trace.InfoFromTID(u.GetTID())
 				if err != nil {
 					utils.LogError(err.Error())
 					continue
@@ -134,7 +139,7 @@ func checkForUnlockBeforeLock() {
 				if l.GetTID() == "\n" {
 					continue
 				}
-				file, line, tPre, err := infoFromTID(l.GetTID())
+				file, line, tPre, err := trace.InfoFromTID(l.GetTID())
 				if err != nil {
 					utils.LogError(err.Error())
 					continue

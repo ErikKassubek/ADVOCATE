@@ -3,6 +3,7 @@
 The select based fuzzing is based on [GFuzz](../relatedWorks/gfuzz.md).
 
 ## Fuzzing
+
 The main fuzzing loop is implemented as follows.\
 The fuzzing contains a queue with all the mutations to run.
 When the program or test is run for the first time, it will be run in the normal recording mode of the toolchain. Otherwise it will pop a mutation
@@ -19,11 +20,13 @@ This loop is repeated until the mutation queue is empty. Additionally a maximum 
 
 
 ## Implementation
+
 - It is possible to determine all values needed to determine how interesting a run is from the trace
 - Checking if a select case is possible using the HB relation would only make sense until the program run first executes a select, where a different channel is used than in the last recording. After that, the HB relation is no longer valid and can therefore not be used to determine, if a select case has a possible partner.
 - The score calculation could include information from the HB relation. E.g., a run where many not executed select cases have a possible partner, could be more interesting.
 
 ### Determine whether the run was interesting
+
 - A run is interesting, if one of the following conditions is met. The underlying information need to be stored in a file for the following runs.
   - The run contains a new pair of channel operations
     - All pairs of channel operations (send-recv) must be stored
@@ -42,6 +45,7 @@ This loop is repeated until the mutation queue is empty. Additionally a maximum 
   a select case, that has never been selected before is selected
 
 ### Determine the score
+
 - For the base GFuzz, we need to extract the following information from the trace:
   - CountChOpPair_i: For each pair i of send/receive, how often was it executed
   - CreateCh: How many distinct channels have been created
@@ -64,6 +68,7 @@ where $a$ is a scaling factor that is still to be determined by experiments (cur
 
 
 ### Creating mutations
+
 From the score of an interesting mutation we get the number of mutations to create
 by calculating $$mut = \lceil 5 * score/maxScore \rceil.$$
 
@@ -81,13 +86,14 @@ The newly created mutations are then stored in a queue to be run.
 
 
 ### Flip Probability
+
 The flip probability is the probability that a single select in the fuzzingData will change its preferred case compared to the previous mutation. If its set to high, the mutation mechanism basically becomes completely random. If its to small, the program will result in the same mutation being created over and over again. For now the probability is calculated as $$P = max(0.1, 1 - (1 - 0.99)^{1/numSel})$$ where $numSel$ is the number of selects in the previous mutation. This is selected in such a way, that the probability of at least one of the selects to flip its preferred case is at least $99\%$, but the probability for each individual select to get flipped is at least $10\%$. This may be changed based on experimental results.
 
 This is extended for the version with HB information. Here we want to increase the chance for of a case with a possible partner to be chosen. We don't want to make them impossible, since it can happen that a different case in a earlier select uncovers a potential partner in a later select for a case, which was indicated to have no potential partner in the previous run. We therefore chose those cases with a higher probability (3:1).
 
 
-
 ### Running a mutation
+
 The `fuzzingData.log` contains for each select a list the preferred cases.
 The selects are identified by its position in the code base. When initializing the mutation run, the file is read in and stored in a `map[string][]int` `fuzzingSelectData` with an entry per select containing the list of preferred indexes. Additionally there is a map `fuzzingSelectDataIndex: map[string]int`, storing for each of the select the index of the next preferred case in `fuzzingSelectData`. Then a select is supposed to be executed, assuming it is not an internal select, the preferred case is retrieved via `fuzzingSelectData[selPos][fuzzingSelectDataIndex[selPos]]` followed by `fuzzingSelectDataIndex[selPos]++`.
 
@@ -142,6 +148,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 This part method will first start a go routine with a timer. If the timer has run out, it will wake up the routine regardless of whether it has found a partner. Then the normal park function is run. If the routine was woken up because the enqueued channel found a partner, the select continues as in the unmodified version. If it was woken up by the timeout, it will remove the enqueued channel operation, do some clean up and return from the modified select returning $ok = false$. In this case the unmodified select will be run as can be seen in the `selectgo` func above.
 
 ## Improvement over original GFuzz
+
 The improvements over GFuzz are mainly in finding interesting runs faster and
 therefore needing to run fewer runs.
 The main improvement is, as always, that

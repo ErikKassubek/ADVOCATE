@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"analyzer/analysis"
+	"analyzer/trace"
 	"analyzer/utils"
 )
 
@@ -26,17 +26,17 @@ const (
 )
 
 var (
-	numberOfPreviousRuns     = 0
-	numberOfWrittenGoPieMuts = 0
-	maxGFuzzScore            = 0.0
-	maxGoPieScore            = 0
+	numberOfPreviousRuns   = 0
+	numberWrittenGoPieMuts = 0
+	maxGFuzzScore          = 0.0
+	maxGoPieScore          = 0
 	// Info for the current trace
 	channelInfoTrace = make(map[int]fuzzingChannel)     // localID -> fuzzingChannel
 	pairInfoTrace    = make(map[string]fuzzingPair)     // posSend-posRecv -> fuzzing pair
 	selectInfoTrace  = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
 	numberSelects    = 0
 	numberClose      = 0
-	elemsByID        = make(map[int][]analysis.TraceElement) // id -> chan/sel/mutex elem
+	elemsByID        = make(map[int][]trace.TraceElement) // id -> chan/sel/mutex elem
 	// Info from the file/the previous runs
 	channelInfoFile              = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
 	pairInfoFile                 = make(map[string]fuzzingPair)    // posSend-noPrintosRecv -> fuzzing pair
@@ -142,7 +142,7 @@ func clearData() {
 	channelInfoTrace = make(map[int]fuzzingChannel)
 	pairInfoTrace = make(map[string]fuzzingPair)
 	selectInfoTrace = make(map[string][]fuzzingSelect)
-	elemsByID = make(map[int][]analysis.TraceElement)
+	elemsByID = make(map[int][]trace.TraceElement)
 }
 
 // Reset the fuzzing data that is unique for each test but used for each fuzzing

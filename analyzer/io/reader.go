@@ -13,6 +13,7 @@ package io
 import (
 	"analyzer/analysis"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 	"bufio"
 	"errors"
@@ -44,7 +45,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		return 0, 0, err
 	}
 
-	analysis.SetMainTraceToNewTrace()
+	tr := trace.NewTrace()
 
 	elemCounter := 0
 	for _, file := range files {
@@ -66,16 +67,18 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		if err != nil {
 			continue
 		}
-		numberRoutines = max(numberRoutines, routine)
 
-		numberElems, err := createTraceFromFile(filePath, routine, ignoreAtomics)
+		numberElems, err := createTraceFromFile(&tr, filePath, routine, ignoreAtomics)
 		if err != nil {
 			return 0, elemCounter, err
 		}
 		elemCounter += numberElems
+		numberRoutines++
 	}
 
-	analysis.SortTrace()
+	tr.Sort()
+
+	analysis.SetMainTrace(&tr)
 
 	return numberRoutines, elemCounter, nil
 }
@@ -141,33 +144,35 @@ func getTraceInfoFromFile(filePath string) error {
 // Read and build the trace from a file
 //
 // Parameter:
+//   - tr *trace.Trace: the trace to add the elements to
 //   - filePath string: The path to the log file
 //   - routine int: The routine id
 //   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
-//   - - int: number of elements
+//   - int: number of elements
 //   - error: An error if the trace could not be created
-func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int, error) {
+func createTraceFromFile(tr *trace.Trace, filePath string, routine int, ignoreAtomics bool) (int, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		utils.LogError("Error opening file: " + filePath)
 		return 0, err
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+
+	tr.AddRoutine(routine)
 
 	counter := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		err := processElement(line, routine, ignoreAtomics)
+		err := processElement(tr, line, routine, ignoreAtomics)
 		if err != nil {
 			utils.LogError("Error in processing trace element: ", err)
 		}
 		counter++
 	}
-
-	file.Close()
 
 	return counter, scanner.Err()
 }
@@ -175,13 +180,14 @@ func createTraceFromFile(filePath string, routine int, ignoreAtomics bool) (int,
 // Process one element from the log file.
 //
 // Parameter:
+//   - tr *trace.Trace: the trace to add the elements to
 //   - element string: The element to process
 //   - routine int: The routine id, equal to the line number
 //   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - error: An error if the element could not be processed
-func processElement(element string, routine int, ignoreAtomics bool) error {
+func processElement(tr *trace.Trace, element string, routine int, ignoreAtomics bool) error {
 	if element == "" {
 		return errors.New("Element is empty")
 	}
@@ -192,59 +198,59 @@ func processElement(element string, routine int, ignoreAtomics bool) error {
 		if ignoreAtomics {
 			return nil
 		}
-		err = analysis.AddTraceElementAtomic(routine, fields[1], fields[2], fields[3], fields[4])
+		err = tr.AddTraceElementAtomic(routine, fields[1], fields[2], fields[3], fields[4])
 	case "C":
 		if len(fields) != 10 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 10", element, len(fields))
 		}
-		err = analysis.AddTraceElementChannel(routine, fields[1], fields[2],
+		err = tr.AddTraceElementChannel(routine, fields[1], fields[2],
 			fields[3], fields[4], fields[5], fields[6], fields[7], fields[8], fields[9])
 	case "M":
 		if len(fields) != 8 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 8", element, len(fields))
 		}
-		err = analysis.AddTraceElementMutex(routine, fields[1], fields[2],
+		err = tr.AddTraceElementMutex(routine, fields[1], fields[2],
 			fields[3], fields[4], fields[5], fields[6], fields[7])
 	case "G":
 		if len(fields) != 4 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
 		}
-		err = analysis.AddTraceElementFork(routine, fields[1], fields[2], fields[3])
+		err = tr.AddTraceElementFork(routine, fields[1], fields[2], fields[3])
 	case "S":
 		if len(fields) != 7 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 7", element, len(fields))
 		}
-		err = analysis.AddTraceElementSelect(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementSelect(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5], fields[6])
 	case "W":
 		if len(fields) != 8 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 8", element, len(fields))
 		}
-		err = analysis.AddTraceElementWait(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementWait(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5], fields[6], fields[7])
 	case "O":
 		if len(fields) != 6 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
 		}
-		err = analysis.AddTraceElementOnce(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementOnce(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "D":
 		if len(fields) != 6 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
 		}
-		err = analysis.AddTraceElementCond(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementCond(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "N":
 		if len(fields) != 6 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
 		}
-		err = analysis.AddTraceElementNew(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementNew(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "E":
 		if len(fields) != 2 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 2", element, len(fields))
 		}
-		err = analysis.AddTraceElementRoutineEnd(routine, fields[1])
+		err = tr.AddTraceElementRoutineEnd(routine, fields[1])
 	default:
 		return errors.New("Unknown element type in: " + element)
 	}

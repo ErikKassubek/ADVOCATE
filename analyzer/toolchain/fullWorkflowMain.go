@@ -29,6 +29,11 @@ import (
 // Parameter:
 //   - pathToAdvocate string: path to the ADVOCATE folder
 //   - pathToFile string: path to the file containing the main function
+//   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
+//     set the trace at tracePath is used
+//   - runAnalysis bool: run the analysis on a path
+//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
+//     otherwise the trace at tracePath is replayed
 //   - executableName string: name of the executable
 //   - keepTraces bool: do not delete the traces after analysis
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
@@ -38,12 +43,15 @@ import (
 //
 // Returns:
 //   - error
-func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName string,
-	keepTraces bool, fuzzing int, fuzzingTrace string, firstRun bool,
-	onlyRecord bool) error {
+func runWorkflowMain(pathToAdvocate string, pathToFile string,
+	runRecord, runAnalysis, runReplay bool,
+	executableName string, keepTraces bool, fuzzing int, fuzzingTrace string,
+	firstRun bool) error {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
+
+	utils.LogInfo("Run main")
 
 	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
 
@@ -58,6 +66,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	if err := os.Chdir(dir); err != nil {
 		return fmt.Errorf("Failed to change directory: %v", err)
 	}
+	resultPath := filepath.Join(dir, "advocateResult")
 
 	if firstRun {
 		os.RemoveAll("advocateResult")
@@ -68,12 +77,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
 		removeTraces(dir)
 		removeLogs(dir)
-	}
-
-	if onlyRecord {
-		utils.LogInfo("Run program...")
-	} else {
-		utils.LogInfo("Run program and analysis...")
 	}
 
 	output := "output.log"
@@ -101,13 +104,39 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
 
-	// Remove header
-	if err := headerRemoverMain(pathToFile); err != nil {
-		return fmt.Errorf("Error removing header: %v", err)
-	}
+	if runRecord {
+		utils.LogInfo("Execute Program")
 
-	// build the program
-	if measureTime && fuzzing > 1 {
+		// Remove header
+		if err := headerRemoverMain(pathToFile); err != nil {
+			return fmt.Errorf("Error removing header: %v", err)
+		}
+
+		// build the program
+		if measureTime && fuzzing < 1 {
+			fmt.Printf("%s build\n", pathToPatchedGoRuntime)
+			if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
+				utils.LogError("Error in building program, removing header and stopping workflow")
+				headerRemoverMain(pathToFile)
+				return err
+			}
+
+			// run the program
+			timer.Start(timer.Run)
+			execPath := utils.MakePathLocal(executableName)
+			if err := runCommand(execPath); err != nil {
+				headerRemoverMain(pathToFile)
+			}
+			timer.Stop(timer.Run)
+
+		}
+
+		// Add header
+		if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
+			return fmt.Errorf("Error in adding header: %v", err)
+		}
+
+		// build the program
 		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
 			utils.LogError("Error in building program, removing header and stopping workflow")
@@ -115,101 +144,84 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 			return err
 		}
 
-		// run the program
-		timer.Start(timer.Run)
+		// run the recording
+		timer.Start(timer.Recording)
 		execPath := utils.MakePathLocal(executableName)
+		timer.Stop(timer.Recording)
 		if err := runCommand(execPath); err != nil {
 			headerRemoverMain(pathToFile)
 		}
-		timer.Stop(timer.Run)
 
-	}
-
-	// Add header
-	if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
-		return fmt.Errorf("Error in adding header: %v", err)
-	}
-
-	// build the program
-	fmt.Printf("%s build\n", pathToPatchedGoRuntime)
-	if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
-		utils.LogError("Error in building program, removing header and stopping workflow")
-		headerRemoverMain(pathToFile)
-		return err
-	}
-
-	// run the recording
-	timer.Start(timer.Recording)
-	execPath := utils.MakePathLocal(executableName)
-	timer.Stop(timer.Recording)
-	if err := runCommand(execPath); err != nil {
-		headerRemoverMain(pathToFile)
-	}
-
-	// Remove header
-	if err := headerRemoverMain(pathToFile); err != nil {
-		return fmt.Errorf("Error removing header: %v", err)
-	}
-
-	resultPath := filepath.Join(dir, "advocateResult")
-	if onlyRecord {
-		collect(dir, dir, resultPath, false)
-
-		return nil
+		// Remove header
+		if err := headerRemoverMain(pathToFile); err != nil {
+			return fmt.Errorf("Error removing header: %v", err)
+		}
 	}
 
 	// Apply analyzer
-	analyzerOutput := filepath.Join(dir, "advocateTrace")
+	if runAnalysis {
+		analyzerOutput := filepath.Join(dir, "advocateTrace")
 
-	err = runAnalyzer(analyzerOutput, noRewriteFlag, analysisCasesFlag,
-		"results_readable.log", "results_machine.log",
-		ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
-		"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
+		err = runAnalyzer(analyzerOutput, noRewriteFlag, analysisCasesFlag,
+			"results_readable.log", "results_machine.log",
+			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
+			"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
 
-	if err != nil {
-		return err
-	}
-
-	// Find rewrittenTrace directories
-	rewrittenTraces, err := filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
-	if err != nil {
-		return fmt.Errorf("Error finding rewritten traces: %v", err)
-	}
-
-	// Apply replay header and run tests for each trace
-	timeoutRepl := time.Duration(0)
-	if timeoutReplay == -1 {
-		timeoutRepl = 500 * timer.GetTime(timer.Recording)
-		timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
-	} else {
-		timeoutRepl = time.Duration(timeoutReplay) * time.Second
-	}
-
-	timer.Start(timer.Replay)
-	for _, trace := range rewrittenTraces {
-		traceNum := extractTraceNum(trace)
-		fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
-		if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing, fuzzingTrace); err != nil {
-			return err
-		}
-
-		// build the program
-		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
-			utils.LogError("Error in building program, removing header and stopping workflow")
-			headerRemoverMain(pathToFile)
-			continue
-		}
-
-		// run the program
-		execPath := utils.MakePathLocal(executableName)
-		runCommand(execPath)
-
-		fmt.Printf("Remove replay header from %s\n", pathToFile)
-		if err := headerRemoverMain(pathToFile); err != nil {
+		if err != nil {
 			return err
 		}
 	}
-	timer.Stop(timer.Replay)
+
+	rewrittenTraces := make([]string, 0)
+	if runReplay {
+		utils.LogInfo("Run replay")
+		// Find rewrittenTrace directories
+		if runAnalysis {
+			rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
+			if err != nil {
+				return fmt.Errorf("Error finding rewritten traces: %v", err)
+			}
+		} else {
+			if tracePathFlag != "" {
+				rewrittenTraces = append(rewrittenTraces, tracePathFlag)
+			}
+		}
+
+		// Apply replay header and run tests for each trace
+		timeoutRepl := time.Duration(0)
+		if timeoutReplay == -1 {
+			timeoutRepl = 500 * timer.GetTime(timer.Recording)
+			timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
+		} else {
+			timeoutRepl = time.Duration(timeoutReplay) * time.Second
+		}
+
+		timer.Start(timer.Replay)
+		for _, trace := range rewrittenTraces {
+			traceNum := extractTraceNum(trace)
+			fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
+			if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing, fuzzingTrace); err != nil {
+				return err
+			}
+
+			// build the program
+			if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
+				utils.LogError("Error in building program, removing header and stopping workflow")
+				headerRemoverMain(pathToFile)
+				continue
+			}
+
+			// run the program
+			execPath := utils.MakePathLocal(executableName)
+			runCommand(execPath)
+
+			fmt.Printf("Remove replay header from %s\n", pathToFile)
+			if err := headerRemoverMain(pathToFile); err != nil {
+				return err
+			}
+		}
+		timer.Stop(timer.Replay)
+	}
 
 	if !keepTraces {
 		removeTraces(dir)
@@ -219,10 +231,12 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string, executableName st
 	collect(dir, dir, resultPath, total)
 
 	// Generate Bug Reports
-	fmt.Println("Generate Bug Reports")
-	generateBugReports(resultPath, fuzzing)
+	if runAnalysis {
+		fmt.Println("Generate Bug Reports")
+		generateBugReports(resultPath, fuzzing)
 
-	timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
+		timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
+	}
 
 	if notExecuted {
 		complete.Check(filepath.Join(dir, "advocateResult"), dir)

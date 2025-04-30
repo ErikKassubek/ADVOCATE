@@ -29,12 +29,32 @@ var numberTimeout = 0
 var numberResults = 0
 var numberResultsConf = 0
 
+var noInfoFlag bool
+
+var preventPanicFlag bool
+
+// LogInit initializes the logging
+//
+// Parameter:
+//   - noInfo bool: if set, no info is shown during execution
+//     errors, results and important are still shown
+//   - preventPanic bool: is set to true, panics will only stop the current
+//     analysis or test and not the whole analyzer
+func LogInit(noInfo, preventPanic bool) {
+	noInfoFlag = noInfo
+	preventPanicFlag = preventPanic
+}
+
 // LogInfo logs an information to the terminal
 // Printed in base color
 //
 // Parameter:
 //   - v ...any: the content of the log
 func LogInfo(v ...any) {
+	if noInfoFlag {
+		return
+	}
+
 	log.Println(v...)
 }
 
@@ -45,6 +65,10 @@ func LogInfo(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func LogInfof(format string, v ...any) {
+	if noInfoFlag {
+		return
+	}
+
 	log.Printf(format, v...)
 }
 
@@ -151,4 +175,12 @@ func LogErrorf(format string, v ...any) {
 //   - int: number of timeouts
 func GetLoggingNumbers() (int, int, int, int) {
 	return numberResults, numberResultsConf, numberErr, numberTimeout
+}
+
+// IsPanicPrevent returns if panic should be suppressed
+//
+// Returns:
+//   - bool: true if panics should recover
+func IsPanicPrevent() bool {
+	return preventPanicFlag
 }

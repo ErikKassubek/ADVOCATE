@@ -32,6 +32,8 @@ var (
 	rewriteAllFlag            bool
 	onlyAPanicAndLeakFlag     bool
 	replayAllFlag             bool
+	noWarningFlag             bool
+	tracePathFlag             string
 )
 
 // SetFlags makes the relevant command line arguments given to the analyzer
@@ -47,9 +49,11 @@ var (
 //   - onlyAPanicAndLeak bool: do not run a HB analysis, but only detect actually occurring bugs
 //   - timeoutRec int: timeout of recording in seconds
 //   - timeoutRepl int: timeout of replay in seconds
+//   - tracePath string: path to the trace for replay mode
 func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
-	timeoutRec, timeoutRepl int, replayAll bool) {
+	timeoutRec, timeoutRepl int, replayAll bool, noWarning bool,
+	tracePath string) {
 
 	noRewriteFlag = noRewrite
 
@@ -65,4 +69,8 @@ func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	timeoutReplay = timeoutRepl
 
 	replayAllFlag = replayAll
+
+	noWarningFlag = noWarning
+
+	tracePathFlag = tracePath
 }

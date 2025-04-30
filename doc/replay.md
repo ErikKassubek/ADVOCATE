@@ -20,18 +20,17 @@ The replay is run, if the test of main function starts with the following header
 The parameters are as follows:
 
 - `index` $\in \mathbb{N}$: The replay expects the name of the folder containing the trace to be called `advocateTrace`, in this case set `index = 0` or `rewritten_trace_[index]`, meaning if the trace folder is called `rewritten_trace_2`, set `index = 2`
-- `exitCode` $\in \mathbb B$: currently always `false`<!-- TODO: currently always set to false, maybe remove -->
 - `timeout` $\in \mathbb{N}$: If you want to cancel the replay with a timeout after a given time, set this value to the timeout in seconds. Otherwise set to `0`.
 - `atomic`: If set to `true`, the replay will force the correct order of atomic events. If atomic operations should be ignored for the replay, set this to `false`.
 
 When using the toolchain to run replays, this header is automatically added.
 
 
-
 ## Implementation
+
 The following is a description of the implementation of the trace replay.
 
-First we will give an [overview](#overview) over the replay mechanism. Then
+First we will give an [overview](#replay-mechanism) over the replay mechanism. Then
 we will give an [detailed explanation](#detail) of the implementation.
 <!-- At the end we will illustrate the mechanism with an [example](#example). -->
 
@@ -411,11 +410,45 @@ or receive, until the communication succeeds or a timer runs out. If the timer
 runs out first, we run the default case regardless.
 
 #### Atomics
+
 While for most operations, we could add the code for the [replay](#replay-in-operations)
 directly into the implementation of those operations, this was not
 possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
+
+### Partial replay
+
+To implement some of the [Order based fuzzing](./fuzzing/GoPie.md), we use a
+simplified partial replay. Here, we do not restrict the order of all
+element in the trace and program. Instead, we have a list of active
+elements from the trace.
+
+When  read in a trace for a replay with partial order, we also read in
+a file containing the information about this partial replay. This file
+contains the active elements and an information when the replay should
+switch from the strict to the partial replay (this information can also
+indicate to directly start with the partial replay). When reading in the
+trace, the mechanism will ignore all elements that are after the specified
+starting point and not in the set of active operations.
+For operations that are in the list of active operations, we also store
+how often the same operation (same file and line) appears before this
+specific operation execution in the trace.
+
+When the partial replay is active, it is executed as follows:
+
+Elements that want to execute, but are not in the list of active elements
+are directly executed without there order being influenced by the
+replay mechanism.
+
+For elements that want to execute, and are in the list of active
+operations, we track how often the same operation has been executed before.
+We then compare this number with the number we have stored. If it is not equal,
+the execution represents the correct operation (file and line), but not the
+correct execution of this operation. In this case the operation is directly
+executed. If it is the same, the execution represents an active execution,
+and is handled by the replay mechanism in the same way as in the total
+replay.
 
 ### Things that can go wrong
 
@@ -477,3 +510,4 @@ To not get completely stuck if such operations occur, the replay mechanism
 is able to release waiting elements without them being the next trace element
 or to completely disable the replay, if it senses, that it is stuck (as
 described in the [details](#detail) section).
+

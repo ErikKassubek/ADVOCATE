@@ -24,22 +24,48 @@ import (
 // store all created mutations to avoid doubling
 var allGoPieMutations = make(map[string]struct{})
 
+// for each mutation file, store the file number and the chain
+var chainFiles = make(map[int]chain)
+
+// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
+const maxSCStart = 5
+
 // Create new mutations for GoPie
 //
 // Parameter:
 //   - pkgPath string: path to where the new traces should be created
 //   - numberFuzzingRun int: number of fuzzing run
-func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
-	energy := getEnergy()
-
+//   - mutNumber int: number of the mutation file
+func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 	mutations := make(map[string]chain)
 
-	utils.LogInfof("Trace contains %d scheduling chains", len(schedulingChains))
+	// Original GoPie does not mutate all possible scheduling chains
+	// If no SC is given, it creates a new one consisting of two random
+	// operations that are in rel2 relation. Otherwise it always mutates the
+	// original SC, not newly recorded once
+	schedulingChains = []chain{}
+	if fuzzingMode == GoPie {
+		if c, ok := chainFiles[mutNumber]; ok {
+			schedulingChains = []chain{c}
+		}
+	}
+	if len(schedulingChains) == 0 {
+		for range maxSCStart {
+			schedulingChains = append(schedulingChains, randomChain())
+		}
+	}
+
+	energy := getEnergy()
+
+	utils.LogInfof("Mutate %d scheduling chains", len(schedulingChains))
 
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
-			if _, ok := allGoPieMutations[key]; !ok {
+			if fuzzingMode != GoPie && mut.len() <= 1 {
+				continue
+			}
+			if _, ok := allGoPieMutations[key]; fuzzingMode == GoPie || !ok {
 				// only add if not invalidated by hb
 				if !useHBInfoFuzzing || mut.isValid() {
 					mutations[key] = mut
@@ -55,6 +81,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 	}
 
 	for _, mut := range mutations {
+		numberWrittenGoPieMuts++
 		traceCopy := analysis.CopyMainTrace()
 
 		tPosts := make([]int, len(mut.elems))
@@ -88,15 +115,23 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int) {
 		// add a replayEndElem
 		traceCopy.AddTraceElementReplay(lastTPost+2, 0)
 
-		fileName := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberOfWrittenGoPieMuts))
-		numberOfWrittenGoPieMuts++
+		fuzzingTracePath := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberWrittenGoPieMuts))
+		chainFiles[numberWrittenGoPieMuts] = mut
 
-		err := io.WriteTrace(&traceCopy, fileName, true)
+		err := io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 		if err != nil {
 			utils.LogError("Could not create pie mutation: ", err.Error())
+			continue
 		}
 
-		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: fileName})
+		// write the active map to a "replay_active.log"
+		if fuzzingMode == GoPie {
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+		} else {
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTSort())
+		}
+
+		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: numberWrittenGoPieMuts})
 	}
 }
 
@@ -115,14 +150,13 @@ func addFuzzingTraceFolder(path string) {
 // Calculate the energy for a schedule. This determines how many mutations
 // are created
 func getEnergy() int {
-	numberSchedulChains := len(schedulingChains)
 
 	// not interesting
-	if analysis.GetTimeoutHappened() || numberSchedulChains == 0 {
+	if analysis.GetTimeoutHappened() {
 		return 0
 	}
 
-	score := counterCPOP1 + int(math.Log(float64(counterCPOP2))) + 10*numberSchedulChains
+	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

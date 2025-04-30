@@ -253,7 +253,7 @@ func posToString(file string, line int) string {
 //
 // Returns:
 //   - true if the list contains the element, false otherwise
-func containsList[T comparable](list []T, elem T) bool {
+func isInSlice[T comparable](list []T, elem T) bool {
 	for _, e := range list {
 		if e == elem {
 			return true

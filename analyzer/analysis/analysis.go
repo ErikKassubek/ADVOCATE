@@ -15,6 +15,7 @@ import (
 	"analyzer/memory"
 	"analyzer/results"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 )
 
@@ -29,12 +30,14 @@ import (
 func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
-	defer func() {
-		if r := recover(); r != nil {
-			memory.Cancel()
-			utils.LogError(r)
-		}
-	}()
+	if utils.IsPanicPrevent() {
+		defer func() {
+			if r := recover(); r != nil {
+				memory.Cancel()
+				utils.LogError(r)
+			}
+		}()
+	}
 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
@@ -57,7 +60,7 @@ func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
 
-	file, line, err := posFromPosString(exitPos)
+	file, line, err := trace.PosFromPosString(exitPos)
 	if err != nil {
 		return
 	}
@@ -147,7 +150,7 @@ func checkForLeakSimple() {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	elems := getLastElemPerRout()
+	elems := GetLastElemPerRout()
 
 	for _, elem := range elems {
 		if elem.GetTPost() == 0 {
@@ -174,9 +177,10 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		ResetState()
 	}
 
-	for i := 1; i <= MainTrace.numberOfRoutines; i++ {
-		currentVC[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
-		currentWVC[i] = clock.NewVectorClock(MainTrace.numberOfRoutines)
+	noRoutine := MainTrace.GetNoRoutines()
+	for i := 1; i <= noRoutine; i++ {
+		currentVC[i] = clock.NewVectorClock(noRoutine)
+		currentWVC[i] = clock.NewVectorClock(noRoutine)
 	}
 
 	currentVC[1].Inc(1)
@@ -184,58 +188,62 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 
 	utils.LogInfo("Start HB analysis")
 
-	for elem := getNextElement(); elem != nil; elem = getNextElement() {
+	traceIter := MainTrace.AsIterator()
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		switch e := elem.(type) {
-		case *TraceElementAtomic:
+		case *trace.TraceElementAtomic:
 			if ignoreCriticalSections {
-				e.updateVectorClockAlt()
+				UpdateVCAtomicAlt(e)
 			} else {
-				e.updateVectorClock()
+				UpdateVCAtomic(e)
 			}
-		case *TraceElementChannel:
-			e.updateVectorClock()
-		case *TraceElementMutex:
+		case *trace.TraceElementChannel:
+			UpdateVCChannel(e)
+		case *trace.TraceElementMutex:
 			if ignoreCriticalSections {
-				e.updateVectorClockAlt()
+				UpdateVCMutexAlt(e)
 			} else {
-				e.updateVectorClock()
+				UpdateVCMutex(e)
 			}
 			if analysisFuzzing {
 				getConcurrentMutexForFuzzing(e)
 			}
-		case *TraceElementFork:
-			e.updateVectorClock()
-		case *TraceElementSelect:
+		case *trace.TraceElementFork:
+			UpdateVCFork(e)
+		case *trace.TraceElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
 			opTypes := make([]int, 0)
 			for _, c := range cases {
-				switch c.opC {
-				case SendOp:
+				switch c.GetOpC() {
+				case trace.SendOp:
 					ids = append(ids, c.GetID())
 					opTypes = append(opTypes, 0)
-				case RecvOp:
+				case trace.RecvOp:
 					ids = append(ids, c.GetID())
 					opTypes = append(opTypes, 1)
 				}
 			}
-			e.updateVectorClock()
-		case *TraceElementWait:
-			e.updateVectorClock()
-		case *TraceElementCond:
-			e.updateVectorClock()
-		case *TraceElementOnce:
-			e.updateVectorClock()
+			UpdateVCSelect(e)
+		case *trace.TraceElementWait:
+			UpdateVCWait(e)
+		case *trace.TraceElementCond:
+			UpdateVCCond(e)
+		case *trace.TraceElementOnce:
+			UpdateVCOnce(e)
 			if analysisFuzzing {
 				getConcurrentOnceForFuzzing(e)
 			}
-		case *TraceElementNew:
-			// do noting
+		case *trace.TraceElementRoutineEnd:
+			UpdateVCRoutineEnd(e)
+		case *trace.TraceElementNew:
+			UpdateVCNew(e)
 		}
 
 		if analysisCases["resourceDeadlock"] {
 			switch e := elem.(type) {
-			case *TraceElementMutex:
+			case *trace.TraceElementMutex:
 				HandleMutexEventForRessourceDeadlock(*e)
 			}
 		}
@@ -250,7 +258,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 		}
 	}
 
-	MainTrace.hbWasCalc = true
+	MainTrace.SetHBWasCalc(true)
 
 	utils.LogInfo("Finished HB analysis")
 
@@ -310,35 +318,35 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 //
 // Parameter:
 //   - elem TraceElement: Element to check
-func checkLeak(elem TraceElement) {
+func checkLeak(elem trace.TraceElement) {
 	switch e := elem.(type) {
-	case *TraceElementChannel:
-		CheckForLeakChannelStuck(e, currentVC[e.routine])
-	case *TraceElementMutex:
+	case *trace.TraceElementChannel:
+		CheckForLeakChannelStuck(e, currentVC[e.GetRoutine()])
+	case *trace.TraceElementMutex:
 		CheckForLeakMutex(e)
-	case *TraceElementWait:
+	case *trace.TraceElementWait:
 		CheckForLeakWait(e)
-	case *TraceElementSelect:
+	case *trace.TraceElementSelect:
 		timer.Start(timer.AnaLeak)
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
 		opTypes := make([]int, 0)
 		for _, c := range cases {
-			switch c.opC {
-			case SendOp:
+			switch c.GetOpC() {
+			case trace.SendOp:
 				ids = append(ids, c.GetID())
 				opTypes = append(opTypes, 0)
 				buffered = append(buffered, c.IsBuffered())
-			case RecvOp:
+			case trace.RecvOp:
 				ids = append(ids, c.GetID())
 				opTypes = append(opTypes, 1)
 				buffered = append(buffered, c.IsBuffered())
 			}
 		}
 		timer.Stop(timer.AnaLeak)
-		CheckForLeakSelectStuck(e, ids, buffered, currentVC[e.routine], opTypes)
-	case *TraceElementCond:
+		CheckForLeakSelectStuck(e, ids, buffered, currentVC[e.GetRoutine()], opTypes)
+	case *trace.TraceElementCond:
 		CheckForLeakCond(e)
 	}
 }

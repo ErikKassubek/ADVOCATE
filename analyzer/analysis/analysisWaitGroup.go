@@ -14,6 +14,7 @@ import (
 	"analyzer/clock"
 	"analyzer/results"
 	"analyzer/timer"
+	"analyzer/trace"
 	"analyzer/utils"
 	"fmt"
 )
@@ -22,13 +23,15 @@ import (
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait or done element
-func checkForDoneBeforeAddChange(wa *TraceElementWait) {
+func checkForDoneBeforeAddChange(wa *trace.TraceElementWait) {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)
 
-	if wa.delta > 0 {
+	delta := wa.GetDelta()
+
+	if delta > 0 {
 		checkForDoneBeforeAddAdd(wa)
-	} else if wa.delta < 0 {
+	} else if delta < 0 {
 		checkForDoneBeforeAddDone(wa)
 	} else {
 		// checkForImpossibleWait(routine, id, pos, vc)
@@ -39,15 +42,17 @@ func checkForDoneBeforeAddChange(wa *TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
-func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
+func checkForDoneBeforeAddAdd(wa *trace.TraceElementWait) {
+	id := wa.GetID()
+
 	// if necessary, create maps and lists
-	if _, ok := wgAdd[wa.id]; !ok {
-		wgAdd[wa.id] = make([]TraceElement, 0)
+	if _, ok := wgAdd[id]; !ok {
+		wgAdd[id] = make([]trace.TraceElement, 0)
 	}
 
 	// add the vector clock and position to the list
-	for i := 0; i < wa.delta; i++ {
-		wgAdd[wa.id] = append(wgAdd[wa.id], wa)
+	for i := 0; i < wa.GetID(); i++ {
+		wgAdd[id] = append(wgAdd[id], wa)
 	}
 }
 
@@ -55,15 +60,17 @@ func checkForDoneBeforeAddAdd(wa *TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
-func checkForDoneBeforeAddDone(wa *TraceElementWait) {
+func checkForDoneBeforeAddDone(wa *trace.TraceElementWait) {
+	id := wa.GetID()
+
 	// if necessary, create maps and lists
-	if _, ok := wgDone[wa.id]; !ok {
-		wgDone[wa.id] = make([]TraceElement, 0)
+	if _, ok := wgDone[id]; !ok {
+		wgDone[id] = make([]trace.TraceElement, 0)
 
 	}
 
 	// add the vector clock and position to the list
-	wgDone[wa.id] = append(wgDone[wa.id], wa)
+	wgDone[id] = append(wgDone[id], wa)
 }
 
 // Check if a wait group counter could become negative
@@ -83,8 +90,8 @@ func checkForDoneBeforeAdd() {
 		}
 		nrDone := len(wgDone[id])
 
-		addsNegWg := make([]TraceElement, 0)
-		donesNegWg := make([]TraceElement, 0)
+		addsNegWg := make([]trace.TraceElement, 0)
+		donesNegWg := make([]trace.TraceElement, 0)
 
 		if maxFlow < nrDone {
 			// sort the adds and dones, that do not have a partner is such a way,
@@ -101,8 +108,8 @@ func checkForDoneBeforeAdd() {
 				donesNegWg = append(donesNegWg, dones)
 			}
 
-			addsNegWgSorted := make([]TraceElement, 0)
-			donesNEgWgSorted := make([]TraceElement, 0)
+			addsNegWgSorted := make([]trace.TraceElement, 0)
+			donesNEgWgSorted := make([]trace.TraceElement, 0)
 
 			for i := 0; i < len(addsNegWg); {
 				removed := false
@@ -132,7 +139,7 @@ func checkForDoneBeforeAdd() {
 				if done.GetTID() == "\n" {
 					continue
 				}
-				file, line, tPre, err := infoFromTID(done.GetTID())
+				file, line, tPre, err := trace.InfoFromTID(done.GetTID())
 				if err != nil {
 					utils.LogError(err.Error())
 					return
@@ -152,7 +159,7 @@ func checkForDoneBeforeAdd() {
 				if add.GetTID() == "\n" {
 					continue
 				}
-				file, line, tPre, err := infoFromTID(add.GetTID())
+				file, line, tPre, err := trace.InfoFromTID(add.GetTID())
 				if err != nil {
 					utils.LogError(err.Error())
 					continue

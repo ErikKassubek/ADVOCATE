@@ -13,6 +13,7 @@ package analysis
 import (
 	"analyzer/clock"
 	"analyzer/timer"
+	"analyzer/trace"
 )
 
 // TODO: do we need the oSuc
@@ -28,32 +29,53 @@ func newOSuc(index int, nRout int) {
 	}
 }
 
+// UpdateVCOnce update the vector clock of the trace and element
+// Parameter:
+//   - on *trace.TraceElementOnce: the once trace element
+func UpdateVCOnce(on *trace.TraceElementOnce) {
+	routine := on.GetRoutine()
+	on.SetVc(currentVC[routine])
+	on.SetWVc(currentVC[routine])
+
+	if on.GetSuc() {
+		DoSuc(on)
+	} else {
+		DoFail(on)
+	}
+}
+
 // DoSuc updates and calculates the vector clocks given a successful do operation
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element
-func DoSuc(on *TraceElementOnce) {
+func DoSuc(on *trace.TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, currentVC[on.routine].GetSize())
-	oSuc[on.id] = currentVC[on.routine].Copy()
+	id := on.GetID()
+	routine := on.GetRoutine()
 
-	currentVC[on.routine].Inc(on.routine)
-	currentWVC[on.routine].Inc(on.routine)
+	newOSuc(id, currentVC[routine].GetSize())
+	oSuc[id] = currentVC[routine].Copy()
+
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }
 
 // DoFail updates and calculates the vector clocks given a unsuccessful do operation
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element
-func DoFail(on *TraceElementOnce) {
+func DoFail(on *trace.TraceElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	newOSuc(on.id, currentVC[on.routine].GetSize())
+	id := on.GetID()
+	routine := on.GetRoutine()
 
-	currentVC[on.routine].Sync(oSuc[on.id])
-	currentVC[on.routine].Inc(on.routine)
-	currentWVC[on.routine].Inc(on.routine)
+	newOSuc(id, currentVC[routine].GetSize())
+
+	currentVC[routine].Sync(oSuc[id])
+	currentVC[routine].Inc(routine)
+	currentWVC[routine].Inc(routine)
 }

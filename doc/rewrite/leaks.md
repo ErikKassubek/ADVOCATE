@@ -1,10 +1,12 @@
 ### Leaks
 
 #### Channel
+
 There are two possible cases, either the stuck channel is unbuffered, or it is
 buffered.
 
 ##### Unbuffered Channels
+
 Buffered channels must communicate concurrently. If an unbuffered channel operation $c_s$/$c_r is
 stuck, we check if there is a possible concurrent communication partner. If there
 is non, we cannot rewrite the channel to get unstuck. This does not mean,
@@ -19,10 +21,12 @@ must be concurrent. Additionally we assume, that $c_s$ and $r$ or $c_r$ and
 $s$ are also concurrent. If this is not the case, we assume, we cannot
 rewrite the trace with the selected possible partner.
 We can therefore rewrite the trace as:
-~~~
+
+```
 T_1 ++ [X_s, c_s, r, X_e]
 T_1 ++ [X_s, s, c_r, X_e]
-~~~
+```
+
 In practice we will do this by deleting the original communication partner
 and then removing all elements that happend after the stuck element or the
 possible communication.
@@ -33,6 +37,7 @@ given trace.
 
 
 ##### Buffered Channels
+
 Leaks on buffered channels do not depend on whether there is a concurrent
 communication partner. There are two cases, in which a buffered channel
 can refuse to send/receive and get stuck. Either the program tries to
@@ -51,11 +56,13 @@ program run freely after executing $r$, by adding the $X_e$ control element.
 
 
 #### Select
+
 When searching for a possible communication partner, we check for all
 cases, if there is a possible partner. When this partner is found, we
 rewrite the program as if the select was only this selected channel operation.
 
 #### Mutex
+
 A mutex can only be blocked by a lock operation $l$. This operations blocks,
 if the mutex is currently hold by another block operation. Because $l$
 was blocked at the end of the program run, there is another lock operation $l'$,
@@ -65,17 +72,22 @@ before $l$. Therefore we can only try to solve this stuck operation, if $l$ and
 $l'$ are concurrent. In this case, we can try to execute $l$ before $l'$ to see,
 if this prevents the stuck operation.
 We therefore rewrite the trace from
-~~~
+
+```
 T_1 ++ [l'] ++ T_2 ++ [l] ++ T_3
-~~~~
+```
+
 to
-~~~
+
+```
 T_1 ++ T_2' ++ [l, X_e]
-~~~~
+```
+
 where X_e ends the guided replay and lets the rest of the program play out
 by itself. T_2' is the set of all elements, that are before $l$.
 
 #### Wait Group
+
 Only the wait in a wait group can lead to an actual leak. This happens, when the
 wait group counter is not 0 at any time after the wait command. We can
 only influence the counter for the wait, by moving adds and dones, that are
@@ -86,6 +98,7 @@ the wait. To make sure, that we do not create a negative wait counter, we
 keep the order of those moving elements the same as before the rewrite.
 
 #### Conditional Variables
+
 For a conditional variable only the wait operation can block. The block can be
 ended by a Signal or Broadcast call.
 

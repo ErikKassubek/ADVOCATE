@@ -14,6 +14,7 @@ import (
 	"analyzer/analysis"
 	"analyzer/bugs"
 	"analyzer/clock"
+	"analyzer/trace"
 	"analyzer/utils"
 	"errors"
 )
@@ -35,46 +36,46 @@ import (
 // Rewrite a trace where a leaking unbuffered channel/select with possible partner was found.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteUnbufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
+func rewriteUnbufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 	// check if one or both of the bug elements are select
 	t1Sel := false
 	t2Sel := false
 	switch bug.TraceElement1[0].(type) {
-	case *analysis.TraceElementSelect:
+	case *trace.TraceElementSelect:
 		t1Sel = true
 	}
 	switch bug.TraceElement2[0].(type) {
-	case *analysis.TraceElementSelect:
+	case *trace.TraceElementSelect:
 		t2Sel = true
 	}
 
 	if !t1Sel && !t2Sel { // both are channel operations
-		return rewriteUnbufChanLeakChanChan(trace, bug)
+		return rewriteUnbufChanLeakChanChan(tr, bug)
 	} else if !t1Sel && t2Sel { // first is channel operation, second is select
-		return rewriteUnbufChanLeakChanSel(trace, bug)
+		return rewriteUnbufChanLeakChanSel(tr, bug)
 	} else if t1Sel && !t2Sel { // first is select, second is channel operation
-		return rewriteUnbufChanLeakSelChan(trace, bug)
+		return rewriteUnbufChanLeakSelChan(tr, bug)
 	} // both are select
-	return rewriteUnbufChanLeakSelSel(trace, bug)
+	return rewriteUnbufChanLeakSelSel(tr, bug)
 }
 
 // Rewrite a trace where a leaking unbuffered channel/select with possible partner was found
 // if both elements are channel operations.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *analysis.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*analysis.TraceElementChannel)
-	possiblePartner := bug.TraceElement2[0].(*analysis.TraceElementChannel)
+func rewriteUnbufChanLeakChanChan(tr *trace.Trace, bug bugs.Bug) error {
+	stuck := bug.TraceElement1[0].(*trace.TraceElementChannel)
+	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementChannel)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -89,39 +90,39 @@ func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
 
 	// remove the potential partner partner from the trace
 	if possiblePartnerPartner != nil {
-		trace.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
+		tr.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
 	}
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if stuck.Operation() == analysis.RecvOp { // Case 3
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+	if stuck.Operation() == trace.RecvOp { // Case 3
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
 		// add replay signals
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 
 	} else { // Case 4
 		if possiblePartnerPartner != nil {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
 		} else {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
 		}
 
 		// T = T1 ++ T2' ++ T3' ++ [e] ++ T4 ++ [f]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4 = [h in T4 | h >= e]
 
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
 		// T = T1 ++ T2' ++ T3' ++ [e] ++ T4' ++ [f]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 
 		// add replay signal
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 	}
 
 	return nil
@@ -131,14 +132,14 @@ func rewriteUnbufChanLeakChanChan(trace *analysis.Trace, bug bugs.Bug) error {
 // if a channel is stuck and a select is a possible partner
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *analysis.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*analysis.TraceElementChannel)
-	possiblePartner := bug.TraceElement2[0].(*analysis.TraceElementSelect)
+func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
+	stuck := bug.TraceElement1[0].(*trace.TraceElementChannel)
+	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementSelect)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -153,49 +154,49 @@ func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
 
 	// remove the potential partner partner from the trace
 	if possiblePartnerPartner != nil {
-		trace.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
+		tr.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
 	}
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if stuck.Operation() == analysis.RecvOp { // Case 3
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+	if stuck.Operation() == trace.RecvOp { // Case 3
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement2[0].(*analysis.TraceElementSelect).SetCase(stuck.GetID(), analysis.SendOp)
+		err := bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.SendOp)
 		if err != nil {
 			println(err.Error())
 		}
 
 		// add replay signal
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 
 	} else { // Case 4
 		if possiblePartnerPartner != nil {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
 		} else {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
 		}
 
 		// T = T1 ++ T2' ++ T3' ++ [e] ++ T4 ++ [f]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4 = [h in T4 | h >= e]
 
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
 		// T = T1 ++ T2' ++ T3' ++ [e] ++ T4' ++ [f]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 
-		err := bug.TraceElement2[0].(*analysis.TraceElementSelect).SetCase(stuck.GetID(), analysis.RecvOp)
+		err := bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
 		if err != nil {
 			println(err.Error())
 		}
 
 		// add replay signal
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 	}
 
 	return nil
@@ -205,14 +206,14 @@ func rewriteUnbufChanLeakChanSel(trace *analysis.Trace, bug bugs.Bug) error {
 // if a select is stuck and a channel is a possible partner
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*analysis.TraceElementSelect)
-	possiblePartner := bug.TraceElement2[0].(*analysis.TraceElementChannel)
+func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
+	stuck := bug.TraceElement1[0].(*trace.TraceElementSelect)
+	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementChannel)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -227,25 +228,25 @@ func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
 
 	// remove the potential partner partner from the trace
 	if possiblePartnerPartner != nil {
-		trace.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
+		tr.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
 	}
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if possiblePartner.Operation() == analysis.RecvOp {
+	if possiblePartner.Operation() == trace.RecvOp {
 		if possiblePartnerPartner != nil {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
 		} else {
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], 0) // bug.TraceElement1[0] = stuck
 		}
 
 		// T = T1 ++ T2' ++ T3' ++ [e] ++ T4 ++ [f]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4 = [h in T4 | h >= e]
 
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
-		err := bug.TraceElement1[0].(*analysis.TraceElementSelect).SetCase(stuck.GetID(), analysis.SendOp)
+		err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.SendOp)
 		if err != nil {
 			println(err.Error())
 		}
@@ -254,21 +255,21 @@ func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 		// add replay signals
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 
 	} else { // Case 3
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement1[0].(*analysis.TraceElementSelect).SetCase(stuck.GetID(), analysis.RecvOp)
+		err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
 		if err != nil {
 			println(err.Error())
 		}
 
 		// add replay signal
-		trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+		tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 
 	}
 
@@ -279,14 +280,14 @@ func rewriteUnbufChanLeakSelChan(trace *analysis.Trace, bug bugs.Bug) error {
 // if both elements are select operations.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*analysis.TraceElementSelect)
-	possiblePartner := bug.TraceElement2[0].(*analysis.TraceElementSelect)
+func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
+	stuck := bug.TraceElement1[0].(*trace.TraceElementSelect)
+	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementSelect)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -301,7 +302,7 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 
 	// remove the potential partner partner from the trace
 	if possiblePartnerPartner != nil {
-		trace.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
+		tr.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
 	}
 
 	// find communication
@@ -317,23 +318,23 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 
 			// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-			if c.Operation() == analysis.RecvOp { // Case 3
-				trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			if c.Operation() == trace.RecvOp { // Case 3
+				tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 				// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 				// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-				err := bug.TraceElement1[0].(*analysis.TraceElementSelect).SetCase(c.GetID(), analysis.RecvOp)
+				err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(c.GetID(), trace.RecvOp)
 				if err != nil {
 					println(err.Error())
 				}
-				err = bug.TraceElement2[0].(*analysis.TraceElementSelect).SetCase(d.GetID(), analysis.SendOp)
+				err = bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(d.GetID(), trace.SendOp)
 				if err != nil {
 					println(err.Error())
 				}
 
 				// add replay signal
-				trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+				tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 				return nil
 			}
 
@@ -344,23 +345,23 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 			// and T4 = [h in T4 | h >= e]
 
-			trace.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
+			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
 			// T = T1 ++ T2' ++ T3' ++ [e] ++ T4' ++ [f]
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 			// and T4' = [h in T4 | h >= e and h < f]
 
-			err := bug.TraceElement1[0].(*analysis.TraceElementSelect).SetCase(c.GetID(), analysis.SendOp)
+			err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(c.GetID(), trace.SendOp)
 			if err != nil {
 				println(err.Error())
 			}
-			err = bug.TraceElement2[0].(*analysis.TraceElementSelect).SetCase(d.GetID(), analysis.RecvOp)
+			err = bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(d.GetID(), trace.RecvOp)
 			if err != nil {
 				println(err.Error())
 			}
 
 			// add replay signals
-			trace.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
+			tr.AddTraceElementReplay(max(bug.TraceElement1[0].GetTSort(), bug.TraceElement2[0].GetTSort())+1, utils.ExitCodeLeakUnbuf)
 
 			return nil
 		}
@@ -372,19 +373,19 @@ func rewriteUnbufChanLeakSelSel(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace for a leaking buffered channel
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
+func rewriteBufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0]
 	possiblePartner := bug.TraceElement2[0]
-	var possiblePartnerPartner *analysis.TraceElementChannel
+	var possiblePartnerPartner *trace.TraceElementChannel
 	switch z := possiblePartner.(type) {
-	case *analysis.TraceElementChannel:
+	case *trace.TraceElementChannel:
 		possiblePartnerPartner = z.GetPartner()
-	case *analysis.TraceElementSelect:
+	case *trace.TraceElementSelect:
 		possiblePartnerPartner = z.GetPartner()
 	}
 
@@ -398,19 +399,19 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 
 	if possiblePartnerPartner != nil {
 		// T = T1 ++ T2 ++ [e]
-		trace.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
+		tr.RemoveElementFromTrace(possiblePartnerPartner.GetTID())
 
 		// T = T1 ++ T2' ++ [e]
 		// where T2' = [ h | h in T2 and h <HB e]
-		trace.ShiftConcurrentOrAfterToAfterStartingFromElement(stuck, possiblePartnerPartner.GetTSort())
+		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(stuck, possiblePartnerPartner.GetTSort())
 	}
 
 	bug.TraceElement1[0].SetTSort(possiblePartner.GetTSort() + 1)
 
 	if possiblePartner.GetTSort() < stuck.GetTSort() {
-		trace.AddTraceElementReplay(stuck.GetTSort()+1, utils.ExitCodeLeakBuf)
+		tr.AddTraceElementReplay(stuck.GetTSort()+1, utils.ExitCodeLeakBuf)
 	} else {
-		trace.AddTraceElementReplay(possiblePartner.GetTSort()+1, utils.ExitCodeLeakBuf)
+		tr.AddTraceElementReplay(possiblePartner.GetTSort()+1, utils.ExitCodeLeakBuf)
 	}
 
 	return nil
@@ -437,17 +438,17 @@ func rewriteBufChanLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // guided replay.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *analysis.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
+func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
 	utils.LogInfo("Start rewriting trace for mutex leak...")
 
 	// get l and l'
-	lockOp := bug.TraceElement1[0].(*analysis.TraceElementMutex)
-	lastLockOp := bug.TraceElement2[0].(*analysis.TraceElementMutex)
+	lockOp := bug.TraceElement1[0].(*trace.TraceElementMutex)
+	lastLockOp := bug.TraceElement2[0].(*trace.TraceElementMutex)
 
 	hb := clock.GetHappensBefore(lockOp.GetVC(), lastLockOp.GetVC())
 	if hb != clock.Concurrent {
@@ -455,17 +456,17 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 	}
 
 	// remove T_3 -> T_1 + [l'] + T_2 + [l]
-	trace.ShortenTrace(lockOp.GetTSort(), true)
+	tr.ShortenTrace(lockOp.GetTSort(), true)
 
 	// remove all elements, that are concurrent with l. This includes l'
 	// -> T_1' + T_2' + [l]
-	trace.RemoveConcurrent(bug.TraceElement1[0], 0)
+	tr.RemoveConcurrent(bug.TraceElement1[0], 0)
 
 	// set tPost of l to non zero
 	lockOp.SetT(lockOp.GetTPre())
 
 	// add the start and stop signal after l -> T_1' + T_2' + [X_s, l, X_e]
-	trace.AddTraceElementReplay(lockOp.GetTPre()+1, utils.ExitCodeLeakMutex)
+	tr.AddTraceElementReplay(lockOp.GetTPre()+1, utils.ExitCodeLeakMutex)
 
 	return nil
 }
@@ -475,12 +476,12 @@ func rewriteMutexLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace where a leaking waitgroup was found.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
+func rewriteWaitGroupLeak(tr *trace.Trace, bug bugs.Bug) error {
 	utils.LogInfo("Start rewriting trace for waitgroup leak...")
 
 	wait := bug.TraceElement1[0]
@@ -489,11 +490,11 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 		return errors.New("no possible partner to move. Cannot rewrite trace")
 	}
 
-	trace.ShiftConcurrentOrAfterToAfter(wait)
+	tr.ShiftConcurrentOrAfterToAfter(wait)
 
-	trace.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakWG)
+	tr.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakWG)
 
-	nrAdd, nrDone := trace.GetNrAddDoneBeforeTime(wait.GetID(), wait.GetTSort())
+	nrAdd, nrDone := tr.GetNrAddDoneBeforeTime(wait.GetID(), wait.GetTSort())
 
 	if nrAdd != nrDone {
 		return errors.New("the wait group is not balanced. Cannot rewrite trace")
@@ -507,19 +508,19 @@ func rewriteWaitGroupLeak(trace *analysis.Trace, bug bugs.Bug) error {
 // Rewrite a trace where a leaking cond was found.
 //
 // Parameter:
-//   - trace *analysis.Trace: The trace to rewrite
+//   - tr *trace.Trace: The trace to rewrite
 //   - bug Bug: The bug to create a trace for
 //
 // Returns:
 //   - error: An error if the trace could not be created
-func rewriteCondLeak(trace *analysis.Trace, bug bugs.Bug) error {
+func rewriteCondLeak(tr *trace.Trace, bug bugs.Bug) error {
 	utils.LogInfo("Start rewriting trace for cond leak...")
 
 	couldRewrite := false
 
 	wait := bug.TraceElement1[0]
 
-	res := trace.GetConcurrentWaitGroups(wait)
+	res := tr.GetConcurrentWaitGroups(wait)
 
 	// possible signals to release the wait
 	if len(res["signal"]) > 0 {
@@ -528,21 +529,21 @@ func rewriteCondLeak(trace *analysis.Trace, bug bugs.Bug) error {
 		wait.SetT(wait.GetTPre())
 
 		// move the signal after the wait
-		trace.ShiftConcurrentOrAfterToAfter(wait)
+		tr.ShiftConcurrentOrAfterToAfter(wait)
 	}
 
 	// possible broadcasts to release the wait
 	for _, broad := range res["broadcast"] {
 		couldRewrite = true
-		trace.ShiftConcurrentToBefore(broad)
+		tr.ShiftConcurrentToBefore(broad)
 	}
 
 	wait.SetT(wait.GetTPre())
 
 	if len(bug.TraceElement2) == 0 {
-		trace.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakCond)
+		tr.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakCond)
 	} else {
-		trace.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakCond)
+		tr.AddTraceElementReplay(wait.GetTPre()+1, utils.ExitCodeLeakCond)
 	}
 
 	if couldRewrite {

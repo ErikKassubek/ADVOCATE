@@ -17,7 +17,7 @@ Initially, all entries in S(x) are set to zero.
 S(x) is computed as follows.
 
 
-~~~~~
+```
 sndRcvU(tS,tR,x) {
   V = sync(Th(tS), Th(tR))    -- Sync
   Th(tS) = V
@@ -34,14 +34,14 @@ snd(t,x,i) {
   S(x) = sync(S(x), Th(t))         --     record most recent send
   inc(Th(t),t)
   }
-~~~~~~~~~
+```
 
 
 When processing `close` we check if there is any earlier send that could happen
 concurrently to `close`.
 
 
-~~~~
+```
 close(t,x) {
   Cl(x) = Th(t)
   if ! (S(x) < Cl(x)) {
@@ -49,7 +49,7 @@ close(t,x) {
   }
   inc(Th(t),t)
 }
-~~~~~~~~~
+```
 
 *The above is similar to checking if there is any earlier read that could conflict with a write.*
 
@@ -70,7 +70,7 @@ Initially, all entries in R(x) are set to zero.
 R(x) is computed as follows.
 
 
-~~~~~
+```
 sndRcvU(tS,tR,x) {
   V = sync(Th(tS), Th(tR))    -- Sync
   Th(tS) = V
@@ -87,14 +87,14 @@ rcv(t,x,i) {
   R(x) = sync(R(x), Th(t))            --     record most recent receive
   inc(Th(t),t)
 }
-~~~~~~~~~
+```
 
 
 When processing `close` we check if there is any earlier receive that could happen
 concurrently to `close`.
 
 
-~~~~
+```
 close(t,x) {
   Cl(x) = Th(t)
   if ! (R(x) < Cl(x)) {
@@ -102,4 +102,4 @@ close(t,x) {
   }
   inc(Th(t),t)
 }
-~~~~~~~~~
+```

@@ -12,12 +12,13 @@ package analysis
 
 import (
 	"analyzer/clock"
+	"analyzer/trace"
 )
 
 // elemWithVc is a helper element for an element with an additional vector clock
 type elemWithVc struct {
 	vc   *clock.VectorClock
-	elem TraceElement
+	elem trace.TraceElement
 }
 
 // VectorClockTID2 is a helper to store the relevant elements of a
@@ -37,7 +38,7 @@ type VectorClockTID2 struct {
 // ElemWithVcVal is a helper element for an element with an additional vector clock
 // and an additional int val
 type ElemWithVcVal struct {
-	Elem TraceElement
+	Elem trace.TraceElement
 	Vc   *clock.VectorClock
 	Val  int
 }
@@ -45,15 +46,15 @@ type ElemWithVcVal struct {
 // allSelectCase is a helper element to store individual references to all
 // select cases in a trace
 type allSelectCase struct {
-	sel          *TraceElementSelect // the select
-	chanID       int                 // channel id
-	elem         elemWithVc          // vector clock and tID
-	send         bool                // true: send, false: receive
-	buffered     bool                // true: buffered, false: unbuffered
-	partnerFound bool                // true: partner found, false: no partner found
-	partner      []ElemWithVcVal     // the potential partner
-	exec         bool                // true: the case was executed, false: otherwise
-	casi         int                 // internal index for the case in the select
+	sel          *trace.TraceElementSelect // the select
+	chanID       int                       // channel id
+	elem         elemWithVc                // vector clock and tID
+	send         bool                      // true: send, false: receive
+	buffered     bool                      // true: buffered, false: unbuffered
+	partnerFound bool                      // true: partner found, false: no partner found
+	partner      []ElemWithVcVal           // the potential partner
+	exec         bool                      // true: the case was executed, false: otherwise
+	casi         int                       // internal index for the case in the select
 }
 
 // ConcurrentEntryType is an enum type used in ConcurrentEntry
@@ -70,7 +71,7 @@ const (
 // ConcurrentEntry is a helper element to store elements relevant for
 // flow fuzzing
 type ConcurrentEntry struct {
-	Elem    TraceElement
+	Elem    trace.TraceElement
 	Counter int
 	Type    ConcurrentEntryType
 }
@@ -80,7 +81,8 @@ var (
 
 	// MainTrace is the trace that is created and the trace on which most
 	// normal operations and the analysis is performed
-	MainTrace Trace
+	MainTrace     trace.Trace
+	MainTraceIter trace.TraceIterator
 
 	// current happens before vector clocks
 	currentVC = make(map[int]*clock.VectorClock)
@@ -89,7 +91,7 @@ var (
 	currentWVC = make(map[int]*clock.VectorClock)
 
 	// channel without partner in main trace
-	channelWithoutPartner = make(map[int]map[int]*TraceElementChannel) // id -> opId -> element
+	channelWithoutPartner = make(map[int]map[int]*trace.TraceElementChannel) // id -> opId -> element
 
 	fifo          bool
 	modeIsFuzzing bool
@@ -99,7 +101,7 @@ var (
 	analysisFuzzing = false
 
 	// vc of close on channel
-	closeData = make(map[int]*TraceElementChannel) // id -> vcTID3 val = ch.id
+	closeData = make(map[int]*trace.TraceElementChannel) // id -> vcTID3 val = ch.id
 
 	// last send/receive for each routine and each channel
 	lastSendRoutine = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
@@ -121,20 +123,20 @@ var (
 	bufferedVCsSize  = make(map[int]int)
 
 	// add/done on waitGroup
-	wgAdd  = make(map[int][]TraceElement) // id  -> []TraceElement
-	wgDone = make(map[int][]TraceElement) // id -> []TraceElement
+	wgAdd  = make(map[int][]trace.TraceElement) // id  -> []TraceElement
+	wgDone = make(map[int][]trace.TraceElement) // id -> []TraceElement
 	// wait on waitGroup
 	// wgWait = make(map[int]map[int][]VectorClockTID) // id -> routine -> []vcTID
 
 	// lock/unlocks on mutexes
-	allLocks   = make(map[int][]TraceElement)
-	allUnlocks = make(map[int][]TraceElement) // id -> []TraceElement
+	allLocks   = make(map[int][]trace.TraceElement)
+	allUnlocks = make(map[int][]trace.TraceElement) // id -> []TraceElement
 
 	// last acquire on mutex for each routine
-	lockSet                = make(map[int]map[int]string)     // routine -> id -> string
-	currentlyHoldLock      = make(map[int]*TraceElementMutex) // routine -> lock op
-	mostRecentAcquire      = make(map[int]map[int]elemWithVc) // routine -> id -> vcTID
-	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)      // id -> vcTID
+	lockSet                = make(map[int]map[int]string)           // routine -> id -> string
+	currentlyHoldLock      = make(map[int]*trace.TraceElementMutex) // routine -> lock op
+	mostRecentAcquire      = make(map[int]map[int]elemWithVc)       // routine -> id -> vcTID
+	mostRecentAcquireTotal = make(map[int]ElemWithVcVal)            // id -> vcTID
 
 	// vector clocks for last release times
 	relW = make(map[int]*clock.VectorClock) // id -> vc
@@ -151,7 +153,7 @@ var (
 	selectCases = make([]allSelectCase, 0)
 
 	// all positions of creations of routines
-	allForks = make(map[int]*TraceElementFork) // routineId -> fork
+	allForks = make(map[int]*trace.TraceElementFork) // routineId -> fork
 
 	// currently waiting cond var
 	currentlyWaiting = make(map[int][]int) // -> id -> []routine
@@ -188,7 +190,7 @@ var (
 
 	durationInSeconds = -1 // the duration of the recording in seconds
 
-	waitingReceive = make([]*TraceElementChannel, 0)
+	waitingReceive = make([]*trace.TraceElementChannel, 0)
 	maxOpID        = make(map[int]int)
 )
 
@@ -260,19 +262,28 @@ func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
 
 // SetMainTraceToNewTrace sets the main analysis trace to a new, empty trace
 func SetMainTraceToNewTrace() {
-	MainTrace = NewTrace()
+	MainTrace = trace.NewTrace()
+	MainTraceIter = MainTrace.AsIterator()
+}
+
+// SetMainTrace sets the main trace to a given trace
+//
+// Parameter:
+//   - t *trace.Trace: the new trace
+func SetMainTrace(t *trace.Trace) {
+	MainTrace = *t
+	MainTraceIter = MainTrace.AsIterator()
+}
+
+// GetMainTrace returns a pointer to the main trace
+//
+// Returns:
+//   - *trace.Trace: pointer to the main trace
+func GetMainTrace() *trace.Trace {
+	return &MainTrace
 }
 
 // ===========  Helper function for trace operations on the main trace ==========
-
-// AddElementToTrace adds an element to the main trace
-//
-// Parameter:
-//   - routine int: The routine id
-//   - element TraceElement: The element to add
-func AddElementToTrace(element TraceElement) {
-	MainTrace.AddElement(element)
-}
 
 // GetTraceElementFromTID returns the routine and index of the element
 // in trace, given the tID
@@ -283,7 +294,7 @@ func AddElementToTrace(element TraceElement) {
 // Returns:
 //   - TraceElement: The element
 //   - error: An error if the element does not exist
-func GetTraceElementFromTID(tID string) (TraceElement, error) {
+func GetTraceElementFromTID(tID string) (trace.TraceElement, error) {
 	return MainTrace.GetTraceElementFromTID(tID)
 }
 
@@ -296,7 +307,7 @@ func GetTraceElementFromTID(tID string) (TraceElement, error) {
 // Returns:
 //   - *TraceElement: The element
 //   - error: An error if the element does not exist
-func GetTraceElementFromBugArg(bugArg string) (TraceElement, error) {
+func GetTraceElementFromBugArg(bugArg string) (trace.TraceElement, error) {
 	return MainTrace.GetTraceElementFromBugArg(bugArg)
 }
 
@@ -334,7 +345,7 @@ func ShortenRoutine(routine int, time int) {
 //
 // Returns:
 //   - []traceElement: The trace of the routine
-func GetRoutineTrace(id int) []TraceElement {
+func GetRoutineTrace(id int) []trace.TraceElement {
 	return MainTrace.GetRoutineTrace(id)
 }
 
@@ -348,14 +359,6 @@ func ShortenRoutineIndex(routine, index int, incl bool) {
 	MainTrace.ShortenRoutineIndex(routine, index, incl)
 }
 
-// SetNoRoutines is a setter for the number of routines
-//
-// Parameter:
-//   - n int: The number of routines
-func SetNoRoutines(n int) {
-	MainTrace.SetNoRoutines(n)
-}
-
 // GetNoRoutines is a getter for the number of routines
 //
 // Returns:
@@ -364,22 +367,12 @@ func GetNoRoutines() int {
 	return MainTrace.GetNoRoutines()
 }
 
-// Get the next element from a trace
-// Update the current index of the trace
-//
-// Returns:
-//   - (TraceElement) The element in the trace with the smallest TSort that
-//   - has not been returned yet
-func getNextElement() TraceElement {
-	return MainTrace.getNextElement()
-}
-
-// Get the last elements in each routine
+// GetLastElemPerRout returns the last elements in each routine
 // Returns
 //
 //   - []TraceElements: List of elements that are the last element in a routine
-func getLastElemPerRout() []TraceElement {
-	return MainTrace.getLastElemPerRout()
+func GetLastElemPerRout() []trace.TraceElement {
+	return MainTrace.GetLastElemPerRout()
 }
 
 // GetNrAddDoneBeforeTime returns the number of add and done operations that were
@@ -412,7 +405,7 @@ func ShiftTrace(startTPre int, shift int) bool {
 //
 // Parameter:
 //   - element traceElement: The element
-func ShiftConcurrentOrAfterToAfter(element TraceElement) {
+func ShiftConcurrentOrAfterToAfter(element trace.TraceElement) {
 	MainTrace.ShiftConcurrentOrAfterToAfter(element)
 }
 
@@ -424,7 +417,7 @@ func ShiftConcurrentOrAfterToAfter(element TraceElement) {
 // Parameter:
 //   - element traceElement: The element
 //   - start traceElement: The time to start shifting (not including)
-func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, start int) {
+func ShiftConcurrentOrAfterToAfterStartingFromElement(element trace.TraceElement, start int) {
 	MainTrace.ShiftConcurrentOrAfterToAfterStartingFromElement(element, start)
 }
 
@@ -433,7 +426,7 @@ func ShiftConcurrentOrAfterToAfterStartingFromElement(element TraceElement, star
 //
 // Parameter:
 //   - element traceElement: The element
-func ShiftConcurrentToBefore(element TraceElement) {
+func ShiftConcurrentToBefore(element trace.TraceElement) {
 	MainTrace.ShiftConcurrentToBefore(element)
 }
 
@@ -443,7 +436,7 @@ func ShiftConcurrentToBefore(element TraceElement) {
 // Parameter:
 //   - element traceElement: The element
 //   - tMin int: the minimum time
-func RemoveConcurrent(element TraceElement, tMin int) {
+func RemoveConcurrent(element trace.TraceElement, tMin int) {
 	MainTrace.RemoveConcurrent(element, tMin)
 }
 
@@ -453,7 +446,7 @@ func RemoveConcurrent(element TraceElement, tMin int) {
 // Parameter:
 //   - element traceElement: The element
 //   - tMin int: the minimum time
-func RemoveConcurrentOrAfter(element TraceElement, tMin int) {
+func RemoveConcurrentOrAfter(element trace.TraceElement, tMin int) {
 	MainTrace.RemoveConcurrentOrAfter(element, tMin)
 }
 
@@ -465,7 +458,7 @@ func RemoveConcurrentOrAfter(element TraceElement, tMin int) {
 //
 // Returns:
 //   - map[int]traceElement: The earliest concurrent element for each routine
-func GetConcurrentEarliest(element TraceElement) map[int]TraceElement {
+func GetConcurrentEarliest(element trace.TraceElement) map[int]trace.TraceElement {
 	return MainTrace.GetConcurrentEarliest(element)
 }
 
@@ -500,7 +493,7 @@ func ShiftRoutine(routine int, startTSort int, shift int) bool {
 //
 // Returns:
 //   - map[int][]TraceElement: The partial trace
-func GetPartialTrace(startTime int, endTime int) map[int][]TraceElement {
+func GetPartialTrace(startTime int, endTime int) map[int][]trace.TraceElement {
 	return MainTrace.GetPartialTrace(startTime, endTime)
 }
 
@@ -513,7 +506,7 @@ func SortTrace() {
 //
 // Returns:
 //   - Trace: The copy of the trace
-func CopyMainTrace() Trace {
+func CopyMainTrace() trace.Trace {
 	return MainTrace.Copy()
 }
 
@@ -521,7 +514,7 @@ func CopyMainTrace() Trace {
 //
 // Parameter:
 //   - trace Trace: The trace
-func SetTrace(trace Trace) {
+func SetTrace(trace trace.Trace) {
 	MainTrace = trace
 }
 
@@ -535,7 +528,7 @@ func PrintTrace() {
 // Returns:
 //   - hbWasCalc of the main trace
 func HBWasCalc() bool {
-	return MainTrace.hbWasCalc
+	return MainTrace.GetHBWasCalc()
 }
 
 // numberElemsInTrace returns how many elements are in a given routine of the main trace
@@ -546,5 +539,5 @@ func HBWasCalc() bool {
 // Returns:
 //   - number of elements in routine
 func numberElemsInTrace(routine int) int {
-	return MainTrace.numberElemsInTrace[routine]
+	return MainTrace.NumberElemInTrace(routine)
 }

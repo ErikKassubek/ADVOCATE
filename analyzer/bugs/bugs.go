@@ -12,6 +12,7 @@ package bugs
 
 import (
 	"analyzer/analysis"
+	"analyzer/trace"
 	"analyzer/utils"
 	"errors"
 	"sort"
@@ -57,16 +58,16 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 //
 // Parameter:
 //   - Type ResultType: The type of the bug
-//   - TraceElement1 []analysis.TraceElement: first list of trace element involved in the bug
+//   - TraceElement1 []trace.TraceElement: first list of trace element involved in the bug
 //     normally the elements that actually cause the bug, e.g. for send on close the send
-//   - TraceElement2 []analysis.TraceElement: second list of trace element involved in the bug
+//   - TraceElement2 []trace.TraceElement: second list of trace element involved in the bug
 //     normally the elements indirectly involved or elements to solve the bug (possible partner),
 //     e.g. for send on close the close
 type Bug struct {
 	Type          utils.ResultType
-	TraceElement1 []analysis.TraceElement
+	TraceElement1 []trace.TraceElement
 	// TraceElement1Sel []BugElementSelectCase
-	TraceElement2 []analysis.TraceElement
+	TraceElement2 []trace.TraceElement
 }
 
 // GetBugString Convert the bug to a unique string. Mostly used internally
@@ -346,7 +347,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bugArg2 = bugSplit[2]
 	}
 
-	bug.TraceElement1 = make([]analysis.TraceElement, 0)
+	bug.TraceElement1 = make([]trace.TraceElement, 0)
 	// bug.TraceElement1Sel = make([]BugElementSelectCase, 0)
 
 	for _, bugArg := range strings.Split(bugArg1, ";") {
@@ -371,7 +372,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		// }
 	}
 
-	bug.TraceElement2 = make([]analysis.TraceElement, 0)
+	bug.TraceElement2 = make([]trace.TraceElement, 0)
 
 	if !containsArg2 {
 		return actual, bug, nil

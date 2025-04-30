@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"analyzer/timer"
+	"analyzer/trace"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -92,4 +93,54 @@ func getPath(path string) string {
 	}
 
 	return filepath.Dir(path)
+}
+
+// writeMutActive writes the element in the chain into a rewriteActive.log
+// file for use in GoPie (only in original, not in GoPi+ or GoPieHB)
+//
+// Parameter
+//   - fuzzingTracePath string: path to the trace folder
+//   - tr *trace.Trace: the trace to write
+//   - mut *chain: chain to write
+//   - partTime int: if 0, the replay will partial replay from the beginning
+//     otherwise it will switch to partial replay when the element with this
+//     time is the next element to be replayed
+func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain, partTime int) {
+	activePath := filepath.Join(fuzzingTracePath, "replay_active.log")
+
+	f, err := os.Create(activePath)
+	if err != nil {
+		return
+	}
+
+	defer f.Close()
+
+	f.WriteString(fmt.Sprintf("%d\n", partTime))
+
+	// find the counter for all elements in the mut
+	mutCounter := make(map[int]int)
+	posCounter := make(map[string]int)
+	mutTPre := make(map[int]int)
+	for _, elem := range mut.elems {
+		mutCounter[elem.GetTraceID()] = 0
+	}
+
+	traceIter := tr.AsIterator()
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		traceID := elem.GetTraceID()
+		pos := elem.GetPos()
+		posCounter[pos]++
+		if _, ok := mutCounter[traceID]; ok { // is in chain
+			mutCounter[traceID] = posCounter[pos]
+			mutTPre[traceID] = elem.GetTPre()
+		}
+	}
+
+	for _, elem := range mut.elems {
+		traceID := elem.GetTraceID()
+		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
+		key := fmt.Sprintf("%s,%d,%d\n", elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
+		f.WriteString(key)
+	}
 }

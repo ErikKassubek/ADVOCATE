@@ -13,6 +13,3 @@ The documentation has the following sections:
 - [Fuzzing](fuzzing.md)
 - [Statistics and Runtime](statistics.md)
 - [Related works](relatedWorks.md)
-
-## Usage
-TODO: write

@@ -71,9 +71,9 @@ event. The events are sorted by the time when the operations was executed.
 To reconstruct the global trace from the recorded local traces, we need a consistent
 timer.
 
-For this we use a global timer. This timer is increased every time an operation requests a timer value.
+For this we use a global counter. This counter is increased every time an operation requests a time value.
 
-We tried to implement the timer routine local, using timer provided by the operating systems. For this, we looked at two possible time functions in the go runtime. Both of them have there problems
+We tried to implement the timer routine local, using timer provided by the operating systems. For this, we looked at two possible time functions in the go runtime. Both of them have there problems.
 
 The `cputicks` function is described by the go tracer team as\
 "On most platforms, this function queries the CPU for a tick count with a single instruction. (Intuitively a "tick" goes by roughly every CPU clock period, but in practice this clock usually has a constant rate that's independent of CPU frequency entirely.) [...] Unfortunately, many modern CPUs don't provide such a clock that is stable across CPU cores, meaning even though cores might synchronize with one another, the clock read-out on each CPU is not guaranteed to be ordered in the same direction as that synchronization. This led to traces with inconsistent timestamps." [^1]

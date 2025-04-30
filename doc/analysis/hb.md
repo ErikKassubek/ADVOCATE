@@ -41,7 +41,7 @@ where the time stamp's position correspond to a thread id.
 
 Vector clock operations.
 
-~~~~
+```
 Increment the time stamp of thread i
 
     inc([k1,...,ki-1,ki,ki+1,...,kn],i) = [k1,...,ki-1,ki+1,ki+1,...,kn]
@@ -49,7 +49,7 @@ Increment the time stamp of thread i
 Synchronize two vector clocks by taking the larger time stamp
 
      sync([i1,...,in],[j1,...,jn]) = [max(i1,j1), ..., max(in,jn)]
-~~~~~~~~~
+```
 
 
 In some implementation, it will be the easiert to use a map (ThreadID to TimeStamp) to represent vector clocks.
@@ -60,17 +60,17 @@ The time stamp of the main thread is one wherer all other entries are set to zer
 
 Events:
 
-~~~
+```
 fork(t1,t2)      in thread t1 we start the new thread t2
-~~~~~
+```
 
-~~~~
+```
 fork(t1,t2) {
   Th(t2) = Th(t1)
   inc(Th(t2),t2)
   inc(Th(t1),t1)
 }
-~~~~~~~~~
+```
 
 
 ## (RW)-Mutex
@@ -79,12 +79,12 @@ RW Mutex = multiple readers but only single writers
 
 Events:
 
-~~~~
+```
 rlock(t,x)           -- thread t executes rlock of x
 runlock(t,x)
 lock(t,x)
 unlock(t,x)
-~~~~~~~~~~
+```
 
 Go also supports trylock/tryrlock.
 If successful this corresponds to lock/rlock, otherwise trylock/tryrlock can be ignored.
@@ -92,7 +92,7 @@ If successful this corresponds to lock/rlock, otherwise trylock/tryrlock can be 
 
 Based on the Go memory model for [RWMutex](https://go.dev/ref/mem#locks), happens-before relations are:
 
-~~~
+```
 
 (RW-1) unlock(_,x)_i <HB lock(_,x)_j where i < j
 
@@ -102,7 +102,7 @@ Based on the Go memory model for [RWMutex](https://go.dev/ref/mem#locks), happen
 
 
 where i and j denote the trace position.
-~~~~~~
+```
 
 
 For each RWMutex we introduce vector clocks RelW(x) and RelR(x)
@@ -114,7 +114,7 @@ We assume that Th(t) holds the vector clock of thread t.
 Event processing functions to compute vector clocks are as follows.
 
 
-~~~~~
+```
 lock(t,x) {
   Th(t) = sync(Th(t), RelW(x))     -- RW-1
   Th(t) = sync(Th(t), RelR(x))     -- RW-2
@@ -142,12 +142,12 @@ runlock(t,x) {
       -- This is achieved by merging the vector clocks of all prior runlocks.
   inc(Th(t),t)
 }
-~~~~~~~~~~~
+```
 
 
 Example
 
-~~~~
+```
       #1        #2        #3
 
 1.  rlock(y)
@@ -156,7 +156,7 @@ Example
 4.              runlock(y)
 5.                          lock(y)
 6.                          unlock(y)
-~~~~~~~~~~~~
+``````
 
 Note. There is a valid reordering under which the events in thread #3 are executed before the other events.
 As we over-approximate, the happens-before relation orders critical sections based on their "textual" order
@@ -164,11 +164,11 @@ in the trace. Hence, we find that `runlock(y)_3 <HB lock(y)_5` and `runlock(y)_4
 
 This ordering based on "textual" order can be turned of. In this case all operations are replaced by
 
-~~~~
+```
 op(t, x) {
   inc(Th(t), t)
 }
-~~~~
+```
 
 This can lead to more bugs being detected, but can also introduce false positives.
 
@@ -193,7 +193,7 @@ Initially, all entries in LW(x) are set to zero.
 
 Event processing functions are as follows.
 
-~~~~
+```
 write(t,x) {
   LW(x) = Th(t)
   inc(Th(t),t)
@@ -205,24 +205,24 @@ read(t,x) {
 }
 
 
-~~~~~~~~~
+```
 
 ## Wait groups
 
 Events:
 
-~~~~
+```
 add(t,g)
 done(t,g)
 wait(t,g)
-~~~~~
+```
 
 Based on the description of [wait groups](https://pkg.go.dev/sync#WaitGroup), happens-before relations are:
 
 
-~~~~
+```
 done(_,g)_i <HB wait(_,g)_j where i < j
-~~~~~~~~
+``````
 
 
 The wait group description says:
@@ -235,9 +235,9 @@ The wait group description says:
 Our tracer does not explicitly distinguish between `add` and `done`.
 So, it's okay to treat both the same way.
 
-~~~~
+```
 add(_,g)_i <HB wait(_,g)_j where i < j
-~~~~~~~~
+``````
 
 Further assumptions are:
 
@@ -254,7 +254,7 @@ Event processing is as follows.
 For each wait group g, we assume a vector clock WG(g).
 Initially, all entries in WG(g) are set to zero.
 
-~~~~
+```
 add(t,g) {
   WG(g) = sync(WG(g),Th(t))
   inc(Th(t),t)
@@ -269,7 +269,7 @@ wait(t,g) {
   Th(t) = sync(WG(g),Th(t))
   inc(Th(t),t)
 }
-~~~~~~~~
+``````
 
 
 ## Channels
@@ -280,7 +280,7 @@ A send communicating with a receive is identified via a unique id i.
 
 Events:
 
-~~~~
+```
 snd(t,x,i)      -- unbuffered send on x with communication partner i in thread t
 rcv(t,x,i)
 sndB(t,x,i)     -- buffered version, we assume that size(x) denotes the buffer size
@@ -288,7 +288,7 @@ rcvB(t,x,i)
 
 close(t,x)      -- closing a channel
 rcvC(t,x)       -- receive on a closed channel (send on closed fails immediately)
-~~~~~~~
+```
 
 
 When processing events, we use the post counter to identify the next to be processed events.
@@ -308,7 +308,7 @@ T_j = [rec(tR,x,k), ...]
 We drop send(tS,x,k) and rec(tR,x,k) from the trace and carry out the following call.
 
 
-~~~~
+```
 sndRcvU(tS,tR,x) {
   V = sync(Th(tS), Th(tR))    -- Sync
   Th(tS) = V
@@ -316,7 +316,7 @@ sndRcvU(tS,tR,x) {
   inc(Th(tS),tS)
   inc(Th(tR),tR)
 }
-~~~~~~~~~
+```
 
 Vector clocks of sender and receiver are synchronized. See `Sync`.
 
@@ -358,7 +358,7 @@ to denote that elements in X' are all occupied.
 Event processing for snd/rcv is based on the total order as specified by the post counter.
 
 
-~~~~~
+```
 snd(t,x,i) {
   X = X' ++ [(false, 0, V)] ++ X''    -- S1
   Th(t) = sync(V, Th(t))              -- S2
@@ -372,7 +372,7 @@ rcv(t,x,i) {
   X = X' ++ [(false, 0, Th(t))]       -- R3
   inc(Th(t),t)
 }
-~~~~~~~~~~~
+```
 
 * Send puts its vector clock and communication id i in the next available buffer slot. See `S3`.
 
@@ -401,7 +401,7 @@ Initially, all entries in LastSnd(x) are set to zero.
 
 Processing of `snd(t,x,i)` is adapted as follows.
 
-~~~~~
+```
 snd(t,x,i) {
   X = X' ++ [(false,V)] ++ X''     -- S1
   Th(t) = sync(V, Th(t))           -- S2
@@ -410,7 +410,7 @@ snd(t,x,i) {
   X = X' + [(true,Th(t))] + X''    -- S3
   inc(Th(t),t)
 }
-~~~~~~~~~
+```
 
 Similarly, we can adapt the (buffered) receive case.
 
@@ -426,7 +426,7 @@ The resulting vector clock computations are as follows.
 
 Cl(x) records the vector clock of the close operation on channel x.
 
-~~~~
+```
 close(t,x) {
   Cl(x) = Th(t)
   inc(Th(t),t)
@@ -438,17 +438,17 @@ rcvC(t,x) {
   inc(Th(t),t)
 }
 
-~~~~~~~~
+``````
 
 
 ## Once
 
 Events:
 
-~~~~
+```
 onceT(t,x)         -- successful once x
 onceF(t,x)         -- failed once x
-~~~~~~
+```
 
 The assumption is:
 
@@ -467,16 +467,16 @@ The assumption is:
 
 In terms of the happens-before we find the following.
 
-~~~~~
+```
    onceT(_,x) <HB onceF(_,x)
-~~~~~~~~~
+```
 
 
 O(x) records the vector clock of `onceT(_,x)`.
 Initially, all entries in O(x) are zero.
 
 
-~~~~~
+```
 onceT(t,x) {
    O(x) = Th(t)
    inc(Th(t),t)
@@ -486,7 +486,7 @@ onceF(t,x) {
    Th(t) = sync(O(x), Th(t))
    inc(Th(t),t)
 }
-~~~~~~~~
+``````
 
 
 
@@ -494,11 +494,11 @@ onceF(t,x) {
 
 Events:
 
-~~~
+```
 Wait(t, x)          -- Wait
 Signal(t, x)        -- Release on wait
 Broadcast(t, x)     -- Release all
-~~~
+```
 
 [Conditional variables description](https://pkg.go.dev/sync#Cond)
 
@@ -508,15 +508,15 @@ Broadcast(t, x)     -- Release all
 
 In terms of the happens-before we find the following.
 
-~~~
+```
    signal(_,x) <HB wait(_,x) [0]  -- first not considered wait
    broadcast(_,x) <HB wait(_,x)   -- all not considered wait
-~~~
+```
 
 For each conditional variable we save the currently waiting routines in Cond(x).
 The update of the vector clocks is implemented as follows:
 
-~~~~
+```
 condWait(t, x) {
   Cond(x).append(t)
   inc(Th(t), t)
@@ -538,26 +538,26 @@ condBroadcast(t, x) {
   inc(Th(t), t)
 }
 
-~~~~
+```
 
 ## Examples
 
 Consider the trace
 
-~~~~~~
+```
    T1                  T2
 1. fork(T2)
 2.                     snd(c,1)
 3. rcv(c,1)
 4. close(c)
-~~~~~~~~~~
+```
 
 
 We annotate the trace with vector clock information.
 
 
 
-~~~~~~
+```
    T1                  T2           S(c)
    [1,0]
 1. fork(T2)
@@ -579,5 +579,5 @@ We annotate the trace with vector clock information.
    [2,1] < [3,1] => "okay"
 
    [4,1]
-~~~~~~~~~~
+```
 

@@ -35,12 +35,11 @@ var tracePathRewritten = ""
 //
 // Parameter:
 //   - tracePath string: The path to the rewritten trace, relative the the dir where advocateResult is placed
-//   - exitCode bool: Whether the program should exit after the important replay part passed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
-func InitReplay(tracePath string, exitCode bool, timeout int, atomic bool) {
+func InitReplay(tracePath string, timeout int, atomic bool) {
 	// use first as default
-	runtime.SetForceExit(exitCode)
+	runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
 	println("Tracepath: ", tracePath)

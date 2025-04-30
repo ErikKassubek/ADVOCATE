@@ -178,7 +178,7 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
   // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", false, %d, %s)
+  advocate.InitReplay("%s", %d, %s)
   defer advocate.FinishReplay()
   // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				}

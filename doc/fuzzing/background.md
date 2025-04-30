@@ -50,7 +50,7 @@ Let's take a look at fuzzing via some Go examples.
 The following function is meant to return true if the number is even.
 Otherwise, we return false.
 
-~~~{.go}
+```go
 func Even(i int) bool {
 	if i > 100 {
 		return false
@@ -62,7 +62,7 @@ func Even(i int) bool {
 	return false
 
 }
-~~~~~~
+```
 
 There is an obvious bug (for numbers above 100).
 We may miss this bug if we only consider a limited number of test inputs
@@ -77,7 +77,7 @@ Put the following files in a separate folder.
 
 even.go:
 
-~~~{.go}
+```go
 package main
 
 import "fmt"
@@ -101,11 +101,11 @@ func main() {
 	fmt.Printf("%d => %t", 0, Even(0))
 
 }
-~~~~~~~
+```
 
 even_test.go:
 
-~~~{.go}
+```go
 package main
 
 import "testing"
@@ -146,11 +146,11 @@ func FuzzEvent(f *testing.F) {
         }
     })
 }
-~~~~~~~
+```
 
 Sample runs.
 
-~~~
+```
 > go mod init example/even
 >
 > go test . --fuzz=Fuzz
@@ -164,7 +164,7 @@ fuzz: elapsed: 0s, gathering baseline coverage: 3/4 completed
 FAIL
 exit status 1
 FAIL	example/even	0.247s
-~~~~~~~
+```
 
 
 
@@ -185,7 +185,7 @@ Put the following files in a separate folder.
 
 channel.go:
 
-~~~{.go}
+```go
 package main
 
 // Deadlock possible!
@@ -212,11 +212,11 @@ func main() {
 	}
 
 }
-~~~~~~~
+```
 
 channel_test.go:
 
-~~~{.go}
+```go
 package main
 
 import "testing"
@@ -232,11 +232,11 @@ func FuzzRunner(f *testing.F) {
 
 	})
 }
-~~~~~~~
+```
 
 Sample runs.
 
-~~~~
+```
 > go mod init example/channel
 >
 > go run channel.go
@@ -256,7 +256,7 @@ fuzz: elapsed: 11s, execs: 41980 (350/sec), new interesting: 1 (total: 23)
 FAIL
 exit status 1
 FAIL	example/channel	10.875s
-~~~~~~~
+```
 
 
 Comment.
@@ -270,7 +270,7 @@ Put the following files in a separate folder.
 
 race.go:
 
-~~~{.go}
+```go
 package main
 
 import "fmt"
@@ -304,11 +304,11 @@ func main() {
 	}
 
 }
-~~~~~~~~
+```
 
 race_test.go:
 
-~~~{.go}
+```go
 package main
 
 import "testing"
@@ -324,18 +324,18 @@ func FuzzRace(f *testing.F) {
 
 	})
 }
-~~~~~~~~
+```
 
 
 Sample runs.
 
-~~~~
+```
 > go mod init example/race
 >
 > go run -race race.go
 ...
 many, many times, no race warning is issued
-~~~~~~
+```
 
 The reason why no race warning is issued is as follows.
 
@@ -353,7 +353,7 @@ The reason why no race warning is issued is as follows.
 
 Let's try Go fuzzing.
 
-~~~~
+```
 > go test . --fuzz=Fuzz -race
 fuzz: elapsed: 0s, gathering baseline coverage: 0/8 completed
 fuzz: elapsed: 0s, gathering baseline coverage: 8/8 completed, now fuzzing with 10 workers
@@ -368,7 +368,7 @@ fuzz: elapsed: 0s, execs: 4115 (14303/sec), new interesting: 1 (total: 9)
 FAIL
 exit status 1
 FAIL	example/race	0.569s
-~~~~~~~~~
+```
 
 Interesting. Data race detected! How?
 Does Go fuzzing tap in the Go run-time and mutate thread scheduling?

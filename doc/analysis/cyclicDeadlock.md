@@ -8,7 +8,8 @@ to see, if see, if the operations in the cycle are concurrent.
 
 Lets, as an example assume, the program trace with the mutexes m, n and o had
 the following form:
-~~~
+
+```
   T1         T2          T3
 lock(m)
 unlock(m)
@@ -24,19 +25,23 @@ unlock(n)
                        lock(m)
                        unlock(m)
                        unlock(o)
-~~~
+```
+
 Whis would result in the following lock trees:
-~~~
+
+```
  T1   T2  T3
   m   n   o
   |   |   |
   n   o   m
-~~~
+```
+
 which can be connected to a circle as follows:
-~~~
+
+```
  T1   T2  T3
   m   n   o
 / | / | / |
 | n   o   m
 \--------/
-~~~
+```

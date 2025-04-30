@@ -14,7 +14,7 @@ same channel and will therefore return a warning.
 Summarized that means, that the sendRcvU(tS, tR, x) and rcv(t, x, i) functions
 are changed to
 
-~~~
+```
 sendRcvU(tS, tR, x) {
   checkForConcurrentRecv(tR, x)
   ...
@@ -24,11 +24,11 @@ rcv(t, x, i) {
   checkForConcurrentRecv(t, x)
   ...
 }
-~~~
+```
 
 with
 
-~~~
+```
 checkForConcurrentRecv(t, x) {   -- t: current routine, x: id of channel
   L(t, x) = Th(t)
   for routine, lastRecv in L {                -- Iterate over all routines
@@ -39,7 +39,7 @@ checkForConcurrentRecv(t, x) {   -- t: current routine, x: id of channel
     }
   }
 }
-~~~
+```
 
 This allows us to find concurrent receives on the same channel. It is not necessary to
 search for concurrent send on the same channel, because this can behavior

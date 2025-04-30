@@ -78,13 +78,11 @@ or
 script. This will create a go executable in the `bin` directory.
 
 
-### Analysis
+### Analysis and Toolchain
 
-The complete analysis is done with the [analyzer](analyzer).
+The complete analysis and toolchain is integrated into the [analyzer](analyzer).
 
-Currently, the analysis and fuzzing can only be applied to unit tests.
-
-ADVOCATE has two different modes.
+ADVOCATE has different modes.
 
 #### Mode: analysis
 
@@ -103,7 +101,7 @@ It can be run with
 
 The following arg is required:
 
-- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file or the folder containing the `main.go` file. Note: the program to analyzer cannot be inside the ADVOCATE folder
+- `-path [path]`: For tests, the path to the root of the project folder containing all the tests. For main, the path to the main file. Note: the program to analyzer cannot be inside the ADVOCATE folder
 
 If the main function should be analyzed instead of the unit tests, the following arg must be set (we recommend applying the analysis to the tests and not the main function):
 
@@ -177,6 +175,38 @@ An example command would therefore be
 ```shell
 ./analyzer fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
+
+#### Mode: Recording and Replay
+
+During both the analysis and the fuzzing, [recording](./doc/recording.md)
+and [replay](./doc/replay.md) mechanisms are used. With those, a program or
+test run can be recorded and later be replayed. We also make those modes directly
+available.
+
+To create a trace from a program or test, you can run
+
+```shell
+./analyzer record [args]
+```
+
+The args must contain the `-path [pathToProg]` flag, pointing to the folder
+containing the tests of the main file. All additional, applicable flags
+mentioned above can also be used.
+
+To replay a trace, you can run
+
+```shell
+./analyzer replay [args]
+```
+
+The following args are required
+
+- `-path [pathToProg]`: path to the folder containing the tests of the main file
+- `-trace [pathToTrace]`: path to the folder containing the trace files to be replayed
+
+If the `-main` flag is not set, meaning some tests are replayed, and there
+is more than one test in `pathToProg`, `-exec [testName]` must be set to specify
+the test, the trace belongs to.
 
 ### Warning
 

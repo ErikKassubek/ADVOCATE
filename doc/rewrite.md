@@ -21,17 +21,17 @@ Suppose e appears before f in T
 
 and
 
-~~~~
+```
 T = T1 ++ [e] ++ T2 ++ [f] ++ T3
-~~~~~~
+```
 
 where T1, T2 and T3 are subtraces and we write ++ for concatenation.
 
 Take
 
-~~~~
+```
 T' = T1 ++ T2' ++ [e,f]
-~~~~~~~
+```
 
 where T2' = [ g | g in T2 and g <HB f ].
 
@@ -88,20 +88,20 @@ next to each other if we replay traces.
 
 Consider event e's trace L_i.
 
-~~~~
+```
 L_i = [ g | g in L_i and g <tr e ] ++ [e]
-~~~~~~~~
+```
 
 We simply shorten the trace L_i by ignoring all events in thread i that were processed after e.
 
 
 Consider event f's trace L_j.
 
-~~~~~~~
+```
 L_j = [ g | g in L_i and g <tr e ]                             -- (1)
       ++
       [ g' | g' in L_i and e <tr g' and g' <tr f] ++ [f]       -- (2)
-~~~~~~~~~~~~~~
+```
 
 Consider part (1). These are all events g that were processed before e. So, we keep them.
 
@@ -115,11 +115,11 @@ such that g' <trNew e for each g'.
 
 For all other threads k where k != i and k != j.
 
-~~~~~~~~
+```
 L_k = [ g | g in L_k and g <tr e ]                                  -- (1)
       ++
       [ g' | in L_k and e <tr g' and g' <tr f and g' <HB f]         -- (2)
-~~~~~~~~~~~
+```
 
 We again need to update the global trace order for events g's in part (2).
 
@@ -141,14 +141,14 @@ where for each ei and ej where i !=j we find that ei and ej are unordered under 
 
 Currently, we do not observe any non-atomic variables.
 
-~~~~~
+```
 Question: Does this affect the claim the reordering constructed above is valid?
-~~~~~~~
+```
 
 Based on the Go memory model, non-atomic variables do not imply any (must) happens-before relations.
 For example, consider the following program
 
-~~~~{.go}
+```go
 go func() {
   x = 1
 }()
@@ -159,28 +159,27 @@ go func() {
   ...
   }
 }()
-
-~~~~~~~~~
+```
 
 and a possible program run represented by the following trace
 
-~~~~~~
+```
     T1     T2
 
 1.  wr(x)
 2.         rd(x)
 3.         ...
-~~~~~~~~
+```
 
 There is a write-read dependency. So, it seems that "..." must happen after the write on x in T1.
 However, the read and write are in a race. Racy programs imply undefined behavior.
 
-~~~~~
+```
 Answer to the above question:
 
 Assuming the program is race-free, we can argue that the reordering is valid.
 Rigorously formalizing the statement might be quite a challenge though.
-~~~~~~~~
+```
 
 
 ## Reconstructions for the different analysis cases

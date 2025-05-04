@@ -56,7 +56,7 @@ var ExitCodeNames = map[int]string{
 var (
 	hasReturnedExitCode = false
 	ignoreAtomicsReplay = true
-	printDebug          = true
+	printDebug          = false
 
 	tPostWhenFirstTimeout    = 0
 	tPostWhenReplayDisabled  = 0
@@ -180,8 +180,8 @@ func (elem *ReplayElement) key() string {
 //   - file string: code position file of the element
 //   - line int: code position line of the element
 func BuildReplayKey(routine int, file string, line int) string {
-	// return intToString(routine) + ":" + file + ":" + intToString(line)
-	return file + ":" + intToString(line)
+	return intToString(routine) + ":" + file + ":" + intToString(line)
+	// return file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement
@@ -621,9 +621,8 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil
 	}
 
-	routine := GetRoutineID()
+	routine := GetReplayRoutineID()
 
-	// routine := GetRoutineID()
 	key := BuildReplayKey(routine, file, line)
 
 	// ignore not active operations if partial replay is active
@@ -727,7 +726,10 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	}
 
 	// switch to replay that only looks for active elements
+	if printDebug {
 	println("Check for partial replay ", elemReplay.Time, startTimeActive)
+	}
+
 	if !partialReplay && startTimeActive != -1 && elemReplay.Time >= startTimeActive {
 		if printDebug {
 			println("Switch to active replay")

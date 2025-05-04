@@ -1,5 +1,8 @@
 # Replay
 
+TODO: distinguish between two operations at same postion, but different routines
+
+
 Replay allows us to force the execution of a program to follow a given trace.
 
 Here we explain the exact replay used in the replay of rewritten traces and

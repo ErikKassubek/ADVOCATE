@@ -561,7 +561,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	runCommand(pathToPatchedGoRuntime, "version")
 
 	pkgPath := utils.MakePathLocal(pkg)
-	err := runCommand(pathToPatchedGoRuntime, "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
+	err := runCommand(pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -677,7 +677,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 		utils.LogInfof("Run replay %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := utils.MakePathLocal(pkg)
-		runCommand(pathToPatchedGoRuntime, "test", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
+		runCommand(pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
 		utils.LogInfof("Finished replay %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

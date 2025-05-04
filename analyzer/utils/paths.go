@@ -92,6 +92,7 @@ func GetMainPath(path string) (string, error) {
 				return "", err
 			}
 		}
+		return mainPath, nil
 	}
 
 	// It's a file, return the path as is

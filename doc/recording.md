@@ -1,5 +1,7 @@
 # Execution, Recording and Trace
 
+TODO: nochmal überarbeiten\
+
 ADVOCATE uses dynamic analysis, meaning it runs the code that should be analyzed,
 records the relevant information about this execution and tries to deduce
 potential concurrency problems from this trace. For information about the
@@ -67,7 +69,45 @@ in which it stores the trace files. For each routine, one trace file will be
 generated. In it, each line contains the information about one recorded
 event. The events are sorted by the time when the operations was executed.
 
-### Timer
+## Optimization and inlining
+
+The build process of go can perform optimizations and inlining. This can lead
+to problems, e.g. in the following program:
+
+```go
+func main() {
+	c := make(chan int, 2)
+
+	c <- 1
+	c <- 2
+
+	a := func(s string) {
+		<-c                       // line 8
+		println(s)
+	}
+
+	go a("A")                  // line 12
+	go a("B")                  // line 13
+
+	time.Sleep(time.Second)
+}
+```
+
+The receive on the channel is at the same code position for both spawned
+routines. But, because of inlining, they may be recorded at being at different
+positions. Let's assume, that for the first routine in line 12, the compiler
+applies inlining, but for the second routine in line 13, it does not. In this
+case, the receive on `c` will in one case be recorded as being in line 12,
+and in the other as being in line 8. This can lead to problems, especially
+if during a replay of the recorded trace, the inlining is done differently.
+
+To guarantee, that the recorded code positions are always the positions
+where the operation actually occurs, optimization and
+inlining is disables for running the recording, and also when running a replay.
+This is done by setting the `-gcflags="all=-N -l"` when building a program or running a test.
+
+## Timer
+
 To reconstruct the global trace from the recorded local traces, we need a consistent
 timer.
 

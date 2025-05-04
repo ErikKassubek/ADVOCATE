@@ -5069,8 +5069,10 @@ func newproc(fn *funcval) {
 	file, line := funcline(f, tracepc)
 
 	wait, ch, ack := WaitForReplayPath(OperationSpawn, file, int(line), true)
+	index := 1
 	if wait {
-		_ = <-ch
+		elem := <-ch
+		index = elem.Index
 		defer func() { ack <- struct{}{} }()
 	}
 	// ADVOCATE-END
@@ -5078,7 +5080,7 @@ func newproc(fn *funcval) {
 	systemstack(func() {
 		newg := newproc1(fn, gp, pc, false, waitReasonZero)
 
-		newg.advocateRoutineInfo = newAdvocateRoutine(newg)
+		newg.advocateRoutineInfo = newAdvocateRoutine(newg, index)
 
 		if gp != nil && gp.advocateRoutineInfo != nil {
 			AdvocateSpawnCaller(gp.advocateRoutineInfo, newg.advocateRoutineInfo.id, file, line)

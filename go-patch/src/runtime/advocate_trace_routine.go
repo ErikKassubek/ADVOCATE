@@ -41,7 +41,8 @@ type AdvocateTraceRoutineExit struct {
 //   - newID uint64: id of the new routine
 //   - file string: file where the routine was created
 //   - line int32: line where the routine was created
-func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file string, line int32) {
+func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file string,
+	line int32) {
 	if advocateTracingDisabled {
 		return
 	}

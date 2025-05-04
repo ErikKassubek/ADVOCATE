@@ -103,10 +103,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	}
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
-
 	if runRecord {
-		utils.LogInfo("Execute Program")
-
 		// Remove header
 		if err := headerRemoverMain(pathToFile); err != nil {
 			return fmt.Errorf("Error removing header: %v", err)
@@ -114,6 +111,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 		// build the program
 		if measureTime && fuzzing < 1 {
+			utils.LogInfo("Build Program")
 			fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 			if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
 				utils.LogError("Error in building program, removing header and stopping workflow")
@@ -122,6 +120,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			}
 
 			// run the program
+			utils.LogInfo("Execute Program")
 			timer.Start(timer.Run)
 			execPath := utils.MakePathLocal(executableName)
 			if err := runCommand(execPath); err != nil {
@@ -137,20 +136,21 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		}
 
 		// build the program
-		fmt.Printf("%s build\n", pathToPatchedGoRuntime)
-		if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
+		utils.LogInfo("Build program for recording")
+		if err := runCommand(pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
 			utils.LogError("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
 			return err
 		}
 
 		// run the recording
+		utils.LogInfo("Run program for recording")
 		timer.Start(timer.Recording)
 		execPath := utils.MakePathLocal(executableName)
-		timer.Stop(timer.Recording)
 		if err := runCommand(execPath); err != nil {
 			headerRemoverMain(pathToFile)
 		}
+		timer.Stop(timer.Recording)
 
 		// Remove header
 		if err := headerRemoverMain(pathToFile); err != nil {
@@ -205,13 +205,15 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			}
 
 			// build the program
-			if err := runCommand(pathToPatchedGoRuntime, "build"); err != nil {
+			utils.LogInfo("Build program for replay")
+			if err := runCommand(pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
 				utils.LogError("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(pathToFile)
 				continue
 			}
 
 			// run the program
+			utils.LogInfo("Run program for replay")
 			execPath := utils.MakePathLocal(executableName)
 			runCommand(execPath)
 

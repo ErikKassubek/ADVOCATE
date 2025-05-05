@@ -8,15 +8,13 @@ potential concurrency problems from this trace. For information about the
 analysis, see [here](analysis.md).
 
 The recording of the trace is implemented in the [modified runtime](../go-patch/src/runtime).
-It can be found in the [advocate_trace.go](../go-patch/src/runtime/advocate_trace.go) file and the
-advocate_trace_....go files in the same directory.
 
 To run the recording, a special header is added to the running program by
 the toolchain.
 
 For each of the operations we want to record, additional function calls
-have been added to the operations implementations.
-We record the following types and operations:
+have been added to the operation implementations.
+We record the following operations:
 
 - [Channel](trace/channel.md): Send, Receive, Close
 - [Select](trace/select.md)
@@ -26,12 +24,11 @@ We record the following types and operations:
 - [Conditional Variable](trace/conditionalVariables.md): Wait, Signal, Broadcast
 - [Atomics](trace/atomics.md): Load, Store, Add Swap, CompareAndSwap
 - [New Channel](trace/newChannel.md)
-- [Fork](trace/fork.md) (Start of new routine)
+- [Fork/Spawn](trace/fork.md) (Start of new routine)
 - [Return of Routine](trace/routineEnd.md)
 
-Additionally, the replay can add in additional [markers](trace/replay.md).
 
-## Trace Recording
+## Toolchain
 
 To run the recording, we need to add the following header to the main function
 or the test that is analyzed:
@@ -45,30 +42,80 @@ or the test that is analyzed:
 
 When the toolchain is used, this is done automatically.
 
-To routines locally record the trace, we add an new variable `advocateRoutineInfo` into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
+
+## Implementation
+
+To record the execution trace local, we add an new variable `advocateRoutineInfo` into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
 This struct is automatically created for each routine.
 This variable (defined [here](../go-patch/src/runtime/advocate_routine.go#L28)), stores the routine id,
 the maximum id of any element used in this routine and the
-Trace as list of elements. They are set [when the routine is started](../go-patch/src/runtime/proc.go#L5080).
+trace of this routine as a list of elements.
 
-For each struct representing one of the recorded operations (except for fork and atomic operations), we add a field `id`, to store the `id` for this element. When a recorded function
+They are set [when the routine is started](../go-patch/src/runtime/proc.go#L5080).
+
+To prevent those elements from being removed by the garbage collector and to
+make it easy to collect them at the end, we store a reference to those elements
+in a global map.
+
+Before the runtime starts to run the main functions, multiple routines are created
+and executed. They would always result in completely empty trace files, since
+the recording only starts after the
+[InitTracing](../go-patch/src/advocate/advocate_tracing.go#25) has been executed.
+We therefore therefore ignore those routines by setting there IDs to 0
+and don't add there advocateRoutineInfo into the global map.
+
+To identify operations, that where executed on the same element, we assign
+an ID to each channel, mutex, .... Since most of those elements are internally
+implemented as struct, we add a new field for this ID to the struct.
+
+When a recorded function
 is executed, we first check if this id was already set. If it was not, we set a new id. We want to minimize the number of
 global counters we need to use. We therefor construct the new
-id as $routine.id\cdot1000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine. For atomics, we use the memory position of the value as id.
+id as $routine.id\cdot1000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine.
+With this, we can guarantee that each object ID is unique.
+
+For atomics, we use the memory position of the variable as id.
 
 For each recorded operation a Pre and sometimes a Post function is implemented (multiple operations on the same type may share a Post function). The Pre function is called when the operation
 is started, but before it executes. The Post function is called after it finished executing.
 
-The Pre function record that the operation was executed, as well as all required information that are already available (for the lest if required information, check out the type specific information linked above). The Pre function
+The calls to those functions are directly added into the implementations of
+the recorded operations.
+
+To be able to reconstruct a global trace from those elements, we store a
+time value for each pre and post. This values is created by an atomic counter,
+that is increased every time a time value is requested. For more info, see [here](#timer).
+
+The Pre function records that the operation was executed, the time when it was started, as well as all required information that are already available (for the list if required information, check out the type specific information linked above). The Pre function
 also always records the location where the operation was recorded. This is (except for fork, see [here](./trace/fork.md#implementation)) done using the [runtime.Caller](https://pkg.go.dev/runtime#Caller) function.
 
 The Post function then records the successful completion of the
-operation (by setting tPost to not zero) as well as all information that was not available at the beginning, e.g. if a trylock was successful or not or which select case was executed.
+operation (by setting the post timer from 0 to the current time) as well as all information that was not available at the beginning, e.g. if a trylock was successful or not or which select case was executed.
+
+For each operations we only store one element in the trace, representing
+both the pre and post signal. The functions creating the pre signal
+add a new element to the trace slice and return the index of this element
+in the slice. The post functions take this index as an argument, to find
+and update this value. We can determine if an operation had an pre, but no
+post element, meaning the execution got stuck, by checking if the post timer is 0.
+A post element without a pre element is not possible.
+
+For elements that are executed directly without the possibility of the operations
+being delayed by other operations (e.g. close on channel), the pre and post
+signal may be recorded with the same function.
 
 When the program execution has finished, it will create a folder `advocateTrace`
 in which it stores the trace files. For each routine, one trace file will be
 generated. In it, each line contains the information about one recorded
 event. The events are sorted by the time when the operations was executed.
+
+We have decided not to record internal operations.
+The reason for this is that for most uses (e.g. bug analysis), they are not relevant
+and unnecessarily increase the trace file size and the replay and recording time.
+Additionally, they may be part of unpredictable operations like e.g. the garbage
+collector, which would make the replay much more complicated to implements.\
+If an internal operation is executed (meaning if the file path is in "go-patch/src/"),
+it is ignored.
 
 ## Optimization and inlining
 
@@ -151,6 +198,11 @@ Even though this would allow us to get a routine local, accurate timer signal, a
 the `nanotime` function is slightly slower than the use of a global atomic variable, even for programs where a lot of recorded
 operations are executed at the same time. Since the main reason for routine local recording is performance, it was not useful to use the `nanotime` function.
 
+## Writing
+
+When the main function terminates, it calls the [FinishTracing](../go-patch/src/advocate/advocate_tracing.go#65) function. This will collect all the local traces and write them into files.
+We ignore all internal routines, that where created and run before the main
+routine started to execute.
 
 [^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)\
 [^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)\

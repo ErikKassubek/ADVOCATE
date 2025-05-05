@@ -130,10 +130,6 @@ func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
 	// create the file if it does not exist and open it
 	defer wg.Done()
 
-	// if runtime.TraceIsEmptyByRoutine(routine) {
-	// 	return
-	// }
-
 	fileName := filepath.Join(tracePath, "trace_"+strconv.Itoa(routine)+".log")
 
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

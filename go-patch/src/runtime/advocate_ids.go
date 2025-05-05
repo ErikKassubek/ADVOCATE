@@ -14,16 +14,25 @@ import "internal/runtime/atomic"
 
 var advocateCurrentRoutineID atomic.Uint64
 
-// GetAdvocateRoutineID returns a new id for a routine
+// GetNewAdvocateRoutineID returns a new id for a routine
 //
 // Returns:
 //   - new id
-func GetAdvocateRoutineID() uint64 {
+func GetNewAdvocateRoutineID() uint64 {
 	id := advocateCurrentRoutineID.Add(1)
 	if id > 184467440 {
 		panic("Overflow Error: Two many routines. Max: 184467440")
 	}
 	return id
+}
+
+// GetNewAdvocateRoutineID returns the next routine id that will be provided
+// by GetNewAdvocateRoutineID without advancing the counter
+//
+// Returns:
+//   - next id
+func GetNextAdvocateRoutineID() uint64 {
+	return advocateCurrentRoutineID.Load() + 1
 }
 
 // GetAdvocateObjectID returns a new id for an primitive

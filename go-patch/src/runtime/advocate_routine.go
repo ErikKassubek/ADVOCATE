@@ -28,26 +28,38 @@ var projectPath string
 //   - Trace []traceElem: the trace of the routine
 type AdvocateRoutine struct {
 	id          uint64
-	replayID int
+	replayID    int
 	maxObjectId uint64
 	G           *g
 	Trace       []traceElem
 }
 
-
 // Create a new advocate routine
 // Params:
 //   - g: the g struct of the routine
 //   - replayRoutine int: when used in reply, id of the new routine in the replayed trace
+//
 // Return:
 //   - the new advocate routine
 func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
+
+	// ignore the internal routines that are run before the main function starts
+	if advocateTracingDisabled && GetNextAdvocateRoutineID() != 1 {
+		return &AdvocateRoutine{
+			id:          0,
+			maxObjectId: 0,
+			G:           g,
+			Trace:       make([]traceElem, 0),
+			replayID:    replayRoutine,
+		}
+	}
+
 	routine := &AdvocateRoutine{
-		id: GetAdvocateRoutineID(),
+		id:          GetNewAdvocateRoutineID(),
 		maxObjectId: 0,
-		G:     g,
-		Trace: make([]traceElem, 0),
-		replayID : replayRoutine,
+		G:           g,
+		Trace:       make([]traceElem, 0),
+		replayID:    replayRoutine,
 	}
 
 	lock(&AdvocateRoutinesLock)
@@ -65,6 +77,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 // Add an element to the trace of the current routine
 // Params:
 //   - elem: the element to add
+//
 // Return:
 //   - the index of the element in the trace
 func (gi *AdvocateRoutine) addToTrace(elem traceElem) int {
@@ -104,7 +117,6 @@ func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
 
 	gi.Trace[index] = elem
 }
-
 
 // Get the current routine
 // Return:

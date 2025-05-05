@@ -1,16 +1,21 @@
 # Mutex
+
 The locking and unlocking of sync.(rw)-mutexes is recorded in the trace where it occurred.
 
 ## Trace element
+
 The basic form of the trace element is
+
 ```
-M,[tpre],[tpost],[id],[rw],[opM],[suc],[pos]
+M,[tPre],[tPost],[id],[rw],[opM],[suc],[pos]
 ```
+
 where `M` identifies the element as a mutex element.
 The other fields are set as follows:
-- [tpre] $\in \mathbb N$: This is the value of the global counter when the operation starts
+
+- [tPre] $\in \mathbb N$: This is the value of the global counter when the operation starts
 the execution of the lock or unlock function
-- [tpost] $\in \mathbb N$: This is the value of the global counter when the mutex has finished its operation. For lock operations this can be either if the lock was successfully acquired or if the routines continues its execution without
+- [tPost] $\in \mathbb N$: This is the value of the global counter when the mutex has finished its operation. For lock operations this can be either if the lock was successfully acquired or if the routines continues its execution without
 acquiring the lock in case of a trylock.
 - [id] $\in \mathbb N$: This is the unique id identifying this mutex
 - [rw]: This field records, whether the mutex is an rw mutex ([rw] = `t`) or not
@@ -29,6 +34,7 @@ set to `t`.
 was executed. It consists of the file and line number separated by a colon (:)
 
 ## Implementation
+
 The recording of the mutex operations is implemented in the `go-patch/src/sync/mutex.go` and `go-patch/src/sync/rwmutex.go` files in the implementation of the
 Lock, RLock, TryLock, TryRLock, Unlock and RUnlock function.\
 To save the id of the mutex, a field for the id is added to the `Mutex` and
@@ -36,9 +42,10 @@ To save the id of the mutex, a field for the id is added to the `Mutex` and
 The recording consist of
 two function calls, one at the beginning and one at the end of each function.
 The first function call is called before the Operation tries to executed
-and records the id ([id]) and type ([rw]) of the involved mutex, the called operation (opM), the position of the operation in the program ([pos]) and the counter at the beginning of the operation ([tpre]).\
+and records the id ([id]) and type ([rw]) of the involved mutex, the called operation (opM), the position of the operation in the program ([pos]) and the counter at the beginning of the operation ([tPre]).\
 The second function call records the success of the operation. This includes
-the counter at the end of the operation ([tpost]), the information that the
-operation finished ([exec]) and the success of try lock operations ([suc]).\
+the counter at the end of the operation ([tPost]), the information that the
+operation finished ([exec]) and the success of try lock operations ([suc]).
+
 The implementation of those function calls can be found in
-`go-patch/src/runtime/advocate_trace.go` in the functions [AdvocateMutexPre](../../go-patch/src/runtime/advocate_trace_mutex.go#L40) and [AdvocateMutexPost](../../go-patch/src/runtime/advocate_trace_mutex.go#L75) 
+`go-patch/src/runtime/advocate_trace.go` in the functions [AdvocateMutexPre](../../go-patch/src/runtime/advocate_trace_mutex.go#L46) and [AdvocateMutexPost](../../go-patch/src/runtime/advocate_trace_mutex.go#L77)

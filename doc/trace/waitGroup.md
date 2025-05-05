@@ -1,16 +1,20 @@
 # WaitGroup
+
 The Add, Done and Wait operations of a wait group are recorded in the trace where the operations occurs.
 
 ## Trace element
+
 The basic form of the trace element is
+
 ```
-W,[tpre],[tpost],[id],[opW],[delta],[val],[pos]
+W,[tPre],[tPost],[id],[opW],[delta],[val],[pos]
 ```
+
 where `W` identifies the element as a wait group element. The following sets are set as follows:
 
-- [tpre] $\in\mathbb N: This is the value of the global counter when the operation starts
+- [tPre] $\in\mathbb N: This is the value of the global counter when the operation starts
 the execution of the lock or unlock function
-- [tpost] $\in\mathbb N: This is the value of the global counter when the operation has finished
+- [tPost] $\in\mathbb N: This is the value of the global counter when the operation has finished
 its operation.
 - [id] $\in\mathbb N: This is the unique id identifying this wait group
 - [opW]: This filed identifies the operation type that was executed on the wait group:
@@ -26,4 +30,8 @@ was executed. It consists of the file and line number separated by a colon (:)
 
 
 ## Implementation
-The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the [Add](../../go-patch/src/sync/waitgroup.go#L36) (Add, Done), [Wait](../../go-patch/src/sync/waitgroup.go#L76) and [Post] (../../go-patch/src/sync/waitgroup.go#L106) functions. We differentiate between add and done by checking the delta value (done -1, add > 0).
+
+The recording of the operations is done in the `go-patch/src/sync/waitgroup.go` file in the [Add](../../go-patch/src/sync/waitgroup.go#L53) (Add, Done) and [Wait](../../go-patch/src/sync/waitgroup.go#L138) with
+the functions being implemented [here](../../go-patch/src/runtime/advocate_trace_waitgroup.go).
+
+We differentiate between add and done by checking the delta value (done -1, add > 0).

@@ -36,7 +36,7 @@ const (
 )
 
 var ExitCodeNames = map[int]string{
-	0:  "The replay terminated without confirming the predicted bug",
+	0:  "The replay terminated normally",
 	3:  "The program panicked unexpectedly",
 	10: "Timeout",
 	20: "Leak: Leaking unbuffered channel or select was unstuck",
@@ -727,7 +727,7 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 
 	// switch to replay that only looks for active elements
 	if printDebug {
-	println("Check for partial replay ", elemReplay.Time, startTimeActive)
+		println("Check for partial replay ", elemReplay.Time, startTimeActive)
 	}
 
 	if !partialReplay && startTimeActive != -1 && elemReplay.Time >= startTimeActive {

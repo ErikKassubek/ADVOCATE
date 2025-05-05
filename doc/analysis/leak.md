@@ -5,7 +5,7 @@
 A goroutine leak is an indefinitely blocked goroutine.
 
 In our approach, we can identify potential leaks by checking for goroutines
-where the last recorded event is a "pre" event (tpost = 0).
+where the last recorded event is a "pre" event (tPost = 0).
 
 For channel operation, we try to find a possible partner, which is
 used in the trace reorder to get the operation unstuck.

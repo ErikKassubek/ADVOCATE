@@ -23,7 +23,7 @@ or
 with
 ```
 [args]: [arg] | [arg];[arg] | [arg];[arg];[arg] | ...
-[arg] : T:[routineId]:[objId]:[tpre]:[objType]:[file]:[line] (trace element)
+[arg] : T:[routineId]:[objId]:[tPre]:[objType]:[file]:[line] (trace element)
 [arg] : S:[objId]:[objType] (select case)
 ```
 The typeIDs have the following meaning:
@@ -62,7 +62,7 @@ The arg in args are separated by a semicolon (;).\
 Each arg contains the following elements separated by a colon (:)
 - `[routineId]` is the id of the routine that contains the operation
 - `[objId]` is the id of the object that is involved in the operation
-- `[tpre]` is the time of the operation
+- `[tPre]` is the time of the operation
 - `[opjType]` is the type of the element
 	- Atomic:
 	  - AL: Load

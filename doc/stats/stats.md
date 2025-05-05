@@ -1,34 +1,8 @@
 
 # Statistics
+
 If the `-stats` flag is set when running the `analysis` or `fuzzing` mode, multiple statistic files will be created.
 
-## Error Codes
-
-- A01: Send on closed channel
-- A02: Receive on closed channel
-- A03: Close on closed channel
-- A04: Concurrent recv
-- A05: Select case without partner
-- P01: Possible send on closed channel
-- P02: Possible receive on closed channel
-- P03: Possible negative waitgroup counter
-- P04: Possible unlock of not locked mutex
-- L00: Leak on routine without blocking element
-- L01: Leak on unbuffered channel with possible partner
-- L02: Leak on unbuffered channel without possible partner
-- L03: Leak on buffered channel with possible partner
-- L04: Leak on buffered channel without possible partner
-- L05: Leak on nil channel
-- L06: Leak on select with possible partner
-- L07: Leak on select without possible partner
-- L08: Leak on mutex
-- L09: Leak on waitgroup
-- L10: Leak on cond
-- R01: Unknown panic in recording
-- R02: Timeout in recording
-
-
-## Statistics
 To create the statistic files, set the `-stats` flag.\
 This will create three files
 
@@ -38,7 +12,8 @@ This will create three files
 - `statsAll_progName.csv`: detailed results about the trace and analysis
 - `statsFuzzing_progName.csv`: Information about the fuzzing. Merged results for all runs of a test
 
-# statsProgram
+## statsProgram
+
 While for all the other stat files, the data is collected on a per test base, this file contains data about the whole analyzed program. This contains some information about the program, like the number of files and lines, as well as the number of unique found bugs
 for the whole problem. Meaning if the same bug was found in multiple tests, it is just counted once here. For the replay we again
 use the best possible result for the bug. The fields are
@@ -153,7 +128,8 @@ use the best possible result for the bug. The fields are
 - `NoUnexpectedPanicR01`
 - `NoUnexpectedPanicR02`
 
-### statsTrace
+## statsTrace
+
 This file contains statistics about the program traces. It contains one
 line with the column names and then one line for each tests, or just one line if it is run on a main file.\
 The columns are
@@ -169,7 +145,8 @@ The columns are
 - `NoCondVariablesEvents`: Total number of events on conditional vars
 - `NoOnceOperations`: Total number of once operations
 
-### statsAnalysis
+## statsAnalysis
+
 This file contains general statistics about the program analysis. It contains one
 line with the column names and then one line for each test, or just one line if it is run on a main file.
 For fuzzing, it will create one line per fuzzing run.
@@ -197,7 +174,8 @@ The columns are
 - `NoUnexpectedPanicsInReplayUnique`: Number of unexpected bugs in replay
 
 
-### statsAll
+## statsAll
+
 This file contains full statistics about the program trace and analysis. It contains one
 line with the column names and then one line for each tests, or just one line if it is run on a main file.
 For fuzzing, it will create one line per fuzzing run.\
@@ -455,7 +433,8 @@ The full list of columns is as follows:
 - `NoUniqueUnexpectedPanicR01`
 - `NoUniqueUnexpectedPanicR02`
 
-# statsFuzzing
+## statsFuzzing
+
 This file contains information of the fuzzing for each test. This file is only created if the analysis is run in fuzzing mode.
 The info for each test contains the name, the number of runs in fuzzing and the
 number of unique bugs found over all fuzzing runs.\
@@ -568,3 +547,29 @@ The columns are
 - `NoUnexpectedPanicL10`
 - `NoUnexpectedPanicR01`
 - `NoUnexpectedPanicR02`
+
+
+## Error Codes
+
+- A01: Send on closed channel
+- A02: Receive on closed channel
+- A03: Close on closed channel
+- A04: Concurrent recv
+- A05: Select case without partner
+- P01: Possible send on closed channel
+- P02: Possible receive on closed channel
+- P03: Possible negative waitgroup counter
+- P04: Possible unlock of not locked mutex
+- L00: Leak on routine without blocking element
+- L01: Leak on unbuffered channel with possible partner
+- L02: Leak on unbuffered channel without possible partner
+- L03: Leak on buffered channel with possible partner
+- L04: Leak on buffered channel without possible partner
+- L05: Leak on nil channel
+- L06: Leak on select with possible partner
+- L07: Leak on select without possible partner
+- L08: Leak on mutex
+- L09: Leak on waitgroup
+- L10: Leak on cond
+- R01: Unknown panic in recording
+- R02: Timeout in recording

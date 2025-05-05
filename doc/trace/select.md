@@ -45,7 +45,7 @@ The implementation for the select with more than one non-default case has been s
 
 We implement a [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L187) and a [Post](../../go-patch/src/runtime/advocate_trace_select.go#L231) function for the select case with exactly one non default case and separate [Pre](../../go-patch/src/runtime/advocate_trace_select.go#L25) and [Post](../../go-patch/src/runtime/advocate_trace_select.go#L122) functions for all other selects.
 
-The case with only one select case is the simple one. Here the Pre function records the involved channel and wether the case is a send or receive. The post function simple adds the information about wether the default or the non-default case was chosen. Since they basically have the form
+The case with only one select case is the simple one. Here the Pre function records the involved channel and whether the case is a send or receive. The post function simple adds the information about whether the default or the non-default case was chosen. Since they basically have the form
 ```go
 if selectnbsend(c, v) {
 	... foo
@@ -77,7 +77,7 @@ for _, casei := range lockorder {
 	c := cas.c
 ```
 where cas is the representation of the case, and c is the channel involved in the case.
-Since the number of sending cases is given as `nsend`, we can determine for a case wether
+Since the number of sending cases is given as `nsend`, we can determine for a case whether
 it is a send or a receive by checking
 ```go
 chanOp := OperationChannelRecv

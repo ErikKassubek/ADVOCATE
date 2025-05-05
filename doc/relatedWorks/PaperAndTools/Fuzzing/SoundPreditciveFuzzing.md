@@ -13,6 +13,6 @@ To overcome heavy efficiency challenges existing in predictive tools, they propo
 
 The first module decides whether an input should be passed to the second module for vulnerability prediction (no matter whether the input can bring new coverage defined in AFL++ or not). The second module accepts the original program under test and input from the first module. Next, it calls SEQCHECK to run the program against that input and to conduct subsequent analysis. If SEQCHECK reports any concurrency vulnerability, PREDFUZZ reports it.
 
-PREFFUZZ uses Lock/unlock coverage to determine wether an input should be passed to prediction. This coverage is defined as:
+PREFFUZZ uses Lock/unlock coverage to determine whether an input should be passed to prediction. This coverage is defined as:
 
 > Given two executions, let $s = \langle e_1, e_2, ....e_n\rangle$ and $s' = \langle e'_1, e'_2, ....e'_n\rangle$ be two sequences of lock/unlock operations (i.e., $e_i/{e'}_i$ has the form $\langle lock/unlock, l\rangle$ where $l$ is a unique location identifier where the operation $e$ occurs) from two executions $p$ and $p'$, if we have $e_i \neq e'_i$, then the two executions $p$ and $p'$ have different lock/unlock coverage.

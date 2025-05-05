@@ -1,22 +1,24 @@
 # Replay
 
-TODO: distinguish between two operations at same postion, but different routines
-
-
 Replay allows us to force the execution of a program to follow a given trace.
 
-Here we explain the exact replay used in the replay of rewritten traces and
-the GoPie fuzzing. For the explanation of the simplified replay used for
-flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
+Here we explain the total and partial replay used in the replay of rewritten traces and
+the [GoPie](./fuzzing/GoPie.md) fuzzing.
 
-First we will look how the replay is used in the [toolchain](#toolchain). Then we will give a description of how the replay mechanism works and how it is implemented ([here](#Implementation)). <!-- At the end, we will look at some problems, that can cause the replay mechanism to [fail](#things-that-can-go-wrong). -->
+For the [total replay](#total-replay), we force the order of the execution of all relevant
+concurrency operations. For the [partial replay](#partial-replay), we provide a list of
+active operations. For those operations we force the order of the executions,
+while all other operations can run freely.
+
+For the explanation of the simplified replay used for
+flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 
 ## Toolchain
 
 The replay is run, if the test of main function starts with the following header:
 
   ```go
-  advocate.InitReplay(index, exitCode, timeout, atomic)
+  advocate.InitReplay(index, timeout, atomic)
   defer advocate.FinishReplay()
   ```
 
@@ -29,13 +31,12 @@ The parameters are as follows:
 When using the toolchain to run replays, this header is automatically added.
 
 
-## Implementation
+## Total replay
 
 The following is a description of the implementation of the trace replay.
 
 First we will give an [overview](#replay-mechanism) over the replay mechanism. Then
 we will give an [detailed explanation](#detail) of the implementation.
-<!-- At the end we will illustrate the mechanism with an [example](#example). -->
 
 ### Replay Mechanism
 
@@ -46,36 +47,15 @@ in the trace. If it is, it will execute. If not, it will wait until it is the
 operations turn.
 
 There are two main parts in this mechanism, the operation and the replay
-manager. The operations wants to execute, and if it is not the next element
-to be executed, it will wait. The replay manager runs in the background to
-release all waiting operations.
+manager.\
+The operations wants to execute, and if it is not the next element
+to be executed, it will wait.\
+The replay manager is a routine running in the background to
+release waiting operations.
 
 The replay in the operation works as follows:
 
 ```
-If the operations is an ignored (internal) operation,
-execute directly.
-See (E1)
-
-Get the next element in the trace.
-See (E2)
-
-If current operations matches next event,
-then executed and send a direct acknowledgement
-to the manager.
-See (E3).
-
-Otherwise, suspend operation and store signal
-to wake-up (suspended) operation in map.
-See (E4).
-
-When wake-up signal is triggered, execute.
-See (E5).
-
-After execution, send an acknowledgement
-to the manager.
-See (E6)
-
 func operation(op) {
 	if ignored(op) {  // (E1)
 		execute(op)
@@ -95,34 +75,22 @@ func operation(op) {
 		}
 	}
 }
+
+E1: If the operations is an ignored (internal) operation, execute directly.
+E2: Get the next element in the trace.
+E3: If current operations matches the next event, then executed and send a direct acknowledgement to the manager.
+E4: Otherwise, suspend operation and store a signal to wake-up the operation in map.
+E5: When the wake-up signal is triggered, execute the operation.
+E6: After execution, send an acknowledgement to the manager. For `Once.Do`, the
+    acknowledgement is send after the `Do` has decided whether it will execute
+    the given function (whether it is the first call to this once) or not, but
+    before the argument function is run.
 ```
 
 The replay manager runs in a background routine and is implemented as followed
 (here we ignore the timeout mechanism. For details on this, see the [detailed](#detail) explanation):
 
 ```
-Get the next element in the trace.
-See (M1)
-
-Check if the next element in the trace has been directly
-executed (ackDir). If this is the
-case, and it is not a channel, wait for the operation
-to fully execute (wait for ack). Then advance the trace to the next element.
-See (M2)
-
-If the next operation corresponds to an
-already waiting operation in a map, send the
-signal to release it and remove the operation
-from the waitMap.
-See (M3)
-
-If it is not a channel communication, select or once.Do, wait for the operation
-to fully execute (wait for ack).
-See (M4)
-
-Advance to the next operation in the trace.
-See (M5)
-
 func replayManager() {
 	while(replayInProgress()) {
 		evt = headEvt()  // (M1)
@@ -138,7 +106,7 @@ func replayManager() {
 			release(sig)
 			delete waitMap[evt]
 
-			if !isChannelComOrOnceDo(evt) {  // (M4)
+			if !isChannelCom {  // (M4)
 				waitAck()
 			}
 
@@ -146,15 +114,18 @@ func replayManager() {
 		}
 	}
 }
-```
 
-To determine if an trace event corresponds with an operation, we
-use the routine number in the replay trace and the file name and line number
-of the operation in the case. We can directly connect the spawn events
-in the trace with the executed operations by there file name and line number,
-as well as the order in which they execute. When we release a routine spawn,
-we store the corresponding trace number in this routine. We can now use this
-operation, the position information and the order to uniquely identify each operation.
+M1: Get the next element in the trace.
+M2: Check if the next element in the trace has been directly
+    executed (ackDir). If this is the case, and it is not a channel, wait for
+    the operation to fully execute (wait for ack). Then advance the trace to
+    the next element.
+M3: If the next operation corresponds to an already waiting operation,
+    send the signal to release it and remove the operation from the waitMap.
+M4: If it is not a channel communication or select, wait for the operation
+    to fully execute (wait for ack).
+M5: Advance to the next operation in the trace.
+```
 
 #### Acknowledgement
 
@@ -162,7 +133,7 @@ The implemented acknowledgements are necessary to prevent situations like the fo
 
 Assume we have the following program code
 ```go
-var o sync.Once
+var m sync.Mutex
 
 go func() {     // R1
 	o.Do(f1())  // Do 1
@@ -179,6 +150,8 @@ Similar situations can be constructed for situations, where operations with diff
 
 To prevent this, we use an acknowledgement. When an operation is released, the replay manager will pause. When the operations is completed, it will send an acknowledgement to the replay manager. Only when the acknowledgement is received, the current element will be advanced to the next element in the trace, meaning the next element can only be released when the previous operations has fully executed.
 
+Additionally, we only directly release elements (E3) if the replay manager is currently not waiting for an acknowledgement.
+
 For most operation this works, since they can be executed consecutively. The only operation where this does not work are the channels. Assume we have the following code:
 ```go
 c := make(chan int, 0)
@@ -190,161 +163,242 @@ go func() {
 <- c
 ```
 If we would wait for the send to fully execute and send an acknowledgement before we release the receive, the program would get stuck, because the send and the receive need to execute at the same time. We therefore do not wait for acknowledgements on channel communication operations and selects (M4).
+
 ### Detail
 
 The code for the replay is mainly in [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
 
-[advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read. The internal representation of the replay consists of a `map[int][]ReplayElement` `replayData`. For each of the routines, we store a slice of `ReplayElement`, meaning the list of elements in this routine.
-The lists are sorted by the `tPost` time stamp. Each `ReplayElement`
-represents one operation that is to be executed. It contains data about
-the type of operation, the timestamp and the position of the operation
-in the file. This position is used to connect the `ReplayElement` to the actual operation during the execution. Additionally it may contain
-information about wether the operation is blocked, meaning it should start but never finish or wether it should execute successfully, e.g. for `once.Do` and `TryLock`. For selects, it also contains the internal
-index of the case that should be executed.
+[advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read.
 
-[runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) contains the functions for the actual order enforcement.\
-The basic idea is as follows: When a operation wants to
-execute, it informs the replay manager that it wants to execute. It will then wait until the manager clears it to run. The manager will clear the operations in the order
-in which they appear in the trace. In most cases, the manager will then wait
-for an acknowledgement from the operation, that it has finished executing.
-For channel send/recv we do not wait for an acknowledgement, since here multiple
-operation need to be executed at the same time. We also do not wait for the
-`Do` on a once to fully execute. The `Do` first executes its parameter function.
-Let's assume we have the following code:
+The internal representation of the replay consists of a slice of `ReplayElements` called `replayData`.
+Each `ReplayElement` represents one operation that is to be executed. It contains data about
+the type of operation, the timestamp, the routine ID and the position of the operation
+in the file. This position is used to connect the `ReplayElement` to the actual operation during the execution. Additionally it may contain
+information about whether the operation is blocked, meaning it should start but never finish or whether it should execute successfully,
+e.g. for `once.Do` and `TryLock`. For selects, it also contains the internal
+index of the case that should be executed.\
+After the trace local trace files have been read, the elements in `replayData`, representing
+a global trace, are sorted by there timestamp. This allows us to always get the
+next operation that should be executed.
+
+To connect an operation from the trace to an operation in an executing program,
+we create a key for each operation. This key consists of the file and line
+in the program code, where the operation is located, and the ID of the routine
+in the trace file, where the operation should be executed.
+Using the routine is important because of the following situations:
 
 ```go
-o := sync.Once{}
-m := sync.Mutex{}
+c := make(chan int, 1)
 
-o.Do(func() {
-	m.Lock()
-})
+a := func() {
+	c <- 1
+}
+
+go a()
+go a()
 ```
-We need to first start run the `Do`. Then the `Lock` operation must be
-fully executed. If we would wait for an acknowledgement of the `Do`, the
-replay of the `Lock` would block, since it must be executed, before the
-`Do` finishes and therefore could send its acknowledgement.
 
-To prevent the replay from getting stuck, the manager is able to release operations out of order if it thinks, something went wrong.\
-The Order enforcements consists of the operation and the replay manager. First, we have the code in operations itself, that blocks the execution of the operation, until its released by the replay manager.\
-The manager will release the operations in the correct order.
+If we assume, that both routines running the function `a` are already running
+when the first send on `c` should be executed, we would not be able to
+uniquely identify by the code position, which send of the sends should be executed first.
 
-#### Flow
-##### Replay in operations
-<center><img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto></center>
-<center><img src="img/waitForReplay.png" alt="WaitForReplay" width="800px" height=auto></center>
+Each spawn operation in the trace
+contains the ID of the new routine, it creates. When a spawn is executed,
+it will store this `replayID` in the new routine (in the `*g` object, where we
+also record the traces, [implemented here](../go-patch/src/runtime/proc.go#L5083)). When a operation wants to execute, it will get this
+ID from the routine and its code position from `runtime.Caller`. With those
+information, an operation can be (mostly) uniquely connected to an operation in
+the trace. The only case, where operation would have the same key, is for operations
+at the same code position and in the same routine. Since operations
+in the same routine are executed consecutively, the order of the executions
+of those operations must be the same as the order of those operations in the trace,
+which allows us to uniquely connect such operations without any additional information.
 
-When a operation wants to execute, it will call the `WaitForReplay` function. The arguments of the function
-contain information about the waiting operation (type of operation and
-skip value for `runtime.Caller`) as well as information about wether the
-operation will send an acknowledgement (`wAck`) or not. The function
-creates a wait channel `chWait` and and acknowledgement channel `cka`, each with
-buffer size 1.\
-The function then checks, if the operation is part of the replay.
-If it is not, either because replay is disabled or because the operation is
-an ignored (internal) operation, the function will return and inform the
-operation, that it can immediately execution.
-If this is not the case, the function checks, if the calling function is the
-next element in the trace. If this is the case, it will directly send the
+To guarantee, that the recorded code positions are always the positions
+where the operation actually occurs, optimization and
+inlining is disables for running a replay.\
+This is done by setting the `-gcflags="all=-N -l"` when building a program or running a test.
+
+#### Replay in operations
+
+In each of the implementations of the operations that are considered in the
+replay, the following (or similar) code snipped has been added:
+
+```go
+wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
+if wait {
+	defer func() { chAck <- struct{}{} }()  // not in channel/select
+	replayElem := <-chWait
+	if replayElem.Blocked {
+		runtime.BlockForever()
+	}
+}
+```
+
+When a operation wants to execute
+it will call the [WaitForReplay](../go-patch/src/runtime/advocate_replay.go#L587) function.
+The arguments of the function
+contain information about the operation (type of operation and
+skip value for `runtime.Caller`) as well as information about whether the
+operation will send an acknowledgement (`wAck`) or not.
+
+This function will first check, if the operations is part of the replay.
+It is not part of the replay, if replay is disabled, or if the operation is
+an internal operation.\
+We have decided not to replay (or record) internal operations.
+The reason for this is that for most uses (e.g. bug analysis), they are not relevant
+and unnecessarily increase the trace file size and the replay and recording time.
+Additionally, they may be part of unpredictable operations like e.g. the garbage
+collector, which would make the replay much more complicated to implements.\
+If the operation is not part of the replay, `WaitForReplay` will return `wait = false`
+and the function can directly be executed.
+
+If the operations is part of the replay, `WaitForReplay` creates a wait channel
+`chWait` and and acknowledgement channel `cka`, each with
+buffer size 1.
+
+It will then check if the replay manager is currently not waiting for an acknowledgement,
+and if so if the operation is the next operation in the trace.
+If this is the case, it will directly send the
 `replayElement` from the trace over the `chWait` channel, to
-directly release the operation. The `replayElement` also contains information
-whether the manager expects an acknowledgement (`wAck`).
-Otherwise it will store those channels with a reference to the code location and routine
-id of the operation in a map `waitingOps`. The routine id is the id of the
-routine in the replay trace. It is set for the routine in the [newProc](../go-patch/src/runtime/proc.go#L5057) function in `runtime/proc.go`. This allows us to separate
-operations in the same code position but in separate routines. Code at the
-same code position and in the same routine does not need
-to be separated, since routines are executed sequentially. The function then
-returns the channels to the waiting operation.
+directly release the operation. If the operation should send an acknowledgement,
+`WaitForReplay` will inform the replay manger, by setting a global variable, that it should wait for an acknowledgement.
+If not, it will inform it to advance to the next element in the trace.
 
-The operation will then start to read on the the `ch` channel. When the manager clears the
-operation to run, it will send a message over this channel. This
-message, contains information about wether the operation blocked and wether
+If now direct release is possible, it will store those channels in a map `waitingOps`, where the key
+is the operation key explained above.
+
+When `WaitForReplay` has finished, if well return the channels to the operation.
+
+The operation will then start to read on the the `chWait` channel.
+When the operation is cleared to run, a message containing the trace element will
+be send over this channel. This replay element contains the
+information about whether the operation blocked and whether
 it was successful. If it should block (tPost = 0), it will block the operation
-forever. If the operation was not successful (only possible for once.Do or Try(R)Lock), it will force the execution of the operation to follow this behavior.
-Otherwise it will now execute the operation. When `wAck` is true, the
-operation will send an empty message as soon as the operation is finished
+forever. If the operation was not successful (only possible for once.Do or Try(R)Lock),
+it will force the execution of the operation to follow this behavior.
+When the operation is not a channel or select, it will send an empty message over the `ackCh` as soon as the operation is finished
 (normally implemented by `defer`). This allows the manager to release the
 next operation.
 
+<center><img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto></center>
 
-##### Replay Manager
-<center><img src="img/replayManager.png" alt="Replay Manager" width="1200px" height=auto></center>
+<center><img src="img/waitForReplay.png" alt="WaitForReplay" width="800px" height=auto></center>
+
+#### Replay Manager
+
 The replay manager releases the operations in the correct order.
 
-To release the operations, a separate routine `ReleaseWait` is run in the
-background.\
+To release the operations, a separate routine [ReleaseWait](../go-patch/src/runtime/advocate_replay.go#L349) is run in the
+background.
+
 This routing loops as long as the replay is active.
+
 The main loop of this manager is as follows:\
 First the manager checks, if an operation has executed directly
 without it being added to the `waitOps` map first. If this is the case,
 it will, if required, check if the operation has already send its acknowledgement.
 If not, it will wait for it. If the acknowledgement has arrived, it will
-advance to the next element in the trace.\
+advance to the next element in the trace.
+
 Then, the manager gets the next element that should be executed (see [here](#getnextreplayelement)).
 If no element is left, the replay is disabled.
 The same is true if the next element in the trace is the `replayEnd` element.
 If the bug is confirmed by reaching a certain point in the code (e.g leak or
-resource deadlock), this will confirm the replay. If the element is an
+resource deadlock), this will confirm the replay.
+
+If the element is an
 operation element, the manager will check if the element should be ignored
 for the replay. In this case, there is no waiting operation and the
 manager will simply assume, that the operation was executed and will continue
-the loop from the beginning. If this is not the case, the it is checked, if the
-operation is already waiting. If this is the case, it is [released](#release).
+the loop from the beginning.
+
+If this is not the case, the it is checked, if the
+operation is already waiting, meaning the corresponding key is in `waitingOps`.
+If this is the case, it is [released](#release).
+
 After that, the manager will continue the loop to get the next trace element.
 If the operation is not yet waiting, the manager will directly restart the
 loop without advancing to the next replay element, until the operation is
 waiting.
 
-It is possible, that in the replay or the rewrite something went wrong
-and there are a small number of trace elements, that cause the replay to get
-stuck. To still get a chance that is may resolve itself, the manager
-is able to release the longest waiting operation, if it senses that the
+<center><img src="img/replayManager.png" alt="Replay Manager" width="1200px" height=auto></center>
+
+##### Timeout
+
+It is possible, that in the replay something went wrong (see [here](#things-that-can-go-wrong))
+causing the replay to get stuck.
+
+THis may be cause by a single unexpected or invalid operation in the trace or
+execution.To still get a chance that is may resolve itself, the manager
+is able skip operations, if it senses that the
 replay is stuck. This will be done, if the next replayElement is the same for
 a too long time. In this case, the replay will trigger the timeout mechanism.
+
 In this, either the oldest element in `waitOps` is released
-or the next element in the trace is skipped. We choose one of them at random.
-We hope that this will clear the
-blockage, so that the replay can continue to be executed.
-Additionally, if no element has been cleared regularly
-for a certain time, the replay will assume that it is stuck and cannot be
-brought back by releasing the oldest waiting elements and will therefore
+or the next element in the trace is skipped. We choose one of them at random
+(if no operation is waiting, we always skip the trace element).
+We hope that this will clear the blockage, so that the replay can continue to be executed.
+If an element is released as an oldest waiting, we add this element to a map
+of operations. If the next element in the trace is skipped, we increase the
+counter pointing to the next element in the trace
+(compare [getNextReplayElement](#getnextreplayelement) and [release](#release)).
+
+Sometimes this clears the problem, and the program can continue as normal,
+if no element has been cleared regularly
+for a certain time, the replay will assume that it it is completely stuck and cannot be
+brought back by those irregular releases or skips.
+It will therefore
 disable the replay completely, meaning the program will continue without
 any guidance (all waiting operations are released). If the replay is already
-far enough, this may still result in the program running in the expected bug.
-For more information see the bottom left corner of the flow diagram.
+far enough, this may still result in interesting behavior, e.g. if the replay
+is used for confirming a bug, the bug may still be triggered, if the program has already been
+pushed far enough in the correct direction.
+
 
 ##### getNextReplayElement
-The trace is stored in a map. Each entry contains the elements for one routine as a sorted list. Additionally, we have a map `replayIndex` with the same key. The values of this map contain for each routine the index of the first element in the trace list, that has not been executed yet. We now iterate over all routines that have elements that have not been executed yet. For each
-of those traces we check the first element that has not been
-executed yet and choose the one with the smallest time value
-as the next element to be executed.\
-When the replay manager releases an oldest element, we need to
-make sure, that when this element is returned as the
-next element to be replayed, we skip it, since it already has been executed. We therefore have an map `alreadyExecutedAsOldest` from the element key to a counter. This counter contains how often the element has been executed without it being the next element. If this value for the
-next element to be replayed is not 0, we will advance the `replayIndex` for the routine, reduce the value of `alreadyExecutedAsOldest` of the element by 1 and call the `getNextReplayElement` function again, to get the next element to be executed.
 
+The function to get the next element to be replayed is implemented [here](../go-patch/src/runtime/advocate_replay.go#L789).
+
+The trace is stored in a sorted slice. The replay is therefore done in the
+order, in which the operations occur in this trace. To keep track of this,
+we have a counter, always pointing to the next operation to be executed.
+
+When the replay manager or an operation requests the next replay element,
+we return the element at the position, where this counter points to.
+
+Before we return the element, we check if it is in the list of elements,
+that where released by the timeout mechanism. If it is, we advance the counter
+by one, and recursively call `getNextReplayElement` again.
+
+If the counter is greater than the number of elements in the trace, we return and
+empty element, signaling to the manager that all elements in the trace have been
+replayed.
 
 ##### release
-To release a waiting element, we send the element info over the corresponding
-channel, on which the operation is waiting. If an acknowledgement is expected,
+
+To [release](../go-patch/src/runtime/advocate_replay.go#L693) a waiting element,
+we send the element info over the corresponding
+channel, on which the operation is waiting.
+
+If an acknowledgement is expected,
 the release function will then read on the acknowledgement channel until
-the acknowledgement is received. To prevent a failed acknowledgement from
+the acknowledgement is received.
+
+To prevent a failed acknowledgement from
 getting the replay stuck, we have a timeout. If no acknowledgement has been received
 after a certain time, we continue the replay anyways. To prevent the case,
 where an operation ties to send an acknowledgement after the timeout has been triggered
 and therefore cannot send, we set the buffer size of all acknowledgement
-channels to 1. They can therefore also send if no one is receiving any more.
+channels to 1. They can therefore also send if no one is receiving it any more.
 
-##### foundReplayElement/releasedElementOldest
-If a replay has been released, the `replayIndex` value of the corresponding
-routine is advanced by one. If an oldest replay element was released without
-it being the next element, the `alreadyExecutedAsOldes` counter for this element
-is increased by one.
-![Release](img/release.png)
+The release function than delete the operation from `waitingOps` and
+increase the trace counter by 1.
 
+<center><img src="img/release.png" alt="Release" width="1000px" height=auto></center>
 
 #### Select
+
 While most operations are fully determined by the order in which they are executed,
 this may not be the case for selects. Here we need to determine which case
 the replay should execute. For this an alternative implementation of the
@@ -373,6 +427,7 @@ wait on the select if the runtime senses, that the replay may be stuck. For
 this reason, we implement a `gopark` function with a timeout, that
 automatically wakes it up after a certain time. The park with timeout is implemented
 in [prog.go](../go-patch/src/runtime/proc.go#L439) as follows:
+
 ```go
 func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int, timeout int64) {
 	mp := acquirem()
@@ -420,15 +475,26 @@ possible for the atomic operations, since they are partially implemented in
 assembly. We therefore needed to intersect an additional function call.
 For more information about this, see the [atomic recording documentation](./trace/atomics.md#implementation).
 
-### Partial replay
+#### FinishReplay
+
+Go stops the execution of all routines in a program, as soon as all operations
+in the main routine have been executed. In the replay, we want to avoid that the
+program terminates, before all operations in the trace have been executed.
+To do this, we implement a function [FinishReplay](../go-patch/src/advocate/advocate_replay.go#L447).
+This function should be executed at the end of the main functions.
+It will run, until all operations in the trace have been executed, stopping the
+main routine from terminating to early.
+
+
+## Partial replay
 
 To implement some of the [Order based fuzzing](./fuzzing/GoPie.md), we use a
 simplified partial replay. Here, we do not restrict the order of all
 element in the trace and program. Instead, we have a list of active
 elements from the trace.
 
-When  read in a trace for a replay with partial order, we also read in
-a file containing the information about this partial replay. This file
+When reading in a trace for a partial replay, we also read in
+a file containing the information about this partiality. This file
 contains the active elements and an information when the replay should
 switch from the strict to the partial replay (this information can also
 indicate to directly start with the partial replay). When reading in the
@@ -453,7 +519,7 @@ executed. If it is the same, the execution represents an active execution,
 and is handled by the replay mechanism in the same way as in the total
 replay.
 
-### Things that can go wrong
+## Things that can go wrong
 
 It is possible, that either an element in the trace never tries to execute
 of that an operation tries to execute that is not in the trace. This could
@@ -512,5 +578,5 @@ lead to the program getting stuck.
 To not get completely stuck if such operations occur, the replay mechanism
 is able to release waiting elements without them being the next trace element
 or to completely disable the replay, if it senses, that it is stuck (as
-described in the [details](#detail) section).
+described in the [details](#timeout) section).
 

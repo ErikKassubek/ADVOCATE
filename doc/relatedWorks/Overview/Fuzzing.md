@@ -2,7 +2,7 @@
 
 DeadlockFuzzer [^1] introduces a two-stage approach to detect real deadlocks in Java programs. It combines lightweight dynamic analysis to identify potential deadlock scenarios and then utilizes a randomized thread scheduler to increase the likelihood of manifesting those deadlocks in practice. This method avoids false positives, a common drawback of static deadlock detection tools, by validating that the identified cycles can be exercised in real executions.
 
-GFuzz [^2] focuses on Go programs and detects channel-related bugs. It focuses on mutating the cases executed in selects. The basic idea lies in setting a preferred case for each select. After executing it is checked, wether the run explored new operations. If so, the set of preferred cases is mutated, to get the next mutation run.
+GFuzz [^2] focuses on Go programs and detects channel-related bugs. It focuses on mutating the cases executed in selects. The basic idea lies in setting a preferred case for each select. After executing it is checked, whether the run explored new operations. If so, the set of preferred cases is mutated, to get the next mutation run.
 
 GoPie [^3] expands this idea to by directly influencing the interleaving of channel messages and mutexes to detect concurrency bugs. To prevent the path explosion problem, GoPie divides the program into smaller fragments, that can be individually mutated. It utilizes execution histories to identify new interleavings instead of relying on exhaustive exploration or random scheduling.
 

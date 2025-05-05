@@ -10,7 +10,7 @@ Architectural Support for Programming Languages and Operating Systems, ser. ASPL
 
 The tool created by the paper is called GFuzz. It focuses on
 mutating the cases executed in selects. The basic idea lies in
-setting a preferred case for each select. After executing it is checked, wether the run explored new operations. If so, the set of preferred cases is mutated, to get the next mutation run.
+setting a preferred case for each select. After executing it is checked, whether the run explored new operations. If so, the set of preferred cases is mutated, to get the next mutation run.
 
 ### Interesting
 

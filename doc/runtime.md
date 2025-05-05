@@ -15,9 +15,11 @@ which will create the runtime in the [go-path/bin](../go-patch/bin/).
 
 If we want to use this runtime directly, we need to change the
 `GOROOT` environment variable to this go-path file, e.g. with
+
 ```shell
 export GOROOT=/home/.../go-patch
 ```
+
 If the toolchain is used, this is done automatically.
 
 The only change required in the analyzed program is to add

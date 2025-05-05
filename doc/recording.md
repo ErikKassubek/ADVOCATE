@@ -32,6 +32,7 @@ We record the following types and operations:
 Additionally, the replay can add in additional [markers](trace/replay.md).
 
 ## Trace Recording
+
 To run the recording, we need to add the following header to the main function
 or the test that is analyzed:
 

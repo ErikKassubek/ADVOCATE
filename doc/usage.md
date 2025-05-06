@@ -306,6 +306,11 @@ The available modes are:
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
 
+For fuzzing, the `-prog [progName]` flag with the name of the program must be set.
+
+The number of fuzzing runs per test/prog can be limited by setting `-maxFuzzingRun [maxRun]` (default: 100). To disable this, set `-maxFuzzingRun -1`
+Alternatively, a maximum time can be set using `-timeoutFuz [to in s]` (default 7 min). To disable this, set `-timeoutFuz -1`
+
 An example command would therefore be
 
 ```

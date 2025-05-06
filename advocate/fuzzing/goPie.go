@@ -49,6 +49,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 			schedulingChains = []chain{c}
 		}
 	}
+
 	if len(schedulingChains) == 0 {
 		for range maxSCStart {
 			schedulingChains = append(schedulingChains, randomChain())
@@ -131,7 +132,9 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTSort())
 		}
 
-		mutationQueue = append(mutationQueue, mutation{mutType: mutPiType, mutPie: numberWrittenGoPieMuts})
+		mut := mutation{mutType: mutPiType, mutPie: numberWrittenGoPieMuts}
+
+		addMutToQueue(mut)
 	}
 }
 

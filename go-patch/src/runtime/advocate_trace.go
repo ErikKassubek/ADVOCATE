@@ -276,7 +276,7 @@ func buildTraceElemStringSep(sep string, values ...any) string {
 	res := ""
 	for i, v := range values {
 		if i != 0 {
-			res += ","
+			res += sep
 		}
 
 		res += convToString(v)

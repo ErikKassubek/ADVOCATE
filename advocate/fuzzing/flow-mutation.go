@@ -65,7 +65,7 @@ func createMutationsFlow() {
 			// if one mut per change, comment this in
 			if oneMutPerDelay {
 				mut := mutation{mutType: mutFlowType, mutSel: selectInfoTrace, mutFlow: mutFlow}
-				mutationQueue = append(mutationQueue, mut)
+				addMutToQueue(mut)
 				numberMutAdded++
 			}
 		}
@@ -73,7 +73,7 @@ func createMutationsFlow() {
 
 	if oneMutPerDelay && len(mutFlow) != 0 {
 		mut := mutation{mutType: mutFlowType, mutSel: selectInfoTrace, mutFlow: mutFlow}
-		mutationQueue = append(mutationQueue, mut)
+		addMutToQueue(mut)
 		numberMutAdded++
 	}
 

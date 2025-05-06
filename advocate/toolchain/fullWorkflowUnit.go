@@ -116,12 +116,12 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 		}
 
 		for _, testFunc := range testFunctions {
-			analysis.ClearTrace()
-			analysis.ClearData()
-
-			if (pathToTest == "" || pathToTest == file) && testName != "" && testName != testFunc {
+			if (pathToTest == "" || pathToTest != file) && testName != "" && testName != testFunc {
 				continue
 			}
+
+			analysis.ClearTrace()
+			analysis.ClearData()
 
 			analysis.Clear()
 

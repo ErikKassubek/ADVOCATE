@@ -39,7 +39,10 @@ var (
 
 	timeoutRecording int
 	timeoutReplay    int
+	timeoutFuzzing   int
 	recordTime       bool
+
+	maxFuzzingRun int
 
 	noFifo                bool
 	ignoreCriticalSection bool
@@ -88,6 +91,10 @@ func main() {
 
 	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
 	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
+
+	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7 min. To Disable, set to -1")
+	flag.IntVar(&maxFuzzingRun, "maxFuzzingRun", 100, "Maximum number of fuzzing runs per test/prog. Default: 100. To Disable, set to -1")
+
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
 	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
@@ -281,7 +288,7 @@ func modeFuzzing() {
 
 	err = fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath,
 		progName, execName, ignoreAtomics, recordTime, notExec, statistics,
-		keepTraces, cont)
+		keepTraces, cont, timeoutFuzzing, maxFuzzingRun)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())
 	}

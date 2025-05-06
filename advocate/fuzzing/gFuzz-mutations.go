@@ -35,8 +35,8 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 		}
 
 		if num, _ := allMutations[id]; num < maxRunPerMut {
-			muta := mutation{mutType: mutSelType, mutSel: mut}
-			mutationQueue = append(mutationQueue, muta)
+			mut := mutation{mutType: mutSelType, mutSel: mut}
+			addMutToQueue(mut)
 			allMutations[id]++
 			numberMutAdded++
 		}

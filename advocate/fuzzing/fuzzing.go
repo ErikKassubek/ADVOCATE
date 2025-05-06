@@ -48,15 +48,16 @@ const (
 )
 
 const (
-	maxNumberRuns = 100
-	maxTime       = 60 * time.Minute
-	maxRunPerMut  = 2
+	maxRunPerMut = 2
 
 	factorCaseWithPartner = 3
 	maxFlowMut            = 10
 )
 
 var (
+	maxNumberRuns     = 100
+	maxTime           = 7 * time.Minute
+	maxTimeSet        = false
 	numberFuzzingRuns = 0
 	mutationQueue     = make([]mutation, 0)
 	// count how often a specific mutation has been in the queue
@@ -83,8 +84,10 @@ var (
 //   - keepTraces bool: keep the traces after analysis
 //   - skipExisting bool: skip existing runs
 //   - cont bool: continue partial fuzzing
+//   - mTime int: maximum time in seconds spend for one test/prog\
+//   - mRun int: maximum number of times a test/prog is run
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, cont bool) error {
+	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int) error {
 
 	if fm == "" {
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
@@ -93,6 +96,12 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	modes := []string{GoPie, GoPiePlus, GoPieHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
 	if !utils.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
+	}
+
+	maxNumberRuns = mRun
+	if maxTime > 0 {
+		maxTime = time.Duration(mTime) * time.Second
+		maxTimeSet = true
 	}
 
 	fuzzingMode = fm
@@ -290,12 +299,12 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		numberFuzzingRuns++
 
 		// cancel if max number of mutations have been reached
-		if numberFuzzingRuns > maxNumberRuns {
+		if maxNumberRuns != -1 && numberFuzzingRuns >= maxNumberRuns {
 			utils.LogInfof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
 			return nil
 		}
 
-		if time.Since(startTime) > maxTime {
+		if maxTimeSet && time.Since(startTime) > maxTime {
 			utils.LogInfof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(maxTime.Minutes()))
 			return nil
 		}
@@ -335,4 +344,15 @@ func resetFuzzing() {
 	mutationQueue = make([]mutation, 0)
 	// count how often a specific mutation has been in the queue
 	allMutations = make(map[string]int)
+}
+
+// Add a mutation to the queue. If a maximum number of mutation runs in set,
+// only add the mutation if it does not exceed this max number
+//
+// Parameter:
+//   - mut mutation: the mutation to add
+func addMutToQueue(mut mutation) {
+	if maxNumberRuns == -1 || numberFuzzingRuns+len(mutationQueue) <= maxNumberRuns {
+		mutationQueue = append(mutationQueue, mut)
+	}
 }

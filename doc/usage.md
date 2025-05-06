@@ -132,7 +132,7 @@ The replay mode allows us to replay a previously recorded trace.
 This can be done by calling
 
 ```
-./analyzer replay [args]
+./advocate replay [args]
 ```
 
 The following args are required
@@ -222,13 +222,13 @@ type and position of the bug and information about the replay (if performed).
 An example command would be
 
 ```
-./analyzer analysis -path ~/pathToProg/progDir/main.go -prog progName -main
+./advocate analysis -path ~/pathToProg/progDir/main.go -prog progName -main
 ```
 
 to run the analysis on the main function of a program, or
 
 ```
-./analyzer analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
+./advocate analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
 ```
 
 to analyze the test `TestOne` in the given path, only checking for cyclic (resource) deadlocks.
@@ -286,7 +286,7 @@ for actually occurring panics or leaks, you can set the `-onlyActual` flag.
 To run the fuzzing as described [here](doc/fuzzing.md), the following command can be used:
 
 ```
-./analyzer fuzzing [args]
+./advocate fuzzing [args]
 ```
 
 To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
@@ -305,7 +305,7 @@ All other required and additional args as well as the output files are the same 
 An example command would therefore be
 
 ```
-./analyzer fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
+./advocate fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
 
 
@@ -347,3 +347,12 @@ only because the analysis of one of the tests crashed, a catch mechanism
 has been implemented, that will only terminate the analysis of the given tests
 and continue with the next, without crashing the whole program. To disable this,
 you can set the `-panic` flag.
+
+## Warning
+
+It is the users responsibility of the user to make sure, that the input to
+the program, including e.g. API calls are equal for the recording and the
+tracing. Otherwise the replay is likely to get stuck.
+
+Do not change the program code between trace recording and replay. The identification of the operations is based on the file names and lines, where the operations occur. If they get changed, the program will most likely block without terminating. If you need to change the program, you must either rerun the trace recording or change the effected trace elements in the recorded trace.
+This also includes the adding of the replay header. Make sure, that it is already in the program (but commented out), when you run the recording.

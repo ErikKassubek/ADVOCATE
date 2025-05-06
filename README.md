@@ -3,9 +3,7 @@
 ## What is AdvocateGo
 
 AdvocateGo is an analysis tool for concurrent Go programs.
-It detects concurrency bugs and gives diagnostic insight.
-
-Furthermore it is also able to produce traces which can be fed back into the program in order to experience the predicted bug.
+It tries to detects concurrency bugs and gives diagnostic insight.
 
 AdvocateGo tries to detect the following situations:
 
@@ -31,9 +29,17 @@ AdvocateGo tries to detect the following situations:
 - L09: Leak on waitgroup
 - L10: Leak on cond
 
-## Documentation
+Additionally it is able to record and deterministically replay
+executions of concurrent GO programs.
 
-A detailed description of the inner workings can be found in the [doc](doc) folder (currently in the process of being rewritten and therefore not complete).
+## Modes
+
+Advocate provides 4 different modes:
+
+- record: record the execution of a program or test into a trace
+- replay: given a trace file, execute a program in such a way, that it follows the trace
+- analysis: record a program and analyze the recorded trace to detect potential concurrency bugs. If a potential bug is found, rewrite the trace in such a way that the bug is triggered and replay this trace to confirm that the bug is possible.
+- fuzzing: Apply different fuzzing approaches to increase the reach of the analysis.
 
 ## Usage
 
@@ -41,17 +47,12 @@ A detailed description of the inner workings can be found in the [doc](doc) fold
 > This program currently only runs / is tested under Linux
 
 > [!IMPORTANT]
-> ADVOCATE is implemented for go version 1.24.
+> advocate is implemented for go version 1.24.
 > Make sure, that the program does not choose another version/toolchain and is compatible with go 1.24.
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
 
-For an explanation on how to use ADVOCATE, see [here](./doc/usage.md).
+For an explanation on how to use advocate, see [here](./doc/usage.md).
 
-## Warning
+## Documentation
 
-It is the users responsibility of the user to make sure, that the input to
-the program, including e.g. API calls are equal for the recording and the
-tracing. Otherwise the replay is likely to get stuck.
-
-Do not change the program code between trace recording and replay. The identification of the operations is based on the file names and lines, where the operations occur. If they get changed, the program will most likely block without terminating. If you need to change the program, you must either rerun the trace recording or change the effected trace elements in the recorded trace.
-This also includes the adding of the replay header. Make sure, that it is already in the program (but commented out), when you run the recording.
+A detailed description of how advocate works can be found in the [doc](doc) folder.

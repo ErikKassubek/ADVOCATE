@@ -11,6 +11,7 @@
 package toolchain
 
 import (
+	"io"
 	"os"
 	"os/exec"
 )
@@ -18,16 +19,23 @@ import (
 // runCommand runs a command line (shell) commands
 //
 // Parameter:
+//   - osOut *os.File: file/output to write to not being what os.Stdout points to
+//   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //   - name string: main command
 //   - args ...string: command line parameters
 //
 // Returns:
 //   - error
-func runCommand(name string, args ...string) error {
+func runCommand(osOut, osErr *os.File, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
-	// utils.LogInfo("Run command: ", cmd.String())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
+	if osOut != nil {
+		multiOut := io.MultiWriter(os.Stdout, osOut)
+		cmd.Stdout = multiOut
+	}
+	if osErr != nil {
+		multiErr := io.MultiWriter(os.Stderr, osErr)
+		cmd.Stderr = multiErr
+	}
 	return cmd.Run()
 }
 

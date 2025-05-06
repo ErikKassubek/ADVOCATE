@@ -453,7 +453,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	if runRecord {
 		if measureTime && fuzzing < 1 {
-			err := unitTestRun(pkg, file, testName)
+			err := unitTestRun(pkg, file, testName, origStdout, origStderr)
 			if err != nil {
 				if checkForTimeout(output) {
 					utils.LogTimeout("Running T0 timed out")
@@ -461,7 +461,8 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 			}
 		}
 
-		err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName, fuzzing, fuzzingTrace, output)
+		err = unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file,
+			testName, fuzzing, fuzzingTrace, output, origStdout, origStderr)
 		if err != nil {
 			utils.LogError("Recording failed: ", err.Error())
 		}
@@ -481,7 +482,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output, runAnalysis)
+		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output, runAnalysis, origStdout, origStderr)
 	}
 
 	return numberReplay, true, nil
@@ -493,10 +494,12 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 //   - pkg string: path to the package containing the test
 //   - file string: path to the file containing the test function
 //   - name of the test function to run
+//   - osOut *os.File: file/output to write to not being what os.Stdout points to
+//   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //
 // Returns:
 //   - error
-func unitTestRun(pkg, file, testName string) error {
+func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) error {
 	timer.Start(timer.Run)
 	defer timer.Stop(timer.Run)
 
@@ -512,9 +515,9 @@ func unitTestRun(pkg, file, testName string) error {
 	var err error
 	if timeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
-		err = runCommand("go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = runCommand("go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -531,10 +534,13 @@ func unitTestRun(pkg, file, testName string) error {
 //   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
 //   - fuzzingPath string: path to the fuzzing guidance information file, if not fuzzing set to ""
 //   - output string: path to where the output should be created
+//   - osOut *os.File: file/output to write to not being what os.Stdout points to
+//   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //
 // Returns:
 //   - error
-func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string, fuzzing int, fuzzingPath, output string) error {
+func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName string,
+	fuzzing int, fuzzingPath, output string, osOut, osErr *os.File) error {
 	timer.Start(timer.Recording)
 	defer timer.Stop(timer.Recording)
 
@@ -558,10 +564,10 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 
 	timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
 
-	runCommand(pathToPatchedGoRuntime, "version")
+	runCommand(osOut, osErr, pathToPatchedGoRuntime, "version")
 
 	pkgPath := utils.MakePathLocal(pkg)
-	err := runCommand(pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
+	err := runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -629,10 +635,13 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 //   - output string: path to the output file
 //   - runAnalysis bool: whether the rewritten traces from the analysis or the
 //     given trace path should be used
+//   - osOut *os.File: file/output to write to not being what os.Stdout points to
+//   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //
 // Returns:
 //   - int: number of executed replays
-func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output string, fromAnalysis bool) int {
+func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
+	testName, output string, fromAnalysis bool, osOut, osErr *os.File) int {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
@@ -677,7 +686,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testNa
 
 		utils.LogInfof("Run replay %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := utils.MakePathLocal(pkg)
-		runCommand(pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
+		runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
 		utils.LogInfof("Finished replay %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

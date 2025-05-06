@@ -11,13 +11,12 @@
 package fuzzing
 
 import (
+	"advocate/utils"
 	"math/rand/v2"
 )
 
 const (
-	bound       = 3
-	mutateBound = 128
-	maxNoNew    = 5
+	maxNoNew = 5
 )
 
 // Create the mutations for a GoPie chain
@@ -32,6 +31,9 @@ func mutate(c chain, energy int) map[string]chain {
 	if energy > 100 {
 		energy = 100
 	}
+
+	bound := utils.GoPieBound
+	mutateBound := utils.GoPieMutabound
 
 	res := make(map[string]chain)
 

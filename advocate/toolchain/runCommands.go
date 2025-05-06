@@ -28,14 +28,21 @@ import (
 //   - error
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
 	cmd := exec.Command(name, args...)
-	if osOut != nil {
-		multiOut := io.MultiWriter(os.Stdout, osOut)
-		cmd.Stdout = multiOut
+
+	if outputFlag {
+		if osOut != nil {
+			multiOut := io.MultiWriter(os.Stdout, osOut)
+			cmd.Stdout = multiOut
+		}
+		if osErr != nil {
+			multiErr := io.MultiWriter(os.Stderr, osErr)
+			cmd.Stderr = multiErr
+		}
+	} else {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
-	if osErr != nil {
-		multiErr := io.MultiWriter(os.Stderr, osErr)
-		cmd.Stderr = multiErr
-	}
+
 	return cmd.Run()
 }
 

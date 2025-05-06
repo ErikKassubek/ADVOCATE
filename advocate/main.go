@@ -70,6 +70,9 @@ var (
 	noMemorySupervisor bool
 
 	alwaysPanic bool
+
+	settings string
+	output   bool
 )
 
 // Main function
@@ -111,6 +114,8 @@ func main() {
 
 	flag.BoolVar(&alwaysPanic, "panic", false, "Panic if the analysis panics")
 
+	flag.BoolVar(&output, "output", false, "Show the output of the executed programs in the terminal. Otherwise it is only in output.log file.")
+
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
@@ -132,6 +137,8 @@ func main() {
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
+
+	flag.StringVar(&settings, "settings", "", "Settings")
 
 	flag.Parse()
 
@@ -169,6 +176,8 @@ func main() {
 
 	utils.LogInit(noInfo, !alwaysPanic)
 
+	utils.SetSettings(settings)
+
 	progPathDir := utils.GetDirectory(progPath)
 	timer.Init(recordTime, progPathDir)
 	timer.Start(timer.Total)
@@ -202,7 +211,7 @@ func main() {
 
 	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
-		timeoutRecording, timeoutReplay, rewriteAll, noWarning, tracePath)
+		timeoutRecording, timeoutReplay, rewriteAll, noWarning, tracePath, output)
 
 	modeMainTest := "test"
 	if modeMain {

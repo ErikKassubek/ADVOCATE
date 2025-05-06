@@ -34,6 +34,8 @@ var (
 	replayAllFlag             bool
 	noWarningFlag             bool
 	tracePathFlag             string
+
+	outputFlag bool
 )
 
 // SetFlags makes the relevant command line arguments given to the analyzer
@@ -53,7 +55,7 @@ var (
 func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
 	timeoutRec, timeoutRepl int, replayAll bool, noWarning bool,
-	tracePath string) {
+	tracePath string, output bool) {
 
 	noRewriteFlag = noRewrite
 
@@ -73,4 +75,6 @@ func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
 	noWarningFlag = noWarning
 
 	tracePathFlag = tracePath
+
+	outputFlag = output
 }

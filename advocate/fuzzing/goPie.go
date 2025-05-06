@@ -156,7 +156,10 @@ func getEnergy() int {
 		return 0
 	}
 
-	score := counterCPOP1 + int(math.Log(float64(counterCPOP2)))
+	w1 := utils.GoPieW1
+	w2 := utils.GoPieW2
+
+	score := int(w1*float64(counterCPOP1) + w2*math.Log(float64(counterCPOP2)))
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

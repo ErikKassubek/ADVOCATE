@@ -63,8 +63,8 @@ in which the HB analysis indicates for multiple selects, that they have
 multiple possible communication partners. For this, we calculate the number
 of possible communication partners for each select to get the SelPosPartner value. The calculation for the score is
 then extended as
-$$score = \sum\log_2 CountChOpPair + 10 \cdot CreateCh + 10 \cdot CloseCh + 10 \cdot \sum MaxChBufFull + a \cdot \sum SelPosPartner$$
-where $a$ is a scaling factor that is still to be determined by experiments (currently also set to 10).
+$$score = \sum\log_2 CountChOpPair + w_1 \cdot CreateCh + w_2 \cdot CloseCh + s_3 \cdot \sum MaxChBufFull + w_4 \cdot \sum SelPosPartner$$
+where $w$ are scaling factors.
 
 
 ### Creating mutations

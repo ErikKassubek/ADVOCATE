@@ -278,8 +278,12 @@ with `BOUND = 3` and `MUTATEBOUND = 138`.
 
 The number of chains created is determined by the energy, which itself is
 based on a score depending on the recorded run. The score is
-based on the number of pairs of elements in $Rel_1$ and $Rel_2$ as
-a percentage of the maximum score over all runs.
+calculated as $\#w_1 * Rel_1 + w_2 * \log(Rel_2)$
+based on the number of pairs of elements in $Rel_1$ and $Rel_2$ with wights $w_1$ and $w_2$.
+If the run the mutation is based on was not successful,
+e.g. because it ran into a timeout, the score is set to 0 and
+no mutations are created based on this run.\
+The energy is then the percentage of this score compared to the maximum score over all runs.
 
 GoPie does not create new scheduling chains based on new runs. Instead it
 only chooses a scheduling chain on the first run (but starts the whole process multiple times).

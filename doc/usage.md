@@ -75,6 +75,10 @@ To record a program, run
 This will run the program or tests and create the traces. They are placed
 into a folder called `advocateResult`.
 
+Normally, the print outputs of the executed programs are not printed to
+the terminal, but printed into an `output.log` file. To show them on the terminal,
+you can set the `-output` flag.
+
 #### Tests
 
 If you want to execute and record the unit tests of a program, you need to
@@ -356,3 +360,33 @@ tracing. Otherwise the replay is likely to get stuck.
 
 Do not change the program code between trace recording and replay. The identification of the operations is based on the file names and lines, where the operations occur. If they get changed, the program will most likely block without terminating. If you need to change the program, you must either rerun the trace recording or change the effected trace elements in the recorded trace.
 This also includes the adding of the replay header. Make sure, that it is already in the program (but commented out), when you run the recording.
+
+## Settings
+
+There are multiple constants that can be changed from the outside. This is
+normally not necessary, but I you want to experiment with some of the settings,
+you are free to do so.
+
+Those constants can be set using the -settings [args] flag, where the args
+must consists of the values that should be set in the form
+
+```
+-settings name1=value1,name2=value2
+```
+
+Make sure to not use spaces in this argument.
+
+The following values can be changed:
+
+| name  | default value | range | description |
+|---|---|---|---|
+| GFuzzW1 | 10 | $\mathbb{Q}$ | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
+| GFuzzW2 | 10 | $\mathbb{Q}$ | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
+| GFuzzW3 | 10 | $\mathbb{Q}$ | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
+| GFuzzW4 | 10 | $\mathbb{Q}$ | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
+| GFuzzFlipP | 0.99 | $\mathbb{Q}, 0 <= val <= 1$ |probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability) |
+| GFuzzFlipPMin | 0.1 | $\mathbb{Q}, 0 <= val <= 1$ |minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
+| GoPieW1 | 1 | $\mathbb{Q}$ | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
+| GoPieW2 | 1 | $\mathbb{Q}$ | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
+| GoPieBound | 3 | $\mathbb{N}, val \geq 2$ | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation) |
+| GoPieMutabound | 3 | $\mathbb{N}, val \geq 1$  | Mutabound as described [here](./fuzzing/GoPie.md#mutation) |

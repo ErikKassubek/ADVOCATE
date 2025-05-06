@@ -10,7 +10,10 @@
 
 package fuzzing
 
-import "math"
+import (
+	"advocate/utils"
+	"math"
+)
 
 // Calculate how many gFuzz mutations should be created for a given
 // trace
@@ -26,8 +29,10 @@ func numberMutations() int {
 
 // Calculate the score of the given run
 func calculateScore() float64 {
-	const fact1 = 10.0
-	const fact2 = 10.0
+	fact1 := utils.GFuzzW1
+	fact2 := utils.GFuzzW2
+	fact3 := utils.GFuzzW3
+	fact4 := utils.GFuzzW4
 
 	res := 0.0
 
@@ -40,18 +45,18 @@ func calculateScore() float64 {
 	res += fact1 * float64(len(channelInfoTrace))
 
 	// number of close (closeCh)
-	res += fact1 * float64(numberClose)
+	res += fact2 * float64(numberClose)
 
 	// maximum buffer size for each chan (maxChBufFull)
 	bufFullSum := 0.0
 	for _, ch := range channelInfoFile {
 		bufFullSum += float64(ch.maxQCount)
 	}
-	res += fact1 * bufFullSum
+	res += fact3 * bufFullSum
 
 	if useHBInfoFuzzing {
 		// number of select cases with possible partner (both executed and not executed)
-		res += fact2 * float64(numberSelectCasesWithPartner)
+		res += fact4 * float64(numberSelectCasesWithPartner)
 	}
 
 	return res

@@ -36,7 +36,6 @@ The typeIDs have the following meaning:
 - A05: Negative wait group
 - A06: Unlock of not locked mutex
 - A07: Concurrent recv
-- A08: Select case without partner
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter
@@ -341,54 +340,8 @@ Found concurrent Recv on same channel:
 	recv: example.go:5@10
 ```
 
-### Select case without partner or nil case
-A select case without partner shows a select case that is missing a partner or is a nil case.
-The two args of this case are:
-
-- the select operation
-- the select case without partner
-
-The select case consists of the channel number and the direction (S: send, R: recv). If the channel is nil, the channel number is -1.
-
-The following example shows a select case without partner (d) and a nil case (e):
-```golang
- 1 func main() {          // routine = 1
- 2   c := make(chan int)  // objId = 2
- 3   d := make(chan int)  // objId = 3
- 4   e := make(chan int)  // objId = 4
- 5
- 6   e = nil
- 3
- 4   go func() {          // routine = 2
- 5     c <- 1             // objID = 2, tPre = 8
- 6   }()
- 7
- 8   select {             // objID = 5, tPre = 10
- 9   case <-c:
-10   case <-d:            // no partner
-11   case e <- 1:         // nil
-12  }
-13 }
-```
-
-The machine readable format of the select case without partner or nil case has the following form:
-```
-A08,T:1:5:10:SS:example.go:8,S:3:CR      // select case without partner
-A08,T:1:5:10:SS:example.go:8,S:-1:CS     // nil case
-```
-
-The human readable format of the select case without partner or nil case has the following form:
-```
-Possible select case without partner or nil case:    // select case without partner
-	select: example.go:8@10
-	case: 3,R
-Possible select case without partner or nil case:    // nil case
-	select: example.go:8@10
-	case: -1,R
-```
-
-
 ### Possible send on closed
+
 A possible send on closed is a possible but not actual send on a closed channel.
 The two args of this case are:
 
@@ -396,6 +349,7 @@ The two args of this case are:
 - the close operation
 
 An example for a possible send on closed is:
+
 ```golang
 1 func main() {          // routine = 1
 2   c := make(chan int)  // objId = 2
@@ -414,6 +368,7 @@ An example for a possible send on closed is:
 
 
 In the machine readable format, the possible send on closed has the following form:
+
 ```
 P01,T:2:2:10:CS:example.go:5,T:3:2:30:CC:example.go:30
 ```
@@ -432,6 +387,7 @@ The two args of this case are:
 - the close operation
 
 An example for a possible recv on closed is:
+
 ```golang
 1 func main() {          // routine = 1
 2   c := make(chan int)  // objId = 2
@@ -450,6 +406,7 @@ An example for a possible recv on closed is:
 
 
 In the machine readable format, the possible send on closed has the following form:
+
 ```
 P02,T:3:2:20:CR:example.go:9,T:3:2:30:CC:example.go:30
 ```
@@ -462,6 +419,7 @@ Possible send on closed channel:
 
 
 ### Possible negative waitgroup counter
+
 A possible negative waitgroup counter is a possible but not actual negative waitgroup counter.
 The two args of this case are:
 - The list of add operations that might make the counter negative (separated by semicolon)

@@ -1,11 +1,8 @@
 # Execution, Recording and Trace
 
-TODO: nochmal überarbeiten\
-
-ADVOCATE uses dynamic analysis, meaning it runs the code that should be analyzed,
-records the relevant information about this execution and tries to deduce
-potential concurrency problems from this trace. For information about the
-analysis, see [here](analysis.md).
+Advocate is able to record a program or test run, and to store the executed
+interleaving in a trace. Those traces can be used to deterministically
+[replay](./replay.md) a program run or to perform [dynamic analysis](analysis.md) on the recorded execution.
 
 The recording of the trace is implemented in the [modified runtime](../go-patch/src/runtime).
 
@@ -25,12 +22,12 @@ We record the following operations:
 - [Atomics](trace/atomics.md): Load, Store, Add Swap, CompareAndSwap
 - [New Channel](trace/newChannel.md)
 - [Fork/Spawn](trace/fork.md) (Start of new routine)
-- [Return of Routine](trace/routineEnd.md)
+- [End of Routine](trace/routineEnd.md)
 
 
 ## Toolchain
 
-To run the recording, we need to add the following header to the main function
+To run the recording, the following header needs to be added to the main function
 or the test that is analyzed:
 
 ```go
@@ -40,13 +37,14 @@ or the test that is analyzed:
 // ======= Preamble End =======
 ```
 
-When the toolchain is used, this is done automatically.
+When the [toolchain](../advocate/) is used, this is done automatically.
 
 
 ## Implementation
 
-To record the execution trace local, we add an new variable `advocateRoutineInfo` into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
-This struct is automatically created for each routine.
+To record the execution trace local, we add an new variable `advocateRoutineInfo`
+into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
+This struct is automatically created for each routine by the runtime.
 This variable (defined [here](../go-patch/src/runtime/advocate_routine.go#L28)), stores the routine id,
 the maximum id of any element used in this routine and the
 trace of this routine as a list of elements.
@@ -61,17 +59,17 @@ Before the runtime starts to run the main functions, multiple routines are creat
 and executed. They would always result in completely empty trace files, since
 the recording only starts after the
 [InitTracing](../go-patch/src/advocate/advocate_tracing.go#25) has been executed.
-We therefore therefore ignore those routines by setting there IDs to 0
-and don't add there advocateRoutineInfo into the global map.
+We therefore ignore those routines by setting there IDs to 0
+and don't add there `advocateRoutineInfo` into the global map.
 
 To identify operations, that where executed on the same element, we assign
-an ID to each channel, mutex, .... Since most of those elements are internally
+an ID to each element (channel, mutex, ...). Since most of those elements are internally
 implemented as struct, we add a new field for this ID to the struct.
 
 When a recorded function
-is executed, we first check if this id was already set. If it was not, we set a new id. We want to minimize the number of
+is executed, we first check if the id was already set. If it was not, we set a new id. We want to minimize the number of
 global counters we need to use. We therefor construct the new
-id as $routine.id\cdot1000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine.
+id as $routine.id \cdot 1000000000 + routine.maxObjectId$ and then increase the maxObjectId field of the routine.
 With this, we can guarantee that each object ID is unique.
 
 For atomics, we use the memory position of the variable as id.
@@ -82,19 +80,22 @@ is started, but before it executes. The Post function is called after it finishe
 The calls to those functions are directly added into the implementations of
 the recorded operations.
 
+To get information about the specific implementation, see the descriptions
+of the different recorded types as linked above.
+
 To be able to reconstruct a global trace from those elements, we store a
 time value for each pre and post. This values is created by an atomic counter,
 that is increased every time a time value is requested. For more info, see [here](#timer).
 
-The Pre function records that the operation was executed, the time when it was started, as well as all required information that are already available (for the list if required information, check out the type specific information linked above). The Pre function
+The Pre function records that the operation was executed, the time when it was started, as well as all required information that are already available . The Pre function
 also always records the location where the operation was recorded. This is (except for fork, see [here](./trace/fork.md#implementation)) done using the [runtime.Caller](https://pkg.go.dev/runtime#Caller) function.
 
 The Post function then records the successful completion of the
-operation (by setting the post timer from 0 to the current time) as well as all information that was not available at the beginning, e.g. if a trylock was successful or not or which select case was executed.
+operation as well as all information that was not available at the beginning, e.g. if a trylock was successful or not or which select case was executed.
 
-For each operations we only store one element in the trace, representing
+For each operation we only store one element in the trace, representing
 both the pre and post signal. The functions creating the pre signal
-add a new element to the trace slice and return the index of this element
+add a new element to the trace slice of the routine and return the index of this element
 in the slice. The post functions take this index as an argument, to find
 and update this value. We can determine if an operation had an pre, but no
 post element, meaning the execution got stuck, by checking if the post timer is 0.
@@ -203,6 +204,17 @@ operations are executed at the same time. Since the main reason for routine loca
 When the main function terminates, it calls the [FinishTracing](../go-patch/src/advocate/advocate_tracing.go#65) function. This will collect all the local traces and write them into files.
 We ignore all internal routines, that where created and run before the main
 routine started to execute.
+
+The trace files are stored trace local, meaning one file per trace in a folder called
+`advocateTrace_[number]` inside the `advocateResult` folder.
+The files are called `trace_[id].log`. In each file the elements executed
+in this routine are stored, one element per line sorted by the pre counter.
+The elements stored for each operations are described in the
+explanations for the different types linked above.
+
+Additionally a `trace_info.log` file is created with some additional infos,
+e.g. whether the program terminated normally or because of a panic.
+
 
 [^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)\
 [^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)\

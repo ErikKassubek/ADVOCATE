@@ -1,13 +1,26 @@
 # Toolchain
 
-The toolchain allow the user to analyze programs or tests.
-It is integrated in the [analyzer](../analyzer).
+The toolchain allow the user to record, replay and analyze programs or tests.
+It is implemented in [advocate](../advocate/).
 
-The toolchain has tow modi, analysis and fuzzing.
+The toolchain has 4 modi, record, replay, analysis and fuzzing.
+
+## Recording
+
+Recoding will take a program or a set of unit tests and [records](./recording.md)
+there behavior. This will run the program or tests and record
+the trace files. The files can be found in a created `advocateResult` folder.
+
+## Replay
+
+Replay allows us to replay a (modified) recording of a program. Given the
+program or test, it will force the program execution to follow the
+order specified in the trace.
+
 
 ## Analysis
 
-Analysis will analyze a given program, test or set of tests.\
+Analysis will [analyze](./analysis.md) a given program, test or set of tests.\
 It can be specified if the analysis should be done on the main function of the
 program, on on specific test or on all tests. If it is done on all tests, the
 following is consecutively done for each test.\

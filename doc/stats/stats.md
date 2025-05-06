@@ -555,7 +555,6 @@ The columns are
 - A02: Receive on closed channel
 - A03: Close on closed channel
 - A04: Concurrent recv
-- A05: Select case without partner
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter

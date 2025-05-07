@@ -62,13 +62,13 @@ it is partially used for the implemented fuzzing approach.
 The relevant section for this project are mostly the following:
 
 
-- [Usage](usage.md)
-- [Toolchain](toolchain.md)
-- [Runtime](runtime.md)
-- [Execution, Recording and Trace](recording.md)
-- [Replay](replay.md)
-- [Fuzzing](fuzzing.md)
-- [Memory](memory.md)
-- [Related works](relatedWorks.md)
+- [Usage](doc/usage.md)
+- [Toolchain](doc/toolchain.md)
+- [Runtime](doc/runtime.md)
+- [Execution, Recording and Trace](doc/recording.md)
+- [Replay](doc/replay.md)
+- [Fuzzing](doc/fuzzing.md)
+- [Memory](doc/memory.md)
+- [Related works](doc/relatedWorks.md)
 
 But of course, feel free to take a look at the other things if you're interested.

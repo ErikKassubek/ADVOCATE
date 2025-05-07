@@ -337,7 +337,7 @@ func WaitForReplayFinish(exit bool) {
 	}
 
 	if stuckReplayExecutedSuc {
-		ExitReplayWithCode(expectedExitCode)
+		ExitReplayWithCode(expectedExitCode, "")
 	}
 }
 
@@ -397,14 +397,14 @@ func ReleaseWaits() {
 
 				if stuckMutexCounter > 0 {
 					SetForceExit(true)
-					ExitReplayWithCode(replayElem.Line)
+					ExitReplayWithCode(replayElem.Line, "")
 				}
 
 				lock(&waitDeadlockDetectLock)
 				waitDeadlockDetect = false
 				unlock(&waitDeadlockDetectLock)
 			} else if isExitCodeConfOnEndElem(replayElem.Line) {
-				ExitReplayWithCode(replayElem.Line)
+				ExitReplayWithCode(replayElem.Line, "")
 			}
 			return
 		}
@@ -848,7 +848,8 @@ func SetExpectedExitCode(code int) {
 //
 // Parameter:
 //   - code: the exit code
-func ExitReplayWithCode(code int) {
+//   - msg any: message
+func ExitReplayWithCode(code int, msg any) {
 	if !hasReturnedExitCode {
 		// if !isExitCodeConfOnEndElem(code) && !stuckReplayExecutedSuc {
 		// 	return
@@ -857,6 +858,12 @@ func ExitReplayWithCode(code int) {
 		hasReturnedExitCode = true
 	} else {
 		println("Exit code already returned")
+	}
+
+	if msg != "" {
+		print("Exit Message: ")
+		printpanicval(msg)
+		print("\n")
 	}
 
 	if replayForceExit && ExitCodeNames[code] != "" {
@@ -903,7 +910,7 @@ func ExitReplayPanic(msg any) {
 	// 	return
 	// }
 
-	ExitReplayWithCode(advocateExitCode)
+	ExitReplayWithCode(advocateExitCode, msg)
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.

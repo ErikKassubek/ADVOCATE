@@ -239,7 +239,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if numberFuzzingRuns != 0 {
 			order = popMutation()
 			if order.mutType == mutPiType {
-				fuzzingPath = filepath.Join(fuzzingPath,
+				fuzzingPath = filepath.Join(progPath,
 					filepath.Join("fuzzingTraces",
 						fmt.Sprintf("fuzzingTrace_%d", order.mutPie)))
 			} else {

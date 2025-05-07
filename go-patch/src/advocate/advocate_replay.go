@@ -109,7 +109,7 @@ func startReplay(timeout int) {
 		// start time timeout
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
-			runtime.ExitReplayWithCode(runtime.ExitCodeTimeout)
+			runtime.ExitReplayWithCode(runtime.ExitCodeTimeout, "")
 			if runtime.IsAdvocateFuzzingEnabled() {
 				FinishFuzzing()
 			}
@@ -453,7 +453,7 @@ func FinishReplay() {
 
 	time.Sleep(time.Second)
 
-	runtime.ExitReplayWithCode(runtime.ExitCodeDefault)
+	runtime.ExitReplayWithCode(runtime.ExitCodeDefault, "")
 }
 
 // func InitReplayTracing(index string, exitCode bool, timeout int, atomic bool) {

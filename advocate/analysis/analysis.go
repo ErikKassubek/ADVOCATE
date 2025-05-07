@@ -60,13 +60,13 @@ func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
 
-	file, line, err := trace.PosFromPosString(exitPos)
-	if err != nil {
-		return
-	}
-
 	switch exitCode {
 	case utils.ExitCodeCloseClose: // close on closed
+		file, line, err := trace.PosFromPosString(exitPos)
+		if err != nil {
+			utils.LogError("Could not read exit pos: ", err)
+		}
+
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -78,6 +78,10 @@ func runAnalysisOnExitCodes(all bool) {
 		results.Result(results.CRITICAL, utils.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	case utils.ExitCodeCloseNil: // close on nil
+		file, line, err := trace.PosFromPosString(exitPos)
+		if err != nil {
+			utils.LogError("Could not read exit code: ", err)
+		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -89,6 +93,10 @@ func runAnalysisOnExitCodes(all bool) {
 		results.Result(results.CRITICAL, utils.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	case utils.ExitCodeNegativeWG: // negative wg counter
+		file, line, err := trace.PosFromPosString(exitPos)
+		if err != nil {
+			utils.LogError("Could not read exit code: ", err)
+		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -100,6 +108,10 @@ func runAnalysisOnExitCodes(all bool) {
 		results.Result(results.CRITICAL, utils.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	case utils.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
+		file, line, err := trace.PosFromPosString(exitPos)
+		if err != nil {
+			utils.LogError("Could not read exit code: ", err)
+		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -111,6 +123,10 @@ func runAnalysisOnExitCodes(all bool) {
 		results.Result(results.CRITICAL, utils.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
 	case utils.ExitCodePanic: // unknown panic
+		file, line, err := trace.PosFromPosString(exitPos)
+		if err != nil {
+			utils.LogError("Could not read exit code: ", err)
+		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
@@ -121,13 +137,17 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
-	case 7: // timeout
+	case utils.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, utils.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
 		if exitCode == utils.ExitCodeSendClose { // send on closed
+			file, line, err := trace.PosFromPosString(exitPos)
+			if err != nil {
+				utils.LogError("Could not read exit code: ", err)
+			}
 			arg1 := results.TraceElementResult{ // send
 				RoutineID: 0,
 				ObjID:     0,

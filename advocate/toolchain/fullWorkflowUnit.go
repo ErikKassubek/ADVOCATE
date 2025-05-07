@@ -562,12 +562,10 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	// Set GOROOT
 	os.Setenv("GOROOT", pathToGoRoot)
 
-	timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
-
 	runCommand(osOut, osErr, pathToPatchedGoRuntime, "version")
 
 	pkgPath := utils.MakePathLocal(pkg)
-	err := runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, pkgPath)
+	err := runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -666,7 +664,6 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 	} else {
 		timeoutRepl = time.Duration(timeoutReplay) * time.Second
 	}
-	timeoutReplString := fmt.Sprintf("%ds", int(timeoutRepl.Seconds()))
 
 	for i, trace := range rewrittenTraces {
 		traceNum, bugString := extractTraceNumber(trace)
@@ -686,7 +683,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 
 		utils.LogInfof("Run replay %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := utils.MakePathLocal(pkg)
-		runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-timeout", timeoutReplString, "-run="+testName, pkgPath)
+		runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		utils.LogInfof("Finished replay %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

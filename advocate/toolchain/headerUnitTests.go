@@ -184,9 +184,9 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s")
+  advocate.InitFuzzing("%s", %d)
   defer advocate.FinishFuzzing()
-  // ======= Preamble End =======`, replayInfo))
+  // ======= Preamble End =======`, replayInfo, timeoutRecording))
 			} else { // recording
 				lines = append(lines, `	// ======= Preamble Start =======
   advocate.InitTracing()

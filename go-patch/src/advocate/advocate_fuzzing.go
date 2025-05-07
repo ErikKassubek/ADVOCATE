@@ -26,7 +26,8 @@ var isFuzzing = false
 // Parameter:
 //   - tracePath string: For fuzzing approaches that use trace, add the path to the
 //     trace, otherwise set to ""
-func InitFuzzing(tracePath string) {
+//   - timeout int: Timeout in seconds
+func InitFuzzing(tracePath string, timeout int) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
@@ -45,7 +46,7 @@ func InitFuzzing(tracePath string) {
 		runtime.InitFuzzingReplay(FinishFuzzing)
 		tracePathRewritten = tracePath
 		runtime.SetReplayAtomic(true)
-		startReplay(20)
+		startReplay(timeout)
 	}
 }
 

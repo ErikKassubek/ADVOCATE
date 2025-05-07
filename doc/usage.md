@@ -16,10 +16,10 @@ There are two elements that need to be build.
 ### Runtime
 
 To run the recording and replay for Go, a modified version of the Go runtime
-has been provided. It can be found in the [go-path](../../go-patch/) folder.
+has been provided. It can be found in the [go-path](../go-patch/) folder.
 
 Before it can be used, it needs to be build. To do this, move into
-[go-path/src](../../go-patch/src/) directory and run the
+[go-path/src](../go-patch/src/) directory and run the
 
 ```shell
 ./src/make.bash
@@ -30,7 +30,7 @@ script. This will create a go executable in the `bin` directory.
 ### Advocate
 
 Additionally, the advocate program needs to be build. This is a standard Go
-program. To build it, move into the [advocate](../../advocate/) directory
+program. To build it, move into the [advocate](../advocate/) directory
 and build it with the standard
 
 ```shell

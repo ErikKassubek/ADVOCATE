@@ -53,6 +53,7 @@ func InitFuzzing(tracePath string, timeout int) {
 // Run when fuzzing is finished (normally as defer)
 // This records the traces and some additional info
 func FinishFuzzing() {
+	runtime.DisableReplay()
 	FinishTracing()
 }
 

@@ -103,17 +103,18 @@ func FinishTracing() {
 //
 // Parameter:
 //
-//	tracePath string: path to where the trace should be written
+//	tracePath string:t path to where the trace should be written
 func writeToTraceFiles(tracePath string) {
 	numRout := runtime.GetNumberOfRoutines()
+
+	writeToTraceFileInfo(tracePath, numRout)
+
 	var wg sync.WaitGroup
 	for i := 1; i <= numRout; i++ {
 		// write the trace to the file
 		wg.Add(1)
 		go writeToTraceFile(i, &wg, tracePath)
 	}
-
-	writeToTraceFileInfo(tracePath, numRout)
 
 	wg.Wait()
 }

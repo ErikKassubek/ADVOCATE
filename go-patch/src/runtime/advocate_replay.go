@@ -866,16 +866,7 @@ func ExitReplayWithCode(code int, msg any) {
 		print("\n")
 	}
 
-	if replayForceExit && ExitCodeNames[code] != "" {
-		// if !advocateTracingDisabled { // do not exit if recording is enabled
-		// 	return
-		// }
-		println("Forcing exit with code ", code, ExitCodeNames[code])
-		exit(int32(code))
-	} else {
-		println("Exit code not set")
-		exit(-1)
-	}
+	exit(int32(code))
 }
 
 //	For some exit codes, the replay is seen as confirmed, if the replay end

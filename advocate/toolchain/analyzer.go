@@ -49,8 +49,6 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	rewriteAll bool, newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
 
-	utils.LogInfo("Run analyzer")
-
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
 	}
@@ -61,8 +59,9 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	results.InitResults(outReadable, outMachine)
 
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+
 	if err != nil {
-		fmt.Println("Could not open trace: ", err.Error())
+		utils.LogError("Could not open trace: ", err.Error())
 	}
 
 	if numberElems == 0 {

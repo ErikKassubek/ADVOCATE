@@ -82,6 +82,9 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 	}
 
 	for _, mut := range mutations {
+		if maxNumberRuns != -1 && numberFuzzingRuns+len(mutationQueue) > maxNumberRuns {
+			break
+		}
 		numberWrittenGoPieMuts++
 		traceCopy := analysis.CopyMainTrace()
 

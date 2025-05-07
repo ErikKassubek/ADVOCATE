@@ -67,7 +67,7 @@ func SetExitCodeFromPanicMsg(msg any) {
 	case string:
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = ExitCodeNegativeWG
-		} else if hasPrefix(m, "test timed out") {
+		} else if hasPrefix(m, "test timed out") || hasPrefix(m, "Timeout") {
 			advocateExitCode = exitCodeTimeOut
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||

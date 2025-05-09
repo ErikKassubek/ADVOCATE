@@ -69,7 +69,7 @@ func Supervisor() {
 		}
 
 		// Sleep for a while before checking again
-		time.Sleep(1 * time.Second)
+		time.Sleep(500 * time.Millisecond)
 	}
 }
 

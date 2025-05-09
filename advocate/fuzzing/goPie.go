@@ -28,7 +28,7 @@ var allGoPieMutations = make(map[string]struct{})
 var chainFiles = make(map[int]chain)
 
 // number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
-const maxSCStart = 5
+var maxSCStart = utils.GoPieSCStart
 
 // Create new mutations for GoPie
 //
@@ -86,7 +86,12 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 			break
 		}
 		numberWrittenGoPieMuts++
-		traceCopy := analysis.CopyMainTrace()
+
+		traceCopy, err := analysis.CopyMainTrace()
+		if err != nil {
+			utils.LogErrorf("Could not copy trace: %s", err.Error())
+			return
+		}
 
 		tPosts := make([]int, len(mut.elems))
 		routines := make(map[int]struct{})
@@ -122,7 +127,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 		fuzzingTracePath := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberWrittenGoPieMuts))
 		chainFiles[numberWrittenGoPieMuts] = mut
 
-		err := io.WriteTrace(&traceCopy, fuzzingTracePath, true)
+		err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 		if err != nil {
 			utils.LogError("Could not create pie mutation: ", err.Error())
 			continue

@@ -1208,7 +1208,6 @@ func initIntrinsics(cfg *intrinsicBuildConfig) {
 	alias("internal/runtime/sys", "OnesCount64", "math/bits", "OnesCount64", all...)
 
 	/******** sync/atomic ********/
-	// ADVOCATE-START
 
 	// Note: these are disabled by flag_race in findIntrinsic below.
 	alias("sync/atomic", "LoadInt32", "internal/runtime/atomic", "Load", all...)

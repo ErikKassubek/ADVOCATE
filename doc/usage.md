@@ -394,4 +394,5 @@ The following values can be changed:
 | GoPieW1 | 1 | $\mathbb{Q}$ | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
 | GoPieW2 | 1 | $\mathbb{Q}$ | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
 | GoPieBound | 3 | $\mathbb{N}, val \geq 2$ | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieMutabound | 3 | $\mathbb{N}, val \geq 1$  | Mutabound as described [here](./fuzzing/GoPie.md#mutation) |
+| GoPieMutabound | 3 | $\mathbb{N}_{\neq 0}$ | Mutabound as described [here](./fuzzing/GoPie.md#mutation) |
+| GoPieSCStart | 5 | $\mathbb{N}_{\neq 0}$ | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation) |

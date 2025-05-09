@@ -293,3 +293,15 @@ func getBugElementType(elemType string) string {
 	}
 	return objectTypes[elemType]
 }
+
+// buildBugCodes builds the bugCodes as an inversion of bugNames
+// If bugCodes is already build, this does nothing
+func buildBugCodes() {
+	if len(bugCodes) > 0 {
+		return
+	}
+
+	for key, desc := range bugNames {
+		bugCodes[desc] = key
+	}
+}

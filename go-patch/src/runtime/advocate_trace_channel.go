@@ -134,7 +134,7 @@ func AdvocateChanPost(index int, qCount uint) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceChannel)
 
 	set := false
 
@@ -171,7 +171,7 @@ func AdvocateChanPost(index int, qCount uint) {
 	}
 	elem.qCount = qCount
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // AdvocateChanPostCausedByClose sets the operation as successfully finished
@@ -188,12 +188,12 @@ func AdvocateChanPostCausedByClose(index int) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceChannel)
 
 	elem.tPost = time
 	elem.cl = true
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // Get a string representation of the trace element

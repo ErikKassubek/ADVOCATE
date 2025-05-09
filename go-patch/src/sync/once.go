@@ -32,7 +32,7 @@ type Once struct {
 	done atomic.Uint32
 	m    Mutex
 
-	// ADVOCATE-CHANGE-BEGIN
+	// ADVOCATE-START
 	id uint64 // id of the once
 	// ADVOCATE-END
 }

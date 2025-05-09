@@ -149,7 +149,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceSelect)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceSelect)
 	elem.tPost = timer
 	elem.selIndex = selIndex
 
@@ -174,7 +174,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 		elem.cases[selIndex] = chosenCase
 	}
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // AdvocateSelectPreOneNonDef adds a new select element to the trace if the
@@ -257,7 +257,7 @@ func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceSelect)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceSelect)
 
 	elem.tPost = timer
 
@@ -276,7 +276,7 @@ func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 		elem.selIndex = -1
 	}
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // Get a string representation of the trace element

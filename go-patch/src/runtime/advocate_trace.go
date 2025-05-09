@@ -118,7 +118,7 @@ type traceElem interface {
 //   - string representation of the trace
 func CurrentTraceToString() string {
 	res := ""
-	for i, elem := range currentGoRoutine().Trace {
+	for i, elem := range currentGoRoutineInfo().Trace {
 		if i != 0 {
 			res += "\n"
 		}
@@ -156,7 +156,7 @@ func traceToString(trace *[]traceElem) string {
 // Returns:
 //   - index of the element in the trace
 func insertIntoTrace(elem traceElem) int {
-	return currentGoRoutine().addToTrace(elem)
+	return currentGoRoutineInfo().addToTrace(elem)
 }
 
 // Print the trace of the current routines

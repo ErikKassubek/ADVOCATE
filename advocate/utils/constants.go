@@ -29,6 +29,8 @@ var (
 	GoPieW2        = 1.0
 	GoPieBound     = 3
 	GoPieMutabound = 128
+
+	GoPieSCStart = 5
 )
 
 // SetSettings sets different constants and settings used in the program
@@ -77,6 +79,8 @@ func SetSettings(settings string) {
 			GoPieBound = int(clamp(value, 2.0, math.MaxFloat64))
 		case "GoPieMutabound":
 			GoPieMutabound = int(clamp(value, 1, math.MaxFloat64))
+		case "GoPieSCStart":
+			GoPieSCStart = int(clamp(value, 1, math.MaxFloat64))
 		default:
 			LogErrorf("Unknown name in setting %s", elemParts[0])
 			continue

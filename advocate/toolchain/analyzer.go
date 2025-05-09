@@ -199,7 +199,10 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, nil
 	}
 
-	traceCopy := analysis.CopyMainTrace()
+	traceCopy, err := analysis.CopyMainTrace()
+	if err != nil {
+		return false, err
+	}
 
 	rewriteNeeded, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
 

@@ -50,6 +50,8 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
 	utils.LogInfo("Create bug reports")
 
+	buildBugCodes()
+
 	replayCodes := getOutputCodes(path)
 
 	progInfo, err := readProgInfo(path)

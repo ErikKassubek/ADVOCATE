@@ -88,12 +88,12 @@ func AdvocateMutexPost(index int, suc bool) {
 
 	// only needed to fix tests
 
-	if currentGoRoutine() == nil {
+	if currentGoRoutineInfo() == nil {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceMutex)
-	routine := currentGoRoutine().id
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceMutex)
+	routine := currentGoRoutineInfo().id
 
 	lock(&lastRWOpLock)
 	if elem.isRw() && lastRWOp[routine] != 0 {
@@ -110,7 +110,7 @@ func AdvocateMutexPost(index int, suc bool) {
 
 	elem.suc = suc
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // Check if the mutex is a rw mutex

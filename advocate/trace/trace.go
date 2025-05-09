@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/clock"
+	"advocate/memory"
 	"advocate/utils"
 	"errors"
 	"fmt"
@@ -624,13 +625,18 @@ func (t *Trace) GetPartialTrace(startTime int, endTime int) map[int][]TraceEleme
 // Copy returns a deep copy a trace
 //
 // Returns:
-//   - The copy of the trace
-func (t *Trace) Copy() Trace {
+//   - Trace: The copy of the trace
+//   - error
+func (t *Trace) Copy() (Trace, error) {
 	tracesCopy := make(map[int][]TraceElement)
 	for routine, trace := range t.traces {
 		tracesCopy[routine] = make([]TraceElement, len(trace))
 		for i, elem := range trace {
 			tracesCopy[routine][i] = elem.Copy()
+
+			if memory.WasCanceled() {
+				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient small RAM")
+			}
 		}
 	}
 
@@ -644,7 +650,7 @@ func (t *Trace) Copy() Trace {
 		hbWasCalc:          t.hbWasCalc,
 		numberElemsInTrace: numberElemsInTraceCopy,
 		minTraceID:         t.minTraceID,
-	}
+	}, nil
 }
 
 // PrintTrace prints the trace sorted by tPost

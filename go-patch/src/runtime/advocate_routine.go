@@ -28,10 +28,10 @@ var projectPath string
 //   - Trace []traceElem: the trace of the routine
 type AdvocateRoutine struct {
 	id          uint64
-	replayID    int
 	maxObjectId uint64
 	G           *g
 	Trace       []traceElem
+	replayID    int
 }
 
 // Create a new advocate routine
@@ -54,7 +54,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 		}
 	}
 
-	routine := &AdvocateRoutine{
+	advocateRoutineInfo := &AdvocateRoutine{
 		id:          GetNewAdvocateRoutineID(),
 		maxObjectId: 0,
 		G:           g,
@@ -69,9 +69,9 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 		AdvocateRoutines = make(map[uint64]*AdvocateRoutine)
 	}
 
-	AdvocateRoutines[routine.id] = routine
+	AdvocateRoutines[advocateRoutineInfo.id] = advocateRoutineInfo
 
-	return routine
+	return advocateRoutineInfo
 }
 
 // Add an element to the trace of the current routine
@@ -121,7 +121,7 @@ func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
 // Get the current routine
 // Return:
 //   - *AdvocateRoutine: the current routine
-func currentGoRoutine() *AdvocateRoutine {
+func currentGoRoutineInfo() *AdvocateRoutine {
 	return getg().advocateRoutineInfo
 }
 
@@ -129,7 +129,7 @@ func currentGoRoutine() *AdvocateRoutine {
 // Return:
 //   - int: id of the current routine, 0 if current routine is nil
 func GetRoutineID() int {
-	currentRoutine := currentGoRoutine()
+	currentRoutine := currentGoRoutineInfo()
 	if currentRoutine == nil {
 		return 0
 	}
@@ -140,7 +140,7 @@ func GetRoutineID() int {
 // Return:
 //   - int: replay id of the current routine, 0 if current routine is nil
 func GetReplayRoutineID() int {
-	currentRoutine := currentGoRoutine()
+	currentRoutine := currentGoRoutineInfo()
 	if currentRoutine == nil {
 		return 0
 	}

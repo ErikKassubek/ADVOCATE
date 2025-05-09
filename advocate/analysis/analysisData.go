@@ -506,7 +506,8 @@ func SortTrace() {
 //
 // Returns:
 //   - Trace: The copy of the trace
-func CopyMainTrace() trace.Trace {
+//   - error
+func CopyMainTrace() (trace.Trace, error) {
 	return MainTrace.Copy()
 }
 

@@ -171,8 +171,6 @@ func (elem *ReplayElement) key() string {
 	return BuildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 
-// TODO (Erik): fix replay routine, if fixed also add routine in active key
-
 // Build the key (id) of a replay element
 //
 // Parameters:
@@ -181,7 +179,6 @@ func (elem *ReplayElement) key() string {
 //   - line int: code position line of the element
 func BuildReplayKey(routine int, file string, line int) string {
 	return intToString(routine) + ":" + file + ":" + intToString(line)
-	// return file + ":" + intToString(line)
 }
 
 type AdvocateReplayTrace []ReplayElement

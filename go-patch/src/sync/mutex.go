@@ -96,35 +96,34 @@ func (m *Mutex) Lock() {
 // and use of TryLock is often a sign of a deeper problem
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
-		// ADVOCATE-START
-		wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
-		if wait {
-			defer func() { chAck <- struct{}{} }()
-			replayElem := <-ch
-			if replayElem.Blocked {
-				if m.id == 0 {
-					m.id = runtime.GetAdvocateObjectID()
-				}
-				_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-				runtime.BlockForever()
+	// ADVOCATE-START
+	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
+	if wait {
+		defer func() { chAck <- struct{}{} }()
+		replayElem := <-ch
+		if replayElem.Blocked {
+			if m.id == 0 {
+				m.id = runtime.GetAdvocateObjectID()
 			}
+			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+			runtime.BlockForever()
 		}
+	}
 
-		runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(2)
 
-		// Mutexe don't need to be initialized in default go code. Because
-		// go does not have constructors, the only way to initialize a mutex
-		// is directly in the lock function. If the id of the channel is the default
-		// value, it is set to a new, unique object id
-		if m.id == 0 {
-			m.id = runtime.GetAdvocateObjectID()
-		}
+	// Mutexe don't need to be initialized in default go code. Because
+	// go does not have constructors, the only way to initialize a mutex
+	// is directly in the lock function. If the id of the channel is the default
+	// value, it is set to a new, unique object id
+	if m.id == 0 {
+		m.id = runtime.GetAdvocateObjectID()
+	}
 
-		// AdvocateMutexPre records, that a routine tries to lock a mutex.
-		// advocateIndex is used for AdvocateMutexPost to find the pre event.
-		advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-		// ADVOCATE-END
-
+	// AdvocateMutexPre records, that a routine tries to lock a mutex.
+	// advocateIndex is used for AdvocateMutexPost to find the pre event.
+	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+	// ADVOCATE-END
 
 	res := m.mu.TryLock()
 

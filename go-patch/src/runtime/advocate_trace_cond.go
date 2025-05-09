@@ -75,11 +75,11 @@ func AdvocateCondPost(index int) {
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceCond)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceCond)
 
 	elem.tPost = timer
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // Get a string representation of the trace element

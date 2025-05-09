@@ -126,15 +126,15 @@ func AdvocateWaitGroupPost(index int) {
 
 	// only needed to fix tests
 
-	if currentGoRoutine() == nil {
+	if currentGoRoutineInfo() == nil {
 		return
 	}
 
-	elem := currentGoRoutine().getElement(index).(AdvocateTraceWaitGroup)
+	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceWaitGroup)
 
 	elem.tPost = timer
 
-	currentGoRoutine().updateElement(index, elem)
+	currentGoRoutineInfo().updateElement(index, elem)
 }
 
 // Get a string representation of the trace element

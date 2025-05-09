@@ -53,7 +53,7 @@ type hchan struct {
 	// with stack shrinking.
 	lock mutex
 
-	// ADVOCATE-CHANGE-START
+	// ADVOCATE-START
 	id              uint64 // id of the channel
 	numberSend      uint64 // number of completed send operations
 	numberSendMutex mutex  // mutex for numberSend
@@ -408,7 +408,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
-		// ADVOCATE-CHANGE-EN
+		// ADVOCATE-END
 		if c.closed == 0 {
 			throw("chansend: spurious wakeup")
 		}

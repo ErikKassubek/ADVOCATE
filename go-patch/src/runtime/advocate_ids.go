@@ -39,7 +39,7 @@ func GetNextAdvocateRoutineID() uint64 {
 // Return:
 //   - new id
 func GetAdvocateObjectID() uint64 {
-	routine := currentGoRoutine()
+	routine := currentGoRoutineInfo()
 
 	if routine == nil {
 		return 0

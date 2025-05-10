@@ -183,7 +183,7 @@ func main() {
 
 	utils.LogInit(noInfo, !alwaysPanic)
 
-	utils.SetSettings(settings)
+	utils.SetSettings(settings, maxFuzzingRun, fuzzingMode)
 
 	progPathDir := utils.GetDirectory(progPath)
 	timer.Init(recordTime, progPathDir)

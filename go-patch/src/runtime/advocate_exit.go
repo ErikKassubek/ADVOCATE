@@ -18,16 +18,6 @@ var advocatePanicDone chan struct{}
 var advocateExitCode = 0
 var advocateExitCodePos = ""
 
-const (
-	exitCodeSendOnClosed          = 1
-	exitCodeCloseOnClosed         = 2
-	exitCodeCloseOnNilChannel     = 3
-	exitCodeNegWG                 = 4
-	exitCodeUnlockOfUnlockedMutex = 5
-	exitCodeUnknownPanic          = 6
-	exitCodeTimeOut               = 7
-)
-
 // Get the channels used to write the trace on certain panics
 //
 // Parameters:
@@ -68,7 +58,7 @@ func SetExitCodeFromPanicMsg(msg any) {
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = ExitCodeNegativeWG
 		} else if hasPrefix(m, "test timed out") || hasPrefix(m, "Timeout") {
-			advocateExitCode = exitCodeTimeOut
+			advocateExitCode = ExitCodeTimeout
 		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
 			if m == "sync: RUnlock of unlocked RWMutex" ||
 				m == "sync: Unlock of unlocked RWMutex" ||

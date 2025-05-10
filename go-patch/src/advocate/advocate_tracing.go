@@ -22,7 +22,7 @@ var duration time.Duration
 
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
-func InitTracing() {
+func InitTracing(timeout int) {
 	// if the program panics, but is not in the main routine, no trace is written
 	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
 	blocked := make(chan struct{})
@@ -53,6 +53,17 @@ func InitTracing() {
 
 	startTime = time.Now()
 	timerStarted = true
+
+	if timeout > 0 {
+		// start time timeout
+		go func() {
+			time.Sleep(time.Duration(timeout) * time.Second)
+			if runtime.IsTracingEnabled() {
+				FinishTracing()
+			}
+			panic("Timeout")
+		}()
+	}
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()

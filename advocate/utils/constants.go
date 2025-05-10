@@ -38,7 +38,13 @@ var (
 //
 // Parameter
 //   - settings string: settings string of the form `name1=value1,name2=value2,...`
-func SetSettings(settings string) {
+//   - maxFuzzingRun int: maxFuzzingRun flag value
+//   - fuzzingMode string: fuzzingMode flag value
+func SetSettings(settings string, maxFuzzingRun int, fuzzingMode string) {
+	if fuzzingMode != "GoPie" {
+		GoPieMutabound = min(int(maxFuzzingRun/GoPieSCStart), 128)
+	}
+
 	if settings == "" {
 		return
 	}

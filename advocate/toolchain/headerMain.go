@@ -219,10 +219,10 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
   defer advocate.FinishTracing()
   // ======= Preamble End =======`, fuzzingTrace, timeoutRecording))
 			} else { // recording
-				lines = append(lines, `	// ======= Preamble Start =======
-  advocate.InitTracing()
+				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
+  advocate.InitTracing(%d)
   defer advocate.FinishTracing()
-  // ======= Preamble End =======`)
+  // ======= Preamble End =======`, timeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)
 			fmt.Printf("Header added at file: %s\n", fileName)

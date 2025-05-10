@@ -274,7 +274,7 @@ for {
   }
 }
 ```
-with `BOUND = 3` and `MUTATEBOUND = 138`.
+with `BOUND = 3` and `MUTATEBOUND = 128`.
 
 The number of chains created is determined by the energy, which itself is
 based on a score depending on the recorded run. The score is

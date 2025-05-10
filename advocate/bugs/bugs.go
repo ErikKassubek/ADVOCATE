@@ -157,7 +157,7 @@ func (b Bug) ToString() string {
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
-	case utils.LWithoutBlock:
+	case utils.LUnknown:
 		typeStr = "Leak on routine without any blocking operation"
 		arg1Str = "fork: "
 	case utils.LUnbufferedWith:
@@ -303,7 +303,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	// 	bug.Type = MixedDeadlock
 	case "L00":
 		containsArg1 = false
-		bug.Type = utils.LWithoutBlock
+		bug.Type = utils.LUnknown
 	case "L01":
 		bug.Type = utils.LUnbufferedWith
 	case "L02":

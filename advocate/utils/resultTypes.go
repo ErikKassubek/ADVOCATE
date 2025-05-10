@@ -38,7 +38,7 @@ const (
 	PCyclicDeadlock   ResultType = "P05"
 
 	// leaks
-	LWithoutBlock      ResultType = "L00"
+	LUnknown           ResultType = "L00"
 	LUnbufferedWith    ResultType = "L01"
 	LUnbufferedWithout ResultType = "L02"
 	LBufferedWith      ResultType = "L03"

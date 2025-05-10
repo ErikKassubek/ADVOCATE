@@ -97,10 +97,9 @@ func calculateRelRule2() {
 				rel2[elem1][elem2] = struct{}{}
 				counterCPOP2++
 			}
-		}
-
-		if memory.WasCanceled() {
-			return
+			if memory.WasCanceled() {
+				return
+			}
 		}
 	}
 }
@@ -128,11 +127,11 @@ func calculateRelRule3And4() {
 					rel2[c][c2] = struct{}{}
 					counterCPOP2++
 				}
+				if memory.WasCanceled() {
+					return
+				}
 			}
 
-			if memory.WasCanceled() {
-				return
-			}
 		}
 
 		// rule4

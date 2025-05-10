@@ -18,6 +18,7 @@ AdvocateGo tries to detect the following situations:
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel (only warning)
 - P03: Possible negative waitgroup counter
+- L00: Leak on routine with unknown cause
 - L01: Leak on unbuffered channel with possible partner
 - L02: Leak on unbuffered channel without possible partner
 - L03: Leak on buffered channel with possible partner

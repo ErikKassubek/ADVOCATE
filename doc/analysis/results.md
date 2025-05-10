@@ -41,6 +41,7 @@ The typeIDs have the following meaning:
 - P03: Possible negative waitgroup counter
 - P04: Possible unlock deadlock before lock
 - P05: Possible cyclic deadlock
+- L00: Leak on routine with unknown cause
 - L01: Leak on unbuffered channel with possible partner
 - L02: Leak on unbuffered channel without possible partner
 - L03: Leak on buffered channel with possible partner

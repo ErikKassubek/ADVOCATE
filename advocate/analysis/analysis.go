@@ -44,7 +44,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
-		checkForStuckRoutine()
+		checkForStuckRoutine(true)
 		return
 	}
 
@@ -277,7 +277,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMa
 	if analysisCases["leak"] {
 		utils.LogInfo("Check for leak")
 		checkForLeak()
-		checkForStuckRoutine()
+		checkForStuckRoutine(false)
 		utils.LogInfo("Finish check for leak")
 	}
 

@@ -11,7 +11,9 @@
 package memory
 
 import (
+	"advocate/utils"
 	"reflect"
+	"runtime"
 	"unsafe"
 )
 
@@ -65,4 +67,11 @@ func getSizeRecursive(val reflect.Value, visited map[uintptr]bool) int {
 	default:
 		return int(unsafe.Sizeof(val.Interface()))
 	}
+}
+
+// printAllGoroutines prints the stack traces of all routines
+func printAllGoroutines() {
+	buf := make([]byte, 1<<20) // 1 MB buffer
+	n := runtime.Stack(buf, true)
+	utils.LogErrorf("%s", buf[:n])
 }

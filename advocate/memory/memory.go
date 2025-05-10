@@ -40,7 +40,7 @@ func Supervisor() {
 	}
 
 	thresholdRAM := uint64(float64(v.Total) * 0.02)
-	thresholdSwap := uint64(1000 * 1024 * 1024) // 1GB
+	thresholdSwap := uint64(10 * 1024 * 1024) // 1MB
 
 	startSwap := s.Used
 
@@ -82,6 +82,7 @@ func Cancel() {
 func cancelRAM() {
 	wasCanceled.Store(true)
 	wasCanceledRAM.Store(true)
+	printAllGoroutines()
 	utils.LogError("Not enough RAM")
 }
 

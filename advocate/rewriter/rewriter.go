@@ -70,7 +70,7 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[utils.ResultT
 	case utils.PCyclicDeadlock:
 		rewriteNeeded = true
 		err = rewriteCyclicDeadlock(tr, bug)
-	case utils.LWithoutBlock:
+	case utils.LUnknown:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case utils.LUnbufferedWith:
 		code = utils.ExitCodeLeakUnbuf

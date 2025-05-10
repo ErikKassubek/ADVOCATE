@@ -16,8 +16,6 @@ import (
 	"advocate/timer"
 	"advocate/trace"
 	"advocate/utils"
-	"strconv"
-	"strings"
 )
 
 // CheckForLeakChannelStuck is run for channel operation without a post event.
@@ -609,7 +607,10 @@ func CheckForLeakCond(co *trace.TraceElementCond) {
 // Iterate over all routines and check if the routines finished.
 // Only record leaking routines, that don't have a leaking element (tPost = 0)
 // as its last element, since they are recorded separately
-func checkForStuckRoutine() {
+//
+// Parameter
+//   - simple bool: set to true, if only simple analysis is run
+func checkForStuckRoutine(simple bool) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -625,27 +626,27 @@ func checkForStuckRoutine() {
 		}
 
 		// do not record extra if a leak with a blocked operation is present
-		if len(tr) > 0 && tr[len(tr)-1].GetTPost() == 0 {
+		if !simple && len(tr) > 0 && tr[len(tr)-1].GetTPost() == 0 {
 			continue
 		}
 
-		file := ""
-		line := -1
-		if p, ok := allForks[routine]; ok {
-			pos := p.GetPos()
-			posSplit := strings.Split(pos, ":")
-			if len(posSplit) == 2 {
-				file = posSplit[0]
-				line, _ = strconv.Atoi(posSplit[1])
-			}
-		}
+		// file := ""
+		// line := -1
+		// if p, ok := allForks[routine]; ok {
+		// 	pos := p.GetPos()
+		// 	posSplit := strings.Split(pos, ":")
+		// 	if len(posSplit) == 2 {
+		// 		file = posSplit[0]
+		// 		line, _ = strconv.Atoi(posSplit[1])
+		// 	}
+		// }
 
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
-			ObjType: "RE", File: file, Line: line,
+			ObjType: "RE", File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
-		results.Result(results.CRITICAL, utils.LWithoutBlock,
+		results.Result(results.CRITICAL, utils.LUnknown,
 			"fork", []results.ResultElem{arg}, "", []results.ResultElem{})
 	}
 }

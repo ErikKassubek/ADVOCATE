@@ -11,8 +11,10 @@
 package fuzzing
 
 import (
+	"advocate/memory"
 	"advocate/trace"
 	"advocate/utils"
+	"sort"
 )
 
 // We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
@@ -50,12 +52,12 @@ func calculateRelRule1(routineTrace []trace.TraceElement) {
 			if _, ok := rel1[elem1]; !ok {
 				rel1[elem1] = make(map[trace.TraceElement]struct{})
 			}
-			if _, ok := rel1[elem2]; !ok {
-				rel1[elem2] = make(map[trace.TraceElement]struct{})
-			}
 			rel1[elem1][elem2] = struct{}{}
-			rel1[elem2][elem1] = struct{}{}
 			counterCPOP1++
+			break
+		}
+		if memory.WasCanceled() {
+			return
 		}
 	}
 }
@@ -80,28 +82,30 @@ func calculateRelRule2AddElem(elem trace.TraceElement) {
 // For all elements apply rule 2
 func calculateRelRule2() {
 	for _, elems := range elemsByID {
-		for i := 0; i < len(elems)-1; i++ {
-			for j := i + 1; i < len(elems); i++ {
-				elem1 := elems[i]
-				elem2 := elems[j]
-				if elem1.GetRoutine() != elem2.GetRoutine() {
-					if _, ok := rel2[elem1]; !ok {
-						rel2[elem1] = make(map[trace.TraceElement]struct{})
-					}
-					if _, ok := rel2[elem2]; !ok {
-						rel2[elem2] = make(map[trace.TraceElement]struct{})
-					}
+		sort.Slice(elems, func(i, j int) bool {
+			return elems[i].GetTSort() < elems[j].GetTSort()
+		})
 
-					rel2[elem1][elem2] = struct{}{}
-					rel2[elem2][elem1] = struct{}{}
-					counterCPOP2++
+		for i := 0; i < len(elems)-1; i++ {
+			elem1 := elems[i]
+			elem2 := elems[i+1]
+			if elem1.GetRoutine() != elem2.GetRoutine() {
+				if _, ok := rel2[elem1]; !ok {
+					rel2[elem1] = make(map[trace.TraceElement]struct{})
 				}
+
+				rel2[elem1][elem2] = struct{}{}
+				counterCPOP2++
 			}
+		}
+
+		if memory.WasCanceled() {
+			return
 		}
 	}
 }
 
-// For all elements apply rules 3 and 4
+// For all elements apply rulers 3 and 4
 func calculateRelRule3And4() {
 	hasChanged := true
 
@@ -125,6 +129,10 @@ func calculateRelRule3And4() {
 					counterCPOP2++
 				}
 			}
+
+			if memory.WasCanceled() {
+				return
+			}
 		}
 
 		// rule4
@@ -143,6 +151,9 @@ func calculateRelRule3And4() {
 					rel2[c][c2] = struct{}{}
 					counterCPOP2++
 				}
+			}
+			if memory.WasCanceled() {
+				return
 			}
 		}
 	}

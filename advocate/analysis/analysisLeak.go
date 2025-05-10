@@ -624,8 +624,6 @@ func checkForStuckRoutine() {
 			continue
 		}
 
-		utils.LogImportantf("Routine %d with %d elements", routine, len(tr))
-
 		// do not record extra if a leak with a blocked operation is present
 		if len(tr) > 0 && tr[len(tr)-1].GetTPost() == 0 {
 			continue

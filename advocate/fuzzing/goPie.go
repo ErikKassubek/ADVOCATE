@@ -36,7 +36,8 @@ var maxSCStart = utils.GoPieSCStart
 //   - pkgPath string: path to where the new traces should be created
 //   - numberFuzzingRun int: number of fuzzing run
 //   - mutNumber int: number of the mutation file
-func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
+//   - error
+func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error {
 	mutations := make(map[string]chain)
 
 	// Original GoPie does not mutate all possible scheduling chains
@@ -89,8 +90,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 
 		traceCopy, err := analysis.CopyMainTrace()
 		if err != nil {
-			utils.LogErrorf("Could not copy trace: %s", err.Error())
-			return
+			return err
 		}
 
 		tPosts := make([]int, len(mut.elems))
@@ -140,10 +140,14 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) {
 			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTSort())
 		}
 
+		traceCopy.Clear()
+
 		mut := mutation{mutType: mutPiType, mutPie: numberWrittenGoPieMuts}
 
 		addMutToQueue(mut)
 	}
+
+	return nil
 }
 
 // Create the folder for the fuzzing traces

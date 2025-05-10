@@ -260,8 +260,8 @@ func InitAnalysis(analysisCasesMap map[string]bool, anaFuzzing bool) {
 	analysisFuzzing = anaFuzzing
 }
 
-// SetMainTraceToNewTrace sets the main analysis trace to a new, empty trace
-func SetMainTraceToNewTrace() {
+// ClearTrace sets the main analysis trace to a new, empty trace
+func ClearTrace() {
 	MainTrace = trace.NewTrace()
 	MainTraceIter = MainTrace.AsIterator()
 }

@@ -11,6 +11,7 @@
 package results
 
 import (
+	"advocate/memory"
 	"advocate/utils"
 	"fmt"
 	"os"
@@ -185,6 +186,10 @@ func (s SelectCaseResult) isInvalid() bool {
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
 	if len(arg1) == 0 {
+		return
+	}
+
+	if memory.WasCanceled() {
 		return
 	}
 

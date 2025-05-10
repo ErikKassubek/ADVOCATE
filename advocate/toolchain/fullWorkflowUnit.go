@@ -14,6 +14,7 @@ package toolchain
 import (
 	"advocate/analysis"
 	"advocate/complete"
+	"advocate/memory"
 	"advocate/results"
 	"advocate/stats"
 	"advocate/timer"
@@ -120,10 +121,8 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 				continue
 			}
 
-			analysis.ClearTrace()
-			analysis.ClearData()
-
 			analysis.Clear()
+			memory.Reset()
 
 			if !isFuzzing {
 				timer.ResetTest()

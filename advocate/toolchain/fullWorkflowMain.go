@@ -127,7 +127,6 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 				headerRemoverMain(pathToFile)
 			}
 			timer.Stop(timer.Run)
-
 		}
 
 		// Add header

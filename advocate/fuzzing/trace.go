@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"advocate/analysis"
+	"advocate/memory"
 	"advocate/trace"
 )
 
@@ -37,6 +38,10 @@ func ParseTrace(tr *trace.Trace) {
 			calculateRelRule1(routine)
 		}
 
+		if memory.WasCanceled() {
+			return
+		}
+
 		for _, elem := range routine {
 			if ignoreFuzzing(elem) {
 				continue
@@ -59,6 +64,10 @@ func ParseTrace(tr *trace.Trace) {
 				parseSelectOp(e)
 			}
 
+			if memory.WasCanceled() {
+				return
+			}
+
 		}
 	}
 
@@ -70,6 +79,10 @@ func ParseTrace(tr *trace.Trace) {
 	if fuzzingModeGoPie {
 		calculateRelRule2()
 		calculateRelRule3And4()
+	}
+
+	if memory.WasCanceled() {
+		return
 	}
 
 	sortSelects()

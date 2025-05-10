@@ -32,7 +32,7 @@ const (
 	releaseOldestWaitLastMax  int64 = 6
 	releaseWaitMaxWait              = 20
 	releaseWaitMaxNoWait            = 10
-	acknowledgementMaxWaitSec       = 5
+	acknowledgementMaxWaitSec       = 4
 )
 
 var ExitCodeNames = map[int]string{
@@ -301,13 +301,20 @@ func WaitForReplayFinish(exit bool) {
 	if printDebug {
 		println("Wait for replay finish")
 	}
-	if IsReplayEnabled() { // Is this correct?
+
+	startTime := currentTime()
+
+	if IsReplayEnabled() {
 		for {
 			if replayIndex >= numberElementsInTrace {
 				break
 			}
 
 			if !replayEnabled {
+				break
+			}
+
+			if hasTimePast(startTime, 10) {
 				break
 			}
 
@@ -408,7 +415,7 @@ func ReleaseWaits() {
 
 		key := replayElem.key()
 
-		if false && key == lastKey {
+		if key == lastKey {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
 				if printDebug {
 					println("TIMEOUT")
@@ -627,6 +634,9 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		// the operation is never active
 		c, ok := active[key]
 		if !ok {
+			if printDebug {
+				println("ReleaseNonActive: ", key)
+			}
 			return false, nil, nil
 		}
 
@@ -635,6 +645,9 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 
 		// the operation is sometimes active, but not this time
 		if !isInSlice(c, currentCounter) {
+			if printDebug {
+				println("ReleaseNonActive: ", key)
+			}
 			return false, nil, nil
 		}
 	}
@@ -722,39 +735,6 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 		}
 	}
 
-	// switch to replay that only looks for active elements
-	if printDebug {
-		println("Check for partial replay ", elemReplay.Time, startTimeActive)
-	}
-
-	if !partialReplay && startTimeActive != -1 && elemReplay.Time >= startTimeActive {
-		if printDebug {
-			println("Switch to active replay")
-		}
-		partialReplay = true
-		lock(&waitingOpsMutex)
-		for key, ops := range waitingOps {
-			// the operation is never active
-			c, ok := active[key]
-			if !ok {
-				ops.chWait <- ReplayElement{Blocked: false}
-				delete(waitingOps, key)
-				return true
-			}
-
-			partialReplayCounter[key] += 1
-			currentCounter := partialReplayCounter[key]
-
-			// the operation is sometimes active, but not this time
-			if !isInSlice(c, currentCounter) {
-				ops.chWait <- ReplayElement{Blocked: false}
-				delete(waitingOps, key)
-				return true
-			}
-		}
-		unlock(&waitingOpsMutex)
-	}
-
 	if printDebug {
 		println("Complete: ", elemReplay.key())
 	}
@@ -769,6 +749,51 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	}
 
 	return true
+}
+
+// Check if it is time to switch to active replay, and if so, switch
+func CheckForPartialReplay(elemReplay ReplayElement) {
+	if partialReplay {
+		return
+	}
+	// switch to replay that only looks for active elements
+	if printDebug {
+		println("Check for partial replay ", elemReplay.Time, startTimeActive)
+	}
+
+	if startTimeActive != -1 && elemReplay.Time >= startTimeActive {
+		if printDebug {
+			println("Switch to active replay")
+		}
+		partialReplay = true
+		lock(&waitingOpsMutex)
+
+		for key, ops := range waitingOps {
+			// the operation is never active
+			c, ok := active[key]
+			if !ok {
+				ops.chWait <- ReplayElement{Blocked: false}
+				if printDebug {
+					println("ReleaseNotActive: ", key)
+				}
+				delete(waitingOps, key)
+				continue
+			}
+
+			partialReplayCounter[key] += 1
+			currentCounter := partialReplayCounter[key]
+
+			// the operation is sometimes active, but not this time
+			if !isInSlice(c, currentCounter) {
+				ops.chWait <- ReplayElement{Blocked: false}
+				if printDebug {
+					println("ReleaseNotActive: ", key)
+				}
+				delete(waitingOps, key)
+			}
+		}
+		unlock(&waitingOpsMutex)
+	}
 }
 
 // When called, the calling routine is blocked and cannot be woken up again
@@ -800,6 +825,8 @@ func getNextReplayElement() (int, ReplayElement) {
 		alreadyExecutedAsOldest[elemKey]--
 		return getNextReplayElement()
 	}
+
+	CheckForPartialReplay(elem)
 
 	return elem.Routine, elem
 }
@@ -859,7 +886,11 @@ func ExitReplayWithCode(code int, msg any) {
 
 	if msg != "" {
 		print("Exit Message: ")
-		printpanicval(msg)
+
+		var p _panic
+		p.arg = msg
+		preprintpanics(&p)
+		printpanics(&p)
 		print("\n")
 	}
 

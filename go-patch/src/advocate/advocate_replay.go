@@ -42,8 +42,6 @@ func InitReplay(tracePath string, timeout int, atomic bool) {
 	runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
-	println("Tracepath: ", tracePath)
-
 	tracePathRewritten = tracePath
 
 	startReplay(timeout)
@@ -63,7 +61,7 @@ func startReplay(timeout int) {
 	}
 
 	// check for and if exists, read the rewrite_active.log file
-	activeStartTime, active, activeTPre := readReplayActive(tracePathRewritten)
+	activeStartTime, active, activeTime := readReplayActive(tracePathRewritten)
 
 	if active != nil {
 		runtime.AddActiveTrace(activeStartTime, active)
@@ -91,7 +89,7 @@ func startReplay(timeout int) {
 		if strings.HasSuffix(file.Name(), ".log") &&
 			file.Name() != "rewrite_info.log" &&
 			file.Name() != activeFile {
-			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTPre, activeStartTime, replayData)
+			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData)
 			foundTraceFiles = true
 		}
 	}
@@ -131,15 +129,17 @@ func startReplay(timeout int) {
 //   - int: switch from all to active if the element with this time has been replayed
 //     if 0, start with active replay, if -1 never start active replay
 //   - map[string][]int: the map from key to counter for the active elements
-//   - map[int]struct{}: the map containing the tPre of all elements that are active
+//   - map[int]struct{}: the map containing the time of all elements that are active
 func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int]struct{}) {
-	file, err := os.Open(filepath.Join(tracePathRewritten, activeFile))
+	path := filepath.Join(tracePathRewritten, activeFile)
+	file, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return -1, nil, nil
 		}
 		panic(err)
 	}
+	defer file.Close()
 
 	active := make(map[string][]int)
 	activeTPre := make(map[int]struct{})
@@ -207,7 +207,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //     has been replayed. If 0, start with active from the beginning,
 //     if -1 never switch to active replay
 //   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
-func readTraceFile(fileName string, activeTPre map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace) {
+func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -232,13 +232,6 @@ func readTraceFile(fileName string, activeTPre map[int]struct{}, activeStart int
 		tPre, err := strconv.Atoi(fields[1])
 		if err != nil {
 			panic("Invalid tPre " + fields[0] + " in line " + elem + " in file " + fileName + ".")
-		}
-
-		// do not add element to the trace if it is not active
-		if activeTPre != nil && activeStart != -1 && tPre > activeStart {
-			if _, ok := activeTPre[tPre]; !ok {
-				continue
-			}
 		}
 
 		var time int
@@ -427,6 +420,13 @@ func readTraceFile(fileName string, activeTPre map[int]struct{}, activeStart int
 		}
 		if blocked || time == 0 {
 			time = math.MaxInt
+		}
+
+		// do not add element to the trace if it is not active
+		if activeTime != nil && activeStart != -1 && time > activeStart {
+			if _, ok := activeTime[time]; !ok {
+				continue
+			}
 		}
 
 		if op != runtime.OperationNone && !runtime.AdvocateIgnoreReplay(op, file) {

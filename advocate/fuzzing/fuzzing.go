@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"advocate/analysis"
+	"advocate/memory"
 	"advocate/stats"
 	"advocate/timer"
 	"advocate/toolchain"
@@ -124,6 +125,10 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			utils.LogInfo("Run fuzzing on test ", name)
 		}
 
+		clearData()
+		timer.ResetFuzzing()
+		memory.Reset()
+
 		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
@@ -171,6 +176,8 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		for j, testFunc := range testFunctions {
 			resetFuzzing()
 			timer.ResetTest()
+			memory.Reset()
+
 			timer.Start(timer.TotalTest)
 
 			utils.LogInfof("Run fuzzing for %s->%s", testFile, testFunc)
@@ -232,18 +239,25 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 	// while there are available mutations, run them
 	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
+
+		// clean up
+		clearData()
+		timer.ResetFuzzing()
+		memory.Reset()
+
 		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 
 		fuzzingPath := ""
+		progPathDir := utils.GetDirectory(progPath)
 		var order mutation
 		if numberFuzzingRuns != 0 {
 			order = popMutation()
 			if order.mutType == mutPiType {
-				fuzzingPath = filepath.Join(progPath,
+				fuzzingPath = filepath.Join(progPathDir,
 					filepath.Join("fuzzingTraces",
 						fmt.Sprintf("fuzzingTrace_%d", order.mutPie)))
 			} else {
-				err := writeMutationToFile(progDir, order)
+				err := writeMutationToFile(progPathDir, order)
 				if err != nil {
 					return err
 				}
@@ -269,6 +283,11 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// and to create the mutations
 			ParseTrace(&analysis.MainTrace)
 
+			if memory.WasCanceled() {
+				numberFuzzingRuns++
+				continue
+			}
+
 			utils.LogInfof("Create mutations")
 			if fuzzingModeGFuzz {
 				utils.LogInfof("Create GFuzz mutations")
@@ -291,10 +310,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 			mergeTraceInfoIntoFileInfo()
 		}
-
-		// clean up
-		clearData()
-		timer.ResetFuzzing()
 
 		numberFuzzingRuns++
 

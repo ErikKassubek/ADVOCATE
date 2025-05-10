@@ -49,6 +49,16 @@ func NewTrace() Trace {
 	}
 }
 
+// Clear the trace
+func (t *Trace) Clear() {
+	t = &Trace{
+		traces:             make(map[int][]TraceElement),
+		hbWasCalc:          false,
+		numberElemsInTrace: make(map[int]int),
+		minTraceID:         0,
+	}
+}
+
 // AddElement adds an element to the trace
 //
 // Parameter:

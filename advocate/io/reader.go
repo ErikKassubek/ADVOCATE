@@ -12,6 +12,7 @@ package io
 
 import (
 	"advocate/analysis"
+	"advocate/memory"
 	"advocate/timer"
 	"advocate/trace"
 	"advocate/utils"
@@ -74,6 +75,10 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		}
 		elemCounter += numberElems
 		numberRoutines++
+
+		if memory.WasCanceled() {
+			return numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
+		}
 	}
 
 	tr.Sort()

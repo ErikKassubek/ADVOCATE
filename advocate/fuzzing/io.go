@@ -120,7 +120,7 @@ func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain, partTi
 	// find the counter for all elements in the mut
 	mutCounter := make(map[int]int)
 	posCounter := make(map[string]int)
-	mutTPre := make(map[int]int)
+	mutTime := make(map[int]int)
 	for _, elem := range mut.elems {
 		mutCounter[elem.GetTraceID()] = 0
 	}
@@ -133,14 +133,14 @@ func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *chain, partTi
 		posCounter[pos]++
 		if _, ok := mutCounter[traceID]; ok { // is in chain
 			mutCounter[traceID] = posCounter[pos]
-			mutTPre[traceID] = elem.GetTPre()
+			mutTime[traceID] = elem.GetTSort()
 		}
 	}
 
 	for _, elem := range mut.elems {
 		traceID := elem.GetTraceID()
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%s,%d,%d\n", elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[traceID], mutCounter[traceID])
 		f.WriteString(key)
 	}
 }

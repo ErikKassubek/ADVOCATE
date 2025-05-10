@@ -62,6 +62,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	if err != nil {
 		utils.LogError("Could not open trace: ", err.Error())
+		return err
 	}
 
 	if numberElems == 0 {

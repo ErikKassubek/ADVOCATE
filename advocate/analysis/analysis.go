@@ -44,7 +44,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 
 	if onlyAPanicAndLeak {
 		runAnalysisOnExitCodes(true)
-		checkForLeakSimple()
+		checkForStuckRoutine()
 		return
 	}
 
@@ -158,23 +158,6 @@ func runAnalysisOnExitCodes(all bool) {
 			}
 			results.Result(results.CRITICAL, utils.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		}
-	}
-}
-
-// checkForLeakSimple check only for leaks without using the hb info
-// Do not check for potential partners
-// This is done by checking for each routine, if the last element is a blocking element
-// and if its tPost is 0
-func checkForLeakSimple() {
-	timer.Start(timer.AnaLeak)
-	defer timer.Stop(timer.AnaLeak)
-
-	elems := GetLastElemPerRout()
-
-	for _, elem := range elems {
-		if elem.GetTPost() == 0 {
-			checkLeak(elem)
 		}
 	}
 }

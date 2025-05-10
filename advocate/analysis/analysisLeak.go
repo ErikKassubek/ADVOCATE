@@ -46,14 +46,8 @@ func CheckForLeakChannelStuck(ch *trace.TraceElementChannel, vc *clock.VectorClo
 			return // close
 		}
 
-		file, line, tPre, err := trace.InfoFromTID(ch.GetTID())
-		if err != nil {
-			utils.LogError("Error in infoFromTID: ", err.Error())
-			return
-		}
-
 		arg1 := results.TraceElementResult{
-			RoutineID: routine, ObjID: id, TPre: tPre, ObjType: objType, File: file, Line: line}
+			RoutineID: routine, ObjID: id, TPre: ch.GetTPre(), ObjType: objType, File: ch.GetFile(), Line: ch.GetLine()}
 
 		results.Result(results.CRITICAL, utils.LNilChan,
 			"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
@@ -107,21 +101,10 @@ func CheckForLeakChannelStuck(ch *trace.TraceElementChannel, vc *clock.VectorClo
 						bugType = utils.LBufferedWith
 					}
 
-					file1, line1, tPre1, err1 := trace.InfoFromTID(ch.GetTID())
-					if err1 != nil {
-						utils.LogErrorf("Error in trace.InfoFromTID(%s)\n", ch.GetTID())
-						return
-					}
-					file2, line2, tPre2, err2 := trace.InfoFromTID(mrs[id].Elem.GetTID())
-					if err2 != nil {
-						utils.LogErrorf("Error in trace.InfoFromTID(%s)\n", mrs[id].Elem.GetTID())
-						return
-					}
-
 					arg1 := results.TraceElementResult{
-						RoutineID: routine, ObjID: id, TPre: tPre1, ObjType: "CR", File: file1, Line: line1}
+						RoutineID: routine, ObjID: id, TPre: ch.GetTPre(), ObjType: "CR", File: ch.GetFile(), Line: ch.GetLine()}
 					arg2 := results.TraceElementResult{
-						RoutineID: partnerRout, ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
+						RoutineID: partnerRout, ObjID: id, TPre: mrs[id].Elem.GetTPre(), ObjType: "CS", File: mrs[id].Elem.GetFile(), Line: mrs[id].Elem.GetLine()}
 
 					results.Result(results.CRITICAL, bugType,
 						"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
@@ -640,6 +623,8 @@ func checkForStuckRoutine() {
 		case *trace.TraceElementRoutineEnd:
 			continue
 		}
+
+		utils.LogImportantf("Routine %d with %d elements", routine, len(tr))
 
 		// do not record extra if a leak with a blocked operation is present
 		if len(tr) > 0 && tr[len(tr)-1].GetTPost() == 0 {

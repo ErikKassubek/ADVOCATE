@@ -8,6 +8,7 @@ import (
 	"runtime"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -19,6 +20,8 @@ var hasFinished = false
 var timerStarted = false
 var startTime time.Time
 var duration time.Duration
+
+var currentlyWriting atomic.Bool
 
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
@@ -58,9 +61,6 @@ func InitTracing(timeout int) {
 		// start time timeout
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
-			if runtime.IsTracingEnabled() {
-				FinishTracing()
-			}
 			panic("Timeout")
 		}()
 	}
@@ -75,9 +75,16 @@ func InitTracing(timeout int) {
 // The trace is written in the format of advocate.
 func FinishTracing() {
 	if hasFinished {
+		// needed to prevent program stop while still writing
+		// otherwise, trace may be empty
+		for currentlyWriting.Load() {
+			time.Sleep(10 * time.Millisecond)
+		}
 		return
 	}
 	hasFinished = true
+	currentlyWriting.Store(true)
+	defer currentlyWriting.Store(false)
 
 	// remove the trace folder if it exists
 	err := os.RemoveAll(tracePathRecorded)

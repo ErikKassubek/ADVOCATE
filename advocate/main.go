@@ -265,8 +265,8 @@ func main() {
 		if numberResults == 0 {
 			utils.LogInfo("No bugs have been found/indicated")
 		} else {
-			utils.LogResultf(false, "%d bugs have been indicated", numberResults)
-			utils.LogResultf(false, "%d bugs have been confirmed", numberResultsConf)
+			utils.LogResultf(false, false, "%d bugs have been indicated", numberResults)
+			utils.LogResultf(false, false, "%d bugs have been confirmed", numberResultsConf)
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")

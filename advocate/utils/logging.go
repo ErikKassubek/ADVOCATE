@@ -95,13 +95,16 @@ func LogImportantf(format string, v ...any) {
 // Printed in green
 //
 // Parameter:
+//   - count bool: wether to count for the number of results
 //   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - v ...any: the content of the log
-func LogResult(confirmed bool, v ...any) {
+func LogResult(count, confirmed bool, v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
-	numberResults++
-	if confirmed {
-		numberResultsConf++
+	if count {
+		numberResults++
+		if confirmed {
+			numberResultsConf++
+		}
 	}
 }
 
@@ -109,14 +112,17 @@ func LogResult(confirmed bool, v ...any) {
 // Printed in green
 //
 // Parameter:
+//   - count bool: wether to count for the number of results
 //   - confirmed bool: true of bug is actual or replay was suc, false otherwise
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
-func LogResultf(confirmed bool, format string, v ...any) {
+func LogResultf(count, confirmed bool, format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
-	numberResults++
-	if confirmed {
-		numberResultsConf++
+	if count {
+		numberResults++
+		if confirmed {
+			numberResultsConf++
+		}
 	}
 }
 

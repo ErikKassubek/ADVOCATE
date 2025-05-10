@@ -165,7 +165,7 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 			if replay { // replay
 				replayPath := ""
 				if replayInfo != "" {
-					replayPath = "fuzzingTraces/rewrittenTrace_" + replayInfo
+					replayPath = "rewrittenTrace_" + replayInfo
 				} else if tracePathFlag != "" {
 					replayPath = filepath.Base(tracePathFlag)
 				} else {

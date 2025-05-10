@@ -44,7 +44,7 @@ func getConcurrentSendForFuzzing(sender *trace.TraceElementChannel) {
 			continue
 		}
 
-		if elem[id].vc.GetClock() == nil {
+		if elem[id].vc == nil || elem[id].vc.GetClock() == nil {
 			continue
 		}
 
@@ -88,7 +88,7 @@ func checkForConcurrentRecv(ch *trace.TraceElementChannel, vc map[int]*clock.Vec
 			continue
 		}
 
-		if elem[id].vc.GetClock() == nil {
+		if elem[id].vc == nil || elem[id].vc.GetClock() == nil {
 			continue
 		}
 

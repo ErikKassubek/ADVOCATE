@@ -295,7 +295,7 @@ func writeFile(path string, index string, description map[string]string,
 			confirmed = true
 		}
 
-		utils.LogResultf(confirmed, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
+		utils.LogResultf(true, confirmed, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
 	}
 
 	// if in path, the folder "bugs" does not exist, create it

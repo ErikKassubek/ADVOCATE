@@ -51,6 +51,10 @@ func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
 // Returns:
 //   - happensBefore: The happens before relation between the two vector clocks
 func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) HappensBefore {
+	if vc1 == nil || vc2 == nil {
+		return None
+	}
+
 	if vc1.size != vc2.size {
 		return None
 	}

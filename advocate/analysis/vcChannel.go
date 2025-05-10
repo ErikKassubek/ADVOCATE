@@ -92,8 +92,8 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 		switch opC {
 		case trace.SendOp:
 			partner := ch.GetPartner()
-			partnerRout := partner.GetRoutine()
 			if partner != nil {
+				partnerRout := partner.GetRoutine()
 				partner.SetVc(currentVC[partnerRout])
 				sel := partner.GetSelect()
 				if sel != nil {
@@ -112,8 +112,8 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 
 		case trace.RecvOp: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
-			partnerRout := partner.GetRoutine()
 			if partner != nil {
+				partnerRout := partner.GetRoutine()
 				partner.SetVc(currentVC[partnerRout])
 				Unbuffered(partner, ch)
 				// advance index of receive routine, send routine is already advanced

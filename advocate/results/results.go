@@ -185,7 +185,7 @@ func (s SelectCaseResult) isInvalid() bool {
 //   - argType2 string: description of the type of elements in arg2
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
-	if len(arg1) == 0 {
+	if resType != utils.RUnknownPanic && resType != utils.RTimeout && len(arg1) == 0 {
 		return
 	}
 
@@ -252,6 +252,8 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	}
+
+	utils.LogResultf(false, false, "Info: %s", resultTypeMap[resType])
 }
 
 // InitResults sets the output file paths and clears al previous results

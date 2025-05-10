@@ -17,7 +17,6 @@ import (
 	"advocate/trace"
 	"advocate/utils"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -501,7 +500,7 @@ func logAbortReason(reason ...any) {
 	r := []any{"No Deadlock:"}
 	r = append(r, reason...)
 	utils.LogInfo(r...)
-	log.Println(r...)
+	// log.Println(r...)
 }
 
 // Lock Dependency methods.

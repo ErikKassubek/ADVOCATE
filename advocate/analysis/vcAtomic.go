@@ -81,7 +81,7 @@ func Write(at *trace.TraceElementAtomic) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	newLw(id, currentVC[id].GetSize())
+	newLw(id, currentVC[routine].GetSize())
 	lw[id] = currentVC[routine].Copy()
 
 	currentVC[routine].Inc(routine)
@@ -101,7 +101,7 @@ func Read(at *trace.TraceElementAtomic, sync bool) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	newLw(id, currentVC[id].GetSize())
+	newLw(id, currentVC[routine].GetSize())
 	if sync {
 		currentVC[routine].Sync(lw[id])
 	}

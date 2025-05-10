@@ -59,7 +59,7 @@ func Change(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, currentVC[id].GetSize())
+	newWg(id, currentVC[routine].GetSize())
 	lastChangeWG[id].Sync(currentVC[routine])
 
 	currentVC[routine].Inc(routine)
@@ -83,7 +83,7 @@ func Wait(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, currentVC[id].GetSize())
+	newWg(id, currentVC[routine].GetSize())
 
 	if wa.GetTPost() != 0 {
 		currentVC[routine].Sync(lastChangeWG[id])

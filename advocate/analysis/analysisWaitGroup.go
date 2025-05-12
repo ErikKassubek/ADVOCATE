@@ -51,9 +51,7 @@ func checkForDoneBeforeAddAdd(wa *trace.TraceElementWait) {
 	}
 
 	// add the vector clock and position to the list
-	for i := 0; i < wa.GetID(); i++ {
-		wgAdd[id] = append(wgAdd[id], wa)
-	}
+	wgAdd[id] = append(wgAdd[id], wa)
 }
 
 // Collect all dones for the analysis

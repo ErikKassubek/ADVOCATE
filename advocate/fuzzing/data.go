@@ -47,6 +47,12 @@ var (
 
 	useHBInfoFuzzing = true
 	runFullAnalysis  = true
+
+	// GFUzz relations
+	counterCPOP1 = 0
+	counterCPOP2 = 0
+	rel1         = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	rel2         = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
 )
 
 // For each channel that has ever been created, store the
@@ -143,19 +149,24 @@ func clearData() {
 	pairInfoTrace = make(map[string]fuzzingPair)
 	selectInfoTrace = make(map[string][]fuzzingSelect)
 	elemsByID = make(map[int][]trace.TraceElement)
+
+	numberSelects = 0
+	numberClose = 0
+
+	rel1 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	rel2 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	counterCPOP1 = 0
+	counterCPOP2 = 0
 }
 
 // Reset the fuzzing data that is unique for each test but used for each fuzzing
 // run of a test
 func clearDataFull() {
+	clearData()
+
 	numberOfPreviousRuns = 0
 	maxGFuzzScore = 0.0
-	// Info for the current trace
-	channelInfoTrace = make(map[int]fuzzingChannel)    // localID -> fuzzingChannel
-	pairInfoTrace = make(map[string]fuzzingPair)       // posSend-posRecv -> fuzzing pair
-	selectInfoTrace = make(map[string][]fuzzingSelect) // id -> []fuzzingSelects
-	numberSelects = 0
-	numberClose = 0
+
 	// Info from the file/the previous runs
 	channelInfoFile = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel
 	pairInfoFile = make(map[string]fuzzingPair)       // posSend-noPrintosRecv -> fuzzing pair

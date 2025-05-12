@@ -26,14 +26,6 @@ import (
 // Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
 // Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
-var (
-	counterCPOP1 = 0
-	counterCPOP2 = 0
-
-	rel1 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
-	rel2 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
-)
-
 // For each element in a routine trace, store the rule 1 information
 //
 // Parameter:

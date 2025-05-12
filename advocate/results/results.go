@@ -30,32 +30,32 @@ const (
 )
 
 var resultTypeMap = map[utils.ResultType]string{
-	utils.ASendOnClosed:           "Actual Send on Closed Channel:",
-	utils.ARecvOnClosed:           "Actual Receive on Closed Channel:",
-	utils.ACloseOnClosed:          "Actual Close on Closed Channel:",
-	utils.AConcurrentRecv:         "Concurrent Receive:",
+	utils.ASendOnClosed:           "Actual Send on Closed Channel",
+	utils.ARecvOnClosed:           "Actual Receive on Closed Channel",
+	utils.ACloseOnClosed:          "Actual Close on Closed Channel",
+	utils.AConcurrentRecv:         "Concurrent Receive",
 	utils.ASelCaseWithoutPartner:  "Select Case without Partner",
 	utils.ACloseOnNilChannel:      "Actual close on nil channel",
 	utils.ANegWG:                  "Actual negative Wait Group",
 	utils.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 
-	utils.PSendOnClosed:     "Possible send on closed channel:",
-	utils.PRecvOnClosed:     "Possible receive on closed channel:",
-	utils.PNegWG:            "Possible negative waitgroup counter:",
-	utils.PUnlockBeforeLock: "Possible unlock of a not locked mutex:",
-	utils.PCyclicDeadlock:   "Possible cyclic deadlock:",
+	utils.PSendOnClosed:     "Possible send on closed channel",
+	utils.PRecvOnClosed:     "Possible receive on closed channel",
+	utils.PNegWG:            "Possible negative waitgroup counter",
+	utils.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
+	utils.PCyclicDeadlock:   "Possible cyclic deadlock",
 
 	utils.LUnknown:           "Leak on routine with unknown cause",
-	utils.LUnbufferedWith:    "Leak on unbuffered channel with possible partner:",
-	utils.LUnbufferedWithout: "Leak on unbuffered channel without possible partner:",
-	utils.LBufferedWith:      "Leak on buffered channel with possible partner:",
-	utils.LBufferedWithout:   "Leak on unbuffered channel without possible partner:",
-	utils.LNilChan:           "Leak on nil channel:",
-	utils.LSelectWith:        "Leak on select with possible partner:",
+	utils.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
+	utils.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
+	utils.LBufferedWith:      "Leak on buffered channel with possible partner",
+	utils.LBufferedWithout:   "Leak on unbuffered channel without possible partner",
+	utils.LNilChan:           "Leak on nil channel",
+	utils.LSelectWith:        "Leak on select with possible partner",
 	utils.LSelectWithout:     "Leak on select without partner or nil case",
-	utils.LMutex:             "Leak on mutex:",
-	utils.LWaitGroup:         "Leak on wait group:",
-	utils.LCond:              "Leak on conditional variable:",
+	utils.LMutex:             "Leak on mutex",
+	utils.LWaitGroup:         "Leak on wait group",
+	utils.LCond:              "Leak on conditional variable",
 
 	utils.RUnknownPanic: "Unknown Panic",
 	utils.RTimeout:      "Timeout",
@@ -193,9 +193,14 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 		return
 	}
 
+	if resType == utils.RTimeout {
+		utils.LogResultf(false, false, "Info: %s", resultTypeMap[resType])
+		return
+	}
+
 	foundBug = true
 
-	resultReadable := resultTypeMap[resType] + "\n\t" + argType1 + ": "
+	resultReadable := resultTypeMap[resType] + ":\n\t" + argType1 + ": "
 	resultMachine := string(resType) + ","
 	resultMachineShort := string(resType)
 

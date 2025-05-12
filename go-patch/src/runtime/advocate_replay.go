@@ -457,6 +457,8 @@ func ReleaseWaits() {
 					delete(waitingOps, oldestKey)
 					unlock(&waitingOpsMutex)
 				}
+
+				continue
 			}
 		}
 

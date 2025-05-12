@@ -824,8 +824,21 @@ func (ti *TraceIterator) Next() TraceElement {
 		}
 	}
 
-	// all elements have been processed
+	// all executed elements have been processed
+	// check for elements with just a pre but no post
 	if minRoutine == -1 {
+		for routine := range ti.t.traces {
+			if ti.currentIndex[routine] == -1 {
+				continue
+			}
+
+			element := ti.t.traces[routine][ti.currentIndex[routine]]
+			ti.IncreaseIndex(routine)
+
+			return element
+		}
+
+		// all elements have been processed
 		return nil
 	}
 

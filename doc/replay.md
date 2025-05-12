@@ -282,7 +282,7 @@ When the operation is not a channel or select, it will send an empty message ove
 (normally implemented by `defer`). This allows the manager to release the
 next operation.
 
-<center><img src="img/replayInOp.png" alt="Replay in Operations" width="600px" height=auto></center>
+<center><img src="img/replayInOp.png" alt="Replay in Operations" width="400px" height=auto></center>
 
 <center><img src="img/waitForReplay.png" alt="WaitForReplay" width="800px" height=auto></center>
 

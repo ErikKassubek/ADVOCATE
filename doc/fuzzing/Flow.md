@@ -40,6 +40,17 @@ massive amounts of mutations, and we would be able to increase the number of
 paths we explore.
 
 ## Implementations
+
+We implemented the flow mutation for `once`, `mutex`, `channel`.
+While performing the analysis, we look for operations of on the same element
+and of the same operation (e.g. Do on the same once, send on the same channel),
+that happen concurrently, based on the HB information. We hereby focus mainly
+on situations, where the first of those executions was successful (executed
+Do functions, successful acquire in tryLock, executed send, ...), but the
+second was not.\
+If this is the case, we will create a run, where the order of those
+are switched.
+
 It would be possible to directly write a new trace, where the concurrent
 once, mutex, send and receive are reversed. But here we use a simple
 method to reduce the overhead. For each of the pairs of operations we
@@ -87,9 +98,11 @@ Because of the channels, `do 1` will normally be executed before the
 
 GoPie only reorders channel and mutex operations. It is therefore not
 able to rewrite the schedule in such a way, that the `codeWithPosBug` is triggered (unless it is accidentally created by some mutation).
-But to see the general advantage of out approach, assume it could reschedule the `Do`.\
+But even vor GoPie+, which includes all operations, this approach can be beneficial.
+
+To see the general advantage of out approach, assume it could reschedule the `Do`.\
 GoPie will always create scheduling chains such that two neighboring operations in this chain are in different routines and then randomly
-modifies those chains, by abridging, flipping, substituting or augmenting the chain. I was not able to determine, whether GoPie always create maximal scheduling chain, or whether it looks at different scheduling chains. In both cases we can say, that there are a huge number of possible scheduling chains that can be generated, only a very small number of them would contains the potential bug.
+modifies those chains, by abridging, flipping, substituting or augmenting the chain. There are a huge number of possible scheduling chains that can be generated, only a very small number of them would contains the potential bug.
 GoPie would therefore need to run a large number of unnecessary runs , hoping that one of them leads to the detection of the potential bug.
 If we also include that GoPie would need to trigger the bug to
 detect it, meaning not all chains that execute `codeWithPosBug` may result in the detection of the bug, the number of required runs increase even more, while we are able detect the bug in only two runs, assuming the bug can be detected with the HB analysis when running `codeWithoutPosBug`.

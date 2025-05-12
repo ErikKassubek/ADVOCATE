@@ -1,6 +1,6 @@
 # Select Based Fuzzing
 
-The select based fuzzing is based on [GFuzz](../relatedWorks/gfuzz.md).
+The select based fuzzing is based on [GFuzz](../relatedWorks/PaperAndTools/Fuzzing/GFuzz.md).
 
 ## Fuzzing
 
@@ -169,6 +169,7 @@ In the original GFuzz, the two following examples, assuming in both the
 communication on `x` is executed, result in the same
 decision about whether the runs are are interesting and in the same number
 of mutations (given that the rest of the program is identical)
+
 ```go
 a := make(chan int)
 x := make(chan int)
@@ -206,6 +207,7 @@ select {
   ...
 }
 ```
+
 But it should be obvious, that a mutation of the second program
 is more useful than a mutation of the first problem. By including the
 number of select cases with possible partners, we are more likely to create
@@ -215,6 +217,7 @@ Additionally, the changes in the calculation of the score and the
 calculation of the mutations may result in interesting runs been found faster
 and preventing to many mutations that do not change the actual mutation from
 being created.
+
 ```go
 go func() {
   a <- 1

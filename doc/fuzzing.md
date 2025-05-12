@@ -63,3 +63,6 @@ Additionally we implement our own fuzzing approaches (Flow).
 - [GFuzz](fuzzing/GFuzz.md)
 - [GoPie](fuzzing/GoPie.md)
 - [Flow](fuzzing/Flow.md)
+
+[Here](./../examples/fuzzing/) you can find some examples illustrating the
+different approaches.

@@ -55,20 +55,19 @@ to discover new program code, not executed in the recorded run, making
 
 The documentation can be found in the [doc](./doc/) directory. Here all parts
 of the current version of advocate are described. This also includes
-information about the (happens-before) analysis, which was mostly implemented
+information about the [(happens-before) analysis](./doc/analysis.md), which was mostly implemented
 before this master project and is therefore not directly relevant, even throw
 it is partially used for the implemented fuzzing approach.
 
 The relevant section for this project are mostly the following:
 
-
-- [Usage](doc/usage.md)
-- [Toolchain](doc/toolchain.md)
+- [Usage](./doc/usage.md)
+- [Toolchain](./doc/toolchain.md)
 - [Runtime](doc/runtime.md)
-- [Execution, Recording and Trace](doc/recording.md)
-- [Replay](doc/replay.md)
-- [Fuzzing](doc/fuzzing.md)
-- [Memory](doc/memory.md)
-- [Related works](doc/relatedWorks.md)
+- [Execution, Recording and Trace](./doc/recording.md)
+- [Replay](./doc/replay.md)
+- [Fuzzing](./doc/fuzzing.md)
+- [Memory](./doc/memory.md)
+- [Related works](./doc/relatedWorks.md)
 
 But of course, feel free to take a look at the other things if you're interested.

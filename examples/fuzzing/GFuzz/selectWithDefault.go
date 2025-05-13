@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"testing"
+	"time"
+)
 
 // The following code is an example in which GFuzz is helpful.
 // It consists of a select with one case an a default.
@@ -14,13 +17,7 @@ import "time"
 // By forcing the program to execute the c case as the preferred case,
 // GFuzz is able to aid in detecting this bug.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestSelectWithDefault(_ *testing.T) {
 	c := make(chan int)
 
 	go func() {
@@ -31,7 +28,7 @@ func main() {
 
 	select {
 	case <-c:
-		codeWithBug()
+		panic("CODE WITH PANIC")
 	default:
 	}
 }

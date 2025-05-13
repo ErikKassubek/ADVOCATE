@@ -2,13 +2,42 @@
 
 Replay allows us to force the execution of a program to follow a given trace.
 
-Here we explain the total and partial replay used in the replay of rewritten traces and
-the [GoPie](./fuzzing/GoPie.md) fuzzing.
+Being able to replay has a great benefit for analyzing or bugging programs with
+multiple possible applications.
 
-For the [total replay](#total-replay), we force the order of the execution of all relevant
+Many analysis tools may produce false positives when trying to detect bugs.
+With recording, it is possible to [rewrite](./rewrite.md) a program trace,
+in which no actual bug has been executed but the analysis has indicated
+a potential bug, in such a way, that the bug should occur. By replaying
+this new trace, we may be able to confirm that such a bug can actually occur.
+
+Additionally, the replay mechanism can be used for implementing a guided
+fuzzing approach. By recording, mutating and then executing scheduling orders,
+we may able to directly detect bugs or to execute new code, which was not
+run in previous runs. Using such a form of guided fuzzing has way better
+potential, especially in concurrent programs, to execute unlikely, but still
+possible paths or execution schedules in the program than
+approaches, where only the input of a program is mutated. This allows for a much
+more guided approach, reducing the number of required runs and therefore
+the expected runtime to detect possible bugs.
+
+Here we explain the complete and partial replay used in the replay of
+[rewritten traces](./rewrite.md) and the [GoPie](./fuzzing/GoPie.md) fuzzing.
+
+For the [complete replay](#complete-replay), we force the order of the execution of all
 concurrency operations. For the [partial replay](#partial-replay), we provide a list of
 active operations. For those operations we force the order of the executions,
 while all other operations can run freely.
+
+In most cases, especially for the replay of rewritten traces, we want the
+replay to execute the given trace as closely as possible. For this the
+complete replay is used. But in certain situations this is to strong of an
+assumption. E.g. in fuzzing, a mutation of the order of some element in
+a trace may be difficult to merge back into the trace in such a way, that a
+valid trace is created, even if the order of the mutated elements is valid.
+In this case it may be useful to switch to the partial replay, where only
+the order of the mutated elements is enforced, preventing the program from
+getting stuck due to an impossible trace.
 
 For the explanation of the simplified replay used for
 flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
@@ -32,7 +61,7 @@ The parameters are as follows:
 When using the toolchain to run replays, this header is automatically added.
 
 
-## Total replay
+## Complete replay
 
 The following is a description of the implementation of the trace replay.
 

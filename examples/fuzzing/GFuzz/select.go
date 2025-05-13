@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"testing"
+	"time"
+)
 
 // The following code is an example in which GFuzz is helpful.
 // It consists of a select with two possible path.
@@ -17,13 +20,7 @@ import "time"
 // By forcing the program to execute the d case as the preferred case,
 // GFuzz is able to aid in detecting this bug.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestSelect(_ *testing.T) {
 	c := make(chan int)
 	d := make(chan int)
 
@@ -44,6 +41,6 @@ func main() {
 	select {
 	case <-c:
 	case <-d:
-		codeWithBug()
+		panic("CODE WITH PANIC")
 	}
 }

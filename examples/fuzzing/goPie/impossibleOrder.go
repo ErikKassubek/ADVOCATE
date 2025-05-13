@@ -1,5 +1,7 @@
 package main
 
+import "testing"
+
 // This function does not contain a bug, but is an illustration on a program,
 // that can lead to an impossible mutation using GoPie, which can
 // be directly filtered out by the HB information in GoPieHB.
@@ -14,7 +16,7 @@ package main
 // discarded, without being run, either reducing the number of necessary
 // runs or making time for more interesting runs.
 
-func main() {
+func TestGoPieImpOrder(_ *testing.T) {
 	c := make(chan int, 3)
 
 	c <- 1 // send 1

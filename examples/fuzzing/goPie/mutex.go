@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"testing"
 	"time"
 )
 
@@ -19,13 +20,7 @@ import (
 // to successfully acquire the mutex, making it possible for the analysis
 // to detect the hidden bug.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestGoPieMutex(_ *testing.T) {
 	m := sync.Mutex{}
 
 	go func() {
@@ -34,7 +29,7 @@ func main() {
 
 		res := m.TryLock()
 		if res {
-			codeWithBug()
+			panic("CODE WITH PANIC")
 			m.Unlock()
 		}
 	}()

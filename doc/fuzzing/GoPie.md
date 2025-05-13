@@ -317,11 +317,11 @@ uses the [GoLeak](../relatedWorks/PaperAndTools/Analysis/GoLeak.md) tool,
 to check for routines from a test that are still running, after a test has
 concluded.
 
-Instead of following those approach, we use our own detection for detecting
+Instead of following this approach, we use our own detection for detecting
 [leaks](../analysis/leak.md), [total deadlocks or panics](../analysis/panics.md).
 Implementing these detection mechanisms may have been possible but, especially
 for the inclusion of GoLeak, unnecessary laborious. Since our approaches can
-detect the same situations as those tools and approaches, we used out own.
+detect the same situations as those tools and approaches, we used our own.
 
 #### Order Enforcement
 

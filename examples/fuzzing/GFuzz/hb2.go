@@ -1,5 +1,7 @@
 package main
 
+import "testing"
+
 // In this example we show how the change of the score function for GFuzz
 // may lead to more interesting runs.
 // Lets assume, that for all the channels in the program except for x and y,
@@ -18,7 +20,7 @@ package main
 // possible partners into account, we limit the number select cases where the
 // execution of a preferred case is not possible.
 
-func main() {
+func TestHB2(_ *testing.T) {
 	c := make(chan int)
 	d := make(chan int)
 	e := make(chan int)

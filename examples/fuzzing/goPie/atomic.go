@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync/atomic"
+	"testing"
 	"time"
 )
 
@@ -14,13 +15,7 @@ import (
 // Be reordering the store and load, such that the store is executed before
 // the load, the code can be detected.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestGoPieAtomic(_ *testing.T) {
 	a := atomic.Int32{}
 
 	go func() {
@@ -34,6 +29,6 @@ func main() {
 	time.Sleep(200 * time.Millisecond)
 
 	if a.Load() == 1 {
-		codeWithBug()
+		panic("CODE WITH PANIC")
 	}
 }

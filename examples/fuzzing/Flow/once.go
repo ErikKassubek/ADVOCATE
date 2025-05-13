@@ -2,6 +2,7 @@ package main
 
 import (
 	"sync"
+	"testing"
 	"time"
 )
 
@@ -18,27 +19,17 @@ import (
 // Do containing the bug, making it possible for the analysis to detect the
 // bug.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func codeWithoutBug() {
-	time.Sleep(100 * time.Millisecond)
-}
-
-func main() {
+func TestOnce(_ *testing.T) {
 	var o sync.Once
 
 	go func() {
 		// some code
 		time.Sleep(500 * time.Millisecond)
 
-		o.Do(codeWithBug)
+		o.Do(func() { panic("CODE WITH PANIC") })
 	}()
 
 	// some code
 	time.Sleep(300 * time.Millisecond)
-	o.Do(codeWithoutBug)
+	o.Do(func() { time.Sleep(100 * time.Millisecond) })
 }

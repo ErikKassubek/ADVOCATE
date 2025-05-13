@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"testing"
+	"time"
+)
 
 // Based on the original GFuzz, we build some improvements based on our HB
 // analysis. This mainly focuses on reducing the number of impossible runs.
@@ -20,13 +23,7 @@ import "time"
 // do select cases without an indicated partner, but with a smaller probability
 // that cases, that have a possible partner
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestHB1(_ *testing.T) {
 	c := make(chan int)
 	d := make(chan int)
 	e := make(chan int)
@@ -53,7 +50,7 @@ func main() {
 	select {
 	case <-c:
 	case <-d:
-		codeWithBug()
+		panic("CODE WITH PANIC")
 	case <-e:
 	case <-f:
 	case <-g:

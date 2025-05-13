@@ -42,7 +42,7 @@ func GetExitCode() (int, string) {
 // Parameter:
 //   - msg any: the panic message
 func SetExitCodeFromPanicMsg(msg any) {
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(4)
 	advocateExitCodePos = file + ":" + intToString(line)
 
 	switch m := msg.(type) {

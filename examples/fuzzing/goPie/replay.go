@@ -1,11 +1,12 @@
-package gopie
+package main
 
 import (
 	"sync"
+	"testing"
 	"time"
 )
 
-// This program is an example, of how the fully partial replay in GoPie
+// This program is an example, of how the partial replay in GoPie
 // may miss the execution of the mutated section, while the partially full replay
 // in GoPie+ and GoPieHB can avoid this.
 // Lets assume in the recorded run, the TryLock was executed before to Lock,
@@ -20,7 +21,7 @@ import (
 // mechanism makes sure, that the Lock and TryLock are executed in the
 // correct order.
 
-func main() {
+func TestGoPieReplay(_ *testing.T) {
 	m := sync.Mutex{}
 
 	go func() {

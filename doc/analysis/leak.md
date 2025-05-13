@@ -49,5 +49,3 @@ case, we have detected such a case. We then check if the penultimate element
 (if it exists), has tPost = 0. In this case the situation is a go routine
 leak as described above and is not again reported, to prevent double reports.
 Otherwise, it is reported.
-
-There is no rewrite/replay for those cases.

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"testing"
 	"time"
 )
 
@@ -18,13 +19,7 @@ import (
 // The same effect can be reached if all the sends are replaced by receives and
 // the receive is replaced by a send.
 
-func codeWithBug() {
-	e := make(chan int)
-	close(e)
-	e <- 1
-}
-
-func main() {
+func TestChannel(_ *testing.T) {
 	c := make(chan int)
 
 	go func() {
@@ -39,7 +34,7 @@ func main() {
 		time.Sleep(300 * time.Second)
 
 		c <- 1 // send 2
-		codeWithBug()
+		panic("CODE WITH PANIC")
 	}()
 
 	<-c

@@ -39,6 +39,16 @@ or the test that is analyzed:
 
 When the [toolchain](../advocate/) is used, this is done automatically.
 
+## Trace local recording
+
+To minimize the overhead introduced by the recording, we try to implement
+the recording to be as routine local as possible. This includes storing
+the trace element in a variable directly connected to the internal routine
+implementation, preventing the necessity of synchronization mechanism (locks) when recording
+elements. In total, we are able to do almost all of the recording
+trace local, except for two global counter, namely the ids for the routines and
+the [timestamps](#timestamp).
+
 
 ## Implementation
 
@@ -85,7 +95,7 @@ of the different recorded types as linked above.
 
 To be able to reconstruct a global trace from those elements, we store a
 time value for each pre and post. This values is created by an atomic counter,
-that is increased every time a time value is requested. For more info, see [here](#timer).
+that is increased every time a time value is requested. For more info, see [here](#timestamp).
 
 The Pre function records that the operation was executed, the time when it was started, as well as all required information that are already available . The Pre function
 also always records the location where the operation was recorded. This is (except for fork, see [here](./trace/fork.md#implementation)) done using the [runtime.Caller](https://pkg.go.dev/runtime#Caller) function.
@@ -98,7 +108,7 @@ both the pre and post signal. The functions creating the pre signal
 add a new element to the trace slice of the routine and return the index of this element
 in the slice. The post functions take this index as an argument, to find
 and update this value. We can determine if an operation had an pre, but no
-post element, meaning the execution got stuck, by checking if the post timer is 0.
+post element, meaning the execution got stuck, by checking if the post timestamp is 0.
 A post element without a pre element is not possible.
 
 For elements that are executed directly without the possibility of the operations
@@ -110,7 +120,7 @@ in which it stores the trace files. For each routine, one trace file will be
 generated. In it, each line contains the information about one recorded
 event. The events are sorted by the time when the operations was executed.
 
-We have decided not to record internal operations.
+We have decided not to record internal operations.\
 The reason for this is that for most uses (e.g. bug analysis), they are not relevant
 and unnecessarily increase the trace file size and the replay and recording time.
 Additionally, they may be part of unpredictable operations like e.g. the garbage
@@ -148,21 +158,25 @@ positions. Let's assume, that for the first routine in line 12, the compiler
 applies inlining, but for the second routine in line 13, it does not. In this
 case, the receive on `c` will in one case be recorded as being in line 12,
 and in the other as being in line 8. This can lead to problems, especially
-if during a replay of the recorded trace, the inlining is done differently.
+if during a replay of the recorded trace, where we use the line information
+to connect the trace elements to the operations in the execution. Since we
+cannot guarantee, that inlining will be applied consistently across recording
+and replay, this may lead to problems.
 
 To guarantee, that the recorded code positions are always the positions
 where the operation actually occurs, optimization and
 inlining is disables for running the recording, and also when running a replay.
 This is done by setting the `-gcflags="all=-N -l"` when building a program or running a test.
 
-## Timer
+## Timestamp
 
 To reconstruct the global trace from the recorded local traces, we need a consistent
-timer.
+way to apply timestamps to all trace elements.
 
-For this we use a global counter. This counter is increased every time an operation requests a time value.
+To synchronize the thread-local traces, we use a global atomic counter.
+This counter is increased every time an operation requests a time value.
 
-We tried to implement the timer routine local, using timer provided by the operating systems. For this, we looked at two possible time functions in the go runtime. Both of them have there problems.
+We tried to implement the timestamps routine local, using time values provided by the operating systems. For this, we looked at two possible time functions in the go runtime. Both of them have there problems.
 
 The `cputicks` function is described by the go tracer team as\
 "On most platforms, this function queries the CPU for a tick count with a single instruction. (Intuitively a "tick" goes by roughly every CPU clock period, but in practice this clock usually has a constant rate that's independent of CPU frequency entirely.) [...] Unfortunately, many modern CPUs don't provide such a clock that is stable across CPU cores, meaning even though cores might synchronize with one another, the clock read-out on each CPU is not guaranteed to be ordered in the same direction as that synchronization. This led to traces with inconsistent timestamps." [^1]
@@ -188,16 +202,21 @@ go func() {
 
 If the following code in the second routine depends on the value of `x`, it is necessary
 to determine the exact order of the Load and Store operations, to get an accurate analysis and especially replay.
-If we use the nanosecond counter as timer and the precision of the timer is to small, this may result in
+If we use the nanosecond counter as a timestamp and the precision of it is to small, this may result in
 unclear orders.
 
 For Linux based systems, this uses `CLOCK_MONOTONIC` (normally defined in `/usr/include/time.h`) with a precision of, in most cases, `1 ns` (can by checked by running `clock_getres(CLOCK_MONOTONIC, &res); printf("%ld\n", res.tv_nsec)` as a c program).
 It is therefore enough. The problem, lies in the use in windows and macos. For windows, the `QueryPerformanceCounter` is used. According to [^3], this only has a resolution of about `100 ns`. This could lead to a situation, where the two atomic
-operations receive the same timer value, resulting in an incorrect replay.
+operations receive the same timestamp value, resulting in an incorrect replay.
 
-Even though this would allow us to get a routine local, accurate timer signal, at least for linux systems, our experiments show, that the executing using
+Even though this would allow us to get a routine local, accurate time signal, at least for linux systems, our experiments show, that the executing using
 the `nanotime` function is slightly slower than the use of a global atomic variable, even for programs where a lot of recorded
 operations are executed at the same time. Since the main reason for routine local recording is performance, it was not useful to use the `nanotime` function.
+
+We therefore simply use a global, atomic
+variable (atomic.Int64) initialized to 0, which is incremented each time a new
+timestamp is requested.
+
 
 ## Writing
 

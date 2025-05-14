@@ -4,13 +4,15 @@
 
 A goroutine leak is an indefinitely blocked goroutine.
 
-In our approach, we can identify potential leaks by checking for goroutines
+In our approach, we can identify potential leaks by checking for routines
 where the last recorded event is a "pre" event (tPost = 0).
 
-For channel operation, we try to find a possible partner, which is
-used in the trace reorder to get the operation unstuck.
 
-For the other operation, no additional analysis besides finding them is done.
+
+<!-- For channel operation, we try to find a possible partner, which is
+used in the trace reorder to get the operation unstuck. -->
+
+<!-- For the other operation, no additional analysis besides finding them is done.
 This is done in the following way. For each channel and each routine,
 the last processed send and receive is recorded (the elements are processed
 in the order of there execution in the trace).
@@ -32,10 +34,10 @@ For a leaking mutex $m$, we add the mutex and the last successful lock of this
 mutex before $m$ to the analysis result.
 
 For all other stuck elements, we only add the stuck element to the analysis
-result.
+result. -->
 
 
-## Analysis scenario: Non blocking Goroutine leak
+## Non blocking Goroutine leak
 
 In some cases it can happen, that a routine is still running at the end,
 without it being blocked by one of the recorded operations. This can be

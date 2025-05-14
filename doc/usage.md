@@ -1,9 +1,5 @@
 # How To Use Advocate
 
-<!-- Rewrite Mode Recording -->
-<!-- Rewrite Mode Replay -->
-<!-- Rewrite Mode Analysis -->
-<!-- Rewrite Mode Fuzzing -->
 
 This file provides a detailed explanation on how to use the ADVOCATE framework.
 

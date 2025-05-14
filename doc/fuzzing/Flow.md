@@ -31,6 +31,7 @@ if a := <-c; a == 0 {
   // code with bug
 }
 ```
+
 Here the execution of the code part containing the bug depends on the order
 in which the two sends are executed. We could try to implement mutations,
 where we change the order of channel operations of the same type and on the same

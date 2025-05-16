@@ -4,6 +4,8 @@
 
 //go:build !(386 || arm || mips || mipsle)
 
+// ADVOCATE-START
+
 package atomic
 
 // SwapInt64 atomically stores new into *addr and returns the previous *addr value.
@@ -105,3 +107,5 @@ func StoreInt64Advocate(addr *int64, val int64)
 //
 //go:noescape
 func StoreUint64Advocate(addr *uint64, val uint64)
+
+// ADVOCATE-END

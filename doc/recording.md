@@ -4,10 +4,12 @@ Advocate is able to record a program or test run, and to store the executed
 interleaving in a trace. Those traces can be used to deterministically
 [replay](./replay.md) a program run or to perform [dynamic analysis](analysis.md) on the recorded execution.
 
-The recording of the trace is implemented in the [modified runtime](../go-patch/src/runtime).
+To record the relevant operation into traces, we have added the required
+functionality directly into the implementations of the operations. For this
+we provide a modified [modified runtime](../go-patch/src/runtime).
 
-To run the recording, a special header is added to the running program by
-the toolchain.
+Running a test or program with the correct preamble (see below) using this runtime,
+will result in a trace being recorded.
 
 For each of the operations we want to record, additional function calls
 have been added to the operation implementations.
@@ -27,7 +29,7 @@ We record the following operations:
 
 ## Toolchain
 
-To run the recording, the following header needs to be added to the main function
+To run the recording, the following preamble needs to be added to the main function
 or the test that is analyzed:
 
 ```go

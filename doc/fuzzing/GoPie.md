@@ -161,6 +161,9 @@ mutations, that are impossible based on the HB information.
 
 ### GoPie
 
+This sections describes the original [GoPie](../relatedWorks/PaperAndTools/Fuzzing/GoPie.md),
+and how we have implemented this version.
+
 #### Operations
 
 The original GoPie implementation and therefore also our direct
@@ -183,7 +186,46 @@ Additionally, two consecutive triples in a chain must belong to different routin
 We then mutate those scheduling chains. Chains to mutate are created by
 randomly choosing two elements with a $Rel_2$ relation (see below.)
 
+Let's look at the following example:
+
+```go
+c := make(chan int, 3)
+d := make(chan int)
+
+go func() {  // G1
+  c <- 1
+  d <- 1
+  c <- 1
+}
+
+<- d
+<- c
+<- c
+```
+
+with the following trace:
+
+```
+    G0         G1
+1. send(c)
+2. send(d)
+3.          recv(d)
+4.          recv(c)
+5. send(c)
+6.          recv(c)
+```
+
+The chain $\{\langle G0, chan, 2 \rangle, \langle G1, chan, 3 \rangle, \langle G0, chan, 5 \rangle\}$,
+meaning the send and receive in d and the second send on c would create a valid scheduling chain,
+since all neighboring elements are in different routines, while
+$\{\langle G0, chan, 1 \rangle, \langle G0, chan, 2 \rangle, \langle G1, chan, 3 \rangle\}$ is not,
+since the first two elements are from the same routine.
+
 #### Relations
+
+During the mutation, we want to assure, that mutated scheduling chains stay
+mutated scheduling chains. We therefore define two relations, which tell
+us how the mutations can be performed.
 
 We say $\langle c, c'\rangle \in CPOP_1$ if $c$ and $c'$ are operations in the same routine.
 We say $\langle c, c' \rangle \in CPOP_2$ if $c$ and $c'$ are operations on the same primitive but in different routines.
@@ -196,7 +238,7 @@ To see which mutations on a chain are possible, GoPie defines two Relation betwe
 - Rule 4: $\exists c, c', c'', c' \in Rel_2(c), c'' \in Rel_2(c')\to c'' \in Rel_2(c)$
 
 where $Rel_{1/2}(x)$ stands for the set in which the operations of primitives are related to $x$.\
-Rule 1 indicates, that two operations executed in the same routine are related.\
+Rule 1 indicates, that two neighboring operations executed in the same routine are related.\
 Rule 2 indicates, that two operations of the same primitive that execute consecutively in different routines are related.\
 Rule 3 and 4 perform transitive inference.
 
@@ -212,7 +254,10 @@ Given such a scheduling chain, it can be mutated with the following rules:
 1. Abridge: This removes an item from the $SC$ (either from head or tail) if there
 is more than one operation in it, which helps GoPie to limit the length of an $SC$. $$\exists o_i, o_j \{o_i, o_{i+1},...,o_{j-1}, o_j\} \in SC \to \{o_{i+1},...,o_{j-1}, o_j\} \in SC, \{o_i, o_{i+1},...,o_{j-1}\} \in SC$$
 2. Flip: This performes a reverse process on the $SC$ to be mutated. E.g. if $\langle s_1, s_2\rangle$ is covered in the scheduling, $\langle s_2, s_1\rangle$ is also valuable to take a try $$\exists o_i, o_j \{...,o_i, o_j,...\}\in SC \to \{...,o_j, o_i,...\}\in SC$$
-The Flip operation is described in the paper, but not implemented in the original goPie implementation. For this reason, we exclude it in our GoPie implementation, but add it in the [GoPie+](#gopie-1) implementation.
+The Flip operation is described in the paper, but not implemented in the original goPie implementation.
+We assume the reason for leaving it out of the implementation is, that flipping two elements in
+a scheduling chain, may result in a chain, that is not a valid scheduling chain, which may lead to
+impossible schedules. For this reason, we exclude it in our GoPie implementation, but add it in the [GoPie+](#gopie-1) implementation.
 3. Substitute: This tries to replace an operation with another one from the set of $Rel_1$ $$\exists o_i, o_j \in Rel_1(o_i), \{...,o_i,...\} \in SC \to \{...,o_j,...\} \in SC$$
 4. Augment: This tries to increase the length of $SC$ by adding another operation from the set of $Rel_2$ to its tail, which aims to explore those effective interleaving in a further step. $$\exists o_j, o_j \in Rel_2(o_i), \{...,o_j\}\in SC \to \{...,o_j, o_j\}\in SC$$
 
@@ -325,10 +370,11 @@ detect the same situations as those tools and approaches, we used our own.
 
 #### Order Enforcement
 
-The order enforcement used is similar to the replay mechanism implemented by us.
+The order enforcement or replay mechanism of the original GoPie implementation
+used is similar to the replay mechanism implemented by us.
 For a tracked operation, it creates a wait and release mechanism.
 The main difference is, that GoPie only enforces the order of a subset of
-all operations, namely the operations in the scheduling chain. Those operations
+all operations, namely the operations in the mutated scheduling chain. Those operations
 are called active operation.
 
 It the program wants to execute an operation, it first checks if the operations
@@ -362,10 +408,30 @@ at a code position which could only be reached because of the mutation,
 it is unlikely to be reached again, if we only force the order of this new chain,
 but not the previous chain.
 
+#### Differences to original implementation
+
+We have implemented the described implementation into our Advocate framework.
+The implementation therefore differs from the original GoPie implementation.
+
+The main change is that the original GoPie implementation needs to instrument
+the tested source code to implement the recording and replay.
+In our implementation, this is all directly added into the
+implementation of the relevant operations as described in [recording](../recording.md)
+and [replay](../replay.md).
+
 ### GoPie+
 
 In the GoPie+ implementation we improve multiple points compared to the
-original GoPie implementation. In this step we do not use out HB information.
+original GoPie implementation. In this step we do not use our HB information.
+
+We improve the following points:
+
+1. We use all recorded operations during mutations, not just channel and mutex
+2. The original implementation only chooses a set of scheduling chains on the first run, mutating them over and over, we also pick new chains after each mutation run
+3. We implement the Flip mutation described in the paper but not implemented in GoPie
+4. We include started but never fully executed operations in our mutations.
+5. We improve the replay by performing order enforcement for all operations before the scheduling chain
+6. We exclude scheduling chains that have been executed multiple times before, or chains, that only contain one element.
 
 #### Operations
 
@@ -516,16 +582,14 @@ letting all other operations run freely. It is still possible, that this leads
 to program runs getting stuck, even if the mutation describes a theoretically
 possible execution, but the possibility of this is minimized.
 
-#### Double and Short
+#### Superfluous chains
 
 GoPie does not filter its mutation. This leads to situations, where
 scheduling chains with a length of 1 are executed. Those chains
-have no influence on the execution of the program. Additionally,
-if GoPie creates a scheduling chain, that has already been executed before,
-it will still execute it.
-
-Since both those situations won't give us new information, it is not necessary
-to execute them. We will therefore ignore such operations.
+have no influence on the execution of the program. We therefore skip such chains.
+Additionally, it can happen, tha the same chain is executed over and over
+again. Since it has limited value to execute the same chain over and over again,
+we limit the number of how often the same chain can be executed.
 
 ### GoPieHB
 

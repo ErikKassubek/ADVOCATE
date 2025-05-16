@@ -52,6 +52,8 @@ import (
 	"unsafe"
 )
 
+// ADVOCATE-START
+
 // BUG(rsc): On 386, the 64-bit functions use instructions unavailable before the Pentium MMX.
 //
 // On non-Linux ARM, the 64-bit functions use instructions unavailable before the ARMv6k core.
@@ -213,3 +215,5 @@ func StoreUintptrAdvocate(addr *uintptr, val uintptr)
 // StorePointer atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Store] instead.
 func StorePointer(addr *unsafe.Pointer, val unsafe.Pointer)
+
+// ADVOCATE-END

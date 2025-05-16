@@ -51,23 +51,30 @@ panic is actually possible. It also allows us to modify the execution
 to discover new program code, not executed in the recorded run, making
 (guided) fuzzing approaches possible.
 
+Please note, that the current code base also includes code for trace analysis
+using happens-before information and improvements on fuzzing approaches using
+happens-before information. They have partially been build before or during the
+project, but should not be seen as part of the project. The project only
+focuses on the recoding and replay aspect, and using the replay with some simple
+fuzzing approaches.
+
 ## Documentation
 
-The documentation can be found in the [doc](./doc/) directory. Here all parts
-of the current version of advocate are described. This also includes
-information about the [(happens-before) analysis](./doc/analysis.md), which was mostly implemented
-before this master project and is therefore not directly relevant, even throw
-it is partially used for the implemented fuzzing approach.
+The documentation can be found in the [doc_proj](./doc_proj/) and [doc](./doc/) directories.
+[doc_proj](./doc_proj/) contains all documentation that is relevant for the
+project. [doc](./doc/) also includes the documentation for all other parts
+that have been implemented into the Advocate framework.
+
 
 The relevant section for this project are mostly the following:
 
-- [Usage](./doc/usage.md)
-- [Toolchain](./doc/toolchain.md)
-- [Runtime](doc/runtime.md)
-- [Execution, Recording and Trace](./doc/recording.md)
-- [Replay](./doc/replay.md)
-- [Fuzzing](./doc/fuzzing.md)
-- [Memory](./doc/memory.md)
-- [Related works](./doc/relatedWorks.md)
+- [Usage](./doc_proj/usage.md)
+- [Toolchain](./doc_proj/toolchain.md)
+- [Runtime](./doc_proj/runtime.md)
+- [Execution, Recording and Trace](./doc_proj/recording.md)
+- [Replay](./doc_proj/replay.md)
+- [Fuzzing](./doc_proj/fuzzing.md)
+- [Memory](./doc_proj/memory.md)
+- [Related works](./doc_proj/relatedWorks.md)
 
 But of course, feel free to take a look at the other things if you're interested.

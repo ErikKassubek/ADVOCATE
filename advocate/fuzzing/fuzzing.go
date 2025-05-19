@@ -13,6 +13,7 @@ package fuzzing
 import (
 	"advocate/analysis"
 	"advocate/memory"
+	"advocate/results"
 	"advocate/stats"
 	"advocate/timer"
 	"advocate/toolchain"
@@ -67,6 +68,8 @@ var (
 	fuzzingModeGFuzz = false
 	fuzzingModeGoPie = false
 	fuzzingModeFlow  = false
+
+	cancelTestIfBugFound = false
 )
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
@@ -87,8 +90,11 @@ var (
 //   - cont bool: continue partial fuzzing
 //   - mTime int: maximum time in seconds spend for one test/prog\
 //   - mRun int: maximum number of times a test/prog is run
+//   - cancelTestIfFound int: do not run further fuzzing runs on tests if one
+//     bug has been found, mainly used for benchmarks
 func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int) error {
+	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int,
+	cancelTestIfFound bool) error {
 
 	if fm == "" {
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
@@ -110,6 +116,8 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	fuzzingModeGFuzz = (fuzzingMode == GFuzz || fuzzingMode == GFuzzHBFlow || fuzzingMode == GFuzzHB)
 	fuzzingModeFlow = (fuzzingMode == Flow || fuzzingMode == GFuzzHBFlow)
 	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzHBFlow || fuzzingMode == Flow || fuzzingMode == GoPieHB)
+
+	cancelTestIfBugFound = cancelTestIfFound
 
 	if cont {
 		utils.LogInfo("Continue fuzzing")
@@ -164,8 +172,8 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 	for i, testFile := range testFiles {
 		fileCounter++
-		utils.LogInfof("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
-		utils.LogInfof("Processing file: %s\n", testFile)
+		utils.LogProgressf("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
+		utils.LogProgressf("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
 		if err != nil || len(testFunctions) == 0 {
@@ -180,7 +188,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			timer.Start(timer.TotalTest)
 
-			utils.LogInfof("Run fuzzing for %s->%s", testFile, testFunc)
+			utils.LogProgressf("Run fuzzing for %s->%s", testFile, testFunc)
 
 			firstRun := (i == 0 && j == 0)
 
@@ -244,6 +252,11 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		clearData()
 		timer.ResetFuzzing()
 		memory.Reset()
+
+		if cancelTestIfBugFound && results.GetBugWasFound() {
+			utils.LogResultf(false, false, "", "Cancel test after %d runs", numberFuzzingRuns)
+			break
+		}
 
 		utils.LogInfo("Fuzzing Run: ", numberFuzzingRuns+1)
 

@@ -21,7 +21,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
-	"time"
 )
 
 // Run ADVOCATE on a program with a main function
@@ -186,20 +185,11 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			}
 		}
 
-		// Apply replay header and run tests for each trace
-		timeoutRepl := time.Duration(0)
-		if timeoutReplay == -1 {
-			timeoutRepl = 500 * timer.GetTime(timer.Recording)
-			timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
-		} else {
-			timeoutRepl = time.Duration(timeoutReplay) * time.Second
-		}
-
 		timer.Start(timer.Replay)
 		for _, trace := range rewrittenTraces {
 			traceNum := extractTraceNum(trace)
 			fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
-			if err := headerInserterMain(pathToFile, true, traceNum, int(timeoutRepl.Seconds()), false, fuzzing, fuzzingTrace); err != nil {
+			if err := headerInserterMain(pathToFile, true, traceNum, timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
 				return err
 			}
 

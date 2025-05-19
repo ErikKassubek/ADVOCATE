@@ -287,16 +287,16 @@ func writeFile(path string, index string, description map[string]string,
 		}
 	}
 
+	confirmed := false
 	if description["crit"] == "Bug" {
-		confirmed := false
-
 		if replayDouble || replay["replaySuc"] == "was successful" ||
 			strings.HasPrefix(description["name"], "Actual") {
 			confirmed = true
 		}
-
-		utils.LogResultf(true, confirmed, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
 	}
+
+	id := progInfo["file"] + "#" + progInfo["name"]
+	utils.LogResultf(true, confirmed, id, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
 
 	// if in path, the folder "bugs" does not exist, create it
 	if _, err := os.Stat(path + "/bugs"); os.IsNotExist(err) {

@@ -103,6 +103,10 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 		utils.LogError("Error in printing summary: ", err.Error())
 	}
 
+	if onlyAPanicAndLeak {
+		return nil
+	}
+
 	if noRewrite {
 		utils.LogInfo("Skip rewrite")
 		return nil
@@ -112,13 +116,13 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	failedRewrites := 0
 	notNeededRewrites := 0
 
-	if numberOfResults != 0 {
-		utils.LogInfo("Start rewriting")
-	}
-
 	if err != nil {
 		utils.LogError("Failed to create result files: ", err)
 		return nil
+	}
+
+	if numberOfResults != 0 {
+		utils.LogInfo("Start rewriting")
 	}
 
 	rewrittenBugs := make(map[utils.ResultType][]string) // bugtype -> paths string

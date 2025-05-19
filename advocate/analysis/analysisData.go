@@ -192,6 +192,8 @@ var (
 
 	waitingReceive = make([]*trace.TraceElementChannel, 0)
 	maxOpID        = make(map[int]int)
+
+	bugWasFound = false
 )
 
 // SetExitInfo stores the exit code and exit position of a run

@@ -610,9 +610,14 @@ func CheckForLeakCond(co *trace.TraceElementCond) {
 //
 // Parameter
 //   - simple bool: set to true, if only simple analysis is run
-func checkForStuckRoutine(simple bool) {
+//
+// Returns
+//   - bool: true if a stuck routine was found
+func checkForStuckRoutine(simple bool) bool {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
+
+	res := false
 
 	for routine, tr := range MainTrace.GetTraces() {
 		if len(tr) < 1 {
@@ -630,17 +635,6 @@ func checkForStuckRoutine(simple bool) {
 			continue
 		}
 
-		// file := ""
-		// line := -1
-		// if p, ok := allForks[routine]; ok {
-		// 	pos := p.GetPos()
-		// 	posSplit := strings.Split(pos, ":")
-		// 	if len(posSplit) == 2 {
-		// 		file = posSplit[0]
-		// 		line, _ = strconv.Atoi(posSplit[1])
-		// 	}
-		// }
-
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
 			ObjType: "RE", File: lastElem.GetFile(), Line: lastElem.GetLine(),
@@ -648,5 +642,9 @@ func checkForStuckRoutine(simple bool) {
 
 		results.Result(results.CRITICAL, utils.LUnknown,
 			"fork", []results.ResultElem{arg}, "", []results.ResultElem{})
+
+		res = true
 	}
+
+	return res
 }

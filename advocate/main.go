@@ -11,7 +11,6 @@
 package main
 
 import (
-	"bufio"
 	"flag"
 	"fmt"
 	"os"
@@ -66,7 +65,8 @@ var (
 
 	noWarning bool
 
-	noInfo bool
+	noInfo     bool
+	noProgress bool
 
 	cont bool
 
@@ -76,24 +76,27 @@ var (
 
 	settings string
 	output   bool
+
+	cancelTestIfBugFound bool
 )
 
 // Main function
 func main() {
 	flag.BoolVar(&help, "h", false, "Print help")
+	flag.BoolVar(&help, "help", false, "Print help")
 
 	flag.StringVar(&progPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
 
 	flag.StringVar(&progName, "prog", "", "Name of the program")
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay or analyze")
+	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay")
 
 	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
-	flag.IntVar(&timeoutReplay, "timeoutRep", -1, "Set a timeout in seconds for the replay. If not set, it is set to 500 * recording time")
+	flag.IntVar(&timeoutReplay, "timeoutRep", 900, "Set a timeout in seconds for the replay. Default: 600s. To disable set to -1")
 
-	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7 min. To Disable, set to -1")
-	flag.IntVar(&maxFuzzingRun, "maxFuzzingRun", 100, "Maximum number of fuzzing runs per test/prog. Default: 100. To Disable, set to -1")
+	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
+	flag.IntVar(&maxFuzzingRun, "maxFuzzingRun", 100, "Maximum number of fuzzing runs per test/prog. Default: 100s. To Disable, set to -1")
 
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
@@ -117,7 +120,8 @@ func main() {
 
 	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
-	flag.BoolVar(&noInfo, "noInfo", false, "Do not show infos in the terminal (will only show results, errors and important)")
+	flag.BoolVar(&noInfo, "noInfo", false, "Do not show infos in the terminal (will only show results, errors, important and progress)")
+	flag.BoolVar(&noProgress, "noProgress", false, "Do not show progress info")
 
 	flag.BoolVar(&alwaysPanic, "panic", false, "Panic if the analysis panics")
 
@@ -145,26 +149,26 @@ func main() {
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
 
-	flag.StringVar(&settings, "settings", "", "Settings")
+	flag.StringVar(&settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
+
+	flag.BoolVar(&cancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
 
 	flag.Parse()
 
 	var mode string
-	if len(os.Args) >= 2 {
+	if len(os.Args) >= 2 && !strings.HasPrefix(os.Args[1], "-") {
 		mode = os.Args[1]
 		flag.CommandLine.Parse(os.Args[2:])
 		if help {
-			printHelpMode(mode)
+			utils.PrintHelpMode(mode)
 			return
 		}
 	} else {
 		if help {
-			printHelp()
+			utils.PrintHelp()
 			return
 		}
-		fmt.Println("No mode selected")
-		fmt.Println("Select one mode from 'analysis', 'fuzzing' or 'recording'")
-		printHelp()
+		utils.PrintHelp()
 		return
 	}
 
@@ -181,7 +185,7 @@ func main() {
 		}
 	}
 
-	utils.LogInit(noInfo, !alwaysPanic)
+	utils.LogInit(noInfo, noProgress, !alwaysPanic)
 
 	utils.SetSettings(settings, maxFuzzingRun, fuzzingMode)
 
@@ -225,21 +229,19 @@ func main() {
 		modeMainTest = "main"
 	}
 
-	checkGoMod()
+	execName = utils.CheckGoMod(progPath, modeMain, execName)
 
 	if modeMain && execName == "" {
 		utils.LogError("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")
 		panic(fmt.Errorf("Could not determine executable name"))
 	}
 
-	// TODO: mode for analysis of already existing trace
-
 	switch mode {
 	case "analysis":
 		modeToolchain(modeMainTest, true, true, true)
 	case "fuzzing":
 		modeFuzzing()
-	case "record":
+	case "record", "recording":
 		keepTraces = true
 		modeToolchain(modeMainTest, true, false, false)
 	case "replay":
@@ -247,10 +249,10 @@ func main() {
 	default:
 		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
 		utils.LogError("Select one mode from  'analysis', 'fuzzing' or 'record'")
-		printHelp()
+		utils.PrintHelp()
 	}
 
-	numberResults, numberResultsConf, numberErr, numberTimeout := utils.GetLoggingNumbers()
+	numberResults, numberResultsConf, numberTestWithRes, numberErr, numberTimeout := utils.GetLoggingNumbers()
 	if numberErr == 0 {
 		utils.LogInfo("Finished with 0 errors")
 	} else {
@@ -265,8 +267,9 @@ func main() {
 		if numberResults == 0 {
 			utils.LogInfo("No bugs have been found/indicated")
 		} else {
-			utils.LogResultf(false, false, "%d bugs have been indicated", numberResults)
-			utils.LogResultf(false, false, "%d bugs have been confirmed", numberResultsConf)
+			utils.LogResultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
+			utils.LogResultf(false, false, "", "Number of indicated bugs:  %d", numberResults)
+			utils.LogResultf(false, false, "", "Number of confirmed bugs:  %d", numberResultsConf)
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
@@ -288,7 +291,7 @@ func modeFuzzing() {
 
 	err = fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath,
 		progName, execName, ignoreAtomics, recordTime, notExec, statistics,
-		keepTraces, cont, timeoutFuzzing, maxFuzzingRun)
+		keepTraces, cont, timeoutFuzzing, maxFuzzingRun, cancelTestIfBugFound)
 	if err != nil {
 		utils.LogError("Fuzzing Failed: ", err.Error())
 	}
@@ -422,172 +425,4 @@ func getFolderTrace(pathTrace string) (string, error) {
 
 	// remove last folder from path
 	return folderTrace[:strings.LastIndex(folderTrace, string(os.PathSeparator))+1], nil
-}
-
-// printHelp prints the usage help. Can be called with -h
-func printHelp() {
-	println("Usage: ./advocate [mode] [options]\n")
-	println("There are different modes of operation:")
-	println("1. Analysis")
-	println("2. Fuzzing")
-	println("3. Record")
-	println("4. Replay")
-	println("\n\n")
-	printHelpMode("analysis")
-	printHelpMode("fuzzing")
-	printHelpMode("record")
-	printHelpMode("replay")
-}
-
-// printHelpMode prints the help for one mode
-//
-// Parameter:
-//   - mode string: the mode (analysis or fuzzing)
-func printHelpMode(mode string) {
-	switch mode {
-	case "analysis":
-		println("Mode: analysis")
-		println("Analyze tests")
-		println("This runs the analysis on tests")
-		println("Usage: ./advocate analysis [options]")
-		println("  -main                  Run on the main function instead on tests")
-		println("  -path [path]           Path to the folder containing the program and tests, if main, path to the file containing the main function (required)")
-		println("  -exec [name]           For tests, name of the test to run (do not set to run all tests). For main name of the executable (only required if fo.mod cannot be found)")
-		println("  -prog [name]           Name of the program (required if -recordTime, -notExec or -stats is set)")
-		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
-		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
-		println("  -ignoreAtomics         Set to ignore atomics in replay")
-		println("  -recordTime            Set to record runtimes")
-		println("  -notExec               Set to determine never executed operations")
-		println("  -stats                 Set to create statistics")
-		println("  -keepTrace             Do not delete the trace files after analysis finished")
-	case "fuzzing":
-		println("Mode: fuzzing")
-		println("Run fuzzing")
-		println("This creates and updates the information required for as well as executes the fuzzing runs and analysis")
-		println("Usage: ./advocate fuzzing [options]")
-		println("  -main                  Run on the main function instead on tests")
-		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
-		println("  -prog [name]           Name of the program")
-		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
-		println("  -fuzzingMode [mode]    Mode of fuzzing:")
-		println("\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPie+\n\tGoPieHB")
-		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
-		println("  -timeoutRep [second]   Set a timeout in seconds for the replay")
-		println("  -ignoreAtomics         Set to ignore atomics in replay")
-		println("  -recordTime            Set to record runtimes")
-		println("  -notExec               Set to determine never executed operations")
-		println("  -stats                 Set to create statistics")
-		println("  -keepTrace             Do not delete the trace files after analysis finished")
-	case "record":
-		println("Mode: record")
-		println("Record traces")
-		println("This records program or test traces without running any analysis")
-		println("Usage: ./advocate record [options]")
-		println("  -main                  Run on the main function instead on tests")
-		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
-		println("  -exec [name]           Name of the test to run (do not set to run all tests)")
-		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
-		println("  -recordTime            Set to record runtimes")
-		println("  -notExec               Set to determine never executed operations")
-		println("  -stats                 Set to create statistics")
-	case "replay":
-		println("Mode: replay")
-		println("Replay the trace")
-		println("This will take a prerecorded trace and replay it")
-		println("Usage: ./advocate record [options]")
-		println("  -main                  Run on the main function instead on tests")
-		println("  -path [folder]         If -main, path to the file containing the main function, otherwise path to the program folder")
-		println("  -trace [folder]        Path to the trace that should be executed")
-		println("  -exec [name]           Name of the test to run (only when -main is not set)")
-		println("  -timeoutRec [second]   Set a timeout in seconds for the recording")
-		println("  -recordTime            Set to record runtimes")
-		println("  -notExec               Set to determine never executed operations")
-		println("  -stats                 Set to create statistics")
-	default:
-		println("Mode: unknown")
-		printHelp()
-	}
-}
-
-// checkGoMod checks the version of the program to be analyzed.
-// Advocate is implemented in and for go1.24. It the analyzed program has another
-// version, especially if the other version is also installed on the machine,
-// this can lead to problems. checkGoMod therefore reads the version of the
-// analyzed program and if its not 1.24, a warning and information is printed
-// to the terminal
-// Additionally it reads the module name from the go.mod file.
-// If -main is set, but -exec is not set it will try to set the
-// execname value. If no module value is found, the program will panic
-func checkGoMod() {
-	var goModPath string
-
-	if progPath == "" {
-		return
-	}
-
-	// Search for go.mod
-	err := filepath.WalkDir(utils.GetDirectory(progPath), func(path string, d os.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == "go.mod" {
-			goModPath = path
-			return filepath.SkipAll // Stop searching after finding the first one
-		}
-		return nil
-	})
-
-	if goModPath == "" {
-		utils.LogInfo("Could not find go.mod")
-		return
-	}
-
-	// Open and read go.mod
-	file, err := os.Open(goModPath)
-	if err != nil {
-		utils.LogInfo("Could not find go.mod")
-		return
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-
-		// check for module name
-		if modeMain && execName == "" && strings.HasPrefix(line, "module") {
-			s := strings.Split(line, " ")
-			if len(s) < 2 {
-				continue
-			}
-
-			execName = s[1]
-			continue
-		}
-
-		// check for version
-		if strings.HasPrefix(line, "go ") {
-			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
-
-			versionSplit := strings.Split(version, ".")
-
-			if len(versionSplit) < 2 {
-				utils.LogError("Invalid go version")
-			}
-
-			if versionSplit[0] != "1" || versionSplit[1] != "24" {
-				errString := "ADVOCATE is implemented for go version 1.24. "
-				errString += fmt.Sprintf("Found version %s. ", version)
-				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
-				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."
-				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
-				utils.LogImportant(errString)
-			}
-
-			return
-		}
-	}
-
-	utils.LogError("Could not determine go version")
 }

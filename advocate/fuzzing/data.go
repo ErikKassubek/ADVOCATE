@@ -11,6 +11,7 @@
 package fuzzing
 
 import (
+	"advocate/results"
 	"advocate/trace"
 	"advocate/utils"
 )
@@ -163,6 +164,7 @@ func clearData() {
 // run of a test
 func clearDataFull() {
 	clearData()
+	results.Reset()
 
 	numberOfPreviousRuns = 0
 	maxGFuzzScore = 0.0

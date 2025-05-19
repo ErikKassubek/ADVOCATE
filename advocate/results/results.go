@@ -194,7 +194,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 	}
 
 	if resType == utils.RTimeout {
-		utils.LogResultf(false, false, "Info: %s", resultTypeMap[resType])
+		utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
 		return
 	}
 
@@ -206,7 +206,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 
 	for i, arg := range arg1 {
 		if arg.isInvalid() {
-			return
+			continue
 		}
 		if i != 0 {
 			resultReadable += ";"
@@ -223,7 +223,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 		resultMachine += ","
 		for i, arg := range arg2 {
 			if arg.isInvalid() {
-				return
+				continue
 			}
 			if i != 0 {
 				resultReadable += ";"
@@ -258,7 +258,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 		}
 	}
 
-	utils.LogResultf(false, false, "Info: %s", resultTypeMap[resType])
+	utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
 }
 
 // InitResults sets the output file paths and clears al previous results
@@ -416,4 +416,12 @@ func Reset() {
 	outputReadableFile = ""
 
 	foundBug = false
+}
+
+// GetBugWasFound returns if since the last reset, a bug was found
+//
+// Returns:
+//   - foundBug
+func GetBugWasFound() bool {
+	return foundBug
 }

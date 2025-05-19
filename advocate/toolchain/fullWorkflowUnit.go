@@ -27,7 +27,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 )
 
 // Run ADVOCATE for all given unit tests
@@ -105,8 +104,8 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	// Process each test file
 	for _, file := range testFiles {
 		if testName == "" {
-			utils.LogInfof("Progress %s: %d/%d", progName, currentFile, totalFiles)
-			utils.LogInfof("Processing file: %s", file)
+			utils.LogProgressf("Progress %s: %d/%d", progName, currentFile, totalFiles)
+			utils.LogProgressf("Processing file: %s", file)
 		}
 
 		packagePath := filepath.Dir(file)
@@ -134,7 +133,10 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			attemptedTests++
 			packageName := filepath.Base(packagePath)
 			fileName := filepath.Base(file)
-			utils.LogInfof("Running full workflow for test %s in package %s in file %s", testFunc, packageName, file)
+
+			if fuzzing == -1 {
+				utils.LogProgressf("Running test %s in package %s in file %s", testFunc, packageName, file)
+			}
 
 			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
 			if !strings.HasSuffix(adjustedPackagePath, string(filepath.Separator)) {
@@ -616,7 +618,6 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 		return err
 	}
 
-	utils.LogInfo("Finished Analyzer")
 	return nil
 }
 
@@ -656,14 +657,6 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 
 	utils.LogInfof("Found %d rewritten traces", len(rewrittenTraces))
 
-	timeoutRepl := time.Duration(0)
-	if timeoutReplay == -1 {
-		timeoutRepl = 500 * timer.GetTime(timer.Recording)
-		timeoutRepl = max(min(timeoutRepl, 10*time.Minute), time.Duration(timeoutRecording)*time.Second*2)
-	} else {
-		timeoutRepl = time.Duration(timeoutReplay) * time.Second
-	}
-
 	for i, trace := range rewrittenTraces {
 		traceNum, bugString := extractTraceNumber(trace)
 		// record := getRerecord(trace)
@@ -676,7 +669,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 			continue
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, int(timeoutRepl.Seconds()), record)
+		headerInserterUnit(file, testName, true, -1, traceNum, timeoutReplay, record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 

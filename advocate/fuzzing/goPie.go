@@ -68,7 +68,6 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
 			if fuzzingMode != GoPie && mut.len() <= 1 {
-				utils.LogImportant("len 1")
 				continue
 			}
 			if _, ok := allGoPieMutations[key]; fuzzingMode == GoPie || !ok {

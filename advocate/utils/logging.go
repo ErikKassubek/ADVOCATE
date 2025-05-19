@@ -27,9 +27,13 @@ const (
 var numberErr = 0
 var numberTimeout = 0
 var numberResults = 0
+var numberTestWithRes = 0
 var numberResultsConf = 0
 
+var seenTests = make(map[string]struct{})
+
 var noInfoFlag bool
+var noProgressFlag bool
 
 var preventPanicFlag bool
 
@@ -38,10 +42,12 @@ var preventPanicFlag bool
 // Parameter:
 //   - noInfo bool: if set, no info is shown during execution
 //     errors, results and important are still shown
+//   - noProgress bool: do not show progress
 //   - preventPanic bool: is set to true, panics will only stop the current
 //     analysis or test and not the whole analyzer
-func LogInit(noInfo, preventPanic bool) {
+func LogInit(noInfo, noProgress, preventPanic bool) {
 	noInfoFlag = noInfo
+	noProgressFlag = noProgress
 	preventPanicFlag = preventPanic
 }
 
@@ -96,12 +102,17 @@ func LogImportantf(format string, v ...any) {
 //
 // Parameter:
 //   - count bool: wether to count for the number of results
-//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise\
+//   - name string: unique id for the program or test
 //   - v ...any: the content of the log
-func LogResult(count, confirmed bool, v ...any) {
+func LogResult(count, confirmed bool, name string, v ...any) {
 	log.Print(Green, fmt.Sprint(v...), Reset, "\n")
 	if count {
 		numberResults++
+		if _, ok := seenTests[name]; name != "" && !ok {
+			seenTests[name] = struct{}{}
+			numberTestWithRes++
+		}
 		if confirmed {
 			numberResultsConf++
 		}
@@ -113,17 +124,47 @@ func LogResult(count, confirmed bool, v ...any) {
 //
 // Parameter:
 //   - count bool: wether to count for the number of results
-//   - confirmed bool: true of bug is actual or replay was suc, false otherwise
+//   - confirmed bool: true of bug is actual or replay was suc, false otherwise\
+//   - name string: unique id for the program or test
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
-func LogResultf(count, confirmed bool, format string, v ...any) {
+func LogResultf(count, confirmed bool, name string, format string, v ...any) {
 	log.Printf(Green+format+Reset, v...)
 	if count {
 		numberResults++
+		if _, ok := seenTests[name]; name != "" && !ok {
+			seenTests[name] = struct{}{}
+			numberTestWithRes++
+		}
 		if confirmed {
 			numberResultsConf++
 		}
 	}
+}
+
+// LogProgress logs a the progress to the terminal
+// Printed in green
+//
+// Parameter:
+//   - v ...any: the content of the log
+func LogProgress(v ...any) {
+	if noProgressFlag {
+		return
+	}
+	log.Print(fmt.Sprint(v...), "\n")
+}
+
+// LogProgressf logs a the progress to the terminal
+// Printed in green
+//
+// Parameter:
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
+func LogProgressf(format string, v ...any) {
+	if noProgressFlag {
+		return
+	}
+	log.Printf(format, v...)
 }
 
 // LogTimeout logs a timeout to the terminal
@@ -177,10 +218,11 @@ func LogErrorf(format string, v ...any) {
 // Returns:
 //   - int: number of results
 //   - int: number of confirmed results
+//   - int: number of tests with found bug
 //   - int: number of errors
 //   - int: number of timeouts
-func GetLoggingNumbers() (int, int, int, int) {
-	return numberResults, numberResultsConf, numberErr, numberTimeout
+func GetLoggingNumbers() (int, int, int, int, int) {
+	return numberResults, numberResultsConf, numberTestWithRes, numberErr, numberTimeout
 }
 
 // IsPanicPrevent returns if panic should be suppressed

@@ -53,6 +53,14 @@ program. This program implements multiple modes:
 - [Analysis](#mode-analysis)
 - [Fuzzing](#mode-fuzzing)
 
+### Help
+
+To get an overview over the possible modes and arguments, you can run
+
+```shell
+./advocate -help
+```
+
 ### Mode: Recording
 
 This mode allows us to record all relevant concurrency operations of a given

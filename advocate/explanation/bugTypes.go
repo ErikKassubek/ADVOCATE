@@ -56,7 +56,7 @@ var bugNames = map[string]string{
 	"P04": "Possible unlock of not locked mutex",
 	"P05": "Possible cyclic deadlock",
 
-	"L00": "Leak on routine without blocking operation",
+	"L00": "Leak on routine with unknown cause",
 	"L01": "Leak on unbuffered channel with possible partner",
 	"L02": "Leak on unbuffered channel without possible partner",
 	"L03": "Leak on buffered Channel with possible partner",

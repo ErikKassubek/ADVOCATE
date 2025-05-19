@@ -27,7 +27,8 @@ import (
 //   - analysisCasesMap map[string]bool: The analysis cases to run
 //   - fuzzing bool: true if run with fuzzing
 //   - onlyAPanicAndLeak bool: only test for actual panics and leaks
-func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
+func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
+	analysisCasesMap map[string]bool, fuzzing bool, onlyAPanicAndLeak bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
 	if utils.IsPanicPrevent() {
@@ -50,6 +51,8 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap 
 
 	runAnalysisOnExitCodes(fuzzing)
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
+
+	return
 }
 
 // runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
@@ -77,10 +80,11 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		bugWasFound = true
 	case utils.ExitCodeCloseNil: // close on nil
 		file, line, err := trace.PosFromPosString(exitPos)
 		if err != nil {
-			utils.LogError("Could not read exit code: ", err)
+			utils.LogError("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
@@ -92,10 +96,11 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		bugWasFound = true
 	case utils.ExitCodeNegativeWG: // negative wg counter
 		file, line, err := trace.PosFromPosString(exitPos)
 		if err != nil {
-			utils.LogError("Could not read exit code: ", err)
+			utils.LogError("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
@@ -107,10 +112,11 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		bugWasFound = true
 	case utils.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
 		file, line, err := trace.PosFromPosString(exitPos)
 		if err != nil {
-			utils.LogError("Could not read exit code: ", err)
+			utils.LogError("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
@@ -122,10 +128,11 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		bugWasFound = true
 	case utils.ExitCodePanic: // unknown panic
 		file, line, err := trace.PosFromPosString(exitPos)
 		if err != nil {
-			utils.LogError("Could not read exit code: ", err)
+			utils.LogError("Could not read exit pos: ", err)
 		}
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
@@ -137,6 +144,7 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, utils.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		bugWasFound = true
 	case utils.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, utils.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
@@ -146,7 +154,7 @@ func runAnalysisOnExitCodes(all bool) {
 		if exitCode == utils.ExitCodeSendClose { // send on closed
 			file, line, err := trace.PosFromPosString(exitPos)
 			if err != nil {
-				utils.LogError("Could not read exit code: ", err)
+				utils.LogError("Could not read exit pos: ", err)
 			}
 			arg1 := results.TraceElementResult{ // send
 				RoutineID: 0,
@@ -158,6 +166,7 @@ func runAnalysisOnExitCodes(all bool) {
 			}
 			results.Result(results.CRITICAL, utils.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			bugWasFound = true
 		}
 	}
 }
@@ -169,7 +178,11 @@ func runAnalysisOnExitCodes(all bool) {
 //   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
 //   - analysisCasesMap map[string]bool: The analysis cases to run
 //   - fuzzing bool: true if run with fuzzing
-func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, analysisCasesMap map[string]bool, fuzzing bool) {
+//
+// Returns:
+//   - bool: true if something has been found
+func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
+	analysisCasesMap map[string]bool, fuzzing bool) {
 	fifo = assumeFifo
 	modeIsFuzzing = fuzzing
 

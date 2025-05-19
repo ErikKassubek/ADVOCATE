@@ -338,7 +338,9 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		}
 	}
 
-	toolchain.ClearFuzzingTrace(progDir, keepTraces)
+	if fuzzingModeGoPie {
+		toolchain.ClearFuzzingTrace(progDir, keepTraces)
+	}
 
 	utils.LogInfof("Finish fuzzing after %d runs\n", numberFuzzingRuns)
 

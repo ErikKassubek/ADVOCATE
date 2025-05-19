@@ -34,6 +34,11 @@ an unnecessary increase of the number of required runs. With the information, ru
 based on the HB information, are impossible can directly be filtered out.
 An example for this can be seen [here](./goPie/impossibleOrder.go).
 
+To show, that our implementation of GoPie can replicate the results of the
+original implementation, we have applied it to the GoBench benchmark,
+and compared the results to the numbers given in the GoPie paper.
+A summary of this can be found [here](./goPie/GoBench.md).
+
 ## GFuzz
 
 GFuzz forces the execution of select cases, which are possible but may be
@@ -54,8 +59,9 @@ accuracy and speed of GFuzz.
 
 ## Flow
 
-GFuzz changes the order of the two concurrent instances of the same
-operation type on the same elements. We show three examples of this in
+Flow changes the order of the two concurrent instances of the same
+operation type on the same elements, where the first one succeeded, but the other did not.
+We show three examples of this in
 
 - [Flow/once.go](./Flow/once.go)
 - [Flow/mutex.go](./Flow/mutex.go)

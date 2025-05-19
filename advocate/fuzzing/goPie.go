@@ -55,7 +55,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		for range maxSCStart {
 			sc := randomChain()
 			if sc.len() > 0 {
-				schedulingChains = append(schedulingChains)
+				schedulingChains = append(schedulingChains, sc)
 			}
 		}
 	}
@@ -66,7 +66,6 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
-		utils.LogImportant("L: ", len(muts))
 		for key, mut := range muts {
 			if fuzzingMode != GoPie && mut.len() <= 1 {
 				utils.LogImportant("len 1")

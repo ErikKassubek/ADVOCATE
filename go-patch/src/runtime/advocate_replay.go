@@ -433,7 +433,7 @@ func ReplayManager() {
 					foundReplayElement()
 				} else {
 					// release the currently waiting element
-					var oldest = replayChan{nil, nil, -1, false, 0, "", 0, false}
+					var oldest = replayChan{nil, nil, -1, false, false}
 					oldestKey := ""
 					lock(&waitingOpsMutex)
 					for key, ch := range waitingOps {
@@ -554,9 +554,6 @@ type replayChan struct {
 	chAck    chan struct{}
 	counter  int
 	waitAck  bool
-	routine  int
-	file     string
-	line     int
 	released bool
 }
 
@@ -661,7 +658,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	chWait := make(chan ReplayElement, 1)
 	chAck := make(chan struct{}, 1)
 
-	replayElem := replayChan{chWait, chAck, counter, waitForResponse, routine, file, line, false}
+	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false}
 
 	_, nextElem := getNextReplayElement()
 	if key == nextElem.key() && !waitForAck.waitForAck {

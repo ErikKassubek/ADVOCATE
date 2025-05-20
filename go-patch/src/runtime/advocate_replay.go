@@ -266,7 +266,7 @@ func EnableReplay() {
 		println("\n\n")
 	}
 
-	go ReleaseWaits()
+	go ReplayManager()
 
 	replayEnabled = true
 }
@@ -350,7 +350,7 @@ func IsReplayEnabled() bool {
 }
 
 // Function to run in the background and to release the waiting operations
-func ReleaseWaits() {
+func ReplayManager() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 

@@ -319,7 +319,7 @@ next operation.
 
 The replay manager releases the operations in the correct order.
 
-To release the operations, a separate routine [ReleaseWait](../go-patch/src/runtime/advocate_replay.go#L349) is run in the
+To release the operations, a separate routine [ReplayManager](../go-patch/src/runtime/advocate_replay.go#L353) is run in the
 background.
 
 This routing loops as long as the replay is active.

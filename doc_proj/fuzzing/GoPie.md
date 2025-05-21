@@ -585,3 +585,62 @@ have no influence on the execution of the program. We therefore skip such chains
 Additionally, it can happen, tha the same chain is executed over and over
 again. Since it has limited value to execute the same chain over and over again,
 we limit the number of how often the same chain can be executed.
+
+
+### Example
+
+The following is an example on how this can lead to a bug being triggered.
+The example is a simplified version of the Kubernetes bug presented in the
+[GoPie](../relatedWorks/PaperAndTools/Fuzzing/GoPie.md) paper.
+
+We assume the following program
+
+```go
+// simplified mixed deadlock from Kubernetes
+// simplified from GoPie paper
+var (
+  m = sync.Mutex{}
+  c = make(chan bool)
+)
+
+func R1() {
+  for i := 0; i < 2; i++ {
+    <- c             // 10
+    m.Lock()         // 11
+    m.Unlock()       // 12
+  }
+}
+
+func R2() {
+  m.Lock()           // 17
+  c <- true          // 18
+  m.Unlock()         // 19
+}
+
+func main() {
+  go R1()            // G1
+  go R2()            // G2
+  go R2()            // G3
+}
+```
+
+This can have different interleaving. Depending on the interleaving, this can
+lead to a mixed deadlock. The following image shows two possible interleavings,
+one which contains a bug (on the right) and one that does not contain the bug.
+
+<center><img src="../img/GoPieEx.png" alt="Go Pie Example" width=600px" height=auto></center>
+
+The shown number are the line numbers in the program. The locks show the
+mutex lock and unlock operations. The circles show channel send and receive.
+
+By starting with a scheduling chain consisting of the unlock in G2 (19) and
+the first lock in G1 (11), we can show, how we get to the buggy execution.
+
+| Step | Mutations | Scheduling chain |
+| --- | --- | --- |
+| Init | - | $\{\langle G2, 19\rangle, \langle G1, 11 \rangle\}$ |
+| Step 1 | Substitute | $\{\langle G2, 18\rangle, \langle G1, 11 \rangle\}$ |
+| Step 2 | Substitute | $\{\langle G2, 18\rangle, \langle G1, 12 \rangle\}$ |
+| Step 3 | Abridge | $\{\langle G2, 18\rangle, \langle G1, 12 \rangle, \langle G3, 17 \rangle\}$ |
+| Step 4 | Flip | $\{\langle G2, 18\rangle, \langle G3, 17 \rangle, \langle G1, 12 \rangle\}$ |
+| Step 5 | Substitute | $\{\langle G2, 18\rangle, \langle G3, 17 \rangle, \langle G1, 11 \rangle\}$ |

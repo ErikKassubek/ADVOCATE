@@ -11,7 +11,7 @@ With this, we get the following results for the number of found bugs:
 
 | GoPie Paper | GoPie Tests | GoPie Bugs | GoPie+ Tests | GoPie+ Bugs |
 | --- | --- | --- | --- | --- |
-| 66 | 46 | 64 | 48 | 69 |
+| 66 | 46 | 65 | 48 | 69 |
 
 
 From the table given in the GoPie paper it is not directly clear if it

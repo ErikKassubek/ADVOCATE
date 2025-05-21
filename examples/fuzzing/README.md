@@ -53,6 +53,9 @@ In [GFuzz/selectWithDefault.go](./GFuzz/selectWithDefault.go) a similar
 example is shown, in which the triggering of the default is the most likely
 scenario, but triggering another case could lead to a bug.
 
+In [GFuzz/select2.go](./GFuzz/select2.go), a program where only a specific
+combination of chosen cases in multiple selects leads to a bug.
+
 In [GFuzz/hb1.go](./GFuzz/hb1.go) and [GFuzz/hb1.go](./GFuzz/hb1.go) we show
 examples for how our improvements using the HB analysis may improve the
 accuracy and speed of GFuzz.

@@ -63,6 +63,6 @@ Additionally we implement our own fuzzing approaches (Flow).
 - [GFuzz](fuzzing/GFuzz.md)
 - [GoPie](fuzzing/GoPie.md)
 
-[Here](./../examples/fuzzing/README.md) you can find some examples illustrating the
+[Here](./examples/README.md) you can find some examples illustrating the
 different approaches, and a comparison between the original and our GoPie
 implementation when applying them to the GoBench benchmark.

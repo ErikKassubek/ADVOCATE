@@ -27,6 +27,25 @@ transparent, low-overhead mechanism for capturing execution behavior.
 This approach lays the groundwork for tools that rely on deterministic
 execution, including systematic testing and dynamic analysis.
 
+## Achievements
+
+For the project, we implemented the following parts
+
+- Tracing of concurrency primitives in Go programs
+  - routine local tracing
+  - minimal need of program instrumentation by use of modified go runtime
+- Replay of concurrent Go programs
+  - Ability to execute program scheduling based on recorded and/or modified traces
+  - minimal need of program instrumentation by use of modified go runtime
+- Implementation of [GFuzz](./doc_proj/relatedWorks/PaperAndTools/Fuzzing/GFuzz.md) and [GoPie](./doc_proj/relatedWorks/PaperAndTools/Fuzzing/GoPie.md) fuzzing mechanisms and improvements for GoPie
+  - GFuzz: integration of GFuzz idea into our framework
+  - GoPie: integration of GoPie idea into our framework
+  - GoPie+: improvements on GoPie idea
+    - full coverage of all concurrency primitives, like mutex, channel, wait group, once,... (original GoPie only uses channel and mutex)
+    - replay mechanism to guaranty that the program reaches the modified code block
+    - consider scheduling chains resulting from mutated program runs
+    - exclude superfluous mutations
+
 ## Implementations
 
 The provided implementations consists of two parts.

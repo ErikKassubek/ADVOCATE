@@ -44,6 +44,7 @@ For the project, we implemented the following parts
     - full coverage of all concurrency primitives, like mutex, channel, wait group, once,... (original GoPie only uses channel and mutex)
     - replay mechanism to guaranty that the program reaches the modified code block
     - consider scheduling chains resulting from mutated program runs
+    - mutate partially executed operations
     - exclude superfluous mutations
 
 ## Implementations

@@ -361,12 +361,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	mysg.isSelect = false
 	mysg.c = c
 	gp.waiting = mysg
-	// ADVOCATE-START
-	// save partner file and line in sudog
-	if replayEnabled && !ignored && !c.advocateIgnore {
-		// mysg.replayEnabled = true
-	}
-	// ADVOCATE-END
 	gp.param = nil
 	c.sendq.enqueue(mysg)
 	// Signal to anyone trying to shrink our stack that we're about
@@ -522,6 +516,10 @@ func recvDirect(t *_type, sg *sudog, dst unsafe.Pointer) {
 func closechan(c *hchan) {
 	if c == nil {
 		panic(plainError("close of nil channel"))
+	}
+
+	if c != nil && c.id == 0 {
+		c.id = AdvocateChanMake(int(c.dataqsiz))
 	}
 
 	// ADVOCATE-START

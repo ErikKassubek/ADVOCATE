@@ -42,29 +42,35 @@ func GetExitCode() (int, string) {
 // Parameter:
 //   - msg any: the panic message
 func SetExitCodeFromPanicMsg(msg any) {
-	_, file, line, _ := Caller(3)
-	advocateExitCodePos = file + ":" + intToString(line)
+	skip := 3
 
 	switch m := msg.(type) {
 	case plainError:
 		if m.Error() == "send on closed channel" {
 			advocateExitCode = ExitCodeSendClose
+			skip = 5
 		} else if m.Error() == "close of closed channel" {
 			advocateExitCode = ExitCodeCloseClose
+			skip = 4
 		} else if m.Error() == "close of nil channel" {
 			advocateExitCode = ExitCodeCloseNil
+			skip = 4
 		}
 	case string:
 		if m == "sync: negative WaitGroup counter" {
 			advocateExitCode = ExitCodeNegativeWG
+			skip = 5
 		} else if hasPrefix(m, "test timed out") || hasPrefix(m, "Timeout") {
 			advocateExitCode = ExitCodeTimeout
-		} else if expectedExitCode == ExitCodeUnlockBeforeLock {
-			if m == "sync: RUnlock of unlocked RWMutex" ||
-				m == "sync: Unlock of unlocked RWMutex" ||
-				m == "sync: unlock of unlocked mutex" {
-				advocateExitCode = ExitCodeUnlockBeforeLock
-			}
+		} else if m == "sync: unlock of unlocked mutex" {
+			advocateExitCode = ExitCodeUnlockBeforeLock
+			skip = 6
+		} else if m == "sync: Unlock of unlocked RWMutex" {
+			advocateExitCode = ExitCodeUnlockBeforeLock
+			skip = 4
+		} else if m == "sync: RUnlock of unlocked RWMutex" {
+			advocateExitCode = ExitCodeUnlockBeforeLock
+			skip = 5
 		}
 	default:
 		println("SetExitCode: other")
@@ -75,6 +81,9 @@ func SetExitCodeFromPanicMsg(msg any) {
 		print("\n")
 		printAllGoroutines()
 	}
+
+	_, file, line, _ := Caller(skip)
+	advocateExitCodePos = file + ":" + intToString(line)
 
 	if advocateExitCode == 0 {
 		advocateExitCode = ExitCodePanic

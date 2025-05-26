@@ -918,7 +918,6 @@ func isExitCodeConfOnEndElem(code int) bool {
 func ExitReplayPanic(msg any) {
 	SetExitCodeFromPanicMsg(msg)
 
-	println("E0")
 	if IsAdvocateFuzzingEnabled() {
 		finishFuzzingFunc()
 	} else if IsTracingEnabled() {

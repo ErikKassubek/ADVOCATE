@@ -17,7 +17,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -87,16 +86,10 @@ func testExists(fileName string, testName string) (bool, error) {
 	}
 	defer file.Close()
 
-	regexStr := "func " + testName + "\\(*t \\*testing.T*\\) {"
-	regex, err := regexp.Compile(regexStr)
-	if err != nil {
-		return false, err
-	}
-
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if regex.MatchString(line) {
+		if strings.Contains(line, "func "+testName) && strings.Contains(line, "testing.T") {
 			return true, nil
 		}
 	}

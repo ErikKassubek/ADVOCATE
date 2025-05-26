@@ -172,6 +172,9 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 		atomicReplayStr = "true"
 	}
 
+	fmt.Println("FileName: ", fileName)
+	fmt.Println("TestName: Main")
+
 	var lines []string
 	scanner := bufio.NewScanner(file)
 	importAdded := false
@@ -183,12 +186,15 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 
 		if strings.Contains(line, "package main") {
 			lines = append(lines, "import \"advocate\"")
+			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import \"") && !importAdded {
 			lines = append(lines, "import \"advocate\"")
+			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
 			lines = append(lines, "\t\"advocate\"")
+			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
 

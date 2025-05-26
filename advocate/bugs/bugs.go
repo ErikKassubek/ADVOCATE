@@ -158,7 +158,7 @@ func (b Bug) ToString() string {
 		arg1Str = "head: "
 		arg2Str = "tail: "
 	case utils.LUnknown:
-		typeStr = "Leak on routine with unknown cause"
+		typeStr = "Leak on routine"
 		arg1Str = "fork: "
 	case utils.LUnbufferedWith:
 		typeStr = "Leak on unbuffered channel with possible partner:"

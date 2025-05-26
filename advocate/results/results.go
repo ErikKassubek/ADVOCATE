@@ -45,7 +45,7 @@ var resultTypeMap = map[utils.ResultType]string{
 	utils.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
 	utils.PCyclicDeadlock:   "Possible cyclic deadlock",
 
-	utils.LUnknown:           "Leak on routine with unknown cause",
+	utils.LUnknown:           "Leak on routine",
 	utils.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
 	utils.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
 	utils.LBufferedWith:      "Leak on buffered channel with possible partner",
@@ -194,7 +194,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 	}
 
 	if resType == utils.RTimeout {
-		utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
+		// utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
 		return
 	}
 
@@ -258,7 +258,7 @@ func Result(level resultLevel, resType utils.ResultType, argType1 string, arg1 [
 		}
 	}
 
-	utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
+	// utils.LogResultf(false, false, "", "Info: %s", resultTypeMap[resType])
 }
 
 // InitResults sets the output file paths and clears al previous results

@@ -39,7 +39,7 @@ var tracePathRewritten = ""
 //   - atomic bool: if true, replay includes atomic
 func InitReplay(tracePath string, timeout int, atomic bool) {
 	// use first as default
-	runtime.SetForceExit(false)
+	// runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
 
 	tracePathRewritten = tracePath

@@ -259,9 +259,9 @@ func main() {
 		utils.LogErrorf("Finished with %d errors", numberErr)
 	}
 	if numberTimeout == 0 {
-		utils.LogInfo("No timeouts occur")
+		utils.LogInfo("No internal replay timeouts occurred")
 	} else {
-		utils.LogErrorf("%d timeouts occurred", numberTimeout)
+		utils.LogErrorf("%d internal replay timeouts occurred", numberTimeout)
 	}
 	if mode == "analysis" || mode == "fuzzing" {
 		if numberResults == 0 {

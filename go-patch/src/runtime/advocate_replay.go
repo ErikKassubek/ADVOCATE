@@ -30,9 +30,9 @@ const (
 
 const (
 	releaseOldestWaitLastMax  int64 = 6
-	releaseWaitMaxWait              = 20
-	releaseWaitMaxNoWait            = 10
-	acknowledgementMaxWaitSec       = 4
+	releaseWaitMaxWait              = 3
+	releaseWaitMaxNoWait            = 2
+	acknowledgementMaxWaitSec       = 1
 )
 
 var ExitCodeNames = map[int]string{
@@ -204,7 +204,7 @@ var (
 	replayIndex = 0
 
 	// exit code
-	replayForceExit  bool
+	// replayForceExit  bool
 	expectedExitCode int
 
 	// for leak, TimePre of stuck elem
@@ -400,7 +400,7 @@ func ReplayManager() {
 				println("Number of routines waiting on mutexes:", stuckMutexCounter)
 
 				if stuckMutexCounter > 0 {
-					SetForceExit(true)
+					// SetForceExit(true)
 					ExitReplayWithCode(replayElem.Line, "")
 				}
 
@@ -855,9 +855,9 @@ func foundReplayElement() {
 // Parameter:
 //
 //	force: force exit
-func SetForceExit(force bool) {
-	replayForceExit = force
-}
+// func SetForceExit(force bool) {
+// 	replayForceExit = force
+// }
 
 // Set the expected exit code
 //
@@ -916,6 +916,9 @@ func isExitCodeConfOnEndElem(code int) bool {
 // Parameter:
 //   - msg: the panic message
 func ExitReplayPanic(msg any) {
+	DisableReplay()
+	DisableTracing()
+
 	SetExitCodeFromPanicMsg(msg)
 
 	if IsAdvocateFuzzingEnabled() {
@@ -929,6 +932,12 @@ func ExitReplayPanic(msg any) {
 	// }
 
 	ExitReplayWithCode(advocateExitCode, msg)
+}
+
+// ExitReplayTimeout exits the program, when a timeout in tracing or replay
+// was triggered
+func ExitReplayTimeout() {
+	ExitReplayPanic("Timeout")
 }
 
 // AdvocateIgnoreReplay decides if an operation should be ignored for replay.

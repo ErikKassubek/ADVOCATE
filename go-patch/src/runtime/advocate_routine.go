@@ -43,8 +43,8 @@ type AdvocateRoutine struct {
 //   - the new advocate routine
 func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 
-	// ignore the internal routines that are run before the main function starts
-	if advocateTracingDisabled && GetNextAdvocateRoutineID() != 1 {
+	// ignore the internal routines that are run before the main/test function starts
+	if advocateTracingDisabled {
 		return &AdvocateRoutine{
 			id:          0,
 			maxObjectId: 0,
@@ -72,6 +72,29 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 	AdvocateRoutines[advocateRoutineInfo.id] = advocateRoutineInfo
 
 	return advocateRoutineInfo
+}
+
+// setCurrentRoutineToActive will set the id of the current routine to a valid id
+// and add it to AdvocateRoutine
+// If it already contains a valid id, do nothing.
+// Call when tracing gets enabled
+func setCurrentRoutineToActive() {
+	g := getg()
+
+	if g.advocateRoutineInfo.id != 0 {
+		return
+	}
+
+	g.advocateRoutineInfo.id = GetNewAdvocateRoutineID()
+
+	lock(&AdvocateRoutinesLock)
+	defer unlock(&AdvocateRoutinesLock)
+
+	if AdvocateRoutines == nil {
+		AdvocateRoutines = make(map[uint64]*AdvocateRoutine)
+	}
+
+	AdvocateRoutines[g.advocateRoutineInfo.id] = g.advocateRoutineInfo
 }
 
 // Add an element to the trace of the current routine

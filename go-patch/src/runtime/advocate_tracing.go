@@ -23,6 +23,7 @@ var tracingStartNano int64
 func InitTracing(finishFuzzing func()) {
 	advocateTracingDisabled = false
 	finishTracingFunc = finishFuzzing
+	setCurrentRoutineToActive()
 
 	if tracingStartNano == 0 {
 		tracingStartNano = nanotime()

@@ -445,11 +445,15 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 			}
 		} else {
 			c = k.c
-			if int(casei) < nsends {
-				c.sendq.dequeueSudoG(sglist)
-			} else {
-				c.recvq.dequeueSudoG(sglist)
+			// ADVOCATE-START
+			if casi == preferredIndex {
+				if int(casei) < nsends {
+					c.sendq.dequeueSudoG(sglist)
+				} else {
+					c.recvq.dequeueSudoG(sglist)
+				}
 			}
+			// ADVOCATE-END
 		}
 		sgnext = sglist.waitlink
 		sglist.waitlink = nil

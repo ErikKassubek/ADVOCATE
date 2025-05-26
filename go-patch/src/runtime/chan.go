@@ -396,6 +396,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		blockevent(mysg.releasetime-t0, 2)
 	}
 	mysg.c = nil
+
 	releaseSudog(mysg)
 	if closed {
 		// ADVOCATE-START

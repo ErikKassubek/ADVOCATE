@@ -113,7 +113,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 	casesList := make([]TraceElementChannel, 0)
 	containsDefault := false
 	chosenDefault := false
-	for _, c := range cs {
+	for i, c := range cs {
 		if c == "" {
 			continue
 		}
@@ -130,46 +130,43 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 
 		// read channel operation
 		caseList := strings.Split(c, ".")
-		cTPre, err := strconv.Atoi(caseList[1])
-		if err != nil {
-			return errors.New("c_tPre is not an integer")
-		}
-		cTPost, err := strconv.Atoi(caseList[2])
-		if err != nil {
-			return errors.New("c_tPost is not an integer")
-		}
 
 		cID := -1
-		if caseList[3] != "*" {
-			cID, err = strconv.Atoi(caseList[3])
+		if caseList[1] != "*" {
+			cID, err = strconv.Atoi(caseList[1])
 			if err != nil {
 				return errors.New("c_id is not an integer")
 			}
 		}
 		var cOpC = SendOp
-		if caseList[4] == "R" {
+		if caseList[2] == "R" {
 			cOpC = RecvOp
-		} else if caseList[4] == "C" {
+		} else if caseList[2] == "C" {
 			return errors.New("Close in select case list")
 		}
 
-		cCl, err := strconv.ParseBool(caseList[5])
+		cCl, err := strconv.ParseBool(caseList[3])
 		if err != nil {
 			return errors.New("c_cr is not a boolean")
 		}
 
-		cOID, err := strconv.Atoi(caseList[6])
+		cOID, err := strconv.Atoi(caseList[4])
 		if err != nil {
 			return errors.New("c_oId is not an integer")
 		}
-		cOSize, err := strconv.Atoi(caseList[7])
+		cOSize, err := strconv.Atoi(caseList[5])
 		if err != nil {
 			return errors.New("c_oSize is not an integer")
 		}
 
+		cTPost := 0
+		if i == chosenIndexInt {
+			cTPost = tPostInt
+		}
+
 		elemCase := TraceElementChannel{
 			routine: routine,
-			tPre:    cTPre,
+			tPre:    tPreInt,
 			tPost:   cTPost,
 			id:      cID,
 			opC:     cOpC,
@@ -610,7 +607,7 @@ func (se *TraceElementSelect) ToString() string {
 			if notNil != 0 {
 				res += "~"
 			}
-			res += ca.toStringSep(".", false)
+			res += ca.toStringSep(".", true)
 			notNil++
 		}
 	}

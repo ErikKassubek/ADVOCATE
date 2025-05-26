@@ -535,7 +535,7 @@ func (ch *TraceElementChannel) SetOID(oID int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (ch *TraceElementChannel) ToString() string {
-	return ch.toStringSep(",", true)
+	return ch.toStringSep(",", false)
 }
 
 // ToStringSep returns the simple string representation of the element with a
@@ -543,11 +543,11 @@ func (ch *TraceElementChannel) ToString() string {
 //
 // Parameter:
 //   - sep string: The separator between the values
-//   - pos bool: Whether the position should be included
+//   - sel bool: Whether the channel is part of a select do not add time and pos)
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
+func (ch *TraceElementChannel) toStringSep(sep string, sel bool) string {
 	op := ""
 	switch ch.opC {
 	case SendOp:
@@ -566,12 +566,14 @@ func (ch *TraceElementChannel) toStringSep(sep string, pos bool) string {
 		cl = "t"
 	}
 
+	timeString := ""
 	posStr := ""
-	if pos {
+	if !sel {
+		timeString = fmt.Sprintf("%s%d%s%d", sep, ch.GetTPre(), sep, ch.GetTPost())
 		posStr = sep + ch.GetPos()
 	}
 
-	return fmt.Sprintf("C%s%d%s%d%s%d%s%s%s%s%s%d%s%d%s%d%s", sep, ch.tPre, sep, ch.tPost, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
+	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
 }
 
 // GetTraceID returns the trace id

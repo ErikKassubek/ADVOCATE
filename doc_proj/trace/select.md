@@ -21,8 +21,8 @@ The other fields are set as follows:
 - [id]: This field contains the unique id of the select statement
 - [cases]: This field shows a list of the available cases in the select. The
 cases are separated by a ~ symbol. The elements are equal to an equivalent
-channel operation without the `pos` field, except that the fields are separated
-by a decimapl point (.) instead of a comma. . The operations are ordered in the following way: First all send
+channel operation without the `tPre`, `tPost` and `pos` field, except that the fields are separated
+by a decimapl point (.) instead of a comma. The operations are ordered in the following way: First all send
 operations, ordered as in the order of the select cases, then all receive operations,
 again ordered as written in the select cases. If a case is on a nil channel, the channel ID is set to *.
 By checking the the `tPre` of those channel operations are

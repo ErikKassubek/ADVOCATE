@@ -241,7 +241,7 @@ func (elem AdvocateTraceChannel) toStringForSelect() string {
 		idStr = uint64ToString(elem.id)
 	}
 
-	return buildTraceElemStringSep(".", "C", elem.tPre, elem.tPost, idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount)
+	return buildTraceElemStringSep(".", "C", idStr, opStr, elem.cl, elem.oId, elem.qSize, elem.qCount)
 }
 
 // getOperation is a getter for the operation

@@ -224,7 +224,7 @@ func (elem AdvocateTraceChannel) toString() string {
 //
 // Returns:
 //   - string: the string representation of the form
-//     C,[tPre].[tPost].[id].[operation].[cl].[oId].[qSize].[qCount]
+//     C,[id].[operation].[cl].[oId].[qSize].[qCount]
 func (elem AdvocateTraceChannel) toStringForSelect() string {
 	opStr := ""
 	switch elem.op {

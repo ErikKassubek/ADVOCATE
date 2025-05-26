@@ -49,10 +49,6 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 		return
 	}
 
-	if ch.GetPartner() == nil {
-		findPartner(ch)
-	}
-
 	// hold back receive operations, until the send operation is processed
 	for _, elem := range waitingReceive {
 		if elem.GetOID() <= maxOpID[id] {
@@ -153,7 +149,6 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 		chosenCase := se.GetChosenCase()
 		chosenCase.SetVc(se.GetVC())
 
-		findPartner(chosenCase)
 		UpdateVCChannel(chosenCase)
 	}
 
@@ -201,52 +196,6 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 				int(c.GetOpC()), c.IsBuffered())
 		}
 	}
-}
-
-// Find the partner of the channel operation
-//
-// Parameter:
-//   - ch *trace.TraceElementChannel: the trace element
-//
-// Returns:
-//   - int: The routine id of the partner, -1 if no partner was found
-func findPartner(ch *trace.TraceElementChannel) *trace.TraceElementChannel {
-	id := ch.GetID()
-	oID := ch.GetOID()
-
-	// return -1 if closed by channel
-	if ch.GetClosed() || ch.GetTPost() == 0 {
-		return nil
-	}
-
-	// find partner has already been applied to the partner and the communication
-	// was fund. An repeated search is not necessary
-	if ch.GetPartner() != nil {
-		return ch.GetPartner()
-	}
-
-	// check if partner has already been processed
-	if partner, ok := channelWithoutPartner[id][oID]; ok {
-		if ch.IsEqual(partner) {
-			return nil
-		}
-
-		// partner was already processed
-		ch.SetPartner(partner)
-		partner.SetPartner(ch)
-
-		delete(channelWithoutPartner[id], oID)
-
-		return partner
-
-	}
-
-	if channelWithoutPartner[id] == nil {
-		channelWithoutPartner[id] = make(map[int]*trace.TraceElementChannel)
-	}
-	channelWithoutPartner[id][oID] = ch
-
-	return nil
 }
 
 // Unbuffered updates and calculates the vector clocks given a send/receive pair on a unbuffered

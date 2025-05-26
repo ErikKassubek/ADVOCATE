@@ -27,11 +27,15 @@ import (
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - numberElemsInTrace map[int]int: per routine number of elems in trace, routineId -> number
+//   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
+//   - channelIDs map[int]struct{}: all channel ids in the trace
 type Trace struct {
-	traces             map[int][]TraceElement
-	hbWasCalc          bool
-	numberElemsInTrace map[int]int
-	minTraceID         int
+	traces                map[int][]TraceElement
+	hbWasCalc             bool
+	numberElemsInTrace    map[int]int
+	minTraceID            int
+	channelWithoutPartner map[int]map[int]*TraceElementChannel
+	channelIDs            map[int]struct{}
 }
 
 // TODO: update numberElemsInTrace on trace modification
@@ -42,10 +46,11 @@ type Trace struct {
 //   - Trace: the new trace
 func NewTrace() Trace {
 	return Trace{
-		traces:             make(map[int][]TraceElement),
-		hbWasCalc:          false,
-		numberElemsInTrace: make(map[int]int),
-		minTraceID:         0,
+		traces:                make(map[int][]TraceElement),
+		hbWasCalc:             false,
+		numberElemsInTrace:    make(map[int]int),
+		minTraceID:            0,
+		channelWithoutPartner: make(map[int]map[int]*TraceElementChannel),
 	}
 }
 

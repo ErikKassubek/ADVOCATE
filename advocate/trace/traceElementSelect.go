@@ -184,6 +184,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		casesList = append(casesList, elemCase)
 		if elemCase.tPost != 0 {
 			elem.chosenCase = elemCase
+			elemCase.findPartner(t)
 		}
 	}
 

@@ -14,6 +14,7 @@ import (
 	"advocate/analysis"
 	"advocate/memory"
 	"advocate/trace"
+	"advocate/utils"
 )
 
 var currentTrace *trace.Trace
@@ -43,7 +44,7 @@ func ParseTrace(tr *trace.Trace) {
 		}
 
 		for _, elem := range routine {
-			if ignoreFuzzing(elem) {
+			if ignoreFuzzing(elem, false) {
 				continue
 			}
 
@@ -106,7 +107,7 @@ func canBeAddedToChain(elem trace.TraceElement) bool {
 		return t == trace.ObjectTypeMutex || t == trace.ObjectTypeChannel || t == trace.ObjectTypeSelect
 	}
 
-	return !ignoreFuzzing(elem)
+	return !ignoreFuzzing(elem, true)
 }
 
 // For the creation of mutations we ignore all elements that do not directly
@@ -114,12 +115,13 @@ func canBeAddedToChain(elem trace.TraceElement) bool {
 //
 // Parameter:
 //   - elem *trace.TraceElementFork: The element to check
+//   - ignoreNew bool: if true, new elem is ignored elem, otherwise not
 //
 // Returns:
 //   - True if the element is of one of those types, false otherwise
-func ignoreFuzzing(elem trace.TraceElement) bool {
+func ignoreFuzzing(elem trace.TraceElement, ignoreNew bool) bool {
 	t := elem.GetObjType(false)
-	return t == trace.ObjectTypeNew || t == trace.ObjectTypeReplay || t == trace.ObjectTypeRoutineEnd
+	return (ignoreNew && t == trace.ObjectTypeNew) || t == trace.ObjectTypeReplay || t == trace.ObjectTypeRoutineEnd
 }
 
 // Parse a new elem element.
@@ -128,6 +130,7 @@ func ignoreFuzzing(elem trace.TraceElement) bool {
 func parseNew(elem *trace.TraceElementNew) {
 	// only process channels
 	if elem.GetObjType(true) != "NC" {
+		utils.LogImportant(elem.GetObjType(true))
 		return
 	}
 

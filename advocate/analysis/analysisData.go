@@ -90,9 +90,6 @@ var (
 	// current must happens before vector clocks
 	currentWVC = make(map[int]*clock.VectorClock)
 
-	// channel without partner in main trace
-	channelWithoutPartner = make(map[int]map[int]*trace.TraceElementChannel) // id -> opId -> element
-
 	fifo          bool
 	modeIsFuzzing bool
 

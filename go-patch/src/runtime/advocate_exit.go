@@ -68,6 +68,12 @@ func SetExitCodeFromPanicMsg(msg any) {
 		}
 	default:
 		println("SetExitCode: other")
+		var p _panic
+		p.arg = msg
+		preprintpanics(&p)
+		printpanics(&p)
+		print("\n")
+		printAllGoroutines()
 	}
 
 	if advocateExitCode == 0 {

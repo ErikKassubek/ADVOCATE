@@ -163,6 +163,8 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		wVc:     nil,
 	}
 
+	elem.findPartner(t)
+
 	t.AddElement(&elem)
 	return nil
 }
@@ -612,4 +614,50 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 		wVc:     ch.wVc.Copy(),
 	}
 	return &newCh
+}
+
+// Find the partner of the channel operation
+//
+// Parameter:
+//   - tr *Trace: the trace, the element is in
+//
+// Returns:
+//   - *TraceElementChannel: The partner, -1 if not found
+func (ch *TraceElementChannel) findPartner(tr *Trace) *TraceElementChannel {
+	id := ch.GetID()
+	oID := ch.GetOID()
+
+	// return -1 if closed by channel
+	if ch.GetClosed() || ch.GetTPost() == 0 {
+		return nil
+	}
+
+	// find partner has already been applied to the partner and the communication
+	// was fund. An repeated search is not necessary
+	if ch.GetPartner() != nil {
+		return ch.GetPartner()
+	}
+
+	// check if partner has already been processed
+	if partner, ok := tr.channelWithoutPartner[id][oID]; ok {
+		if ch.IsEqual(partner) {
+			return nil
+		}
+
+		// partner was already processed
+		ch.SetPartner(partner)
+		partner.SetPartner(ch)
+
+		delete(tr.channelWithoutPartner[id], oID)
+
+		return partner
+
+	}
+
+	if tr.channelWithoutPartner[id] == nil {
+		tr.channelWithoutPartner[id] = make(map[int]*TraceElementChannel)
+	}
+	tr.channelWithoutPartner[id][oID] = ch
+
+	return nil
 }

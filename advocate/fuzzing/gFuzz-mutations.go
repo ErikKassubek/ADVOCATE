@@ -58,7 +58,7 @@ func createMutation(flipChance float64) map[string][]fuzzingSelect {
 	for key, listSel := range selectInfoTrace {
 		res[key] = make([]fuzzingSelect, 0)
 		for _, sel := range listSel {
-			res[key] = append(res[key], sel.getCopyRandom(true, flipChance))
+			res[key] = append(res[key], sel.getCopyRandom(sel.containsDefault, flipChance))
 		}
 	}
 
@@ -85,7 +85,7 @@ func getIDFromMut(mut map[string][]fuzzingSelect) string {
 
 	// Iterate over the sorted keys
 	for _, key := range keys {
-		id := key + "-"
+		id += (key + "-")
 		for _, sel := range mut[key] {
 			id += fmt.Sprintf("%d", sel.chosenCase)
 		}

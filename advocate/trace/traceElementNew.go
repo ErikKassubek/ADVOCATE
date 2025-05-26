@@ -28,7 +28,8 @@ const (
 	Conditional newOpType = "D"
 	Mutex       newOpType = "M"
 	Once        newOpType = "O"
-	wait        newOpType = "W"
+	Wait        newOpType = "W"
+	None        newOpType = ""
 )
 
 // TraceElementNew is a trace element for the creation of an object / new
@@ -90,12 +91,28 @@ func (t *Trace) AddTraceElementNew(routine int, tPost string, id string, elemTyp
 		return err
 	}
 
+	et := None
+	switch elemType {
+	case "NA":
+		et = AtomicVar
+	case "NC":
+		et = Channel
+	case "ND":
+		et = Conditional
+	case "NM":
+		et = Mutex
+	case "NO":
+		et = Once
+	case "NW":
+		et = Wait
+	}
+
 	elem := TraceElementNew{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPost:    tPostInt,
 		id:       idInt,
-		elemType: newOpType(elemType),
+		elemType: et,
 		num:      numInt,
 		file:     file,
 		line:     line,
@@ -211,7 +228,7 @@ func (n *TraceElementNew) GetObjType(operation bool) string {
 		return ObjectTypeNew + "M"
 	case Once:
 		return ObjectTypeNew + "O"
-	case wait:
+	case Wait:
 		return ObjectTypeNew + "W"
 	default:
 		return ObjectTypeNew

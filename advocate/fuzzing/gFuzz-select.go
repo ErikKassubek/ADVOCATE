@@ -23,7 +23,7 @@ import (
 //   - chosenCase int: id of the chosen case, -1 for default
 //   - numberCases int: number of cases not including default
 //   - containsDefault bool: true if contains default case, otherwise false
-//   - casiWithPos[]int: list of casi with
+//   - casiWithPos[]int: list of casi with possible partner
 type fuzzingSelect struct {
 	id              string
 	t               int
@@ -87,9 +87,13 @@ func (fs fuzzingSelect) getCopyRandom(def bool, flipChance float64) fuzzingSelec
 // Randomly select a case.
 // The case is between 0 and fs.numberCases if def is false and between -1 and fs.numberCases otherwise
 // fs.chosenCase is never chosen
-// The values in fs.casiWithPos have a higher likelihood to be chosen by a
+// The values in fs.casiWithPos have a higher likelihood to be chosen by a factor factorCaseWithPartner (defined in fuzzing/data.go)
 //
-//   - factor factorCaseWithPartner (defined in fuzzing/data.go)
+// Parameter
+//   - def bool: true if the select contains a bool
+//
+// Returns:
+//   - the chosen case id
 func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 	// Determine the starting number based on includeZero
 	start := 0
@@ -101,17 +105,13 @@ func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 	weights := make(map[int]int)
 
 	// Assign weights to each number
-	for i := start; i <= fs.numberCases; i++ {
-		if i == fs.chosenCase {
-			weights[i] = 0 // Ensure chosen case is never selected
-		} else {
-			weights[i] = 1 // Default weight
-		}
+	for i := start; i < fs.numberCases; i++ {
+		weights[i] = 1 // Default weight
 	}
 
 	// Increase weights for numbers in fs.casiWithPos
 	for _, num := range fs.casiWithPos {
-		if num >= start && num <= fs.numberCases && num != fs.chosenCase {
+		if num >= start && num < fs.numberCases && num != fs.chosenCase {
 			weights[num] *= factorCaseWithPartner
 		}
 	}
@@ -121,7 +121,7 @@ func (fs fuzzingSelect) chooseRandomCase(def bool) int {
 	numbers := []int{} // Keep track of the corresponding numbers
 	totalWeight := 0
 
-	for i := start; i <= fs.numberCases; i++ {
+	for i := start; i < fs.numberCases; i++ {
 		if weight, exists := weights[i]; exists && weight > 0 {
 			totalWeight += weight
 			cumulativeWeights = append(cumulativeWeights, totalWeight)

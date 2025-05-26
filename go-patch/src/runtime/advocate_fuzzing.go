@@ -33,7 +33,9 @@ var (
 // Parameter:
 //   - selectData map[string][]int: preferred select cases (select pos -> []preferred case index)
 //   - fuzzingFlow map[string][]int: operations to delay (file -> []lines)
-func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int) {
+//   - finishFuzzing func(): function that should be called if fuzzing has finished
+func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int, finishFuzzing func()) {
+	finishFuzzingFunc = finishFuzzing
 	fuzzingSelectData = selectData
 	fuzzingFlowData = fuzzingFlow
 
@@ -55,6 +57,7 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int)
 // Parameter:
 //   - finishFuzzing func(): advocate.FinishFuzzing function
 func InitFuzzingReplay(finishFuzzing func()) {
+	println("Init FuzzingReplay")
 	finishFuzzingFunc = finishFuzzing
 	advocateFuzzingEnabled = true
 	advocateFuzzingReplayEnabled = true

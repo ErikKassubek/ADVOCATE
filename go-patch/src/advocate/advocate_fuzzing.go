@@ -41,7 +41,7 @@ func InitFuzzing(tracePath string, timeout int) {
 			println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
 			panic(err)
 		}
-		runtime.InitFuzzingDelay(prefSel, prefFlow)
+		runtime.InitFuzzingDelay(prefSel, prefFlow, FinishFuzzing)
 	} else { // GoPie
 		runtime.InitFuzzingReplay(FinishFuzzing)
 		tracePathRewritten = tracePath

@@ -911,11 +911,24 @@ func isExitCodeConfOnEndElem(code int) bool {
 	return (code >= 20 && code < 30) || (code >= 40 && code < 50)
 }
 
+var hasPanicked = false
+
 // Exit the program with the given code if the program panics.
 //
 // Parameter:
 //   - msg: the panic message
 func ExitReplayPanic(msg any) {
+	if hasPanicked {
+		println("Circular Panic")
+		var p _panic
+		p.arg = msg
+		preprintpanics(&p)
+		printpanics(&p)
+		print("\n")
+		return
+	}
+	hasPanicked = true
+
 	SetExitCodeFromPanicMsg(msg)
 
 	if IsAdvocateFuzzingEnabled() {

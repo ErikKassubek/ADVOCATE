@@ -349,4 +349,11 @@ func split(s string, sep rune) []string {
 	return res
 }
 
+// printAllGoroutines prints the stack traces of all routines
+func printAllGoroutines() {
+	buf := make([]byte, 1<<20) // 1 MB buffer
+	n := Stack(buf, true)
+	println(string(buf[:n]))
+}
+
 // ADVOCATE-FILE-END

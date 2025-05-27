@@ -107,6 +107,11 @@ func startReplay(timeout int) {
 		// start time timeout
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
+			go func() {
+				maxWriteTime := min(timeout, 10)
+				time.Sleep(time.Duration(maxWriteTime) * time.Second)
+				os.Exit(10)
+			}()
 			panic("Timeout")
 		}()
 	}

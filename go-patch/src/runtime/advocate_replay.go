@@ -190,6 +190,7 @@ var (
 	// only run partial replay based on active
 	partialReplay        bool
 	partialReplayCounter = make(map[string]int)
+	partialReplayMutex   = mutex{}
 
 	// detection of deadlock
 	waitDeadlockDetect     bool
@@ -639,8 +640,10 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 			return false, nil, nil
 		}
 
+		lock(&partialReplayMutex)
 		partialReplayCounter[key] += 1
 		currentCounter := partialReplayCounter[key]
+		unlock(&partialReplayMutex)
 
 		// the operation is sometimes active, but not this time
 		if !isInSlice(c, currentCounter) {
@@ -779,8 +782,10 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 				continue
 			}
 
+			lock(&partialReplayMutex)
 			partialReplayCounter[key] += 1
 			currentCounter := partialReplayCounter[key]
+			unlock(&partialReplayMutex)
 
 			// the operation is sometimes active, but not this time
 			if !isInSlice(c, currentCounter) {

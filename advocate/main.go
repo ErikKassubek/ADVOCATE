@@ -252,7 +252,7 @@ func main() {
 		utils.PrintHelp()
 	}
 
-	numberResults, numberResultsConf, numberTestWithRes, numberErr, numberTimeout := utils.GetLoggingNumbers()
+	_, _, numberTestWithRes, numberErr, numberTimeout := utils.GetLoggingNumbers()
 	if numberErr == 0 {
 		utils.LogInfo("Finished with 0 errors")
 	} else {
@@ -264,12 +264,12 @@ func main() {
 		utils.LogErrorf("%d internal replay timeouts occurred", numberTimeout)
 	}
 	if mode == "analysis" || mode == "fuzzing" {
-		if numberResults == 0 {
+		if numberTestWithRes == 0 {
 			utils.LogInfo("No bugs have been found/indicated")
 		} else {
 			utils.LogResultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
-			utils.LogResultf(false, false, "", "Number of indicated bugs:  %d", numberResults)
-			utils.LogResultf(false, false, "", "Number of confirmed bugs:  %d", numberResultsConf)
+			// utils.LogResultf(false, false, "", "Number of indicated bugs:  %d", numberResults)
+			// utils.LogResultf(false, false, "", "Number of confirmed bugs:  %d", numberResultsConf)
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")

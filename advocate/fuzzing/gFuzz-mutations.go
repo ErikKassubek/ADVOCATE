@@ -26,6 +26,7 @@ import (
 func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 	numberMutAdded := 0
 
+	numberSkip := 0
 	for i := 0; i < numberMutations; i++ {
 		mut := createMutation(flipChance)
 
@@ -39,6 +40,15 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 			addMutToQueue(mut)
 			allMutations[id]++
 			numberMutAdded++
+			numberSkip = 0
+		} else {
+			// redraw mutation that has already been executed to often
+			// break if no new valid mut has been created for a while
+			numberSkip++
+			if numberSkip > len(mut) {
+				break
+			}
+			i--
 		}
 	}
 

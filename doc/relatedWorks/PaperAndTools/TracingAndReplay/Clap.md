@@ -17,6 +17,6 @@ a global trace. The solving of the constraint problem has multiple steps:
 - Encode all the other necessary execution constraints – i.e., the bug manifestation, the synchronization order, the memory order, and the read-write constraints – into a set of formulae in terms of the symbolic value variables and the order variables.
 Use a SMT solver to solve the constraints, which computes a schedule represented by an ordering of all the SAPs, and this schedule is then used by an application-level.
 
-<center><img src="../img/clap.png" alt="Order enforcement" width="800px" height=auto></center>
+<center><img src="../../../img/clap.png" alt="Order enforcement" width="800px" height=auto></center>
 
 Based on the reconstructed trace, CLAP is then able to replay bugs.

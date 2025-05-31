@@ -56,4 +56,4 @@ Not all run executions are again selected for mutations. The selection mainly de
 The order enforcement is similar to the enforcement used for ADVOCATE.
 An operation will only execute if it is the next element in the schedule. Otherwise it will wait.
 
-<center><img src="../img/relatedWorkGoPieOrder.png" alt="Order enforcement" width="400px" height=auto></center>
+<center><img src="../../../img/relatedWorkGoPieOrder.png" alt="Order enforcement" width="400px" height=auto></center>

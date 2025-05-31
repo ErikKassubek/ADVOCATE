@@ -12,7 +12,7 @@ identify new behaviors, it uses the "reads-from" relation.
 
 The Paper uses a grey box fuzzing approach.
 
-<center><img src="../img/relatedWorksGreyboxFuzzingAlgo.png" alt="Greybox Fuzzing" width="400px" height=auto></center>
+<center><img src="../../../img/relatedWorksGreyboxFuzzingAlgo.png" alt="Greybox Fuzzing" width="400px" height=auto></center>
 
 
 ### Read-from and (abstract) schedules
@@ -65,6 +65,6 @@ succinct state machine for each constraint is maintained in the
 abstract schedule to determine how priorities of relevant
 events should be proactively adjusted.
 
-<center><img src="../img/relatedWorksGreyboxFuzzingState.png" alt="State machines" width="900px" height=auto></center>
+<center><img src="../../../img/relatedWorksGreyboxFuzzingState.png" alt="State machines" width="900px" height=auto></center>
 
 In the absence of relevant events, the paper first assigns each event a random score if it does not already have one. It then picks the event with the highest score to execute next, resetting that event’s score along with the scores of any racing events.

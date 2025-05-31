@@ -46,7 +46,7 @@ select {
 
 is instrumented as
 
-<center><img src="../img/relatedWorkGFuzzOrderEnforcement.png" alt="Greybox Fuzzing" width="800px" height=auto></center>
+<center><img src="../../../img/relatedWorkGFuzzOrderEnforcement.png" alt="Greybox Fuzzing" width="800px" height=auto></center>
 
 The switch selects the case that should be executed. In each case of the switch, a select with two cases is implemented. On is a copy of the select case of the original select with the corresponding index.
 The other is a timer case, containing the original select as its body.

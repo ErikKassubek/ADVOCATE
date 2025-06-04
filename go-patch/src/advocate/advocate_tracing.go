@@ -1,3 +1,13 @@
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_replay.go
+// Brief: Advocate tracing
+//
+// Author: Erik Kassubek
+// Created: 2024-11-5
+//
+// License: BSD-3-Clause
+
 package advocate
 
 import (

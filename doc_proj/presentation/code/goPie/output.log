@@ -1,0 +1,7 @@
+FileName:  /home/erik/Obsidian/Bibliothek/Uni/Advocate/MasterProjectPresentation/code/goPie/main.go
+TestName: Main
+Import added at line: 1
+Header added at line: 27
+Header added at file: /home/erik/Obsidian/Bibliothek/Uni/Advocate/MasterProjectPresentation/code/goPie/main.go
+Init FuzzingReplay
+Reading trace from /home/erik/Obsidian/Bibliothek/Uni/Advocate/MasterProjectPresentation/code/goPie/fuzzingTraces/fuzzingTrace_4

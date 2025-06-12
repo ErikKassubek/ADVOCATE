@@ -5,7 +5,7 @@ multiple concurrency bugs from different real world programs.
 
 To compare our goPie implementation with the original implementation,
 we apply it to those example programs and compare the number of found bugs with
-the number given in the [GFuzz paper](../../doc_proj/relatedWorks/PaperAndTools/Fuzzing/GoPie.md).
+the number given in the [GoPie paper](../../relatedWorks/PaperAndTools/Fuzzing/GoPie.md).
 
 With this, we get the following results for the number of found bugs:
 

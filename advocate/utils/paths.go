@@ -133,3 +133,17 @@ func CheckPath(path string) (string, error) {
 
 	return progPath, nil
 }
+
+// GetProgName returns a program name from the path
+//
+// Parameter:
+//   - path string: path to the program
+//
+// Returns:
+//   - string: name for the program
+func GetProgName(path string) string {
+	path = strings.ReplaceAll(path, "~/"+string(os.PathSeparator), "")
+	path = strings.ReplaceAll(path, "."+string(os.PathSeparator), "")
+	path = strings.ReplaceAll(path, ".", "-")
+	return strings.ReplaceAll(path, string(os.PathSeparator), "-")
+}

@@ -279,8 +279,7 @@ func main() {
 // modeFuzzing starts the fuzzing
 func modeFuzzing() {
 	if progName == "" {
-		utils.LogError("Provide a name for the analyzed program. Set with -prog [name]")
-		return
+		progName = utils.GetProgName(progPath)
 	}
 
 	progPath, err := utils.CheckPath(progPath)

@@ -76,7 +76,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 			return fmt.Errorf("Name of the executable required")
 		}
 		if (stats || measureTime) && progName == "" {
-			return fmt.Errorf("If -stats or -recordTime is set, -prog [name] must be set as well")
+			progName = utils.GetProgName(pathToMainFileOrTestDir)
 		}
 		return runWorkflowMain(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
@@ -88,7 +88,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 			return fmt.Errorf("Path to test folder required for mode main")
 		}
 		if (stats || measureTime) && progName == "" {
-			return fmt.Errorf("If -stats or -recordTime is set, -prog [name] must be set as well")
+			progName = utils.GetProgName(pathToMainFileOrTestDir)
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			pathToTest, progName, notExecuted, stats, fuzzing, fuzzingTrace, keepTraces,

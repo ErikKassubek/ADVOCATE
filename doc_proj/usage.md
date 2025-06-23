@@ -181,7 +181,7 @@ The available modes are:
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
 
-For fuzzing, the `-prog [progName]` flag with the name of the program must be set.
+For fuzzing, the `-prog [progName]` flag with the name of the program can be set.
 
 The number of fuzzing runs per test/prog can be limited by setting `-maxFuzzingRun [maxRun]` (default: 100). To disable this, set `-maxFuzzingRun -1`
 Alternatively, a maximum time can be set using `-timeoutFuz [to in s]` (default 7 min). To disable this, set `-timeoutFuz -1`
@@ -206,7 +206,7 @@ To get additional information, the following tags can also be set:
 - `-stats`: create multiple statistic files as described [here](doc/statistics.md)
 - `-notExec`: Find operations, that have never been executed
 
-If one of these are set, the `-prog [name]` tag must be set to indicate the name of the program.
+If one of these are set, the `-prog [name]` tag can be set to indicate the name of the program.
 
 The created statistic and time files can also be found in the `advocateResult` folder.
 

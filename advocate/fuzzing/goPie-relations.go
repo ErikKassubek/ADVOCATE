@@ -44,7 +44,11 @@ func calculateRelRule1(routineTrace []trace.TraceElement) {
 			if _, ok := rel1[elem1]; !ok {
 				rel1[elem1] = make(map[trace.TraceElement]struct{})
 			}
+			if _, ok := rel1[elem2]; !ok {
+				rel1[elem2] = make(map[trace.TraceElement]struct{})
+			}
 			rel1[elem1][elem2] = struct{}{}
+			rel1[elem2][elem1] = struct{}{}
 			counterCPOP1++
 			break
 		}
@@ -98,53 +102,43 @@ func calculateRelRule2() {
 
 // For all elements apply rulers 3 and 4
 func calculateRelRule3And4() {
-	hasChanged := true
+	changed := true
+	for changed {
+		changed = false
 
-	for hasChanged {
-		hasChanged = false
-
-		// Rule3
-		for c, rel := range rel1 {
-			for c1 := range rel {
-				for c2 := range rel2[c1] {
-					if c.GetTraceID() == c2.GetTraceID() {
-						continue
-					}
-					if _, ok := rel2[c]; !ok {
+		// Rule 3
+		for c, rel1Elems := range rel1 {
+			for cPrime := range rel1Elems {
+				if rel2Elems, ok := rel2[cPrime]; ok {
+					if _, exists := rel2[c]; !exists {
 						rel2[c] = make(map[trace.TraceElement]struct{})
 					}
-					if _, ok := rel2[c][c2]; !ok {
-						hasChanged = true
+					for cDoublePrime := range rel2Elems {
+						if _, exists := rel2[c][cDoublePrime]; !exists {
+							rel2[c][cDoublePrime] = struct{}{}
+							changed = true
+						}
 					}
-					rel2[c][c2] = struct{}{}
-					counterCPOP2++
-				}
-				if memory.WasCanceled() {
-					return
 				}
 			}
-
 		}
 
-		// rule4
-		for c, rel := range rel2 {
-			for c1 := range rel {
-				for c2 := range rel2[c1] {
-					if c.GetTraceID() == c2.GetTraceID() {
-						continue
+		// Rule 4
+		for c, rel2Elems := range rel2 {
+			newTargets := make(map[trace.TraceElement]struct{})
+			for cPrime := range rel2Elems {
+				if nestedElems, ok := rel2[cPrime]; ok {
+					for cDoublePrime := range nestedElems {
+						if _, exists := rel2Elems[cDoublePrime]; !exists {
+							newTargets[cDoublePrime] = struct{}{}
+							changed = true
+						}
 					}
-					if _, ok := rel2[c]; !ok {
-						rel2[c] = make(map[trace.TraceElement]struct{})
-					}
-					if _, ok := rel2[c][c2]; !ok {
-						hasChanged = true
-					}
-					rel2[c][c2] = struct{}{}
-					counterCPOP2++
 				}
 			}
-			if memory.WasCanceled() {
-				return
+
+			for k := range newTargets {
+				rel2[c][k] = struct{}{}
 			}
 		}
 	}

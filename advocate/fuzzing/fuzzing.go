@@ -292,6 +292,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
+			utils.LogInfo("Parse recorded trace to calculate fuzzing relations")
+
 			// collect the required data to decide whether run is interesting
 			// and to create the mutations
 			ParseTrace(&analysis.MainTrace)

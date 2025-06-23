@@ -60,7 +60,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 
-	if err != nil {
+	if err != nil && fuzzingRun <= 0 {
 		utils.LogError("Could not open trace: ", err.Error())
 		return err
 	}

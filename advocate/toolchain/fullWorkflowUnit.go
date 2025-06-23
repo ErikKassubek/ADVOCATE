@@ -222,11 +222,11 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 	// Output test summary
 	if testName == "" {
-		utils.LogInfo("Finished full workflow for all tests")
+		utils.LogInfo("Finished run for all tests")
 		utils.LogInfof("Attempted tests: %d", attemptedTests)
 		utils.LogInfof("Skipped tests: %d", skippedTests)
 	} else {
-		utils.LogInfof("Finished full work flow for %s", testName)
+		utils.LogInfof("Finished run for %s", testName)
 	}
 
 	return nil

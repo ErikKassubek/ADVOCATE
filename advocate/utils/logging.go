@@ -24,10 +24,6 @@ const (
 	Purple = "\033[35m"
 )
 
-const (
-	noErrorMessages = true
-)
-
 var numberErr = 0
 var numberTimeout = 0
 var numberResults = 0
@@ -201,9 +197,6 @@ func LogTimeoutf(format string, v ...any) {
 // Parameter:
 //   - v ...any: the content of the log
 func LogError(v ...any) {
-	if noErrorMessages {
-		return
-	}
 	log.Print(Red, fmt.Sprint(v...), Reset, "\n")
 	numberErr++
 }
@@ -216,9 +209,6 @@ func LogError(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func LogErrorf(format string, v ...any) {
-	if noErrorMessages {
-		return
-	}
 	log.Printf(Red+format+Reset, v...)
 	numberErr++
 }

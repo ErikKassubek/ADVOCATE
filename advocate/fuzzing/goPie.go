@@ -85,8 +85,9 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		addFuzzingTraceFolder(fuzzingPath)
 	}
 
+	utils.LogInfof("Write %d mutations to file", min(len(mutations), maxNumberRuns-numberWrittenGoPieMuts))
 	for _, mut := range mutations {
-		if maxNumberRuns != -1 && numberFuzzingRuns+len(mutationQueue) > maxNumberRuns {
+		if maxNumberRuns != -1 && numberWrittenGoPieMuts > maxNumberRuns {
 			break
 		}
 		numberWrittenGoPieMuts++

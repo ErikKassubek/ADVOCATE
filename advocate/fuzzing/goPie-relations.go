@@ -75,8 +75,10 @@ func calculateRelRule2AddElem(elem trace.TraceElement) {
 	counterCPOP2++
 }
 
-// For all elements apply rule 2
-func calculateRelRule2() {
+// For all elements apply rule 2 and directly rule 4
+// This calculates rel2 as the tuples, of elements on the same primitive
+// but in different routines
+func calculateRelRule2And4() {
 	for _, elems := range elemsByID {
 		sort.Slice(elems, func(i, j int) bool {
 			return elems[i].GetTSort() < elems[j].GetTSort()
@@ -84,14 +86,20 @@ func calculateRelRule2() {
 
 		for i := 0; i < len(elems)-1; i++ {
 			elem1 := elems[i]
-			elem2 := elems[i+1]
-			if elem1.GetRoutine() != elem2.GetRoutine() {
-				if _, ok := rel2[elem1]; !ok {
-					rel2[elem1] = make(map[trace.TraceElement]struct{})
-				}
+			for j := i + 1; j < len(elems)-1; j++ {
+				elem2 := elems[j]
+				if elem1.GetRoutine() != elem2.GetRoutine() {
+					if _, ok := rel2[elem1]; !ok {
+						rel2[elem1] = make(map[trace.TraceElement]struct{})
+					}
+					if _, ok := rel2[elem2]; !ok {
+						rel2[elem2] = make(map[trace.TraceElement]struct{})
+					}
 
-				rel2[elem1][elem2] = struct{}{}
-				counterCPOP2++
+					rel2[elem1][elem2] = struct{}{}
+					rel2[elem2][elem1] = struct{}{}
+					counterCPOP2++
+				}
 			}
 			if memory.WasCanceled() {
 				return
@@ -100,8 +108,8 @@ func calculateRelRule2() {
 	}
 }
 
-// For all elements apply rulers 3 and 4
-func calculateRelRule3And4() {
+// For all elements apply rule 3
+func calculateRelRule3() {
 	changed := true
 	for changed {
 		changed = false
@@ -124,23 +132,23 @@ func calculateRelRule3And4() {
 		}
 
 		// Rule 4
-		for c, rel2Elems := range rel2 {
-			newTargets := make(map[trace.TraceElement]struct{})
-			for cPrime := range rel2Elems {
-				if nestedElems, ok := rel2[cPrime]; ok {
-					for cDoublePrime := range nestedElems {
-						if _, exists := rel2Elems[cDoublePrime]; !exists {
-							newTargets[cDoublePrime] = struct{}{}
-							changed = true
-						}
-					}
-				}
-			}
+		// for c, rel2Elems := range rel2 {
+		// 	newTargets := make(map[trace.TraceElement]struct{})
+		// 	for cPrime := range rel2Elems {
+		// 		if nestedElems, ok := rel2[cPrime]; ok {
+		// 			for cDoublePrime := range nestedElems {
+		// 				if _, exists := rel2Elems[cDoublePrime]; !exists {
+		// 					newTargets[cDoublePrime] = struct{}{}
+		// 					changed = true
+		// 				}
+		// 			}
+		// 		}
+		// 	}
 
-			for k := range newTargets {
-				rel2[c][k] = struct{}{}
-			}
-		}
+		// 	for k := range newTargets {
+		// 		rel2[c][k] = struct{}{}
+		// 	}
+		// }
 	}
 }
 

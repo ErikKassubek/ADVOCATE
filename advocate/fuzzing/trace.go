@@ -78,8 +78,8 @@ func ParseTrace(tr *trace.Trace) {
 	}
 
 	if fuzzingModeGoPie {
-		calculateRelRule2()
-		calculateRelRule3And4()
+		calculateRelRule2And4()
+		calculateRelRule3()
 	}
 
 	if memory.WasCanceled() {

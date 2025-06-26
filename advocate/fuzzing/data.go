@@ -168,6 +168,9 @@ func clearDataFull() {
 
 	numberOfPreviousRuns = 0
 	maxGFuzzScore = 0.0
+	numberWrittenGoPieMuts = 0
+	maxGFuzzScore = 0.0
+	maxGoPieScore = 0
 
 	// Info from the file/the previous runs
 	channelInfoFile = make(map[string]fuzzingChannel) // globalID -> fuzzingChannel

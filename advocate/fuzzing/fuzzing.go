@@ -292,6 +292,14 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if err != nil {
 			utils.LogError("Fuzzing run failed: ", err.Error())
 		} else {
+			numberFuzzingRuns++
+
+			// cancel if max number of mutations have been reached
+			if maxNumberRuns != -1 && numberFuzzingRuns >= maxNumberRuns {
+				utils.LogInfof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+				return nil
+			}
+
 			utils.LogInfo("Parse recorded trace to calculate fuzzing relations")
 
 			// collect the required data to decide whether run is interesting
@@ -299,7 +307,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			ParseTrace(&analysis.MainTrace)
 
 			if memory.WasCanceled() {
-				numberFuzzingRuns++
 				continue
 			}
 
@@ -324,14 +331,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			utils.LogInfof("Current fuzzing queue size: %d", len(mutationQueue))
 
 			mergeTraceInfoIntoFileInfo()
-		}
-
-		numberFuzzingRuns++
-
-		// cancel if max number of mutations have been reached
-		if maxNumberRuns != -1 && numberFuzzingRuns >= maxNumberRuns {
-			utils.LogInfof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
-			return nil
 		}
 
 		if maxTimeSet && time.Since(startTime) > maxTime {

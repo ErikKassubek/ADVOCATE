@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"math"
@@ -38,19 +38,22 @@ const (
 //   - opC opCond: The operation on the condition variable
 //   - file string, The file of the condition variable operation in the code
 //   - line int, The line of the condition variable operation in the code
-
+//   - children []TraceElement: children in partial order graph
+//   - parent []TraceElement: parents in partial order graph
 type TraceElementCond struct {
-	traceID int
-	index   int
-	routine int
-	tPre    int
-	tPost   int
-	id      int
-	opC     OpCond
-	file    string
-	line    int
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	traceID  int
+	index    int
+	routine  int
+	tPre     int
+	tPost    int
+	id       int
+	opC      OpCond
+	file     string
+	line     int
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementCond adds a new condition variable element to the main trace
@@ -93,16 +96,18 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 	}
 
 	elem := TraceElementCond{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPre:    tPreInt,
-		tPost:   tPostInt,
-		id:      idInt,
-		opC:     op,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPre:     tPreInt,
+		tPost:    tPostInt,
+		id:       idInt,
+		opC:      op,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -366,17 +371,48 @@ func (co *TraceElementCond) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (co *TraceElementCond) Copy() TraceElement {
+	children := make([]TraceElement, len(co.children))
+	copy(children, co.children)
+	parents := make([]TraceElement, len(co.parents))
+	copy(parents, co.parents)
+
 	return &TraceElementCond{
-		traceID: co.traceID,
-		index:   co.index,
-		routine: co.routine,
-		tPre:    co.tPre,
-		tPost:   co.tPost,
-		id:      co.id,
-		opC:     co.opC,
-		file:    co.file,
-		line:    co.line,
-		vc:      co.vc.Copy(),
-		wVc:     co.wVc.Copy(),
+		traceID:  co.traceID,
+		index:    co.index,
+		routine:  co.routine,
+		tPre:     co.tPre,
+		tPost:    co.tPost,
+		id:       co.id,
+		opC:      co.opC,
+		file:     co.file,
+		line:     co.line,
+		vc:       co.vc.Copy(),
+		wVc:      co.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (co *TraceElementCond) AddChild(elem TraceElement) {
+	co.children = append(co.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (co *TraceElementCond) GetChildren() []TraceElement {
+	return co.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (co *TraceElementCond) GetParents() []TraceElement {
+	return co.children
 }

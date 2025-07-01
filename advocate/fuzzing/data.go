@@ -11,9 +11,9 @@
 package fuzzing
 
 import (
-	"advocate/results"
+	"advocate/results/results"
 	"advocate/trace"
-	"advocate/utils"
+	"advocate/utils/helper"
 )
 
 // Info for a channel wether it was closed in all runs,
@@ -138,7 +138,7 @@ func mergeTraceInfoIntoFileInfo() {
 		}
 
 		for _, sit := range sits {
-			selectInfoFile[id] = utils.AddIfNotContains(selectInfoFile[id], sit.chosenCase)
+			selectInfoFile[id] = helper.AddIfNotContains(selectInfoFile[id], sit.chosenCase)
 		}
 	}
 }

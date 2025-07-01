@@ -12,7 +12,7 @@
 package toolchain
 
 import (
-	"advocate/utils"
+	"advocate/utils/helper"
 	"bufio"
 	"io"
 	"os"
@@ -40,7 +40,7 @@ func extractTraceNumber(trace string) (string, string) {
 	}
 
 	// read bug string
-	rewrittenInfoPath := filepath.Join(trace, utils.RewrittenInfo)
+	rewrittenInfoPath := filepath.Join(trace, helper.RewrittenInfo)
 	file, err := os.Open(rewrittenInfoPath)
 	if err == nil {
 		defer file.Close()
@@ -112,7 +112,7 @@ func wasReplaySuc(output string) bool {
 				return false
 			}
 
-			return exitCode >= utils.MinExitCodeSuc
+			return exitCode >= helper.MinExitCodeSuc
 		}
 	}
 

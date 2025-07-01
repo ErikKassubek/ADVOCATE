@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"math"
@@ -42,20 +42,24 @@ const (
 //   - line int: The line of the wait group in the code
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
+//   - children []TraceElement: children in partial order graph
+//   - parent []TraceElement: parents in partial order graph
 type TraceElementWait struct {
-	traceID int
-	index   int
-	routine int
-	tPre    int
-	tPost   int
-	ID      int
-	opW     OpWait
-	delta   int
-	val     int
-	file    string
-	line    int
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	traceID  int
+	index    int
+	routine  int
+	tPre     int
+	tPost    int
+	ID       int
+	opW      OpWait
+	delta    int
+	val      int
+	file     string
+	line     int
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -109,18 +113,20 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := TraceElementWait{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPre:    tPreInt,
-		tPost:   tPostInt,
-		ID:      idInt,
-		opW:     opWOp,
-		delta:   deltaInt,
-		val:     valInt,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPre:     tPreInt,
+		tPost:    tPostInt,
+		ID:       idInt,
+		opW:      opWOp,
+		delta:    deltaInt,
+		val:      valInt,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -393,19 +399,50 @@ func (wa *TraceElementWait) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (wa *TraceElementWait) Copy() TraceElement {
+	children := make([]TraceElement, len(wa.children))
+	copy(children, wa.children)
+	parents := make([]TraceElement, len(wa.parents))
+	copy(parents, wa.parents)
+
 	return &TraceElementWait{
-		traceID: wa.traceID,
-		index:   wa.index,
-		routine: wa.routine,
-		tPre:    wa.tPre,
-		tPost:   wa.tPost,
-		ID:      wa.ID,
-		opW:     wa.opW,
-		delta:   wa.delta,
-		val:     wa.val,
-		file:    wa.file,
-		line:    wa.line,
-		vc:      wa.vc.Copy(),
-		wVc:     wa.wVc.Copy(),
+		traceID:  wa.traceID,
+		index:    wa.index,
+		routine:  wa.routine,
+		tPre:     wa.tPre,
+		tPost:    wa.tPost,
+		ID:       wa.ID,
+		opW:      wa.opW,
+		delta:    wa.delta,
+		val:      wa.val,
+		file:     wa.file,
+		line:     wa.line,
+		vc:       wa.vc.Copy(),
+		wVc:      wa.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (wa *TraceElementWait) AddChild(elem TraceElement) {
+	wa.children = append(wa.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (wa *TraceElementWait) GetChildren() []TraceElement {
+	return wa.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (wa *TraceElementWait) GetParents() []TraceElement {
+	return wa.children
 }

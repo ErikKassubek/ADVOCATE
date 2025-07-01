@@ -16,8 +16,8 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/clock"
-	"advocate/utils"
+	"advocate/analysis/clock"
+	"advocate/utils/log"
 )
 
 // OpChannel is an enum for opC
@@ -51,24 +51,28 @@ const (
 //   - partner *TraceElementChannel: The partner of the channel operation
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
+//   - children []TraceElement: children in partial order graph
+//   - parent []TraceElement: parents in partial order graph
 type TraceElementChannel struct {
-	traceID int
-	index   int
-	routine int
-	tPre    int
-	tPost   int
-	id      int
-	opC     OpChannel
-	cl      bool
-	oID     int
-	qSize   int
-	qCount  int
-	file    string
-	line    int
-	sel     *TraceElementSelect
-	partner *TraceElementChannel
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	traceID  int
+	index    int
+	routine  int
+	tPre     int
+	tPost    int
+	id       int
+	opC      OpChannel
+	cl       bool
+	oID      int
+	qSize    int
+	qCount   int
+	file     string
+	line     int
+	sel      *TraceElementSelect
+	partner  *TraceElementChannel
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -147,20 +151,22 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := TraceElementChannel{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPre:    tPreInt,
-		tPost:   tPostInt,
-		id:      idInt,
-		opC:     opCInt,
-		cl:      clBool,
-		oID:     oIDInt,
-		qSize:   qSizeInt,
-		qCount:  qCountInt,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPre:     tPreInt,
+		tPost:    tPostInt,
+		id:       idInt,
+		opC:      opCInt,
+		cl:       clBool,
+		oID:      oIDInt,
+		qSize:    qSizeInt,
+		qCount:   qCountInt,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	elem.findPartner(t)
@@ -557,7 +563,7 @@ func (ch *TraceElementChannel) toStringSep(sep string, sel bool) string {
 	case CloseOp:
 		op = "C"
 	default:
-		utils.LogError("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
+		log.Error("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
 		op = "-"
 	}
 
@@ -597,23 +603,30 @@ func (ch *TraceElementChannel) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (ch *TraceElementChannel) Copy() TraceElement {
+	children := make([]TraceElement, len(ch.children))
+	copy(children, ch.children)
+	parents := make([]TraceElement, len(ch.parents))
+	copy(parents, ch.parents)
+
 	newCh := TraceElementChannel{
-		traceID: ch.traceID,
-		index:   ch.index,
-		routine: ch.routine,
-		tPre:    ch.tPre,
-		tPost:   ch.tPost,
-		id:      ch.id,
-		opC:     ch.opC,
-		cl:      ch.cl,
-		oID:     ch.oID,
-		qSize:   ch.qSize,
-		file:    ch.file,
-		line:    ch.line,
-		sel:     ch.sel,
-		partner: ch.partner,
-		vc:      ch.vc.Copy(),
-		wVc:     ch.wVc.Copy(),
+		traceID:  ch.traceID,
+		index:    ch.index,
+		routine:  ch.routine,
+		tPre:     ch.tPre,
+		tPost:    ch.tPost,
+		id:       ch.id,
+		opC:      ch.opC,
+		cl:       ch.cl,
+		oID:      ch.oID,
+		qSize:    ch.qSize,
+		file:     ch.file,
+		line:     ch.line,
+		sel:      ch.sel,
+		partner:  ch.partner,
+		vc:       ch.vc.Copy(),
+		wVc:      ch.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
 	return &newCh
 }
@@ -662,4 +675,28 @@ func (ch *TraceElementChannel) findPartner(tr *Trace) *TraceElementChannel {
 	tr.channelWithoutPartner[id][oID] = ch
 
 	return nil
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (ch *TraceElementChannel) AddChild(elem TraceElement) {
+	ch.children = append(ch.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (ch *TraceElementChannel) GetChildren() []TraceElement {
+	return ch.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (ch *TraceElementChannel) GetParents() []TraceElement {
+	return ch.children
 }

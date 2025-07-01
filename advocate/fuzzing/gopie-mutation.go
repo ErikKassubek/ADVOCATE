@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/utils"
+	"advocate/utils/helper"
 	"math/rand/v2"
 )
 
@@ -32,8 +32,8 @@ func mutate(c chain, energy int) map[string]chain {
 		energy = 100
 	}
 
-	bound := utils.GoPieBound
-	mutateBound := utils.GoPieMutabound
+	bound := helper.GoPieBound
+	mutateBound := helper.GoPieMutabound
 
 	res := make(map[string]chain)
 

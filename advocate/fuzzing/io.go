@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	"advocate/timer"
 	"advocate/trace"
+	"advocate/utils/timer"
 	"fmt"
 	"os"
 	"path/filepath"

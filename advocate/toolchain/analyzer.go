@@ -11,13 +11,14 @@
 package toolchain
 
 import (
-	"advocate/analysis"
-	"advocate/io"
-	"advocate/memory"
-	"advocate/results"
-	"advocate/rewriter"
-	"advocate/timer"
-	"advocate/utils"
+	"advocate/analysis/analysis"
+	"advocate/analysis/rewriter"
+	"advocate/results/results"
+	"advocate/utils/helper"
+	"advocate/utils/io"
+	"advocate/utils/log"
+	"advocate/utils/memory"
+	"advocate/utils/timer"
 	"fmt"
 	"path/filepath"
 	"strconv"
@@ -61,21 +62,21 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 
 	if err != nil && fuzzingRun <= 0 {
-		utils.LogError("Could not open trace: ", err.Error())
+		log.Error("Could not open trace: ", err.Error())
 		return err
 	}
 
 	if numberElems == 0 {
-		utils.LogInfof("Trace at %s does not contain any elements", pathTrace)
+		log.Infof("Trace at %s does not contain any elements", pathTrace)
 		return nil
 	}
 
-	utils.LogInfof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
+	log.Infof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
 	if onlyAPanicAndLeak {
-		utils.LogInfo("Start Analysis for actual panics and leaks")
+		log.Info("Start Analysis for actual panics and leaks")
 	} else if analysisCases["all"] {
-		utils.LogInfo("Start Analysis for all scenarios")
+		log.Info("Start Analysis for all scenarios")
 	} else {
 		info := "Start Analysis for the following scenarios: "
 		for key, value := range analysisCases {
@@ -83,7 +84,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 				info += (key + ",")
 			}
 		}
-		utils.LogInfo(info)
+		log.Info(info)
 	}
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
@@ -96,11 +97,11 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 		}
 		return fmt.Errorf("Analysis was canceled due to unexpected panic")
 	}
-	utils.LogInfo("Analysis finished")
+	log.Info("Analysis finished")
 
 	numberOfResults, err := results.CreateResultFiles(noWarningFlag, true)
 	if err != nil {
-		utils.LogError("Error in printing summary: ", err.Error())
+		log.Error("Error in printing summary: ", err.Error())
 	}
 
 	if onlyAPanicAndLeak {
@@ -108,7 +109,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	}
 
 	if noRewrite {
-		utils.LogInfo("Skip rewrite")
+		log.Info("Skip rewrite")
 		return nil
 	}
 
@@ -117,15 +118,15 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	notNeededRewrites := 0
 
 	if err != nil {
-		utils.LogError("Failed to create result files: ", err)
+		log.Error("Failed to create result files: ", err)
 		return nil
 	}
 
 	if numberOfResults != 0 {
-		utils.LogInfo("Start rewriting")
+		log.Info("Start rewriting")
 	}
 
-	rewrittenBugs := make(map[utils.ResultType][]string) // bugtype -> paths string
+	rewrittenBugs := make(map[helper.ResultType][]string) // bugtype -> paths string
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"
@@ -155,17 +156,17 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 		}
 	}
 	if memory.WasCanceledRAM() {
-		utils.LogError("Rewrite Canceled: Not enough RAM")
+		log.Error("Rewrite Canceled: Not enough RAM")
 	} else {
-		utils.LogInfo("Finished Rewrite")
+		log.Info("Finished Rewrite")
 	}
-	utils.LogInfo("Number Results: ", numberOfResults)
-	utils.LogInfo("Successfully rewrites: ", numberRewrittenTrace)
-	utils.LogInfo("No need/not possible to rewrite: ", notNeededRewrites)
+	log.Info("Number Results: ", numberOfResults)
+	log.Info("Successfully rewrites: ", numberRewrittenTrace)
+	log.Info("No need/not possible to rewrite: ", notNeededRewrites)
 	if failedRewrites > 0 {
-		utils.LogInfo("Failed rewrites: ", failedRewrites)
+		log.Info("Failed rewrites: ", failedRewrites)
 	} else {
-		utils.LogInfo("Failed rewrites: ", failedRewrites)
+		log.Info("Failed rewrites: ", failedRewrites)
 	}
 
 	return nil
@@ -178,13 +179,13 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 //   - newTrace string: The path where the new traces folder will be created
 //   - resultIndex int: The index of the result to use for the reordered trace file
 //   - numberOfRoutines int: The number of routines in the trace
-//   - rewrittenTrace *map[utils.ResultType][]string: set of bugs that have been already rewritten
+//   - rewrittenTrace *map[helper.ResultType][]string: set of bugs that have been already rewritten
 //
 // Returns:
 //   - bool: true, if a rewrite was necessary, false if not (e.g. actual bug, warning)
 //   - error: An error if the trace file could not be created
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
-	numberOfRoutines int, rewrittenTrace *map[utils.ResultType][]string) (bool, error) {
+	numberOfRoutines int, rewrittenTrace *map[helper.ResultType][]string) (bool, error) {
 	timer.Start(timer.Rewrite)
 	defer timer.Stop(timer.Rewrite)
 

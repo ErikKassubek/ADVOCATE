@@ -11,7 +11,7 @@
 package toolchain
 
 import (
-	"advocate/utils"
+	"advocate/utils/log"
 	"io"
 	"os"
 	"path/filepath"
@@ -69,7 +69,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 			_, err = io.Copy(destFile, srcFile)
 			if err != nil {
-				utils.LogError("Could not merge ", src, " int ", dest, ": ", err.Error())
+				log.Error("Could not merge ", src, " int ", dest, ": ", err.Error())
 			}
 		}
 	}
@@ -166,12 +166,12 @@ func ClearFuzzingTrace(path string, keepTrace bool) {
 	if keepTrace {
 		err := os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
 		if err != nil {
-			utils.LogErrorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
+			log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
 		}
 	} else {
 		err := os.RemoveAll(fuzzingPath)
 		if err != nil {
-			utils.LogErrorf("Could not delete fuzzingTraces: %s", err.Error())
+			log.Errorf("Could not delete fuzzingTraces: %s", err.Error())
 		}
 	}
 }

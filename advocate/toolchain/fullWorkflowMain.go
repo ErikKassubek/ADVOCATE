@@ -12,10 +12,11 @@
 package toolchain
 
 import (
-	"advocate/complete"
-	"advocate/stats"
-	"advocate/timer"
-	"advocate/utils"
+	"advocate/results/complete"
+	"advocate/results/stats"
+	"advocate/utils/helper"
+	"advocate/utils/log"
+	"advocate/utils/timer"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -50,7 +51,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		return fmt.Errorf("file %s does not exist", pathToFile)
 	}
 
-	utils.LogInfo("Run main")
+	log.Info("Run main")
 
 	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
 
@@ -110,18 +111,18 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 		// build the program
 		if measureTime && fuzzing < 1 {
-			utils.LogInfo("Build Program")
+			log.Info("Build Program")
 			fmt.Printf("%s build\n", pathToPatchedGoRuntime)
 			if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build"); err != nil {
-				utils.LogError("Error in building program, removing header and stopping workflow")
+				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(pathToFile)
 				return err
 			}
 
 			// run the program
-			utils.LogInfo("Execute Program")
+			log.Info("Execute Program")
 			timer.Start(timer.Run)
-			execPath := utils.MakePathLocal(executableName)
+			execPath := helper.MakePathLocal(executableName)
 			if err := runCommand(origStdout, origStderr, execPath); err != nil {
 				headerRemoverMain(pathToFile)
 			}
@@ -134,17 +135,17 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		}
 
 		// build the program
-		utils.LogInfo("Build program for recording")
+		log.Info("Build program for recording")
 		if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
-			utils.LogError("Error in building program, removing header and stopping workflow")
+			log.Error("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
 			return err
 		}
 
 		// run the recording
-		utils.LogInfo("Run program for recording")
+		log.Info("Run program for recording")
 		timer.Start(timer.Recording)
-		execPath := utils.MakePathLocal(executableName)
+		execPath := helper.MakePathLocal(executableName)
 		if err := runCommand(origStdout, origStderr, execPath); err != nil {
 			headerRemoverMain(pathToFile)
 		}
@@ -172,7 +173,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 	rewrittenTraces := make([]string, 0)
 	if runReplay {
-		utils.LogInfo("Run replay")
+		log.Info("Run replay")
 		// Find rewrittenTrace directories
 		if runAnalysis {
 			rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
@@ -194,16 +195,16 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			}
 
 			// build the program
-			utils.LogInfo("Build program for replay")
+			log.Info("Build program for replay")
 			if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
-				utils.LogError("Error in building program, removing header and stopping workflow")
+				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(pathToFile)
 				continue
 			}
 
 			// run the program
-			utils.LogInfo("Run program for replay")
-			execPath := utils.MakePathLocal(executableName)
+			log.Info("Run program for replay")
+			execPath := helper.MakePathLocal(executableName)
 			runCommand(origStdout, origStderr, execPath)
 
 			fmt.Printf("Remove replay header from %s\n", pathToFile)

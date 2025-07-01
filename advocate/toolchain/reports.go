@@ -11,8 +11,8 @@
 package toolchain
 
 import (
-	"advocate/explanation"
-	"advocate/utils"
+	"advocate/results/explanation"
+	"advocate/utils/log"
 )
 
 var movedTraces int = 0
@@ -25,6 +25,6 @@ var movedTraces int = 0
 func generateBugReports(folder string, fuzzing int) {
 	err := explanation.CreateOverview(folder, true, fuzzing)
 	if err != nil {
-		utils.LogError("Error creating explanation: ", err.Error())
+		log.Error("Error creating explanation: ", err.Error())
 	}
 }

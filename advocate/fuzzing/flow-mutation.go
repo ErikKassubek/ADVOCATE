@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	"advocate/analysis"
-	"advocate/utils"
+	"advocate/analysis/analysis"
+	"advocate/utils/log"
 )
 
 // if true, a new mutation run is created for each flow mutations,
@@ -34,7 +34,7 @@ func createMutationsFlow() {
 		for _, on := range *delay[i] {
 			// limit number of mutations created by this
 			if numberMutAdded > maxFlowMut {
-				utils.LogInfof("Add %d flow mutations to queue", numberMutAdded)
+				log.Infof("Add %d flow mutations to queue", numberMutAdded)
 				return
 			}
 
@@ -77,5 +77,5 @@ func createMutationsFlow() {
 		numberMutAdded++
 	}
 
-	utils.LogInfof("Add %d flow mutations to queue", numberMutAdded)
+	log.Infof("Add %d flow mutations to queue", numberMutAdded)
 }

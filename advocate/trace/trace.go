@@ -11,9 +11,10 @@
 package trace
 
 import (
-	"advocate/clock"
-	"advocate/memory"
-	"advocate/utils"
+	"advocate/analysis/clock"
+	"advocate/utils/helper"
+	"advocate/utils/log"
+	"advocate/utils/memory"
 	"errors"
 	"fmt"
 	"math"
@@ -689,7 +690,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	for _, tra := range t.traces {
 		for _, elem := range tra {
 			elemStr := elem.ToString()
-			if len(types) == 0 || utils.Contains(types, elemStr[0:1]) {
+			if len(types) == 0 || helper.Contains(types, elemStr[0:1]) {
 				elements = append(elements, struct {
 					string
 					time   int
@@ -707,9 +708,9 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	})
 
 	if len(elements) == 0 {
-		utils.LogInfo("Trace contains no elements")
+		log.Info("Trace contains no elements")
 	} else {
-		utils.LogInfof("Trace contains %d elements", len(elements))
+		log.Infof("Trace contains %d elements", len(elements))
 	}
 
 	for _, elem := range elements {
@@ -865,7 +866,7 @@ func (ti *TraceIterator) Reset() {
 //   - routine int: the routine to update
 func (ti *TraceIterator) IncreaseIndex(routine int) {
 	if ti.currentIndex[routine] == -1 {
-		utils.LogError("Tried to increase index of -1 at routine ", routine)
+		log.Error("Tried to increase index of -1 at routine ", routine)
 	}
 	ti.currentIndex[routine]++
 	if ti.currentIndex[routine] >= len(ti.t.traces[routine]) {

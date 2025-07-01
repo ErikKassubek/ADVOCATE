@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"strconv"
@@ -44,17 +44,21 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - file string: the file of the operation
 //   - line int: the line of the operation
+//   - children []TraceElement: children in partial order graph
+//   - parent []TraceElement: parents in partial order graph
 type TraceElementAtomic struct {
-	traceID int
-	index   int
-	routine int
-	tPost   int
-	id      int
-	opA     opAtomic
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
-	file    string
-	line    int
+	traceID  int
+	index    int
+	routine  int
+	tPost    int
+	id       int
+	opA      opAtomic
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	file     string
+	line     int
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -103,15 +107,17 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := TraceElementAtomic{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPost:   tPostInt,
-		id:      idInt,
-		opA:     opAInt,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPost:    tPostInt,
+		id:       idInt,
+		opA:      opAInt,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -368,14 +374,45 @@ func (at *TraceElementAtomic) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (at *TraceElementAtomic) Copy() TraceElement {
+	children := make([]TraceElement, len(at.children))
+	copy(children, at.children)
+	parents := make([]TraceElement, len(at.parents))
+	copy(parents, at.parents)
+
 	return &TraceElementAtomic{
-		traceID: at.traceID,
-		index:   at.index,
-		routine: at.routine,
-		tPost:   at.tPost,
-		id:      at.id,
-		opA:     at.opA,
-		vc:      at.vc.Copy(),
-		wVc:     at.wVc.Copy(),
+		traceID:  at.traceID,
+		index:    at.index,
+		routine:  at.routine,
+		tPost:    at.tPost,
+		id:       at.id,
+		opA:      at.opA,
+		vc:       at.vc.Copy(),
+		wVc:      at.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (at *TraceElementAtomic) AddChild(elem TraceElement) {
+	at.children = append(at.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (at *TraceElementAtomic) GetChildren() []TraceElement {
+	return at.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (at *TraceElementAtomic) GetParents() []TraceElement {
+	return at.children
 }

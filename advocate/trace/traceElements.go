@@ -10,7 +10,7 @@
 
 package trace
 
-import "advocate/clock"
+import "advocate/analysis/clock"
 
 // Values possible primitive types
 const (
@@ -54,4 +54,7 @@ type TraceElement interface {
 	Copy() TraceElement
 	setTraceID(ID int)
 	GetTraceID() int
+	AddChild(elem TraceElement)
+	GetChildren() []TraceElement
+	GetParents() []TraceElement
 }

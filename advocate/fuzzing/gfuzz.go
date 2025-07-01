@@ -10,7 +10,7 @@
 
 package fuzzing
 
-import "advocate/utils"
+import "advocate/utils/log"
 
 // Create new mutations for GFuzz if the previous run was interesting
 func createGFuzzMut() {
@@ -19,8 +19,8 @@ func createGFuzzMut() {
 		numberMut := numberMutations()
 		flipProb := getFlipProbability()
 		numMutAdd := createMutationsGFuzz(numberMut, flipProb)
-		utils.LogInfof("Add %d select mutations to queue", numMutAdd)
+		log.Infof("Add %d select mutations to queue", numMutAdd)
 	} else {
-		utils.LogInfo("Add 0 select mutations to queue")
+		log.Info("Add 0 select mutations to queue")
 	}
 }

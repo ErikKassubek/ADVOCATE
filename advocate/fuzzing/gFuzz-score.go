@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/utils"
+	"advocate/utils/helper"
 	"math"
 )
 
@@ -29,10 +29,10 @@ func numberMutations() int {
 
 // Calculate the score of the given run
 func calculateScore() float64 {
-	fact1 := utils.GFuzzW1
-	fact2 := utils.GFuzzW2
-	fact3 := utils.GFuzzW3
-	fact4 := utils.GFuzzW4
+	fact1 := helper.GFuzzW1
+	fact2 := helper.GFuzzW2
+	fact3 := helper.GFuzzW3
+	fact4 := helper.GFuzzW4
 
 	res := 0.0
 

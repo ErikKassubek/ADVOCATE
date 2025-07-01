@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"strconv"
@@ -20,23 +20,27 @@ import (
 // TraceElementFork is a trace element for a go statement
 // Fields:
 //   - traceID: id of the element, should never be changed
-//   - index int: Index in the routine
-//   - routine int: The routine id
+//   - index int: ID in the new routine
+//   - routine int: The routine id of
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the new go statement
 //   - file (string), line int: The position of the trace element in the file
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
+//   - children []TraceElement: children in partial order graph
+//   - parent []TraceElement: parents in partial order graph
 type TraceElementFork struct {
-	traceID int
-	index   int
-	routine int
-	tPost   int
-	id      int
-	file    string
-	line    int
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	traceID  int
+	index    int
+	routine  int
+	tPost    int
+	id       int
+	file     string
+	line     int
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementFork adds a new go statement element to the main trace
@@ -63,14 +67,16 @@ func (t *Trace) AddTraceElementFork(routine int, tPost string, id string, pos st
 	}
 
 	elem := TraceElementFork{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPost:   tPostInt,
-		id:      idInt,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPost:    tPostInt,
+		id:       idInt,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -285,15 +291,46 @@ func (fo *TraceElementFork) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (fo *TraceElementFork) Copy() TraceElement {
+	children := make([]TraceElement, len(fo.children))
+	copy(children, fo.children)
+	parents := make([]TraceElement, len(fo.parents))
+	copy(parents, fo.parents)
+
 	return &TraceElementFork{
-		traceID: fo.traceID,
-		index:   fo.index,
-		routine: fo.routine,
-		tPost:   fo.tPost,
-		id:      fo.id,
-		file:    fo.file,
-		line:    fo.line,
-		vc:      fo.vc.Copy(),
-		wVc:     fo.wVc.Copy(),
+		traceID:  fo.traceID,
+		index:    fo.index,
+		routine:  fo.routine,
+		tPost:    fo.tPost,
+		id:       fo.id,
+		file:     fo.file,
+		line:     fo.line,
+		vc:       fo.vc.Copy(),
+		wVc:      fo.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (fo *TraceElementFork) AddChild(elem TraceElement) {
+	fo.children = append(fo.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (fo *TraceElementFork) GetChildren() []TraceElement {
+	return fo.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (fo *TraceElementFork) GetParents() []TraceElement {
+	return fo.children
 }

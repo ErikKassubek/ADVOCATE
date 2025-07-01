@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/utils"
+	"advocate/utils/helper"
 	"math"
 )
 
@@ -70,7 +70,7 @@ func isInterestingSelect() bool {
 			}
 
 			for _, sel := range data { // case has been executed for the first time
-				if !utils.Contains(alreadyExecCase, sel.chosenCase) {
+				if !helper.Contains(alreadyExecCase, sel.chosenCase) {
 					return true
 				}
 			}

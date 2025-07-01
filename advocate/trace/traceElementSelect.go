@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"math"
@@ -38,6 +38,8 @@ import (
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
+//   - children []TraceElement: children in partial order graph
+//   - parents []TraceElement: parents in partial order graph
 type TraceElementSelect struct {
 	traceID             int
 	index               int
@@ -55,6 +57,8 @@ type TraceElementSelect struct {
 	vc                  *clock.VectorClock
 	wVc                 *clock.VectorClock
 	casesWithPosPartner []int
+	children            []TraceElement
+	parents             []TraceElement
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -107,6 +111,8 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		casesWithPosPartner: make([]int, 0),
 		vc:                  nil,
 		wVc:                 nil,
+		children:            make([]TraceElement, 0),
+		parents:             make([]TraceElement, 0),
 	}
 
 	cs := strings.Split(cases, "~")
@@ -655,6 +661,12 @@ func (se *TraceElementSelect) Copy() TraceElement {
 
 	chosenCase := *se.chosenCase.Copy().(*TraceElementChannel)
 
+	children := make([]TraceElement, len(se.children))
+	copy(children, se.children)
+
+	parents := make([]TraceElement, len(se.parents))
+	copy(parents, se.parents)
+
 	return &TraceElementSelect{
 		traceID:         se.traceID,
 		index:           se.index,
@@ -671,5 +683,31 @@ func (se *TraceElementSelect) Copy() TraceElement {
 		line:            se.line,
 		vc:              se.vc.Copy(),
 		wVc:             se.wVc.Copy(),
+		children:        children,
+		parents:         parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (se *TraceElementSelect) AddChild(elem TraceElement) {
+	se.children = append(se.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (se *TraceElementSelect) GetChildren() []TraceElement {
+	return se.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (se *TraceElementSelect) GetParents() []TraceElement {
+	return se.children
 }

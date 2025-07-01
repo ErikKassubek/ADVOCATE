@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"strconv"
 )
 
@@ -259,4 +259,30 @@ func (er *TraceElementReplay) Copy() TraceElement {
 		tPost:    er.tPost,
 		exitCode: er.exitCode,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+// Dummy method to implement traceElement
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (er *TraceElementReplay) AddChild(elem TraceElement) {
+}
+
+// GetChildren returns all children of this node in the partial order graph
+// Dummy method to implement traceElement
+//
+// Returns:
+//   - []*TraceElement: the children
+func (er *TraceElementReplay) GetChildren() []TraceElement {
+	return make([]TraceElement, 0)
+}
+
+// GetParents returns all parents of this node in the partial order graph
+// Dummy method to implement traceElement
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (er *TraceElementReplay) GetParents() []TraceElement {
+	return make([]TraceElement, 0)
 }

@@ -12,8 +12,8 @@
 package toolchain
 
 import (
-	"advocate/analysis"
-	"advocate/utils"
+	"advocate/analysis/analysis"
+	"advocate/utils/helper"
 	"fmt"
 )
 
@@ -50,8 +50,8 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 	execName, progName, test string, fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
 	firstRun, cont bool, fileNumber, testNumber int) error {
-	pathToAdvocate = utils.CleanPathHome(advocate)
-	pathToFileOrDir = utils.CleanPathHome(pathToMainFileOrTestDir)
+	pathToAdvocate = helper.CleanPathHome(advocate)
+	pathToFileOrDir = helper.CleanPathHome(pathToMainFileOrTestDir)
 
 	executableName = execName
 	programName = progName
@@ -76,7 +76,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 			return fmt.Errorf("Name of the executable required")
 		}
 		if (stats || measureTime) && progName == "" {
-			progName = utils.GetProgName(pathToMainFileOrTestDir)
+			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
 		return runWorkflowMain(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
@@ -88,7 +88,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 			return fmt.Errorf("Path to test folder required for mode main")
 		}
 		if (stats || measureTime) && progName == "" {
-			progName = utils.GetProgName(pathToMainFileOrTestDir)
+			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			pathToTest, progName, notExecuted, stats, fuzzing, fuzzingTrace, keepTraces,

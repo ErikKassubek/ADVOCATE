@@ -11,10 +11,10 @@
 package fuzzing
 
 import (
-	"advocate/analysis"
-	"advocate/memory"
+	"advocate/analysis/analysis"
 	"advocate/trace"
-	"advocate/utils"
+	"advocate/utils/log"
+	"advocate/utils/memory"
 )
 
 var currentTrace *trace.Trace
@@ -130,7 +130,7 @@ func ignoreFuzzing(elem trace.TraceElement, ignoreNew bool) bool {
 func parseNew(elem *trace.TraceElementNew) {
 	// only process channels
 	if elem.GetObjType(true) != "NC" {
-		utils.LogImportant(elem.GetObjType(true))
+		log.Important(elem.GetObjType(true))
 		return
 	}
 

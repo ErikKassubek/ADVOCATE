@@ -11,9 +11,9 @@
 package fuzzing
 
 import (
-	"advocate/memory"
 	"advocate/trace"
-	"advocate/utils"
+	"advocate/utils/helper"
+	"advocate/utils/memory"
 	"sort"
 )
 
@@ -167,10 +167,10 @@ func isGoPieElem(elem trace.TraceElement) bool {
 		validTypes := []string{
 			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
 			trace.ObjectTypeSelect}
-		return utils.Contains(validTypes, elemTypeShort)
+		return helper.Contains(validTypes, elemTypeShort)
 	}
 
 	invalidTypes := []string{trace.ObjectTypeNew,
 		trace.ObjectTypeReplay, trace.ObjectTypeRoutineEnd}
-	return !utils.Contains(invalidTypes, elemTypeShort)
+	return !helper.Contains(invalidTypes, elemTypeShort)
 }

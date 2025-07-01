@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/clock"
+	"advocate/analysis/clock"
 )
 
 // TraceElementOnce is a trace element for a once
@@ -30,18 +30,22 @@ import (
 //   - file (string), line int: The position of the mutex operation in the code
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
+//   - children []TraceElement: children in partial order graph
+//   - parents []TraceElement: parents in partial order graph
 type TraceElementOnce struct {
-	traceID int
-	index   int
-	routine int
-	tPre    int
-	tPost   int
-	id      int
-	suc     bool
-	file    string
-	line    int
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	traceID  int
+	index    int
+	routine  int
+	tPre     int
+	tPost    int
+	id       int
+	suc      bool
+	file     string
+	line     int
+	vc       *clock.VectorClock
+	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementOnce adds a new mutex trace element to the main trace
@@ -81,16 +85,18 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := TraceElementOnce{
-		index:   t.numberElemsInTrace[routine],
-		routine: routine,
-		tPre:    tPreInt,
-		tPost:   tPostInt,
-		id:      idInt,
-		suc:     sucBool,
-		file:    file,
-		line:    line,
-		vc:      nil,
-		wVc:     nil,
+		index:    t.numberElemsInTrace[routine],
+		routine:  routine,
+		tPre:     tPreInt,
+		tPost:    tPostInt,
+		id:       idInt,
+		suc:      sucBool,
+		file:     file,
+		line:     line,
+		vc:       nil,
+		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -341,17 +347,48 @@ func (on *TraceElementOnce) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (on *TraceElementOnce) Copy() TraceElement {
+	children := make([]TraceElement, len(on.children))
+	copy(children, on.children)
+	parents := make([]TraceElement, len(on.parents))
+	copy(parents, on.parents)
+
 	return &TraceElementOnce{
-		traceID: on.traceID,
-		index:   on.index,
-		routine: on.routine,
-		tPre:    on.tPre,
-		tPost:   on.tPost,
-		id:      on.id,
-		suc:     on.suc,
-		file:    on.file,
-		line:    on.line,
-		vc:      on.vc.Copy(),
-		wVc:     on.wVc.Copy(),
+		traceID:  on.traceID,
+		index:    on.index,
+		routine:  on.routine,
+		tPre:     on.tPre,
+		tPost:    on.tPost,
+		id:       on.id,
+		suc:      on.suc,
+		file:     on.file,
+		line:     on.line,
+		vc:       on.vc.Copy(),
+		wVc:      on.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (on *TraceElementOnce) AddChild(elem TraceElement) {
+	on.children = append(on.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (on *TraceElementOnce) GetChildren() []TraceElement {
+	return on.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (on *TraceElementOnce) GetParents() []TraceElement {
+	return on.children
 }

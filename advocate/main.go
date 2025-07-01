@@ -18,11 +18,12 @@ import (
 	"strings"
 
 	"advocate/fuzzing"
-	"advocate/memory"
-	"advocate/stats"
-	"advocate/timer"
+	"advocate/results/stats"
 	"advocate/toolchain"
-	"advocate/utils"
+	"advocate/utils/helper"
+	"advocate/utils/log"
+	"advocate/utils/memory"
+	"advocate/utils/timer"
 )
 
 var (
@@ -160,15 +161,15 @@ func main() {
 		mode = os.Args[1]
 		flag.CommandLine.Parse(os.Args[2:])
 		if help {
-			utils.PrintHelpMode(mode)
+			helper.PrintHelpMode(mode)
 			return
 		}
 	} else {
 		if help {
-			utils.PrintHelp()
+			helper.PrintHelp()
 			return
 		}
-		utils.PrintHelp()
+		helper.PrintHelp()
 		return
 	}
 
@@ -177,19 +178,19 @@ func main() {
 	// If so, fix the path. Otherwise return error and finish
 	if modeMain {
 		var err error
-		progPath, err = utils.GetMainPath(progPath)
+		progPath, err = helper.GetMainPath(progPath)
 		if err != nil {
-			utils.LogError("Could not find main file. If -main is set, -path should point to the main file.")
-			utils.LogError(err)
+			log.Error("Could not find main file. If -main is set, -path should point to the main file.")
+			log.Error(err)
 			return
 		}
 	}
 
-	utils.LogInit(noInfo, noProgress, !alwaysPanic)
+	log.Init(noInfo, noProgress, !alwaysPanic)
 
-	utils.SetSettings(settings, maxFuzzingRun, fuzzingMode)
+	helper.SetSettings(settings, maxFuzzingRun, fuzzingMode)
 
-	progPathDir := utils.GetDirectory(progPath)
+	progPathDir := helper.GetDirectory(progPath)
 	timer.Init(recordTime, progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
@@ -199,7 +200,7 @@ func main() {
 
 	advocatePathSplit := strings.Split(pathToAdvocate, string(os.PathSeparator))
 	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
-		utils.LogError("Could not determine ADVOCATE folder. Keep the toolchain and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
+		log.Error("Could not determine ADVOCATE folder. Keep the toolchain and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
 		return
 	}
 
@@ -216,7 +217,7 @@ func main() {
 
 	analysisCases, err := parseAnalysisCases(scenarios)
 	if err != nil {
-		utils.LogError("Could not read analysis cases: ", err)
+		log.Error("Could not read analysis cases: ", err)
 		return
 	}
 
@@ -229,10 +230,10 @@ func main() {
 		modeMainTest = "main"
 	}
 
-	execName = utils.CheckGoMod(progPath, modeMain, execName)
+	execName = helper.CheckGoMod(progPath, modeMain, execName)
 
 	if modeMain && execName == "" {
-		utils.LogError("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")
+		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")
 		panic(fmt.Errorf("Could not determine executable name"))
 	}
 
@@ -247,44 +248,44 @@ func main() {
 	case "replay":
 		modeToolchain(modeMainTest, false, false, true)
 	default:
-		utils.LogErrorf("Unknown mode %s\n", os.Args[1])
-		utils.LogError("Select one mode from  'analysis', 'fuzzing' or 'record'")
-		utils.PrintHelp()
+		log.Errorf("Unknown mode %s\n", os.Args[1])
+		log.Error("Select one mode from  'analysis', 'fuzzing' or 'record'")
+		helper.PrintHelp()
 	}
 
-	_, _, numberTestWithRes, numberErr, numberTimeout := utils.GetLoggingNumbers()
+	_, _, numberTestWithRes, numberErr, numberTimeout := log.GetLoggingNumbers()
 	if numberErr == 0 {
-		utils.LogInfo("Finished with 0 errors")
+		log.Info("Finished with 0 errors")
 	} else {
-		utils.LogErrorf("Finished with %d errors", numberErr)
+		log.Errorf("Finished with %d errors", numberErr)
 	}
 	if numberTimeout == 0 {
-		utils.LogInfo("No internal replay timeouts occurred")
+		log.Info("No internal replay timeouts occurred")
 	} else {
-		utils.LogErrorf("%d internal replay timeouts occurred", numberTimeout)
+		log.Errorf("%d internal replay timeouts occurred", numberTimeout)
 	}
 	if mode == "analysis" || mode == "fuzzing" {
 		if numberTestWithRes == 0 {
-			utils.LogInfo("No bugs have been found/indicated")
+			log.Info("No bugs have been found/indicated")
 		} else {
-			utils.LogResultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
-			// utils.LogResultf(false, false, "", "Number of indicated bugs:  %d", numberResults)
-			// utils.LogResultf(false, false, "", "Number of confirmed bugs:  %d", numberResultsConf)
+			log.Resultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
+			// log.Resultf(false, false, "", "Number of indicated bugs:  %d", numberResults)
+			// log.Resultf(false, false, "", "Number of confirmed bugs:  %d", numberResultsConf)
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
-	utils.LogInfo("Total time: ", timer.GetTime(timer.Total))
+	log.Info("Total time: ", timer.GetTime(timer.Total))
 }
 
 // modeFuzzing starts the fuzzing
 func modeFuzzing() {
 	if progName == "" {
-		progName = utils.GetProgName(progPath)
+		progName = helper.GetProgName(progPath)
 	}
 
-	progPath, err := utils.CheckPath(progPath)
+	progPath, err := helper.CheckPath(progPath)
 	if err != nil {
-		utils.LogError("Error on checking prog path: ", err)
+		log.Error("Error on checking prog path: ", err)
 		panic(err)
 	}
 
@@ -292,7 +293,7 @@ func modeFuzzing() {
 		progName, execName, ignoreAtomics, recordTime, notExec, statistics,
 		keepTraces, cont, timeoutFuzzing, maxFuzzingRun, cancelTestIfBugFound)
 	if err != nil {
-		utils.LogError("Fuzzing Failed: ", err.Error())
+		log.Error("Fuzzing Failed: ", err.Error())
 	}
 }
 
@@ -308,22 +309,22 @@ func modeFuzzing() {
 // Note:
 //   - If recording is false, but analysis or replay is set, -trace must be set
 func modeToolchain(mode string, record bool, analysis bool, replay bool) {
-	progPath, err := utils.CheckPath(progPath)
+	progPath, err := helper.CheckPath(progPath)
 	if err != nil {
-		utils.LogError("Error on checking prog path: ", err)
+		log.Error("Error on checking prog path: ", err)
 		panic(err)
 	}
 
 	if !record && (analysis || replay) {
-		tracePath, err = utils.CheckPath(tracePath)
+		tracePath, err = helper.CheckPath(tracePath)
 		if err != nil {
-			utils.LogError("Error on checking trace path: ", err)
+			log.Error("Error on checking trace path: ", err)
 			panic(err)
 		}
 	}
 
 	if mode == "test" && !record && replay && execName == "" {
-		utils.LogError("When running replay of test without recording, -exec [TestName] must be set")
+		log.Error("When running replay of test without recording, -exec [TestName] must be set")
 		panic("When running replay of test without recording, -exec [TestName] must be set")
 	}
 
@@ -331,14 +332,14 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 		replay, execName, progName, execName, -1, "", ignoreAtomics, recordTime,
 		notExec, statistics, keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {
-		utils.LogError("Failed to run toolchain: ", err.Error())
+		log.Error("Failed to run toolchain: ", err.Error())
 	}
 
 	if statistics {
 		// TODO: check if this
 		err = stats.CreateStatsTotal(progPath, progName)
 		if err != nil {
-			utils.LogError("Failed to create stats total: ", err.Error())
+			log.Error("Failed to create stats total: ", err.Error())
 		}
 	}
 }

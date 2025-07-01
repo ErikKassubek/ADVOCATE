@@ -11,9 +11,10 @@
 package fuzzing
 
 import (
-	"advocate/analysis"
-	"advocate/io"
-	"advocate/utils"
+	"advocate/analysis/analysis"
+	"advocate/utils/helper"
+	"advocate/utils/io"
+	"advocate/utils/log"
 	"fmt"
 	"math"
 	"os"
@@ -28,7 +29,7 @@ var allGoPieMutations = make(map[string]struct{})
 var chainFiles = make(map[int]chain)
 
 // number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
-var maxSCStart = utils.GoPieSCStart
+var maxSCStart = helper.GoPieSCStart
 
 // Create new mutations for GoPie
 //
@@ -62,7 +63,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 
 	energy := getEnergy()
 
-	utils.LogInfof("Mutate %d scheduling chains", len(schedulingChains))
+	log.Infof("Mutate %d scheduling chains", len(schedulingChains))
 
 	for _, sc := range schedulingChains {
 		muts := mutate(sc, energy)
@@ -85,7 +86,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		addFuzzingTraceFolder(fuzzingPath)
 	}
 
-	utils.LogInfof("Write %d mutations to file", min(len(mutations), maxNumberRuns-numberWrittenGoPieMuts))
+	log.Infof("Write %d mutations to file", min(len(mutations), maxNumberRuns-numberWrittenGoPieMuts))
 	for _, mut := range mutations {
 		if maxNumberRuns != -1 && numberWrittenGoPieMuts > maxNumberRuns {
 			break
@@ -133,7 +134,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 
 		err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 		if err != nil {
-			utils.LogError("Could not create pie mutation: ", err.Error())
+			log.Error("Could not create pie mutation: ", err.Error())
 			continue
 		}
 
@@ -162,7 +163,7 @@ func addFuzzingTraceFolder(path string) {
 	os.RemoveAll(path)
 	err := os.MkdirAll(path, os.ModePerm)
 	if err != nil {
-		utils.LogError("Could not create fuzzing folder")
+		log.Error("Could not create fuzzing folder")
 	}
 }
 
@@ -175,8 +176,8 @@ func getEnergy() int {
 		return 0
 	}
 
-	w1 := utils.GoPieW1
-	w2 := utils.GoPieW2
+	w1 := helper.GoPieW1
+	w2 := helper.GoPieW2
 
 	score := int(w1*float64(counterCPOP1) + w2*math.Log(float64(counterCPOP2)))
 

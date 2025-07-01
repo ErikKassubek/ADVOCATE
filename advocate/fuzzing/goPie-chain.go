@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	"advocate/analysis"
-	"advocate/clock"
+	"advocate/analysis/analysis"
+	"advocate/analysis/clock"
 	"advocate/trace"
 	"fmt"
 )

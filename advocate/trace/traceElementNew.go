@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/clock"
+	"advocate/analysis/clock"
 	"errors"
 	"fmt"
 	"strconv"
@@ -45,6 +45,8 @@ const (
 //   - line int: The line of the new
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
+//   - children []TraceElement: children in partial order graph
+//   - parents []TraceElement: parents in partial order graph
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type TraceElementNew struct {
@@ -59,6 +61,8 @@ type TraceElementNew struct {
 	line     int
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
+	children []TraceElement
+	parents  []TraceElement
 }
 
 // AddTraceElementNew adds a make trace element to the main trace
@@ -118,6 +122,8 @@ func (t *Trace) AddTraceElementNew(routine int, tPost string, id string, elemTyp
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
+		children: make([]TraceElement, 0),
+		parents:  make([]TraceElement, 0),
 	}
 
 	t.AddElement(&elem)
@@ -360,6 +366,11 @@ func (n *TraceElementNew) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (n *TraceElementNew) Copy() TraceElement {
+	children := make([]TraceElement, len(n.children))
+	copy(children, n.children)
+	parents := make([]TraceElement, len(n.parents))
+	copy(parents, n.parents)
+
 	return &TraceElementNew{
 		traceID:  n.traceID,
 		index:    n.index,
@@ -371,5 +382,31 @@ func (n *TraceElementNew) Copy() TraceElement {
 		line:     n.line,
 		vc:       n.vc.Copy(),
 		wVc:      n.wVc.Copy(),
+		children: children,
+		parents:  parents,
 	}
+}
+
+// AddChild adds an element as a child of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (n *TraceElementNew) AddChild(elem TraceElement) {
+	n.children = append(n.children, elem)
+}
+
+// GetChildren returns all children of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the children
+func (n *TraceElementNew) GetChildren() []TraceElement {
+	return n.children
+}
+
+// GetParents returns all parents of this node in the partial order graph
+//
+// Returns:
+//   - []*TraceElement: the parents
+func (n *TraceElementNew) GetParents() []TraceElement {
+	return n.children
 }

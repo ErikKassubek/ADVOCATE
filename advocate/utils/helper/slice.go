@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: helper.go
-// Brief: Utility function to check if an slice contains a value
+// File: slice.go
+// Brief: Utility functions on slices
 //
 // Author: Erik Kassubek
 // Created: 2024-04-06

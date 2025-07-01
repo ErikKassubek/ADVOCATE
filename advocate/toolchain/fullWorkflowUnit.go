@@ -12,7 +12,7 @@
 package toolchain
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
@@ -121,7 +121,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 				continue
 			}
 
-			analysis.Clear()
+			data.Clear()
 			memory.Reset()
 
 			if !isFuzzing {

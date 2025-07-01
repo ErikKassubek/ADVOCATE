@@ -12,7 +12,7 @@
 package toolchain
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/utils/helper"
 	"fmt"
 )
@@ -62,7 +62,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 	notExecuted = notExec
 	createStats = stats
 
-	analysis.Clear()
+	data.Clear()
 
 	switch mode {
 	case "main":

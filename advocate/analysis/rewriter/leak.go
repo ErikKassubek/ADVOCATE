@@ -11,8 +11,8 @@
 package rewriter
 
 import (
-	"advocate/analysis/analysis"
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/results/bugs"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -340,7 +340,7 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 			}
 
 			// Case 4
-			analysis.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			data.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 			// T = T1 ++ T2' ++ T3' ++ [e] ++ T4 ++ [f]
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]

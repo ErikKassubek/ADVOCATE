@@ -11,6 +11,7 @@
 package analysis
 
 import (
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
 )
@@ -21,8 +22,8 @@ import (
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateVCCond(co *trace.TraceElementCond) {
 	routine := co.GetRoutine()
-	co.SetVc(currentVC[routine])
-	co.SetWVc(currentWVC[routine])
+	co.SetVc(data.CurrentVC[routine])
+	co.SetWVc(data.CurrentWVC[routine])
 
 	switch co.GetOpC() {
 	case trace.WaitCondOp:
@@ -46,13 +47,13 @@ func CondWait(co *trace.TraceElementCond) {
 	routine := co.GetRoutine()
 
 	if co.GetTPost() != 0 { // not leak
-		if _, ok := currentlyWaiting[id]; !ok {
-			currentlyWaiting[id] = make([]int, 0)
+		if _, ok := data.CurrentlyWaiting[id]; !ok {
+			data.CurrentlyWaiting[id] = make([]int, 0)
 		}
-		currentlyWaiting[id] = append(currentlyWaiting[id], routine)
+		data.CurrentlyWaiting[id] = append(data.CurrentlyWaiting[id], routine)
 	}
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }
 
 // CondSignal updates and calculates the vector clocks given a signal operation
@@ -66,14 +67,14 @@ func CondSignal(co *trace.TraceElementCond) {
 	id := co.GetID()
 	routine := co.GetRoutine()
 
-	if len(currentlyWaiting[id]) != 0 {
-		tWait := currentlyWaiting[id][0]
-		currentlyWaiting[id] = currentlyWaiting[id][1:]
-		currentVC[tWait].Sync(currentVC[routine])
+	if len(data.CurrentlyWaiting[id]) != 0 {
+		tWait := data.CurrentlyWaiting[id][0]
+		data.CurrentlyWaiting[id] = data.CurrentlyWaiting[id][1:]
+		data.CurrentVC[tWait].Sync(data.CurrentVC[routine])
 	}
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }
 
 // CondBroadcast updates and calculates the vector clocks given a broadcast operation
@@ -87,11 +88,11 @@ func CondBroadcast(co *trace.TraceElementCond) {
 	id := co.GetID()
 	routine := co.GetRoutine()
 
-	for _, wait := range currentlyWaiting[id] {
-		currentVC[wait].Sync(currentVC[routine])
+	for _, wait := range data.CurrentlyWaiting[id] {
+		data.CurrentVC[wait].Sync(data.CurrentVC[routine])
 	}
-	currentlyWaiting[id] = make([]int, 0)
+	data.CurrentlyWaiting[id] = make([]int, 0)
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }

@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -34,14 +35,14 @@ func lockSetAddLock(mu *trace.TraceElementMutex, vc *clock.VectorClock) {
 	routine := mu.GetRoutine()
 	id := mu.GetID()
 
-	if _, ok := lockSet[routine]; !ok {
-		lockSet[routine] = make(map[int]string)
+	if _, ok := data.LockSet[routine]; !ok {
+		data.LockSet[routine] = make(map[int]string)
 	}
-	if _, ok := mostRecentAcquire[routine]; !ok {
-		mostRecentAcquire[routine] = make(map[int]elemWithVc)
+	if _, ok := data.MostRecentAcquire[routine]; !ok {
+		data.MostRecentAcquire[routine] = make(map[int]data.ElemWithVc)
 	}
 
-	// if _, ok := lockSet[routine][lock]; ok {
+	// if _, ok := data.LockSet[routine][lock]; ok {
 	// TODO: TODO: add a result. Deadlock detection is currently disabled
 	// errorMsg := "Lock " + strconv.Itoa(lock) +
 	// 	" already in lockSet for routine " + strconv.Itoa(routine)
@@ -54,8 +55,8 @@ func lockSetAddLock(mu *trace.TraceElementMutex, vc *clock.VectorClock) {
 	// results.Result(found, results.CRITICAL)
 	// }
 
-	lockSet[routine][id] = mu.GetTID()
-	mostRecentAcquire[routine][id] = elemWithVc{vc, mu}
+	data.LockSet[routine][id] = mu.GetTID()
+	data.MostRecentAcquire[routine][id] = data.ElemWithVc{vc, mu}
 }
 
 // Remove a lock from the lockSet of a routine
@@ -69,13 +70,13 @@ func lockSetRemoveLock(routine int, lock int) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	if _, ok := lockSet[routine][lock]; !ok {
+	if _, ok := data.LockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
 		log.Error(errorMsg)
 		return
 	}
-	delete(lockSet[routine], lock)
+	delete(data.LockSet[routine], lock)
 }
 
 // Check for mixed deadlocks
@@ -87,28 +88,28 @@ func checkForMixedDeadlock(routineSend int, routineRevc int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	for m := range lockSet[routineSend] {
-		_, ok1 := mostRecentAcquire[routineRevc][m]
-		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
+	for m := range data.LockSet[routineSend] {
+		_, ok1 := data.MostRecentAcquire[routineRevc][m]
+		_, ok2 := data.MostRecentAcquire[routineSend][m]
+		if ok1 && ok2 && data.MostRecentAcquire[routineSend][m].Elem.GetTID() != data.MostRecentAcquire[routineRevc][m].Elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"
-			// found += "\tlocks: \t\t" + mostRecentAcquire[routineSend][m].TID + "\t\t" + mostRecentAcquire[routineRevc][m].TID + "\n"
+			// found += "\tlocks: \t\t" + data.MostRecentAcquire[routineSend][m].TID + "\t\t" + data.MostRecentAcquire[routineRevc][m].TID + "\n"
 			// found += "\tsend/close-recv: \t\t" + tIDSend + "\t\t" + tIDRecv
 
 			// results.Result(found, results.CRITICAL)
 		}
 	}
 
-	for m := range lockSet[routineRevc] {
-		_, ok1 := mostRecentAcquire[routineRevc][m]
-		_, ok2 := mostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && mostRecentAcquire[routineSend][m].elem.GetTID() != mostRecentAcquire[routineRevc][m].elem.GetTID() {
+	for m := range data.LockSet[routineRevc] {
+		_, ok1 := data.MostRecentAcquire[routineRevc][m]
+		_, ok2 := data.MostRecentAcquire[routineSend][m]
+		if ok1 && ok2 && data.MostRecentAcquire[routineSend][m].Elem.GetTID() != data.MostRecentAcquire[routineRevc][m].Elem.GetTID() {
 			// found possible mixed deadlock
 			// TODO: add a result. Deadlock detection is currently disabled
 			// found := "Possible mixed deadlock:\n"
-			// found += "\tlocks: \t\t" + mostRecentAcquire[routineSend][m].TID + "\t\t" + mostRecentAcquire[routineRevc][m].TID + "\n"
+			// found += "\tlocks: \t\t" + data.MostRecentAcquire[routineSend][m].TID + "\t\t" + data.MostRecentAcquire[routineRevc][m].TID + "\n"
 			// found += "\tsend/close-recv: \t\t" + tIDSend + "\t\t" + tIDRecv
 
 			// results.Result(found, results.CRITICAL)
@@ -117,14 +118,14 @@ func checkForMixedDeadlock(routineSend int, routineRevc int) {
 }
 
 // func checkForMixedDeadlock2(routine int) {
-// 	for m := range lockSet[routine] {
+// 	for m := range data.LockSet[routine] {
 // 		// if the lock was not acquired by the routine, continue. Should not happen
-// 		vc1, okS := mostRecentAcquire[routine][m]
+// 		vc1, okS := data.MostRecentAcquire[routine][m]
 // 		if !okS {
 // 			continue
 // 		}
 
-// 		for routine2, acquire := range mostRecentAcquire {
+// 		for routine2, acquire := range data.MostRecentAcquire {
 // 			if routine == routine2 {
 // 				continue
 // 			}
@@ -137,8 +138,8 @@ func checkForMixedDeadlock(routineSend int, routineRevc int) {
 
 // 				// found possible mixed deadlock
 // 				found := "Possible mixed deadlock:\n"
-// 				found += "\tlock1: " + lockSet[routine][m] + "\n"
-// 				found += "\tlock2: " + lockSet[routine2][m]
+// 				found += "\tlock1: " + data.LockSet[routine][m] + "\n"
+// 				found += "\tlock2: " + data.LockSet[routine2][m]
 
 // 				results.Result(found, results.CRITICAL)
 // 			}

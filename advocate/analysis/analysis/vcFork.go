@@ -11,6 +11,7 @@
 package analysis
 
 import (
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
 )
@@ -22,8 +23,8 @@ import (
 func UpdateVCFork(fo *trace.TraceElementFork) {
 	routine := fo.GetRoutine()
 
-	fo.SetVc(currentVC[routine])
-	fo.SetWVc(currentWVC[routine])
+	fo.SetVc(data.CurrentVC[routine])
+	fo.SetWVc(data.CurrentWVC[routine])
 
 	Fork(fo)
 }
@@ -40,13 +41,13 @@ func Fork(fo *trace.TraceElementFork) {
 	oldRout := fo.GetRoutine()
 	newRout := fo.GetID()
 
-	currentVC[newRout] = currentVC[oldRout].Copy()
-	currentVC[oldRout].Inc(oldRout)
-	currentVC[newRout].Inc(newRout)
+	data.CurrentVC[newRout] = data.CurrentVC[oldRout].Copy()
+	data.CurrentVC[oldRout].Inc(oldRout)
+	data.CurrentVC[newRout].Inc(newRout)
 
-	currentWVC[newRout] = currentWVC[oldRout].Copy()
-	currentWVC[oldRout].Inc(oldRout)
-	currentWVC[newRout].Inc(newRout)
+	data.CurrentWVC[newRout] = data.CurrentWVC[oldRout].Copy()
+	data.CurrentWVC[oldRout].Inc(oldRout)
+	data.CurrentWVC[newRout].Inc(newRout)
 
-	forkOperations[fo.GetID()] = fo
+	data.ForkOperations[fo.GetID()] = fo
 }

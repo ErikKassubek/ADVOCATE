@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -305,7 +305,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 			// collect the required data to decide whether run is interesting
 			// and to create the mutations
-			ParseTrace(&analysis.MainTrace)
+			ParseTrace(&data.MainTrace)
 
 			if memory.WasCanceled() {
 				continue

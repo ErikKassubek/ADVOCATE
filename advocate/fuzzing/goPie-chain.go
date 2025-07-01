@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	"advocate/analysis/analysis"
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"fmt"
 )
@@ -223,7 +223,7 @@ func (ch *chain) toString() string {
 // Returns:
 //   - bool: True if the mutation is valid, false otherwise
 func (ch *chain) isValid() bool {
-	if !analysis.HBWasCalc() {
+	if !data.HBWasCalc() {
 		return true
 	}
 

@@ -12,6 +12,7 @@ package toolchain
 
 import (
 	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/analysis/rewriter"
 	"advocate/results/results"
 	"advocate/utils/helper"
@@ -91,7 +92,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	if memory.WasCanceled() {
 		// analysis.LogSizes()
-		analysis.Clear()
+		data.Clear()
 		if memory.WasCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		}
@@ -205,7 +206,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, nil
 	}
 
-	traceCopy, err := analysis.CopyMainTrace()
+	traceCopy, err := data.CopyMainTrace()
 	if err != nil {
 		return false, err
 	}

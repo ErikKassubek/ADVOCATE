@@ -12,6 +12,7 @@ package fuzzing
 
 import (
 	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/utils/log"
 )
 
@@ -23,7 +24,7 @@ const oneMutPerDelay = true
 func createMutationsFlow() {
 	numberMutAdded := 0
 
-	delay := make([](*[]analysis.ConcurrentEntry), 4)
+	delay := make([](*[]data.ConcurrentEntry), 4)
 
 	// once, mutex, send, recv
 	delay[0], delay[1], delay[2], delay[3] = analysis.GetConcurrentInfoForFuzzing()

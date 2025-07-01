@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -30,11 +31,11 @@ func checkForUnlockBeforeLockLock(mu *trace.TraceElementMutex) {
 
 	id := mu.GetID()
 
-	if _, ok := allLocks[id]; !ok {
-		allLocks[id] = make([]trace.TraceElement, 0)
+	if _, ok := data.AllLocks[id]; !ok {
+		data.AllLocks[id] = make([]trace.TraceElement, 0)
 	}
 
-	allLocks[id] = append(allLocks[id], mu)
+	data.AllLocks[id] = append(data.AllLocks[id], mu)
 }
 
 // Collect all unlocks for the analysis
@@ -47,11 +48,11 @@ func checkForUnlockBeforeLockUnlock(mu *trace.TraceElementMutex) {
 
 	id := mu.GetID()
 
-	if _, ok := allLocks[id]; !ok {
-		allUnlocks[id] = make([]trace.TraceElement, 0)
+	if _, ok := data.AllLocks[id]; !ok {
+		data.AllUnlocks[id] = make([]trace.TraceElement, 0)
 	}
 
-	allUnlocks[id] = append(allUnlocks[id], mu)
+	data.AllUnlocks[id] = append(data.AllUnlocks[id], mu)
 }
 
 // Check if we can get a unlock of a not locked mutex
@@ -62,26 +63,26 @@ func checkForUnlockBeforeLock() {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	for id := range allUnlocks { // for all mutex ids
+	for id := range data.AllUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
-		if trace.SameRoutine(allLocks[id], allUnlocks[id]) {
+		if trace.SameRoutine(data.AllLocks[id], data.AllUnlocks[id]) {
 			continue
 		}
 
-		graph := buildResidualGraph(allLocks[id], allUnlocks[id])
+		graph := buildResidualGraph(data.AllLocks[id], data.AllUnlocks[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
 			fmt.Println("Could not check for unlock before lock: ", err)
 		}
 
-		nrUnlock := len(allUnlocks)
+		nrUnlock := len(data.AllUnlocks)
 
 		locks := make([]trace.TraceElement, 0)
 		unlocks := make([]trace.TraceElement, 0)
 
 		if maxFlow < nrUnlock {
-			for _, l := range allLocks[id] {
+			for _, l := range data.AllLocks[id] {
 				if !helper.Contains(graph[drain], l) {
 					locks = append(locks, l)
 				}

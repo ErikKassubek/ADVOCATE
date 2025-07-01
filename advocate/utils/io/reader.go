@@ -11,7 +11,7 @@
 package io
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -83,7 +83,7 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 
 	tr.Sort()
 
-	analysis.SetMainTrace(&tr)
+	data.SetMainTrace(&tr)
 
 	return numberRoutines, elemCounter, nil
 }
@@ -122,7 +122,7 @@ func getTraceInfoFromFile(filePath string) error {
 		case "Runtime":
 			rt, err := strconv.Atoi(lineSplit[1])
 			if err == nil {
-				analysis.SetRuntimeDurationSec(rt)
+				data.SetRuntimeDurationSec(rt)
 			}
 		case "ExitCode":
 			ec, err := strconv.Atoi(lineSplit[1])
@@ -130,7 +130,7 @@ func getTraceInfoFromFile(filePath string) error {
 				exitCode = ec
 			}
 		case "ExitPosition":
-			exitPos = lineSplit[1]
+			data.ExitPos = lineSplit[1]
 		case "ReplayTimeout":
 			timeoutOldest, _ = strconv.Atoi(lineSplit[1])
 		case "ReplayDisabled":
@@ -140,8 +140,8 @@ func getTraceInfoFromFile(filePath string) error {
 		}
 	}
 
-	analysis.SetExitInfo(exitCode, exitPos)
-	analysis.SetReplayTimeoutInfo(timeoutOldest, timeoutDisabled, timeoutAck)
+	data.SetExitInfo(exitCode, exitPos)
+	data.SetReplayTimeoutInfo(timeoutOldest, timeoutDisabled, timeoutAck)
 
 	return nil
 }

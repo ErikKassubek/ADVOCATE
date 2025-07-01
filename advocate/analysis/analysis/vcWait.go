@@ -13,6 +13,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -24,8 +25,8 @@ import (
 //   - index int: The id of the wait group
 //   - nRout int: The number of routines in the trace
 func newWg(index int, nRout int) {
-	if _, ok := lastChangeWG[index]; !ok {
-		lastChangeWG[index] = clock.NewVectorClock(nRout)
+	if _, ok := data.LastChangeWG[index]; !ok {
+		data.LastChangeWG[index] = clock.NewVectorClock(nRout)
 	}
 }
 
@@ -34,8 +35,8 @@ func newWg(index int, nRout int) {
 //   - wa *TraceElementWait: the wait trace element
 func UpdateVCWait(wa *trace.TraceElementWait) {
 	routine := wa.GetRoutine()
-	wa.SetVc(currentVC[routine])
-	wa.SetWVc(currentWVC[routine])
+	wa.SetVc(data.CurrentVC[routine])
+	wa.SetWVc(data.CurrentWVC[routine])
 
 	switch wa.GetOpW() {
 	case trace.ChangeOp:
@@ -59,15 +60,15 @@ func Change(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, currentVC[routine].GetSize())
-	lastChangeWG[id].Sync(currentVC[routine])
+	newWg(id, data.CurrentVC[routine].GetSize())
+	data.LastChangeWG[id].Sync(data.CurrentVC[routine])
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["doneBeforeAdd"] {
+	if data.AnalysisCases["doneBeforeAdd"] {
 		checkForDoneBeforeAddChange(wa)
 	}
 }
@@ -83,12 +84,12 @@ func Wait(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, currentVC[routine].GetSize())
+	newWg(id, data.CurrentVC[routine].GetSize())
 
 	if wa.GetTPost() != 0 {
-		currentVC[routine].Sync(lastChangeWG[id])
+		data.CurrentVC[routine].Sync(data.LastChangeWG[id])
 	}
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }

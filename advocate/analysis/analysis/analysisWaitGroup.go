@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -47,12 +48,12 @@ func checkForDoneBeforeAddAdd(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
-	if _, ok := wgAdd[id]; !ok {
-		wgAdd[id] = make([]trace.TraceElement, 0)
+	if _, ok := data.WgAdd[id]; !ok {
+		data.WgAdd[id] = make([]trace.TraceElement, 0)
 	}
 
 	// add the vector clock and position to the list
-	wgAdd[id] = append(wgAdd[id], wa)
+	data.WgAdd[id] = append(data.WgAdd[id], wa)
 }
 
 // Collect all dones for the analysis
@@ -63,13 +64,13 @@ func checkForDoneBeforeAddDone(wa *trace.TraceElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
-	if _, ok := wgDone[id]; !ok {
-		wgDone[id] = make([]trace.TraceElement, 0)
+	if _, ok := data.WgDone[id]; !ok {
+		data.WgDone[id] = make([]trace.TraceElement, 0)
 
 	}
 
 	// add the vector clock and position to the list
-	wgDone[id] = append(wgDone[id], wa)
+	data.WgDone[id] = append(data.WgDone[id], wa)
 }
 
 // Check if a wait group counter could become negative
@@ -80,14 +81,14 @@ func checkForDoneBeforeAdd() {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)
 
-	for id := range wgAdd { // for all waitgroups
-		graph := buildResidualGraph(wgAdd[id], wgDone[id])
+	for id := range data.WgAdd { // for all waitgroups
+		graph := buildResidualGraph(data.WgAdd[id], data.WgDone[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
 			fmt.Println("Could not check for done before add: ", err)
 		}
-		nrDone := len(wgDone[id])
+		nrDone := len(data.WgDone[id])
 
 		addsNegWg := make([]trace.TraceElement, 0)
 		donesNegWg := make([]trace.TraceElement, 0)
@@ -97,7 +98,7 @@ func checkForDoneBeforeAdd() {
 			// that the i-th add in the result message is concurrent with the
 			// i-th done in the result message
 
-			for _, add := range wgAdd[id] {
+			for _, add := range data.WgAdd[id] {
 				if !helper.Contains(graph[drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}

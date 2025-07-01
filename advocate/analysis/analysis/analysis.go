@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -56,7 +57,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	start := time.Now()
 	i := 0
-	for _, trace := range MainTrace.GetTraces() {
+	for _, trace := range data.MainTrace.GetTraces() {
 		i++
 		if len(trace) == 0 {
 			continue
@@ -65,7 +66,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		index := int(len(trace) / 2)
 		elem := trace[index]
 		res := getConcurrentPartialOrderGraph(elem, true)
-		log.Infof("%d/%d: %d", i, MainTrace.GetNoRoutines(), len(res))
+		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
 
 	}
 	dur := time.Since(start)
@@ -73,7 +74,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	start = time.Now()
 	i = 0
-	for _, trace := range MainTrace.GetTraces() {
+	for _, trace := range data.MainTrace.GetTraces() {
 		i++
 		if len(trace) == 0 {
 			continue
@@ -82,7 +83,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		index := int(len(trace) / 2)
 		elem := trace[index]
 		res := getConcurrentBruteForce(elem, true)
-		log.Infof("%d/%d: %d", i, MainTrace.GetNoRoutines(), len(res))
+		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
 
 	}
 	dur = time.Since(start)
@@ -98,9 +99,9 @@ func runAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
 
-	switch exitCode {
+	switch data.ExitCode {
 	case helper.ExitCodeCloseClose: // close on closed
-		file, line, err := trace.PosFromPosString(exitPos)
+		file, line, err := trace.PosFromPosString(data.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -115,9 +116,9 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		bugWasFound = true
+		data.BugWasFound = true
 	case helper.ExitCodeCloseNil: // close on nil
-		file, line, err := trace.PosFromPosString(exitPos)
+		file, line, err := trace.PosFromPosString(data.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -131,9 +132,9 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		bugWasFound = true
+		data.BugWasFound = true
 	case helper.ExitCodeNegativeWG: // negative wg counter
-		file, line, err := trace.PosFromPosString(exitPos)
+		file, line, err := trace.PosFromPosString(data.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -147,9 +148,9 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		bugWasFound = true
+		data.BugWasFound = true
 	case helper.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
-		file, line, err := trace.PosFromPosString(exitPos)
+		file, line, err := trace.PosFromPosString(data.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -163,9 +164,9 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		bugWasFound = true
+		data.BugWasFound = true
 	case helper.ExitCodePanic: // unknown panic
-		file, line, err := trace.PosFromPosString(exitPos)
+		file, line, err := trace.PosFromPosString(data.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -179,15 +180,15 @@ func runAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		bugWasFound = true
+		data.BugWasFound = true
 	case helper.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, helper.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
-		if exitCode == helper.ExitCodeSendClose { // send on closed
-			file, line, err := trace.PosFromPosString(exitPos)
+		if data.ExitCode == helper.ExitCodeSendClose { // send on closed
+			file, line, err := trace.PosFromPosString(data.ExitPos)
 			if err != nil {
 				log.Error("Could not read exit pos: ", err)
 			}
@@ -201,7 +202,7 @@ func runAnalysisOnExitCodes(all bool) {
 			}
 			results.Result(results.CRITICAL, helper.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
-			bugWasFound = true
+			data.BugWasFound = true
 		}
 	}
 }
@@ -211,35 +212,35 @@ func runAnalysisOnExitCodes(all bool) {
 // Parameter:
 //   - assume_fifo bool: True to assume fifo ordering in buffered channels
 //   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
-//   - analysisCasesMap map[string]bool: The analysis cases to run
+//   - data.AnalysisCasesMap map[string]bool: The analysis cases to run
 //   - fuzzing bool: true if run with fuzzing
 //
 // Returns:
 //   - bool: true if something has been found
 func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	analysisCasesMap map[string]bool, fuzzing bool) {
-	fifo = assumeFifo
-	modeIsFuzzing = fuzzing
+	data.Fifo = assumeFifo
+	data.ModeIsFuzzing = fuzzing
 
-	analysisCases = analysisCasesMap
-	InitAnalysis(analysisCases, fuzzing)
+	data.AnalysisCases = analysisCasesMap
+	data.InitAnalysisData(data.AnalysisCases, fuzzing)
 
-	if analysisCases["resourceDeadlock"] {
+	if data.AnalysisCases["resourceDeadlock"] {
 		ResetState()
 	}
 
-	noRoutine := MainTrace.GetNoRoutines()
+	noRoutine := data.MainTrace.GetNoRoutines()
 	for i := 1; i <= noRoutine; i++ {
-		currentVC[i] = clock.NewVectorClock(noRoutine)
-		currentWVC[i] = clock.NewVectorClock(noRoutine)
+		data.CurrentVC[i] = clock.NewVectorClock(noRoutine)
+		data.CurrentWVC[i] = clock.NewVectorClock(noRoutine)
 	}
 
-	currentVC[1].Inc(1)
-	currentWVC[1].Inc(1)
+	data.CurrentVC[1].Inc(1)
+	data.CurrentWVC[1].Inc(1)
 
 	log.Info("Start HB analysis")
 
-	traceIter := MainTrace.AsIterator()
+	traceIter := data.MainTrace.AsIterator()
 
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
@@ -260,7 +261,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			} else {
 				UpdateVCMutex(e)
 			}
-			if analysisFuzzing {
+			if data.AnalysisFuzzing {
 				getConcurrentMutexForFuzzing(e)
 			}
 		case *trace.TraceElementFork:
@@ -286,7 +287,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			UpdateVCCond(e)
 		case *trace.TraceElementOnce:
 			UpdateVCOnce(e)
-			if analysisFuzzing {
+			if data.AnalysisFuzzing {
 				getConcurrentOnceForFuzzing(e)
 			}
 		case *trace.TraceElementRoutineEnd:
@@ -295,7 +296,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			UpdateVCNew(e)
 		}
 
-		if analysisCases["resourceDeadlock"] {
+		if data.AnalysisCases["resourceDeadlock"] {
 			switch e := elem.(type) {
 			case *trace.TraceElementMutex:
 				HandleMutexEventForRessourceDeadlock(*e)
@@ -303,7 +304,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		}
 
 		// check for leak
-		if analysisCases["leak"] && elem.GetTPost() == 0 {
+		if data.AnalysisCases["leak"] && elem.GetTPost() == 0 {
 			checkLeak(elem)
 		}
 
@@ -312,11 +313,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		}
 	}
 
-	MainTrace.SetHBWasCalc(true)
+	data.MainTrace.SetHBWasCalc(true)
 
 	log.Info("Finished HB analysis")
 
-	if modeIsFuzzing {
+	if data.ModeIsFuzzing {
 		rerunCheckForSelectCaseWithPartnerChannel()
 		CheckForSelectCaseWithPartner()
 	}
@@ -325,7 +326,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		return
 	}
 
-	if analysisCases["leak"] {
+	if data.AnalysisCases["leak"] {
 		log.Info("Check for leak")
 		checkForLeak()
 		checkForStuckRoutine(false)
@@ -336,7 +337,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		return
 	}
 
-	if analysisCases["doneBeforeAdd"] {
+	if data.AnalysisCases["doneBeforeAdd"] {
 		log.Info("Check for done before add")
 		checkForDoneBeforeAdd()
 		log.Info("Finish check for done before add")
@@ -350,7 +351,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	// 	return
 	// }
 
-	if analysisCases["resourceDeadlock"] {
+	if data.AnalysisCases["resourceDeadlock"] {
 		log.Info("Check for cyclic deadlock")
 		CheckForResourceDeadlock()
 		log.Info("Finish check for cyclic deadlock")
@@ -360,7 +361,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		return
 	}
 
-	if analysisCases["unlockBeforeLock"] {
+	if data.AnalysisCases["unlockBeforeLock"] {
 		log.Info("Check for unlock before lock")
 		checkForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")
@@ -375,7 +376,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 func checkLeak(elem trace.TraceElement) {
 	switch e := elem.(type) {
 	case *trace.TraceElementChannel:
-		CheckForLeakChannelStuck(e, currentVC[e.GetRoutine()])
+		CheckForLeakChannelStuck(e, data.CurrentVC[e.GetRoutine()])
 	case *trace.TraceElementMutex:
 		CheckForLeakMutex(e)
 	case *trace.TraceElementWait:
@@ -399,7 +400,7 @@ func checkLeak(elem trace.TraceElement) {
 			}
 		}
 		timer.Stop(timer.AnaLeak)
-		CheckForLeakSelectStuck(e, ids, buffered, currentVC[e.GetRoutine()], opTypes)
+		CheckForLeakSelectStuck(e, ids, buffered, data.CurrentVC[e.GetRoutine()], opTypes)
 	case *trace.TraceElementCond:
 		CheckForLeakCond(e)
 	}

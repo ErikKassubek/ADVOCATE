@@ -11,7 +11,7 @@
 package analysis
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -25,8 +25,8 @@ func UpdateVCAtomic(at *trace.TraceElementAtomic) {
 
 	routine := at.GetRoutine()
 
-	at.SetVc(currentVC[routine])
-	at.SetWVc(currentWVC[routine])
+	at.SetVc(data.CurrentVC[routine])
+	at.SetWVc(data.CurrentWVC[routine])
 
 	switch at.GetOpA() {
 	case trace.LoadOp:
@@ -44,7 +44,7 @@ func UpdateVCAtomic(at *trace.TraceElementAtomic) {
 // Store and update the vector clock of the element if the IgnoreCriticalSections
 // tag has been set
 func UpdateVCAtomicAlt(at *trace.TraceElementAtomic) {
-	at.SetVc(currentVC[at.GetRoutine()])
+	at.SetVc(data.CurrentVC[at.GetRoutine()])
 
 	switch at.GetOpA() {
 	case trace.LoadOp:
@@ -59,17 +59,6 @@ func UpdateVCAtomicAlt(at *trace.TraceElementAtomic) {
 	}
 }
 
-// Create a new lw if needed
-//
-// Parameter:
-//   - index int: The id of the atomic variable
-//   - nRout int: The number of routines in the trace
-func newLw(index int, nRout int) {
-	if _, ok := lw[index]; !ok {
-		lw[index] = clock.NewVectorClock(nRout)
-	}
-}
-
 // Write calculates the new vector clock for a write operation and update cv
 //
 // Parameter:
@@ -81,11 +70,10 @@ func Write(at *trace.TraceElementAtomic) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	newLw(id, currentVC[routine].GetSize())
-	lw[id] = currentVC[routine].Copy()
+	data.Lw[id] = data.CurrentVC[routine].Copy()
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }
 
 // Read calculates the new vector clock for a read operation and update cv
@@ -101,13 +89,13 @@ func Read(at *trace.TraceElementAtomic, sync bool) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	newLw(id, currentVC[routine].GetSize())
+	data.NewLW(id, data.CurrentVC[routine].GetSize())
 	if sync {
-		currentVC[routine].Sync(lw[id])
+		data.CurrentVC[routine].Sync(data.Lw[id])
 	}
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }
 
 // Swap calculate the new vector clock for a swap operation and update cv. A swap

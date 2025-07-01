@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -88,7 +88,7 @@ func ParseTrace(tr *trace.Trace) {
 
 	sortSelects()
 
-	numberSelectCasesWithPartner = analysis.GetNumberSelectCasesWithPartner()
+	numberSelectCasesWithPartner = data.NumberSelectCasesWithPartner
 }
 
 // Decides if an element can be added to a scheduling chain

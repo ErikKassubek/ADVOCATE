@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
 )
@@ -24,8 +25,8 @@ import (
 //   - index int: The id of the atomic variable
 //   - nRout int: The number of routines in the trace
 func newOSuc(index int, nRout int) {
-	if _, ok := oSuc[index]; !ok {
-		oSuc[index] = clock.NewVectorClock(nRout)
+	if _, ok := data.OSuc[index]; !ok {
+		data.OSuc[index] = clock.NewVectorClock(nRout)
 	}
 }
 
@@ -34,8 +35,8 @@ func newOSuc(index int, nRout int) {
 //   - on *trace.TraceElementOnce: the once trace element
 func UpdateVCOnce(on *trace.TraceElementOnce) {
 	routine := on.GetRoutine()
-	on.SetVc(currentVC[routine])
-	on.SetWVc(currentVC[routine])
+	on.SetVc(data.CurrentVC[routine])
+	on.SetWVc(data.CurrentVC[routine])
 
 	if on.GetSuc() {
 		DoSuc(on)
@@ -55,11 +56,11 @@ func DoSuc(on *trace.TraceElementOnce) {
 	id := on.GetID()
 	routine := on.GetRoutine()
 
-	newOSuc(id, currentVC[routine].GetSize())
-	oSuc[id] = currentVC[routine].Copy()
+	newOSuc(id, data.CurrentVC[routine].GetSize())
+	data.OSuc[id] = data.CurrentVC[routine].Copy()
 
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }
 
 // DoFail updates and calculates the vector clocks given a unsuccessful do operation
@@ -73,9 +74,9 @@ func DoFail(on *trace.TraceElementOnce) {
 	id := on.GetID()
 	routine := on.GetRoutine()
 
-	newOSuc(id, currentVC[routine].GetSize())
+	newOSuc(id, data.CurrentVC[routine].GetSize())
 
-	currentVC[routine].Sync(oSuc[id])
-	currentVC[routine].Inc(routine)
-	currentWVC[routine].Inc(routine)
+	data.CurrentVC[routine].Sync(data.OSuc[id])
+	data.CurrentVC[routine].Inc(routine)
+	data.CurrentWVC[routine].Inc(routine)
 }

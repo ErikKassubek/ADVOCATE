@@ -13,20 +13,12 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/timer"
 	"strconv"
 )
-
-// elements for buffered channel internal vector clock
-type bufferedVC struct {
-	occupied    bool
-	oID         int
-	vc          *clock.VectorClock
-	routineSend int
-	tID         string
-}
 
 // UpdateVCChannel updates the vecto clocks to a channel element
 //
@@ -42,18 +34,18 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 	opC := ch.GetOpC()
 	cl := ch.GetClosed()
 
-	ch.SetVc(currentVC[routine])
-	ch.SetWVc(currentWVC[routine])
+	ch.SetVc(data.CurrentVC[routine])
+	ch.SetWVc(data.CurrentWVC[routine])
 
 	if ch.GetTPost() == 0 {
 		return
 	}
 
 	// hold back receive operations, until the send operation is processed
-	for _, elem := range waitingReceive {
-		if elem.GetOID() <= maxOpID[id] {
-			if len(waitingReceive) != 0 {
-				waitingReceive = waitingReceive[1:]
+	for _, elem := range data.WaitingReceive {
+		if elem.GetOID() <= data.MaxOpID[id] {
+			if len(data.WaitingReceive) != 0 {
+				data.WaitingReceive = data.WaitingReceive[1:]
 			}
 			UpdateVCChannel(elem)
 		}
@@ -61,25 +53,25 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 
 	if ch.IsBuffered() {
 		if opC == trace.SendOp {
-			maxOpID[id] = oID
+			data.MaxOpID[id] = oID
 		} else if opC == trace.RecvOp {
-			if oID > maxOpID[id] && !cl {
-				waitingReceive = append(waitingReceive, ch)
+			if oID > data.MaxOpID[id] && !cl {
+				data.WaitingReceive = append(data.WaitingReceive, ch)
 				return
 			}
 		}
 
 		switch opC {
 		case trace.SendOp:
-			Send(ch, currentVC, currentWVC, fifo)
+			Send(ch, data.CurrentVC, data.CurrentWVC, data.Fifo)
 		case trace.RecvOp:
 			if cl { // recv on closed channel
-				RecvC(ch, currentVC, currentWVC, true)
+				RecvC(ch, data.CurrentVC, data.CurrentWVC, true)
 			} else {
-				Recv(ch, currentVC, currentWVC, fifo)
+				Recv(ch, data.CurrentVC, data.CurrentWVC, data.Fifo)
 			}
 		case trace.CloseOp:
-			Close(ch, currentVC, currentWVC)
+			Close(ch, data.CurrentVC, data.CurrentWVC)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -90,19 +82,19 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
-				partner.SetVc(currentVC[partnerRout])
+				partner.SetVc(data.CurrentVC[partnerRout])
 				sel := partner.GetSelect()
 				if sel != nil {
-					sel.SetVc(currentVC[partnerRout])
+					sel.SetVc(data.CurrentVC[partnerRout])
 				}
 				Unbuffered(ch, partner)
 				// advance index of receive routine, send routine is already advanced
-				MainTraceIter.IncreaseIndex(partnerRout)
+				data.MainTraceIter.IncreaseIndex(partnerRout)
 			} else {
 				if cl { // recv on closed channel
 					SendC(ch)
 				} else {
-					StuckChan(routine, currentVC, currentWVC)
+					StuckChan(routine, data.CurrentVC, data.CurrentWVC)
 				}
 			}
 
@@ -110,19 +102,19 @@ func UpdateVCChannel(ch *trace.TraceElementChannel) {
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
-				partner.SetVc(currentVC[partnerRout])
+				partner.SetVc(data.CurrentVC[partnerRout])
 				Unbuffered(partner, ch)
 				// advance index of receive routine, send routine is already advanced
-				MainTraceIter.IncreaseIndex(partnerRout)
+				data.MainTraceIter.IncreaseIndex(partnerRout)
 			} else {
 				if cl { // recv on closed channel
-					RecvC(ch, currentVC, currentWVC, false)
+					RecvC(ch, data.CurrentVC, data.CurrentWVC, false)
 				} else {
-					StuckChan(routine, currentVC, currentWVC)
+					StuckChan(routine, data.CurrentVC, data.CurrentWVC)
 				}
 			}
 		case trace.CloseOp:
-			Close(ch, currentVC, currentWVC)
+			Close(ch, data.CurrentVC, data.CurrentWVC)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -139,12 +131,12 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 
 	routine := se.GetRoutine()
 
-	se.SetVc(currentVC[routine])
-	se.SetWVc(currentVC[routine])
+	se.SetVc(data.CurrentVC[routine])
+	se.SetWVc(data.CurrentVC[routine])
 
 	if noChannel {
-		currentVC[routine].Inc(routine)
-		currentWVC[routine].Inc(routine)
+		data.CurrentVC[routine].Inc(routine)
+		data.CurrentWVC[routine].Inc(routine)
 	} else {
 		chosenCase := se.GetChosenCase()
 		chosenCase.SetVc(se.GetVC())
@@ -152,8 +144,8 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 		UpdateVCChannel(chosenCase)
 	}
 
-	if modeIsFuzzing {
-		CheckForSelectCaseWithPartnerSelect(se, currentVC[routine])
+	if data.ModeIsFuzzing {
+		CheckForSelectCaseWithPartnerSelect(se, data.CurrentVC[routine])
 	}
 
 	cases := se.GetCases()
@@ -168,7 +160,7 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 		}
 	}
 
-	if analysisCases["sendOnClosed"] {
+	if data.AnalysisCases["sendOnClosed"] {
 		chosenIndex := se.GetChosenIndex()
 		for i, c := range cases {
 			if i == chosenIndex {
@@ -177,7 +169,7 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 
 			opC := c.GetOpC()
 
-			if _, ok := closeData[c.GetID()]; ok {
+			if _, ok := data.CloseData[c.GetID()]; ok {
 				if opC == trace.SendOp {
 					foundSendOnClosedChannel(&c, false)
 				} else if opC == trace.RecvOp {
@@ -187,12 +179,12 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 		}
 	}
 
-	if analysisCases["leak"] {
+	if data.AnalysisCases["leak"] {
 		for _, c := range cases {
 			CheckForLeakChannelRun(routine, c.GetRoutine(),
-				elemWithVc{
-					vc:   se.GetVC().Copy(),
-					elem: se},
+				data.ElemWithVc{
+					Vc:   se.GetVC().Copy(),
+					Elem: se},
 				int(c.GetOpC()), c.IsBuffered())
 		}
 	}
@@ -208,16 +200,16 @@ func UpdateVCSelect(se *trace.TraceElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.TraceElement, recv trace.TraceElement) {
-	if analysisCases["concurrentRecv"] || analysisFuzzing { // or fuzzing
+	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzing { // or fuzzing
 		switch r := recv.(type) {
 		case *trace.TraceElementChannel:
-			checkForConcurrentRecv(r, currentVC)
+			checkForConcurrentRecv(r, data.CurrentVC)
 		case *trace.TraceElementSelect:
-			checkForConcurrentRecv(r.GetChosenCase(), currentVC)
+			checkForConcurrentRecv(r.GetChosenCase(), data.CurrentVC)
 		}
 	}
 
-	if analysisFuzzing {
+	if data.AnalysisFuzzing {
 		switch s := sender.(type) {
 		case *trace.TraceElementChannel:
 			getConcurrentSendForFuzzing(s)
@@ -231,64 +223,54 @@ func Unbuffered(sender trace.TraceElement, recv trace.TraceElement) {
 
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
 
-		if mostRecentReceive[recv.GetRoutine()] == nil {
-			mostRecentReceive[recv.GetRoutine()] = make(map[int]ElemWithVcVal)
+		if data.MostRecentReceive[recv.GetRoutine()] == nil {
+			data.MostRecentReceive[recv.GetRoutine()] = make(map[int]data.ElemWithVcVal)
 		}
-		if mostRecentSend[sender.GetRoutine()] == nil {
-			mostRecentSend[sender.GetRoutine()] = make(map[int]ElemWithVcVal)
+		if data.MostRecentSend[sender.GetRoutine()] == nil {
+			data.MostRecentSend[sender.GetRoutine()] = make(map[int]data.ElemWithVcVal)
 		}
 
 		// for detection of send on closed
-		hasSend[sender.GetID()] = true
-		mostRecentSend[sender.GetRoutine()][sender.GetID()] = ElemWithVcVal{sender, mostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(currentVC[sender.GetRoutine()]).Copy(), sender.GetID()}
+		data.HasSend[sender.GetID()] = true
+		data.MostRecentSend[sender.GetRoutine()][sender.GetID()] = data.ElemWithVcVal{sender, data.MostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(data.CurrentVC[sender.GetRoutine()]).Copy(), sender.GetID()}
 
 		// for detection of receive on closed
-		hasReceived[sender.GetID()] = true
-		mostRecentReceive[recv.GetRoutine()][sender.GetID()] = ElemWithVcVal{recv, mostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(currentVC[recv.GetRoutine()]).Copy(), sender.GetID()}
+		data.HasReceived[sender.GetID()] = true
+		data.MostRecentReceive[recv.GetRoutine()][sender.GetID()] = data.ElemWithVcVal{recv, data.MostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(data.CurrentVC[recv.GetRoutine()]).Copy(), sender.GetID()}
 
-		currentVC[recv.GetRoutine()].Sync(currentVC[sender.GetRoutine()])
-		currentVC[sender.GetRoutine()] = currentVC[recv.GetRoutine()].Copy()
-		currentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
-		currentVC[recv.GetRoutine()].Inc(recv.GetRoutine())
-		currentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
-		currentWVC[recv.GetRoutine()].Inc(recv.GetRoutine())
+		data.CurrentVC[recv.GetRoutine()].Sync(data.CurrentVC[sender.GetRoutine()])
+		data.CurrentVC[sender.GetRoutine()] = data.CurrentVC[recv.GetRoutine()].Copy()
+		data.CurrentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		data.CurrentVC[recv.GetRoutine()].Inc(recv.GetRoutine())
+		data.CurrentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		data.CurrentWVC[recv.GetRoutine()].Inc(recv.GetRoutine())
 
 	} else {
-		currentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
-		currentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		data.CurrentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
+		data.CurrentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
 	}
 
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["sendOnClosed"] {
-		if _, ok := closeData[sender.GetID()]; ok {
+	if data.AnalysisCases["sendOnClosed"] {
+		if _, ok := data.CloseData[sender.GetID()]; ok {
 			foundSendOnClosedChannel(sender, true)
 		}
 	}
 
-	if analysisCases["mixedDeadlock"] {
+	if data.AnalysisCases["mixedDeadlock"] {
 		checkForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())
 	}
 
-	if modeIsFuzzing {
-		CheckForSelectCaseWithPartnerChannel(sender, currentVC[sender.GetRoutine()], true, false)
-		CheckForSelectCaseWithPartnerChannel(recv, currentVC[recv.GetRoutine()], false, false)
+	if data.ModeIsFuzzing {
+		CheckForSelectCaseWithPartnerChannel(sender, data.CurrentVC[sender.GetRoutine()], true, false)
+		CheckForSelectCaseWithPartnerChannel(recv, data.CurrentVC[recv.GetRoutine()], false, false)
 	}
 
-	if analysisCases["leak"] {
-		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), elemWithVc{currentVC[sender.GetRoutine()].Copy(), sender}, 0, false)
-		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), elemWithVc{currentVC[recv.GetRoutine()].Copy(), recv}, 1, false)
+	if data.AnalysisCases["leak"] {
+		CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: data.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, 0, false)
+		CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: data.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, 1, false)
 	}
-}
-
-// holdObj can temporarily hold an channel operations with additional information
-// it is used in the case that for a synchronous communication, the recv is
-// recorded before the send
-type holdObj struct {
-	ch   *trace.TraceElementChannel
-	vc   map[int]*clock.VectorClock
-	wvc  map[int]*clock.VectorClock
-	fifo bool
 }
 
 // Send updates and calculates the vector clocks given a send on a buffered channel.
@@ -312,68 +294,68 @@ func Send(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fif
 		return
 	}
 
-	if mostRecentSend[routine] == nil {
-		mostRecentSend[routine] = make(map[int]ElemWithVcVal)
+	if data.MostRecentSend[routine] == nil {
+		data.MostRecentSend[routine] = make(map[int]data.ElemWithVcVal)
 	}
 
 	newBufferedVCs(id, qSize, vc[routine].GetSize())
 
-	count := bufferedVCsCount[id]
+	count := data.BufferedVCsCount[id]
 
-	if bufferedVCsSize[id] <= count {
-		holdSend = append(holdSend, holdObj{ch, vc, wVc, fifo})
+	if data.BufferedVCsSize[id] <= count {
+		data.HoldSend = append(data.HoldSend, data.HoldObj{ch, vc, wVc, fifo})
 		return
 	}
 
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(bufferedVCs[id]) >= count && len(bufferedVCs[id]) < bufferedVCsSize[id] {
-		bufferedVCs[id] = append(bufferedVCs[id], bufferedVC{false, 0, clock.NewVectorClock(vc[routine].GetSize()), 0, ""})
+	if len(data.BufferedVCs[id]) >= count && len(data.BufferedVCs[id]) < data.BufferedVCsSize[id] {
+		data.BufferedVCs[id] = append(data.BufferedVCs[id], data.BufferedVC{false, 0, clock.NewVectorClock(vc[routine].GetSize()), 0, ""})
 	}
 
-	if count > qSize || bufferedVCs[id][count].occupied {
+	if count > qSize || data.BufferedVCs[id][count].Occupied {
 		log.Error("Write to occupied buffer position or to big count")
 	}
 
-	v := bufferedVCs[id][count].vc
+	v := data.BufferedVCs[id][count].Vc
 	vc[routine].Sync(v)
 
 	if fifo {
-		vc[routine].Sync(mostRecentSend[routine][id].Vc)
+		vc[routine].Sync(data.MostRecentSend[routine][id].Vc)
 	}
 
 	// for detection of send on closed
-	hasSend[id] = true
-	mostRecentSend[routine][id] = ElemWithVcVal{ch, mostRecentSend[routine][id].Vc.Sync(vc[routine]).Copy(), id}
+	data.HasSend[id] = true
+	data.MostRecentSend[routine][id] = data.ElemWithVcVal{ch, data.MostRecentSend[routine][id].Vc.Sync(vc[routine]).Copy(), id}
 
 	vc[routine].Inc(routine)
 	wVc[routine].Inc(routine)
 
-	bufferedVCs[id][count] = bufferedVC{true, ch.GetOID(), vc[routine].Copy(), routine, ch.GetTID()}
+	data.BufferedVCs[id][count] = data.BufferedVC{true, ch.GetOID(), vc[routine].Copy(), routine, ch.GetTID()}
 
-	bufferedVCsCount[id]++
+	data.BufferedVCsCount[id]++
 
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["sendOnClosed"] {
-		if _, ok := closeData[id]; ok {
+	if data.AnalysisCases["sendOnClosed"] {
+		if _, ok := data.CloseData[id]; ok {
 			foundSendOnClosedChannel(ch, true)
 		}
 	}
 
-	if modeIsFuzzing {
+	if data.ModeIsFuzzing {
 		CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if analysisCases["leak"] {
-		CheckForLeakChannelRun(routine, id, elemWithVc{vc[routine].Copy(), ch}, 0, true)
+	if data.AnalysisCases["leak"] {
+		CheckForLeakChannelRun(routine, id, data.ElemWithVc{vc[routine].Copy(), ch}, 0, true)
 	}
 
-	for i, hold := range holdRecv {
-		if hold.ch.GetID() == id {
-			Recv(hold.ch, hold.vc, hold.wvc, hold.fifo)
-			holdRecv = append(holdRecv[:i], holdRecv[i+1:]...)
+	for i, hold := range data.HoldRecv {
+		if hold.Ch.GetID() == id {
+			Recv(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
+			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
 			break
 		}
 	}
@@ -396,7 +378,7 @@ func Recv(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fif
 	oID := ch.GetOID()
 	qSize := ch.GetQSize()
 
-	if analysisCases["concurrentRecv"] || analysisFuzzing {
+	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzing {
 		checkForConcurrentRecv(ch, vc)
 	}
 
@@ -406,26 +388,26 @@ func Recv(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fif
 		return
 	}
 
-	if mostRecentReceive[routine] == nil {
-		mostRecentReceive[routine] = make(map[int]ElemWithVcVal)
+	if data.MostRecentReceive[routine] == nil {
+		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
 
 	newBufferedVCs(id, qSize, vc[routine].GetSize())
 
-	if bufferedVCsCount[id] == 0 {
-		holdRecv = append(holdRecv, holdObj{ch, vc, wVc, fifo})
+	if data.BufferedVCsCount[id] == 0 {
+		data.HoldRecv = append(data.HoldRecv, data.HoldObj{ch, vc, wVc, fifo})
 		return
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}
-	bufferedVCsCount[id]--
+	data.BufferedVCsCount[id]--
 
-	if bufferedVCs[id][0].oID != oID {
+	if data.BufferedVCs[id][0].OID != oID {
 		found := false
-		for i := 1; i < len(bufferedVCs[id]); i++ {
-			if bufferedVCs[id][i].oID == oID {
+		for i := 1; i < len(data.BufferedVCs[id]); i++ {
+			if data.BufferedVCs[id][i].OID == oID {
 				found = true
-				bufferedVCs[id][0] = bufferedVCs[id][i]
-				bufferedVCs[id][i] = bufferedVC{false, 0, vc[routine].Copy(), 0, ""}
+				data.BufferedVCs[id][0] = data.BufferedVCs[id][i]
+				data.BufferedVCs[id][i] = data.BufferedVC{false, 0, vc[routine].Copy(), 0, ""}
 				break
 			}
 		}
@@ -434,41 +416,41 @@ func Recv(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, fif
 			log.Error(err)
 		}
 	}
-	v := bufferedVCs[id][0].vc
-	routSend := bufferedVCs[id][0].routineSend
+	v := data.BufferedVCs[id][0].Vc
+	routSend := data.BufferedVCs[id][0].RoutineSend
 
 	vc[routine] = vc[routine].Sync(v)
 
 	if fifo {
-		vc[routine] = vc[routine].Sync(mostRecentReceive[routine][id].Vc)
+		vc[routine] = vc[routine].Sync(data.MostRecentReceive[routine][id].Vc)
 	}
 
-	bufferedVCs[id] = append(bufferedVCs[id][1:], bufferedVC{false, 0, vc[routine].Copy(), 0, ""})
+	data.BufferedVCs[id] = append(data.BufferedVCs[id][1:], data.BufferedVC{false, 0, vc[routine].Copy(), 0, ""})
 
 	// for detection of receive on closed
-	hasReceived[id] = true
-	mostRecentReceive[routine][id] = ElemWithVcVal{ch, mostRecentReceive[routine][id].Vc.Sync(vc[routine]), id}
+	data.HasReceived[id] = true
+	data.MostRecentReceive[routine][id] = data.ElemWithVcVal{ch, data.MostRecentReceive[routine][id].Vc.Sync(vc[routine]), id}
 
 	vc[routine].Inc(routine)
 	wVc[routine].Inc(routine)
 
 	timer.Stop(timer.AnaHb)
 
-	if modeIsFuzzing {
+	if data.ModeIsFuzzing {
 		CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if analysisCases["mixedDeadlock"] {
+	if data.AnalysisCases["mixedDeadlock"] {
 		checkForMixedDeadlock(routSend, routine)
 	}
-	if analysisCases["leak"] {
-		CheckForLeakChannelRun(routine, id, elemWithVc{vc[routine].Copy(), ch}, 1, true)
+	if data.AnalysisCases["leak"] {
+		CheckForLeakChannelRun(routine, id, data.ElemWithVc{vc[routine].Copy(), ch}, 1, true)
 	}
 
-	for i, hold := range holdSend {
-		if hold.ch.GetID() == id {
-			Send(hold.ch, hold.vc, hold.wvc, hold.fifo)
-			holdSend = append(holdSend[:i], holdSend[i+1:]...)
+	for i, hold := range data.HoldSend {
+		if hold.Ch.GetID() == id {
+			Send(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
+			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
 			break
 		}
 	}
@@ -504,7 +486,7 @@ func Close(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 
 	ch.SetClosed(true)
 
-	if analysisCases["closeOnClosed"] {
+	if data.AnalysisCases["closeOnClosed"] {
 		checkForClosedOnClosed(ch) // must be called before closePos is updated
 	}
 
@@ -513,26 +495,26 @@ func Close(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	vc[routine].Inc(routine)
 	wVc[routine].Inc(routine)
 
-	closeData[id] = ch
+	data.CloseData[id] = ch
 
 	timer.Stop(timer.AnaHb)
 
-	if analysisCases["sendOnClosed"] || analysisCases["receiveOnClosed"] {
+	if data.AnalysisCases["sendOnClosed"] || data.AnalysisCases["receiveOnClosed"] {
 		checkForCommunicationOnClosedChannel(ch)
 	}
 
-	if modeIsFuzzing {
+	if data.ModeIsFuzzing {
 		CheckForSelectCaseWithPartnerClose(ch, vc[routine])
 	}
 
-	if analysisCases["leak"] {
-		CheckForLeakChannelRun(routine, id, elemWithVc{vc[routine].Copy(), ch}, 2, true)
+	if data.AnalysisCases["leak"] {
+		CheckForLeakChannelRun(routine, id, data.ElemWithVc{vc[routine].Copy(), ch}, 2, true)
 	}
 }
 
 // SendC record an actual send on closed
 func SendC(ch *trace.TraceElementChannel) {
-	if analysisCases["sendOnClosed"] {
+	if data.AnalysisCases["sendOnClosed"] {
 		foundSendOnClosedChannel(ch, true)
 	}
 }
@@ -552,13 +534,13 @@ func RecvC(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, bu
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if analysisCases["receiveOnClosed"] {
+	if data.AnalysisCases["receiveOnClosed"] {
 		foundReceiveOnClosedChannel(ch, true)
 	}
 
 	timer.Start(timer.AnaHb)
-	if _, ok := closeData[id]; ok {
-		vc[routine] = vc[routine].Sync(closeData[id].GetVC())
+	if _, ok := data.CloseData[id]; ok {
+		vc[routine] = vc[routine].Sync(data.CloseData[id].GetVC())
 	}
 
 	vc[routine].Inc(routine)
@@ -566,32 +548,32 @@ func RecvC(ch *trace.TraceElementChannel, vc, wVc map[int]*clock.VectorClock, bu
 
 	timer.Stop(timer.AnaHb)
 
-	if modeIsFuzzing {
+	if data.ModeIsFuzzing {
 		CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
 	}
 
-	if analysisCases["mixedDeadlock"] {
-		checkForMixedDeadlock(closeData[id].GetRoutine(), routine)
+	if data.AnalysisCases["mixedDeadlock"] {
+		checkForMixedDeadlock(data.CloseData[id].GetRoutine(), routine)
 	}
 
-	if analysisCases["leak"] {
-		CheckForLeakChannelRun(routine, id, elemWithVc{vc[routine].Copy(), ch}, 1, buffered)
+	if data.AnalysisCases["leak"] {
+		CheckForLeakChannelRun(routine, id, data.ElemWithVc{vc[routine].Copy(), ch}, 1, buffered)
 	}
 }
 
 // Create a new map of buffered vector clocks for a channel if not already in
-// bufferedVCs.
+// data.BufferedVCs.
 //
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
 //   - numRout int: the number of routines
 func newBufferedVCs(id int, qSize int, numRout int) {
-	if _, ok := bufferedVCs[id]; !ok {
-		bufferedVCs[id] = make([]bufferedVC, 1)
-		bufferedVCsCount[id] = 0
-		bufferedVCsSize[id] = qSize
-		bufferedVCs[id][0] = bufferedVC{false, 0, clock.NewVectorClock(numRout), 0, ""}
+	if _, ok := data.BufferedVCs[id]; !ok {
+		data.BufferedVCs[id] = make([]data.BufferedVC, 1)
+		data.BufferedVCsCount[id] = 0
+		data.BufferedVCsSize[id] = qSize
+		data.BufferedVCs[id][0] = data.BufferedVC{false, 0, clock.NewVectorClock(numRout), 0, ""}
 	}
 }
 
@@ -607,11 +589,11 @@ func SetChannelAsLastSend(c trace.TraceElement) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 
-	if mostRecentSend[routine] == nil {
-		mostRecentSend[routine] = make(map[int]ElemWithVcVal)
+	if data.MostRecentSend[routine] == nil {
+		data.MostRecentSend[routine] = make(map[int]data.ElemWithVcVal)
 	}
-	mostRecentSend[routine][id] = ElemWithVcVal{c, c.GetVC(), id}
-	hasSend[routine] = true
+	data.MostRecentSend[routine][id] = data.ElemWithVcVal{c, c.GetVC(), id}
+	data.HasSend[routine] = true
 }
 
 // SetChannelAsLastReceive sets the channel as the last recv operation.
@@ -626,9 +608,9 @@ func SetChannelAsLastReceive(c trace.TraceElement) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 
-	if mostRecentReceive[routine] == nil {
-		mostRecentReceive[routine] = make(map[int]ElemWithVcVal)
+	if data.MostRecentReceive[routine] == nil {
+		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
-	mostRecentReceive[routine][id] = ElemWithVcVal{c, c.GetVC(), id}
-	hasReceived[id] = true
+	data.MostRecentReceive[routine][id] = data.ElemWithVcVal{c, c.GetVC(), id}
+	data.HasReceived[id] = true
 }

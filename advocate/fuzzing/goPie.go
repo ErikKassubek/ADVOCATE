@@ -11,7 +11,7 @@
 package fuzzing
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/data"
 	"advocate/utils/helper"
 	"advocate/utils/io"
 	"advocate/utils/log"
@@ -93,7 +93,7 @@ func createGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		}
 		numberWrittenGoPieMuts++
 
-		traceCopy, err := analysis.CopyMainTrace()
+		traceCopy, err := data.CopyMainTrace()
 		if err != nil {
 			return err
 		}
@@ -172,7 +172,7 @@ func addFuzzingTraceFolder(path string) {
 func getEnergy() int {
 
 	// not interesting
-	if analysis.GetTimeoutHappened() {
+	if data.GetTimeoutHappened() {
 		return 0
 	}
 

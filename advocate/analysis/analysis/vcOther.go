@@ -12,6 +12,7 @@
 package analysis
 
 import (
+	"advocate/analysis/data"
 	"advocate/trace"
 )
 
@@ -20,8 +21,8 @@ import (
 //   - n *trace.TraceElementNew: the new trace element
 func UpdateVCNew(n *trace.TraceElementNew) {
 	routine := n.GetRoutine()
-	n.SetVc(currentVC[routine])
-	n.SetWVc(currentWVC[routine])
+	n.SetVc(data.CurrentVC[routine])
+	n.SetWVc(data.CurrentWVC[routine])
 }
 
 // UpdateVCRoutineEnd store the vector clock of the element
@@ -29,6 +30,6 @@ func UpdateVCNew(n *trace.TraceElementNew) {
 //   - re *trace.TraceElementRoutineEnd: the new trace element
 func UpdateVCRoutineEnd(re *trace.TraceElementRoutineEnd) {
 	routine := re.GetRoutine()
-	re.SetVc(currentVC[routine])
-	re.SetWVc(currentWVC[routine])
+	re.SetVc(data.CurrentVC[routine])
+	re.SetWVc(data.CurrentWVC[routine])
 }

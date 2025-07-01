@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -26,13 +27,13 @@ import (
 //   - elem trace.TraceElement: the element to search for
 //   - all bool: if true, find all concurrent elements, if false, find only one
 func getConcurrentBruteForce(elem trace.TraceElement, all bool) []trace.TraceElement {
-	if !HBWasCalc() {
+	if !data.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
 		return make([]trace.TraceElement, 0)
 	}
 
 	res := make([]trace.TraceElement, 0)
-	for rout, trace := range MainTrace.GetTraces() {
+	for rout, trace := range data.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}
@@ -58,15 +59,15 @@ func getConcurrentBruteForce(elem trace.TraceElement, all bool) []trace.TraceEle
 func addEdgePartialOrderGraph(elem trace.TraceElement) {
 	routineID := elem.GetRoutine()
 
-	if lastElem, ok := lastAnalyzedElementPerRoutine[routineID]; ok {
+	if lastElem, ok := data.LastAnalyzedElementPerRoutine[routineID]; ok {
 		lastElem.AddChild(elem)
 	} else {
 		// first element, add edge from fork if exists
-		if fork, okF := forkOperations[routineID]; okF {
+		if fork, okF := data.ForkOperations[routineID]; okF {
 			fork.AddChild(elem)
 		}
 	}
-	lastAnalyzedElementPerRoutine[routineID] = elem
+	data.LastAnalyzedElementPerRoutine[routineID] = elem
 }
 
 // For a given element, find one or all elements that are concurrent to it
@@ -86,7 +87,7 @@ func getConcurrentPartialOrderGraph(elem trace.TraceElement, all bool) []trace.T
 
 	res := make([]trace.TraceElement, 0)
 
-	for rout, trace := range MainTrace.GetTraces() {
+	for rout, trace := range data.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}

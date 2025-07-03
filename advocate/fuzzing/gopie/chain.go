@@ -12,19 +12,24 @@ package gopie
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/concurrent"
+	"advocate/analysis/data"
 	anaData "advocate/analysis/data"
 	"advocate/trace"
+	"advocate/utils/helper"
+	"advocate/utils/types"
 	"fmt"
+	"math"
 )
 
-// Representation of a scheduling Chain
+// Chain is a representation of a scheduling Chain
 // A Chain is an ordered list of adjacent element from the trace,
 // where two neighboring elements must be from different routines
 type Chain struct {
 	Elems []trace.Element
 }
 
-// Create a new, empty chain
+// NewChain create a new, empty chain
 //
 // Returns: chain: the new chain
 func NewChain() Chain {
@@ -32,50 +37,55 @@ func NewChain() Chain {
 	return Chain{elems}
 }
 
-// func addElemToChain(elem trace.TraceElement) {
-// 	routine := elem.GetRoutine()
-
-// 	// if the element is already in the chain, it is not added again
-// 	if currentChain.contains(elem) {
-// 		return
-// 	}
-
-// 	// add elem if the last routine is different from the routine of the elem
-// 	// if the current routine is empty, lastRoutine is -1 and this is always true
-// 	if lastRoutine != routine {
-// 		currentChain.add(elem.Copy())
-// 	} else {
-// 		// if the routine is the same as the last routine, we need to start a new
-// 		// chain. In this case, store the current chain as a scheduling chains
-// 		// and start a new routine with the current element
-// 		if currentChain.len() > 1 {
-// 			schedulingChains = append(schedulingChains, currentChain)
-// 		}
-// 		currentChain = newChain()
-// 		currentChain.add(elem.Copy())
-// 	}
-
-// 	lastRoutine = routine
-// }
-
-// randomChain returns a chain consisting of a
-// pair of operations (only of channel, select or mutex)
-// that are in a rel2 relation
+// startChain returns a chain consisting of a
+// pair of operations that are in a rel2 relation
 //
 // Returns:
-//   - the chain, or an empty chain if pair exists
-func randomChain() Chain {
+//   - the chain, or an empty chain if no pair exists
+func startChain() Chain {
 	res := NewChain()
 
+	maxQuality := math.MinInt
+	var elemMax types.Pair[trace.Element, trace.Element]
+
 	for elem1, rel := range rel2 {
+		qElem1 := quality(elem1)
 		for elem2 := range rel {
-			res.add(elem1)
-			res.add(elem2)
+			q := qElem1 + quality(elem2)
+			if q > maxQuality {
+				p := types.NewPair(elem1, elem2)
+				if !helper.Contains(usedStartPos, p) {
+					maxQuality = q
+					elemMax = p
+				}
+			}
+
 			return res
 		}
 	}
 
+	if maxQuality > math.MaxInt {
+		res.add(elemMax.X)
+		res.add(elemMax.Y)
+		usedStartPos = append(usedStartPos, elemMax)
+	}
+
 	return res
+}
+
+// quality calculates how fit for mutation an element is
+// This is based on how many times was an operation called on the same element
+// and how many concurrent operation has the operations
+//
+// Parameters:
+//   - elem trace.Element: the element to check for
+//
+// Returns:
+//   - the quality
+func quality(elem trace.Element) int {
+	numberOps, _ := data.GetOpsPerID(elem.GetID())
+	numberConcurrent := concurrent.GetNumberConcurrent(elem)
+	return int(math.Log(float64(1+numberOps)) + math.Log(float64(numberConcurrent)))
 }
 
 // Add a new element to the chain

@@ -44,22 +44,24 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
+//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 type ElementWait struct {
-	traceID  int
-	index    int
-	routine  int
-	tPre     int
-	tPost    int
-	ID       int
-	opW      OpWait
-	delta    int
-	val      int
-	file     string
-	line     int
-	vc       *clock.VectorClock
-	wVc      *clock.VectorClock
-	children []Element
-	parents  []Element
+	traceID          int
+	index            int
+	routine          int
+	tPre             int
+	tPost            int
+	ID               int
+	opW              OpWait
+	delta            int
+	val              int
+	file             string
+	line             int
+	vc               *clock.VectorClock
+	wVc              *clock.VectorClock
+	children         []Element
+	parents          []Element
+	numberConcurrent int
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -113,20 +115,21 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:    t.numberElemsInTrace[routine],
-		routine:  routine,
-		tPre:     tPreInt,
-		tPost:    tPostInt,
-		ID:       idInt,
-		opW:      opWOp,
-		delta:    deltaInt,
-		val:      valInt,
-		file:     file,
-		line:     line,
-		vc:       nil,
-		wVc:      nil,
-		children: make([]Element, 0),
-		parents:  make([]Element, 0),
+		index:            t.numberElemsInTrace[routine],
+		routine:          routine,
+		tPre:             tPreInt,
+		tPost:            tPostInt,
+		ID:               idInt,
+		opW:              opWOp,
+		delta:            deltaInt,
+		val:              valInt,
+		file:             file,
+		line:             line,
+		vc:               nil,
+		wVc:              nil,
+		children:         make([]Element, 0),
+		parents:          make([]Element, 0),
+		numberConcurrent: -1,
 	}
 
 	t.AddElement(&elem)
@@ -405,21 +408,22 @@ func (wa *ElementWait) Copy() Element {
 	copy(parents, wa.parents)
 
 	return &ElementWait{
-		traceID:  wa.traceID,
-		index:    wa.index,
-		routine:  wa.routine,
-		tPre:     wa.tPre,
-		tPost:    wa.tPost,
-		ID:       wa.ID,
-		opW:      wa.opW,
-		delta:    wa.delta,
-		val:      wa.val,
-		file:     wa.file,
-		line:     wa.line,
-		vc:       wa.vc.Copy(),
-		wVc:      wa.wVc.Copy(),
-		children: children,
-		parents:  parents,
+		traceID:          wa.traceID,
+		index:            wa.index,
+		routine:          wa.routine,
+		tPre:             wa.tPre,
+		tPost:            wa.tPost,
+		ID:               wa.ID,
+		opW:              wa.opW,
+		delta:            wa.delta,
+		val:              wa.val,
+		file:             wa.file,
+		line:             wa.line,
+		vc:               wa.vc.Copy(),
+		wVc:              wa.wVc.Copy(),
+		children:         children,
+		parents:          parents,
+		numberConcurrent: wa.numberConcurrent,
 	}
 }
 
@@ -445,4 +449,21 @@ func (wa *ElementWait) GetChildren() []Element {
 //   - []*TraceElement: the parents
 func (wa *ElementWait) GetParents() []Element {
 	return wa.children
+}
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (wa *ElementWait) GetNumberConcurrent() int {
+	return wa.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (wa *ElementWait) SetNumberConcurrent(c int) {
+	wa.numberConcurrent = c
 }

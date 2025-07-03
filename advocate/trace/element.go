@@ -57,4 +57,6 @@ type Element interface {
 	AddChild(elem Element)
 	GetChildren() []Element
 	GetParents() []Element
+	GetNumberConcurrent() int
+	SetNumberConcurrent(c int)
 }

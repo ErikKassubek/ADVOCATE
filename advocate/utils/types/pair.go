@@ -10,11 +10,18 @@
 
 package types
 
-type Pair[K any, V any] struct {
+// Pair is a type to implement a pair of values
+// The types of the values do not have to be the same
+type Pair[K comparable, V comparable] struct {
 	X K
 	Y V
 }
 
-func NewPair[K any, V any](x K, y V) Pair[K, V] {
+// NewPair returns a new pair
+//
+// Parameter:
+//   - x comparable: first value
+//   - y comparable: second value
+func NewPair[K comparable, V comparable](x K, y V) Pair[K, V] {
 	return Pair[K, V]{X: x, Y: y}
 }

@@ -13,6 +13,7 @@ package gopie
 import (
 	"advocate/trace"
 	"advocate/utils/helper"
+	"advocate/utils/types"
 )
 
 var (
@@ -39,6 +40,8 @@ var (
 	rel2         = make(map[trace.Element]map[trace.Element]struct{})
 
 	ElemsByID = make(map[int][]trace.Element) // id -> chan/sel/mutex elem
+
+	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
 )
 
 func ClearData() {
@@ -49,4 +52,5 @@ func ClearData() {
 	ElemsByID = make(map[int][]trace.Element)
 	numberWrittenGoPieMuts = 0
 	maxGoPieScore = 0
+	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
 }

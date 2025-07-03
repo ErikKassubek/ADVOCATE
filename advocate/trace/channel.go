@@ -53,26 +53,28 @@ const (
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
+//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 type ElementChannel struct {
-	traceID  int
-	index    int
-	routine  int
-	tPre     int
-	tPost    int
-	id       int
-	opC      OpChannel
-	cl       bool
-	oID      int
-	qSize    int
-	qCount   int
-	file     string
-	line     int
-	sel      *ElementSelect
-	partner  *ElementChannel
-	vc       *clock.VectorClock
-	wVc      *clock.VectorClock
-	children []Element
-	parents  []Element
+	traceID          int
+	index            int
+	routine          int
+	tPre             int
+	tPost            int
+	id               int
+	opC              OpChannel
+	cl               bool
+	oID              int
+	qSize            int
+	qCount           int
+	file             string
+	line             int
+	sel              *ElementSelect
+	partner          *ElementChannel
+	vc               *clock.VectorClock
+	wVc              *clock.VectorClock
+	children         []Element
+	parents          []Element
+	numberConcurrent int
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -151,22 +153,23 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := ElementChannel{
-		index:    t.numberElemsInTrace[routine],
-		routine:  routine,
-		tPre:     tPreInt,
-		tPost:    tPostInt,
-		id:       idInt,
-		opC:      opCInt,
-		cl:       clBool,
-		oID:      oIDInt,
-		qSize:    qSizeInt,
-		qCount:   qCountInt,
-		file:     file,
-		line:     line,
-		vc:       nil,
-		wVc:      nil,
-		children: make([]Element, 0),
-		parents:  make([]Element, 0),
+		index:            t.numberElemsInTrace[routine],
+		routine:          routine,
+		tPre:             tPreInt,
+		tPost:            tPostInt,
+		id:               idInt,
+		opC:              opCInt,
+		cl:               clBool,
+		oID:              oIDInt,
+		qSize:            qSizeInt,
+		qCount:           qCountInt,
+		file:             file,
+		line:             line,
+		vc:               nil,
+		wVc:              nil,
+		children:         make([]Element, 0),
+		parents:          make([]Element, 0),
+		numberConcurrent: -1,
 	}
 
 	elem.findPartner(t)
@@ -609,24 +612,25 @@ func (ch *ElementChannel) Copy() Element {
 	copy(parents, ch.parents)
 
 	newCh := ElementChannel{
-		traceID:  ch.traceID,
-		index:    ch.index,
-		routine:  ch.routine,
-		tPre:     ch.tPre,
-		tPost:    ch.tPost,
-		id:       ch.id,
-		opC:      ch.opC,
-		cl:       ch.cl,
-		oID:      ch.oID,
-		qSize:    ch.qSize,
-		file:     ch.file,
-		line:     ch.line,
-		sel:      ch.sel,
-		partner:  ch.partner,
-		vc:       ch.vc.Copy(),
-		wVc:      ch.wVc.Copy(),
-		children: children,
-		parents:  parents,
+		traceID:          ch.traceID,
+		index:            ch.index,
+		routine:          ch.routine,
+		tPre:             ch.tPre,
+		tPost:            ch.tPost,
+		id:               ch.id,
+		opC:              ch.opC,
+		cl:               ch.cl,
+		oID:              ch.oID,
+		qSize:            ch.qSize,
+		file:             ch.file,
+		line:             ch.line,
+		sel:              ch.sel,
+		partner:          ch.partner,
+		vc:               ch.vc.Copy(),
+		wVc:              ch.wVc.Copy(),
+		children:         children,
+		parents:          parents,
+		numberConcurrent: ch.numberConcurrent,
 	}
 	return &newCh
 }
@@ -699,4 +703,21 @@ func (ch *ElementChannel) GetChildren() []Element {
 //   - []*TraceElement: the parents
 func (ch *ElementChannel) GetParents() []Element {
 	return ch.children
+}
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (ch *ElementChannel) GetNumberConcurrent() int {
+	return ch.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (ch *ElementChannel) SetNumberConcurrent(c int) {
+	ch.numberConcurrent = c
 }

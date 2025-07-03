@@ -306,3 +306,18 @@ func (re *ElementRoutineEnd) GetChildren() []Element {
 func (re *ElementRoutineEnd) GetParents() []Element {
 	return make([]Element, 0)
 }
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (at *ElementRoutineEnd) GetNumberConcurrent() int {
+	return -1
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (at *ElementRoutineEnd) SetNumberConcurrent(c int) {}

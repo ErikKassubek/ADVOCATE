@@ -40,6 +40,7 @@ import (
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
+//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 type ElementSelect struct {
 	traceID             int
 	index               int
@@ -59,6 +60,7 @@ type ElementSelect struct {
 	casesWithPosPartner []int
 	children            []Element
 	parents             []Element
+	numberConcurrent    int
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -113,6 +115,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		wVc:                 nil,
 		children:            make([]Element, 0),
 		parents:             make([]Element, 0),
+		numberConcurrent:    -1,
 	}
 
 	cs := strings.Split(cases, "~")
@@ -668,23 +671,24 @@ func (se *ElementSelect) Copy() Element {
 	copy(parents, se.parents)
 
 	return &ElementSelect{
-		traceID:         se.traceID,
-		index:           se.index,
-		routine:         se.routine,
-		tPre:            se.tPre,
-		tPost:           se.tPost,
-		id:              se.id,
-		cases:           cases,
-		chosenCase:      chosenCase,
-		chosenIndex:     se.chosenIndex,
-		containsDefault: se.containsDefault,
-		chosenDefault:   se.chosenDefault,
-		file:            se.file,
-		line:            se.line,
-		vc:              se.vc.Copy(),
-		wVc:             se.wVc.Copy(),
-		children:        children,
-		parents:         parents,
+		traceID:          se.traceID,
+		index:            se.index,
+		routine:          se.routine,
+		tPre:             se.tPre,
+		tPost:            se.tPost,
+		id:               se.id,
+		cases:            cases,
+		chosenCase:       chosenCase,
+		chosenIndex:      se.chosenIndex,
+		containsDefault:  se.containsDefault,
+		chosenDefault:    se.chosenDefault,
+		file:             se.file,
+		line:             se.line,
+		vc:               se.vc.Copy(),
+		wVc:              se.wVc.Copy(),
+		children:         children,
+		parents:          parents,
+		numberConcurrent: se.numberConcurrent,
 	}
 }
 
@@ -710,4 +714,21 @@ func (se *ElementSelect) GetChildren() []Element {
 //   - []*TraceElement: the parents
 func (se *ElementSelect) GetParents() []Element {
 	return se.children
+}
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (se *ElementSelect) GetNumberConcurrent() int {
+	return se.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (se *ElementSelect) SetNumberConcurrent(c int) {
+	se.numberConcurrent = c
 }

@@ -23,7 +23,7 @@ import (
 	"sort"
 )
 
-// Create new mutations for GoPie
+// CreateGoPieMut create new mutations for GoPie
 //
 // Parameter:
 //   - pkgPath string: path to where the new traces should be created
@@ -46,7 +46,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 
 	if len(SchedulingChains) == 0 {
 		for range maxSCStart {
-			sc := randomChain()
+			sc := startChain()
 			if sc.Len() > 0 {
 				SchedulingChains = append(SchedulingChains, sc)
 			}

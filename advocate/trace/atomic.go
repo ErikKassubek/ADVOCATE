@@ -46,19 +46,21 @@ const (
 //   - line int: the line of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
+//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 type ElementAtomic struct {
-	traceID  int
-	index    int
-	routine  int
-	tPost    int
-	id       int
-	opA      OpAtomic
-	vc       *clock.VectorClock
-	wVc      *clock.VectorClock
-	file     string
-	line     int
-	children []Element
-	parents  []Element
+	traceID          int
+	index            int
+	routine          int
+	tPost            int
+	id               int
+	opA              OpAtomic
+	vc               *clock.VectorClock
+	wVc              *clock.VectorClock
+	file             string
+	line             int
+	children         []Element
+	parents          []Element
+	numberConcurrent int
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -107,17 +109,18 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:    t.numberElemsInTrace[routine],
-		routine:  routine,
-		tPost:    tPostInt,
-		id:       idInt,
-		opA:      opAInt,
-		file:     file,
-		line:     line,
-		vc:       nil,
-		wVc:      nil,
-		children: make([]Element, 0),
-		parents:  make([]Element, 0),
+		index:            t.numberElemsInTrace[routine],
+		routine:          routine,
+		tPost:            tPostInt,
+		id:               idInt,
+		opA:              opAInt,
+		file:             file,
+		line:             line,
+		vc:               nil,
+		wVc:              nil,
+		children:         make([]Element, 0),
+		parents:          make([]Element, 0),
+		numberConcurrent: -1,
 	}
 
 	t.AddElement(&elem)
@@ -380,16 +383,17 @@ func (at *ElementAtomic) Copy() Element {
 	copy(parents, at.parents)
 
 	return &ElementAtomic{
-		traceID:  at.traceID,
-		index:    at.index,
-		routine:  at.routine,
-		tPost:    at.tPost,
-		id:       at.id,
-		opA:      at.opA,
-		vc:       at.vc.Copy(),
-		wVc:      at.wVc.Copy(),
-		children: children,
-		parents:  parents,
+		traceID:          at.traceID,
+		index:            at.index,
+		routine:          at.routine,
+		tPost:            at.tPost,
+		id:               at.id,
+		opA:              at.opA,
+		vc:               at.vc.Copy(),
+		wVc:              at.wVc.Copy(),
+		children:         children,
+		parents:          parents,
+		numberConcurrent: at.numberConcurrent,
 	}
 }
 
@@ -415,4 +419,21 @@ func (at *ElementAtomic) GetChildren() []Element {
 //   - []*TraceElement: the parents
 func (at *ElementAtomic) GetParents() []Element {
 	return at.children
+}
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (at *ElementAtomic) GetNumberConcurrent() int {
+	return at.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (at *ElementAtomic) SetNumberConcurrent(c int) {
+	at.numberConcurrent = c
 }

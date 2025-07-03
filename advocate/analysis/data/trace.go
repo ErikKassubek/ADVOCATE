@@ -21,6 +21,8 @@ var (
 	MainTrace     trace.Trace
 	MainTraceIter trace.Iterator
 
+	numberOpsPerID = make(map[int]int) // id -> number of ops on this elem
+
 	HoldSend = make([]HoldObj, 0)
 	HoldRecv = make([]HoldObj, 0)
 
@@ -355,4 +357,29 @@ func PrintTrace() {
 //   - number of elements in routine
 func numberElemsInTrace(routine int) int {
 	return MainTrace.NumberElemInTrace(routine)
+}
+
+// AddOpsPerID increases the counter for numberOpsPerId by one for a given element id
+// Do not call for forks
+//
+// Parameter:
+//   - id int: the id of the element
+func AddOpsPerID(id int) {
+	numberOpsPerID[id]++
+}
+
+// GetOpsPerID how often an operations has been performed on a given element
+//
+// Parameter:
+//   - id int: the id of the element
+//
+// Returns:
+//   - int: how often an operations has been executed on the element. Return 0
+//     if id does not exists
+//   - bool: true if operation on id exists, false otherwise
+func GetOpsPerID(id int) (int, bool) {
+	if count, ok := numberOpsPerID[id]; ok {
+		return count, true
+	}
+	return 0, false
 }

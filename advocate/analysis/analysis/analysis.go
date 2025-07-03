@@ -241,6 +241,14 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		// add edge between element of same routine to partial order trace
 		concurrent.AddEdgePartialOrderGraph(elem)
 
+		// count how many operations where executed on the underlying structure
+		// do not count for operations that do not have an underlying structure
+		switch e := elem.(type) {
+		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
+		default:
+			data.AddOpsPerID(e.GetID())
+		}
+
 		switch e := elem.(type) {
 		case *trace.ElementAtomic:
 			if ignoreCriticalSections {

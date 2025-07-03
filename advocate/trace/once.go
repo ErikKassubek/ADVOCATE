@@ -32,20 +32,22 @@ import (
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
+//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 type ElementOnce struct {
-	traceID  int
-	index    int
-	routine  int
-	tPre     int
-	tPost    int
-	id       int
-	suc      bool
-	file     string
-	line     int
-	vc       *clock.VectorClock
-	wVc      *clock.VectorClock
-	children []Element
-	parents  []Element
+	traceID          int
+	index            int
+	routine          int
+	tPre             int
+	tPost            int
+	id               int
+	suc              bool
+	file             string
+	line             int
+	vc               *clock.VectorClock
+	wVc              *clock.VectorClock
+	children         []Element
+	parents          []Element
+	numberConcurrent int
 }
 
 // AddTraceElementOnce adds a new mutex trace element to the main trace
@@ -85,18 +87,19 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := ElementOnce{
-		index:    t.numberElemsInTrace[routine],
-		routine:  routine,
-		tPre:     tPreInt,
-		tPost:    tPostInt,
-		id:       idInt,
-		suc:      sucBool,
-		file:     file,
-		line:     line,
-		vc:       nil,
-		wVc:      nil,
-		children: make([]Element, 0),
-		parents:  make([]Element, 0),
+		index:            t.numberElemsInTrace[routine],
+		routine:          routine,
+		tPre:             tPreInt,
+		tPost:            tPostInt,
+		id:               idInt,
+		suc:              sucBool,
+		file:             file,
+		line:             line,
+		vc:               nil,
+		wVc:              nil,
+		children:         make([]Element, 0),
+		parents:          make([]Element, 0),
+		numberConcurrent: -1,
 	}
 
 	t.AddElement(&elem)
@@ -353,19 +356,20 @@ func (on *ElementOnce) Copy() Element {
 	copy(parents, on.parents)
 
 	return &ElementOnce{
-		traceID:  on.traceID,
-		index:    on.index,
-		routine:  on.routine,
-		tPre:     on.tPre,
-		tPost:    on.tPost,
-		id:       on.id,
-		suc:      on.suc,
-		file:     on.file,
-		line:     on.line,
-		vc:       on.vc.Copy(),
-		wVc:      on.wVc.Copy(),
-		children: children,
-		parents:  parents,
+		traceID:          on.traceID,
+		index:            on.index,
+		routine:          on.routine,
+		tPre:             on.tPre,
+		tPost:            on.tPost,
+		id:               on.id,
+		suc:              on.suc,
+		file:             on.file,
+		line:             on.line,
+		vc:               on.vc.Copy(),
+		wVc:              on.wVc.Copy(),
+		children:         children,
+		parents:          parents,
+		numberConcurrent: on.numberConcurrent,
 	}
 }
 
@@ -391,4 +395,21 @@ func (on *ElementOnce) GetChildren() []Element {
 //   - []*TraceElement: the parents
 func (on *ElementOnce) GetParents() []Element {
 	return on.children
+}
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (on *ElementOnce) GetNumberConcurrent() int {
+	return on.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+func (on *ElementOnce) SetNumberConcurrent(c int) {
+	on.numberConcurrent = c
 }

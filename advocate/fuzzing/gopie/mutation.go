@@ -11,6 +11,7 @@
 package gopie
 
 import (
+	"advocate/analysis/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/utils/helper"
 	"math/rand/v2"
@@ -19,6 +20,8 @@ import (
 const (
 	maxNoNew = 5
 )
+
+// TODO: limit the number of mutations that can be created from one mutation step
 
 // Create the mutations for a GoPie chain
 //
@@ -196,14 +199,27 @@ func substitute(c Chain) []Chain {
 func augment(c Chain) []Chain {
 	res := make([]Chain, 0)
 
-	for rel := range rel2[c.lastElem()] {
-		if c.contains(rel) {
-			continue
-		}
+	if data.UseHBInfoFuzzing {
+		concurrent := concurrent.GetConcurrent(c.lastElem())
+		for _, elem := range concurrent {
+			if c.contains(elem) {
+				continue
+			}
 
-		nc := c.copy()
-		nc.add(rel)
-		res = append(res, nc)
+			nc := c.copy()
+			nc.add(elem)
+			res = append(res, nc)
+		}
+	} else {
+		for rel := range rel2[c.lastElem()] {
+			if c.contains(rel) {
+				continue
+			}
+
+			nc := c.copy()
+			nc.add(rel)
+			res = append(res, nc)
+		}
 	}
 
 	return res

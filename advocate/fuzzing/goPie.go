@@ -12,8 +12,8 @@ package fuzzing
 
 import (
 	"advocate/analysis/data"
+	"advocate/io"
 	"advocate/utils/helper"
-	"advocate/utils/io"
 	"advocate/utils/log"
 	"fmt"
 	"math"

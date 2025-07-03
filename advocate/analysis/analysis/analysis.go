@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
+	"advocate/analysis/concurrent"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -65,7 +66,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 		index := int(len(trace) / 2)
 		elem := trace[index]
-		res := getConcurrentPartialOrderGraph(elem, true)
+		res := concurrent.GetConcurrentPartialOrderGraph(elem, true)
 		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
 
 	}
@@ -82,7 +83,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 		index := int(len(trace) / 2)
 		elem := trace[index]
-		res := getConcurrentBruteForce(elem, true)
+		res := concurrent.GetConcurrentBruteForce(elem, true)
 		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
 
 	}
@@ -244,7 +245,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
-		addEdgePartialOrderGraph(elem)
+		concurrent.AddEdgePartialOrderGraph(elem)
 
 		switch e := elem.(type) {
 		case *trace.TraceElementAtomic:

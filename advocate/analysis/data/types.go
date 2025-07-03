@@ -17,7 +17,7 @@ import (
 	"strings"
 )
 
-// elemWithVc is a helper element for an element with an additional vector clock
+// ElemWithVc is a helper element for an element with an additional vector clock
 type ElemWithVc struct {
 	Vc   *clock.VectorClock
 	Elem trace.TraceElement
@@ -27,7 +27,7 @@ type ElemWithVc struct {
 // trace element without needing to store the element itself
 type VectorClockTID2 struct {
 	Routine  int
-	Id       int
+	ID       int
 	Vc       *clock.VectorClock
 	TID      string
 	TypeVal  int
@@ -45,7 +45,7 @@ type ElemWithVcVal struct {
 	Val  int
 }
 
-// allSelectCase is a helper element to store individual references to all
+// AllSelectCase is a helper element to store individual references to all
 // select cases in a trace
 type AllSelectCase struct {
 	Sel          *trace.TraceElementSelect // the select

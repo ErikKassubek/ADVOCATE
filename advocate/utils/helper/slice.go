@@ -90,3 +90,19 @@ func MergeLists[T comparable](l1, l2 []T) []T {
 
 	return res
 }
+
+func CopyOfRange[T any](arr []T, from, to int) []T {
+	if from < 0 || to > len(arr) || from > to {
+		panic("copyOfRange: invalid indices")
+	}
+
+	sub := make([]T, to-from)
+	copy(sub, arr[from:to])
+	return sub
+}
+
+func Fill[T any](arr []T, v T) {
+	for i := range arr {
+		arr[i] = v
+	}
+}

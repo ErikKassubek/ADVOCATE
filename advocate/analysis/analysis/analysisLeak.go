@@ -255,7 +255,7 @@ func checkForLeak() {
 			found := false
 			var partner data.AllSelectCase
 			for _, c := range data.SelectCases {
-				if c.ChanID != vcTID.Id {
+				if c.ChanID != vcTID.ID {
 					continue
 				}
 
@@ -298,7 +298,7 @@ func checkForLeak() {
 				if vcTID.Sel {
 
 					arg1 := results.TraceElementResult{ // select
-						RoutineID: vcTID.Routine, ObjID: vcTID.Id, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
+						RoutineID: vcTID.Routine, ObjID: vcTID.ID, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
 						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
@@ -319,7 +319,7 @@ func checkForLeak() {
 					}
 
 					arg1 := results.TraceElementResult{ // channel
-						RoutineID: vcTID.Routine, ObjID: vcTID.Id, TPre: tPre1, ObjType: obType, File: file1, Line: line1}
+						RoutineID: vcTID.Routine, ObjID: vcTID.ID, TPre: tPre1, ObjType: obType, File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
 						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
@@ -357,7 +357,7 @@ func checkForLeak() {
 					}
 
 					arg1 := results.TraceElementResult{
-						RoutineID: vcTID.Routine, ObjID: vcTID.Id, TPre: tPre, ObjType: objType, File: file, Line: line}
+						RoutineID: vcTID.Routine, ObjID: vcTID.ID, TPre: tPre, ObjType: objType, File: file, Line: line}
 
 					var bugType helper.ResultType = helper.LUnbufferedWithout
 					if buffered {

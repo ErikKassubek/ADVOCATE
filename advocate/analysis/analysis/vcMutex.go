@@ -13,7 +13,6 @@ package analysis
 
 import (
 	"advocate/analysis/clock"
-	"advocate/analysis/concurrent"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -68,8 +67,6 @@ func UpdateVCMutex(mu *trace.TraceElementMutex) {
 		err := "Unknown mutex operation: " + mu.ToString()
 		log.Error(err)
 	}
-
-	concurrent.AddEdgePartialOrderGraph(mu)
 }
 
 // UpdateVectorClockAlt stores and updates the vector clock of the trace and element

@@ -37,6 +37,14 @@ var (
 	LastChangeWG = make(map[int]*clock.VectorClock)
 )
 
+func InitVC() {
+	noRoutine := MainTrace.GetNoRoutines()
+	for i := 1; i <= noRoutine; i++ {
+		CurrentVC[i] = clock.NewVectorClock(noRoutine)
+		CurrentWVC[i] = clock.NewVectorClock(noRoutine)
+	}
+}
+
 // NewLW sets the last write times for a given atomic variable to a new vector clock
 // If it is already set, nothing happens
 //

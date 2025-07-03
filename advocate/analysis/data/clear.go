@@ -73,8 +73,6 @@ func ClearData() {
 
 	CurrentState = State{}
 
-	NumberSelectCasesWithPartner = 0
-
 	WaitingReceive = make([]*trace.TraceElementChannel, 0)
 	MaxOpID = make(map[int]int)
 }

@@ -11,7 +11,11 @@
 package fuzzing
 
 import (
-	"advocate/analysis/data"
+	anaData "advocate/analysis/data"
+	"advocate/fuzzing/data"
+	"advocate/fuzzing/flow"
+	"advocate/fuzzing/gFuzz"
+	"advocate/fuzzing/goPie"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -20,57 +24,8 @@ import (
 	"advocate/utils/memory"
 	"advocate/utils/timer"
 	"fmt"
-	"math"
 	"path/filepath"
 	"time"
-)
-
-// Encapsulating type for the different mutations
-type mutation struct {
-	mutType int
-	mutSel  map[string][]fuzzingSelect
-	mutFlow map[string]int
-	mutPie  int
-}
-
-// Possible values for fuzzing mode
-const (
-	GFuzz       = "GFuzz"       // only GFuzz
-	GFuzzHB     = "GFuzzHB"     // GFuzz with use of hb info
-	GFuzzHBFlow = "GFuzzHBFlow" // GFuzz with use of hb info and flow mutation
-	Flow        = "Flow"        // only flow mutation
-	GoPie       = "GoPie"       // only goPie
-	GoPiePlus   = "GoPie+"      // improved goPie without HB
-	GoPieHB     = "GoPieHB"     // goPie with HB relation
-)
-
-const (
-	mutSelType  = 0
-	mutPiType   = 1
-	mutFlowType = 2
-)
-
-const (
-	maxRunPerMut = 2
-
-	factorCaseWithPartner = 3
-	maxFlowMut            = 10
-)
-
-var (
-	maxNumberRuns     = 100
-	maxTime           = 7 * time.Minute
-	maxTimeSet        = false
-	numberFuzzingRuns = 0
-	mutationQueue     = make([]mutation, 0)
-	// count how often a specific mutation has been in the queue
-	allMutations     = make(map[string]int)
-	fuzzingMode      = ""
-	fuzzingModeGFuzz = false
-	fuzzingModeGoPie = false
-	fuzzingModeFlow  = false
-
-	cancelTestIfBugFound = false
 )
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
@@ -101,24 +56,24 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
 	}
 
-	modes := []string{GoPie, GoPiePlus, GoPieHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
+	modes := []string{data.GoPie, data.GoPiePlus, data.GoPieHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
 	if !helper.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 
-	maxNumberRuns = mRun
-	if maxTime > 0 {
-		maxTime = time.Duration(mTime) * time.Second
-		maxTimeSet = true
+	data.MaxNumberRuns = mRun
+	if data.MaxTime > 0 {
+		data.MaxTime = time.Duration(mTime) * time.Second
+		data.MaxTimeSet = true
 	}
 
-	fuzzingMode = fm
-	fuzzingModeGoPie = (fuzzingMode == GoPie || fuzzingMode == GoPiePlus || fuzzingMode == GoPieHB)
-	fuzzingModeGFuzz = (fuzzingMode == GFuzz || fuzzingMode == GFuzzHBFlow || fuzzingMode == GFuzzHB)
-	fuzzingModeFlow = (fuzzingMode == Flow || fuzzingMode == GFuzzHBFlow)
-	useHBInfoFuzzing = (fuzzingMode == GFuzzHB || fuzzingMode == GFuzzHBFlow || fuzzingMode == Flow || fuzzingMode == GoPieHB)
+	data.FuzzingMode = fm
+	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
+	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
+	data.FuzzingModeFlow = (data.FuzzingMode == data.Flow || data.FuzzingMode == data.GFuzzHBFlow)
+	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoPieHB)
 
-	cancelTestIfBugFound = cancelTestIfFound
+	data.CancelTestIfBugFound = cancelTestIfFound
 
 	if cont {
 		log.Info("Continue fuzzing")
@@ -142,11 +97,11 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
-			err := stats.CreateStatsFuzzing(getPath(progPath), progName)
+			err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
 			if err != nil {
 				log.Error("Failed to create fuzzing stats: ", err.Error())
 			}
-			err = stats.CreateStatsTotal(getPath(progPath), progName)
+			err = stats.CreateStatsTotal(data.GetPath(progPath), progName)
 			if err != nil {
 				log.Error("Failed to create total stats: ", err.Error())
 			}
@@ -207,11 +162,11 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	if createStats {
-		err := stats.CreateStatsFuzzing(getPath(progPath), progName)
+		err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
 		if err != nil {
 			log.Error("Failed to create fuzzing stats: ", err.Error())
 		}
-		err = stats.CreateStatsTotal(getPath(progPath), progName)
+		err = stats.CreateStatsTotal(data.GetPath(progPath), progName)
 		if err != nil {
 			log.Error("Failed to create total stats: ", err.Error())
 		}
@@ -240,45 +195,45 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
-	progDir := getPath(progPath)
+	progDir := data.GetPath(progPath)
 
 	clearDataFull()
 
 	startTime := time.Now()
 
 	// while there are available mutations, run them
-	for numberFuzzingRuns == 0 || len(mutationQueue) != 0 {
+	for data.NumberFuzzingRuns == 0 || len(data.MutationQueue) != 0 {
 
 		// clean up
 		clearData()
 		timer.ResetFuzzing()
 		memory.Reset()
 
-		if cancelTestIfBugFound && results.GetBugWasFound() {
-			log.Resultf(false, false, "", "Cancel test after %d runs", numberFuzzingRuns)
+		if data.CancelTestIfBugFound && results.GetBugWasFound() {
+			log.Resultf(false, false, "", "Cancel test after %d runs", data.NumberFuzzingRuns)
 			break
 		}
 
-		log.Info("Fuzzing Run: ", numberFuzzingRuns+1)
+		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns+1)
 
 		fuzzingPath := ""
 		progPathDir := helper.GetDirectory(progPath)
-		var order mutation
-		if numberFuzzingRuns != 0 {
+		var order data.Mutation
+		if data.NumberFuzzingRuns != 0 {
 			order = popMutation()
-			if order.mutType == mutPiType {
+			if order.MutType == data.MutPiType {
 				fuzzingPath = filepath.Join(progPathDir,
 					filepath.Join("fuzzingTraces",
-						fmt.Sprintf("fuzzingTrace_%d", order.mutPie)))
+						fmt.Sprintf("fuzzingTrace_%d", order.MutPie)))
 			} else {
-				err := writeMutationToFile(progPathDir, order)
+				err := data.WriteMutationToFile(progPathDir, order)
 				if err != nil {
 					return err
 				}
 			}
 		}
 
-		firstRun = firstRun && (numberFuzzingRuns == 0)
+		firstRun = firstRun && (data.NumberFuzzingRuns == 0)
 
 		// Run the test/mutation
 
@@ -287,17 +242,17 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 		err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
-			name, progName, name, numberFuzzingRuns, fuzzingPath, ignoreAtomic,
+			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)
 		if err != nil {
 			log.Error("Fuzzing run failed: ", err.Error())
 		} else {
-			numberFuzzingRuns++
+			data.NumberFuzzingRuns++
 
 			// cancel if max number of mutations have been reached
-			if maxNumberRuns != -1 && numberFuzzingRuns >= maxNumberRuns {
-				log.Infof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", maxNumberRuns)
+			if data.MaxNumberRuns != -1 && data.NumberFuzzingRuns >= data.MaxNumberRuns {
+				log.Infof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", data.MaxNumberRuns)
 				return nil
 			}
 
@@ -305,46 +260,46 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 			// collect the required data to decide whether run is interesting
 			// and to create the mutations
-			ParseTrace(&data.MainTrace)
+			ParseTrace(&anaData.MainTrace)
 
 			if memory.WasCanceled() {
 				continue
 			}
 
 			log.Infof("Create mutations")
-			if fuzzingModeGFuzz {
+			if data.FuzzingModeGFuzz {
 				log.Infof("Create GFuzz mutations")
-				createGFuzzMut()
+				gFuzz.CreateGFuzzMut()
 			}
 
 			// add new mutations based on flow path expansion
-			if fuzzingModeFlow {
+			if data.FuzzingModeFlow {
 				log.Infof("Create Flow mutations")
-				createMutationsFlow()
+				flow.CreateMutationsFlow()
 			}
 
 			// add mutations based on GoPie
-			if fuzzingModeGoPie {
+			if data.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				createGoPieMut(progDir, numberFuzzingRuns, order.mutPie)
+				goPie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
 			}
 
-			log.Infof("Current fuzzing queue size: %d", len(mutationQueue))
+			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))
 
-			mergeTraceInfoIntoFileInfo()
+			gFuzz.MergeTraceInfoIntoFileInfo()
 		}
 
-		if maxTimeSet && time.Since(startTime) > maxTime {
-			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(maxTime.Minutes()))
+		if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
+			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(data.MaxTime.Minutes()))
 			return nil
 		}
 	}
 
-	if fuzzingModeGoPie {
+	if data.FuzzingModeGoPie {
 		toolchain.ClearFuzzingTrace(progDir, keepTraces)
 	}
 
-	log.Infof("Finish fuzzing after %d runs\n", numberFuzzingRuns)
+	log.Infof("Finish fuzzing after %d runs\n", data.NumberFuzzingRuns)
 
 	return nil
 }
@@ -353,38 +308,29 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 //
 // Returns:
 //   - the first mutation from the mutation queue
-func popMutation() mutation {
-	var mut mutation
-	mut, mutationQueue = mutationQueue[0], mutationQueue[1:]
+func popMutation() data.Mutation {
+	var mut data.Mutation
+	mut, data.MutationQueue = data.MutationQueue[0], data.MutationQueue[1:]
 	return mut
-}
-
-// Get the probability that a select changes its preferred case
-// It is selected in such a way, that at least one of the selects if flipped
-// with a probability of at least 99%.
-// Additionally the flip probability is at least 10% for each select.
-func getFlipProbability() float64 {
-	p := 0.99   // min prob that at least one case is flipped
-	pMin := 0.1 // min prob that a select is flipt
-
-	return max(pMin, 1-math.Pow(1-p, 1/float64(numberSelects)))
 }
 
 // Reset fuzzing
 func resetFuzzing() {
-	numberFuzzingRuns = 0
-	mutationQueue = make([]mutation, 0)
+	data.NumberFuzzingRuns = 0
+	data.MutationQueue = make([]data.Mutation, 0)
 	// count how often a specific mutation has been in the queue
-	allMutations = make(map[string]int)
+	data.AllMutations = make(map[string]int)
 }
 
-// Add a mutation to the queue. If a maximum number of mutation runs in set,
-// only add the mutation if it does not exceed this max number
-//
-// Parameter:
-//   - mut mutation: the mutation to add
-func addMutToQueue(mut mutation) {
-	if maxNumberRuns == -1 || numberFuzzingRuns+len(mutationQueue) <= maxNumberRuns {
-		mutationQueue = append(mutationQueue, mut)
-	}
+func clearDataFull() {
+	data.ClearDataFull()
+	goPie.ClearData()
+	gFuzz.ClearData()
+	flow.ClearData()
+}
+
+func clearData() {
+	goPie.ClearData()
+	gFuzz.ClearData()
+	flow.ClearData()
 }

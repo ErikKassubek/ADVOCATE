@@ -18,6 +18,7 @@ import (
 	"strings"
 
 	"advocate/fuzzing"
+	fuzzingdata "advocate/fuzzing/data"
 	"advocate/results/stats"
 	"advocate/toolchain"
 	"advocate/utils/helper"
@@ -209,8 +210,8 @@ func main() {
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+
-	if mode == "fuzzing" && (fuzzingMode == fuzzing.GFuzz ||
-		fuzzingMode == fuzzing.GoPie || fuzzingMode == fuzzing.GoPiePlus) {
+	if mode == "fuzzing" && (fuzzingMode == fuzzingdata.GFuzz ||
+		fuzzingMode == fuzzingdata.GoPie || fuzzingMode == fuzzingdata.GoPiePlus) {
 		scenarios = "-"
 		onlyAPanicAndLeak = true
 	}

@@ -20,10 +20,10 @@ import (
 // TraceElementFork is a trace element for a go statement
 // Fields:
 //   - traceID: id of the element, should never be changed
-//   - index int: ID in the new routine
+//   - index int: the index of the fork in the routine
 //   - routine int: The routine id of
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the new go statement
+//   - id int: The id of the new go routine
 //   - file (string), line int: The position of the trace element in the file
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
@@ -83,10 +83,10 @@ func (t *Trace) AddTraceElementFork(routine int, tPost string, id string, pos st
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetID returns the ID of the newly created routine
 //
 // Returns:
-//   - int: The id of the element
+//   - int: The id of the new routine
 func (fo *TraceElementFork) GetID() int {
 	return fo.id
 }

@@ -11,7 +11,10 @@
 package fuzzing
 
 import (
-	"advocate/analysis/data"
+	anadata "advocate/analysis/data"
+	"advocate/fuzzing/data"
+	"advocate/fuzzing/gFuzz"
+	"advocate/fuzzing/goPie"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -27,16 +30,16 @@ func ParseTrace(tr *trace.Trace) {
 	currentTrace = tr
 
 	// clear current order for gFuzz
-	selectInfoTrace = make(map[string][]fuzzingSelect)
+	gFuzz.SelectInfoTrace = make(map[string][]data.FuzzingSelect)
 
 	// clear chains for goPie
-	schedulingChains = make([]chain, 0)
-	currentChain = newChain()
-	lastRoutine = -1
+	goPie.SchedulingChains = make([]goPie.Chain, 0)
+	goPie.CurrentChain = goPie.NewChain()
+	goPie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
-		if fuzzingModeGoPie {
-			calculateRelRule1(routine)
+		if data.FuzzingModeGoPie {
+			goPie.CalculateRelRule1(routine)
 		}
 
 		if memory.WasCanceled() {
@@ -48,8 +51,8 @@ func ParseTrace(tr *trace.Trace) {
 				continue
 			}
 
-			if fuzzingModeGoPie && canBeAddedToChain(elem) {
-				calculateRelRule2AddElem(elem)
+			if data.FuzzingModeGoPie && canBeAddedToChain(elem) {
+				goPie.CalculateRelRule2AddElem(elem)
 			}
 
 			if elem.GetTPost() == 0 {
@@ -72,23 +75,23 @@ func ParseTrace(tr *trace.Trace) {
 		}
 	}
 
-	if fuzzingModeGoPie && currentChain.len() != 0 {
-		schedulingChains = append(schedulingChains, currentChain)
-		currentChain = newChain()
+	if data.FuzzingModeGoPie && goPie.CurrentChain.Len() != 0 {
+		goPie.SchedulingChains = append(goPie.SchedulingChains, goPie.CurrentChain)
+		goPie.CurrentChain = goPie.NewChain()
 	}
 
-	if fuzzingModeGoPie {
-		calculateRelRule2And4()
-		calculateRelRule3()
+	if data.FuzzingModeGoPie {
+		goPie.CalculateRelRule2And4()
+		goPie.CalculateRelRule3()
 	}
 
 	if memory.WasCanceled() {
 		return
 	}
 
-	sortSelects()
+	gFuzz.SortSelects()
 
-	numberSelectCasesWithPartner = data.NumberSelectCasesWithPartner
+	gFuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
 }
 
 // Decides if an element can be added to a scheduling chain
@@ -101,7 +104,7 @@ func ParseTrace(tr *trace.Trace) {
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
 func canBeAddedToChain(elem trace.TraceElement) bool {
-	if fuzzingMode == GoPie {
+	if data.FuzzingMode == data.GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
 		t := elem.GetObjType(false)
 		return t == trace.ObjectTypeMutex || t == trace.ObjectTypeChannel || t == trace.ObjectTypeSelect
@@ -126,7 +129,7 @@ func ignoreFuzzing(elem trace.TraceElement, ignoreNew bool) bool {
 
 // Parse a new elem element.
 // For now only channels are considered
-// Add the corresponding info into fuzzingChannel
+// Add the corresponding info into FuzzingChannel
 func parseNew(elem *trace.TraceElementNew) {
 	// only process channels
 	if elem.GetObjType(true) != "NC" {
@@ -134,16 +137,16 @@ func parseNew(elem *trace.TraceElementNew) {
 		return
 	}
 
-	if fuzzingModeGFuzz {
-		fuzzingElem := fuzzingChannel{
-			globalID:  elem.GetPos(),
-			localID:   elem.GetID(),
-			closeInfo: never,
-			qSize:     elem.GetNum(),
-			maxQCount: 0,
+	if data.FuzzingModeGFuzz {
+		fuzzingElem := gFuzz.FuzzingChannel{
+			GlobalID:  elem.GetPos(),
+			LocalID:   elem.GetID(),
+			CloseInfo: gFuzz.Never,
+			QSize:     elem.GetNum(),
+			MaxQCount: 0,
 		}
 
-		channelInfoTrace[fuzzingElem.localID] = fuzzingElem
+		gFuzz.ChannelInfoTrace[fuzzingElem.LocalID] = fuzzingElem
 	}
 }
 
@@ -154,15 +157,15 @@ func parseNew(elem *trace.TraceElementNew) {
 // selID is the case id if it is a select case, -2 otherwise
 func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
 
-	if fuzzingModeGFuzz {
+	if data.FuzzingModeGFuzz {
 		op := elem.GetObjType(true)
 
 		// close -> update channelInfoTrace
 		if op == "CC" {
-			e := channelInfoTrace[elem.GetID()]
-			e.closeInfo = always // before is always unknown
-			channelInfoTrace[elem.GetID()] = e
-			numberClose++
+			e := gFuzz.ChannelInfoTrace[elem.GetID()]
+			e.CloseInfo = gFuzz.Always // before is always unknown
+			gFuzz.ChannelInfoTrace[elem.GetID()] = e
+			gFuzz.NumberClose++
 		} else if op == "CS" {
 			if elem.GetTPost() == 0 {
 				return
@@ -183,22 +186,22 @@ func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
 					selIDRecv = selRecv.GetChosenIndex()
 				}
 
-				if e, ok := pairInfoTrace[key]; ok {
-					e.com++
-					pairInfoTrace[key] = e
+				if e, ok := gFuzz.PairInfoTrace[key]; ok {
+					e.Com++
+					gFuzz.PairInfoTrace[key] = e
 				} else {
-					fp := fuzzingPair{
-						chanID:  chanID,
-						com:     1,
-						sendSel: selID,
-						recvSel: selIDRecv,
+					fp := gFuzz.FuzzingPair{
+						ChanID:  chanID,
+						Com:     1,
+						SendSel: selID,
+						RecvSel: selIDRecv,
 					}
-					pairInfoTrace[key] = fp
+					gFuzz.PairInfoTrace[key] = fp
 				}
 			}
 
-			channelNew := channelInfoTrace[chanID]
-			channelNew.maxQCount = max(channelNew.maxQCount, elem.GetQCount())
+			channelNew := gFuzz.ChannelInfoTrace[chanID]
+			channelNew.MaxQCount = max(channelNew.MaxQCount, elem.GetQCount())
 		}
 	}
 }
@@ -208,8 +211,8 @@ func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
 // Parameter:
 //   - elem *analysis.TraceElementSelect: the select element
 func parseSelectOp(elem *trace.TraceElementSelect) {
-	if fuzzingModeGFuzz {
-		addFuzzingSelect(elem)
+	if data.FuzzingModeGFuzz {
+		gFuzz.AddFuzzingSelect(elem)
 
 		if elem.GetChosenDefault() {
 			return

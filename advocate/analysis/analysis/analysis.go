@@ -11,7 +11,6 @@
 package analysis
 
 import (
-	"advocate/analysis/clock"
 	"advocate/analysis/concurrent"
 	"advocate/analysis/data"
 	"advocate/results/results"
@@ -20,6 +19,7 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/memory"
 	"advocate/utils/timer"
+	"advocate/utils/types"
 	"time"
 )
 
@@ -230,12 +230,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		ResetState()
 	}
 
-	noRoutine := data.MainTrace.GetNoRoutines()
-	for i := 1; i <= noRoutine; i++ {
-		data.CurrentVC[i] = clock.NewVectorClock(noRoutine)
-		data.CurrentWVC[i] = clock.NewVectorClock(noRoutine)
-	}
-
 	data.CurrentVC[1].Inc(1)
 	data.CurrentWVC[1].Inc(1)
 
@@ -267,6 +261,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			}
 		case *trace.TraceElementFork:
 			UpdateVCFork(e)
+			routine, index := e.GetTraceIndex()
+			newRout := e.GetID()
+			data.Csst.InsetEdge(types.Pair[int, int]{X: routine, Y: index}, types.Pair[int, int]{X: newRout, Y: 0})
 		case *trace.TraceElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)

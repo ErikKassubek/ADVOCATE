@@ -23,7 +23,7 @@ import (
 	"math"
 )
 
-const block_size = 128
+const blockSize = 128
 
 type segmentTreeNode struct {
 	start, end             int
@@ -70,7 +70,7 @@ type sparseSegmentTree struct {
 }
 
 func newSparseSegmentTree1(length int) sparseSegmentTree {
-	v := length / block_size
+	v := length / blockSize
 	height := int(math.Log(float64(v)) / math.Log(2))
 
 	height = max(1, height)

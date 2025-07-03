@@ -30,7 +30,7 @@ const (
 	CloseOp
 )
 
-// TraceElementChannel is a trace element for a channel
+// ElementChannel is a trace element for a channel
 //
 // Fields:
 //   - traceID: id of the element, should never be changed
@@ -48,12 +48,12 @@ const (
 //   - line int: The line of the channel operation
 //   - sel *traceElementSelect: The select operation, if the channel operation
 //     is part of a select, otherwise nil
-//   - partner *TraceElementChannel: The partner of the channel operation
+//   - partner *ElementChannel: The partner of the channel operation
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
-type TraceElementChannel struct {
+type ElementChannel struct {
 	traceID  int
 	index    int
 	routine  int
@@ -67,12 +67,12 @@ type TraceElementChannel struct {
 	qCount   int
 	file     string
 	line     int
-	sel      *TraceElementSelect
-	partner  *TraceElementChannel
+	sel      *ElementSelect
+	partner  *ElementChannel
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
-	children []TraceElement
-	parents  []TraceElement
+	children []Element
+	parents  []Element
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -150,7 +150,7 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		return err
 	}
 
-	elem := TraceElementChannel{
+	elem := ElementChannel{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPre:     tPreInt,
@@ -165,8 +165,8 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
-		children: make([]TraceElement, 0),
-		parents:  make([]TraceElement, 0),
+		children: make([]Element, 0),
+		parents:  make([]Element, 0),
 	}
 
 	elem.findPartner(t)
@@ -179,7 +179,7 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 //
 // Returns:
 //   - *TraceElementChannel: The partner of the channel operation
-func (ch *TraceElementChannel) GetPartner() *TraceElementChannel {
+func (ch *ElementChannel) GetPartner() *ElementChannel {
 	return ch.partner
 }
 
@@ -187,7 +187,7 @@ func (ch *TraceElementChannel) GetPartner() *TraceElementChannel {
 //
 // Returns:
 //   - int: The id of the element
-func (ch *TraceElementChannel) GetID() int {
+func (ch *ElementChannel) GetID() int {
 	return ch.id
 }
 
@@ -195,7 +195,7 @@ func (ch *TraceElementChannel) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (ch *TraceElementChannel) GetRoutine() int {
+func (ch *ElementChannel) GetRoutine() int {
 	return ch.routine
 }
 
@@ -203,7 +203,7 @@ func (ch *TraceElementChannel) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (ch *TraceElementChannel) GetTPre() int {
+func (ch *ElementChannel) GetTPre() int {
 	return ch.tPre
 }
 
@@ -211,7 +211,7 @@ func (ch *TraceElementChannel) GetTPre() int {
 //
 // Returns:
 //   - float32: The time of the element
-func (ch *TraceElementChannel) GetTSort() int {
+func (ch *ElementChannel) GetTSort() int {
 	if ch.tPost == 0 {
 		return math.MaxInt
 	}
@@ -222,7 +222,7 @@ func (ch *TraceElementChannel) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (ch *TraceElementChannel) GetPos() string {
+func (ch *ElementChannel) GetPos() string {
 	return fmt.Sprintf("%s:%d", ch.file, ch.line)
 }
 
@@ -230,7 +230,7 @@ func (ch *TraceElementChannel) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (ch *TraceElementChannel) GetReplayID() string {
+func (ch *ElementChannel) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", ch.routine, ch.file, ch.line)
 }
 
@@ -238,7 +238,7 @@ func (ch *TraceElementChannel) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (ch *TraceElementChannel) GetFile() string {
+func (ch *ElementChannel) GetFile() string {
 	return ch.file
 }
 
@@ -246,7 +246,7 @@ func (ch *TraceElementChannel) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (ch *TraceElementChannel) GetLine() int {
+func (ch *ElementChannel) GetLine() int {
 	return ch.line
 }
 
@@ -255,7 +255,7 @@ func (ch *TraceElementChannel) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (ch *TraceElementChannel) GetTID() string {
+func (ch *ElementChannel) GetTID() string {
 	return ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
 }
 
@@ -263,7 +263,7 @@ func (ch *TraceElementChannel) GetTID() string {
 //
 // Returns:
 //   - int: The oID of the element
-func (ch *TraceElementChannel) GetOID() int {
+func (ch *ElementChannel) GetOID() int {
 	return ch.oID
 }
 
@@ -271,7 +271,7 @@ func (ch *TraceElementChannel) GetOID() int {
 //
 // Returns:
 //   - OpChannel: the operation
-func (ch *TraceElementChannel) GetOpC() OpChannel {
+func (ch *ElementChannel) GetOpC() OpChannel {
 	return ch.opC
 }
 
@@ -279,7 +279,7 @@ func (ch *TraceElementChannel) GetOpC() OpChannel {
 //
 // Returns:
 //   - bool: Whether the channel operation is buffered
-func (ch *TraceElementChannel) IsBuffered() bool {
+func (ch *ElementChannel) IsBuffered() bool {
 	return ch.qSize != 0
 }
 
@@ -287,7 +287,7 @@ func (ch *TraceElementChannel) IsBuffered() bool {
 //
 // Returns:
 //   - OpChannel: The type of the operation
-func (ch *TraceElementChannel) Operation() OpChannel {
+func (ch *ElementChannel) Operation() OpChannel {
 	return ch.opC
 }
 
@@ -295,7 +295,7 @@ func (ch *TraceElementChannel) Operation() OpChannel {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (ch *TraceElementChannel) SetVc(vc *clock.VectorClock) {
+func (ch *ElementChannel) SetVc(vc *clock.VectorClock) {
 	ch.vc = vc.Copy()
 }
 
@@ -303,7 +303,7 @@ func (ch *TraceElementChannel) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (ch *TraceElementChannel) SetWVc(vc *clock.VectorClock) {
+func (ch *ElementChannel) SetWVc(vc *clock.VectorClock) {
 	ch.wVc = vc.Copy()
 }
 
@@ -311,7 +311,7 @@ func (ch *TraceElementChannel) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (ch *TraceElementChannel) GetVC() *clock.VectorClock {
+func (ch *ElementChannel) GetVC() *clock.VectorClock {
 	return ch.vc
 }
 
@@ -319,7 +319,7 @@ func (ch *TraceElementChannel) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (ch *TraceElementChannel) GetWVc() *clock.VectorClock {
+func (ch *ElementChannel) GetWVc() *clock.VectorClock {
 	return ch.wVc
 }
 
@@ -327,7 +327,7 @@ func (ch *TraceElementChannel) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - int: The tPost of the element
-func (ch *TraceElementChannel) GetTPost() int {
+func (ch *ElementChannel) GetTPost() int {
 	return ch.tPost
 }
 
@@ -338,7 +338,7 @@ func (ch *TraceElementChannel) GetTPost() int {
 //
 // Returns:
 //   - string: the object type
-func (ch *TraceElementChannel) GetObjType(operation bool) string {
+func (ch *ElementChannel) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeChannel
 	}
@@ -358,7 +358,7 @@ func (ch *TraceElementChannel) GetObjType(operation bool) string {
 //
 // Returns:
 //   - VectorClock: The number of elems in the queue after the operation
-func (ch *TraceElementChannel) GetQCount() int {
+func (ch *ElementChannel) GetQCount() int {
 	return ch.qCount
 }
 
@@ -366,7 +366,7 @@ func (ch *TraceElementChannel) GetQCount() int {
 //
 // Returns:
 //   - int: the size of the buffer
-func (ch *TraceElementChannel) GetQSize() int {
+func (ch *ElementChannel) GetQSize() int {
 	return ch.qSize
 }
 
@@ -375,7 +375,7 @@ func (ch *TraceElementChannel) GetQSize() int {
 //
 // Returns:
 //   - VectorClock: The select the element is a part of, if not in select it is nil
-func (ch *TraceElementChannel) GetSelect() *TraceElementSelect {
+func (ch *ElementChannel) GetSelect() *ElementSelect {
 	return ch.sel
 }
 
@@ -386,7 +386,7 @@ func (ch *TraceElementChannel) GetSelect() *TraceElementSelect {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (ch *TraceElementChannel) IsEqual(elem TraceElement) bool {
+func (ch *ElementChannel) IsEqual(elem Element) bool {
 	return ch.routine == elem.GetRoutine() && ch.ToString() == elem.ToString()
 }
 
@@ -395,7 +395,7 @@ func (ch *TraceElementChannel) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (ch *TraceElementChannel) GetTraceIndex() (int, int) {
+func (ch *ElementChannel) GetTraceIndex() (int, int) {
 	return ch.routine, ch.index
 }
 
@@ -403,7 +403,7 @@ func (ch *TraceElementChannel) GetTraceIndex() (int, int) {
 //
 // Parameter:
 // - time int: The tPre and tPost of the element
-func (ch *TraceElementChannel) SetT(time int) {
+func (ch *ElementChannel) SetT(time int) {
 	ch.tPre = time
 	ch.tPost = time
 }
@@ -412,7 +412,7 @@ func (ch *TraceElementChannel) SetT(time int) {
 //
 // Parameter:
 //   - partner *TraceElementChannel: The partner of the channel operation
-func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
+func (ch *ElementChannel) SetPartner(partner *ElementChannel) {
 	ch.partner = partner
 }
 
@@ -420,7 +420,7 @@ func (ch *TraceElementChannel) SetPartner(partner *TraceElementChannel) {
 //
 // Parameter:
 //   - closed bool: the new cl value
-func (ch *TraceElementChannel) SetClosed(closed bool) {
+func (ch *ElementChannel) SetClosed(closed bool) {
 	ch.cl = closed
 }
 
@@ -428,7 +428,7 @@ func (ch *TraceElementChannel) SetClosed(closed bool) {
 //
 // Returns:
 //   - bool: cl
-func (ch *TraceElementChannel) GetClosed() bool {
+func (ch *ElementChannel) GetClosed() bool {
 	return ch.cl
 }
 
@@ -436,7 +436,7 @@ func (ch *TraceElementChannel) GetClosed() bool {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (ch *TraceElementChannel) SetTPre(tPre int) {
+func (ch *ElementChannel) SetTPre(tPre int) {
 	ch.tPre = tPre
 	if ch.tPost != 0 && ch.tPost < tPre {
 		ch.tPost = tPre
@@ -451,7 +451,7 @@ func (ch *TraceElementChannel) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (ch *TraceElementChannel) SetTPre2(tPre int) {
+func (ch *ElementChannel) SetTPre2(tPre int) {
 	ch.tPre = tPre
 	if ch.tPost != 0 && ch.tPost < tPre {
 		ch.tPost = tPre
@@ -462,7 +462,7 @@ func (ch *TraceElementChannel) SetTPre2(tPre int) {
 //
 // Parameter:
 //   - tPost int: The tPost of the element
-func (ch *TraceElementChannel) SetTPost(tPost int) {
+func (ch *ElementChannel) SetTPost(tPost int) {
 	ch.tPost = tPost
 	if ch.sel != nil {
 		ch.sel.SetTPost2(tPost)
@@ -473,7 +473,7 @@ func (ch *TraceElementChannel) SetTPost(tPost int) {
 //
 // Parameter:
 //   - tPost int: The tPost of the element
-func (ch *TraceElementChannel) SetTPost2(tPost int) {
+func (ch *ElementChannel) SetTPost2(tPost int) {
 	ch.tPost = tPost
 }
 
@@ -481,7 +481,7 @@ func (ch *TraceElementChannel) SetTPost2(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *TraceElementChannel) SetTSort(tPost int) {
+func (ch *ElementChannel) SetTSort(tPost int) {
 	ch.SetTPre(tPost)
 	ch.tPost = tPost
 
@@ -495,7 +495,7 @@ func (ch *TraceElementChannel) SetTSort(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *TraceElementChannel) SetTSort2(tPost int) {
+func (ch *ElementChannel) SetTSort2(tPost int) {
 	ch.SetTPre(tPost)
 	ch.tPost = tPost
 }
@@ -505,7 +505,7 @@ func (ch *TraceElementChannel) SetTSort2(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
+func (ch *ElementChannel) SetTWithoutNotExecuted(tSort int) {
 	ch.SetTPre(tSort)
 	if ch.tPost != 0 {
 		ch.tPost = tSort
@@ -521,7 +521,7 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
+func (ch *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
 	ch.SetTPre(tSort)
 	if ch.tPost != 0 {
 		ch.tPost = tSort
@@ -532,7 +532,7 @@ func (ch *TraceElementChannel) SetTWithoutNotExecuted2(tSort int) {
 //
 // Parameter:
 //   - oID int: The oID of the element
-func (ch *TraceElementChannel) SetOID(oID int) {
+func (ch *ElementChannel) SetOID(oID int) {
 	ch.oID = oID
 }
 
@@ -540,7 +540,7 @@ func (ch *TraceElementChannel) SetOID(oID int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (ch *TraceElementChannel) ToString() string {
+func (ch *ElementChannel) ToString() string {
 	return ch.toStringSep(",", false)
 }
 
@@ -553,7 +553,7 @@ func (ch *TraceElementChannel) ToString() string {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (ch *TraceElementChannel) toStringSep(sep string, sel bool) string {
+func (ch *ElementChannel) toStringSep(sep string, sel bool) string {
 	op := ""
 	switch ch.opC {
 	case SendOp:
@@ -586,7 +586,7 @@ func (ch *TraceElementChannel) toStringSep(sep string, sel bool) string {
 //
 // Returns:
 //   - int: the trace id
-func (ch *TraceElementChannel) GetTraceID() int {
+func (ch *ElementChannel) GetTraceID() int {
 	return ch.traceID
 }
 
@@ -594,7 +594,7 @@ func (ch *TraceElementChannel) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (ch *TraceElementChannel) setTraceID(ID int) {
+func (ch *ElementChannel) setTraceID(ID int) {
 	ch.traceID = ID
 }
 
@@ -602,13 +602,13 @@ func (ch *TraceElementChannel) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (ch *TraceElementChannel) Copy() TraceElement {
-	children := make([]TraceElement, len(ch.children))
+func (ch *ElementChannel) Copy() Element {
+	children := make([]Element, len(ch.children))
 	copy(children, ch.children)
-	parents := make([]TraceElement, len(ch.parents))
+	parents := make([]Element, len(ch.parents))
 	copy(parents, ch.parents)
 
-	newCh := TraceElementChannel{
+	newCh := ElementChannel{
 		traceID:  ch.traceID,
 		index:    ch.index,
 		routine:  ch.routine,
@@ -638,7 +638,7 @@ func (ch *TraceElementChannel) Copy() TraceElement {
 //
 // Returns:
 //   - *TraceElementChannel: The partner, -1 if not found
-func (ch *TraceElementChannel) findPartner(tr *Trace) *TraceElementChannel {
+func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	id := ch.GetID()
 	oID := ch.GetOID()
 
@@ -670,7 +670,7 @@ func (ch *TraceElementChannel) findPartner(tr *Trace) *TraceElementChannel {
 	}
 
 	if tr.channelWithoutPartner[id] == nil {
-		tr.channelWithoutPartner[id] = make(map[int]*TraceElementChannel)
+		tr.channelWithoutPartner[id] = make(map[int]*ElementChannel)
 	}
 	tr.channelWithoutPartner[id][oID] = ch
 
@@ -681,7 +681,7 @@ func (ch *TraceElementChannel) findPartner(tr *Trace) *TraceElementChannel {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (ch *TraceElementChannel) AddChild(elem TraceElement) {
+func (ch *ElementChannel) AddChild(elem Element) {
 	ch.children = append(ch.children, elem)
 }
 
@@ -689,7 +689,7 @@ func (ch *TraceElementChannel) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (ch *TraceElementChannel) GetChildren() []TraceElement {
+func (ch *ElementChannel) GetChildren() []Element {
 	return ch.children
 }
 
@@ -697,6 +697,6 @@ func (ch *TraceElementChannel) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (ch *TraceElementChannel) GetParents() []TraceElement {
+func (ch *ElementChannel) GetParents() []Element {
 	return ch.children
 }

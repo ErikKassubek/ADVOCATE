@@ -20,7 +20,7 @@ import (
 //
 // Parameter
 //   - co *trace.TraceElementCond: the conditional trace operation
-func UpdateVCCond(co *trace.TraceElementCond) {
+func UpdateVCCond(co *trace.ElementCond) {
 	routine := co.GetRoutine()
 	co.SetVc(data.CurrentVC[routine])
 	co.SetWVc(data.CurrentWVC[routine])
@@ -39,7 +39,7 @@ func UpdateVCCond(co *trace.TraceElementCond) {
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondWait(co *trace.TraceElementCond) {
+func CondWait(co *trace.ElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -60,7 +60,7 @@ func CondWait(co *trace.TraceElementCond) {
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondSignal(co *trace.TraceElementCond) {
+func CondSignal(co *trace.ElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -81,7 +81,7 @@ func CondSignal(co *trace.TraceElementCond) {
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CondBroadcast(co *trace.TraceElementCond) {
+func CondBroadcast(co *trace.ElementCond) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

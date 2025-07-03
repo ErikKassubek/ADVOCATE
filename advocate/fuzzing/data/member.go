@@ -23,17 +23,17 @@ import "math/rand"
 func (fs FuzzingSelect) GetCopyRandom(def bool, flipChance float64) FuzzingSelect {
 	// do only flip with certain chance
 	if rand.Float64() > flipChance {
-		return FuzzingSelect{Id: fs.Id, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+		return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
 	}
 
 	// if at most one case and no default (should not happen), or only default select the same case again
 	if (!def && fs.NumberCases <= 1) || (def && fs.NumberCases == 0) {
-		return FuzzingSelect{Id: fs.Id, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+		return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
 	}
 
 	prefCase := fs.chooseRandomCase(def)
 
-	return FuzzingSelect{Id: fs.Id, T: fs.T, ChosenCase: prefCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+	return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: prefCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
 }
 
 // Randomly select a case.

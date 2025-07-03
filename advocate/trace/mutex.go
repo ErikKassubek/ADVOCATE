@@ -32,7 +32,7 @@ const (
 	RUnlockOp
 )
 
-// TraceElementMutex is a trace element for a mutex
+// ElementMutex is a trace element for a mutex
 //
 // Fields:
 //   - traceID: id of the element, should never be changed
@@ -50,7 +50,7 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
-type TraceElementMutex struct {
+type ElementMutex struct {
 	traceID  int
 	index    int
 	routine  int
@@ -64,8 +64,8 @@ type TraceElementMutex struct {
 	line     int
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
-	children []TraceElement
-	parents  []TraceElement
+	children []Element
+	parents  []Element
 }
 
 // AddTraceElementMutex adds a new mutex element to the main trace
@@ -130,7 +130,7 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 		return err
 	}
 
-	elem := TraceElementMutex{
+	elem := ElementMutex{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPre:     tPreInt,
@@ -143,8 +143,8 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
-		children: make([]TraceElement, 0),
-		parents:  make([]TraceElement, 0),
+		children: make([]Element, 0),
+		parents:  make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -155,7 +155,7 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 //
 // Returns:
 //   - int: The id of the element
-func (mu *TraceElementMutex) GetID() int {
+func (mu *ElementMutex) GetID() int {
 	return mu.id
 }
 
@@ -163,7 +163,7 @@ func (mu *TraceElementMutex) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (mu *TraceElementMutex) GetRoutine() int {
+func (mu *ElementMutex) GetRoutine() int {
 	return mu.routine
 }
 
@@ -171,7 +171,7 @@ func (mu *TraceElementMutex) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (mu *TraceElementMutex) GetTPre() int {
+func (mu *ElementMutex) GetTPre() int {
 	return mu.tPre
 }
 
@@ -179,7 +179,7 @@ func (mu *TraceElementMutex) GetTPre() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (mu *TraceElementMutex) GetTPost() int {
+func (mu *ElementMutex) GetTPost() int {
 	return mu.tPost
 }
 
@@ -187,7 +187,7 @@ func (mu *TraceElementMutex) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (mu *TraceElementMutex) GetTSort() int {
+func (mu *ElementMutex) GetTSort() int {
 	if mu.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -199,7 +199,7 @@ func (mu *TraceElementMutex) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (mu *TraceElementMutex) GetPos() string {
+func (mu *ElementMutex) GetPos() string {
 	return fmt.Sprintf("%s:%d", mu.file, mu.line)
 }
 
@@ -207,7 +207,7 @@ func (mu *TraceElementMutex) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (mu *TraceElementMutex) GetReplayID() string {
+func (mu *ElementMutex) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", mu.routine, mu.file, mu.line)
 }
 
@@ -215,7 +215,7 @@ func (mu *TraceElementMutex) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (mu *TraceElementMutex) GetFile() string {
+func (mu *ElementMutex) GetFile() string {
 	return mu.file
 }
 
@@ -223,7 +223,7 @@ func (mu *TraceElementMutex) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (mu *TraceElementMutex) GetLine() int {
+func (mu *ElementMutex) GetLine() int {
 	return mu.line
 }
 
@@ -232,7 +232,7 @@ func (mu *TraceElementMutex) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (mu *TraceElementMutex) GetTID() string {
+func (mu *ElementMutex) GetTID() string {
 	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
@@ -240,7 +240,7 @@ func (mu *TraceElementMutex) GetTID() string {
 //
 // Returns:
 //   - OpMutex: the operation
-func (mu *TraceElementMutex) GetOpM() OpMutex {
+func (mu *ElementMutex) GetOpM() OpMutex {
 	return mu.opM
 }
 
@@ -248,7 +248,7 @@ func (mu *TraceElementMutex) GetOpM() OpMutex {
 //
 // Returns:
 //   - OpMutex: The operation of the element
-func (mu *TraceElementMutex) GetOperation() OpMutex {
+func (mu *ElementMutex) GetOperation() OpMutex {
 	return mu.opM
 }
 
@@ -256,7 +256,7 @@ func (mu *TraceElementMutex) GetOperation() OpMutex {
 //
 // Returns:
 //   - bool: If the element is a lock operation
-func (mu *TraceElementMutex) IsLock() bool {
+func (mu *ElementMutex) IsLock() bool {
 	return mu.opM == LockOp || mu.opM == RLockOp || mu.opM == TryLockOp || mu.opM == TryRLockOp
 }
 
@@ -264,7 +264,7 @@ func (mu *TraceElementMutex) IsLock() bool {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (mu *TraceElementMutex) SetVc(vc *clock.VectorClock) {
+func (mu *ElementMutex) SetVc(vc *clock.VectorClock) {
 	mu.vc = vc.Copy()
 }
 
@@ -272,7 +272,7 @@ func (mu *TraceElementMutex) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (mu *TraceElementMutex) SetWVc(vc *clock.VectorClock) {
+func (mu *ElementMutex) SetWVc(vc *clock.VectorClock) {
 	mu.wVc = vc.Copy()
 }
 
@@ -280,7 +280,7 @@ func (mu *TraceElementMutex) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
+func (mu *ElementMutex) GetVC() *clock.VectorClock {
 	return mu.vc
 }
 
@@ -288,7 +288,7 @@ func (mu *TraceElementMutex) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (mu *TraceElementMutex) GetWVc() *clock.VectorClock {
+func (mu *ElementMutex) GetWVc() *clock.VectorClock {
 	return mu.wVc
 }
 
@@ -299,7 +299,7 @@ func (mu *TraceElementMutex) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (mu *TraceElementMutex) GetObjType(operation bool) string {
+func (mu *ElementMutex) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeMutex
 	}
@@ -325,7 +325,7 @@ func (mu *TraceElementMutex) GetObjType(operation bool) string {
 //
 // Returns:
 //   - For trylock wether it was successful, otherwise always true
-func (mu *TraceElementMutex) IsSuc() bool {
+func (mu *ElementMutex) IsSuc() bool {
 	return mu.suc
 }
 
@@ -336,7 +336,7 @@ func (mu *TraceElementMutex) IsSuc() bool {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
+func (mu *ElementMutex) IsEqual(elem Element) bool {
 	return mu.routine == elem.GetRoutine() && mu.ToString() == elem.ToString()
 }
 
@@ -345,7 +345,7 @@ func (mu *TraceElementMutex) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
+func (mu *ElementMutex) GetTraceIndex() (int, int) {
 	return mu.routine, mu.index
 }
 
@@ -353,7 +353,7 @@ func (mu *TraceElementMutex) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (mu *TraceElementMutex) SetT(time int) {
+func (mu *ElementMutex) SetT(time int) {
 	mu.tPre = time
 	mu.tPost = time
 }
@@ -362,7 +362,7 @@ func (mu *TraceElementMutex) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (mu *TraceElementMutex) SetTPre(tPre int) {
+func (mu *ElementMutex) SetTPre(tPre int) {
 	mu.tPre = tPre
 	if mu.tPost != 0 && mu.tPost < tPre {
 		mu.tPost = tPre
@@ -373,7 +373,7 @@ func (mu *TraceElementMutex) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (mu *TraceElementMutex) SetTSort(tSort int) {
+func (mu *ElementMutex) SetTSort(tSort int) {
 	mu.SetTPre(tSort)
 	mu.tPost = tSort
 }
@@ -383,7 +383,7 @@ func (mu *TraceElementMutex) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (mu *TraceElementMutex) SetTWithoutNotExecuted(tSort int) {
+func (mu *ElementMutex) SetTWithoutNotExecuted(tSort int) {
 	mu.SetTPre(tSort)
 	if mu.tPost != 0 {
 		mu.tPost = tSort
@@ -394,7 +394,7 @@ func (mu *TraceElementMutex) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (mu *TraceElementMutex) ToString() string {
+func (mu *ElementMutex) ToString() string {
 	res := "M,"
 	res += strconv.Itoa(mu.tPre) + "," + strconv.Itoa(mu.tPost) + ","
 	res += strconv.Itoa(mu.id) + ","
@@ -433,7 +433,7 @@ func (mu *TraceElementMutex) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (mu *TraceElementMutex) GetTraceID() int {
+func (mu *ElementMutex) GetTraceID() int {
 	return mu.traceID
 }
 
@@ -441,7 +441,7 @@ func (mu *TraceElementMutex) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (mu *TraceElementMutex) setTraceID(ID int) {
+func (mu *ElementMutex) setTraceID(ID int) {
 	mu.traceID = ID
 }
 
@@ -449,13 +449,13 @@ func (mu *TraceElementMutex) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (mu *TraceElementMutex) Copy() TraceElement {
-	children := make([]TraceElement, len(mu.children))
+func (mu *ElementMutex) Copy() Element {
+	children := make([]Element, len(mu.children))
 	copy(children, mu.children)
-	parents := make([]TraceElement, len(mu.parents))
+	parents := make([]Element, len(mu.parents))
 	copy(parents, mu.parents)
 
-	return &TraceElementMutex{
+	return &ElementMutex{
 		traceID:  mu.traceID,
 		index:    mu.index,
 		routine:  mu.routine,
@@ -478,7 +478,7 @@ func (mu *TraceElementMutex) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (mu *TraceElementMutex) AddChild(elem TraceElement) {
+func (mu *ElementMutex) AddChild(elem Element) {
 	mu.children = append(mu.children, elem)
 }
 
@@ -486,7 +486,7 @@ func (mu *TraceElementMutex) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (mu *TraceElementMutex) GetChildren() []TraceElement {
+func (mu *ElementMutex) GetChildren() []Element {
 	return mu.children
 }
 
@@ -494,6 +494,6 @@ func (mu *TraceElementMutex) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (mu *TraceElementMutex) GetParents() []TraceElement {
+func (mu *ElementMutex) GetParents() []Element {
 	return mu.children
 }

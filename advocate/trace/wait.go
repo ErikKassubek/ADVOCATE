@@ -27,7 +27,7 @@ const (
 	WaitOp
 )
 
-// TraceElementWait is a trace element for a wait group statement
+// ElementWait is a trace element for a wait group statement
 //
 // Fields:
 //   - traceID: id of the element, should never be changed
@@ -44,7 +44,7 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
-type TraceElementWait struct {
+type ElementWait struct {
 	traceID  int
 	index    int
 	routine  int
@@ -58,8 +58,8 @@ type TraceElementWait struct {
 	line     int
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
-	children []TraceElement
-	parents  []TraceElement
+	children []Element
+	parents  []Element
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -112,7 +112,7 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 		return err
 	}
 
-	elem := TraceElementWait{
+	elem := ElementWait{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPre:     tPreInt,
@@ -125,8 +125,8 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
-		children: make([]TraceElement, 0),
-		parents:  make([]TraceElement, 0),
+		children: make([]Element, 0),
+		parents:  make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -138,7 +138,7 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 //
 // Returns:
 //   - int: The id of the element
-func (wa *TraceElementWait) GetID() int {
+func (wa *ElementWait) GetID() int {
 	return wa.ID
 }
 
@@ -146,7 +146,7 @@ func (wa *TraceElementWait) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (wa *TraceElementWait) GetRoutine() int {
+func (wa *ElementWait) GetRoutine() int {
 	return wa.routine
 }
 
@@ -154,7 +154,7 @@ func (wa *TraceElementWait) GetRoutine() int {
 //
 // Returns:
 //   - int: The timestamp at the start of the event
-func (wa *TraceElementWait) GetTPre() int {
+func (wa *ElementWait) GetTPre() int {
 	return wa.tPre
 }
 
@@ -162,7 +162,7 @@ func (wa *TraceElementWait) GetTPre() int {
 //
 // Returns:
 //   - int: The timestamp at the end of the event
-func (wa *TraceElementWait) GetTPost() int {
+func (wa *ElementWait) GetTPost() int {
 	return wa.tPost
 }
 
@@ -170,7 +170,7 @@ func (wa *TraceElementWait) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (wa *TraceElementWait) GetTSort() int {
+func (wa *ElementWait) GetTSort() int {
 	if wa.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -182,7 +182,7 @@ func (wa *TraceElementWait) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (wa *TraceElementWait) GetPos() string {
+func (wa *ElementWait) GetPos() string {
 	return fmt.Sprintf("%s:%d", wa.file, wa.line)
 }
 
@@ -190,7 +190,7 @@ func (wa *TraceElementWait) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (wa *TraceElementWait) GetReplayID() string {
+func (wa *ElementWait) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", wa.routine, wa.file, wa.line)
 }
 
@@ -198,7 +198,7 @@ func (wa *TraceElementWait) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (wa *TraceElementWait) GetFile() string {
+func (wa *ElementWait) GetFile() string {
 	return wa.file
 }
 
@@ -206,7 +206,7 @@ func (wa *TraceElementWait) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (wa *TraceElementWait) GetLine() int {
+func (wa *ElementWait) GetLine() int {
 	return wa.line
 }
 
@@ -215,7 +215,7 @@ func (wa *TraceElementWait) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (wa *TraceElementWait) GetTID() string {
+func (wa *ElementWait) GetTID() string {
 	return wa.GetPos() + "@" + strconv.Itoa(wa.tPre)
 }
 
@@ -223,7 +223,7 @@ func (wa *TraceElementWait) GetTID() string {
 //
 // Returns:
 //   - bool: True if the operation is a wait op
-func (wa *TraceElementWait) IsWait() bool {
+func (wa *ElementWait) IsWait() bool {
 	return wa.opW == WaitOp
 }
 
@@ -231,7 +231,7 @@ func (wa *TraceElementWait) IsWait() bool {
 //
 // Returns:
 //   - opWait: the wait operations
-func (wa *TraceElementWait) GetOpW() OpWait {
+func (wa *ElementWait) GetOpW() OpWait {
 	return wa.opW
 }
 
@@ -241,7 +241,7 @@ func (wa *TraceElementWait) GetOpW() OpWait {
 //
 // Returns:
 //   - int: the delta of the wait element
-func (wa *TraceElementWait) GetDelta() int {
+func (wa *ElementWait) GetDelta() int {
 	return wa.delta
 }
 
@@ -249,7 +249,7 @@ func (wa *TraceElementWait) GetDelta() int {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (wa *TraceElementWait) SetVc(vc *clock.VectorClock) {
+func (wa *ElementWait) SetVc(vc *clock.VectorClock) {
 	wa.vc = vc.Copy()
 }
 
@@ -257,7 +257,7 @@ func (wa *TraceElementWait) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (wa *TraceElementWait) SetWVc(vc *clock.VectorClock) {
+func (wa *ElementWait) SetWVc(vc *clock.VectorClock) {
 	wa.wVc = vc.Copy()
 }
 
@@ -265,7 +265,7 @@ func (wa *TraceElementWait) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (wa *TraceElementWait) GetVC() *clock.VectorClock {
+func (wa *ElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
 
@@ -273,7 +273,7 @@ func (wa *TraceElementWait) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (wa *TraceElementWait) GetWVc() *clock.VectorClock {
+func (wa *ElementWait) GetWVc() *clock.VectorClock {
 	return wa.wVc
 }
 
@@ -284,7 +284,7 @@ func (wa *TraceElementWait) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (wa *TraceElementWait) GetObjType(operation bool) string {
+func (wa *ElementWait) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeWait
 	}
@@ -304,7 +304,7 @@ func (wa *TraceElementWait) GetObjType(operation bool) string {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (wa *TraceElementWait) IsEqual(elem TraceElement) bool {
+func (wa *ElementWait) IsEqual(elem Element) bool {
 	return wa.routine == elem.GetRoutine() && wa.ToString() == elem.ToString()
 }
 
@@ -313,7 +313,7 @@ func (wa *TraceElementWait) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (wa *TraceElementWait) GetTraceIndex() (int, int) {
+func (wa *ElementWait) GetTraceIndex() (int, int) {
 	return wa.routine, wa.index
 }
 
@@ -321,7 +321,7 @@ func (wa *TraceElementWait) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (wa *TraceElementWait) SetT(time int) {
+func (wa *ElementWait) SetT(time int) {
 	wa.tPre = time
 	wa.tPost = time
 }
@@ -330,7 +330,7 @@ func (wa *TraceElementWait) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (wa *TraceElementWait) SetTPre(tPre int) {
+func (wa *ElementWait) SetTPre(tPre int) {
 	wa.tPre = tPre
 	if wa.tPost != 0 && wa.tPost < tPre {
 		wa.tPost = tPre
@@ -341,7 +341,7 @@ func (wa *TraceElementWait) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (wa *TraceElementWait) SetTSort(tSort int) {
+func (wa *ElementWait) SetTSort(tSort int) {
 	wa.SetTPre(tSort)
 	wa.tPost = tSort
 }
@@ -351,7 +351,7 @@ func (wa *TraceElementWait) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (wa *TraceElementWait) SetTWithoutNotExecuted(tSort int) {
+func (wa *ElementWait) SetTWithoutNotExecuted(tSort int) {
 	wa.SetTPre(tSort)
 	if wa.tPost != 0 {
 		wa.tPost = tSort
@@ -362,7 +362,7 @@ func (wa *TraceElementWait) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (wa *TraceElementWait) ToString() string {
+func (wa *ElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(wa.tPre) + "," + strconv.Itoa(wa.tPost) + ","
 	res += strconv.Itoa(wa.ID) + ","
@@ -382,7 +382,7 @@ func (wa *TraceElementWait) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (wa *TraceElementWait) GetTraceID() int {
+func (wa *ElementWait) GetTraceID() int {
 	return wa.traceID
 }
 
@@ -390,7 +390,7 @@ func (wa *TraceElementWait) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (wa *TraceElementWait) setTraceID(ID int) {
+func (wa *ElementWait) setTraceID(ID int) {
 	wa.traceID = ID
 }
 
@@ -398,13 +398,13 @@ func (wa *TraceElementWait) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (wa *TraceElementWait) Copy() TraceElement {
-	children := make([]TraceElement, len(wa.children))
+func (wa *ElementWait) Copy() Element {
+	children := make([]Element, len(wa.children))
 	copy(children, wa.children)
-	parents := make([]TraceElement, len(wa.parents))
+	parents := make([]Element, len(wa.parents))
 	copy(parents, wa.parents)
 
-	return &TraceElementWait{
+	return &ElementWait{
 		traceID:  wa.traceID,
 		index:    wa.index,
 		routine:  wa.routine,
@@ -427,7 +427,7 @@ func (wa *TraceElementWait) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (wa *TraceElementWait) AddChild(elem TraceElement) {
+func (wa *ElementWait) AddChild(elem Element) {
 	wa.children = append(wa.children, elem)
 }
 
@@ -435,7 +435,7 @@ func (wa *TraceElementWait) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (wa *TraceElementWait) GetChildren() []TraceElement {
+func (wa *ElementWait) GetChildren() []Element {
 	return wa.children
 }
 
@@ -443,6 +443,6 @@ func (wa *TraceElementWait) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (wa *TraceElementWait) GetParents() []TraceElement {
+func (wa *ElementWait) GetParents() []Element {
 	return wa.children
 }

@@ -25,14 +25,14 @@ import (
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
-func checkForUnlockBeforeLockLock(mu *trace.TraceElementMutex) {
+func checkForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
 	id := mu.GetID()
 
 	if _, ok := data.AllLocks[id]; !ok {
-		data.AllLocks[id] = make([]trace.TraceElement, 0)
+		data.AllLocks[id] = make([]trace.Element, 0)
 	}
 
 	data.AllLocks[id] = append(data.AllLocks[id], mu)
@@ -42,14 +42,14 @@ func checkForUnlockBeforeLockLock(mu *trace.TraceElementMutex) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
-func checkForUnlockBeforeLockUnlock(mu *trace.TraceElementMutex) {
+func checkForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
 	id := mu.GetID()
 
 	if _, ok := data.AllLocks[id]; !ok {
-		data.AllUnlocks[id] = make([]trace.TraceElement, 0)
+		data.AllUnlocks[id] = make([]trace.Element, 0)
 	}
 
 	data.AllUnlocks[id] = append(data.AllUnlocks[id], mu)
@@ -78,8 +78,8 @@ func checkForUnlockBeforeLock() {
 
 		nrUnlock := len(data.AllUnlocks)
 
-		locks := make([]trace.TraceElement, 0)
-		unlocks := make([]trace.TraceElement, 0)
+		locks := make([]trace.Element, 0)
+		unlocks := make([]trace.Element, 0)
 
 		if maxFlow < nrUnlock {
 			for _, l := range data.AllLocks[id] {
@@ -92,8 +92,8 @@ func checkForUnlockBeforeLock() {
 				unlocks = append(unlocks, u)
 			}
 
-			locksSorted := make([]trace.TraceElement, 0)
-			unlockSorted := make([]trace.TraceElement, 0)
+			locksSorted := make([]trace.Element, 0)
+			unlockSorted := make([]trace.Element, 0)
 
 			for i := 0; i < len(locks); {
 				removed := false

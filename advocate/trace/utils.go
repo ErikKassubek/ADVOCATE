@@ -70,7 +70,7 @@ func InfoFromTID(tID string) (string, int, int, error) {
 //
 // Returns:
 //   - true if for each primitive, the element in elems are always in the same routine
-func SameRoutine(elems ...[]TraceElement) bool {
+func SameRoutine(elems ...[]Element) bool {
 	ids := make(map[int]int)
 	for _, elem := range elems {
 		for i, e := range elem {

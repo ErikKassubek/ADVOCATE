@@ -33,7 +33,7 @@ func newOSuc(index int, nRout int) {
 // UpdateVCOnce update the vector clock of the trace and element
 // Parameter:
 //   - on *trace.TraceElementOnce: the once trace element
-func UpdateVCOnce(on *trace.TraceElementOnce) {
+func UpdateVCOnce(on *trace.ElementOnce) {
 	routine := on.GetRoutine()
 	on.SetVc(data.CurrentVC[routine])
 	on.SetWVc(data.CurrentVC[routine])
@@ -49,7 +49,7 @@ func UpdateVCOnce(on *trace.TraceElementOnce) {
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element
-func DoSuc(on *trace.TraceElementOnce) {
+func DoSuc(on *trace.ElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -67,7 +67,7 @@ func DoSuc(on *trace.TraceElementOnce) {
 //
 // Parameter:
 //   - on *TraceElementOnce: The trace element
-func DoFail(on *trace.TraceElementOnce) {
+func DoFail(on *trace.ElementOnce) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

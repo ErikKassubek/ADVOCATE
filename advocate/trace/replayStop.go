@@ -15,12 +15,12 @@ import (
 	"strconv"
 )
 
-// TraceElementReplay is a struct to save an end of replay marker in the trace
+// ElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
 //   - traceID: id of the element, should never be changed
 //   - tPost int: The timestamp of the event
 //   - exitCode int: expected exit code
-type TraceElementReplay struct {
+type ElementReplay struct {
 	traceID  int
 	tPost    int
 	exitCode int
@@ -35,7 +35,7 @@ type TraceElementReplay struct {
 // Returns:
 //   - error
 func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
-	elem := TraceElementReplay{
+	elem := ElementReplay{
 		tPost:    ts,
 		exitCode: exitCode,
 	}
@@ -49,7 +49,7 @@ func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 //
 // Returns:
 //   - int: The id of the element
-func (er *TraceElementReplay) GetID() int {
+func (er *ElementReplay) GetID() int {
 	return 0
 }
 
@@ -57,14 +57,14 @@ func (er *TraceElementReplay) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (er *TraceElementReplay) GetRoutine() int {
+func (er *ElementReplay) GetRoutine() int {
 	return 1
 }
 
 // GetTPre returns the tPre of the element.
 //
 //   - int: The tPost of the element
-func (er *TraceElementReplay) GetTPre() int {
+func (er *ElementReplay) GetTPre() int {
 	return er.tPost
 }
 
@@ -72,7 +72,7 @@ func (er *TraceElementReplay) GetTPre() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (er *TraceElementReplay) GetTPost() int {
+func (er *ElementReplay) GetTPost() int {
 	return er.tPost
 }
 
@@ -80,7 +80,7 @@ func (er *TraceElementReplay) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (er *TraceElementReplay) GetTSort() int {
+func (er *ElementReplay) GetTSort() int {
 	return er.tPost
 }
 
@@ -88,7 +88,7 @@ func (er *TraceElementReplay) GetTSort() int {
 //
 // Returns:
 //   - string: The file of the element
-func (er *TraceElementReplay) GetPos() string {
+func (er *ElementReplay) GetPos() string {
 	return ""
 }
 
@@ -96,7 +96,7 @@ func (er *TraceElementReplay) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (er *TraceElementReplay) GetReplayID() string {
+func (er *ElementReplay) GetReplayID() string {
 	return ""
 }
 
@@ -104,7 +104,7 @@ func (er *TraceElementReplay) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (er *TraceElementReplay) GetFile() string {
+func (er *ElementReplay) GetFile() string {
 	return ""
 }
 
@@ -112,7 +112,7 @@ func (er *TraceElementReplay) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (er *TraceElementReplay) GetLine() int {
+func (er *ElementReplay) GetLine() int {
 	return 0
 }
 
@@ -122,7 +122,7 @@ func (er *TraceElementReplay) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (er *TraceElementReplay) GetTID() string {
+func (er *ElementReplay) GetTID() string {
 	return ""
 }
 
@@ -130,31 +130,31 @@ func (er *TraceElementReplay) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (er *TraceElementReplay) SetVc(_ *clock.VectorClock) {
+func (er *ElementReplay) SetVc(_ *clock.VectorClock) {
 }
 
 // SetWVc is a dummy function to implement the TraceElement interface
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (er *TraceElementReplay) SetWVc(_ *clock.VectorClock) {
+func (er *ElementReplay) SetWVc(_ *clock.VectorClock) {
 }
 
 // GetVC is a dummy function to implement the TraceElement interface
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (er *TraceElementReplay) GetVC() *clock.VectorClock {
+func (er *ElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
 // GetWVc is a dummy function to implement the TraceElement interface
-func (er *TraceElementReplay) GetWVc() *clock.VectorClock {
+func (er *ElementReplay) GetWVc() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
 // GetObjType returns the string representation of the object type
-func (er *TraceElementReplay) GetObjType(operation bool) string {
+func (er *ElementReplay) GetObjType(operation bool) string {
 	if operation {
 		return ObjectTypeReplay + "R"
 	}
@@ -168,7 +168,7 @@ func (er *TraceElementReplay) GetObjType(operation bool) string {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (er *TraceElementReplay) IsEqual(elem TraceElement) bool {
+func (er *ElementReplay) IsEqual(elem Element) bool {
 	return er.ToString() == elem.ToString()
 }
 
@@ -177,7 +177,7 @@ func (er *TraceElementReplay) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (er *TraceElementReplay) GetTraceIndex() (int, int) {
+func (er *ElementReplay) GetTraceIndex() (int, int) {
 	return -1, -1
 }
 
@@ -185,7 +185,7 @@ func (er *TraceElementReplay) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (er *TraceElementReplay) SetT(time int) {
+func (er *ElementReplay) SetT(time int) {
 	er.tPost = time
 }
 
@@ -193,7 +193,7 @@ func (er *TraceElementReplay) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (er *TraceElementReplay) SetTPre(tPre int) {
+func (er *ElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
 	er.tPost = tPre
 }
@@ -202,7 +202,7 @@ func (er *TraceElementReplay) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (er *TraceElementReplay) SetTSort(tSort int) {
+func (er *ElementReplay) SetTSort(tSort int) {
 	tSort = max(1, tSort)
 	er.SetTPre(tSort)
 	er.tPost = tSort
@@ -213,7 +213,7 @@ func (er *TraceElementReplay) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
+func (er *ElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
 	er.SetTPre(tSort)
 	er.tPost = tSort
@@ -223,13 +223,13 @@ func (er *TraceElementReplay) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (er *TraceElementReplay) ToString() string {
+func (er *ElementReplay) ToString() string {
 	res := "X," + strconv.Itoa(er.tPost) + "," + strconv.Itoa(er.exitCode)
 	return res
 }
 
 // UpdateVectorClock update and stores the vector clock of the element
-func (er *TraceElementReplay) UpdateVectorClock() {
+func (er *ElementReplay) UpdateVectorClock() {
 	// nothing to do
 }
 
@@ -237,7 +237,7 @@ func (er *TraceElementReplay) UpdateVectorClock() {
 //
 // Returns:
 //   - int: the trace id
-func (er *TraceElementReplay) GetTraceID() int {
+func (er *ElementReplay) GetTraceID() int {
 	return er.traceID
 }
 
@@ -245,7 +245,7 @@ func (er *TraceElementReplay) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (er *TraceElementReplay) setTraceID(ID int) {
+func (er *ElementReplay) setTraceID(ID int) {
 	er.traceID = ID
 }
 
@@ -253,8 +253,8 @@ func (er *TraceElementReplay) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (er *TraceElementReplay) Copy() TraceElement {
-	return &TraceElementReplay{
+func (er *ElementReplay) Copy() Element {
+	return &ElementReplay{
 		traceID:  er.traceID,
 		tPost:    er.tPost,
 		exitCode: er.exitCode,
@@ -266,7 +266,7 @@ func (er *TraceElementReplay) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (er *TraceElementReplay) AddChild(elem TraceElement) {
+func (er *ElementReplay) AddChild(elem Element) {
 }
 
 // GetChildren returns all children of this node in the partial order graph
@@ -274,8 +274,8 @@ func (er *TraceElementReplay) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (er *TraceElementReplay) GetChildren() []TraceElement {
-	return make([]TraceElement, 0)
+func (er *ElementReplay) GetChildren() []Element {
+	return make([]Element, 0)
 }
 
 // GetParents returns all parents of this node in the partial order graph
@@ -283,6 +283,6 @@ func (er *TraceElementReplay) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (er *TraceElementReplay) GetParents() []TraceElement {
-	return make([]TraceElement, 0)
+func (er *ElementReplay) GetParents() []Element {
+	return make([]Element, 0)
 }

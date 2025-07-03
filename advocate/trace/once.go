@@ -19,7 +19,7 @@ import (
 	"advocate/analysis/clock"
 )
 
-// TraceElementOnce is a trace element for a once
+// ElementOnce is a trace element for a once
 // Fields:
 //   - traceID: id of the element, should never be changed
 //   - routine int: The routine id
@@ -32,7 +32,7 @@ import (
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
-type TraceElementOnce struct {
+type ElementOnce struct {
 	traceID  int
 	index    int
 	routine  int
@@ -44,8 +44,8 @@ type TraceElementOnce struct {
 	line     int
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
-	children []TraceElement
-	parents  []TraceElement
+	children []Element
+	parents  []Element
 }
 
 // AddTraceElementOnce adds a new mutex trace element to the main trace
@@ -84,7 +84,7 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 		return err
 	}
 
-	elem := TraceElementOnce{
+	elem := ElementOnce{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPre:     tPreInt,
@@ -95,8 +95,8 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
-		children: make([]TraceElement, 0),
-		parents:  make([]TraceElement, 0),
+		children: make([]Element, 0),
+		parents:  make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -108,7 +108,7 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 //
 // Returns:
 //   - int: The id of the element
-func (on *TraceElementOnce) GetID() int {
+func (on *ElementOnce) GetID() int {
 	return on.id
 }
 
@@ -116,7 +116,7 @@ func (on *TraceElementOnce) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (on *TraceElementOnce) GetRoutine() int {
+func (on *ElementOnce) GetRoutine() int {
 	return on.routine
 }
 
@@ -124,7 +124,7 @@ func (on *TraceElementOnce) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (on *TraceElementOnce) GetTPre() int {
+func (on *ElementOnce) GetTPre() int {
 	return on.tPre
 }
 
@@ -132,7 +132,7 @@ func (on *TraceElementOnce) GetTPre() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (on *TraceElementOnce) GetTPost() int {
+func (on *ElementOnce) GetTPost() int {
 	return on.tPost
 }
 
@@ -140,7 +140,7 @@ func (on *TraceElementOnce) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (on *TraceElementOnce) GetTSort() int {
+func (on *ElementOnce) GetTSort() int {
 	if on.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -152,7 +152,7 @@ func (on *TraceElementOnce) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (on *TraceElementOnce) GetPos() string {
+func (on *ElementOnce) GetPos() string {
 	return fmt.Sprintf("%s:%d", on.file, on.line)
 }
 
@@ -160,7 +160,7 @@ func (on *TraceElementOnce) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (on *TraceElementOnce) GetReplayID() string {
+func (on *ElementOnce) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", on.routine, on.file, on.line)
 }
 
@@ -168,7 +168,7 @@ func (on *TraceElementOnce) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (on *TraceElementOnce) GetFile() string {
+func (on *ElementOnce) GetFile() string {
 	return on.file
 }
 
@@ -176,7 +176,7 @@ func (on *TraceElementOnce) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (on *TraceElementOnce) GetLine() int {
+func (on *ElementOnce) GetLine() int {
 	return on.line
 }
 
@@ -185,7 +185,7 @@ func (on *TraceElementOnce) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (on *TraceElementOnce) GetTID() string {
+func (on *ElementOnce) GetTID() string {
 	return on.GetPos() + "@" + strconv.Itoa(on.tPre)
 }
 
@@ -193,7 +193,7 @@ func (on *TraceElementOnce) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (on *TraceElementOnce) SetVc(vc *clock.VectorClock) {
+func (on *ElementOnce) SetVc(vc *clock.VectorClock) {
 	on.vc = vc.Copy()
 }
 
@@ -201,7 +201,7 @@ func (on *TraceElementOnce) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (on *TraceElementOnce) SetWVc(vc *clock.VectorClock) {
+func (on *ElementOnce) SetWVc(vc *clock.VectorClock) {
 	on.wVc = vc.Copy()
 }
 
@@ -209,7 +209,7 @@ func (on *TraceElementOnce) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (on *TraceElementOnce) GetVC() *clock.VectorClock {
+func (on *ElementOnce) GetVC() *clock.VectorClock {
 	return on.vc
 }
 
@@ -217,7 +217,7 @@ func (on *TraceElementOnce) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (on *TraceElementOnce) GetWVc() *clock.VectorClock {
+func (on *ElementOnce) GetWVc() *clock.VectorClock {
 	return on.wVc
 }
 
@@ -228,7 +228,7 @@ func (on *TraceElementOnce) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (on *TraceElementOnce) GetObjType(operation bool) string {
+func (on *ElementOnce) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeOnce
 	}
@@ -243,7 +243,7 @@ func (on *TraceElementOnce) GetObjType(operation bool) string {
 //
 // Returns:
 //   - bool: true if function in Do was executed, false otherwise
-func (on *TraceElementOnce) GetSuc() bool {
+func (on *ElementOnce) GetSuc() bool {
 	return on.suc
 }
 
@@ -254,7 +254,7 @@ func (on *TraceElementOnce) GetSuc() bool {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (on *TraceElementOnce) IsEqual(elem TraceElement) bool {
+func (on *ElementOnce) IsEqual(elem Element) bool {
 	return on.routine == elem.GetRoutine() && on.ToString() == elem.ToString()
 }
 
@@ -263,7 +263,7 @@ func (on *TraceElementOnce) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (on *TraceElementOnce) GetTraceIndex() (int, int) {
+func (on *ElementOnce) GetTraceIndex() (int, int) {
 	return on.routine, on.index
 }
 
@@ -271,7 +271,7 @@ func (on *TraceElementOnce) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (on *TraceElementOnce) SetT(time int) {
+func (on *ElementOnce) SetT(time int) {
 	on.tPre = time
 	on.tPost = time
 }
@@ -280,7 +280,7 @@ func (on *TraceElementOnce) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (on *TraceElementOnce) SetTPre(tPre int) {
+func (on *ElementOnce) SetTPre(tPre int) {
 	on.tPre = tPre
 	if on.tPost != 0 && on.tPost < tPre {
 		on.tPost = tPre
@@ -291,7 +291,7 @@ func (on *TraceElementOnce) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (on *TraceElementOnce) SetTSort(tSort int) {
+func (on *ElementOnce) SetTSort(tSort int) {
 	on.SetTPre(tSort)
 	on.tPost = tSort
 }
@@ -301,7 +301,7 @@ func (on *TraceElementOnce) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (on *TraceElementOnce) SetTWithoutNotExecuted(tSort int) {
+func (on *ElementOnce) SetTWithoutNotExecuted(tSort int) {
 	on.SetTPre(tSort)
 	if on.tPost != 0 {
 		on.tPost = tSort
@@ -312,7 +312,7 @@ func (on *TraceElementOnce) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (on *TraceElementOnce) ToString() string {
+func (on *ElementOnce) ToString() string {
 	res := "O,"
 	res += strconv.Itoa(on.tPre) + ","
 	res += strconv.Itoa(on.tPost) + ","
@@ -330,7 +330,7 @@ func (on *TraceElementOnce) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (on *TraceElementOnce) GetTraceID() int {
+func (on *ElementOnce) GetTraceID() int {
 	return on.traceID
 }
 
@@ -338,7 +338,7 @@ func (on *TraceElementOnce) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (on *TraceElementOnce) setTraceID(ID int) {
+func (on *ElementOnce) setTraceID(ID int) {
 	on.traceID = ID
 }
 
@@ -346,13 +346,13 @@ func (on *TraceElementOnce) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (on *TraceElementOnce) Copy() TraceElement {
-	children := make([]TraceElement, len(on.children))
+func (on *ElementOnce) Copy() Element {
+	children := make([]Element, len(on.children))
 	copy(children, on.children)
-	parents := make([]TraceElement, len(on.parents))
+	parents := make([]Element, len(on.parents))
 	copy(parents, on.parents)
 
-	return &TraceElementOnce{
+	return &ElementOnce{
 		traceID:  on.traceID,
 		index:    on.index,
 		routine:  on.routine,
@@ -373,7 +373,7 @@ func (on *TraceElementOnce) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (on *TraceElementOnce) AddChild(elem TraceElement) {
+func (on *ElementOnce) AddChild(elem Element) {
 	on.children = append(on.children, elem)
 }
 
@@ -381,7 +381,7 @@ func (on *TraceElementOnce) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (on *TraceElementOnce) GetChildren() []TraceElement {
+func (on *ElementOnce) GetChildren() []Element {
 	return on.children
 }
 
@@ -389,6 +389,6 @@ func (on *TraceElementOnce) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (on *TraceElementOnce) GetParents() []TraceElement {
+func (on *ElementOnce) GetParents() []Element {
 	return on.children
 }

@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package gFuzz
+package gfuzz
 
 import (
 	fuzzingdata "advocate/fuzzing/data"
@@ -20,9 +20,9 @@ import (
 //
 // Parameter:
 //   - e *trace.TraceElementSelect: the select trace element to add
-func AddFuzzingSelect(e *trace.TraceElementSelect) {
+func AddFuzzingSelect(e *trace.ElementSelect) {
 	fs := fuzzingdata.FuzzingSelect{
-		Id:              e.GetReplayID(),
+		ID:              e.GetReplayID(),
 		T:               e.GetTPost(),
 		ChosenCase:      e.GetChosenIndex(),
 		NumberCases:     len(e.GetCases()),
@@ -30,7 +30,7 @@ func AddFuzzingSelect(e *trace.TraceElementSelect) {
 		CasiWithPos:     e.GetCasiWithPosPartner(),
 	}
 
-	SelectInfoTrace[fs.Id] = append(SelectInfoTrace[fs.Id], fs)
+	SelectInfoTrace[fs.ID] = append(SelectInfoTrace[fs.ID], fs)
 	NumberSelects++
 }
 

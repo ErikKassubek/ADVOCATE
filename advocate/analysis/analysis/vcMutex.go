@@ -23,7 +23,7 @@ import (
 //
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
-func UpdateVCMutex(mu *trace.TraceElementMutex) {
+func UpdateVCMutex(mu *trace.ElementMutex) {
 	routine := mu.GetRoutine()
 	mu.SetVc(data.CurrentVC[routine])
 	mu.SetWVc(data.CurrentWVC[routine])
@@ -74,7 +74,7 @@ func UpdateVCMutex(mu *trace.TraceElementMutex) {
 //
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
-func UpdateVCMutexAlt(mu *trace.TraceElementMutex) {
+func UpdateVCMutexAlt(mu *trace.ElementMutex) {
 	routine := mu.GetRoutine()
 	mu.SetVc(data.CurrentVC[routine])
 
@@ -100,7 +100,7 @@ func newRel(index int, nRout int) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func Lock(mu *trace.TraceElementMutex) {
+func Lock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -136,7 +136,7 @@ func Lock(mu *trace.TraceElementMutex) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func Unlock(mu *trace.TraceElementMutex) {
+func Unlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -169,7 +169,7 @@ func Unlock(mu *trace.TraceElementMutex) {
 //
 // Returns:
 //   - *VectorClock: The new vector clock
-func RLock(mu *trace.TraceElementMutex) {
+func RLock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -205,7 +205,7 @@ func RLock(mu *trace.TraceElementMutex) {
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func RUnlock(mu *trace.TraceElementMutex) {
+func RUnlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

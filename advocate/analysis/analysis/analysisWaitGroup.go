@@ -25,7 +25,7 @@ import (
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait or done element
-func checkForDoneBeforeAddChange(wa *trace.TraceElementWait) {
+func checkForDoneBeforeAddChange(wa *trace.ElementWait) {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)
 
@@ -44,12 +44,12 @@ func checkForDoneBeforeAddChange(wa *trace.TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
-func checkForDoneBeforeAddAdd(wa *trace.TraceElementWait) {
+func checkForDoneBeforeAddAdd(wa *trace.ElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
 	if _, ok := data.WgAdd[id]; !ok {
-		data.WgAdd[id] = make([]trace.TraceElement, 0)
+		data.WgAdd[id] = make([]trace.Element, 0)
 	}
 
 	// add the vector clock and position to the list
@@ -60,12 +60,12 @@ func checkForDoneBeforeAddAdd(wa *trace.TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
-func checkForDoneBeforeAddDone(wa *trace.TraceElementWait) {
+func checkForDoneBeforeAddDone(wa *trace.ElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
 	if _, ok := data.WgDone[id]; !ok {
-		data.WgDone[id] = make([]trace.TraceElement, 0)
+		data.WgDone[id] = make([]trace.Element, 0)
 
 	}
 
@@ -90,8 +90,8 @@ func checkForDoneBeforeAdd() {
 		}
 		nrDone := len(data.WgDone[id])
 
-		addsNegWg := make([]trace.TraceElement, 0)
-		donesNegWg := make([]trace.TraceElement, 0)
+		addsNegWg := make([]trace.Element, 0)
+		donesNegWg := make([]trace.Element, 0)
 
 		if maxFlow < nrDone {
 			// sort the adds and dones, that do not have a partner is such a way,
@@ -108,8 +108,8 @@ func checkForDoneBeforeAdd() {
 				donesNegWg = append(donesNegWg, dones)
 			}
 
-			addsNegWgSorted := make([]trace.TraceElement, 0)
-			donesNEgWgSorted := make([]trace.TraceElement, 0)
+			addsNegWgSorted := make([]trace.Element, 0)
+			donesNEgWgSorted := make([]trace.Element, 0)
 
 			for i := 0; i < len(addsNegWg); {
 				removed := false

@@ -19,7 +19,7 @@ import (
 // UpdateVCNew store the vector clock of the element
 // Parameter:
 //   - n *trace.TraceElementNew: the new trace element
-func UpdateVCNew(n *trace.TraceElementNew) {
+func UpdateVCNew(n *trace.ElementNew) {
 	routine := n.GetRoutine()
 	n.SetVc(data.CurrentVC[routine])
 	n.SetWVc(data.CurrentWVC[routine])
@@ -28,7 +28,7 @@ func UpdateVCNew(n *trace.TraceElementNew) {
 // UpdateVCRoutineEnd store the vector clock of the element
 // Parameter:
 //   - re *trace.TraceElementRoutineEnd: the new trace element
-func UpdateVCRoutineEnd(re *trace.TraceElementRoutineEnd) {
+func UpdateVCRoutineEnd(re *trace.ElementRoutineEnd) {
 	routine := re.GetRoutine()
 	re.SetVc(data.CurrentVC[routine])
 	re.SetWVc(data.CurrentWVC[routine])

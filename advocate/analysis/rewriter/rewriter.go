@@ -90,9 +90,9 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		code = helper.ExitCodeLeakUnbuf
 		rewriteNeeded = true
 		switch b := bug.TraceElement2[0].(type) {
-		case *trace.TraceElementSelect:
+		case *trace.ElementSelect:
 			err = rewriteUnbufChanLeak(tr, bug)
-		case *trace.TraceElementChannel:
+		case *trace.ElementChannel:
 			if b.IsBuffered() {
 				err = rewriteBufChanLeak(tr, bug)
 			} else {

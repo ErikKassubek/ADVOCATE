@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package gFuzz
+package gfuzz
 
 // For each pair of channel operations, that have communicated, store the following information:
 //

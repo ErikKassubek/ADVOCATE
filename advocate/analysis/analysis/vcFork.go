@@ -20,7 +20,7 @@ import (
 //
 // Parameter:
 //   - fo *TraceElementFork: the fork element
-func UpdateVCFork(fo *trace.TraceElementFork) {
+func UpdateVCFork(fo *trace.ElementFork) {
 	routine := fo.GetRoutine()
 
 	fo.SetVc(data.CurrentVC[routine])
@@ -34,7 +34,7 @@ func UpdateVCFork(fo *trace.TraceElementFork) {
 // Parameter:
 //   - oldRout int: The id of the old routine
 //   - newRout int: The id of the new routine
-func Fork(fo *trace.TraceElementFork) {
+func Fork(fo *trace.ElementFork) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

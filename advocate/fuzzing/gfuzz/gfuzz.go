@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package gFuzz
+package gfuzz
 
 import (
 	"advocate/utils/log"

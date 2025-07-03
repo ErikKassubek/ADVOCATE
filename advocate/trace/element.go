@@ -27,8 +27,8 @@ const (
 	ObjectTypeWait       = "W"
 )
 
-// TraceElement is an interface for the elements in a trace
-type TraceElement interface {
+// Element is an interface for the elements in a trace
+type Element interface {
 	GetID() int
 	GetTPre() int
 	GetTSort() int
@@ -40,7 +40,7 @@ type TraceElement interface {
 	GetObjType(operation bool) string
 	GetTID() string
 	GetRoutine() int
-	IsEqual(elem TraceElement) bool
+	IsEqual(elem Element) bool
 	GetTraceIndex() (int, int)
 	SetTPre(tPre int)
 	SetTSort(tSort int)
@@ -51,10 +51,10 @@ type TraceElement interface {
 	SetWVc(vc *clock.VectorClock)
 	GetVC() *clock.VectorClock
 	GetWVc() *clock.VectorClock
-	Copy() TraceElement
+	Copy() Element
 	setTraceID(ID int)
 	GetTraceID() int
-	AddChild(elem TraceElement)
-	GetChildren() []TraceElement
-	GetParents() []TraceElement
+	AddChild(elem Element)
+	GetChildren() []Element
+	GetParents() []Element
 }

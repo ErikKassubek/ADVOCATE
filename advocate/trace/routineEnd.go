@@ -16,14 +16,14 @@ import (
 	"strconv"
 )
 
-// TraceElementRoutineEnd is a trace element for the termination of a routine end
+// ElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
 //   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp at the end of the event
 //   - vc clock.VectorClock: The vector clock
-type TraceElementRoutineEnd struct {
+type ElementRoutineEnd struct {
 	traceID int
 	index   int
 	routine int
@@ -45,7 +45,7 @@ func (t *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 		return errors.New("tPre is not an integer")
 	}
 
-	elem := TraceElementRoutineEnd{
+	elem := ElementRoutineEnd{
 		index:   t.numberElemsInTrace[routine],
 		routine: routine,
 		tPost:   tPostInt,
@@ -62,7 +62,7 @@ func (t *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 //
 // Returns:
 //   - int: 0
-func (re *TraceElementRoutineEnd) GetID() int {
+func (re *ElementRoutineEnd) GetID() int {
 	return 0
 }
 
@@ -70,7 +70,7 @@ func (re *TraceElementRoutineEnd) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (re *TraceElementRoutineEnd) GetRoutine() int {
+func (re *ElementRoutineEnd) GetRoutine() int {
 	return re.routine
 }
 
@@ -78,7 +78,7 @@ func (re *TraceElementRoutineEnd) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (re *TraceElementRoutineEnd) GetTPre() int {
+func (re *ElementRoutineEnd) GetTPre() int {
 	return re.tPost
 }
 
@@ -86,7 +86,7 @@ func (re *TraceElementRoutineEnd) GetTPre() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (re *TraceElementRoutineEnd) GetTPost() int {
+func (re *ElementRoutineEnd) GetTPost() int {
 	return re.tPost
 }
 
@@ -94,7 +94,7 @@ func (re *TraceElementRoutineEnd) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (re *TraceElementRoutineEnd) GetTSort() int {
+func (re *ElementRoutineEnd) GetTSort() int {
 	return re.tPost
 }
 
@@ -102,7 +102,7 @@ func (re *TraceElementRoutineEnd) GetTSort() int {
 //
 // Returns:
 //   - string: empty string
-func (re *TraceElementRoutineEnd) GetPos() string {
+func (re *ElementRoutineEnd) GetPos() string {
 	return ""
 }
 
@@ -110,7 +110,7 @@ func (re *TraceElementRoutineEnd) GetPos() string {
 //
 // Returns:
 //   - string: empty string
-func (re *TraceElementRoutineEnd) GetReplayID() string {
+func (re *ElementRoutineEnd) GetReplayID() string {
 	return ""
 }
 
@@ -118,7 +118,7 @@ func (re *TraceElementRoutineEnd) GetReplayID() string {
 //
 // Returns:
 //   - string: empty string
-func (re *TraceElementRoutineEnd) GetFile() string {
+func (re *ElementRoutineEnd) GetFile() string {
 	return ""
 }
 
@@ -126,7 +126,7 @@ func (re *TraceElementRoutineEnd) GetFile() string {
 //
 // Returns:
 //   - int: 0
-func (re *TraceElementRoutineEnd) GetLine() int {
+func (re *ElementRoutineEnd) GetLine() int {
 	return 0
 }
 
@@ -135,7 +135,7 @@ func (re *TraceElementRoutineEnd) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (re *TraceElementRoutineEnd) GetTID() string {
+func (re *ElementRoutineEnd) GetTID() string {
 	return ""
 }
 
@@ -143,7 +143,7 @@ func (re *TraceElementRoutineEnd) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (re *TraceElementRoutineEnd) SetVc(vc *clock.VectorClock) {
+func (re *ElementRoutineEnd) SetVc(vc *clock.VectorClock) {
 	re.vc = vc.Copy()
 }
 
@@ -151,7 +151,7 @@ func (re *TraceElementRoutineEnd) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (re *TraceElementRoutineEnd) SetWVc(vc *clock.VectorClock) {
+func (re *ElementRoutineEnd) SetWVc(vc *clock.VectorClock) {
 	re.wVc = vc.Copy()
 }
 
@@ -159,7 +159,7 @@ func (re *TraceElementRoutineEnd) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (re *TraceElementRoutineEnd) GetVC() *clock.VectorClock {
+func (re *ElementRoutineEnd) GetVC() *clock.VectorClock {
 	return re.vc
 }
 
@@ -167,7 +167,7 @@ func (re *TraceElementRoutineEnd) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (re *TraceElementRoutineEnd) GetWVc() *clock.VectorClock {
+func (re *ElementRoutineEnd) GetWVc() *clock.VectorClock {
 	return re.wVc
 }
 
@@ -178,7 +178,7 @@ func (re *TraceElementRoutineEnd) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (re *TraceElementRoutineEnd) GetObjType(operation bool) string {
+func (re *ElementRoutineEnd) GetObjType(operation bool) string {
 	if operation {
 		return ObjectTypeRoutineEnd + "E"
 	}
@@ -192,7 +192,7 @@ func (re *TraceElementRoutineEnd) GetObjType(operation bool) string {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (re *TraceElementRoutineEnd) IsEqual(elem TraceElement) bool {
+func (re *ElementRoutineEnd) IsEqual(elem Element) bool {
 	return re.routine == elem.GetRoutine() && re.ToString() == elem.ToString()
 }
 
@@ -201,7 +201,7 @@ func (re *TraceElementRoutineEnd) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (re *TraceElementRoutineEnd) GetTraceIndex() (int, int) {
+func (re *ElementRoutineEnd) GetTraceIndex() (int, int) {
 	return re.routine, re.index
 }
 
@@ -209,7 +209,7 @@ func (re *TraceElementRoutineEnd) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (re *TraceElementRoutineEnd) SetT(time int) {
+func (re *ElementRoutineEnd) SetT(time int) {
 	re.tPost = time
 }
 
@@ -217,7 +217,7 @@ func (re *TraceElementRoutineEnd) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (re *TraceElementRoutineEnd) SetTPre(tPre int) {
+func (re *ElementRoutineEnd) SetTPre(tPre int) {
 	re.tPost = tPre
 }
 
@@ -225,7 +225,7 @@ func (re *TraceElementRoutineEnd) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (re *TraceElementRoutineEnd) SetTSort(tPost int) {
+func (re *ElementRoutineEnd) SetTSort(tPost int) {
 	re.SetTPre(tPost)
 	re.tPost = tPost
 }
@@ -235,7 +235,7 @@ func (re *TraceElementRoutineEnd) SetTSort(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (re *TraceElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
+func (re *ElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
 	re.SetTPre(tSort)
 	if re.tPost != 0 {
 		re.tPost = tSort
@@ -246,7 +246,7 @@ func (re *TraceElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (re *TraceElementRoutineEnd) ToString() string {
+func (re *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(re.tPost)
 }
 
@@ -254,7 +254,7 @@ func (re *TraceElementRoutineEnd) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (re *TraceElementRoutineEnd) GetTraceID() int {
+func (re *ElementRoutineEnd) GetTraceID() int {
 	return re.traceID
 }
 
@@ -262,7 +262,7 @@ func (re *TraceElementRoutineEnd) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (re *TraceElementRoutineEnd) setTraceID(ID int) {
+func (re *ElementRoutineEnd) setTraceID(ID int) {
 	re.traceID = ID
 }
 
@@ -270,8 +270,8 @@ func (re *TraceElementRoutineEnd) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (re *TraceElementRoutineEnd) Copy() TraceElement {
-	return &TraceElementRoutineEnd{
+func (re *ElementRoutineEnd) Copy() Element {
+	return &ElementRoutineEnd{
 		traceID: re.traceID,
 		index:   re.index,
 		routine: re.routine,
@@ -286,7 +286,7 @@ func (re *TraceElementRoutineEnd) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (re *TraceElementRoutineEnd) AddChild(elem TraceElement) {
+func (re *ElementRoutineEnd) AddChild(elem Element) {
 }
 
 // GetChildren returns all children of this node in the partial order graph
@@ -294,8 +294,8 @@ func (re *TraceElementRoutineEnd) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (re *TraceElementRoutineEnd) GetChildren() []TraceElement {
-	return make([]TraceElement, 0)
+func (re *ElementRoutineEnd) GetChildren() []Element {
+	return make([]Element, 0)
 }
 
 // GetParents returns all parents of this node in the partial order graph
@@ -303,6 +303,6 @@ func (re *TraceElementRoutineEnd) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (re *TraceElementRoutineEnd) GetParents() []TraceElement {
-	return make([]TraceElement, 0)
+func (re *ElementRoutineEnd) GetParents() []Element {
+	return make([]Element, 0)
 }

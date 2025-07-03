@@ -33,7 +33,7 @@ func newWg(index int, nRout int) {
 // UpdateVCWait updates and stores the vector clock of the element
 // Parameter:
 //   - wa *TraceElementWait: the wait trace element
-func UpdateVCWait(wa *trace.TraceElementWait) {
+func UpdateVCWait(wa *trace.ElementWait) {
 	routine := wa.GetRoutine()
 	wa.SetVc(data.CurrentVC[routine])
 	wa.SetWVc(data.CurrentWVC[routine])
@@ -53,7 +53,7 @@ func UpdateVCWait(wa *trace.TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
-func Change(wa *trace.TraceElementWait) {
+func Change(wa *trace.ElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -77,7 +77,7 @@ func Change(wa *trace.TraceElementWait) {
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
-func Wait(wa *trace.TraceElementWait) {
+func Wait(wa *trace.ElementWait) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

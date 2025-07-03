@@ -22,12 +22,12 @@ import (
 //
 // Returns:
 //   - []trace.TraceElement: the concurrent element(s)
-func GetConcurrentCSST(elem trace.TraceElement, all bool) []trace.TraceElement {
+func GetConcurrentCSST(elem trace.Element, all bool) []trace.Element {
 	// TODO: implement
-	return make([]trace.TraceElement, 0)
+	return make([]trace.Element, 0)
 }
 
-func GetIndicesFromTraceElem(elem trace.TraceElement) types.Pair[int, int] {
+func GetIndicesFromTraceElem(elem trace.Element) types.Pair[int, int] {
 	rout, index := elem.GetTraceIndex()
 	return types.NewPair(rout, index)
 }

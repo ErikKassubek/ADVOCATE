@@ -28,7 +28,7 @@ import (
 //
 // Parameter:
 //   - sender *TraceElementChannel: Send trace element
-func getConcurrentSendForFuzzing(sender *trace.TraceElementChannel) {
+func getConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
 
@@ -62,7 +62,7 @@ func getConcurrentSendForFuzzing(sender *trace.TraceElementChannel) {
 			data.LastSendRoutine[routine] = make(map[int]data.ElemWithVc)
 		}
 
-		data.LastSendRoutine[routine][id] = data.ElemWithVc{data.CurrentVC[routine].Copy(), sender}
+		data.LastSendRoutine[routine][id] = data.ElemWithVc{Vc: data.CurrentVC[routine].Copy(), Elem: sender}
 	}
 }
 
@@ -72,7 +72,7 @@ func getConcurrentSendForFuzzing(sender *trace.TraceElementChannel) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: recv trace element
-func checkForConcurrentRecv(ch *trace.TraceElementChannel, vc map[int]*clock.VectorClock) {
+func checkForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorClock) {
 	if data.AnalysisFuzzing {
 		timer.Start(timer.FuzzingAna)
 		defer timer.Stop(timer.FuzzingAna)
@@ -131,7 +131,7 @@ func checkForConcurrentRecv(ch *trace.TraceElementChannel, vc map[int]*clock.Vec
 			data.LastRecvRoutine[routine] = make(map[int]data.ElemWithVc)
 		}
 
-		data.LastRecvRoutine[routine][id] = data.ElemWithVc{vc[routine].Copy(), ch}
+		data.LastRecvRoutine[routine][id] = data.ElemWithVc{Vc: vc[routine].Copy(), Elem: ch}
 	}
 }
 
@@ -141,7 +141,7 @@ func checkForConcurrentRecv(ch *trace.TraceElementChannel, vc map[int]*clock.Vec
 //
 // Parameter:
 //   - mu *TraceElementMutex: mutex operations
-func getConcurrentMutexForFuzzing(mu *trace.TraceElementMutex) {
+func getConcurrentMutexForFuzzing(mu *trace.ElementMutex) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
 
@@ -173,7 +173,7 @@ func getConcurrentMutexForFuzzing(mu *trace.TraceElementMutex) {
 //
 // Parameter:
 //   - on *TraceElementOnce: once.Do operations
-func getConcurrentOnceForFuzzing(on *trace.TraceElementOnce) {
+func getConcurrentOnceForFuzzing(on *trace.ElementOnce) {
 	timer.Start(timer.FuzzingAna)
 	timer.Stop(timer.FuzzingAna)
 
@@ -215,7 +215,7 @@ func GetConcurrentInfoForFuzzing() (*[]data.ConcurrentEntry, *[]data.ConcurrentE
 //
 // Returns:
 //   - int: the current fuzzing counter for the element
-func getFuzzingCounter(te trace.TraceElement) int {
+func getFuzzingCounter(te trace.Element) int {
 	id := te.GetID()
 	pos := te.GetPos()
 
@@ -233,7 +233,7 @@ func getFuzzingCounter(te trace.TraceElement) int {
 //
 // Parameter:
 //   - te TraceElement: The element to increase the counter for
-func incFuzzingCounter(te trace.TraceElement) {
+func incFuzzingCounter(te trace.Element) {
 	id := te.GetID()
 	pos := te.GetPos()
 

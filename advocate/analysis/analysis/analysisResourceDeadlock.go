@@ -52,7 +52,10 @@ func acquire(s *data.State, readLock bool, event data.LockEvent) {
 		}
 	}
 
-	lockID := data.LockID{event.LockID, readLock}
+	lockID := data.LockID{
+		ID:       event.LockID,
+		ReadLock: readLock,
+	}
 
 	ls := s.Threads[event.ThreadID].CurrentLockset
 	if !ls.Empty() {
@@ -67,7 +70,11 @@ func acquire(s *data.State, readLock bool, event data.LockEvent) {
 }
 
 func release(s *data.State, readLock bool, event data.LockEvent) {
-	lockID := data.LockID{event.LockID, readLock}
+	lockID := data.LockID{
+		ID:       event.LockID,
+		ReadLock: readLock,
+	}
+
 	if lockID.IsRead() {
 		lockID.RemoveReader(s.Threads[event.ThreadID])
 		for _, thread := range s.Threads {
@@ -95,7 +102,10 @@ func insert(dependencies []data.Dependency, ls data.Lockset, event data.LockEven
 			return dependencies
 		}
 	}
-	return append(dependencies, data.Dependency{ls.Clone(), []data.LockEvent{event}})
+	return append(dependencies, data.Dependency{
+		Lockset:  ls.Clone(),
+		Requests: []data.LockEvent{event}},
+	)
 }
 
 // The above insert function records all requests that share the same dependency (tid,l,ls).
@@ -150,7 +160,10 @@ func insert2(dependencies []data.Dependency, lockset data.Lockset, event data.Lo
 			return dependencies
 		}
 	}
-	return append(dependencies, data.Dependency{lockset.Clone(), []data.LockEvent{event}})
+	return append(dependencies, data.Dependency{
+		Lockset:  lockset.Clone(),
+		Requests: []data.LockEvent{event},
+	})
 }
 
 // Algorithm phase 2
@@ -182,7 +195,12 @@ func getCycles(s *data.State) []data.Cycle {
 		traversedThread[threadID] = true
 		for lock, dependencies := range s.Threads[threadID].LockDependencies {
 			for _, dependency := range dependencies {
-				chainStack = append(chainStack, data.LockDependency{threadID, lock, dependency.Lockset, dependency.Requests}) // push
+				chainStack = append(chainStack, data.LockDependency{
+					Thread:   threadID,
+					Lock:     lock,
+					Lockset:  dependency.Lockset,
+					Requests: dependency.Requests,
+				}) // push
 				dfs(s, &chainStack, traversedThread)
 				chainStack = chainStack[:len(chainStack)-1] // pop
 			}
@@ -200,7 +218,12 @@ func dfs(s *data.State, chainStack *[]data.LockDependency, traversedThread map[d
 
 		for l, lD := range s.Threads[tid].LockDependencies {
 			for _, lLsD := range lD {
-				ld := data.LockDependency{tid, l, lLsD.Lockset, lLsD.Requests}
+				ld := data.LockDependency{
+					Thread:   tid,
+					Lock:     l,
+					Lockset:  lLsD.Lockset,
+					Requests: lLsD.Requests,
+				}
 				if isChain(chainStack, ld) {
 					if isCycleChain(chainStack, ld) {
 						var c data.Cycle = make([]data.LockDependency, len(*chainStack)+1)
@@ -305,7 +328,6 @@ func checkAndFilterConcurrentRequests(cycle *data.Cycle) bool {
 	return true
 }
 
-// ////////////////////////////////
 // High level functions for integration with Advocate
 func ResetState() {
 	timer.Start(timer.AnaResource)
@@ -318,7 +340,7 @@ func ResetState() {
 	}
 }
 
-func HandleMutexEventForRessourceDeadlock(element trace.TraceElementMutex) {
+func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 

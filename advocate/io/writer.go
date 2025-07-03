@@ -101,7 +101,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 //
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
-func isReplay(element trace.TraceElement) bool {
+func isReplay(element trace.Element) bool {
 	t := element.GetObjType(false)
 	return !(t == trace.ObjectTypeNew || t == trace.ObjectTypeRoutineEnd)
 }

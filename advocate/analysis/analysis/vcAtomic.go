@@ -21,7 +21,7 @@ import (
 //
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
-func UpdateVCAtomic(at *trace.TraceElementAtomic) {
+func UpdateVCAtomic(at *trace.ElementAtomic) {
 
 	routine := at.GetRoutine()
 
@@ -43,7 +43,7 @@ func UpdateVCAtomic(at *trace.TraceElementAtomic) {
 
 // Store and update the vector clock of the element if the IgnoreCriticalSections
 // tag has been set
-func UpdateVCAtomicAlt(at *trace.TraceElementAtomic) {
+func UpdateVCAtomicAlt(at *trace.ElementAtomic) {
 	at.SetVc(data.CurrentVC[at.GetRoutine()])
 
 	switch at.GetOpA() {
@@ -63,7 +63,7 @@ func UpdateVCAtomicAlt(at *trace.TraceElementAtomic) {
 //
 // Parameter:
 //   - at *TraceElementAtomic: The trace element
-func Write(at *trace.TraceElementAtomic) {
+func Write(at *trace.ElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -82,7 +82,7 @@ func Write(at *trace.TraceElementAtomic) {
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
 //   - sync bool: sync reader with last writer
-func Read(at *trace.TraceElementAtomic, sync bool) {
+func Read(at *trace.ElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -105,7 +105,7 @@ func Read(at *trace.TraceElementAtomic, sync bool) {
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
 //   - sync bool: sync reader with last writer
-func Swap(at *trace.TraceElementAtomic, sync bool) {
+func Swap(at *trace.ElementAtomic, sync bool) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 

@@ -18,11 +18,11 @@ import (
 )
 
 // enum for operation
-type opAtomic int
+type OpAtomic int
 
 // Values for the opAtomic enum
 const (
-	LoadOp opAtomic = iota
+	LoadOp OpAtomic = iota
 	StoreOp
 	AddOp
 	SwapOp
@@ -31,7 +31,7 @@ const (
 	OrOp
 )
 
-// TraceElementAtomic is a struct to save an atomic event in the trace
+// ElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
 //   - traceID: id of the element, should never be changed
@@ -46,19 +46,19 @@ const (
 //   - line int: the line of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
-type TraceElementAtomic struct {
+type ElementAtomic struct {
 	traceID  int
 	index    int
 	routine  int
 	tPost    int
 	id       int
-	opA      opAtomic
+	opA      OpAtomic
 	vc       *clock.VectorClock
 	wVc      *clock.VectorClock
 	file     string
 	line     int
-	children []TraceElement
-	parents  []TraceElement
+	children []Element
+	parents  []Element
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -81,7 +81,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		return errors.New("id is not an integer")
 	}
 
-	var opAInt opAtomic
+	var opAInt OpAtomic
 	switch operation {
 	case "L":
 		opAInt = LoadOp
@@ -106,7 +106,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		return err
 	}
 
-	elem := TraceElementAtomic{
+	elem := ElementAtomic{
 		index:    t.numberElemsInTrace[routine],
 		routine:  routine,
 		tPost:    tPostInt,
@@ -116,8 +116,8 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		line:     line,
 		vc:       nil,
 		wVc:      nil,
-		children: make([]TraceElement, 0),
-		parents:  make([]TraceElement, 0),
+		children: make([]Element, 0),
+		parents:  make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -128,7 +128,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 //
 // Returns:
 //   - int: The id of the element
-func (at *TraceElementAtomic) GetID() int {
+func (at *ElementAtomic) GetID() int {
 	return at.id
 }
 
@@ -136,7 +136,7 @@ func (at *TraceElementAtomic) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (at *TraceElementAtomic) GetRoutine() int {
+func (at *ElementAtomic) GetRoutine() int {
 	return at.routine
 }
 
@@ -144,7 +144,7 @@ func (at *TraceElementAtomic) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (at *TraceElementAtomic) GetTPre() int {
+func (at *ElementAtomic) GetTPre() int {
 	return at.tPost
 }
 
@@ -152,7 +152,7 @@ func (at *TraceElementAtomic) GetTPre() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (at *TraceElementAtomic) GetTPost() int {
+func (at *ElementAtomic) GetTPost() int {
 	return at.tPost
 }
 
@@ -160,7 +160,7 @@ func (at *TraceElementAtomic) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (at *TraceElementAtomic) GetTSort() int {
+func (at *ElementAtomic) GetTSort() int {
 	return at.tPost
 }
 
@@ -168,7 +168,7 @@ func (at *TraceElementAtomic) GetTSort() int {
 //
 // Returns:
 //   - string: The file of the element
-func (at *TraceElementAtomic) GetPos() string {
+func (at *ElementAtomic) GetPos() string {
 	return fmt.Sprintf("%s:%d", at.file, at.line)
 }
 
@@ -176,7 +176,7 @@ func (at *TraceElementAtomic) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (at *TraceElementAtomic) GetReplayID() string {
+func (at *ElementAtomic) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", at.routine, at.file, at.line)
 }
 
@@ -184,7 +184,7 @@ func (at *TraceElementAtomic) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (at *TraceElementAtomic) GetFile() string {
+func (at *ElementAtomic) GetFile() string {
 	return at.file
 }
 
@@ -192,7 +192,7 @@ func (at *TraceElementAtomic) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (at *TraceElementAtomic) GetLine() int {
+func (at *ElementAtomic) GetLine() int {
 	return at.line
 }
 
@@ -201,7 +201,7 @@ func (at *TraceElementAtomic) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (at *TraceElementAtomic) GetTID() string {
+func (at *ElementAtomic) GetTID() string {
 	return at.GetPos() + "@" + strconv.Itoa(at.tPost)
 }
 
@@ -209,7 +209,7 @@ func (at *TraceElementAtomic) GetTID() string {
 //
 // Returns:
 //   - opAtomic: the operation type
-func (at *TraceElementAtomic) GetOpA() opAtomic {
+func (at *ElementAtomic) GetOpA() OpAtomic {
 	return at.opA
 }
 
@@ -217,7 +217,7 @@ func (at *TraceElementAtomic) GetOpA() opAtomic {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (at *TraceElementAtomic) SetVc(vc *clock.VectorClock) {
+func (at *ElementAtomic) SetVc(vc *clock.VectorClock) {
 	at.vc = vc.Copy()
 }
 
@@ -225,7 +225,7 @@ func (at *TraceElementAtomic) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (at *TraceElementAtomic) SetWVc(vc *clock.VectorClock) {
+func (at *ElementAtomic) SetWVc(vc *clock.VectorClock) {
 	at.wVc = vc.Copy()
 }
 
@@ -233,7 +233,7 @@ func (at *TraceElementAtomic) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (at *TraceElementAtomic) GetVC() *clock.VectorClock {
+func (at *ElementAtomic) GetVC() *clock.VectorClock {
 	return at.vc
 }
 
@@ -241,7 +241,7 @@ func (at *TraceElementAtomic) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (at *TraceElementAtomic) GetWVc() *clock.VectorClock {
+func (at *ElementAtomic) GetWVc() *clock.VectorClock {
 	return at.wVc
 }
 
@@ -252,7 +252,7 @@ func (at *TraceElementAtomic) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (at *TraceElementAtomic) GetObjType(operation bool) string {
+func (at *ElementAtomic) GetObjType(operation bool) string {
 	if !operation {
 		return ObjectTypeAtomic
 	}
@@ -280,7 +280,7 @@ func (at *TraceElementAtomic) GetObjType(operation bool) string {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (at *TraceElementAtomic) IsEqual(elem TraceElement) bool {
+func (at *ElementAtomic) IsEqual(elem Element) bool {
 	return at.routine == elem.GetRoutine() && at.ToString() == elem.ToString()
 }
 
@@ -289,7 +289,7 @@ func (at *TraceElementAtomic) IsEqual(elem TraceElement) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (at *TraceElementAtomic) GetTraceIndex() (int, int) {
+func (at *ElementAtomic) GetTraceIndex() (int, int) {
 	return at.routine, at.index
 }
 
@@ -297,7 +297,7 @@ func (at *TraceElementAtomic) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (at *TraceElementAtomic) SetT(time int) {
+func (at *ElementAtomic) SetT(time int) {
 	at.tPost = time
 }
 
@@ -305,7 +305,7 @@ func (at *TraceElementAtomic) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPost of the element
-func (at *TraceElementAtomic) SetTPre(tPre int) {
+func (at *ElementAtomic) SetTPre(tPre int) {
 	at.tPost = tPre
 }
 
@@ -313,7 +313,7 @@ func (at *TraceElementAtomic) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (at *TraceElementAtomic) SetTSort(tSort int) {
+func (at *ElementAtomic) SetTSort(tSort int) {
 	at.tPost = tSort
 }
 
@@ -322,7 +322,7 @@ func (at *TraceElementAtomic) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (at *TraceElementAtomic) SetTWithoutNotExecuted(tSort int) {
+func (at *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
 	if at.tPost != 0 {
 		at.tPost = tSort
 	}
@@ -332,7 +332,7 @@ func (at *TraceElementAtomic) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (at *TraceElementAtomic) ToString() string {
+func (at *ElementAtomic) ToString() string {
 	opString := ""
 
 	switch at.opA {
@@ -357,7 +357,7 @@ func (at *TraceElementAtomic) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (at *TraceElementAtomic) GetTraceID() int {
+func (at *ElementAtomic) GetTraceID() int {
 	return at.traceID
 }
 
@@ -365,7 +365,7 @@ func (at *TraceElementAtomic) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (at *TraceElementAtomic) setTraceID(ID int) {
+func (at *ElementAtomic) setTraceID(ID int) {
 	at.traceID = ID
 }
 
@@ -373,13 +373,13 @@ func (at *TraceElementAtomic) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (at *TraceElementAtomic) Copy() TraceElement {
-	children := make([]TraceElement, len(at.children))
+func (at *ElementAtomic) Copy() Element {
+	children := make([]Element, len(at.children))
 	copy(children, at.children)
-	parents := make([]TraceElement, len(at.parents))
+	parents := make([]Element, len(at.parents))
 	copy(parents, at.parents)
 
-	return &TraceElementAtomic{
+	return &ElementAtomic{
 		traceID:  at.traceID,
 		index:    at.index,
 		routine:  at.routine,
@@ -397,7 +397,7 @@ func (at *TraceElementAtomic) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (at *TraceElementAtomic) AddChild(elem TraceElement) {
+func (at *ElementAtomic) AddChild(elem Element) {
 	at.children = append(at.children, elem)
 }
 
@@ -405,7 +405,7 @@ func (at *TraceElementAtomic) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (at *TraceElementAtomic) GetChildren() []TraceElement {
+func (at *ElementAtomic) GetChildren() []Element {
 	return at.children
 }
 
@@ -413,6 +413,6 @@ func (at *TraceElementAtomic) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (at *TraceElementAtomic) GetParents() []TraceElement {
+func (at *ElementAtomic) GetParents() []Element {
 	return at.children
 }

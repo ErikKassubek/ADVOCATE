@@ -19,7 +19,7 @@ package data
 //   - ContainsDefault bool: true if contains default case, otherwise false
 //   - CasiWithPos[]int: list of casi with possible partner
 type FuzzingSelect struct {
-	Id              string
+	ID              string
 	T               int
 	ChosenCase      int
 	NumberCases     int

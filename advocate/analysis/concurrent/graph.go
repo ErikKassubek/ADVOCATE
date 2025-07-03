@@ -18,7 +18,7 @@ import (
 // For a given element, add it the the children of the last element that
 // was analyzed in the same routine.
 // Then set this element to be the last element analyzed in the routine
-func AddEdgePartialOrderGraph(elem trace.TraceElement) {
+func AddEdgePartialOrderGraph(elem trace.Element) {
 	routineID := elem.GetRoutine()
 
 	if lastElem, ok := data.LastAnalyzedElementPerRoutine[routineID]; ok {
@@ -40,14 +40,14 @@ func AddEdgePartialOrderGraph(elem trace.TraceElement) {
 //
 // Returns
 //   - []trace.TraceElement: element(s) that are concurrent to elem
-func GetConcurrentPartialOrderGraph(elem trace.TraceElement, all bool) []trace.TraceElement {
+func GetConcurrentPartialOrderGraph(elem trace.Element, all bool) []trace.Element {
 	visitedFromN := make(map[int]bool)
 	visitedToN := make(map[int]bool)
 
 	dfsPartialOrderGraph(elem, visitedFromN, false)
 	dfsPartialOrderGraph(elem, visitedToN, true)
 
-	res := make([]trace.TraceElement, 0)
+	res := make([]trace.Element, 0)
 
 	for rout, trace := range data.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
@@ -74,8 +74,8 @@ func GetConcurrentPartialOrderGraph(elem trace.TraceElement, all bool) []trace.T
 //   - visited map[int]bool: traceID of all visited nodes
 //   - inverted bool: If false, find all nodes that can be reached from start,
 //     if true, find all nodes from which start can be reached
-func dfsPartialOrderGraph(start trace.TraceElement, visited map[int]bool, inverted bool) {
-	stack := []trace.TraceElement{start}
+func dfsPartialOrderGraph(start trace.Element, visited map[int]bool, inverted bool) {
+	stack := []trace.Element{start}
 
 	for len(stack) > 0 {
 		curr := stack[len(stack)-1]

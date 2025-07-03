@@ -20,7 +20,7 @@ import (
 // ElemWithVc is a helper element for an element with an additional vector clock
 type ElemWithVc struct {
 	Vc   *clock.VectorClock
-	Elem trace.TraceElement
+	Elem trace.Element
 }
 
 // VectorClockTID2 is a helper to store the relevant elements of a
@@ -40,7 +40,7 @@ type VectorClockTID2 struct {
 // ElemWithVcVal is a helper element for an element with an additional vector clock
 // and an additional int val
 type ElemWithVcVal struct {
-	Elem trace.TraceElement
+	Elem trace.Element
 	Vc   *clock.VectorClock
 	Val  int
 }
@@ -48,15 +48,15 @@ type ElemWithVcVal struct {
 // AllSelectCase is a helper element to store individual references to all
 // select cases in a trace
 type AllSelectCase struct {
-	Sel          *trace.TraceElementSelect // the select
-	ChanID       int                       // channel id
-	Elem         ElemWithVc                // vector clock and tID
-	Send         bool                      // true: send, false: receive
-	Buffered     bool                      // true: buffered, false: unbuffered
-	PartnerFound bool                      // true: partner found, false: no partner found
-	Partner      []ElemWithVcVal           // the potential partner
-	Exec         bool                      // true: the case was executed, false: otherwise
-	Casi         int                       // internal index for the case in the select
+	Sel          *trace.ElementSelect // the select
+	ChanID       int                  // channel id
+	Elem         ElemWithVc           // vector clock and tID
+	Send         bool                 // true: send, false: receive
+	Buffered     bool                 // true: buffered, false: unbuffered
+	PartnerFound bool                 // true: partner found, false: no partner found
+	Partner      []ElemWithVcVal      // the potential partner
+	Exec         bool                 // true: the case was executed, false: otherwise
+	Casi         int                  // internal index for the case in the select
 }
 
 // ConcurrentEntryType is an enum type used in ConcurrentEntry
@@ -65,7 +65,7 @@ type ConcurrentEntryType int
 // ConcurrentEntry is a helper element to store elements relevant for
 // flow fuzzing
 type ConcurrentEntry struct {
-	Elem    trace.TraceElement
+	Elem    trace.Element
 	Counter int
 	Type    ConcurrentEntryType
 }
@@ -91,7 +91,7 @@ type BufferedVC struct {
 // it is used in the case that for a synchronous communication, the recv is
 // recorded before the send
 type HoldObj struct {
-	Ch   *trace.TraceElementChannel
+	Ch   *trace.ElementChannel
 	Vc   map[int]*clock.VectorClock
 	WVc  map[int]*clock.VectorClock
 	Fifo bool
@@ -140,7 +140,7 @@ type LockEvent struct {
 
 type ThreadID int
 type LockID struct {
-	Id       int
+	ID       int
 	ReadLock bool
 }
 type Lockset map[LockID]struct{}
@@ -204,7 +204,7 @@ func (l LockID) HasReaders(s Thread) bool {
 
 // Check if two locks are equal ignoring whether they are read or write locks.
 func (l LockID) EqualsIgnoreRW(other LockID) bool {
-	return l.Id == other.Id
+	return l.ID == other.ID
 }
 
 // Check if two locks are the same and at least one of them is a write lock.
@@ -246,7 +246,7 @@ func (ls Lockset) String() string {
 	b := strings.Builder{}
 	b.WriteString("Lockset{")
 	for l := range ls {
-		b.WriteString(strconv.Itoa(int(l.Id)))
+		b.WriteString(strconv.Itoa(int(l.ID)))
 	}
 	b.WriteString("}")
 	return b.String()

@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package goPie
+package gopie
 
 import (
 	"advocate/trace"
@@ -35,18 +35,18 @@ var (
 	// GoPie relations
 	counterCPOP1 = 0
 	counterCPOP2 = 0
-	rel1         = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
-	rel2         = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	rel1         = make(map[trace.Element]map[trace.Element]struct{})
+	rel2         = make(map[trace.Element]map[trace.Element]struct{})
 
-	ElemsByID = make(map[int][]trace.TraceElement) // id -> chan/sel/mutex elem
+	ElemsByID = make(map[int][]trace.Element) // id -> chan/sel/mutex elem
 )
 
 func ClearData() {
-	rel1 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
-	rel2 = make(map[trace.TraceElement]map[trace.TraceElement]struct{})
+	rel1 = make(map[trace.Element]map[trace.Element]struct{})
+	rel2 = make(map[trace.Element]map[trace.Element]struct{})
 	counterCPOP1 = 0
 	counterCPOP2 = 0
-	ElemsByID = make(map[int][]trace.TraceElement)
+	ElemsByID = make(map[int][]trace.Element)
 	numberWrittenGoPieMuts = 0
 	maxGoPieScore = 0
 }

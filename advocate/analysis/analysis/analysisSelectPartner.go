@@ -51,8 +51,16 @@ func CheckForSelectCaseWithPartner() {
 			if found {
 				data.SelectCases[i].PartnerFound = true
 				data.SelectCases[j].PartnerFound = true
-				data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{data.SelectCases[j].Sel, data.SelectCases[j].Sel.GetVC(), 0})
-				data.SelectCases[j].Partner = append(data.SelectCases[j].Partner, data.ElemWithVcVal{data.SelectCases[i].Sel, data.SelectCases[i].Sel.GetVC(), 0})
+				data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
+					Elem: data.SelectCases[j].Sel,
+					Vc:   data.SelectCases[j].Sel.GetVC(),
+					Val:  0,
+				})
+				data.SelectCases[j].Partner = append(data.SelectCases[j].Partner, data.ElemWithVcVal{
+					Elem: data.SelectCases[i].Sel,
+					Vc:   data.SelectCases[i].Sel.GetVC(),
+					Val:  0,
+				})
 			}
 		}
 	}
@@ -84,7 +92,7 @@ func CheckForSelectCaseWithPartner() {
 // Parameter:
 //   - se *TraceElementSelect: The trace elemen
 //   - vc *VectorClock: The vector clock
-func CheckForSelectCaseWithPartnerSelect(se *trace.TraceElementSelect, vc *clock.VectorClock) {
+func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
@@ -106,7 +114,9 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.TraceElementSelect, vc *clock
 			if p != nil {
 				found = true
 				vcTID := data.ElemWithVcVal{
-					p, p.GetVC().Copy(), 0,
+					Elem: p,
+					Vc:   p.GetVC().Copy(),
+					Val:  0,
 				}
 				partner = append(partner, vcTID)
 			}
@@ -142,7 +152,18 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.TraceElementSelect, vc *clock
 		}
 
 		data.SelectCases = append(data.SelectCases,
-			data.AllSelectCase{se, id, data.ElemWithVc{vc, se}, send, buffered, found, partner, executed, casi})
+			data.AllSelectCase{Sel: se,
+				ChanID: id,
+				Elem: data.ElemWithVc{
+					Vc:   vc,
+					Elem: se,
+				},
+				Send:         send,
+				Buffered:     buffered,
+				PartnerFound: found,
+				Partner:      partner,
+				Exec:         executed,
+				Casi:         casi})
 
 	}
 }
@@ -155,7 +176,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.TraceElementSelect, vc *clock
 //   - vc VectorClock: The vector clock
 //   - send bool: True if the operation is a send
 //   - buffered bool: True if the channel is buffered
-func CheckForSelectCaseWithPartnerChannel(ch trace.TraceElement, vc *clock.VectorClock,
+func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *clock.VectorClock,
 	send bool, buffered bool) {
 
 	timer.Start(timer.AnaSelWithoutPartner)
@@ -184,7 +205,11 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.TraceElement, vc *clock.Vecto
 
 		if found {
 			data.SelectCases[i].PartnerFound = true
-			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{ch, vc, 0})
+			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
+				Elem: ch,
+				Vc:   vc,
+				Val:  0,
+			})
 		}
 	}
 }
@@ -195,7 +220,7 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.TraceElement, vc *clock.Vecto
 // Parameter:
 //   - id int: The id of the channel
 //   - vc VectorClock: The vector clock
-func CheckForSelectCaseWithPartnerClose(cl *trace.TraceElementChannel, vc *clock.VectorClock) {
+func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
@@ -214,7 +239,11 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.TraceElementChannel, vc *clock
 
 		if found {
 			data.SelectCases[i].PartnerFound = true
-			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{cl, vc, 0})
+			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
+				Elem: cl,
+				Vc:   vc,
+				Val:  0,
+			})
 		}
 	}
 }
@@ -225,7 +254,7 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.TraceElementChannel, vc *clock
 func rerunCheckForSelectCaseWithPartnerChannel() {
 	for _, tr := range data.MainTrace.GetTraces() {
 		for _, elem := range tr {
-			if e, ok := elem.(*trace.TraceElementChannel); ok {
+			if e, ok := elem.(*trace.ElementChannel); ok {
 				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(),
 					e.Operation() == trace.SendOp, e.IsBuffered())
 			}

@@ -19,7 +19,7 @@ import (
 	"strings"
 )
 
-// TraceElementSelect is a trace element for a select statement
+// ElementSelect is a trace element for a select statement
 // Fields:
 //   - traceID: id of the element, should never be changed
 //   - index int: Index in the routine
@@ -40,15 +40,15 @@ import (
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
-type TraceElementSelect struct {
+type ElementSelect struct {
 	traceID             int
 	index               int
 	routine             int
 	tPre                int
 	tPost               int
 	id                  int
-	cases               []TraceElementChannel
-	chosenCase          TraceElementChannel
+	cases               []ElementChannel
+	chosenCase          ElementChannel
 	chosenIndex         int
 	containsDefault     bool
 	chosenDefault       bool
@@ -57,8 +57,8 @@ type TraceElementSelect struct {
 	vc                  *clock.VectorClock
 	wVc                 *clock.VectorClock
 	casesWithPosPartner []int
-	children            []TraceElement
-	parents             []TraceElement
+	children            []Element
+	parents             []Element
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -99,7 +99,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		return err
 	}
 
-	elem := TraceElementSelect{
+	elem := ElementSelect{
 		index:               t.numberElemsInTrace[routine],
 		routine:             routine,
 		tPre:                tPreInt,
@@ -111,12 +111,12 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		casesWithPosPartner: make([]int, 0),
 		vc:                  nil,
 		wVc:                 nil,
-		children:            make([]TraceElement, 0),
-		parents:             make([]TraceElement, 0),
+		children:            make([]Element, 0),
+		parents:             make([]Element, 0),
 	}
 
 	cs := strings.Split(cases, "~")
-	casesList := make([]TraceElementChannel, 0)
+	casesList := make([]ElementChannel, 0)
 	containsDefault := false
 	chosenDefault := false
 	for i, c := range cs {
@@ -170,7 +170,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 			cTPost = tPostInt
 		}
 
-		elemCase := TraceElementChannel{
+		elemCase := ElementChannel{
 			routine: routine,
 			tPre:    tPreInt,
 			tPost:   cTPost,
@@ -204,7 +204,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 //
 // Returns:
 //   - int: The id of the element
-func (se *TraceElementSelect) GetID() int {
+func (se *ElementSelect) GetID() int {
 	return se.id
 }
 
@@ -212,7 +212,7 @@ func (se *TraceElementSelect) GetID() int {
 //
 // Returns:
 //   - []traceElementChannel: The cases of the select statement
-func (se *TraceElementSelect) GetCases() []TraceElementChannel {
+func (se *ElementSelect) GetCases() []ElementChannel {
 	return se.cases
 }
 
@@ -220,7 +220,7 @@ func (se *TraceElementSelect) GetCases() []TraceElementChannel {
 //
 // Returns:
 //   - int: The routine of the element
-func (se *TraceElementSelect) GetRoutine() int {
+func (se *ElementSelect) GetRoutine() int {
 	return se.routine
 }
 
@@ -228,7 +228,7 @@ func (se *TraceElementSelect) GetRoutine() int {
 //
 // Returns:
 //   - int: The timestamp at the start of the event
-func (se *TraceElementSelect) GetTPre() int {
+func (se *ElementSelect) GetTPre() int {
 	return se.tPre
 }
 
@@ -236,7 +236,7 @@ func (se *TraceElementSelect) GetTPre() int {
 //
 // Returns:
 //   - int: The timestamp at the end of the event
-func (se *TraceElementSelect) GetTPost() int {
+func (se *ElementSelect) GetTPost() int {
 	return se.tPost
 }
 
@@ -244,7 +244,7 @@ func (se *TraceElementSelect) GetTPost() int {
 //
 // Returns:
 //   - int: The timer of the element
-func (se *TraceElementSelect) GetTSort() int {
+func (se *ElementSelect) GetTSort() int {
 	if se.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -256,7 +256,7 @@ func (se *TraceElementSelect) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (se *TraceElementSelect) GetPos() string {
+func (se *ElementSelect) GetPos() string {
 	return fmt.Sprintf("%s:%d", se.file, se.line)
 }
 
@@ -264,7 +264,7 @@ func (se *TraceElementSelect) GetPos() string {
 //
 // Returns:
 //   - string: The replay id of the element
-func (se *TraceElementSelect) GetReplayID() string {
+func (se *ElementSelect) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", se.routine, se.file, se.line)
 }
 
@@ -272,7 +272,7 @@ func (se *TraceElementSelect) GetReplayID() string {
 //
 // Returns:
 //   - string: The file of the element
-func (se *TraceElementSelect) GetFile() string {
+func (se *ElementSelect) GetFile() string {
 	return se.file
 }
 
@@ -280,7 +280,7 @@ func (se *TraceElementSelect) GetFile() string {
 //
 // Returns:
 //   - string: The line of the element
-func (se *TraceElementSelect) GetLine() int {
+func (se *ElementSelect) GetLine() int {
 	return se.line
 }
 
@@ -289,7 +289,7 @@ func (se *TraceElementSelect) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (se *TraceElementSelect) GetTID() string {
+func (se *ElementSelect) GetTID() string {
 	return se.GetPos() + "@" + strconv.Itoa(se.tPre)
 }
 
@@ -297,7 +297,7 @@ func (se *TraceElementSelect) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (se *TraceElementSelect) SetVc(vc *clock.VectorClock) {
+func (se *ElementSelect) SetVc(vc *clock.VectorClock) {
 	se.vc = vc.Copy()
 }
 
@@ -305,7 +305,7 @@ func (se *TraceElementSelect) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (se *TraceElementSelect) SetWVc(vc *clock.VectorClock) {
+func (se *ElementSelect) SetWVc(vc *clock.VectorClock) {
 	se.wVc = vc.Copy()
 }
 
@@ -313,7 +313,7 @@ func (se *TraceElementSelect) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (se *TraceElementSelect) GetVC() *clock.VectorClock {
+func (se *ElementSelect) GetVC() *clock.VectorClock {
 	return se.vc
 }
 
@@ -321,7 +321,7 @@ func (se *TraceElementSelect) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (se *TraceElementSelect) GetWVc() *clock.VectorClock {
+func (se *ElementSelect) GetWVc() *clock.VectorClock {
 	return se.wVc
 }
 
@@ -329,7 +329,7 @@ func (se *TraceElementSelect) GetWVc() *clock.VectorClock {
 //
 // Returns:
 //   - the chosen case
-func (se *TraceElementSelect) GetChosenCase() *TraceElementChannel {
+func (se *ElementSelect) GetChosenCase() *ElementChannel {
 	if se.chosenDefault {
 		return nil
 	}
@@ -340,7 +340,7 @@ func (se *TraceElementSelect) GetChosenCase() *TraceElementChannel {
 //
 // Returns:
 //   - The internal index of the chosen case
-func (se *TraceElementSelect) GetChosenIndex() int {
+func (se *ElementSelect) GetChosenIndex() int {
 	return se.chosenIndex
 }
 
@@ -348,7 +348,7 @@ func (se *TraceElementSelect) GetChosenIndex() int {
 //
 // Returns:
 //   - bool: true if select contains default, false otherwise
-func (se *TraceElementSelect) GetContainsDefault() bool {
+func (se *ElementSelect) GetContainsDefault() bool {
 	return se.chosenDefault
 }
 
@@ -357,7 +357,7 @@ func (se *TraceElementSelect) GetContainsDefault() bool {
 //
 // Returns:
 //   - *TraceElementChannel: The communication partner of the select or nil
-func (se *TraceElementSelect) GetPartner() *TraceElementChannel {
+func (se *ElementSelect) GetPartner() *ElementChannel {
 	if se.chosenCase.tPost != 0 && !se.chosenDefault {
 		return se.chosenCase.partner
 	}
@@ -371,7 +371,7 @@ func (se *TraceElementSelect) GetPartner() *TraceElementChannel {
 //
 // Returns:
 //   - the object type
-func (se *TraceElementSelect) GetObjType(operation bool) string {
+func (se *ElementSelect) GetObjType(operation bool) string {
 	if operation {
 		return ObjectTypeSelect + "S"
 	}
@@ -384,7 +384,7 @@ func (se *TraceElementSelect) GetObjType(operation bool) string {
 //
 // Returns:
 //   - []int: list of indices
-func (se *TraceElementSelect) GetCasiWithPosPartner() []int {
+func (se *ElementSelect) GetCasiWithPosPartner() []int {
 	return se.casesWithPosPartner
 }
 
@@ -395,7 +395,7 @@ func (se *TraceElementSelect) GetCasiWithPosPartner() []int {
 //
 // Returns:
 //   - bool: true if they are equal, false otherwise
-func (se *TraceElementSelect) IsEqual(elem TraceElement) bool {
+func (se *ElementSelect) IsEqual(elem Element) bool {
 	return se.routine == elem.GetRoutine() && se.ToString() == elem.ToString()
 }
 
@@ -404,7 +404,7 @@ func (se *TraceElementSelect) IsEqual(elem TraceElement) bool {
 //
 //   - int: routine index
 //   - int: routine local index of the element
-func (se *TraceElementSelect) GetTraceIndex() (int, int) {
+func (se *ElementSelect) GetTraceIndex() (int, int) {
 	return se.routine, se.index
 }
 
@@ -412,7 +412,7 @@ func (se *TraceElementSelect) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (se *TraceElementSelect) SetT(time int) {
+func (se *ElementSelect) SetT(time int) {
 	se.tPre = time
 	se.tPost = time
 
@@ -427,7 +427,7 @@ func (se *TraceElementSelect) SetT(time int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (se *TraceElementSelect) SetTPre(tPre int) {
+func (se *ElementSelect) SetTPre(tPre int) {
 	se.tPre = tPre
 	if se.tPost != 0 && se.tPost < tPre {
 		se.tPost = tPre
@@ -442,7 +442,7 @@ func (se *TraceElementSelect) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (se *TraceElementSelect) SetTPre2(tPre int) {
+func (se *ElementSelect) SetTPre2(tPre int) {
 	se.tPre = tPre
 	if se.tPost != 0 && se.tPost < tPre {
 		se.tPost = tPre
@@ -457,7 +457,7 @@ func (se *TraceElementSelect) SetTPre2(tPre int) {
 //
 // Parameter:
 //   - casi int: the case id to add
-func (se *TraceElementSelect) AddCasesWithPosPartner(casi int) {
+func (se *ElementSelect) AddCasesWithPosPartner(casi int) {
 	se.casesWithPosPartner = append(se.casesWithPosPartner, casi)
 }
 
@@ -465,7 +465,7 @@ func (se *TraceElementSelect) AddCasesWithPosPartner(casi int) {
 //
 // Returns:
 //   - []int: list of cases with potential partner
-func (se *TraceElementSelect) GetCasesWithPosPartner() []int {
+func (se *ElementSelect) GetCasesWithPosPartner() []int {
 	return se.casesWithPosPartner
 }
 
@@ -476,7 +476,7 @@ func (se *TraceElementSelect) GetCasesWithPosPartner() []int {
 //
 // Returns:
 //   - error
-func (se *TraceElementSelect) SetChosenCase(index int) error {
+func (se *ElementSelect) SetChosenCase(index int) error {
 	if index >= len(se.cases) {
 		return fmt.Errorf("Invalid index %d for size %d", index, len(se.cases))
 	}
@@ -491,7 +491,7 @@ func (se *TraceElementSelect) SetChosenCase(index int) error {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (se *TraceElementSelect) SetTPost(tPost int) {
+func (se *ElementSelect) SetTPost(tPost int) {
 	se.tPost = tPost
 	se.chosenCase.SetTPost2(tPost)
 }
@@ -500,7 +500,7 @@ func (se *TraceElementSelect) SetTPost(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (se *TraceElementSelect) SetTPost2(tPost int) {
+func (se *ElementSelect) SetTPost2(tPost int) {
 	se.tPost = tPost
 }
 
@@ -508,7 +508,7 @@ func (se *TraceElementSelect) SetTPost2(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (se *TraceElementSelect) SetTSort(tSort int) {
+func (se *ElementSelect) SetTSort(tSort int) {
 	se.SetTPre(tSort)
 	se.tPost = tSort
 }
@@ -518,7 +518,7 @@ func (se *TraceElementSelect) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (se *TraceElementSelect) SetTSort2(tSort int) {
+func (se *ElementSelect) SetTSort2(tSort int) {
 	se.SetTPre2(tSort)
 	se.tPost = tSort
 }
@@ -527,7 +527,7 @@ func (se *TraceElementSelect) SetTSort2(tSort int) {
 // value was not 0
 //
 // Parameter: tSort int: The timer of the element
-func (se *TraceElementSelect) SetTWithoutNotExecuted(tSort int) {
+func (se *ElementSelect) SetTWithoutNotExecuted(tSort int) {
 	se.SetTPre(tSort)
 	if se.tPost != 0 {
 		se.tPost = tSort
@@ -539,7 +539,7 @@ func (se *TraceElementSelect) SetTWithoutNotExecuted(tSort int) {
 // value was not 0. Do not update the chosen case
 //
 // Parameter: tSort int: The timer of the element
-func (se *TraceElementSelect) SetTWithoutNotExecuted2(tSort int) {
+func (se *ElementSelect) SetTWithoutNotExecuted2(tSort int) {
 	se.SetTPre2(tSort)
 	if se.tPost != 0 {
 		se.tPost = tSort
@@ -549,7 +549,7 @@ func (se *TraceElementSelect) SetTWithoutNotExecuted2(tSort int) {
 // GetChosenDefault if the default case is the executed case
 //
 // Returns: bool: true if default case
-func (se *TraceElementSelect) GetChosenDefault() bool {
+func (se *ElementSelect) GetChosenDefault() bool {
 	return se.chosenDefault
 }
 
@@ -561,7 +561,7 @@ func (se *TraceElementSelect) GetChosenDefault() bool {
 //
 // Returns:
 //   - error
-func (se *TraceElementSelect) SetCase(chanID int, op OpChannel) error {
+func (se *ElementSelect) SetCase(chanID int, op OpChannel) error {
 	if chanID == -1 {
 		if se.containsDefault {
 			se.chosenDefault = true
@@ -603,7 +603,7 @@ func (se *TraceElementSelect) SetCase(chanID int, op OpChannel) error {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (se *TraceElementSelect) ToString() string {
+func (se *ElementSelect) ToString() string {
 	res := "S" + "," + strconv.Itoa(se.tPre) + "," +
 		strconv.Itoa(se.tPost) + "," + strconv.Itoa(se.id) + ","
 
@@ -637,7 +637,7 @@ func (se *TraceElementSelect) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (se *TraceElementSelect) GetTraceID() int {
+func (se *ElementSelect) GetTraceID() int {
 	return se.traceID
 }
 
@@ -645,7 +645,7 @@ func (se *TraceElementSelect) GetTraceID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (se *TraceElementSelect) setTraceID(ID int) {
+func (se *ElementSelect) setTraceID(ID int) {
 	se.traceID = ID
 }
 
@@ -653,21 +653,21 @@ func (se *TraceElementSelect) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (se *TraceElementSelect) Copy() TraceElement {
-	cases := make([]TraceElementChannel, 0)
+func (se *ElementSelect) Copy() Element {
+	cases := make([]ElementChannel, 0)
 	for _, c := range se.cases {
-		cases = append(cases, *c.Copy().(*TraceElementChannel))
+		cases = append(cases, *c.Copy().(*ElementChannel))
 	}
 
-	chosenCase := *se.chosenCase.Copy().(*TraceElementChannel)
+	chosenCase := *se.chosenCase.Copy().(*ElementChannel)
 
-	children := make([]TraceElement, len(se.children))
+	children := make([]Element, len(se.children))
 	copy(children, se.children)
 
-	parents := make([]TraceElement, len(se.parents))
+	parents := make([]Element, len(se.parents))
 	copy(parents, se.parents)
 
-	return &TraceElementSelect{
+	return &ElementSelect{
 		traceID:         se.traceID,
 		index:           se.index,
 		routine:         se.routine,
@@ -692,7 +692,7 @@ func (se *TraceElementSelect) Copy() TraceElement {
 //
 // Parameter:
 //   - elem *TraceElement: the element to add
-func (se *TraceElementSelect) AddChild(elem TraceElement) {
+func (se *ElementSelect) AddChild(elem Element) {
 	se.children = append(se.children, elem)
 }
 
@@ -700,7 +700,7 @@ func (se *TraceElementSelect) AddChild(elem TraceElement) {
 //
 // Returns:
 //   - []*TraceElement: the children
-func (se *TraceElementSelect) GetChildren() []TraceElement {
+func (se *ElementSelect) GetChildren() []Element {
 	return se.children
 }
 
@@ -708,6 +708,6 @@ func (se *TraceElementSelect) GetChildren() []TraceElement {
 //
 // Returns:
 //   - []*TraceElement: the parents
-func (se *TraceElementSelect) GetParents() []TraceElement {
+func (se *ElementSelect) GetParents() []Element {
 	return se.children
 }

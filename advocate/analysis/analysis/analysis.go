@@ -242,15 +242,15 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		concurrent.AddEdgePartialOrderGraph(elem)
 
 		switch e := elem.(type) {
-		case *trace.TraceElementAtomic:
+		case *trace.ElementAtomic:
 			if ignoreCriticalSections {
 				UpdateVCAtomicAlt(e)
 			} else {
 				UpdateVCAtomic(e)
 			}
-		case *trace.TraceElementChannel:
+		case *trace.ElementChannel:
 			UpdateVCChannel(e)
-		case *trace.TraceElementMutex:
+		case *trace.ElementMutex:
 			if ignoreCriticalSections {
 				UpdateVCMutexAlt(e)
 			} else {
@@ -259,12 +259,12 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			if data.AnalysisFuzzing {
 				getConcurrentMutexForFuzzing(e)
 			}
-		case *trace.TraceElementFork:
+		case *trace.ElementFork:
 			UpdateVCFork(e)
 			routine, index := e.GetTraceIndex()
 			newRout := e.GetID()
 			data.Csst.InsetEdge(types.Pair[int, int]{X: routine, Y: index}, types.Pair[int, int]{X: newRout, Y: 0})
-		case *trace.TraceElementSelect:
+		case *trace.ElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
 			opTypes := make([]int, 0)
@@ -279,24 +279,24 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 				}
 			}
 			UpdateVCSelect(e)
-		case *trace.TraceElementWait:
+		case *trace.ElementWait:
 			UpdateVCWait(e)
-		case *trace.TraceElementCond:
+		case *trace.ElementCond:
 			UpdateVCCond(e)
-		case *trace.TraceElementOnce:
+		case *trace.ElementOnce:
 			UpdateVCOnce(e)
 			if data.AnalysisFuzzing {
 				getConcurrentOnceForFuzzing(e)
 			}
-		case *trace.TraceElementRoutineEnd:
+		case *trace.ElementRoutineEnd:
 			UpdateVCRoutineEnd(e)
-		case *trace.TraceElementNew:
+		case *trace.ElementNew:
 			UpdateVCNew(e)
 		}
 
 		if data.AnalysisCases["resourceDeadlock"] {
 			switch e := elem.(type) {
-			case *trace.TraceElementMutex:
+			case *trace.ElementMutex:
 				HandleMutexEventForRessourceDeadlock(*e)
 			}
 		}
@@ -371,15 +371,15 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 //
 // Parameter:
 //   - elem TraceElement: Element to check
-func checkLeak(elem trace.TraceElement) {
+func checkLeak(elem trace.Element) {
 	switch e := elem.(type) {
-	case *trace.TraceElementChannel:
+	case *trace.ElementChannel:
 		CheckForLeakChannelStuck(e, data.CurrentVC[e.GetRoutine()])
-	case *trace.TraceElementMutex:
+	case *trace.ElementMutex:
 		CheckForLeakMutex(e)
-	case *trace.TraceElementWait:
+	case *trace.ElementWait:
 		CheckForLeakWait(e)
-	case *trace.TraceElementSelect:
+	case *trace.ElementSelect:
 		timer.Start(timer.AnaLeak)
 		cases := e.GetCases()
 		ids := make([]int, 0)
@@ -399,7 +399,7 @@ func checkLeak(elem trace.TraceElement) {
 		}
 		timer.Stop(timer.AnaLeak)
 		CheckForLeakSelectStuck(e, ids, buffered, data.CurrentVC[e.GetRoutine()], opTypes)
-	case *trace.TraceElementCond:
+	case *trace.ElementCond:
 		CheckForLeakCond(e)
 	}
 }

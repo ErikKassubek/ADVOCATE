@@ -13,8 +13,8 @@ package fuzzing
 import (
 	anadata "advocate/analysis/data"
 	"advocate/fuzzing/data"
-	"advocate/fuzzing/gFuzz"
-	"advocate/fuzzing/goPie"
+	"advocate/fuzzing/gfuzz"
+	"advocate/fuzzing/gopie"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -30,16 +30,16 @@ func ParseTrace(tr *trace.Trace) {
 	currentTrace = tr
 
 	// clear current order for gFuzz
-	gFuzz.SelectInfoTrace = make(map[string][]data.FuzzingSelect)
+	gfuzz.SelectInfoTrace = make(map[string][]data.FuzzingSelect)
 
 	// clear chains for goPie
-	goPie.SchedulingChains = make([]goPie.Chain, 0)
-	goPie.CurrentChain = goPie.NewChain()
-	goPie.LastRoutine = -1
+	gopie.SchedulingChains = make([]gopie.Chain, 0)
+	gopie.CurrentChain = gopie.NewChain()
+	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
 		if data.FuzzingModeGoPie {
-			goPie.CalculateRelRule1(routine)
+			gopie.CalculateRelRule1(routine)
 		}
 
 		if memory.WasCanceled() {
@@ -52,7 +52,7 @@ func ParseTrace(tr *trace.Trace) {
 			}
 
 			if data.FuzzingModeGoPie && canBeAddedToChain(elem) {
-				goPie.CalculateRelRule2AddElem(elem)
+				gopie.CalculateRelRule2AddElem(elem)
 			}
 
 			if elem.GetTPost() == 0 {
@@ -60,11 +60,11 @@ func ParseTrace(tr *trace.Trace) {
 			}
 
 			switch e := elem.(type) {
-			case *trace.TraceElementNew:
+			case *trace.ElementNew:
 				parseNew(e)
-			case *trace.TraceElementChannel:
+			case *trace.ElementChannel:
 				parseChannelOp(e, -2) // -2: not part of select
-			case *trace.TraceElementSelect:
+			case *trace.ElementSelect:
 				parseSelectOp(e)
 			}
 
@@ -75,23 +75,23 @@ func ParseTrace(tr *trace.Trace) {
 		}
 	}
 
-	if data.FuzzingModeGoPie && goPie.CurrentChain.Len() != 0 {
-		goPie.SchedulingChains = append(goPie.SchedulingChains, goPie.CurrentChain)
-		goPie.CurrentChain = goPie.NewChain()
+	if data.FuzzingModeGoPie && gopie.CurrentChain.Len() != 0 {
+		gopie.SchedulingChains = append(gopie.SchedulingChains, gopie.CurrentChain)
+		gopie.CurrentChain = gopie.NewChain()
 	}
 
 	if data.FuzzingModeGoPie {
-		goPie.CalculateRelRule2And4()
-		goPie.CalculateRelRule3()
+		gopie.CalculateRelRule2And4()
+		gopie.CalculateRelRule3()
 	}
 
 	if memory.WasCanceled() {
 		return
 	}
 
-	gFuzz.SortSelects()
+	gfuzz.SortSelects()
 
-	gFuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
+	gfuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
 }
 
 // Decides if an element can be added to a scheduling chain
@@ -103,7 +103,7 @@ func ParseTrace(tr *trace.Trace) {
 //
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
-func canBeAddedToChain(elem trace.TraceElement) bool {
+func canBeAddedToChain(elem trace.Element) bool {
 	if data.FuzzingMode == data.GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
 		t := elem.GetObjType(false)
@@ -122,7 +122,7 @@ func canBeAddedToChain(elem trace.TraceElement) bool {
 //
 // Returns:
 //   - True if the element is of one of those types, false otherwise
-func ignoreFuzzing(elem trace.TraceElement, ignoreNew bool) bool {
+func ignoreFuzzing(elem trace.Element, ignoreNew bool) bool {
 	t := elem.GetObjType(false)
 	return (ignoreNew && t == trace.ObjectTypeNew) || t == trace.ObjectTypeReplay || t == trace.ObjectTypeRoutineEnd
 }
@@ -130,7 +130,7 @@ func ignoreFuzzing(elem trace.TraceElement, ignoreNew bool) bool {
 // Parse a new elem element.
 // For now only channels are considered
 // Add the corresponding info into FuzzingChannel
-func parseNew(elem *trace.TraceElementNew) {
+func parseNew(elem *trace.ElementNew) {
 	// only process channels
 	if elem.GetObjType(true) != "NC" {
 		log.Important(elem.GetObjType(true))
@@ -138,15 +138,15 @@ func parseNew(elem *trace.TraceElementNew) {
 	}
 
 	if data.FuzzingModeGFuzz {
-		fuzzingElem := gFuzz.FuzzingChannel{
+		fuzzingElem := gfuzz.FuzzingChannel{
 			GlobalID:  elem.GetPos(),
 			LocalID:   elem.GetID(),
-			CloseInfo: gFuzz.Never,
+			CloseInfo: gfuzz.Never,
 			QSize:     elem.GetNum(),
 			MaxQCount: 0,
 		}
 
-		gFuzz.ChannelInfoTrace[fuzzingElem.LocalID] = fuzzingElem
+		gfuzz.ChannelInfoTrace[fuzzingElem.LocalID] = fuzzingElem
 	}
 }
 
@@ -155,17 +155,17 @@ func parseNew(elem *trace.TraceElementNew) {
 // If it is an send, add it to pairInfoTrace
 // If it is an recv, it is either tPost = 0 (ignore) or will be handled by the send
 // selID is the case id if it is a select case, -2 otherwise
-func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
+func parseChannelOp(elem *trace.ElementChannel, selID int) {
 
 	if data.FuzzingModeGFuzz {
 		op := elem.GetObjType(true)
 
 		// close -> update channelInfoTrace
 		if op == "CC" {
-			e := gFuzz.ChannelInfoTrace[elem.GetID()]
-			e.CloseInfo = gFuzz.Always // before is always unknown
-			gFuzz.ChannelInfoTrace[elem.GetID()] = e
-			gFuzz.NumberClose++
+			e := gfuzz.ChannelInfoTrace[elem.GetID()]
+			e.CloseInfo = gfuzz.Always // before is always unknown
+			gfuzz.ChannelInfoTrace[elem.GetID()] = e
+			gfuzz.NumberClose++
 		} else if op == "CS" {
 			if elem.GetTPost() == 0 {
 				return
@@ -186,21 +186,21 @@ func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
 					selIDRecv = selRecv.GetChosenIndex()
 				}
 
-				if e, ok := gFuzz.PairInfoTrace[key]; ok {
+				if e, ok := gfuzz.PairInfoTrace[key]; ok {
 					e.Com++
-					gFuzz.PairInfoTrace[key] = e
+					gfuzz.PairInfoTrace[key] = e
 				} else {
-					fp := gFuzz.FuzzingPair{
+					fp := gfuzz.FuzzingPair{
 						ChanID:  chanID,
 						Com:     1,
 						SendSel: selID,
 						RecvSel: selIDRecv,
 					}
-					gFuzz.PairInfoTrace[key] = fp
+					gfuzz.PairInfoTrace[key] = fp
 				}
 			}
 
-			channelNew := gFuzz.ChannelInfoTrace[chanID]
+			channelNew := gfuzz.ChannelInfoTrace[chanID]
 			channelNew.MaxQCount = max(channelNew.MaxQCount, elem.GetQCount())
 		}
 	}
@@ -210,9 +210,9 @@ func parseChannelOp(elem *trace.TraceElementChannel, selID int) {
 //
 // Parameter:
 //   - elem *analysis.TraceElementSelect: the select element
-func parseSelectOp(elem *trace.TraceElementSelect) {
+func parseSelectOp(elem *trace.ElementSelect) {
 	if data.FuzzingModeGFuzz {
-		gFuzz.AddFuzzingSelect(elem)
+		gfuzz.AddFuzzingSelect(elem)
 
 		if elem.GetChosenDefault() {
 			return

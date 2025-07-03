@@ -14,8 +14,8 @@ import (
 	anaData "advocate/analysis/data"
 	"advocate/fuzzing/data"
 	"advocate/fuzzing/flow"
-	"advocate/fuzzing/gFuzz"
-	"advocate/fuzzing/goPie"
+	"advocate/fuzzing/gfuzz"
+	"advocate/fuzzing/gopie"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -269,7 +269,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			log.Infof("Create mutations")
 			if data.FuzzingModeGFuzz {
 				log.Infof("Create GFuzz mutations")
-				gFuzz.CreateGFuzzMut()
+				gfuzz.CreateGFuzzMut()
 			}
 
 			// add new mutations based on flow path expansion
@@ -281,12 +281,12 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// add mutations based on GoPie
 			if data.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				goPie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
+				gopie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
 			}
 
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))
 
-			gFuzz.MergeTraceInfoIntoFileInfo()
+			gfuzz.MergeTraceInfoIntoFileInfo()
 		}
 
 		if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
@@ -324,13 +324,13 @@ func resetFuzzing() {
 
 func clearDataFull() {
 	data.ClearDataFull()
-	goPie.ClearData()
-	gFuzz.ClearData()
+	gopie.ClearData()
+	gfuzz.ClearData()
 	flow.ClearData()
 }
 
 func clearData() {
-	goPie.ClearData()
-	gFuzz.ClearData()
+	gopie.ClearData()
+	gfuzz.ClearData()
 	flow.ClearData()
 }

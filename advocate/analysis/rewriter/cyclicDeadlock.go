@@ -47,7 +47,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 		tr.ShortenRoutine(elem.GetRoutine(), elem.GetTSort())
 	}
 
-	var locksetElements []trace.TraceElement
+	var locksetElements []trace.Element
 
 	// Find the lockset elements
 	for i, elem := range bug.TraceElement2 {
@@ -58,7 +58,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 			if locksetElement.GetID() != prevElement.GetID() {
 				continue
 			}
-			if !locksetElement.(*trace.TraceElementMutex).IsLock() {
+			if !locksetElement.(*trace.ElementMutex).IsLock() {
 				continue
 			}
 			locksetElements = append(locksetElements, locksetElement)
@@ -71,7 +71,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 		routine := relevantRoutineElem.GetRoutine()          // Iterate through all relevant routines
 		for _, unlock := range tr.GetRoutineTrace(routine) { // Iterate through all remaining elements in the routine
 			switch unlock := unlock.(type) {
-			case *trace.TraceElementMutex:
+			case *trace.ElementMutex:
 				if !(*unlock).IsLock() { // Find Unlock elements
 					// Check if the unlocked mutex is in the locksets of the deadlock cycle
 					for _, lockElem := range locksetElements {
@@ -83,7 +83,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							}
 
 							// Move the as much of the routine of the deadlocking element as possible behind this unlock!
-							var concurrentStartElem trace.TraceElement = nil
+							var concurrentStartElem trace.Element = nil
 							for _, possibleStart := range tr.GetRoutineTrace(lockElem.GetRoutine()) {
 								if clock.GetHappensBefore(possibleStart.GetWVc(), (*unlock).GetWVc()) == clock.Concurrent {
 									// fmt.Println("Concurrent to", possibleStart.GetTID(), possibleStart.GetTPre(), possibleStart.GetTPost(), possibleStart.GetRoutine(), possibleStart.GetID())
@@ -129,7 +129,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 //
 // Returns:
 //   - int: the highest tPost from the bug elements
-func findLastTime(bugElements []trace.TraceElement) int {
+func findLastTime(bugElements []trace.Element) int {
 	lastTime := -1
 
 	for _, e := range bugElements {

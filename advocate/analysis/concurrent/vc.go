@@ -24,13 +24,13 @@ import (
 // Parameter:
 //   - elem trace.TraceElement: the element to search for
 //   - all bool: if true, find all concurrent elements, if false, find only one
-func GetConcurrentBruteForce(elem trace.TraceElement, all bool) []trace.TraceElement {
+func GetConcurrentBruteForce(elem trace.Element, all bool) []trace.Element {
 	if !data.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
-		return make([]trace.TraceElement, 0)
+		return make([]trace.Element, 0)
 	}
 
-	res := make([]trace.TraceElement, 0)
+	res := make([]trace.Element, 0)
 	for rout, trace := range data.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue

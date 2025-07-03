@@ -66,9 +66,9 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 //     e.g. for send on close the close
 type Bug struct {
 	Type          helper.ResultType
-	TraceElement1 []trace.TraceElement
+	TraceElement1 []trace.Element
 	// TraceElement1Sel []BugElementSelectCase
-	TraceElement2 []trace.TraceElement
+	TraceElement2 []trace.Element
 }
 
 // GetBugString Convert the bug to a unique string. Mostly used internally
@@ -348,7 +348,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bugArg2 = bugSplit[2]
 	}
 
-	bug.TraceElement1 = make([]trace.TraceElement, 0)
+	bug.TraceElement1 = make([]trace.Element, 0)
 	// bug.TraceElement1Sel = make([]BugElementSelectCase, 0)
 
 	for _, bugArg := range strings.Split(bugArg1, ";") {
@@ -373,7 +373,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		// }
 	}
 
-	bug.TraceElement2 = make([]trace.TraceElement, 0)
+	bug.TraceElement2 = make([]trace.Element, 0)
 
 	if !containsArg2 {
 		return actual, bug, nil

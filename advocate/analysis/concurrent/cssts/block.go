@@ -78,52 +78,50 @@ func newBlock3(other *block) *block {
 func buildTreeBlock1(other *block, otherCurrent *segmentTreeNodeBlock) *segmentTreeNodeBlock {
 	if otherCurrent == nil {
 		return nil
-	} else {
-		thisCurrent := newSegmentTreeNodeBlock(otherCurrent.start, otherCurrent.end)
-		thisCurrent.min = otherCurrent.min
-		thisCurrent.isLeaf = otherCurrent.isLeaf
-		thisCurrent.pos = otherCurrent.pos
-		if otherCurrent.block != nil {
-			copy(thisCurrent.block, otherCurrent.block)
-		}
-		if otherCurrent.left != nil {
-			thisCurrent.left = buildTreeBlock1(other, otherCurrent.left)
-		}
-		if otherCurrent.right != nil {
-			thisCurrent.right = buildTreeBlock1(other, otherCurrent.right)
-		}
-		return &thisCurrent
 	}
+	thisCurrent := newSegmentTreeNodeBlock(otherCurrent.start, otherCurrent.end)
+	thisCurrent.min = otherCurrent.min
+	thisCurrent.isLeaf = otherCurrent.isLeaf
+	thisCurrent.pos = otherCurrent.pos
+	if otherCurrent.block != nil {
+		copy(thisCurrent.block, otherCurrent.block)
+	}
+	if otherCurrent.left != nil {
+		thisCurrent.left = buildTreeBlock1(other, otherCurrent.left)
+	}
+	if otherCurrent.right != nil {
+		thisCurrent.right = buildTreeBlock1(other, otherCurrent.right)
+	}
+	return &thisCurrent
 }
 
 func buildTreeBlock2(start, end, level, maxLevel int) *segmentTreeNodeBlock {
 	if start > end {
 		return nil
-	} else {
-		ret := newSegmentTreeNodeBlock(start, end)
-
-		if level >= maxLevel {
-			ret.min = math.MaxInt
-			ret.pos = -1
-			ret.isLeaf = true
-			return &ret
-		} else if start == end {
-			ret.min = math.MaxInt
-			ret.pos = start
-			ret.isLeaf = true
-		} else {
-			mid := start + (end-start)/2
-			ret.left = buildTreeBlock2(start, mid, level+1, maxLevel)
-			ret.right = buildTreeBlock2(mid+1, end, level+1, maxLevel)
-			ret.min = min(ret.left.min, ret.right.min)
-			if ret.left.min < ret.right.min {
-				ret.pos = ret.left.pos
-			} else {
-				ret.pos = ret.right.pos
-			}
-		}
-		return &ret
 	}
+	ret := newSegmentTreeNodeBlock(start, end)
+
+	if level >= maxLevel {
+		ret.min = math.MaxInt
+		ret.pos = -1
+		ret.isLeaf = true
+		return &ret
+	} else if start == end {
+		ret.min = math.MaxInt
+		ret.pos = start
+		ret.isLeaf = true
+	} else {
+		mid := start + (end-start)/2
+		ret.left = buildTreeBlock2(start, mid, level+1, maxLevel)
+		ret.right = buildTreeBlock2(mid+1, end, level+1, maxLevel)
+		ret.min = min(ret.left.min, ret.right.min)
+		if ret.left.min < ret.right.min {
+			ret.pos = ret.left.pos
+		} else {
+			ret.pos = ret.right.pos
+		}
+	}
+	return &ret
 }
 
 func buildTreeBlock3(nums []int, start, end, level, maxLevel int) *segmentTreeNodeBlock {
@@ -240,20 +238,20 @@ func (bl block) update2(root *segmentTreeNodeBlock, pos, val int) {
 func (bl block) argMin1(x int) int {
 	if bl.root.min <= x {
 		return bl.argMin2(bl.root, x) + bl.offset
-	} else {
-		return -1
 	}
+	return -1
 }
 
 func (bl block) argMin2(root *segmentTreeNodeBlock, x int) int {
 	if root.isLeaf {
 		return getBlockArgMin(root, x)
 	}
+
 	if root.right.min <= x {
 		return bl.argMin2(root.right, x)
-	} else {
-		return bl.argMin2(root.left, x)
 	}
+
+	return bl.argMin2(root.left, x)
 }
 
 func (bl block) sumRange1(i, j int) int {

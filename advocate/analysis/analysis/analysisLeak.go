@@ -30,7 +30,7 @@ import (
 //   - ch *TraceElementChannel: The trace element
 //   - vc VectorClock: The vector clock of the operation
 //   - func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
-func CheckForLeakChannelStuck(ch *trace.TraceElementChannel, vc *clock.VectorClock) {
+func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	buffered := (ch.GetQSize() != 0)
 	id := ch.GetID()
 	opC := ch.GetOpC()
@@ -117,7 +117,16 @@ func CheckForLeakChannelStuck(ch *trace.TraceElementChannel, vc *clock.VectorClo
 	}
 
 	if !foundPartner {
-		data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{routine, id, vc, ch.GetTID(), int(opC), -1, buffered, false, 0})
+		data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{
+			Routine: routine,
+			ID:      id,
+			Vc:      vc,
+			TID:     ch.GetTID(), TypeVal: int(opC),
+			Val:      -1,
+			Buffered: buffered,
+			Sel:      false,
+			SelID:    0,
+		})
 	}
 }
 
@@ -384,7 +393,7 @@ func checkForLeak() {
 //   - buffered []bool: If the channels are buffered
 //   - vc *VectorClock: The vector clock of the operation
 //   - opTypes []int: An identifier for the type of the operations (send = 0, recv = 1)
-func CheckForLeakSelectStuck(se *trace.TraceElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
+func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -492,7 +501,17 @@ func CheckForLeakSelectStuck(se *trace.TraceElementSelect, ids []int, buffered [
 	if !foundPartner {
 		for i, id := range ids {
 			// add all select operations to leaking Channels,
-			data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{routine, id, vc, se.GetTID(), opTypes[i], tPre, buffered[i], true, id})
+			data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{
+				Routine:  routine,
+				ID:       id,
+				Vc:       vc,
+				TID:      se.GetTID(),
+				TypeVal:  opTypes[i],
+				Val:      tPre,
+				Buffered: buffered[i],
+				Sel:      true,
+				SelID:    id,
+			})
 		}
 	}
 }
@@ -502,7 +521,7 @@ func CheckForLeakSelectStuck(se *trace.TraceElementSelect, ids []int, buffered [
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
-func CheckForLeakMutex(mu *trace.TraceElementMutex) {
+func CheckForLeakMutex(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -555,7 +574,7 @@ func CheckForLeakMutex(mu *trace.TraceElementMutex) {
 //   - mu *TraceElementMutex: The trace element
 //   - vc VectorClock: The vector clock of the operation
 //   - op int: The operation on the mutex
-func addMostRecentAcquireTotal(mu *trace.TraceElementMutex, vc *clock.VectorClock, op int) {
+func addMostRecentAcquireTotal(mu *trace.ElementMutex, vc *clock.VectorClock, op int) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -567,7 +586,7 @@ func addMostRecentAcquireTotal(mu *trace.TraceElementMutex, vc *clock.VectorCloc
 //
 // Parameter:
 //   - wa *TraceElementWait: The trace element
-func CheckForLeakWait(wa *trace.TraceElementWait) {
+func CheckForLeakWait(wa *trace.ElementWait) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -589,7 +608,7 @@ func CheckForLeakWait(wa *trace.TraceElementWait) {
 //
 // Parameter:
 //   - co *TraceElementCond: The trace element
-func CheckForLeakCond(co *trace.TraceElementCond) {
+func CheckForLeakCond(co *trace.ElementCond) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -628,7 +647,7 @@ func checkForStuckRoutine(simple bool) bool {
 
 		lastElem := tr[len(tr)-1]
 		switch lastElem.(type) {
-		case *trace.TraceElementRoutineEnd:
+		case *trace.ElementRoutineEnd:
 			continue
 		}
 

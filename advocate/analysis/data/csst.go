@@ -28,7 +28,7 @@ func InitCSSTs() {
 	Csst = cssts.NewIncrementalCSST(lengths)
 }
 
-func AddEdgeCSSTs(from, to trace.TraceElement) {
+func AddEdgeCSSTs(from, to trace.Element) {
 	fromInd := cssts.GetIndicesFromTraceElem(from)
 	toInd := cssts.GetIndicesFromTraceElem(to)
 	Csst.InsetEdge(fromInd, toInd)

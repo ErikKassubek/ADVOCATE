@@ -47,11 +47,11 @@ func rewriteUnbufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 	t1Sel := false
 	t2Sel := false
 	switch bug.TraceElement1[0].(type) {
-	case *trace.TraceElementSelect:
+	case *trace.ElementSelect:
 		t1Sel = true
 	}
 	switch bug.TraceElement2[0].(type) {
-	case *trace.TraceElementSelect:
+	case *trace.ElementSelect:
 		t2Sel = true
 	}
 
@@ -75,8 +75,8 @@ func rewriteUnbufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteUnbufChanLeakChanChan(tr *trace.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*trace.TraceElementChannel)
-	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementChannel)
+	stuck := bug.TraceElement1[0].(*trace.ElementChannel)
+	possiblePartner := bug.TraceElement2[0].(*trace.ElementChannel)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -139,8 +139,8 @@ func rewriteUnbufChanLeakChanChan(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*trace.TraceElementChannel)
-	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementSelect)
+	stuck := bug.TraceElement1[0].(*trace.ElementChannel)
+	possiblePartner := bug.TraceElement2[0].(*trace.ElementSelect)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -166,7 +166,7 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.SendOp)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.SendOp)
 		if err != nil {
 			println(err.Error())
 		}
@@ -191,7 +191,7 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 
-		err := bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
 		if err != nil {
 			println(err.Error())
 		}
@@ -213,8 +213,8 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*trace.TraceElementSelect)
-	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementChannel)
+	stuck := bug.TraceElement1[0].(*trace.ElementSelect)
+	possiblePartner := bug.TraceElement2[0].(*trace.ElementChannel)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -247,7 +247,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 
 		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
-		err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.SendOp)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.SendOp)
 		if err != nil {
 			println(err.Error())
 		}
@@ -264,7 +264,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
 		if err != nil {
 			println(err.Error())
 		}
@@ -287,8 +287,8 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
-	stuck := bug.TraceElement1[0].(*trace.TraceElementSelect)
-	possiblePartner := bug.TraceElement2[0].(*trace.TraceElementSelect)
+	stuck := bug.TraceElement1[0].(*trace.ElementSelect)
+	possiblePartner := bug.TraceElement2[0].(*trace.ElementSelect)
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {
@@ -325,11 +325,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 				// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 				// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-				err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(c.GetID(), trace.RecvOp)
+				err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.RecvOp)
 				if err != nil {
 					println(err.Error())
 				}
-				err = bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(d.GetID(), trace.SendOp)
+				err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.SendOp)
 				if err != nil {
 					println(err.Error())
 				}
@@ -352,11 +352,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 			// and T4' = [h in T4 | h >= e and h < f]
 
-			err := bug.TraceElement1[0].(*trace.TraceElementSelect).SetCase(c.GetID(), trace.SendOp)
+			err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.SendOp)
 			if err != nil {
 				println(err.Error())
 			}
-			err = bug.TraceElement2[0].(*trace.TraceElementSelect).SetCase(d.GetID(), trace.RecvOp)
+			err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.RecvOp)
 			if err != nil {
 				println(err.Error())
 			}
@@ -382,11 +382,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 func rewriteBufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0]
 	possiblePartner := bug.TraceElement2[0]
-	var possiblePartnerPartner *trace.TraceElementChannel
+	var possiblePartnerPartner *trace.ElementChannel
 	switch z := possiblePartner.(type) {
-	case *trace.TraceElementChannel:
+	case *trace.ElementChannel:
 		possiblePartnerPartner = z.GetPartner()
-	case *trace.TraceElementSelect:
+	case *trace.ElementSelect:
 		possiblePartnerPartner = z.GetPartner()
 	}
 
@@ -448,8 +448,8 @@ func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
 	log.Info("Start rewriting trace for mutex leak...")
 
 	// get l and l'
-	lockOp := bug.TraceElement1[0].(*trace.TraceElementMutex)
-	lastLockOp := bug.TraceElement2[0].(*trace.TraceElementMutex)
+	lockOp := bug.TraceElement1[0].(*trace.ElementMutex)
+	lastLockOp := bug.TraceElement2[0].(*trace.ElementMutex)
 
 	hb := clock.GetHappensBefore(lockOp.GetVC(), lastLockOp.GetVC())
 	if hb != clock.Concurrent {

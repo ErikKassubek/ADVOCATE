@@ -88,9 +88,8 @@ func GetMainPath(path string) (string, error) {
 		if _, err := os.Stat(mainPath); err != nil {
 			if os.IsNotExist(err) {
 				return "", fmt.Errorf("main.go not found in directory %s", path)
-			} else {
-				return "", err
 			}
+			return "", err
 		}
 		return mainPath, nil
 	}
@@ -126,9 +125,8 @@ func CheckPath(path string) (string, error) {
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return progPath, fmt.Errorf("Path %s does not exists", progPath)
-		} else {
-			return progPath, err
 		}
+		return progPath, err
 	}
 
 	return progPath, nil

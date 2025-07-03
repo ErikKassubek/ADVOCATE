@@ -26,7 +26,7 @@ import (
 //   - lock int: The id of the mutex
 //   - tId string: The trace id of the mutex operation
 //   - vc VectorClock: The current vector clock
-func lockSetAddLock(mu *trace.TraceElementMutex, vc *clock.VectorClock) {
+func lockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 	timer.Start(timer.AnaResource)
@@ -56,7 +56,10 @@ func lockSetAddLock(mu *trace.TraceElementMutex, vc *clock.VectorClock) {
 	// }
 
 	data.LockSet[routine][id] = mu.GetTID()
-	data.MostRecentAcquire[routine][id] = data.ElemWithVc{vc, mu}
+	data.MostRecentAcquire[routine][id] = data.ElemWithVc{
+		Vc:   vc,
+		Elem: mu,
+	}
 }
 
 // Remove a lock from the lockSet of a routine

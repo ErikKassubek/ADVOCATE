@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package goPie
+package gopie
 
 import (
 	"advocate/fuzzing/data"
@@ -31,7 +31,7 @@ import (
 //
 // Parameter:
 //   - routineTrace []analysis.TraceElement: the list of elems in the same trace
-func CalculateRelRule1(routineTrace []trace.TraceElement) {
+func CalculateRelRule1(routineTrace []trace.Element) {
 	for i := 0; i < len(routineTrace)-1; i++ {
 		elem1 := routineTrace[i]
 		if !isGoPieElem(elem1) {
@@ -43,10 +43,10 @@ func CalculateRelRule1(routineTrace []trace.TraceElement) {
 				continue
 			}
 			if _, ok := rel1[elem1]; !ok {
-				rel1[elem1] = make(map[trace.TraceElement]struct{})
+				rel1[elem1] = make(map[trace.Element]struct{})
 			}
 			if _, ok := rel1[elem2]; !ok {
-				rel1[elem2] = make(map[trace.TraceElement]struct{})
+				rel1[elem2] = make(map[trace.Element]struct{})
 			}
 			rel1[elem1][elem2] = struct{}{}
 			rel1[elem2][elem1] = struct{}{}
@@ -63,14 +63,14 @@ func CalculateRelRule1(routineTrace []trace.TraceElement) {
 //
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
-func CalculateRelRule2AddElem(elem trace.TraceElement) {
+func CalculateRelRule2AddElem(elem trace.Element) {
 	if !isGoPieElem(elem) {
 		return
 	}
 
 	id := elem.GetID()
 	if _, ok := ElemsByID[id]; !ok {
-		ElemsByID[id] = make([]trace.TraceElement, 0)
+		ElemsByID[id] = make([]trace.Element, 0)
 	}
 	ElemsByID[id] = append(ElemsByID[id], elem)
 	counterCPOP2++
@@ -91,10 +91,10 @@ func CalculateRelRule2And4() {
 				elem2 := elems[j]
 				if elem1.GetRoutine() != elem2.GetRoutine() {
 					if _, ok := rel2[elem1]; !ok {
-						rel2[elem1] = make(map[trace.TraceElement]struct{})
+						rel2[elem1] = make(map[trace.Element]struct{})
 					}
 					if _, ok := rel2[elem2]; !ok {
-						rel2[elem2] = make(map[trace.TraceElement]struct{})
+						rel2[elem2] = make(map[trace.Element]struct{})
 					}
 
 					rel2[elem1][elem2] = struct{}{}
@@ -120,7 +120,7 @@ func CalculateRelRule3() {
 			for cPrime := range rel1Elems {
 				if rel2Elems, ok := rel2[cPrime]; ok {
 					if _, exists := rel2[c]; !exists {
-						rel2[c] = make(map[trace.TraceElement]struct{})
+						rel2[c] = make(map[trace.Element]struct{})
 					}
 					for cDoublePrime := range rel2Elems {
 						if _, exists := rel2[c][cDoublePrime]; !exists {
@@ -161,7 +161,7 @@ func CalculateRelRule3() {
 //
 // Returns:
 //   - bool: true if elem should be used in chains, false if not
-func isGoPieElem(elem trace.TraceElement) bool {
+func isGoPieElem(elem trace.Element) bool {
 	elemTypeShort := elem.GetObjType(false)
 
 	if data.FuzzingMode == data.GoPie {

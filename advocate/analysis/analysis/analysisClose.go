@@ -26,7 +26,7 @@ import (
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-func checkForCommunicationOnClosedChannel(ch *trace.TraceElementChannel) {
+func checkForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
@@ -125,7 +125,7 @@ func checkForCommunicationOnClosedChannel(ch *trace.TraceElementChannel) {
 //   - elem TraceElement: the send/select elem
 //   - id int: id of the channel
 //   - actual bool: set actual to true it the panic occurred, set to false if it is in an not triggered select case
-func foundSendOnClosedChannel(elem trace.TraceElement, actual bool) {
+func foundSendOnClosedChannel(elem trace.Element, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
@@ -174,7 +174,7 @@ func foundSendOnClosedChannel(elem trace.TraceElement, actual bool) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-func foundReceiveOnClosedChannel(ch *trace.TraceElementChannel, actual bool) {
+func foundReceiveOnClosedChannel(ch *trace.ElementChannel, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
@@ -233,7 +233,7 @@ func foundReceiveOnClosedChannel(ch *trace.TraceElementChannel, actual bool) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-func checkForClosedOnClosed(ch *trace.TraceElementChannel) {
+func checkForClosedOnClosed(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 

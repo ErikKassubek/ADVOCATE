@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package goPie
+package gopie
 
 import (
 	anadata "advocate/analysis/data"

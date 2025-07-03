@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package goPie
+package gopie
 
 import (
 	"advocate/analysis/clock"
@@ -21,14 +21,14 @@ import (
 // A Chain is an ordered list of adjacent element from the trace,
 // where two neighboring elements must be from different routines
 type Chain struct {
-	Elems []trace.TraceElement
+	Elems []trace.Element
 }
 
 // Create a new, empty chain
 //
 // Returns: chain: the new chain
 func NewChain() Chain {
-	elems := make([]trace.TraceElement, 0)
+	elems := make([]trace.Element, 0)
 	return Chain{elems}
 }
 
@@ -82,7 +82,7 @@ func randomChain() Chain {
 //
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
-func (ch *Chain) add(elem trace.TraceElement) {
+func (ch *Chain) add(elem trace.Element) {
 	if elem == nil {
 		return
 	}
@@ -95,7 +95,7 @@ func (ch *Chain) add(elem trace.TraceElement) {
 // Parameter:
 //   - index int: index to change at
 //   - elem analysis.TraceElement: element to set at index
-func (ch *Chain) replace(index int, elem trace.TraceElement) {
+func (ch *Chain) replace(index int, elem trace.Element) {
 	if elem == nil {
 		return
 	}
@@ -113,7 +113,7 @@ func (ch *Chain) replace(index int, elem trace.TraceElement) {
 //
 // Returns:
 //   - bool: true if the chain contains elem, false otherwise
-func (ch *Chain) contains(elem trace.TraceElement) bool {
+func (ch *Chain) contains(elem trace.Element) bool {
 	if elem == nil {
 		return false
 	}
@@ -141,7 +141,7 @@ func (ch *Chain) removeTail() {
 //
 // Returns:
 //   - analysis.TraceElement: the first element in the chain, or nil if chain is empty
-func (ch *Chain) firstElement() trace.TraceElement {
+func (ch *Chain) firstElement() trace.Element {
 	if ch.Len() == 0 {
 		return nil
 	}
@@ -152,7 +152,7 @@ func (ch *Chain) firstElement() trace.TraceElement {
 //
 // Returns:
 //   - analysis.TraceElement: the last element in the chain, or nil if chain is empty
-func (ch *Chain) lastElem() trace.TraceElement {
+func (ch *Chain) lastElem() trace.Element {
 	if ch.Len() == 0 {
 		return nil
 	}
@@ -176,11 +176,9 @@ func (ch *Chain) swap(i, j int) {
 // Returns:
 //   - chain: a copy of the chain
 func (ch *Chain) copy() Chain {
-	newElems := make([]trace.TraceElement, len(ch.Elems))
+	newElems := make([]trace.Element, len(ch.Elems))
 
-	for i, elem := range ch.Elems {
-		newElems[i] = elem
-	}
+	copy(newElems, ch.Elems)
 
 	newChain := Chain{
 		Elems: newElems,

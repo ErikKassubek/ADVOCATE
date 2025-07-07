@@ -269,6 +269,14 @@ func (er *ElementReplay) Copy() Element {
 func (er *ElementReplay) AddChild(elem Element) {
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+// Dummy method to implement traceElement
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (er *ElementReplay) AddParent(elem Element) {
+}
+
 // GetChildren returns all children of this node in the partial order graph
 // Dummy method to implement traceElement
 //

@@ -289,6 +289,14 @@ func (re *ElementRoutineEnd) Copy() Element {
 func (re *ElementRoutineEnd) AddChild(elem Element) {
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+// Dummy method to implement TraceElement interface
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (re *ElementRoutineEnd) AddParent(elem Element) {
+}
+
 // GetChildren returns all children of this node in the partial order graph
 // Dummy method to implement TraceElement interface
 //

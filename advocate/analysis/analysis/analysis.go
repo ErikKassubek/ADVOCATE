@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent"
+	"advocate/analysis/concurrent/cssts"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -19,7 +20,6 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/memory"
 	"advocate/utils/timer"
-	"advocate/utils/types"
 	"time"
 )
 
@@ -56,39 +56,8 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	runAnalysisOnExitCodes(fuzzing)
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 
-	start := time.Now()
-	i := 0
-	for _, trace := range data.MainTrace.GetTraces() {
-		i++
-		if len(trace) == 0 {
-			continue
-		}
+	concurrent.GetConcurrent(data.MainTrace.GetTraces()[2][0], true, false)
 
-		index := int(len(trace) / 2)
-		elem := trace[index]
-		res := concurrent.GetConcurrentPartialOrderGraph(elem, true)
-		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
-
-	}
-	dur := time.Since(start)
-	log.Importantf("Graph: %s", dur.String())
-
-	start = time.Now()
-	i = 0
-	for _, trace := range data.MainTrace.GetTraces() {
-		i++
-		if len(trace) == 0 {
-			continue
-		}
-
-		index := int(len(trace) / 2)
-		elem := trace[index]
-		res := concurrent.GetConcurrentBruteForce(elem, true)
-		log.Infof("%d/%d: %d", i, data.MainTrace.GetNoRoutines(), len(res))
-
-	}
-	dur = time.Since(start)
-	log.Importantf("Brute Force: %s", dur.String())
 	panic("A")
 }
 
@@ -225,6 +194,8 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	data.AnalysisCases = analysisCasesMap
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
+	data.InitVC()
+	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		ResetState()
@@ -236,10 +207,10 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	log.Info("Start HB analysis")
 
 	traceIter := data.MainTrace.AsIterator()
-
+	start := time.Now()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
-		concurrent.AddEdgePartialOrderGraph(elem)
+		concurrent.AddEdgePartialOrderGraphSameRoutineAndFork(elem)
 
 		// count how many operations where executed on the underlying structure
 		// do not count for operations that do not have an underlying structure
@@ -269,9 +240,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			}
 		case *trace.ElementFork:
 			UpdateVCFork(e)
-			routine, index := e.GetTraceIndex()
-			newRout := e.GetID()
-			data.Csst.InsetEdge(types.Pair[int, int]{X: routine, Y: index}, types.Pair[int, int]{X: newRout, Y: 0})
+			cssts.AddEdgeCSSTsFork(e)
 		case *trace.ElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
@@ -318,6 +287,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			return
 		}
 	}
+
+	end := time.Since(start)
+	log.Important(end.String())
 
 	data.MainTrace.SetHBWasCalc(true)
 

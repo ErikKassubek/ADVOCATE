@@ -486,6 +486,14 @@ func (mu *ElementMutex) AddChild(elem Element) {
 	mu.children = append(mu.children, elem)
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (mu *ElementMutex) AddParent(elem Element) {
+	mu.parents = append(mu.parents, elem)
+}
+
 // GetChildren returns all children of this node in the partial order graph
 //
 // Returns:
@@ -499,7 +507,7 @@ func (mu *ElementMutex) GetChildren() []Element {
 // Returns:
 //   - []*TraceElement: the parents
 func (mu *ElementMutex) GetParents() []Element {
-	return mu.children
+	return mu.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

@@ -19,7 +19,4 @@ package data
 func InitAnalysisData(analysisCasesMap map[string]bool, anaFuzzing bool) {
 	AnalysisCases = analysisCasesMap
 	AnalysisFuzzing = anaFuzzing
-
-	InitVC()
-	InitCSSTs()
 }

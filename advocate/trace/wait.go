@@ -435,6 +435,14 @@ func (wa *ElementWait) AddChild(elem Element) {
 	wa.children = append(wa.children, elem)
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (wa *ElementWait) AddParent(elem Element) {
+	wa.parents = append(wa.parents, elem)
+}
+
 // GetChildren returns all children of this node in the partial order graph
 //
 // Returns:
@@ -448,7 +456,7 @@ func (wa *ElementWait) GetChildren() []Element {
 // Returns:
 //   - []*TraceElement: the parents
 func (wa *ElementWait) GetParents() []Element {
-	return wa.children
+	return wa.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

@@ -25,3 +25,8 @@ func (s *Set[T]) Add(e T) {
 func (s *Set[T]) Remove(e T) {
 	delete(s.data, e)
 }
+
+func (s *Set[T]) Contains(e T) bool {
+	_, ok := s.data[e]
+	return ok
+}

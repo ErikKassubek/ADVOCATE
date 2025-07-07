@@ -24,7 +24,12 @@ import (
 // Parameter:
 //   - elem trace.TraceElement: the element to search for
 //   - all bool: if true, find all concurrent elements, if false, find only one
-func GetConcurrentBruteForce(elem trace.Element, all bool) []trace.Element {
+//   - sameElem bool: if true, only return concurrent operations on the same element,
+//     otherwise return all concurrent elements
+//
+// Returns:
+//   - []trace.Element: set of elements concurrent to elem
+func GetConcurrentVC(elem trace.Element, all, sameElem bool) []trace.Element {
 	if !data.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
 		return make([]trace.Element, 0)
@@ -37,7 +42,15 @@ func GetConcurrentBruteForce(elem trace.Element, all bool) []trace.Element {
 		}
 
 		for _, tElem := range trace {
-			if clock.GetHappensBefore(elem.GetWVc(), tElem.GetWVc()) == clock.Concurrent {
+			if sameElem && elem.GetID() != tElem.GetID() {
+				continue
+			}
+
+			if !valid(tElem) {
+				continue
+			}
+
+			if clock.IsConcurrent(elem.GetWVc(), tElem.GetWVc()) {
 				res = append(res, tElem)
 				if !all {
 					return res

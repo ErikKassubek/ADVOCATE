@@ -700,6 +700,14 @@ func (se *ElementSelect) AddChild(elem Element) {
 	se.children = append(se.children, elem)
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (se *ElementSelect) AddParent(elem Element) {
+	se.parents = append(se.parents, elem)
+}
+
 // GetChildren returns all children of this node in the partial order graph
 //
 // Returns:
@@ -713,7 +721,7 @@ func (se *ElementSelect) GetChildren() []Element {
 // Returns:
 //   - []*TraceElement: the parents
 func (se *ElementSelect) GetParents() []Element {
-	return se.children
+	return se.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

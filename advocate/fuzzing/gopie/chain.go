@@ -84,7 +84,7 @@ func startChain() Chain {
 //   - the quality
 func quality(elem trace.Element) int {
 	numberOps, _ := data.GetOpsPerID(elem.GetID())
-	numberConcurrent := concurrent.GetNumberConcurrent(elem)
+	numberConcurrent := concurrent.GetNumberConcurrent(elem, true)
 	return int(math.Log(float64(1+numberOps)) + math.Log(float64(numberConcurrent)))
 }
 

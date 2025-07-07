@@ -165,6 +165,26 @@ func GetNoRoutines() int {
 	return MainTrace.GetNoRoutines()
 }
 
+// GetTraceLength returns the number of elements in the trace of a given routine
+//
+// Parameter:
+//   - int: the routine id
+//
+// Returns:
+//   - []int: number of elements in routines.
+func GetTraceLength(routine int) int {
+	return MainTrace.GetTraceLength(routine)
+}
+
+// GetTraceLengths returns a slice containing the number of elements in the
+// routines
+//
+// Returns:
+//   - []int: number of elements in routines.
+func GetTraceLengths() []int {
+	return MainTrace.GetTraceLengths()
+}
+
 // GetLastElemPerRout returns the last elements in each routine
 // Returns
 //

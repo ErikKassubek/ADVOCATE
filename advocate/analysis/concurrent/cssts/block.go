@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: compVC.go
-// Brief: Implementatin of Block.java from CSST paper (sea csst.go)
+// File: block.go
+// Brief: Implementation of Block.java from CSST paper (sea csst.go)
 //
 // Author: Erik Kassubek
 // Created: 2025-07-01

@@ -297,6 +297,31 @@ func (t *Trace) GetNoRoutines() int {
 	return len(t.traces)
 }
 
+// GetTraceLength returns the number of element in a given routine
+//
+// Parameter:
+//   - routine int: the routine id
+//
+// Returns:
+//   - int: number of elements in the routine.
+func (t *Trace) GetTraceLength(routine int) int {
+	return len(t.GetTraces()[routine])
+}
+
+// GetTraceLengths returns a slice containing the number of elements in the
+// routines
+//
+// Returns:
+//   - []int: number of elements in routines.
+func (t *Trace) GetTraceLengths() []int {
+	l := make([]int, t.GetNoRoutines()+1)
+	for i, trace := range t.GetTraces() {
+		l[i] = len(trace)
+	}
+
+	return l
+}
+
 // NumberElemInTrace returns the number of elements in the trace.
 //
 // Parameter:

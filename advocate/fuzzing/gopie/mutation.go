@@ -200,7 +200,7 @@ func augment(c Chain) []Chain {
 	res := make([]Chain, 0)
 
 	if data.UseHBInfoFuzzing {
-		concurrent := concurrent.GetConcurrent(c.lastElem())
+		concurrent := concurrent.GetConcurrent(c.lastElem(), true, true)
 		for _, elem := range concurrent {
 			if c.contains(elem) {
 				continue

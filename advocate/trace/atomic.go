@@ -405,6 +405,14 @@ func (at *ElementAtomic) AddChild(elem Element) {
 	at.children = append(at.children, elem)
 }
 
+// AddParent adds an element as a parent of this node in the partial order graph
+//
+// Parameter:
+//   - elem *TraceElement: the element to add
+func (at *ElementAtomic) AddParent(elem Element) {
+	at.parents = append(at.parents, elem)
+}
+
 // GetChildren returns all children of this node in the partial order graph
 //
 // Returns:
@@ -418,7 +426,7 @@ func (at *ElementAtomic) GetChildren() []Element {
 // Returns:
 //   - []*TraceElement: the parents
 func (at *ElementAtomic) GetParents() []Element {
-	return at.children
+	return at.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

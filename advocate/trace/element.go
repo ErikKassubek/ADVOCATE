@@ -56,6 +56,7 @@ type Element interface {
 	GetTraceID() int
 	AddChild(elem Element)
 	GetChildren() []Element
+	AddParent(elem Element)
 	GetParents() []Element
 	GetNumberConcurrent() int
 	SetNumberConcurrent(c int)

@@ -15,18 +15,39 @@ import (
 	"advocate/trace"
 )
 
-// For a given element, add it the the children of the last element that
+// Add an edge between start and end
+//
+// Parameter:
+//   - start trace.Element: the start element
+//   - end trace.Element: the end element
+func AddEdgePartialOrderGraph(start, end trace.Element) {
+	if start == nil || end == nil {
+		return
+	}
+
+	start.AddChild(end)
+	end.AddParent(start)
+}
+
+// For a given element, add it to the children of the last element that
 // was analyzed in the same routine.
 // Then set this element to be the last element analyzed in the routine
-func AddEdgePartialOrderGraph(elem trace.Element) {
+// If it is the first element in a routine, add an edge to the corresponding fork
+//
+// Prarameter:
+//   - elem trace.Element: the element to add an edge for
+func AddEdgePartialOrderGraphSameRoutineAndFork(elem trace.Element) {
+	if !valid(elem) {
+		return
+	}
 	routineID := elem.GetRoutine()
 
 	if lastElem, ok := data.LastAnalyzedElementPerRoutine[routineID]; ok {
-		lastElem.AddChild(elem)
+		AddEdgePartialOrderGraph(lastElem, elem)
 	} else {
 		// first element, add edge from fork if exists
 		if fork, okF := data.ForkOperations[routineID]; okF {
-			fork.AddChild(elem)
+			AddEdgePartialOrderGraph(fork, elem)
 		}
 	}
 	data.LastAnalyzedElementPerRoutine[routineID] = elem
@@ -37,15 +58,17 @@ func AddEdgePartialOrderGraph(elem trace.Element) {
 // Parameter
 //   - elem TraceElement: the element the results should be concurrent with
 //   - all bool: if true, return all elements that are concurrent, if false, only return one
+//   - sameElem bool: if true, only return concurrent operations on the same element,
+//     otherwise return all concurrent elements
 //
 // Returns
 //   - []trace.TraceElement: element(s) that are concurrent to elem
-func GetConcurrentPartialOrderGraph(elem trace.Element, all bool) []trace.Element {
-	visitedFromN := make(map[int]bool)
-	visitedToN := make(map[int]bool)
+func GetConcurrentPartialOrderGraph(elem trace.Element, all bool, sameElem bool) []trace.Element {
+	reachableFromN := make(map[int]bool)
+	reachableToN := make(map[int]bool)
 
-	dfsPartialOrderGraph(elem, visitedFromN, false)
-	dfsPartialOrderGraph(elem, visitedToN, true)
+	dfsPartialOrderGraph(elem, reachableFromN, false)
+	dfsPartialOrderGraph(elem, reachableToN, true)
 
 	res := make([]trace.Element, 0)
 
@@ -55,7 +78,15 @@ func GetConcurrentPartialOrderGraph(elem trace.Element, all bool) []trace.Elemen
 		}
 
 		for _, tElem := range trace {
-			if !visitedFromN[tElem.GetTraceID()] && !visitedToN[tElem.GetTraceID()] {
+			if sameElem && elem.GetID() != tElem.GetID() {
+				continue
+			}
+
+			if !valid(tElem) {
+				continue
+			}
+
+			if !reachableFromN[tElem.GetTraceID()] && !reachableToN[tElem.GetTraceID()] {
 				res = append(res, tElem)
 				if !all {
 					return res
@@ -74,25 +105,25 @@ func GetConcurrentPartialOrderGraph(elem trace.Element, all bool) []trace.Elemen
 //   - visited map[int]bool: traceID of all visited nodes
 //   - inverted bool: If false, find all nodes that can be reached from start,
 //     if true, find all nodes from which start can be reached
-func dfsPartialOrderGraph(start trace.Element, visited map[int]bool, inverted bool) {
+func dfsPartialOrderGraph(start trace.Element, reachable map[int]bool, inverted bool) {
 	stack := []trace.Element{start}
 
 	for len(stack) > 0 {
 		curr := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		if visited[curr.GetTraceID()] {
+		if reachable[curr.GetTraceID()] {
 			continue
 		}
-		visited[curr.GetTraceID()] = true
+		reachable[curr.GetTraceID()] = true
 		if inverted {
 			for _, parent := range curr.GetParents() {
-				if !visited[parent.GetTraceID()] {
+				if !reachable[parent.GetTraceID()] {
 					stack = append(stack, parent)
 				}
 			}
 		} else {
 			for _, child := range curr.GetChildren() {
-				if !visited[child.GetTraceID()] {
+				if !reachable[child.GetTraceID()] {
 					stack = append(stack, child)
 				}
 			}

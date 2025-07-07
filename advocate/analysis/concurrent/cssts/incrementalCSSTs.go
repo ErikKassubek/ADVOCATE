@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: csst.go
+// File: incrementalCSSTs.go
 // Brief: Implementation of IncrementalCSSTs.java from CSST paper (see csst.go)
 //
 // Author: Erik Kassubek

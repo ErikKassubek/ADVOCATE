@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -98,7 +99,7 @@ func checkForUnlockBeforeLock() {
 			for i := 0; i < len(locks); {
 				removed := false
 				for j := 0; j < len(unlocks); {
-					if clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == clock.Concurrent {
+					if clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == hb.Concurrent {
 						locksSorted = append(locksSorted, locks[i])
 						unlockSorted = append(unlockSorted, unlocks[i])
 						locks = append(locks[:i], locks[i+1:]...)

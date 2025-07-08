@@ -27,10 +27,11 @@ import (
 //   - all bool: if true, find all concurrent elements, if false, find only one
 //   - sameElem bool: if true, only return concurrent operations on the same element,
 //     otherwise return all concurrent elements
+//   - weak bool: use the weak happens before relation
 //
 // Returns:
 //   - []trace.Element: set of elements concurrent to elem
-func GetConcurrentVC(elem trace.Element, all, sameElem bool) []trace.Element {
+func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element {
 	if !data.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
 		return make([]trace.Element, 0)
@@ -51,10 +52,19 @@ func GetConcurrentVC(elem trace.Element, all, sameElem bool) []trace.Element {
 				continue
 			}
 
-			if clock.IsConcurrent(elem.GetWVc(), tElem.GetWVc()) {
-				res = append(res, tElem)
-				if !all {
-					return res
+			if weak {
+				if clock.IsConcurrent(elem.GetWVc(), tElem.GetWVc()) {
+					res = append(res, tElem)
+					if !all {
+						return res
+					}
+				}
+			} else {
+				if clock.IsConcurrent(elem.GetVC(), tElem.GetVC()) {
+					res = append(res, tElem)
+					if !all {
+						return res
+					}
 				}
 			}
 		}

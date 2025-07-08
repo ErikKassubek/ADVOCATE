@@ -11,7 +11,6 @@
 package data
 
 import (
-	"advocate/analysis/concurrent/clock"
 	"advocate/trace"
 )
 
@@ -41,7 +40,7 @@ var (
 	CloseData = make(map[int]*trace.ElementChannel) // id -> vcTID3 val = ch.id
 
 	// currently waiting cond var
-	CurrentlyWaiting = make(map[int][]int) // -> id -> []routine
+	CurrentlyWaiting = make(map[int][]*trace.ElementCond) // -> id -> []*trace.ElementCond
 
 	// all positions of creations of routines
 	ForkOperations = make(map[int]*trace.ElementFork) // routineId -> fork
@@ -50,7 +49,7 @@ var (
 	CurrentlyHoldLock = make(map[int]*trace.ElementMutex) // routine -> lock op
 
 	// vector clocks for the successful do
-	OSuc = make(map[int]*clock.VectorClock)
+	OSuc = make(map[int]*trace.ElementOnce)
 
 	// last send/receive for each routine and each channel
 	LastSendRoutine = make(map[int]map[int]ElemWithVc) // routine -> id -> vcTID

@@ -27,22 +27,20 @@ import (
 //   - file (string), line int: The position of the trace element in the file
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
-//   - children []TraceElement: children in partial order graph
-//   - parent []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementFork struct {
-	traceID          int
-	index            int
-	routine          int
-	tPost            int
-	id               int
-	file             string
-	line             int
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPost                int
+	id                   int
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementFork adds a new go statement element to the main trace
@@ -69,17 +67,16 @@ func (t *Trace) AddTraceElementFork(routine int, tPost string, id string, pos st
 	}
 
 	elem := ElementFork{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPost:            tPostInt,
-		id:               idInt,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPost:                tPostInt,
+		id:                   idInt,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -294,65 +291,33 @@ func (fo *ElementFork) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (fo *ElementFork) Copy() Element {
-	children := make([]Element, len(fo.children))
-	copy(children, fo.children)
-	parents := make([]Element, len(fo.parents))
-	copy(parents, fo.parents)
-
 	return &ElementFork{
-		traceID:          fo.traceID,
-		index:            fo.index,
-		routine:          fo.routine,
-		tPost:            fo.tPost,
-		id:               fo.id,
-		file:             fo.file,
-		line:             fo.line,
-		vc:               fo.vc.Copy(),
-		wVc:              fo.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: fo.numberConcurrent,
+		traceID:              fo.traceID,
+		index:                fo.index,
+		routine:              fo.routine,
+		tPost:                fo.tPost,
+		id:                   fo.id,
+		file:                 fo.file,
+		line:                 fo.line,
+		vc:                   fo.vc.Copy(),
+		wVc:                  fo.wVc.Copy(),
+		numberConcurrent:     fo.numberConcurrent,
+		numberConcurrentWeak: fo.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (fo *ElementFork) AddChild(elem Element) {
-	fo.children = append(fo.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (fo *ElementFork) AddParent(elem Element) {
-	fo.parents = append(fo.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (fo *ElementFork) GetChildren() []Element {
-	return fo.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (fo *ElementFork) GetParents() []Element {
-	return fo.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (fo *ElementFork) GetNumberConcurrent() int {
+func (fo *ElementFork) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return fo.numberConcurrentWeak
+	}
 	return fo.numberConcurrent
 }
 
@@ -360,6 +325,11 @@ func (fo *ElementFork) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (fo *ElementFork) SetNumberConcurrent(c int) {
-	fo.numberConcurrent = c
+//   - weak bool: set number of weak concurrent
+func (fo *ElementFork) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		fo.numberConcurrentWeak = c
+	} else {
+		fo.numberConcurrent = c
+	}
 }

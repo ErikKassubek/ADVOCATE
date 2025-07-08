@@ -41,21 +41,21 @@ const (
 //   - children []TraceElement: children in partial order graph
 //   - parent []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementCond struct {
-	traceID          int
-	index            int
-	routine          int
-	tPre             int
-	tPost            int
-	id               int
-	opC              OpCond
-	file             string
-	line             int
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPre                 int
+	tPost                int
+	id                   int
+	opC                  OpCond
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementCond adds a new condition variable element to the main trace
@@ -98,19 +98,18 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 	}
 
 	elem := ElementCond{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPre:             tPreInt,
-		tPost:            tPostInt,
-		id:               idInt,
-		opC:              op,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPre:                 tPreInt,
+		tPost:                tPostInt,
+		id:                   idInt,
+		opC:                  op,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -373,67 +372,35 @@ func (co *ElementCond) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (co *ElementCond) Copy() Element {
-	children := make([]Element, len(co.children))
-	copy(children, co.children)
-	parents := make([]Element, len(co.parents))
-	copy(parents, co.parents)
-
 	return &ElementCond{
-		traceID:          co.traceID,
-		index:            co.index,
-		routine:          co.routine,
-		tPre:             co.tPre,
-		tPost:            co.tPost,
-		id:               co.id,
-		opC:              co.opC,
-		file:             co.file,
-		line:             co.line,
-		vc:               co.vc.Copy(),
-		wVc:              co.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: co.numberConcurrent,
+		traceID:              co.traceID,
+		index:                co.index,
+		routine:              co.routine,
+		tPre:                 co.tPre,
+		tPost:                co.tPost,
+		id:                   co.id,
+		opC:                  co.opC,
+		file:                 co.file,
+		line:                 co.line,
+		vc:                   co.vc.Copy(),
+		wVc:                  co.wVc.Copy(),
+		numberConcurrent:     co.numberConcurrent,
+		numberConcurrentWeak: co.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (co *ElementCond) AddChild(elem Element) {
-	co.children = append(co.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (co *ElementCond) AddParent(elem Element) {
-	co.parents = append(co.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (co *ElementCond) GetChildren() []Element {
-	return co.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (co *ElementCond) GetParents() []Element {
-	return co.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (co *ElementCond) GetNumberConcurrent() int {
+func (co *ElementCond) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return co.numberConcurrentWeak
+	}
 	return co.numberConcurrent
 }
 
@@ -441,6 +408,11 @@ func (co *ElementCond) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (co *ElementCond) SetNumberConcurrent(c int) {
-	co.numberConcurrent = c
+//   - weak bool: set number of weak concurrent
+func (co *ElementCond) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		co.numberConcurrentWeak = c
+	} else {
+		co.numberConcurrent = c
+	}
 }

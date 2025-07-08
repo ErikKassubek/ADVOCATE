@@ -45,5 +45,5 @@ func UpdateHBFork(fo *trace.ElementFork) {
 
 	data.ForkOperations[fo.GetID()] = fo
 
-	cssts.AddEdgeCSSTsFork(fo)
+	cssts.AddEdgeFork(fo)
 }

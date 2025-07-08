@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -114,7 +115,7 @@ func checkForDoneBeforeAdd() {
 			for i := 0; i < len(addsNegWg); {
 				removed := false
 				for j := 0; j < len(donesNegWg); {
-					if clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == clock.Concurrent {
+					if clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == hb.Concurrent {
 						addsNegWgSorted = append(addsNegWgSorted, addsNegWg[i])
 						donesNEgWgSorted = append(donesNEgWgSorted, donesNegWg[j])
 						// remove the element from the list

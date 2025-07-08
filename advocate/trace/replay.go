@@ -261,46 +261,15 @@ func (er *ElementReplay) Copy() Element {
 	}
 }
 
-// AddChild adds an element as a child of this node in the partial order graph
-// Dummy method to implement traceElement
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (er *ElementReplay) AddChild(elem Element) {
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-// Dummy method to implement traceElement
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (er *ElementReplay) AddParent(elem Element) {
-}
-
-// GetChildren returns all children of this node in the partial order graph
-// Dummy method to implement traceElement
-//
-// Returns:
-//   - []*TraceElement: the children
-func (er *ElementReplay) GetChildren() []Element {
-	return make([]Element, 0)
-}
-
-// GetParents returns all parents of this node in the partial order graph
-// Dummy method to implement traceElement
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (er *ElementReplay) GetParents() []Element {
-	return make([]Element, 0)
-}
-
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (er *ElementReplay) GetNumberConcurrent() int {
+func (er *ElementReplay) GetNumberConcurrent(weak bool) int {
 	return -1
 }
 
@@ -308,4 +277,5 @@ func (er *ElementReplay) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (er *ElementReplay) SetNumberConcurrent(c int) {}
+//   - weak bool: set number of weak concurrent
+func (er *ElementReplay) SetNumberConcurrent(c int, weak bool) {}

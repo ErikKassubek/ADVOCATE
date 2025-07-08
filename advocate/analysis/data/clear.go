@@ -44,10 +44,10 @@ func ClearData() {
 	LockSet = make(map[int]map[int]string)
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVcVal)
-	RelW = make(map[int]*clock.VectorClock)
-	RelR = make(map[int]*clock.VectorClock)
+	RelW = make(map[int]*ElemWithVc)
+	RelR = make(map[int]*ElemWithVc)
 	Lw = make(map[int]*trace.ElementAtomic)
-	CurrentlyWaiting = make(map[int][]int)
+	CurrentlyWaiting = make(map[int][]*trace.ElementCond)
 	LeakingChannels = make(map[int][]VectorClockTID2)
 	SelectCases = make([]AllSelectCase, 0)
 	ForkOperations = make(map[int]*trace.ElementFork)
@@ -66,7 +66,7 @@ func ClearData() {
 	CurrentVC = make(map[int]*clock.VectorClock)
 	CurrentWVC = make(map[int]*clock.VectorClock)
 
-	OSuc = make(map[int]*clock.VectorClock)
+	OSuc = make(map[int]*trace.ElementOnce)
 
 	HoldSend = make([]HoldObj, 0)
 	HoldRecv = make([]HoldObj, 0)

@@ -42,26 +42,24 @@ const (
 //   - line int: The line of the wait group in the code
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - children []TraceElement: children in partial order graph
-//   - parent []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementWait struct {
-	traceID          int
-	index            int
-	routine          int
-	tPre             int
-	tPost            int
-	ID               int
-	opW              OpWait
-	delta            int
-	val              int
-	file             string
-	line             int
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPre                 int
+	tPost                int
+	ID                   int
+	opW                  OpWait
+	delta                int
+	val                  int
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -115,21 +113,20 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPre:             tPreInt,
-		tPost:            tPostInt,
-		ID:               idInt,
-		opW:              opWOp,
-		delta:            deltaInt,
-		val:              valInt,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPre:                 tPreInt,
+		tPost:                tPostInt,
+		ID:                   idInt,
+		opW:                  opWOp,
+		delta:                deltaInt,
+		val:                  valInt,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -402,69 +399,37 @@ func (wa *ElementWait) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (wa *ElementWait) Copy() Element {
-	children := make([]Element, len(wa.children))
-	copy(children, wa.children)
-	parents := make([]Element, len(wa.parents))
-	copy(parents, wa.parents)
-
 	return &ElementWait{
-		traceID:          wa.traceID,
-		index:            wa.index,
-		routine:          wa.routine,
-		tPre:             wa.tPre,
-		tPost:            wa.tPost,
-		ID:               wa.ID,
-		opW:              wa.opW,
-		delta:            wa.delta,
-		val:              wa.val,
-		file:             wa.file,
-		line:             wa.line,
-		vc:               wa.vc.Copy(),
-		wVc:              wa.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: wa.numberConcurrent,
+		traceID:              wa.traceID,
+		index:                wa.index,
+		routine:              wa.routine,
+		tPre:                 wa.tPre,
+		tPost:                wa.tPost,
+		ID:                   wa.ID,
+		opW:                  wa.opW,
+		delta:                wa.delta,
+		val:                  wa.val,
+		file:                 wa.file,
+		line:                 wa.line,
+		vc:                   wa.vc.Copy(),
+		wVc:                  wa.wVc.Copy(),
+		numberConcurrent:     wa.numberConcurrent,
+		numberConcurrentWeak: wa.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (wa *ElementWait) AddChild(elem Element) {
-	wa.children = append(wa.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (wa *ElementWait) AddParent(elem Element) {
-	wa.parents = append(wa.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (wa *ElementWait) GetChildren() []Element {
-	return wa.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (wa *ElementWait) GetParents() []Element {
-	return wa.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (wa *ElementWait) GetNumberConcurrent() int {
+func (wa *ElementWait) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return wa.numberConcurrentWeak
+	}
 	return wa.numberConcurrent
 }
 
@@ -472,6 +437,11 @@ func (wa *ElementWait) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (wa *ElementWait) SetNumberConcurrent(c int) {
-	wa.numberConcurrent = c
+//   - weak bool: get number of weak concurrent
+func (wa *ElementWait) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		wa.numberConcurrentWeak = c
+	} else {
+		wa.numberConcurrent = c
+	}
 }

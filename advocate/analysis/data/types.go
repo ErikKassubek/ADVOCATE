@@ -80,11 +80,8 @@ const (
 
 // elements for buffered channel internal vector clock
 type BufferedVC struct {
-	Occupied    bool
-	OID         int
-	Vc          *clock.VectorClock
-	RoutineSend int
-	TID         string
+	Occupied bool
+	Send     *trace.ElementChannel
 }
 
 // holdObj can temporarily hold an channel operations with additional information

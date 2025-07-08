@@ -18,11 +18,17 @@ import (
 var (
 	Csst         IncrementalCSST
 	CsstInverted IncrementalCSST
+
+	CsstWeak         IncrementalCSST
+	CsstWeakInverted IncrementalCSST
 )
 
 func InitCSSTs(numberRoutines int, lengths []int) {
 	Csst = NewIncrementalCSST(lengths)
 	CsstInverted = NewIncrementalCSST(lengths)
+
+	CsstWeak = NewIncrementalCSST(lengths)
+	CsstWeakInverted = NewIncrementalCSST(lengths)
 }
 
 // For a trace element, return the routine id and elem rout index used as identifier
@@ -36,17 +42,4 @@ func InitCSSTs(numberRoutines int, lengths []int) {
 func getIndicesFromTraceElem(elem trace.Element) types.Pair[int, int] {
 	rout, index := elem.GetTraceIndex()
 	return types.NewPair(rout, index)
-}
-
-// Function to filter out element which do not correspond to valid operations, e.g.
-// end of a routine
-//
-// Parameter:
-//   - elem trace.Element: the element to test
-//
-// Returns:
-//   - bool: true if the element is valid, false otherwise
-func valid(elem trace.Element) bool {
-	t := elem.GetObjType(false)
-	return !(t == trace.ObjectTypeReplay || t == trace.ObjectTypeNew || t == trace.ObjectTypeRoutineEnd)
 }

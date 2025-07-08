@@ -13,6 +13,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/trace"
 	"fmt"
 	"math"
@@ -59,7 +60,7 @@ func buildResidualGraph(increases []trace.Element, decreases []trace.Element) ma
 	// add edge from done to add if the add happens before the done
 	for _, elemDecrease := range decreases {
 		for _, elemIncrease := range increases {
-			if clock.GetHappensBefore(elemIncrease.GetVC(), elemDecrease.GetVC()) == clock.Before {
+			if clock.GetHappensBefore(elemIncrease.GetVC(), elemDecrease.GetVC()) == hb.Before {
 				graph[elemDecrease] = append(graph[elemDecrease], elemIncrease)
 			}
 		}

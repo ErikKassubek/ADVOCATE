@@ -10,18 +10,9 @@
 
 package clock
 
-// HappensBefore provides an enum for possible happens before relations
-type HappensBefore int
+import "advocate/analysis/concurrent/hb"
 
-// Possible values for the HappensBefore enum
-const (
-	Before HappensBefore = iota
-	After
-	Concurrent
-	None
-)
-
-// Check if vc1 is a cause of vc2
+// Check if vc1 happens before vc2
 //
 // Parameter:
 //   - vc1 *VectorClock: The first vector clock
@@ -29,7 +20,7 @@ const (
 //
 // Returns:
 //   - bool: True if vc1 is a cause of vc2, false otherwise
-func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
+func happensBefore(vc1 *VectorClock, vc2 *VectorClock) bool {
 	atLeastOneSmaller := false
 	for i := 1; i <= vc1.size; i++ {
 		if vc1.GetValue(i) > vc2.GetValue(i) {
@@ -50,22 +41,22 @@ func isCause(vc1 *VectorClock, vc2 *VectorClock) bool {
 //
 // Returns:
 //   - happensBefore: The happens before relation between the two vector clocks
-func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) HappensBefore {
+func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) hb.HappensBefore {
 	if vc1 == nil || vc2 == nil {
-		return None
+		return hb.None
 	}
 
 	if vc1.size != vc2.size {
-		return None
+		return hb.None
 	}
 
-	if isCause(vc1, vc2) {
-		return Before
+	if happensBefore(vc1, vc2) {
+		return hb.Before
 	}
-	if isCause(vc2, vc1) {
-		return After
+	if happensBefore(vc2, vc1) {
+		return hb.After
 	}
-	return Concurrent
+	return hb.Concurrent
 }
 
 // IsConcurrent returns if the vector clocks are concurrent

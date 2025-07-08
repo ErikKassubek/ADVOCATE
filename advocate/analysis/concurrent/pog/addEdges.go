@@ -1,14 +1,12 @@
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: addEdges.go
-// Brief: Method for the different operations to add edges to the partial order
-//        graph
+// Brief: Add edges to the graph
 //
 // Author: Erik Kassubek
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause
-
 package pog
 
 import (
@@ -24,32 +22,19 @@ import (
 //
 // Prarameter:
 //   - elem trace.Element: the element to add an edge for
-func AddEdgePOGSameRoutineAndFork(elem trace.Element) {
+func AddEdgeSameRoutineAndFork(elem trace.Element) {
 	if !helper.Valid(elem) {
 		return
 	}
 	routineID := elem.GetRoutine()
 
 	if lastElem, ok := data.LastAnalyzedElementPerRoutine[routineID]; ok {
-		AddEdge(lastElem, elem)
+		AddEdge(lastElem, elem, true)
 	} else {
 		// first element, add edge from fork if exists
 		if fork, okF := data.ForkOperations[routineID]; okF {
-			AddEdge(fork, elem)
+			AddEdge(fork, elem, true)
 		}
 	}
 	data.LastAnalyzedElementPerRoutine[routineID] = elem
-}
-
-// AddEdgeAtomic adds a new edge for a last writer of an atomic
-//
-// Parameter:
-//   - read *trace.ElementAtomic: the atomic read
-//   - lw *trace.ElementAtomic: the last reader
-func AddEdgeAtomic(read *trace.ElementAtomic, lw *trace.ElementAtomic) {
-	if lw == nil {
-		return
-	}
-
-	AddEdge(lw, read)
 }

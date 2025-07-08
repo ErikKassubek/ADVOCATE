@@ -14,6 +14,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -51,7 +52,7 @@ func getConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 		}
 
 		happensBefore := clock.GetHappensBefore(elem[id].Vc, data.CurrentVC[routine])
-		if happensBefore == clock.Concurrent {
+		if happensBefore == hb.Concurrent {
 			elem2 := elem[id].Elem
 			data.FuzzingFlowSend = append(data.FuzzingFlowSend, data.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: data.CERecv})
 		}
@@ -95,7 +96,7 @@ func checkForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 		}
 
 		happensBefore := clock.GetHappensBefore(elem[id].Vc, vc[routine])
-		if happensBefore == clock.Concurrent {
+		if happensBefore == hb.Concurrent {
 
 			elem2 := elem[id].Elem
 
@@ -161,7 +162,7 @@ func getConcurrentMutexForFuzzing(mu *trace.ElementMutex) {
 
 	elem := data.CurrentlyHoldLock[id]
 
-	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == clock.Concurrent {
+	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == hb.Concurrent {
 		data.FuzzingFlowMutex = append(data.FuzzingFlowMutex, data.ConcurrentEntry{Elem: elem, Counter: getFuzzingCounter(elem), Type: data.CEMutex})
 	}
 
@@ -188,7 +189,7 @@ func getConcurrentOnceForFuzzing(on *trace.ElementOnce) {
 	}
 
 	if exec, ok := data.ExecutedOnce[id]; ok {
-		if clock.GetHappensBefore(exec.Elem.GetVC(), vc) == clock.Concurrent {
+		if clock.GetHappensBefore(exec.Elem.GetVC(), vc) == hb.Concurrent {
 			data.FuzzingFlowOnce = append(data.FuzzingFlowOnce, *exec)
 		}
 	}

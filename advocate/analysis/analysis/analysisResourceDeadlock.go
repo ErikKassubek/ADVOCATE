@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -299,7 +300,7 @@ func checkAndFilterConcurrentRequests(cycle *data.Cycle) bool {
 		requestsWithPrev := []data.LockEvent{}
 		for _, req := range (*cycle)[i].Requests {
 			for _, prevReq := range (*cycle)[(len(*cycle)+i-1)%len(*cycle)].Requests {
-				if clock.GetHappensBefore(req.VectorClock, prevReq.VectorClock) == clock.Concurrent {
+				if clock.GetHappensBefore(req.VectorClock, prevReq.VectorClock) == hb.Concurrent {
 					requestsWithPrev = append(requestsWithPrev, req)
 					break
 				}
@@ -309,7 +310,7 @@ func checkAndFilterConcurrentRequests(cycle *data.Cycle) bool {
 		requestsWithBoth := []data.LockEvent{}
 		for _, req := range requestsWithPrev {
 			for _, nextReq := range (*cycle)[(i+1)%len(*cycle)].Requests {
-				if clock.GetHappensBefore(req.VectorClock, nextReq.VectorClock) == clock.Concurrent {
+				if clock.GetHappensBefore(req.VectorClock, nextReq.VectorClock) == hb.Concurrent {
 					requestsWithBoth = append(requestsWithBoth, req)
 					break
 				}
@@ -399,7 +400,7 @@ func CheckForResourceDeadlock() {
 			// 	}
 
 			for _, r := range cycle[i].Requests {
-				if clock.GetHappensBefore(request.VectorClock, r.VectorClock) == clock.Concurrent {
+				if clock.GetHappensBefore(request.VectorClock, r.VectorClock) == hb.Concurrent {
 					request = r
 					break
 				}

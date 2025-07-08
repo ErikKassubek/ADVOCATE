@@ -11,24 +11,14 @@
 package analysis
 
 import (
-	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
 )
 
 // TODO: do we need the oSuc
-
-// Create a new oSuc if needed
-//
-// Parameter:
-//   - index int: The id of the atomic variable
-//   - nRout int: The number of routines in the trace
-func newOSuc(index int, nRout int) {
-	if _, ok := data.OSuc[index]; !ok {
-		data.OSuc[index] = clock.NewVectorClock(nRout)
-	}
-}
 
 // UpdateHBOnce update the vector clock of the trace and element
 // Parameter:
@@ -56,8 +46,7 @@ func DoSuc(on *trace.ElementOnce) {
 	id := on.GetID()
 	routine := on.GetRoutine()
 
-	newOSuc(id, data.CurrentVC[routine].GetSize())
-	data.OSuc[id] = data.CurrentVC[routine].Copy()
+	data.OSuc[id] = on
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -74,9 +63,12 @@ func DoFail(on *trace.ElementOnce) {
 	id := on.GetID()
 	routine := on.GetRoutine()
 
-	newOSuc(id, data.CurrentVC[routine].GetSize())
+	suc := data.OSuc[id]
 
-	data.CurrentVC[routine].Sync(data.OSuc[id])
+	data.CurrentVC[routine].Sync(suc.GetVC())
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
+
+	pog.AddEdge(suc, on, false)
+	cssts.AddEdge(suc, on, false)
 }

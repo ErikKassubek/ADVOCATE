@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -37,7 +38,7 @@ func checkForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		for routine, mrs := range data.MostRecentSend {
 			happensBefore := clock.GetHappensBefore(mrs[id].Vc, data.CloseData[id].GetVC())
 
-			if mrs[id].Elem != nil && mrs[id].Elem.GetTID() != "" && happensBefore != clock.Before {
+			if mrs[id].Elem != nil && mrs[id].Elem.GetTID() != "" && happensBefore != hb.Before {
 
 				file1, line1, tPre1, err := trace.InfoFromTID(mrs[id].Elem.GetTID()) // send
 				if err != nil {
@@ -78,7 +79,7 @@ func checkForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	if data.AnalysisCases["receiveOnClosed"] && data.HasReceived[id] {
 		for routine, mrr := range data.MostRecentReceive {
 			happensBefore := clock.GetHappensBefore(data.CloseData[id].GetVC(), mrr[id].Vc)
-			if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == clock.Concurrent || happensBefore == clock.Before) {
+			if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {
 
 				file1, line1, tPre1, err := trace.InfoFromTID(mrr[id].Elem.GetTID()) // recv
 				if err != nil {

@@ -11,6 +11,8 @@
 package analysis
 
 import (
+	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
@@ -48,9 +50,9 @@ func CondWait(co *trace.ElementCond) {
 
 	if co.GetTPost() != 0 { // not leak
 		if _, ok := data.CurrentlyWaiting[id]; !ok {
-			data.CurrentlyWaiting[id] = make([]int, 0)
+			data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 		}
-		data.CurrentlyWaiting[id] = append(data.CurrentlyWaiting[id], routine)
+		data.CurrentlyWaiting[id] = append(data.CurrentlyWaiting[id], co)
 	}
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -69,8 +71,13 @@ func CondSignal(co *trace.ElementCond) {
 
 	if len(data.CurrentlyWaiting[id]) != 0 {
 		tWait := data.CurrentlyWaiting[id][0]
+
 		data.CurrentlyWaiting[id] = data.CurrentlyWaiting[id][1:]
-		data.CurrentVC[tWait].Sync(data.CurrentVC[routine])
+
+		data.CurrentVC[tWait.GetRoutine()].Sync(data.CurrentVC[routine])
+
+		pog.AddEdge(co, tWait, false)
+		cssts.AddEdge(co, tWait, false)
 	}
 
 	data.CurrentVC[routine].Inc(routine)
@@ -89,9 +96,12 @@ func CondBroadcast(co *trace.ElementCond) {
 	routine := co.GetRoutine()
 
 	for _, wait := range data.CurrentlyWaiting[id] {
-		data.CurrentVC[wait].Sync(data.CurrentVC[routine])
+		data.CurrentVC[wait.GetRoutine()].Sync(data.CurrentVC[routine])
+
+		pog.AddEdge(co, wait, false)
+		cssts.AddEdge(co, wait, false)
 	}
-	data.CurrentlyWaiting[id] = make([]int, 0)
+	data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)

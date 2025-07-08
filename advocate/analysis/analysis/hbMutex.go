@@ -13,6 +13,8 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -82,20 +84,6 @@ func UpdateHBMutexAlt(mu *trace.ElementMutex) {
 	data.CurrentWVC[routine].Inc(routine)
 }
 
-// Create a new data.RelW and data.RelR if needed
-//
-// Parameter:
-//   - index int: The id of the atomic variable
-//   - nRout int: The number of routines in the trace
-func newRel(index int, nRout int) {
-	if _, ok := data.RelW[index]; !ok {
-		data.RelW[index] = clock.NewVectorClock(nRout)
-	}
-	if _, ok := data.RelR[index]; !ok {
-		data.RelR[index] = clock.NewVectorClock(nRout)
-	}
-}
-
 // Lock updates and calculates the vector clocks given a lock operation
 //
 // Parameter:
@@ -113,8 +101,16 @@ func Lock(mu *trace.ElementMutex) {
 		return
 	}
 
-	data.CurrentVC[routine].Sync(data.RelW[id])
-	data.CurrentVC[routine].Sync(data.RelR[id])
+	if e, ok := data.RelW[id]; ok {
+		data.CurrentVC[routine].Sync(e.Vc)
+		pog.AddEdge(e.Elem, mu, false)
+		cssts.AddEdge(e.Elem, mu, false)
+	}
+	if e, ok := data.RelR[id]; ok {
+		data.CurrentVC[routine].Sync(e.Vc)
+		pog.AddEdge(e.Elem, mu, false)
+		cssts.AddEdge(e.Elem, mu, false)
+	}
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -147,9 +143,15 @@ func Unlock(mu *trace.ElementMutex) {
 	id := mu.GetID()
 	routine := mu.GetRoutine()
 
-	newRel(id, data.CurrentVC[routine].GetSize())
-	data.RelW[id] = data.CurrentVC[routine].Copy()
-	data.RelR[id] = data.CurrentVC[routine].Copy()
+	data.RelW[id] = &data.ElemWithVc{
+		Elem: mu,
+		Vc:   data.CurrentVC[routine].Copy(),
+	}
+
+	data.RelR[id] = &data.ElemWithVc{
+		Elem: mu,
+		Vc:   data.CurrentVC[routine].Copy(),
+	}
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -182,8 +184,11 @@ func RLock(mu *trace.ElementMutex) {
 		return
 	}
 
-	newRel(id, data.CurrentVC[routine].GetSize())
-	data.CurrentVC[routine].Sync(data.RelW[id])
+	if e, ok := data.RelW[id]; ok {
+		data.CurrentVC[routine].Sync(e.Vc)
+		pog.AddEdge(e.Elem, mu, false)
+		cssts.AddEdge(e.Elem, mu, false)
+	}
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -218,8 +223,15 @@ func RUnlock(mu *trace.ElementMutex) {
 		return
 	}
 
-	newRel(id, data.CurrentVC[routine].GetSize())
-	data.RelR[id].Sync(data.CurrentVC[routine])
+	if _, ok := data.RelR[id]; !ok {
+		data.RelR[id] = &data.ElemWithVc{
+			Vc:   clock.NewVectorClock(data.GetNoRoutines()),
+			Elem: nil,
+		}
+	}
+
+	data.RelR[id].Vc.Sync(data.CurrentVC[routine])
+	data.RelR[id].Elem = mu
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)

@@ -13,6 +13,7 @@ package gopie
 import (
 	"advocate/analysis/concurrent"
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	anaData "advocate/analysis/data"
 	"advocate/trace"
@@ -84,7 +85,7 @@ func startChain() Chain {
 //   - the quality
 func quality(elem trace.Element) int {
 	numberOps, _ := data.GetOpsPerID(elem.GetID())
-	numberConcurrent := concurrent.GetNumberConcurrent(elem, true)
+	numberConcurrent := concurrent.GetNumberConcurrent(elem, true, true)
 	return int(math.Log(float64(1+numberOps)) + math.Log(float64(numberConcurrent)))
 }
 
@@ -230,8 +231,8 @@ func (ch *Chain) isValid() bool {
 	}
 
 	for i := range ch.Len() - 1 {
-		hb := clock.GetHappensBefore(ch.Elems[i].GetWVc(), ch.Elems[i+1].GetWVc())
-		if hb == clock.After {
+		hbInfo := clock.GetHappensBefore(ch.Elems[i].GetWVc(), ch.Elems[i+1].GetWVc())
+		if hbInfo == hb.After {
 			return false
 		}
 	}

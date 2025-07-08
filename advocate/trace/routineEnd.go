@@ -281,46 +281,15 @@ func (re *ElementRoutineEnd) Copy() Element {
 	}
 }
 
-// AddChild adds an element as a child of this node in the partial order graph
-// Dummy method to implement TraceElement interface
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (re *ElementRoutineEnd) AddChild(elem Element) {
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-// Dummy method to implement TraceElement interface
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (re *ElementRoutineEnd) AddParent(elem Element) {
-}
-
-// GetChildren returns all children of this node in the partial order graph
-// Dummy method to implement TraceElement interface
-//
-// Returns:
-//   - []*TraceElement: the children
-func (re *ElementRoutineEnd) GetChildren() []Element {
-	return make([]Element, 0)
-}
-
-// GetParents returns all parents of this node in the partial order graph
-// Dummy method to implement TraceElement
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (re *ElementRoutineEnd) GetParents() []Element {
-	return make([]Element, 0)
-}
-
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (at *ElementRoutineEnd) GetNumberConcurrent() int {
+func (at *ElementRoutineEnd) GetNumberConcurrent(weak bool) int {
 	return -1
 }
 
@@ -328,4 +297,5 @@ func (at *ElementRoutineEnd) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (at *ElementRoutineEnd) SetNumberConcurrent(c int) {}
+//   - weak bool: get number of weak concurrent
+func (at *ElementRoutineEnd) SetNumberConcurrent(c int, weak bool) {}

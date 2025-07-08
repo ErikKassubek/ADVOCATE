@@ -43,28 +43,26 @@ const (
 //   - num int: Variable field for additional information
 //   - file string: The file of the new
 //   - line int: The line of the new
-//   - vc *clock.VectorClock: The vector clock of the operation
-//   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - children []TraceElement: children in partial order graph
 //   - parents []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type ElementNew struct {
-	traceID          int
-	index            int
-	routine          int
-	tPost            int
-	id               int
-	elemType         newOpType
-	num              int
-	file             string
-	line             int
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPost                int
+	id                   int
+	elemType             newOpType
+	num                  int
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementNew adds a make trace element to the main trace
@@ -114,19 +112,18 @@ func (t *Trace) AddTraceElementNew(routine int, tPost string, id string, elemTyp
 	}
 
 	elem := ElementNew{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPost:            tPostInt,
-		id:               idInt,
-		elemType:         et,
-		num:              numInt,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPost:                tPostInt,
+		id:                   idInt,
+		elemType:             et,
+		num:                  numInt,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -369,66 +366,34 @@ func (n *ElementNew) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (n *ElementNew) Copy() Element {
-	children := make([]Element, len(n.children))
-	copy(children, n.children)
-	parents := make([]Element, len(n.parents))
-	copy(parents, n.parents)
-
 	return &ElementNew{
-		traceID:          n.traceID,
-		index:            n.index,
-		routine:          n.routine,
-		tPost:            n.tPost,
-		id:               n.id,
-		elemType:         n.elemType,
-		file:             n.file,
-		line:             n.line,
-		vc:               n.vc.Copy(),
-		wVc:              n.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: n.numberConcurrent,
+		traceID:              n.traceID,
+		index:                n.index,
+		routine:              n.routine,
+		tPost:                n.tPost,
+		id:                   n.id,
+		elemType:             n.elemType,
+		file:                 n.file,
+		line:                 n.line,
+		vc:                   n.vc.Copy(),
+		wVc:                  n.wVc.Copy(),
+		numberConcurrent:     n.numberConcurrent,
+		numberConcurrentWeak: n.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (n *ElementNew) AddChild(elem Element) {
-	n.children = append(n.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (n *ElementNew) AddParent(elem Element) {
-	n.parents = append(n.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (n *ElementNew) GetChildren() []Element {
-	return n.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (n *ElementNew) GetParents() []Element {
-	return n.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (n *ElementNew) GetNumberConcurrent() int {
+func (n *ElementNew) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return n.numberConcurrentWeak
+	}
 	return n.numberConcurrent
 }
 
@@ -436,6 +401,11 @@ func (n *ElementNew) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (n *ElementNew) SetNumberConcurrent(c int) {
-	n.numberConcurrent = c
+//   - weak bool: get number of weak concurrent
+func (n *ElementNew) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		n.numberConcurrentWeak = c
+	} else {
+		n.numberConcurrent = c
+	}
 }

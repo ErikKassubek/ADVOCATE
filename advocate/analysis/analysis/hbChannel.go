@@ -13,6 +13,8 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -251,6 +253,9 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		data.CurrentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
 		data.CurrentWVC[recv.GetRoutine()].Inc(recv.GetRoutine())
 
+		pog.AddEdge(sender, recv, false)
+		cssts.AddEdge(sender, recv, false)
+
 	} else {
 		data.CurrentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
 		data.CurrentWVC[sender.GetRoutine()].Inc(sender.GetRoutine())
@@ -323,22 +328,30 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 	// If the map is full, but the channel has more buffer positions, the map is extended
 	if len(data.BufferedVCs[id]) >= count && len(data.BufferedVCs[id]) < data.BufferedVCsSize[id] {
 		data.BufferedVCs[id] = append(data.BufferedVCs[id], data.BufferedVC{
-			Occupied:    false,
-			OID:         0,
-			Vc:          clock.NewVectorClock(vc[routine].GetSize()),
-			RoutineSend: 0,
-			TID:         ""})
+			Occupied: false,
+			Send:     nil})
 	}
 
 	if count > qSize || data.BufferedVCs[id][count].Occupied {
 		log.Error("Write to occupied buffer position or to big count")
 	}
 
-	v := data.BufferedVCs[id][count].Vc
-	vc[routine].Sync(v)
+	s := data.BufferedVCs[id][count].Send
+	if s != nil {
+		v := s.GetVC()
+		vc[routine].Sync(v)
+
+		pog.AddEdge(s, ch, false)
+		cssts.AddEdge(s, ch, false)
+	}
 
 	if fifo {
-		vc[routine].Sync(data.MostRecentSend[routine][id].Vc)
+		r := data.MostRecentSend[routine][id]
+		if r.Elem != nil {
+			vc[routine].Sync(r.Vc)
+			pog.AddEdge(r.Elem, ch, false)
+			cssts.AddEdge(r.Elem, ch, false)
+		}
 	}
 
 	// for detection of send on closed
@@ -353,11 +366,8 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 	wVc[routine].Inc(routine)
 
 	data.BufferedVCs[id][count] = data.BufferedVC{
-		Occupied:    true,
-		OID:         ch.GetOID(),
-		Vc:          vc[routine].Copy(),
-		RoutineSend: routine,
-		TID:         ch.GetTID(),
+		Occupied: true,
+		Send:     ch,
 	}
 
 	data.BufferedVCsCount[id]++
@@ -435,17 +445,15 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 	}
 	data.BufferedVCsCount[id]--
 
-	if data.BufferedVCs[id][0].OID != oID {
+	if data.BufferedVCs[id][0].Send.GetOID() != oID {
 		found := false
 		for i := 1; i < len(data.BufferedVCs[id]); i++ {
-			if data.BufferedVCs[id][i].OID == oID {
+			if data.BufferedVCs[id][i].Send.GetOID() == oID {
 				found = true
 				data.BufferedVCs[id][0] = data.BufferedVCs[id][i]
 				data.BufferedVCs[id][i] = data.BufferedVC{
 					Occupied: false,
-					OID:      0, Vc: vc[routine].Copy(),
-					RoutineSend: 0,
-					TID:         "",
+					Send:     nil,
 				}
 				break
 			}
@@ -455,21 +463,27 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 			log.Error(err)
 		}
 	}
-	v := data.BufferedVCs[id][0].Vc
-	routSend := data.BufferedVCs[id][0].RoutineSend
 
-	vc[routine] = vc[routine].Sync(v)
+	s := data.BufferedVCs[id][0].Send
+	routSend := data.BufferedVCs[id][0].Send.GetRoutine()
+
+	vc[routine] = vc[routine].Sync(s.GetVC())
+
+	pog.AddEdge(s, ch, false)
+	cssts.AddEdge(s, ch, false)
 
 	if fifo {
-		vc[routine] = vc[routine].Sync(data.MostRecentReceive[routine][id].Vc)
+		r := data.MostRecentReceive[routine][id]
+		if r.Elem != nil {
+			vc[routine] = vc[routine].Sync(r.Vc)
+			pog.AddEdge(r.Elem, ch, false)
+			cssts.AddEdge(r.Elem, ch, false)
+		}
 	}
 
 	data.BufferedVCs[id] = append(data.BufferedVCs[id][1:], data.BufferedVC{
-		Occupied:    false,
-		OID:         0,
-		Vc:          vc[routine].Copy(),
-		RoutineSend: 0,
-		TID:         "",
+		Occupied: false,
+		Send:     nil,
 	})
 
 	// for detection of receive on closed
@@ -595,7 +609,11 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 
 	timer.Start(timer.AnaHb)
 	if _, ok := data.CloseData[id]; ok {
-		vc[routine] = vc[routine].Sync(data.CloseData[id].GetVC())
+		c := data.CloseData[id]
+		vc[routine] = vc[routine].Sync(c.GetVC())
+
+		pog.AddEdge(c, ch, false)
+		cssts.AddEdge(c, ch, false)
 	}
 
 	vc[routine].Inc(routine)
@@ -632,11 +650,8 @@ func newBufferedVCs(id int, qSize int, numRout int) {
 		data.BufferedVCsCount[id] = 0
 		data.BufferedVCsSize[id] = qSize
 		data.BufferedVCs[id][0] = data.BufferedVC{
-			Occupied:    false,
-			OID:         0,
-			Vc:          clock.NewVectorClock(numRout),
-			RoutineSend: 0,
-			TID:         "",
+			Occupied: false,
+			Send:     nil,
 		}
 	}
 }

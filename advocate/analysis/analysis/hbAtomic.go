@@ -11,6 +11,7 @@
 package analysis
 
 import (
+	"advocate/analysis/concurrent/cssts"
 	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
@@ -90,9 +91,10 @@ func Read(at *trace.ElementAtomic, sync bool) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	if sync {
+	if sync && data.Lw[id] != nil {
 		data.CurrentVC[routine].Sync(data.Lw[id].GetVC())
-		pog.AddEdgeAtomic(at, data.Lw[id])
+		pog.AddEdge(at, data.Lw[id], false)
+		cssts.AddEdge(at, data.Lw[id], false)
 	}
 
 	data.CurrentVC[routine].Inc(routine)

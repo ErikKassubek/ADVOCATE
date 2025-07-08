@@ -38,29 +38,27 @@ import (
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
-//   - children []TraceElement: children in partial order graph
-//   - parents []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementSelect struct {
-	traceID             int
-	index               int
-	routine             int
-	tPre                int
-	tPost               int
-	id                  int
-	cases               []ElementChannel
-	chosenCase          ElementChannel
-	chosenIndex         int
-	containsDefault     bool
-	chosenDefault       bool
-	file                string
-	line                int
-	vc                  *clock.VectorClock
-	wVc                 *clock.VectorClock
-	casesWithPosPartner []int
-	children            []Element
-	parents             []Element
-	numberConcurrent    int
+	traceID              int
+	index                int
+	routine              int
+	tPre                 int
+	tPost                int
+	id                   int
+	cases                []ElementChannel
+	chosenCase           ElementChannel
+	chosenIndex          int
+	containsDefault      bool
+	chosenDefault        bool
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	casesWithPosPartner  []int
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -102,20 +100,19 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := ElementSelect{
-		index:               t.numberElemsInTrace[routine],
-		routine:             routine,
-		tPre:                tPreInt,
-		tPost:               tPostInt,
-		id:                  idInt,
-		chosenIndex:         chosenIndexInt,
-		file:                file,
-		line:                line,
-		casesWithPosPartner: make([]int, 0),
-		vc:                  nil,
-		wVc:                 nil,
-		children:            make([]Element, 0),
-		parents:             make([]Element, 0),
-		numberConcurrent:    -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPre:                 tPreInt,
+		tPost:                tPostInt,
+		id:                   idInt,
+		chosenIndex:          chosenIndexInt,
+		file:                 file,
+		line:                 line,
+		casesWithPosPartner:  make([]int, 0),
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	cs := strings.Split(cases, "~")
@@ -664,72 +661,39 @@ func (se *ElementSelect) Copy() Element {
 
 	chosenCase := *se.chosenCase.Copy().(*ElementChannel)
 
-	children := make([]Element, len(se.children))
-	copy(children, se.children)
-
-	parents := make([]Element, len(se.parents))
-	copy(parents, se.parents)
-
 	return &ElementSelect{
-		traceID:          se.traceID,
-		index:            se.index,
-		routine:          se.routine,
-		tPre:             se.tPre,
-		tPost:            se.tPost,
-		id:               se.id,
-		cases:            cases,
-		chosenCase:       chosenCase,
-		chosenIndex:      se.chosenIndex,
-		containsDefault:  se.containsDefault,
-		chosenDefault:    se.chosenDefault,
-		file:             se.file,
-		line:             se.line,
-		vc:               se.vc.Copy(),
-		wVc:              se.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: se.numberConcurrent,
+		traceID:              se.traceID,
+		index:                se.index,
+		routine:              se.routine,
+		tPre:                 se.tPre,
+		tPost:                se.tPost,
+		id:                   se.id,
+		cases:                cases,
+		chosenCase:           chosenCase,
+		chosenIndex:          se.chosenIndex,
+		containsDefault:      se.containsDefault,
+		chosenDefault:        se.chosenDefault,
+		file:                 se.file,
+		line:                 se.line,
+		vc:                   se.vc.Copy(),
+		wVc:                  se.wVc.Copy(),
+		numberConcurrent:     se.numberConcurrent,
+		numberConcurrentWeak: se.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (se *ElementSelect) AddChild(elem Element) {
-	se.children = append(se.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (se *ElementSelect) AddParent(elem Element) {
-	se.parents = append(se.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (se *ElementSelect) GetChildren() []Element {
-	return se.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (se *ElementSelect) GetParents() []Element {
-	return se.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (se *ElementSelect) GetNumberConcurrent() int {
+func (se *ElementSelect) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return se.numberConcurrentWeak
+	}
 	return se.numberConcurrent
 }
 
@@ -737,6 +701,11 @@ func (se *ElementSelect) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (se *ElementSelect) SetNumberConcurrent(c int) {
-	se.numberConcurrent = c
+//   - weak bool: get number of weak concurrent
+func (se *ElementSelect) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		se.numberConcurrentWeak = c
+	} else {
+		se.numberConcurrent = c
+	}
 }

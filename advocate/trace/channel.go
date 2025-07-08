@@ -51,30 +51,28 @@ const (
 //   - partner *ElementChannel: The partner of the channel operation
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
-//   - children []TraceElement: children in partial order graph
-//   - parent []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementChannel struct {
-	traceID          int
-	index            int
-	routine          int
-	tPre             int
-	tPost            int
-	id               int
-	opC              OpChannel
-	cl               bool
-	oID              int
-	qSize            int
-	qCount           int
-	file             string
-	line             int
-	sel              *ElementSelect
-	partner          *ElementChannel
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPre                 int
+	tPost                int
+	id                   int
+	opC                  OpChannel
+	cl                   bool
+	oID                  int
+	qSize                int
+	qCount               int
+	file                 string
+	line                 int
+	sel                  *ElementSelect
+	partner              *ElementChannel
+	vc                   *clock.VectorClock
+	wCl                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -153,23 +151,22 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := ElementChannel{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPre:             tPreInt,
-		tPost:            tPostInt,
-		id:               idInt,
-		opC:              opCInt,
-		cl:               clBool,
-		oID:              oIDInt,
-		qSize:            qSizeInt,
-		qCount:           qCountInt,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPre:                 tPreInt,
+		tPost:                tPostInt,
+		id:                   idInt,
+		opC:                  opCInt,
+		cl:                   clBool,
+		oID:                  oIDInt,
+		qSize:                qSizeInt,
+		qCount:               qCountInt,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wCl:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	elem.findPartner(t)
@@ -307,7 +304,7 @@ func (ch *ElementChannel) SetVc(vc *clock.VectorClock) {
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
 func (ch *ElementChannel) SetWVc(vc *clock.VectorClock) {
-	ch.wVc = vc.Copy()
+	ch.wCl = vc.Copy()
 }
 
 // GetVC returns the vector clock of the element
@@ -323,7 +320,7 @@ func (ch *ElementChannel) GetVC() *clock.VectorClock {
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (ch *ElementChannel) GetWVc() *clock.VectorClock {
-	return ch.wVc
+	return ch.wCl
 }
 
 // GetTPost returns the tPost of the element
@@ -606,31 +603,25 @@ func (ch *ElementChannel) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (ch *ElementChannel) Copy() Element {
-	children := make([]Element, len(ch.children))
-	copy(children, ch.children)
-	parents := make([]Element, len(ch.parents))
-	copy(parents, ch.parents)
-
 	newCh := ElementChannel{
-		traceID:          ch.traceID,
-		index:            ch.index,
-		routine:          ch.routine,
-		tPre:             ch.tPre,
-		tPost:            ch.tPost,
-		id:               ch.id,
-		opC:              ch.opC,
-		cl:               ch.cl,
-		oID:              ch.oID,
-		qSize:            ch.qSize,
-		file:             ch.file,
-		line:             ch.line,
-		sel:              ch.sel,
-		partner:          ch.partner,
-		vc:               ch.vc.Copy(),
-		wVc:              ch.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: ch.numberConcurrent,
+		traceID:              ch.traceID,
+		index:                ch.index,
+		routine:              ch.routine,
+		tPre:                 ch.tPre,
+		tPost:                ch.tPost,
+		id:                   ch.id,
+		opC:                  ch.opC,
+		cl:                   ch.cl,
+		oID:                  ch.oID,
+		qSize:                ch.qSize,
+		file:                 ch.file,
+		line:                 ch.line,
+		sel:                  ch.sel,
+		partner:              ch.partner,
+		vc:                   ch.vc.Copy(),
+		wCl:                  ch.wCl.Copy(),
+		numberConcurrent:     ch.numberConcurrent,
+		numberConcurrentWeak: ch.numberConcurrentWeak,
 	}
 	return &newCh
 }
@@ -681,44 +672,18 @@ func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	return nil
 }
 
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (ch *ElementChannel) AddChild(elem Element) {
-	ch.children = append(ch.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (ch *ElementChannel) AddParent(elem Element) {
-	ch.parents = append(ch.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (ch *ElementChannel) GetChildren() []Element {
-	return ch.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (ch *ElementChannel) GetParents() []Element {
-	return ch.parents
-}
-
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (ch *ElementChannel) GetNumberConcurrent() int {
+func (ch *ElementChannel) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return ch.numberConcurrentWeak
+	}
 	return ch.numberConcurrent
 }
 
@@ -726,6 +691,11 @@ func (ch *ElementChannel) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (ch *ElementChannel) SetNumberConcurrent(c int) {
-	ch.numberConcurrent = c
+//   - weak bool: set number of weak concurrent
+func (ch *ElementChannel) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		ch.numberConcurrentWeak = c
+	} else {
+		ch.numberConcurrent = c
+	}
 }

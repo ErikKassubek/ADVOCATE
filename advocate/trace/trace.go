@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -447,7 +448,7 @@ func (t *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == clock.Before) {
+			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
 				if minTime == -1 || elem.GetTPre() < minTime {
 					minTime = elem.GetTPre()
@@ -483,7 +484,7 @@ func (t *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Element
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == clock.Before) {
+			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
 				if elem.GetTPre() <= start {
 					continue
 				}
@@ -541,7 +542,7 @@ func (t *Trace) RemoveConcurrent(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != clock.Concurrent {
+			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Concurrent {
 				result = append(result, elem)
 			}
 		}
@@ -568,7 +569,7 @@ func (t *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != clock.Before {
+			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Before {
 				result = append(result, elem)
 			}
 		}
@@ -591,7 +592,7 @@ func (t *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 				continue
 			}
 
-			if clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == clock.Concurrent {
+			if clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == hb.Concurrent {
 				concurrent[routine] = elem
 			}
 		}
@@ -779,7 +780,7 @@ func (t *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element {
 				continue
 			}
 
-			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == clock.Concurrent {
+			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == hb.Concurrent {
 				e := elem.(*ElementCond)
 				if e.opC == SignalOp {
 					res["signal"] = append(res["signal"], elem)

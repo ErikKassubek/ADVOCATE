@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/timer"
@@ -40,11 +41,11 @@ func CheckForSelectCaseWithPartner() {
 				c1, c2 = c2, c1
 			}
 
-			hb := clock.GetHappensBefore(c1.Elem.Vc, c2.Elem.Vc)
+			hbInfo := clock.GetHappensBefore(c1.Elem.Vc, c2.Elem.Vc)
 			found := false
-			if c1.Buffered && (hb == clock.Concurrent || hb == clock.After) {
+			if c1.Buffered && (hbInfo == hb.Concurrent || hbInfo == hb.After) {
 				found = true
-			} else if !c1.Buffered && hb == clock.Concurrent {
+			} else if !c1.Buffered && hbInfo == hb.Concurrent {
 				found = true
 			}
 
@@ -125,11 +126,11 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 			if send {
 				for _, mrr := range data.MostRecentReceive {
 					if possiblePartner, ok := mrr[id]; ok {
-						hb := clock.GetHappensBefore(vc, possiblePartner.Vc)
-						if buffered && (hb == clock.Concurrent || hb == clock.Before) {
+						hbInfo := clock.GetHappensBefore(vc, possiblePartner.Vc)
+						if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.Before) {
 							found = true
 							partner = append(partner, possiblePartner)
-						} else if !buffered && hb == clock.Concurrent {
+						} else if !buffered && hbInfo == hb.Concurrent {
 							found = true
 							partner = append(partner, possiblePartner)
 						}
@@ -138,11 +139,11 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 			} else { // recv
 				for _, mrs := range data.MostRecentSend {
 					if possiblePartner, ok := mrs[id]; ok {
-						hb := clock.GetHappensBefore(vc, possiblePartner.Vc)
-						if buffered && (hb == clock.Concurrent || hb == clock.After) {
+						hbInfo := clock.GetHappensBefore(vc, possiblePartner.Vc)
+						if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.After) {
 							found = true
 							partner = append(partner, possiblePartner)
-						} else if !buffered && hb == clock.Concurrent {
+						} else if !buffered && hbInfo == hb.Concurrent {
 							found = true
 							partner = append(partner, possiblePartner)
 						}
@@ -187,18 +188,18 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *clock.VectorCloc
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.Elem.Vc)
+		hbInfo := clock.GetHappensBefore(vc, c.Elem.Vc)
 		found := false
 		if send {
-			if buffered && (hb == clock.Concurrent || hb == clock.Before) {
+			if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.Before) {
 				found = true
-			} else if !buffered && hb == clock.Concurrent {
+			} else if !buffered && hbInfo == hb.Concurrent {
 				found = true
 			}
 		} else {
-			if buffered && (hb == clock.Concurrent || hb == clock.After) {
+			if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.After) {
 				found = true
-			} else if !buffered && hb == clock.Concurrent {
+			} else if !buffered && hbInfo == hb.Concurrent {
 				found = true
 			}
 		}
@@ -229,11 +230,11 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 			continue
 		}
 
-		hb := clock.GetHappensBefore(vc, c.Elem.Vc)
+		hbInfo := clock.GetHappensBefore(vc, c.Elem.Vc)
 		found := false
-		if c.Buffered && (hb == clock.Concurrent || hb == clock.After) {
+		if c.Buffered && (hbInfo == hb.Concurrent || hbInfo == hb.After) {
 			found = true
-		} else if !c.Buffered && hb == clock.Concurrent {
+		} else if !c.Buffered && hbInfo == hb.Concurrent {
 			found = true
 		}
 

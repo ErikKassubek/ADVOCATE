@@ -12,6 +12,7 @@ package analysis
 
 import (
 	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -61,7 +62,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	if opC == trace.SendOp { // send
 		for partnerRout, mrr := range data.MostRecentReceive {
 			if _, ok := mrr[id]; ok {
-				if clock.GetHappensBefore(mrr[id].Vc, vc) == clock.Concurrent {
+				if clock.GetHappensBefore(mrr[id].Vc, vc) == hb.Concurrent {
 
 					var bugType helper.ResultType = helper.LUnbufferedWith
 					if buffered {
@@ -94,7 +95,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	} else if opC == trace.RecvOp { // recv
 		for partnerRout, mrs := range data.MostRecentSend {
 			if _, ok := mrs[id]; ok {
-				if clock.GetHappensBefore(mrs[id].Vc, vc) == clock.Concurrent {
+				if clock.GetHappensBefore(mrs[id].Vc, vc) == hb.Concurrent {
 
 					var bugType = helper.LUnbufferedWith
 					if buffered {
@@ -152,7 +153,7 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.Vc, elemVc.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.Vc, elemVc.Vc) == hb.Concurrent {
 				var bugType = helper.LUnbufferedWith
 				if buffered {
 					bugType = helper.LBufferedWith
@@ -206,7 +207,7 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 				continue
 			}
 
-			if clock.GetHappensBefore(vcTID2.Vc, elemVc.Vc) == clock.Concurrent {
+			if clock.GetHappensBefore(vcTID2.Vc, elemVc.Vc) == hb.Concurrent {
 
 				var bugType = helper.LUnbufferedWith
 				if buffered {
@@ -272,8 +273,8 @@ func checkForLeak() {
 					continue
 				}
 
-				hb := clock.GetHappensBefore(c.Elem.Vc, vcTID.Vc)
-				if hb == clock.Concurrent {
+				hbInfo := clock.GetHappensBefore(c.Elem.Vc, vcTID.Vc)
+				if hbInfo == hb.Concurrent {
 					found = true
 					if c.Buffered {
 						buffered = true
@@ -283,7 +284,7 @@ func checkForLeak() {
 				}
 
 				if c.Buffered {
-					if (c.Send && hb == clock.Before) || (!c.Send && hb == clock.After) {
+					if (c.Send && hbInfo == hb.Before) || (!c.Send && hbInfo == hb.After) {
 						found = true
 						buffered = true
 						partner = c
@@ -423,7 +424,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 		if opTypes[i] == 0 { // send
 			for routinePartner, mrr := range data.MostRecentReceive {
 				if recv, ok := mrr[id]; ok {
-					if clock.GetHappensBefore(vc, mrr[id].Vc) == clock.Concurrent {
+					if clock.GetHappensBefore(vc, mrr[id].Vc) == hb.Concurrent {
 						file1, line1, _, err1 := trace.InfoFromTID(se.GetTID()) // select
 						if err1 != nil {
 							log.Errorf("Error in trace.InfoFromTID(%s)\n", se.GetTID())
@@ -449,7 +450,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 		} else if opTypes[i] == 1 { // recv
 			for routinePartner, mrs := range data.MostRecentSend {
 				if send, ok := mrs[id]; ok {
-					if clock.GetHappensBefore(vc, mrs[id].Vc) == clock.Concurrent {
+					if clock.GetHappensBefore(vc, mrs[id].Vc) == hb.Concurrent {
 						file1, line1, _, err1 := trace.InfoFromTID(se.GetTID()) // select
 						if err1 != nil {
 							log.Errorf("Error in trace.InfoFromTID(%s)\n", se.GetTID())

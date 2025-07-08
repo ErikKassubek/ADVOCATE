@@ -40,27 +40,25 @@ const (
 //   - tPost int: The timestamp of the event
 //   - id int: The id of the atomic variable
 //   - opA opAtomic: The operation on the atomic variable
-//   - vCl *clock.VectorClock: The vector clock of the operation
-//   - wVCl *clock.VectorClock: The weak vector clock of the operation
+//   - vc *clock.VectorClock: The vector clock of the operation
+//   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - file string: the file of the operation
 //   - line int: the line of the operation
-//   - children []TraceElement: children in partial order graph
-//   - parent []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementAtomic struct {
-	traceID          int
-	index            int
-	routine          int
-	tPost            int
-	id               int
-	opA              OpAtomic
-	vCl              *clock.VectorClock
-	wVCl             *clock.VectorClock
-	file             string
-	line             int
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPost                int
+	id                   int
+	opA                  OpAtomic
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	file                 string
+	line                 int
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -109,18 +107,17 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPost:            tPostInt,
-		id:               idInt,
-		opA:              opAInt,
-		file:             file,
-		line:             line,
-		vCl:              nil,
-		wVCl:             nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPost:                tPostInt,
+		id:                   idInt,
+		opA:                  opAInt,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -221,7 +218,7 @@ func (at *ElementAtomic) GetOpA() OpAtomic {
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
 func (at *ElementAtomic) SetVc(cl *clock.VectorClock) {
-	at.vCl = cl.Copy()
+	at.vc = cl.Copy()
 }
 
 // SetWVc sets the weak vector clock
@@ -229,7 +226,7 @@ func (at *ElementAtomic) SetVc(cl *clock.VectorClock) {
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
 func (at *ElementAtomic) SetWVc(cl *clock.VectorClock) {
-	at.wVCl = cl.Copy()
+	at.wVc = cl.Copy()
 }
 
 // GetVC returns the vector clock of the element
@@ -237,7 +234,7 @@ func (at *ElementAtomic) SetWVc(cl *clock.VectorClock) {
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (at *ElementAtomic) GetVC() *clock.VectorClock {
-	return at.vCl
+	return at.vc
 }
 
 // GetWVc returns the weak vector clock of the element
@@ -245,7 +242,7 @@ func (at *ElementAtomic) GetVC() *clock.VectorClock {
 // Returns:
 //   - VectorClock: The weak vector clock of the element
 func (at *ElementAtomic) GetWVc() *clock.VectorClock {
-	return at.wVCl
+	return at.wVc
 }
 
 // GetObjType returns the string representation of the object type
@@ -377,64 +374,32 @@ func (at *ElementAtomic) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (at *ElementAtomic) Copy() Element {
-	children := make([]Element, len(at.children))
-	copy(children, at.children)
-	parents := make([]Element, len(at.parents))
-	copy(parents, at.parents)
-
 	return &ElementAtomic{
-		traceID:          at.traceID,
-		index:            at.index,
-		routine:          at.routine,
-		tPost:            at.tPost,
-		id:               at.id,
-		opA:              at.opA,
-		vCl:              at.vCl.Copy(),
-		wVCl:             at.wVCl.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: at.numberConcurrent,
+		traceID:              at.traceID,
+		index:                at.index,
+		routine:              at.routine,
+		tPost:                at.tPost,
+		id:                   at.id,
+		opA:                  at.opA,
+		vc:                   at.vc.Copy(),
+		wVc:                  at.wVc.Copy(),
+		numberConcurrent:     at.numberConcurrent,
+		numberConcurrentWeak: at.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (at *ElementAtomic) AddChild(elem Element) {
-	at.children = append(at.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (at *ElementAtomic) AddParent(elem Element) {
-	at.parents = append(at.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (at *ElementAtomic) GetChildren() []Element {
-	return at.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (at *ElementAtomic) GetParents() []Element {
-	return at.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (at *ElementAtomic) GetNumberConcurrent() int {
+func (at *ElementAtomic) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return at.numberConcurrentWeak
+	}
 	return at.numberConcurrent
 }
 
@@ -442,6 +407,11 @@ func (at *ElementAtomic) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (at *ElementAtomic) SetNumberConcurrent(c int) {
-	at.numberConcurrent = c
+//   - weak bool: return number of weak concurrent
+func (at *ElementAtomic) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		at.numberConcurrentWeak = c
+	} else {
+		at.numberConcurrent = c
+	}
 }

@@ -13,6 +13,7 @@ package analysis
 import (
 	"advocate/analysis/concurrent"
 	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -56,7 +57,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	runAnalysisOnExitCodes(fuzzing)
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 
-	concurrent.GetConcurrent(data.MainTrace.GetTraces()[2][0], true, false)
+	concurrent.GetConcurrent(data.MainTrace.GetTraces()[3][0], true, false, true)
 
 	panic("A")
 }
@@ -196,6 +197,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
 	data.InitVC()
 	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
+	pog.InitPOG()
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		ResetState()
@@ -210,7 +212,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	start := time.Now()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
-		concurrent.AddEdgePartialOrderGraphSameRoutineAndFork(elem)
+		pog.AddEdgeSameRoutineAndFork(elem)
 
 		// count how many operations where executed on the underlying structure
 		// do not count for operations that do not have an underlying structure

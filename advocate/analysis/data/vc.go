@@ -33,11 +33,11 @@ var (
 	BufferedVCsSize  = make(map[int]int)
 
 	// vector clocks for last release times
-	RelW = make(map[int]*clock.VectorClock) // id -> vc
-	RelR = make(map[int]*clock.VectorClock) // id -> vc
+	RelW = make(map[int]*ElemWithVc) // id -> release
+	RelR = make(map[int]*ElemWithVc) // id -> release
 
 	// vector clock for each wait group
-	LastChangeWG = make(map[int]*clock.VectorClock)
+	LastChangeWG = make(map[int]*trace.ElementWait)
 )
 
 func InitVC() {

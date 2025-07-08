@@ -48,26 +48,24 @@ const (
 //   - line int: The line of the mutex operation in the code
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - children []TraceElement: children in partial order graph
-//   - parents []TraceElement: parents in partial order graph
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 type ElementMutex struct {
-	traceID          int
-	index            int
-	routine          int
-	tPre             int
-	tPost            int
-	id               int
-	rw               bool
-	opM              OpMutex
-	suc              bool
-	file             string
-	line             int
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
-	children         []Element
-	parents          []Element
-	numberConcurrent int
+	traceID              int
+	index                int
+	routine              int
+	tPre                 int
+	tPost                int
+	id                   int
+	rw                   bool
+	opM                  OpMutex
+	suc                  bool
+	file                 string
+	line                 int
+	vc                   *clock.VectorClock
+	wVc                  *clock.VectorClock
+	numberConcurrent     int
+	numberConcurrentWeak int
 }
 
 // AddTraceElementMutex adds a new mutex element to the main trace
@@ -133,21 +131,20 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := ElementMutex{
-		index:            t.numberElemsInTrace[routine],
-		routine:          routine,
-		tPre:             tPreInt,
-		tPost:            tPostInt,
-		id:               idInt,
-		rw:               rwBool,
-		opM:              opMInt,
-		suc:              sucBool,
-		file:             file,
-		line:             line,
-		vc:               nil,
-		wVc:              nil,
-		children:         make([]Element, 0),
-		parents:          make([]Element, 0),
-		numberConcurrent: -1,
+		index:                t.numberElemsInTrace[routine],
+		routine:              routine,
+		tPre:                 tPreInt,
+		tPost:                tPostInt,
+		id:                   idInt,
+		rw:                   rwBool,
+		opM:                  opMInt,
+		suc:                  sucBool,
+		file:                 file,
+		line:                 line,
+		vc:                   nil,
+		wVc:                  nil,
+		numberConcurrent:     -1,
+		numberConcurrentWeak: -1,
 	}
 
 	t.AddElement(&elem)
@@ -453,69 +450,37 @@ func (mu *ElementMutex) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (mu *ElementMutex) Copy() Element {
-	children := make([]Element, len(mu.children))
-	copy(children, mu.children)
-	parents := make([]Element, len(mu.parents))
-	copy(parents, mu.parents)
-
 	return &ElementMutex{
-		traceID:          mu.traceID,
-		index:            mu.index,
-		routine:          mu.routine,
-		tPre:             mu.tPre,
-		tPost:            mu.tPost,
-		id:               mu.id,
-		rw:               mu.rw,
-		opM:              mu.opM,
-		suc:              mu.suc,
-		file:             mu.file,
-		line:             mu.line,
-		vc:               mu.vc.Copy(),
-		wVc:              mu.wVc.Copy(),
-		children:         children,
-		parents:          parents,
-		numberConcurrent: mu.numberConcurrent,
+		traceID:              mu.traceID,
+		index:                mu.index,
+		routine:              mu.routine,
+		tPre:                 mu.tPre,
+		tPost:                mu.tPost,
+		id:                   mu.id,
+		rw:                   mu.rw,
+		opM:                  mu.opM,
+		suc:                  mu.suc,
+		file:                 mu.file,
+		line:                 mu.line,
+		vc:                   mu.vc.Copy(),
+		wVc:                  mu.wVc.Copy(),
+		numberConcurrent:     mu.numberConcurrent,
+		numberConcurrentWeak: mu.numberConcurrentWeak,
 	}
-}
-
-// AddChild adds an element as a child of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (mu *ElementMutex) AddChild(elem Element) {
-	mu.children = append(mu.children, elem)
-}
-
-// AddParent adds an element as a parent of this node in the partial order graph
-//
-// Parameter:
-//   - elem *TraceElement: the element to add
-func (mu *ElementMutex) AddParent(elem Element) {
-	mu.parents = append(mu.parents, elem)
-}
-
-// GetChildren returns all children of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the children
-func (mu *ElementMutex) GetChildren() []Element {
-	return mu.children
-}
-
-// GetParents returns all parents of this node in the partial order graph
-//
-// Returns:
-//   - []*TraceElement: the parents
-func (mu *ElementMutex) GetParents() []Element {
-	return mu.parents
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//
 // Returns:
 //   - number of concurrent element, or -1
-func (mu *ElementMutex) GetNumberConcurrent() int {
+func (mu *ElementMutex) GetNumberConcurrent(weak bool) int {
+	if weak {
+		return mu.numberConcurrentWeak
+	}
 	return mu.numberConcurrent
 }
 
@@ -523,6 +488,11 @@ func (mu *ElementMutex) GetNumberConcurrent() int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-func (mu *ElementMutex) SetNumberConcurrent(c int) {
-	mu.numberConcurrent = c
+//   - weak bool: set number of weak concurrent
+func (mu *ElementMutex) SetNumberConcurrent(c int, weak bool) {
+	if weak {
+		mu.numberConcurrentWeak = c
+	} else {
+		mu.numberConcurrent = c
+	}
 }

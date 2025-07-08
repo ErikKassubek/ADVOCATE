@@ -12,23 +12,13 @@
 package analysis
 
 import (
-	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/concurrent/cssts"
+	"advocate/analysis/concurrent/pog"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/timer"
 )
-
-// Create a new wg if needed
-//
-// Parameter:
-//   - index int: The id of the wait group
-//   - nRout int: The number of routines in the trace
-func newWg(index int, nRout int) {
-	if _, ok := data.LastChangeWG[index]; !ok {
-		data.LastChangeWG[index] = clock.NewVectorClock(nRout)
-	}
-}
 
 // UpdateHBWait updates and stores the vector clock of the element
 // Parameter:
@@ -60,8 +50,11 @@ func Change(wa *trace.ElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, data.CurrentVC[routine].GetSize())
-	data.LastChangeWG[id].Sync(data.CurrentVC[routine])
+	lw := data.LastChangeWG[id]
+	if lw != nil {
+		wa.GetVC().Sync(lw.GetVC())
+	}
+	data.LastChangeWG[id] = wa
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -84,10 +77,13 @@ func Wait(wa *trace.ElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	newWg(id, data.CurrentVC[routine].GetSize())
-
 	if wa.GetTPost() != 0 {
-		data.CurrentVC[routine].Sync(data.LastChangeWG[id])
+		lc := data.LastChangeWG[id]
+		if lc != nil {
+			data.CurrentVC[routine].Sync(lc.GetVC())
+			pog.AddEdge(lc, wa, false)
+			cssts.AddEdge(lc, wa, false)
+		}
 	}
 
 	data.CurrentVC[routine].Inc(routine)

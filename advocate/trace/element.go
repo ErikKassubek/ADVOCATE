@@ -54,10 +54,6 @@ type Element interface {
 	Copy() Element
 	setTraceID(ID int)
 	GetTraceID() int
-	AddChild(elem Element)
-	GetChildren() []Element
-	AddParent(elem Element)
-	GetParents() []Element
-	GetNumberConcurrent() int
-	SetNumberConcurrent(c int)
+	GetNumberConcurrent(weak bool) int
+	SetNumberConcurrent(c int, weak bool)
 }

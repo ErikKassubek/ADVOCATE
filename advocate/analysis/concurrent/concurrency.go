@@ -11,11 +11,8 @@
 package concurrent
 
 import (
-	"advocate/analysis/concurrent/cssts"
 	"advocate/analysis/concurrent/pog"
-	"advocate/analysis/concurrent/vc"
 	"advocate/trace"
-	"advocate/utils/log"
 )
 
 // GetConcurrent returns all concurrent elements for an element
@@ -30,14 +27,14 @@ import (
 // Returns:
 //   - []trace.Element: concurrent elements to elem
 //
-// VC: 44.747463124s; OG: 619.517929ms; ST1: 1.26254268s, ST2: 4.226630035s
+// 9m11.105803818s/48.577234333s; OG: 910.626721ms/644.247894ms; ST1: 1.075209986s/1.770912088s, ST2: 13m57.841537023s/3.984323305s
 func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element {
-	b := vc.GetConcurrent(elem, all, sameElem, weak)
+	// b := vc.GetConcurrent(elem, all, sameElem, weak)
 	g := pog.GetConcurrent(elem, all, sameElem, weak)
-	c1 := cssts.GetConcurrentAllPairs(elem, all, sameElem, weak)
-	c2 := cssts.GetConcurrent(elem, all, sameElem, weak)
+	// c1 := cssts.GetConcurrentAllPairs(elem, all, sameElem, weak)
+	// c2 := cssts.GetConcurrent(elem, all, sameElem, weak)
 
-	log.Importantf("VC: %d; OG: %d; ST1: %d, ST2: %d", len(b), len(g), len(c1), len(c2))
+	// log.Importantf("VC: %d; OG: %d; ST1: %d, ST2: %d", len(b), len(g), len(c1), len(c2))
 
 	// start := time.Now()
 	// for _, trace := range data.MainTrace.GetTraces() {

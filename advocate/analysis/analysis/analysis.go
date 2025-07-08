@@ -223,24 +223,23 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		switch e := elem.(type) {
 		case *trace.ElementAtomic:
 			if ignoreCriticalSections {
-				UpdateVCAtomicAlt(e)
+				UpdateHBAtomicAlt(e)
 			} else {
-				UpdateVCAtomic(e)
+				UpdateHBAtomic(e)
 			}
 		case *trace.ElementChannel:
-			UpdateVCChannel(e)
+			UpdateHBChannel(e)
 		case *trace.ElementMutex:
 			if ignoreCriticalSections {
-				UpdateVCMutexAlt(e)
+				UpdateHBMutexAlt(e)
 			} else {
-				UpdateVCMutex(e)
+				UpdateHBMutex(e)
 			}
 			if data.AnalysisFuzzing {
 				getConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
-			UpdateVCFork(e)
-			cssts.AddEdgeCSSTsFork(e)
+			UpdateHBFork(e)
 		case *trace.ElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
@@ -255,20 +254,20 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 					opTypes = append(opTypes, 1)
 				}
 			}
-			UpdateVCSelect(e)
+			UpdateHBSelect(e)
 		case *trace.ElementWait:
-			UpdateVCWait(e)
+			UpdateHBWait(e)
 		case *trace.ElementCond:
-			UpdateVCCond(e)
+			UpdateHBCond(e)
 		case *trace.ElementOnce:
-			UpdateVCOnce(e)
+			UpdateHBOnce(e)
 			if data.AnalysisFuzzing {
 				getConcurrentOnceForFuzzing(e)
 			}
 		case *trace.ElementRoutineEnd:
-			UpdateVCRoutineEnd(e)
+			UpdateHBRoutineEnd(e)
 		case *trace.ElementNew:
-			UpdateVCNew(e)
+			UpdateHBNew(e)
 		}
 
 		if data.AnalysisCases["resourceDeadlock"] {

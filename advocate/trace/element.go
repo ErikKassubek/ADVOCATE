@@ -10,7 +10,7 @@
 
 package trace
 
-import "advocate/analysis/clock"
+import "advocate/analysis/concurrent/clock"
 
 // Values possible primitive types
 const (

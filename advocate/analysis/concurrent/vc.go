@@ -11,7 +11,7 @@
 package concurrent
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"

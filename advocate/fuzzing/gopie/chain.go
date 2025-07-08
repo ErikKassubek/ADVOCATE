@@ -11,8 +11,8 @@
 package gopie
 
 import (
-	"advocate/analysis/clock"
 	"advocate/analysis/concurrent"
+	"advocate/analysis/concurrent/clock"
 	"advocate/analysis/data"
 	anaData "advocate/analysis/data"
 	"advocate/trace"

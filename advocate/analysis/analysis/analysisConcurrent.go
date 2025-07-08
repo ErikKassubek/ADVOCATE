@@ -13,7 +13,7 @@
 package analysis
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"

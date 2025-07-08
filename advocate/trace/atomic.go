@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 	"errors"
 	"fmt"
 	"strconv"
@@ -40,8 +40,8 @@ const (
 //   - tPost int: The timestamp of the event
 //   - id int: The id of the atomic variable
 //   - opA opAtomic: The operation on the atomic variable
-//   - vc *clock.VectorClock: The vector clock of the operation
-//   - wVc *clock.VectorClock: The weak vector clock of the operation
+//   - vCl *clock.VectorClock: The vector clock of the operation
+//   - wVCl *clock.VectorClock: The weak vector clock of the operation
 //   - file string: the file of the operation
 //   - line int: the line of the operation
 //   - children []TraceElement: children in partial order graph
@@ -54,8 +54,8 @@ type ElementAtomic struct {
 	tPost            int
 	id               int
 	opA              OpAtomic
-	vc               *clock.VectorClock
-	wVc              *clock.VectorClock
+	vCl              *clock.VectorClock
+	wVCl             *clock.VectorClock
 	file             string
 	line             int
 	children         []Element
@@ -116,8 +116,8 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		opA:              opAInt,
 		file:             file,
 		line:             line,
-		vc:               nil,
-		wVc:              nil,
+		vCl:              nil,
+		wVCl:             nil,
 		children:         make([]Element, 0),
 		parents:          make([]Element, 0),
 		numberConcurrent: -1,
@@ -219,17 +219,17 @@ func (at *ElementAtomic) GetOpA() OpAtomic {
 // SetVc sets the vector clock
 //
 // Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (at *ElementAtomic) SetVc(vc *clock.VectorClock) {
-	at.vc = vc.Copy()
+//   - cl *clock.VectorClock: the vector clock
+func (at *ElementAtomic) SetVc(cl *clock.VectorClock) {
+	at.vCl = cl.Copy()
 }
 
 // SetWVc sets the weak vector clock
 //
 // Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (at *ElementAtomic) SetWVc(vc *clock.VectorClock) {
-	at.wVc = vc.Copy()
+//   - cl *clock.VectorClock: the vector clock
+func (at *ElementAtomic) SetWVc(cl *clock.VectorClock) {
+	at.wVCl = cl.Copy()
 }
 
 // GetVC returns the vector clock of the element
@@ -237,7 +237,7 @@ func (at *ElementAtomic) SetWVc(vc *clock.VectorClock) {
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (at *ElementAtomic) GetVC() *clock.VectorClock {
-	return at.vc
+	return at.vCl
 }
 
 // GetWVc returns the weak vector clock of the element
@@ -245,7 +245,7 @@ func (at *ElementAtomic) GetVC() *clock.VectorClock {
 // Returns:
 //   - VectorClock: The weak vector clock of the element
 func (at *ElementAtomic) GetWVc() *clock.VectorClock {
-	return at.wVc
+	return at.wVCl
 }
 
 // GetObjType returns the string representation of the object type
@@ -389,8 +389,8 @@ func (at *ElementAtomic) Copy() Element {
 		tPost:            at.tPost,
 		id:               at.id,
 		opA:              at.opA,
-		vc:               at.vc.Copy(),
-		wVc:              at.wVc.Copy(),
+		vCl:              at.vCl.Copy(),
+		wVCl:             at.wVCl.Copy(),
 		children:         children,
 		parents:          parents,
 		numberConcurrent: at.numberConcurrent,

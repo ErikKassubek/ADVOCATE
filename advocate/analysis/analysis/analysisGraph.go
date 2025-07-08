@@ -12,7 +12,7 @@
 package analysis
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 	"advocate/trace"
 	"fmt"
 	"math"

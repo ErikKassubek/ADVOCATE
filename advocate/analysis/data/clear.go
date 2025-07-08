@@ -11,7 +11,7 @@
 package data
 
 import (
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/memory"
@@ -46,7 +46,7 @@ func ClearData() {
 	MostRecentAcquireTotal = make(map[int]ElemWithVcVal)
 	RelW = make(map[int]*clock.VectorClock)
 	RelR = make(map[int]*clock.VectorClock)
-	Lw = make(map[int]*clock.VectorClock)
+	Lw = make(map[int]*trace.ElementAtomic)
 	CurrentlyWaiting = make(map[int][]int)
 	LeakingChannels = make(map[int][]VectorClockTID2)
 	SelectCases = make([]AllSelectCase, 0)

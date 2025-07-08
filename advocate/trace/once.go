@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/clock"
+	"advocate/analysis/concurrent/clock"
 )
 
 // ElementOnce is a trace element for a once

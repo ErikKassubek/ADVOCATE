@@ -10,7 +10,10 @@
 
 package data
 
-import "advocate/analysis/clock"
+import (
+	"advocate/analysis/concurrent/clock"
+	"advocate/trace"
+)
 
 var (
 	// current happens before vector clocks
@@ -20,7 +23,7 @@ var (
 	CurrentWVC = make(map[int]*clock.VectorClock)
 
 	// vector clocks for last write times
-	Lw = make(map[int]*clock.VectorClock)
+	Lw = make(map[int]*trace.ElementAtomic)
 
 	// vector clock for each buffer place in vector clock
 	// the map key is the channel id. The slice is used for the buffer positions
@@ -42,17 +45,5 @@ func InitVC() {
 	for i := 1; i <= noRoutine; i++ {
 		CurrentVC[i] = clock.NewVectorClock(noRoutine)
 		CurrentWVC[i] = clock.NewVectorClock(noRoutine)
-	}
-}
-
-// NewLW sets the last write times for a given atomic variable to a new vector clock
-// If it is already set, nothing happens
-//
-// Parameter:
-//   - id int: the id of the atomic variable
-//   - nRout int: number of routines in the trace
-func NewLW(id int, nRout int) {
-	if _, ok := Lw[id]; !ok {
-		Lw[id] = clock.NewVectorClock(nRout)
 	}
 }

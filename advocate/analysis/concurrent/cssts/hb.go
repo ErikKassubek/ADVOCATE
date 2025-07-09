@@ -127,11 +127,11 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 }
 
 // GetHappensBefore returns the happens before relation between two operations given there
-// vector clocks
+// csst
 //
 // Parameter:
-//   - vc1 *VectorClock: The first vector clock
-//   - vc2 *VectorClock: The second vector clock
+//   - t1 trace.Element: the trace element
+//   - t2 trace.Element: the second element
 //   - weak bool: get based on weak happens before
 //
 // Returns:

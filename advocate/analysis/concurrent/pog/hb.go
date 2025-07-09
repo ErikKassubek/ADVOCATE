@@ -11,6 +11,7 @@
 package pog
 
 import (
+	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/concurrent/helper"
 	"advocate/analysis/data"
 	"advocate/trace"
@@ -51,8 +52,8 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 	reachableFromN := make(map[int]bool)
 	reachableToN := make(map[int]bool)
 
-	dfsPartialOrderGraph(elem, reachableFromN, false, weak)
-	dfsPartialOrderGraph(elem, reachableToN, true, weak)
+	dfsPartialOrderGraph(elem, nil, reachableFromN, false, weak)
+	dfsPartialOrderGraph(elem, nil, reachableToN, true, weak)
 
 	res := make([]trace.Element, 0)
 
@@ -81,17 +82,50 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 	return res
 }
 
+// GetHappensBefore returns the happens before relation between two operations given there
+// POG
+//
+// Parameter:
+//   - t1 trace.Element: the trace element
+//   - t2 trace.Element: the second element
+//   - weak bool: get based on weak happens before
+//
+// Returns:
+//   - happensBefore: The happens before relation between the elements
+func GetHappensBefore(t1, t2 trace.Element, weak bool) hb.HappensBefore {
+	if dfsPartialOrderGraph(t1, t2, nil, false, weak) {
+		return hb.Before
+	}
+	if dfsPartialOrderGraph(t2, t1, nil, false, weak) {
+		return hb.After
+	}
+
+	return hb.Concurrent
+}
+
 // Pass the partial order graph using dfs
 // Store all visited nodes
 //
 // Parameter:
 //   - start trace.TraceElement: element to start from
+//   - end trace.TraceElement: if not non, stop when end is reached
 //   - visited map[int]bool: traceID of all visited nodes
 //   - inverted bool: If false, find all nodes that can be reached from start,
 //     if true, find all nodes from which start can be reached
 //   - weak bool: if true, use weak partial order
-func dfsPartialOrderGraph(start trace.Element, reachable map[int]bool,
-	inverted, weak bool) {
+//
+// Returns:
+//   - bool: if end is nil, return if end has been reached, otherwise return true
+func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
+	inverted, weak bool) bool {
+	if end != nil && start.GetTraceID() == end.GetTraceID() {
+		return true
+	}
+
+	if reachable == nil {
+		reachable = make(map[int]bool)
+	}
+
 	stack := []trace.Element{start}
 
 	var g *poGraph
@@ -118,10 +152,16 @@ func dfsPartialOrderGraph(start trace.Element, reachable map[int]bool,
 
 		reachable[curr.GetTraceID()] = true
 
+		if end != nil && start.GetTraceID() == end.GetTraceID() {
+			return true
+		}
+
 		for child := range g.getChildren(curr) {
 			if !reachable[child.GetTraceID()] {
 				stack = append(stack, child)
 			}
 		}
 	}
+
+	return end == nil
 }

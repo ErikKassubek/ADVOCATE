@@ -25,11 +25,11 @@ import (
 func AddEdge(from, to trace.Element, weak bool) {
 	fromInd := getIndicesFromTraceElem(from)
 	toInd := getIndicesFromTraceElem(to)
-	Csst.InsetEdge(fromInd, toInd)
-	CsstInverted.InsetEdge(toInd, fromInd)
+	Csst.AddEdge(fromInd, toInd)
+	CsstInverted.AddEdge(toInd, fromInd)
 	if weak {
-		CsstWeak.InsetEdge(fromInd, toInd)
-		CsstWeakInverted.InsetEdge(toInd, fromInd)
+		CsstWeak.AddEdge(fromInd, toInd)
+		CsstWeakInverted.AddEdge(toInd, fromInd)
 	}
 }
 
@@ -40,12 +40,12 @@ func AddEdge(from, to trace.Element, weak bool) {
 //   - to trace.Element: end node
 //   - weak bool: if true, add to weak hb
 func addEdgeIndex(from, to types.Pair[int, int], weak bool) {
-	Csst.InsetEdge(from, to)
-	CsstInverted.InsetEdge(to, from)
+	Csst.AddEdge(from, to)
+	CsstInverted.AddEdge(to, from)
 
 	if weak {
-		CsstWeak.InsetEdge(from, to)
-		CsstWeakInverted.InsetEdge(to, from)
+		CsstWeak.AddEdge(from, to)
+		CsstWeakInverted.AddEdge(to, from)
 	}
 }
 

@@ -114,7 +114,7 @@ func (iCSST *IncrementalCSST) addSuccessor(from, to types.Pair[int, int]) {
 	}
 }
 
-func (iCSST *IncrementalCSST) InsetEdge(from, to types.Pair[int, int]) types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]]] {
+func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]]] {
 	addedEdges := types.NewSet[types.Pair[types.Pair[int, int], types.Pair[int, int]]]()
 
 	if iCSST.reachable(from, to) {

@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: happensBefore.go
+// File: hb.go
 // Brief: Type for happens before
 //
 // Author: Erik Kassubek

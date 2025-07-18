@@ -58,8 +58,6 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
 
 	concurrent.GetConcurrent(data.MainTrace.GetTraces()[3][0], true, false, true)
-
-	panic("A")
 }
 
 // runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs

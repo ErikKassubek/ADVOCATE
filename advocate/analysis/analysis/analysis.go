@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/concurrent"
 	"advocate/analysis/concurrent/cssts"
 	"advocate/analysis/concurrent/pog"
+	"advocate/analysis/constraints"
 	"advocate/analysis/data"
 	"advocate/results/results"
 	"advocate/trace"
@@ -229,6 +230,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			} else {
 				UpdateHBAtomic(e)
 			}
+			constraints.AddAtomic(e)
 		case *trace.ElementChannel:
 			UpdateHBChannel(e)
 		case *trace.ElementMutex:

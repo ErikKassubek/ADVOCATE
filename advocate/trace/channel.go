@@ -661,7 +661,6 @@ func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 		delete(tr.channelWithoutPartner[id], oID)
 
 		return partner
-
 	}
 
 	if tr.channelWithoutPartner[id] == nil {

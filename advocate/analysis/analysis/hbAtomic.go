@@ -69,10 +69,7 @@ func Write(at *trace.ElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	id := at.GetID()
 	routine := at.GetRoutine()
-
-	data.Lw[id] = at
 
 	data.CurrentVC[routine].Inc(routine)
 	data.CurrentWVC[routine].Inc(routine)
@@ -91,10 +88,10 @@ func Read(at *trace.ElementAtomic, sync bool) {
 	id := at.GetID()
 	routine := at.GetRoutine()
 
-	if sync && data.Lw[id] != nil {
-		data.CurrentVC[routine].Sync(data.Lw[id].GetVC())
-		pog.AddEdge(at, data.Lw[id], false)
-		cssts.AddEdge(at, data.Lw[id], false)
+	if sync && data.LastAtomicWriter[id] != nil {
+		data.CurrentVC[routine].Sync(data.LastAtomicWriter[id].GetVC())
+		pog.AddEdge(at, data.LastAtomicWriter[id], false)
+		cssts.AddEdge(at, data.LastAtomicWriter[id], false)
 	}
 
 	data.CurrentVC[routine].Inc(routine)

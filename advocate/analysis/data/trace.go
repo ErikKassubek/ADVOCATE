@@ -83,6 +83,11 @@ var (
 
 	// state for resource deadlock
 	CurrentState State
+
+	// last atomic writer for each atomic variable
+
+	// vector clocks for last write times
+	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
 )
 
 // ClearTrace sets the main analysis trace to a new, empty trace

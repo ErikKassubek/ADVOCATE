@@ -22,9 +22,6 @@ var (
 	// current must happens before vector clocks
 	CurrentWVC = make(map[int]*clock.VectorClock)
 
-	// vector clocks for last write times
-	Lw = make(map[int]*trace.ElementAtomic)
-
 	// vector clock for each buffer place in vector clock
 	// the map key is the channel id. The slice is used for the buffer positions
 	BufferedVCs = make(map[int]([]BufferedVC))

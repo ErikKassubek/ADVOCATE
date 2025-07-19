@@ -10,7 +10,6 @@
 //
 // License: BSD-3-Clause
 
-
 package runtime
 
 import "internal/runtime/atomic"

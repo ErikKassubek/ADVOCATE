@@ -353,7 +353,7 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 		ThreadID:    data.ThreadID(element.GetRoutine()),
 		TraceID:     element.GetTID(),
 		LockID:      element.GetID(),
-		VectorClock: element.GetVC().Copy(),
+		VectorClock: element.GetWVc().Copy(),
 	}
 
 	switch element.GetOpM() {
@@ -468,6 +468,7 @@ func findEarliestRequest(cycle []data.LockDependency) data.LockEvent {
 // }
 
 func logAbortReason(reason ...any) {
+	return
 	r := []any{"No Deadlock:"}
 	r = append(r, reason...)
 	log.Info(r...)

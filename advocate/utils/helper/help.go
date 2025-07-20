@@ -67,8 +67,7 @@ var (
 	skipExisting = newFlagVal("skipExisting", "false", "", "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	// panic
-	noMemorySupervisor = newFlagVal("noMemorySupervisor", "false", "", "Disable the memory supervisor")
-	alwaysPanic        = newFlagVal("panic", "false", "", "Panic if the analysis panics")
+	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
 	noFifo                = newFlagVal("noFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
@@ -224,7 +223,6 @@ func printHelpRecord() {
 	fmt.Println(skipExisting.toString(false))
 
 	// panic
-	fmt.Println(noMemorySupervisor.toString(false))
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
@@ -257,7 +255,6 @@ func printHelpReplay() {
 	fmt.Println(output.toString(false))
 
 	// panic
-	fmt.Println(noMemorySupervisor.toString(false))
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
@@ -307,7 +304,6 @@ func printHelpAnalysis() {
 	fmt.Println(skipExisting.toString(false))
 
 	// panic
-	fmt.Println(noMemorySupervisor.toString(false))
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
@@ -361,7 +357,6 @@ func printHelpFuzzing() {
 	fmt.Println(output.toString(false))
 
 	// panic
-	fmt.Println(noMemorySupervisor.toString(false))
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings

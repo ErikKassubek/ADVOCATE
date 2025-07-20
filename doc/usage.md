@@ -344,10 +344,6 @@ In some situations, especially when only limited storage is available, it may
 be useful to ignore atomic operations during recording and analysis. To do this,
 you can set the `-ignoreAtomics`.
 
-Insufficient memory (RAM) can cause the computer running advocate to crash
-during the analysis. To stop this, a [Memory Supervisor](./memory.md) has been implemented.
-Disable this supervisor, you can set the `- noMemorySupervisor` flag.
-
 If the analysis of multiple tests was interrupted, running the toolchain
 again would start from the beginning. If you want to skip all the already
 finished tests, you can set `-cont`.

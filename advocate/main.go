@@ -23,7 +23,6 @@ import (
 	"advocate/toolchain"
 	"advocate/utils/helper"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 )
 
@@ -72,8 +71,6 @@ var (
 
 	cont bool
 
-	noMemorySupervisor bool
-
 	alwaysPanic bool
 
 	settings string
@@ -119,8 +116,6 @@ func main() {
 	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
 
 	flag.BoolVar(&cont, "cont", false, "Continue a partial analysis of tests")
-
-	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
 	flag.BoolVar(&noInfo, "noInfo", false, "Do not show infos in the terminal (will only show results, errors, important and progress)")
 	flag.BoolVar(&noProgress, "noProgress", false, "Do not show progress info")
@@ -203,10 +198,6 @@ func main() {
 	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
 		log.Error("Could not determine ADVOCATE folder. Keep the toolchain and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
 		return
-	}
-
-	if !noMemorySupervisor {
-		go memory.Supervisor() // cancel analysis if not enough ram
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+

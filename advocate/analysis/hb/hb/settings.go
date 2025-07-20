@@ -11,9 +11,9 @@
 package hb
 
 var (
-	calcVC    = false
-	calcPog   = false
-	calcCssts = false
+	CalcVC    = false
+	CalcPog   = false
+	CalcCssts = false
 )
 
 // SetHBSettings sets which hb structure should be calculated
@@ -23,7 +23,7 @@ var (
 //   - pog bool: calculate partial order graph
 //   - cssts bool: calculate Collective Sparse Segment Trees
 func SetHbSettings(vc, pog, cssts bool) {
-	calcVC = vc
-	calcPog = pog
-	calcCssts = cssts
+	CalcVC = vc
+	CalcPog = pog
+	CalcCssts = cssts
 }

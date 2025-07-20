@@ -31,19 +31,12 @@ var (
 	// the current buffer position
 	BufferedVCsCount = make(map[int]int)
 	BufferedVCsSize  = make(map[int]int)
-
-	// vector clocks for last release times
-	RelW = make(map[int]*data.ElemWithVc) // id -> release
-	RelR = make(map[int]*data.ElemWithVc) // id -> release
-
-	// vector clock for each wait group
-	LastChangeWG = make(map[int]*trace.ElementWait)
 )
 
 func InitVC() {
 	BufferedVCs = make(map[int][]data.BufferedVC)
-	RelW = make(map[int]*data.ElemWithVc)
-	RelR = make(map[int]*data.ElemWithVc)
+	BufferedVCsCount = make(map[int]int)
+	BufferedVCsSize = make(map[int]int)
 	CurrentVC = make(map[int]*clock.VectorClock)
 	CurrentWVC = make(map[int]*clock.VectorClock)
 

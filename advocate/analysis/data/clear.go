@@ -47,6 +47,9 @@ func ClearData() {
 	LeakingChannels = make(map[int][]VectorClockTID2)
 	SelectCases = make([]AllSelectCase, 0)
 	ForkOperations = make(map[int]*trace.ElementFork)
+	LastChangeWG = make(map[int]*trace.ElementWait)
+	RelR = make(map[int]*ElemWithVc)
+	RelW = make(map[int]*ElemWithVc)
 	ExitCode = 0
 	ExitPos = ""
 	replayTimeoutOldest = 0

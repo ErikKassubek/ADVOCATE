@@ -214,7 +214,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	start := time.Now()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
-		pog.AddEdgeSameRoutineAndFork(elem)
+		if hb.CalcPog {
+			pog.AddEdgeSameRoutineAndFork(elem)
+		}
 
 		// count how many operations where executed on the underlying structure
 		// do not count for operations that do not have an underlying structure
@@ -226,20 +228,20 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 		switch e := elem.(type) {
 		case *trace.ElementAtomic:
-			hb.UpdateHBAtomic(e, ignoreCriticalSections)
+			elements.AnalyzeAtomic(e, ignoreCriticalSections)
 		case *trace.ElementChannel:
-			elements.UpdateHBChannel(e)
+			elements.UpdateChannel(e)
 		case *trace.ElementMutex:
 			if ignoreCriticalSections {
-				elements.UpdateHBMutexAlt(e)
+				elements.UpdateMutex(e, true)
 			} else {
-				elements.UpdateHBMutex(e)
+				elements.UpdateMutex(e, false)
 			}
 			if data.AnalysisFuzzing {
 				scenarios.GetConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
-			elements.UpdateHBFork(e)
+			elements.AnalyzeFork(e)
 		case *trace.ElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
@@ -254,20 +256,20 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 					opTypes = append(opTypes, 1)
 				}
 			}
-			elements.UpdateHBSelect(e)
+			elements.UpdateSelect(e)
 		case *trace.ElementWait:
-			elements.UpdateHBWait(e)
+			elements.AnalyzeWait(e)
 		case *trace.ElementCond:
-			elements.UpdateHBCond(e)
+			elements.AnalyzeCond(e)
 		case *trace.ElementOnce:
-			elements.UpdateHBOnce(e)
+			elements.AnalyzeOnce(e)
 			if data.AnalysisFuzzing {
 				scenarios.GetConcurrentOnceForFuzzing(e)
 			}
 		case *trace.ElementRoutineEnd:
-			elements.UpdateHBRoutineEnd(e)
+			elements.AnalyzeRoutineEnd(e)
 		case *trace.ElementNew:
-			elements.UpdateHBNew(e)
+			elements.AnalyzeNew(e)
 		}
 
 		if data.AnalysisCases["resourceDeadlock"] {

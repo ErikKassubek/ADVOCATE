@@ -11,6 +11,7 @@
 package pog
 
 import (
+	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"fmt"
@@ -33,6 +34,10 @@ func newPoGraph() poGraph {
 }
 
 func InitPOG() {
+	bufferedVCs = make(map[int]([]data.BufferedVC))
+	bufferedVCsCount = make(map[int]int)
+	bufferedVCsSize = make(map[int]int)
+
 	po = newPoGraph()
 	poInverted = newPoGraph()
 

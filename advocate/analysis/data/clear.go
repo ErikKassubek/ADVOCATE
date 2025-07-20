@@ -11,7 +11,6 @@
 package data
 
 import (
-	"advocate/analysis/concurrent/clock"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/memory"
@@ -36,7 +35,6 @@ func ClearData() {
 	MostRecentSend = make(map[int]map[int]ElemWithVcVal)
 	HasReceived = make(map[int]bool)
 	MostRecentReceive = make(map[int]map[int]ElemWithVcVal)
-	BufferedVCs = make(map[int][]BufferedVC)
 	WgAdd = make(map[int][]trace.Element)
 	WgDone = make(map[int][]trace.Element)
 	AllLocks = make(map[int][]trace.Element)
@@ -44,8 +42,6 @@ func ClearData() {
 	LockSet = make(map[int]map[int]string)
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVcVal)
-	RelW = make(map[int]*ElemWithVc)
-	RelR = make(map[int]*ElemWithVc)
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
 	CurrentlyWaiting = make(map[int][]*trace.ElementCond)
 	LeakingChannels = make(map[int][]VectorClockTID2)
@@ -62,9 +58,6 @@ func ClearData() {
 	FuzzingFlowRecv = make([]ConcurrentEntry, 0)
 	ExecutedOnce = make(map[int]*ConcurrentEntry)
 	FuzzingCounter = make(map[int]map[string]int)
-
-	CurrentVC = make(map[int]*clock.VectorClock)
-	CurrentWVC = make(map[int]*clock.VectorClock)
 
 	OSuc = make(map[int]*trace.ElementOnce)
 

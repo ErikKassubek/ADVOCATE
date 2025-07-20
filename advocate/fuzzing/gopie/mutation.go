@@ -11,7 +11,7 @@
 package gopie
 
 import (
-	"advocate/analysis/concurrent"
+	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/utils/helper"
 	"math/rand/v2"

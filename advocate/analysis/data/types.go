@@ -11,7 +11,7 @@
 package data
 
 import (
-	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"strconv"
 	"strings"

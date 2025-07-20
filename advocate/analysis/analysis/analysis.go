@@ -11,11 +11,14 @@
 package analysis
 
 import (
-	"advocate/analysis/concurrent"
-	"advocate/analysis/concurrent/cssts"
-	"advocate/analysis/concurrent/pog"
-	"advocate/analysis/constraints"
+	"advocate/analysis/analysis/elements"
+	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
+	"advocate/analysis/hb/concurrent"
+	"advocate/analysis/hb/cssts"
+	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/pog"
+	"advocate/analysis/hb/vc"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -51,7 +54,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	// if onlyAPanicAndLeak {
 	// 	runAnalysisOnExitCodes(true)
-	// 	checkForStuckRoutine(true)
+	// 	CheckForStuckRoutine(true)
 	// 	return
 	// }
 
@@ -194,16 +197,16 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	data.AnalysisCases = analysisCasesMap
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
-	data.InitVC()
+	vc.InitVC()
 	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
 	pog.InitPOG()
 
 	if data.AnalysisCases["resourceDeadlock"] {
-		ResetState()
+		scenarios.ResetState()
 	}
 
-	data.CurrentVC[1].Inc(1)
-	data.CurrentWVC[1].Inc(1)
+	vc.CurrentVC[1].Inc(1)
+	vc.CurrentWVC[1].Inc(1)
 
 	log.Info("Start HB analysis")
 
@@ -223,25 +226,20 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 		switch e := elem.(type) {
 		case *trace.ElementAtomic:
-			if ignoreCriticalSections {
-				UpdateHBAtomicAlt(e)
-			} else {
-				UpdateHBAtomic(e)
-			}
-			constraints.AddAtomic(e)
+			hb.UpdateHBAtomic(e, ignoreCriticalSections)
 		case *trace.ElementChannel:
-			UpdateHBChannel(e)
+			elements.UpdateHBChannel(e)
 		case *trace.ElementMutex:
 			if ignoreCriticalSections {
-				UpdateHBMutexAlt(e)
+				elements.UpdateHBMutexAlt(e)
 			} else {
-				UpdateHBMutex(e)
+				elements.UpdateHBMutex(e)
 			}
 			if data.AnalysisFuzzing {
-				getConcurrentMutexForFuzzing(e)
+				scenarios.GetConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
-			UpdateHBFork(e)
+			elements.UpdateHBFork(e)
 		case *trace.ElementSelect:
 			cases := e.GetCases()
 			ids := make([]int, 0)
@@ -256,26 +254,26 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 					opTypes = append(opTypes, 1)
 				}
 			}
-			UpdateHBSelect(e)
+			elements.UpdateHBSelect(e)
 		case *trace.ElementWait:
-			UpdateHBWait(e)
+			elements.UpdateHBWait(e)
 		case *trace.ElementCond:
-			UpdateHBCond(e)
+			elements.UpdateHBCond(e)
 		case *trace.ElementOnce:
-			UpdateHBOnce(e)
+			elements.UpdateHBOnce(e)
 			if data.AnalysisFuzzing {
-				getConcurrentOnceForFuzzing(e)
+				scenarios.GetConcurrentOnceForFuzzing(e)
 			}
 		case *trace.ElementRoutineEnd:
-			UpdateHBRoutineEnd(e)
+			elements.UpdateHBRoutineEnd(e)
 		case *trace.ElementNew:
-			UpdateHBNew(e)
+			elements.UpdateHBNew(e)
 		}
 
 		if data.AnalysisCases["resourceDeadlock"] {
 			switch e := elem.(type) {
 			case *trace.ElementMutex:
-				HandleMutexEventForRessourceDeadlock(*e)
+				scenarios.HandleMutexEventForRessourceDeadlock(*e)
 			}
 		}
 
@@ -297,8 +295,8 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	log.Info("Finished HB analysis")
 
 	if data.ModeIsFuzzing {
-		rerunCheckForSelectCaseWithPartnerChannel()
-		CheckForSelectCaseWithPartner()
+		scenarios.RerunCheckForSelectCaseWithPartnerChannel()
+		scenarios.CheckForSelectCaseWithPartner()
 	}
 
 	if memory.WasCanceled() {
@@ -307,8 +305,8 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	if data.AnalysisCases["leak"] {
 		log.Info("Check for leak")
-		checkForLeak()
-		checkForStuckRoutine(false)
+		scenarios.CheckForLeak()
+		scenarios.CheckForStuckRoutine(false)
 		log.Info("Finish check for leak")
 	}
 
@@ -318,7 +316,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	if data.AnalysisCases["doneBeforeAdd"] {
 		log.Info("Check for done before add")
-		checkForDoneBeforeAdd()
+		scenarios.CheckForDoneBeforeAdd()
 		log.Info("Finish check for done before add")
 	}
 
@@ -332,7 +330,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		log.Info("Check for cyclic deadlock")
-		CheckForResourceDeadlock()
+		scenarios.CheckForResourceDeadlock()
 		log.Info("Finish check for cyclic deadlock")
 	}
 
@@ -342,7 +340,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	if data.AnalysisCases["unlockBeforeLock"] {
 		log.Info("Check for unlock before lock")
-		checkForUnlockBeforeLock()
+		scenarios.CheckForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")
 	}
 }
@@ -355,11 +353,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 func checkLeak(elem trace.Element) {
 	switch e := elem.(type) {
 	case *trace.ElementChannel:
-		CheckForLeakChannelStuck(e, data.CurrentVC[e.GetRoutine()])
+		scenarios.CheckForLeakChannelStuck(e, vc.CurrentVC[e.GetRoutine()])
 	case *trace.ElementMutex:
-		CheckForLeakMutex(e)
+		scenarios.CheckForLeakMutex(e)
 	case *trace.ElementWait:
-		CheckForLeakWait(e)
+		scenarios.CheckForLeakWait(e)
 	case *trace.ElementSelect:
 		timer.Start(timer.AnaLeak)
 		cases := e.GetCases()
@@ -379,8 +377,8 @@ func checkLeak(elem trace.Element) {
 			}
 		}
 		timer.Stop(timer.AnaLeak)
-		CheckForLeakSelectStuck(e, ids, buffered, data.CurrentVC[e.GetRoutine()], opTypes)
+		scenarios.CheckForLeakSelectStuck(e, ids, buffered, vc.CurrentVC[e.GetRoutine()], opTypes)
 	case *trace.ElementCond:
-		CheckForLeakCond(e)
+		scenarios.CheckForLeakCond(e)
 	}
 }

@@ -11,9 +11,9 @@
 package rewriter
 
 import (
-	"advocate/analysis/concurrent/clock"
-	"advocate/analysis/concurrent/hb"
 	"advocate/analysis/data"
+	"advocate/analysis/hb"
+	"advocate/analysis/hb/clock"
 	"advocate/results/bugs"
 	"advocate/trace"
 	"advocate/utils/helper"

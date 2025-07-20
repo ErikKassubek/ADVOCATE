@@ -11,7 +11,7 @@
 package flow
 
 import (
-	"advocate/analysis/analysis"
+	"advocate/analysis/analysis/scenarios"
 	anadata "advocate/analysis/data"
 	"advocate/fuzzing/data"
 	"advocate/utils/log"
@@ -28,7 +28,7 @@ func CreateMutationsFlow() {
 	delay := make([](*[]anadata.ConcurrentEntry), 4)
 
 	// once, mutex, send, recv
-	delay[0], delay[1], delay[2], delay[3] = analysis.GetConcurrentInfoForFuzzing()
+	delay[0], delay[1], delay[2], delay[3] = scenarios.GetConcurrentInfoForFuzzing()
 
 	// add mutations
 	mutFlow := make(map[string]int)

@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/hb/clock"
 	"errors"
 	"strconv"
 )

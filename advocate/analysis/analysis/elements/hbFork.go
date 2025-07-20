@@ -1,0 +1,50 @@
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: hbFork.go
+// Brief: Update function for happens before info for forks (creation of new routine)
+//
+// Author: Erik Kassubek
+// Created: 2023-07-26
+//
+// License: BSD-3-Clause
+
+package elements
+
+import (
+	"advocate/analysis/data"
+	"advocate/analysis/hb/cssts"
+	"advocate/analysis/hb/vc"
+	"advocate/trace"
+	"advocate/utils/timer"
+)
+
+// UpdateHBFork update and calculate happens before information for fork operations
+// It only calculates the VC and csst, not the pog, which is included in the
+// edge creation of elements in the same routine
+//
+// Parameter:
+//   - fo *TraceElementFork: the fork element
+func UpdateHBFork(fo *trace.ElementFork) {
+	timer.Start(timer.AnaHb)
+	defer timer.Stop(timer.AnaHb)
+
+	routine := fo.GetRoutine()
+
+	fo.SetVc(vc.CurrentVC[routine])
+	fo.SetWVc(vc.CurrentWVC[routine])
+
+	oldRout := fo.GetRoutine()
+	newRout := fo.GetID()
+
+	vc.CurrentVC[newRout] = vc.CurrentVC[oldRout].Copy()
+	vc.CurrentVC[oldRout].Inc(oldRout)
+	vc.CurrentVC[newRout].Inc(newRout)
+
+	vc.CurrentWVC[newRout] = vc.CurrentWVC[oldRout].Copy()
+	vc.CurrentWVC[oldRout].Inc(oldRout)
+	vc.CurrentWVC[newRout].Inc(newRout)
+
+	data.ForkOperations[fo.GetID()] = fo
+
+	cssts.AddEdgeFork(fo)
+}

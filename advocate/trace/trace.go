@@ -11,8 +11,8 @@
 package trace
 
 import (
-	"advocate/analysis/concurrent/clock"
-	"advocate/analysis/concurrent/hb"
+	"advocate/analysis/hb"
+	"advocate/analysis/hb/clock"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/memory"

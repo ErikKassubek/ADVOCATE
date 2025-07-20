@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/concurrent/clock"
+	"advocate/analysis/hb/clock"
 )
 
 // OpMutex is an enum for opM

@@ -15,7 +15,6 @@ import (
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
-	"fmt"
 )
 
 // Add an edge between start and end
@@ -25,7 +24,6 @@ import (
 //   - end trace.Element: the end element
 //   - notWeak bool: if true, add to weak happens before
 func AddEdge(start, end trace.Element, weak bool) {
-	fmt.Println("Add edge")
 	if start == nil || end == nil {
 		return
 	}

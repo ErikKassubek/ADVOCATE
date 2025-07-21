@@ -13,8 +13,6 @@ package vc
 import (
 	"advocate/analysis/data"
 	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/pog"
 	"advocate/trace"
 	"advocate/utils/log"
 	"strconv"
@@ -38,20 +36,11 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		return
 	}
 
-	// hold back receive operations, until the send operation is processed
-	for _, elem := range data.WaitingReceive {
-		if elem.GetOID() <= data.MaxOpID[id] {
-			if len(data.WaitingReceive) != 0 {
-				data.WaitingReceive = data.WaitingReceive[1:]
-			}
-			UpdateHBChannel(elem)
-		}
-	}
-
 	if ch.IsBuffered() {
-		if opC == trace.SendOp {
+		switch opC {
+		case trace.SendOp:
 			data.MaxOpID[id] = oID
-		} else if opC == trace.RecvOp {
+		case trace.RecvOp:
 			if oID > data.MaxOpID[id] && !cl {
 				data.WaitingReceive = append(data.WaitingReceive, ch)
 				return
@@ -179,7 +168,11 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 		return
 	}
 
-	newBufferedVCs(id, qSize, cl[routine].GetSize())
+	if data.MostRecentReceive[routine] == nil {
+		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
+	}
+
+	newBufferedVCs(id, qSize)
 
 	count := BufferedVCsCount[id]
 
@@ -190,6 +183,7 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 			WVc:  wCl,
 			Fifo: fifo,
 		})
+		log.Important("APPEND: ", BufferedVCsSize[id], count)
 		return
 	}
 
@@ -210,17 +204,12 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	if s != nil {
 		v := s.GetVC()
 		cl[routine].Sync(v)
-
-		pog.AddEdge(s, ch, false)
-		cssts.AddEdge(s, ch, false)
 	}
 
 	if fifo {
 		r := data.MostRecentSend[routine][id]
 		if r.Elem != nil {
 			cl[routine].Sync(r.Vc)
-			pog.AddEdge(r.Elem, ch, false)
-			cssts.AddEdge(r.Elem, ch, false)
 		}
 	}
 
@@ -233,14 +222,7 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	}
 
 	BufferedVCsCount[id]++
-
-	for i, hold := range data.HoldRecv {
-		if hold.Ch.GetID() == id {
-			Recv(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
-			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
-			break
-		}
-	}
+	log.Important("+ID: ", id)
 }
 
 // Recv updates and calculates the vector clocks given a receive on a buffered channel.
@@ -266,7 +248,7 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
 
-	newBufferedVCs(id, qSize, cl[routine].GetSize())
+	newBufferedVCs(id, qSize)
 
 	if BufferedVCsCount[id] == 0 {
 		data.HoldRecv = append(data.HoldRecv, data.HoldObj{
@@ -279,6 +261,7 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}
 	BufferedVCsCount[id]--
+	log.Important("-ID: ", id)
 
 	if BufferedVCs[id][0].Send.GetOID() != oID {
 		found := false
@@ -307,8 +290,6 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 		r := data.MostRecentReceive[routine][id]
 		if r.Elem != nil {
 			cl[routine] = cl[routine].Sync(r.Vc)
-			pog.AddEdge(r.Elem, ch, false)
-			cssts.AddEdge(r.Elem, ch, false)
 		}
 	}
 
@@ -320,13 +301,6 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	cl[routine].Inc(routine)
 	wCl[routine].Inc(routine)
 
-	for i, hold := range data.HoldSend {
-		if hold.Ch.GetID() == id {
-			Send(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
-			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
-			break
-		}
-	}
 }
 
 // StuckChan updates and calculates the vector clocks for a stuck channel element
@@ -375,9 +349,6 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	if _, ok := data.CloseData[id]; ok {
 		c := data.CloseData[id]
 		vc[routine] = vc[routine].Sync(c.GetVC())
-
-		pog.AddEdge(c, ch, false)
-		cssts.AddEdge(c, ch, false)
 	}
 
 	vc[routine].Inc(routine)
@@ -390,8 +361,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
-//   - numRout int: the number of routines
-func newBufferedVCs(id int, qSize int, numRout int) {
+func newBufferedVCs(id int, qSize int) {
 	if _, ok := BufferedVCs[id]; !ok {
 		BufferedVCs[id] = make([]data.BufferedVC, 1)
 		BufferedVCsCount[id] = 0

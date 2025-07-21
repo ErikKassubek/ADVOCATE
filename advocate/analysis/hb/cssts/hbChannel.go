@@ -39,16 +39,6 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		return
 	}
 
-	// hold back receive operations, until the send operation is processed
-	for _, elem := range data.WaitingReceive {
-		if elem.GetOID() <= data.MaxOpID[id] {
-			if len(data.WaitingReceive) != 0 {
-				data.WaitingReceive = data.WaitingReceive[1:]
-			}
-			UpdateHBChannel(elem)
-		}
-	}
-
 	if ch.IsBuffered() {
 		if opC == trace.SendOp {
 			data.MaxOpID[id] = oID
@@ -140,6 +130,8 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		return
 	}
 
+	newBufferedVCs(id, qSize)
+
 	count := bufferedVCsCount[id]
 
 	if bufferedVCsSize[id] <= count {
@@ -184,13 +176,6 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 
 	bufferedVCsCount[id]++
 
-	for i, hold := range data.HoldRecv {
-		if hold.Ch.GetID() == id {
-			Recv(hold.Ch, hold.Fifo)
-			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
-			break
-		}
-	}
 }
 
 // Recv updates the cssts given a receive on a buffered channel.
@@ -213,6 +198,8 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 	if data.MostRecentReceive[routine] == nil {
 		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
+
+	newBufferedVCs(id, qSize)
 
 	if bufferedVCsCount[id] == 0 {
 		data.HoldRecv = append(data.HoldRecv, data.HoldObj{
@@ -260,13 +247,6 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		Send:     nil,
 	})
 
-	for i, hold := range data.HoldSend {
-		if hold.Ch.GetID() == id {
-			Send(hold.Ch, hold.Fifo)
-			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
-			break
-		}
-	}
 }
 
 // RecvC updates the cssts given a receive on a closed channel.
@@ -284,5 +264,23 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 	if _, ok := data.CloseData[id]; ok {
 		c := data.CloseData[id]
 		AddEdge(c, ch, false)
+	}
+}
+
+// Create a new map of buffered vector clocks for a channel if not already in
+// vc.BufferedVCs.
+//
+// Parameter:
+//   - id int: the id of the channel
+//   - qSize int: the buffer qSize of the channel
+func newBufferedVCs(id int, qSize int) {
+	if _, ok := bufferedVCs[id]; !ok {
+		bufferedVCs[id] = make([]data.BufferedVC, 1)
+		bufferedVCsCount[id] = 0
+		bufferedVCsSize[id] = qSize
+		bufferedVCs[id][0] = data.BufferedVC{
+			Occupied: false,
+			Send:     nil,
+		}
 	}
 }

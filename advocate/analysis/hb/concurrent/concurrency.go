@@ -42,7 +42,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	// c2 := cssts.GetConcurrent(elem, all, sameElem, weak)
 
 	testGetHB(elem, all)
-	// testGetConcurrent(elem, all, sameElem, weak)
+	testGetConcurrent(elem, all, sameElem, weak)
 
 	elem.SetNumberConcurrent(len(g), weak)
 	return g

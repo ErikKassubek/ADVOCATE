@@ -159,6 +159,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 		bugPos[i] = make([]string, 0)
 
 		for j, elem := range bugElems {
+			log.Important(bugElems)
 			fields := strings.Split(elem, ":")
 
 			if fields[0] != "T" {

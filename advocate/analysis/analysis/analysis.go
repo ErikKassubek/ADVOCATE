@@ -14,14 +14,11 @@ import (
 	"advocate/analysis/analysis/elements"
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
-	"advocate/analysis/hb/concurrent"
 	"advocate/analysis/hb/cssts"
 	"advocate/analysis/hb/hb"
 	"advocate/analysis/hb/pog"
 	"advocate/analysis/hb/vc"
-	"advocate/results/results"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/memory"
 	"advocate/utils/timer"
@@ -52,132 +49,14 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
 
-	// if onlyAPanicAndLeak {
-	// 	runAnalysisOnExitCodes(true)
-	// 	CheckForStuckRoutine(true)
-	// 	return
-	// }
+	if onlyAPanicAndLeak {
+		scenarios.RunAnalysisOnExitCodes(true)
+		scenarios.CheckForStuckRoutine(true)
+		return
+	}
 
-	runAnalysisOnExitCodes(fuzzing)
+	scenarios.RunAnalysisOnExitCodes(fuzzing)
 	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
-
-	concurrent.GetConcurrent(data.MainTrace.GetTraces()[3][0], true, false, true)
-}
-
-// runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
-//
-// Parameter:
-//   - all bool: If true, check for all, else only check for the once, that are not detected by the full analysis
-func runAnalysisOnExitCodes(all bool) {
-	timer.Start(timer.AnaExitCode)
-	defer timer.Stop(timer.AnaExitCode)
-
-	switch data.ExitCode {
-	case helper.ExitCodeCloseClose: // close on closed
-		file, line, err := trace.PosFromPosString(data.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, helper.ACloseOnClosed,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
-	case helper.ExitCodeCloseNil: // close on nil
-		file, line, err := trace.PosFromPosString(data.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "CC",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, helper.ACloseOnNilChannel,
-			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
-	case helper.ExitCodeNegativeWG: // negative wg counter
-		file, line, err := trace.PosFromPosString(data.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "WD",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, helper.ANegWG,
-			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
-	case helper.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
-		file, line, err := trace.PosFromPosString(data.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "ML",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, helper.AUnlockOfNotLockedMutex,
-			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
-	case helper.ExitCodePanic: // unknown panic
-		file, line, err := trace.PosFromPosString(data.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "XX",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(results.CRITICAL, helper.RUnknownPanic,
-			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
-	case helper.ExitCodeTimeout: // timeout
-		results.Result(results.CRITICAL, helper.RTimeout,
-			"", []results.ResultElem{}, "", []results.ResultElem{})
-	}
-
-	if all {
-		if data.ExitCode == helper.ExitCodeSendClose { // send on closed
-			file, line, err := trace.PosFromPosString(data.ExitPos)
-			if err != nil {
-				log.Error("Could not read exit pos: ", err)
-			}
-			arg1 := results.TraceElementResult{ // send
-				RoutineID: 0,
-				ObjID:     0,
-				TPre:      0,
-				ObjType:   "CS",
-				File:      file,
-				Line:      line,
-			}
-			results.Result(results.CRITICAL, helper.ASendOnClosed,
-				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
-			data.BugWasFound = true
-		}
-	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis
@@ -195,20 +74,35 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	data.Fifo = assumeFifo
 	data.ModeIsFuzzing = fuzzing
 
+	// set which hb structures should be calculated
+	// NOTE: Do not use predictive analysis if the first parameter is false
+	hb.SetHbSettings(true, fuzzing, false)
+
 	data.AnalysisCases = analysisCasesMap
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
-	vc.InitVC()
-	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
-	pog.InitPOG()
+
+	if hb.CalcVC {
+		vc.InitVC()
+	}
+
+	if hb.CalcPog {
+		pog.InitPOG()
+	}
+
+	if hb.CalcCssts {
+		cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
+	}
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		scenarios.ResetState()
 	}
 
-	vc.CurrentVC[1].Inc(1)
-	vc.CurrentWVC[1].Inc(1)
-
 	log.Info("Start HB analysis")
+
+	if hb.CalcVC {
+		vc.CurrentVC[1].Inc(1)
+		vc.CurrentWVC[1].Inc(1)
+	}
 
 	traceIter := data.MainTrace.AsIterator()
 	start := time.Now()

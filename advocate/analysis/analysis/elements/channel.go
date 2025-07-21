@@ -34,10 +34,6 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	opC := ch.GetOpC()
 	cl := ch.GetClosed()
 
-	if ch.GetTPost() == 0 {
-		return
-	}
-
 	// hold back receive operations, until the send operation is processed
 	for _, elem := range data.WaitingReceive {
 		if elem.GetOID() <= data.MaxOpID[id] {
@@ -46,6 +42,10 @@ func UpdateChannel(ch *trace.ElementChannel) {
 			}
 			UpdateChannel(elem)
 		}
+	}
+
+	if ch.GetTPost() == 0 {
+		return
 	}
 
 	if ch.IsBuffered() {
@@ -89,6 +89,14 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				}
 			}
 
+			for i, hold := range data.HoldRecv {
+				if hold.Ch.GetID() == id {
+					UpdateChannel(hold.Ch)
+					data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
+					break
+				}
+			}
+
 		case trace.RecvOp: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
@@ -100,6 +108,14 @@ func UpdateChannel(ch *trace.ElementChannel) {
 			} else {
 				if cl { // recv on closed channel
 					RecvC(ch, vc.CurrentVC, vc.CurrentWVC, false)
+				}
+			}
+
+			for i, hold := range data.HoldSend {
+				if hold.Ch.GetID() == id {
+					UpdateChannel(hold.Ch)
+					data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
+					break
 				}
 			}
 		case trace.CloseOp:
@@ -287,15 +303,6 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 			Elem: ch,
 		}, 0, true)
 	}
-
-	for i, hold := range data.HoldRecv {
-		if hold.Ch.GetID() == id {
-			Recv(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
-			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
-			break
-		}
-	}
-
 }
 
 // Recv updates and calculates the vector clocks given a receive on a buffered channel.
@@ -342,14 +349,6 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 			Vc:   cl[routine].Copy(),
 			Elem: ch,
 		}, 1, true)
-	}
-
-	for i, hold := range data.HoldSend {
-		if hold.Ch.GetID() == id {
-			Send(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
-			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
-			break
-		}
 	}
 }
 

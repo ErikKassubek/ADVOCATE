@@ -27,16 +27,16 @@ var (
 
 	// vector clock for each buffer place in vector clock
 	// the map key is the channel id. The slice is used for the buffer positions
-	BufferedVCs = make(map[int]([]data.BufferedVC))
+	chanBuffer = make(map[int]([]data.BufferedVC))
 	// the current buffer position
-	BufferedVCsCount = make(map[int]int)
-	BufferedVCsSize  = make(map[int]int)
+	chanBufferCount = make(map[int]int)
+	chanBufferSize  = make(map[int]int)
 )
 
 func InitVC() {
-	BufferedVCs = make(map[int][]data.BufferedVC)
-	BufferedVCsCount = make(map[int]int)
-	BufferedVCsSize = make(map[int]int)
+	chanBuffer = make(map[int][]data.BufferedVC)
+	chanBufferCount = make(map[int]int)
+	chanBufferSize = make(map[int]int)
 	CurrentVC = make(map[int]*clock.VectorClock)
 	CurrentWVC = make(map[int]*clock.VectorClock)
 

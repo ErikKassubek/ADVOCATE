@@ -21,33 +21,17 @@ import (
 	"advocate/utils/log"
 )
 
-// UpdateChannel updates the vector clocks to a channel element
+// UpdateChannel updates the vecto clocks to a channel element
 //
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateChannel(ch *trace.ElementChannel) {
-
-	hb.UpdateHBChannel(ch)
-
 	id := ch.GetID()
-	oID := ch.GetOID()
 	opC := ch.GetOpC()
+	oID := ch.GetOID()
 	cl := ch.GetClosed()
 
 	// hold back receive operations, until the send operation is processed
-	for _, elem := range data.WaitingReceive {
-		if elem.GetOID() <= data.MaxOpID[id] {
-			if len(data.WaitingReceive) != 0 {
-				data.WaitingReceive = data.WaitingReceive[1:]
-			}
-			UpdateChannel(elem)
-		}
-	}
-
-	if ch.GetTPost() == 0 {
-		return
-	}
-
 	if ch.IsBuffered() {
 		if opC == trace.SendOp {
 			data.MaxOpID[id] = oID
@@ -57,7 +41,25 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				return
 			}
 		}
+	}
 
+	// run hold back recvs if the send has been processed
+	for _, elem := range data.WaitingReceive {
+		if elem.GetOID() <= data.MaxOpID[id] {
+			if len(data.WaitingReceive) != 0 {
+				data.WaitingReceive = data.WaitingReceive[1:]
+			}
+			UpdateChannel(elem)
+		}
+	}
+
+	hb.UpdateHBChannel(ch)
+
+	if ch.GetTPost() == 0 {
+		return
+	}
+
+	if ch.IsBuffered() {
 		switch opC {
 		case trace.SendOp:
 			Send(ch, vc.CurrentVC, vc.CurrentWVC, data.Fifo)
@@ -79,7 +81,6 @@ func UpdateChannel(ch *trace.ElementChannel) {
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
-
 				Unbuffered(ch, partner)
 				// advance index of receive routine, send routine is already advanced
 				data.MainTraceIter.IncreaseIndex(partnerRout)
@@ -89,33 +90,16 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				}
 			}
 
-			for i, hold := range data.HoldRecv {
-				if hold.Ch.GetID() == id {
-					UpdateChannel(hold.Ch)
-					data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
-					break
-				}
-			}
-
 		case trace.RecvOp: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
-				partner.SetVc(vc.CurrentVC[partnerRout])
 				Unbuffered(partner, ch)
 				// advance index of receive routine, send routine is already advanced
 				data.MainTraceIter.IncreaseIndex(partnerRout)
 			} else {
 				if cl { // recv on closed channel
 					RecvC(ch, vc.CurrentVC, vc.CurrentWVC, false)
-				}
-			}
-
-			for i, hold := range data.HoldSend {
-				if hold.Ch.GetID() == id {
-					UpdateChannel(hold.Ch)
-					data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
-					break
 				}
 			}
 		case trace.CloseOp:
@@ -132,16 +116,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 // Parameter:
 //   - se *trace.TraceElementSelect: the select element
 func UpdateSelect(se *trace.ElementSelect) {
-	hb.UpdateHBSelect(se)
-
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
-
 	routine := se.GetRoutine()
-
-	if !noChannel {
-		chosenCase := se.GetChosenCase()
-		UpdateChannel(chosenCase)
-	}
 
 	if data.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerSelect(se, vc.CurrentVC[routine])
@@ -152,9 +127,9 @@ func UpdateSelect(se *trace.ElementSelect) {
 	for _, c := range cases {
 		opC := c.GetOpC()
 		if opC == trace.SendOp {
-			SetChannelAsLastSend(&c)
+			setChannelAsLastSend(&c)
 		} else if opC == trace.RecvOp {
-			SetChannelAsLastReceive(&c)
+			setChannelAsLastReceive(&c)
 		}
 	}
 
@@ -264,10 +239,10 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - cl map[int]*VectorClock: the current vector clocks
-//   - wCl map[int]*VectorClock: the current weak vector clocks
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - fifo bool: true if the channel buffer is assumed to be fifo
-func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo bool) {
+func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
@@ -283,7 +258,7 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	data.HasSend[id] = true
 	data.MostRecentSend[routine][id] = data.ElemWithVcVal{
 		Elem: ch,
-		Vc:   data.MostRecentSend[routine][id].Vc.Sync(cl[routine]).Copy(),
+		Vc:   data.MostRecentSend[routine][id].Vc.Sync(vc[routine]).Copy(),
 		Val:  id,
 	}
 
@@ -294,14 +269,22 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	}
 
 	if data.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerChannel(ch, cl[routine], true, true)
+		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
 	if data.AnalysisCases["leak"] {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   cl[routine].Copy(),
+			Vc:   vc[routine].Copy(),
 			Elem: ch,
 		}, 0, true)
+	}
+
+	for i, hold := range data.HoldRecv {
+		if hold.Ch.GetID() == id {
+			Recv(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
+			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
+			break
+		}
 	}
 }
 
@@ -309,15 +292,15 @@ func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - cl map[int]*VectorClock: the current vector clocks
-//   - wCl map[int]*VectorClock: the current weak vector clocks
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - fifo bool: true if the channel buffer is assumed to be fifo
-func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo bool) {
+func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
 	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzing {
-		scenarios.CheckForConcurrentRecv(ch, cl)
+		scenarios.CheckForConcurrentRecv(ch, vc)
 	}
 
 	if ch.GetTPost() == 0 {
@@ -332,23 +315,31 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 	data.HasReceived[id] = true
 	data.MostRecentReceive[routine][id] = data.ElemWithVcVal{
 		Elem: ch,
-		Vc:   data.MostRecentReceive[routine][id].Vc.Sync(cl[routine]),
+		Vc:   data.MostRecentReceive[routine][id].Vc.Sync(vc[routine]),
 		Val:  id,
 	}
 
 	if data.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerChannel(ch, cl[routine], true, true)
+		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
 	if data.AnalysisCases["mixedDeadlock"] {
-		routSend := vc.BufferedVCs[id][0].Send.GetRoutine()
+		routSend := ch.GetPartner().GetRoutine()
 		scenarios.CheckForMixedDeadlock(routSend, routine)
 	}
 	if data.AnalysisCases["leak"] {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   cl[routine].Copy(),
+			Vc:   vc[routine].Copy(),
 			Elem: ch,
 		}, 1, true)
+	}
+
+	for i, hold := range data.HoldSend {
+		if hold.Ch.GetID() == id {
+			Send(hold.Ch, hold.Vc, hold.WVc, hold.Fifo)
+			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
+			break
+		}
 	}
 }
 
@@ -432,7 +423,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	}
 }
 
-// SetChannelAsLastSend sets the channel as the last send operation.
+// setChannelAsLastSend sets the channel as the last send operation.
 // Used for not executed select send
 //
 // Parameter:
@@ -440,7 +431,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 //   - routine int: the route of the operation
 //   - vc VectorClock: the vector clock of the operation
 //   - tID string: the position of the send in the program
-func SetChannelAsLastSend(c trace.Element) {
+func setChannelAsLastSend(c trace.Element) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 
@@ -455,7 +446,7 @@ func SetChannelAsLastSend(c trace.Element) {
 	data.HasSend[routine] = true
 }
 
-// SetChannelAsLastReceive sets the channel as the last recv operation.
+// setChannelAsLastReceive sets the channel as the last recv operation.
 // Used for not executed select recv
 //
 // Parameter:
@@ -463,7 +454,7 @@ func SetChannelAsLastSend(c trace.Element) {
 //   - rout int: the route of the operation
 //   - vc VectorClock: the vector clock of the operation
 //   - tID string: the position of the recv in the program
-func SetChannelAsLastReceive(c trace.Element) {
+func setChannelAsLastReceive(c trace.Element) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 

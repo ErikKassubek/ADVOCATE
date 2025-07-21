@@ -30,13 +30,13 @@ type poGraph struct {
 }
 
 func newPoGraph() poGraph {
-	return poGraph{map[trace.Element]map[trace.Element]struct{}{}}
+	return poGraph{make(map[trace.Element]map[trace.Element]struct{})}
 }
 
 func InitPOG() {
-	bufferedVCs = make(map[int]([]data.BufferedVC))
-	bufferedVCsCount = make(map[int]int)
-	bufferedVCsSize = make(map[int]int)
+	chanBuffer = make(map[int]([]data.BufferedVC))
+	chanBufferCount = make(map[int]int)
+	chanBufferSize = make(map[int]int)
 
 	po = newPoGraph()
 	poInverted = newPoGraph()

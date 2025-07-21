@@ -23,6 +23,10 @@ import (
 //   - to trace.Element: end node
 //   - weak bool: if true, add to weak hb
 func AddEdge(from, to trace.Element, weak bool) {
+	if from == nil || to == nil {
+		return
+	}
+
 	fromInd := getIndicesFromTraceElem(from)
 	toInd := getIndicesFromTraceElem(to)
 	Csst.AddEdge(fromInd, toInd)

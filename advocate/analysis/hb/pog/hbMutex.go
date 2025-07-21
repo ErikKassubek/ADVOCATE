@@ -98,7 +98,8 @@ func RUnlock(mu *trace.ElementMutex) {
 			Vc:   clock.NewVectorClock(data.GetNoRoutines()),
 			Elem: nil,
 		}
+	} else {
+		AddEdge(mu, data.RelR[id].Elem, false)
 	}
 
-	AddEdge(mu, data.RelR[id].Elem, false)
 }

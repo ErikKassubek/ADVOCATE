@@ -18,16 +18,12 @@ import (
 	"strconv"
 )
 
-// UpdateHBChannel updates the vector clocks to a channel element
+// UpdateHBChannel updates the vecto clocks to a channel element
 //
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateHBChannel(ch *trace.ElementChannel) {
-	id := ch.GetID()
 	routine := ch.GetRoutine()
-	oID := ch.GetOID()
-	opC := ch.GetOpC()
-	cl := ch.GetClosed()
 
 	ch.SetVc(CurrentVC[routine])
 	ch.SetWVc(CurrentWVC[routine])
@@ -36,28 +32,21 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		return
 	}
 
+	opC := ch.GetOpC()
+	cl := ch.GetClosed()
+
 	if ch.IsBuffered() {
 		switch opC {
 		case trace.SendOp:
-			data.MaxOpID[id] = oID
-		case trace.RecvOp:
-			if oID > data.MaxOpID[id] && !cl {
-				data.WaitingReceive = append(data.WaitingReceive, ch)
-				return
-			}
-		}
-
-		switch opC {
-		case trace.SendOp:
-			Send(ch, CurrentVC, CurrentWVC, data.Fifo)
+			Send(ch, data.Fifo)
 		case trace.RecvOp:
 			if cl { // recv on closed channel
-				RecvC(ch, CurrentVC, CurrentWVC, true)
+				RecvC(ch, true)
 			} else {
 				Recv(ch, CurrentVC, CurrentWVC, data.Fifo)
 			}
 		case trace.CloseOp:
-			Close(ch, CurrentVC, CurrentWVC)
+			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -74,25 +63,29 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 					sel.SetVc(CurrentVC[partnerRout])
 				}
 				Unbuffered(ch, partner)
+				// increase index for recv is done in analysis/elements/channel.go
 			} else {
-				if !cl { // stuck channel
-					StuckChan(routine, CurrentVC, CurrentWVC)
+				if !cl {
+					StuckChan(routine)
 				}
 			}
 
 		case trace.RecvOp: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
+				partnerRout := partner.GetRoutine()
+				partner.SetVc(CurrentVC[partnerRout])
 				Unbuffered(partner, ch)
+				// increase index for recv is done in analysis/elements/channel.go
 			} else {
 				if cl { // recv on closed channel
-					RecvC(ch, CurrentVC, CurrentWVC, false)
+					RecvC(ch, false)
 				} else {
-					StuckChan(routine, CurrentVC, CurrentWVC)
+					StuckChan(routine)
 				}
 			}
 		case trace.CloseOp:
-			Close(ch, CurrentVC, CurrentWVC)
+			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -157,119 +150,109 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 //   - fifo bool: true if the channel buffer is assumed to be fifo
-func Send(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo bool) {
+func Send(ch *trace.ElementChannel, fifo bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
 	if ch.GetTPost() == 0 {
-		cl[routine].Inc(routine)
-		wCl[routine].Inc(routine)
+		CurrentVC[routine].Inc(routine)
+		CurrentWVC[routine].Inc(routine)
 		return
-	}
-
-	if data.MostRecentReceive[routine] == nil {
-		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
 
 	newBufferedVCs(id, qSize)
 
-	count := BufferedVCsCount[id]
+	count := chanBufferCount[id]
 
-	if BufferedVCsSize[id] <= count {
+	if chanBufferSize[id] <= count {
 		data.HoldSend = append(data.HoldSend, data.HoldObj{
 			Ch:   ch,
-			Vc:   cl,
-			WVc:  wCl,
+			Vc:   CurrentVC,
+			WVc:  CurrentWVC,
 			Fifo: fifo,
 		})
-		log.Important("APPEND: ", BufferedVCsSize[id], count)
 		return
 	}
 
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(BufferedVCs[id]) >= count && len(BufferedVCs[id]) < BufferedVCsSize[id] {
-		BufferedVCs[id] = append(BufferedVCs[id], data.BufferedVC{
+	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
+		chanBuffer[id] = append(chanBuffer[id], data.BufferedVC{
 			Occupied: false,
 			Send:     nil})
 	}
 
-	if count > qSize || BufferedVCs[id][count].Occupied {
+	if count > qSize || chanBuffer[id][count].Occupied {
 		log.Error("Write to occupied buffer position or to big count")
 	}
 
-	s := BufferedVCs[id][count].Send
+	s := chanBuffer[id][count].Send
 	if s != nil {
 		v := s.GetVC()
-		cl[routine].Sync(v)
+		CurrentVC[routine].Sync(v)
 	}
 
 	if fifo {
 		r := data.MostRecentSend[routine][id]
 		if r.Elem != nil {
-			cl[routine].Sync(r.Vc)
+			CurrentVC[routine].Sync(r.Vc)
 		}
 	}
 
-	cl[routine].Inc(routine)
-	wCl[routine].Inc(routine)
+	CurrentVC[routine].Inc(routine)
+	CurrentWVC[routine].Inc(routine)
 
-	BufferedVCs[id][count] = data.BufferedVC{
+	chanBuffer[id][count] = data.BufferedVC{
 		Occupied: true,
 		Send:     ch,
 	}
 
-	BufferedVCsCount[id]++
-	log.Important("+ID: ", id)
+	chanBufferCount[id]++
 }
 
 // Recv updates and calculates the vector clocks given a receive on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - cl map[int]*VectorClock: the current vector clocks
-//   - wCl map[int]*VectorClock: the current weak vector clocks
+//   - vc map[int]*VectorClock: the current vector clocks
+//   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - fifo bool: true if the channel buffer is assumed to be fifo
-func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo bool) {
+func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 	oID := ch.GetOID()
 	qSize := ch.GetQSize()
 
 	if ch.GetTPost() == 0 {
-		cl[routine].Inc(routine)
-		wCl[routine].Inc(routine)
+		vc[routine].Inc(routine)
+		wVc[routine].Inc(routine)
 		return
-	}
-
-	if data.MostRecentReceive[routine] == nil {
-		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
 	}
 
 	newBufferedVCs(id, qSize)
 
-	if BufferedVCsCount[id] == 0 {
+	if chanBufferCount[id] == 0 {
 		data.HoldRecv = append(data.HoldRecv, data.HoldObj{
 			Ch:   ch,
-			Vc:   cl,
-			WVc:  wCl,
+			Vc:   vc,
+			WVc:  wVc,
 			Fifo: fifo,
 		})
 		return
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}
-	BufferedVCsCount[id]--
-	log.Important("-ID: ", id)
 
-	if BufferedVCs[id][0].Send.GetOID() != oID {
+	chanBufferCount[id]--
+
+	if chanBuffer[id][0].Send.GetOID() != oID {
 		found := false
-		for i := 1; i < len(BufferedVCs[id]); i++ {
-			if BufferedVCs[id][i].Send.GetOID() == oID {
+		for i := 1; i < len(chanBuffer[id]); i++ {
+			if chanBuffer[id][i].Send.GetOID() == oID {
 				found = true
-				BufferedVCs[id][0] = BufferedVCs[id][i]
-				BufferedVCs[id][i] = data.BufferedVC{
+				chanBuffer[id][0] = chanBuffer[id][i]
+				chanBuffer[id][i] = data.BufferedVC{
 					Occupied: false,
 					Send:     nil,
 				}
@@ -282,63 +265,56 @@ func Recv(ch *trace.ElementChannel, cl, wCl map[int]*clock.VectorClock, fifo boo
 		}
 	}
 
-	s := BufferedVCs[id][0].Send
+	s := chanBuffer[id][0].Send
 
-	cl[routine] = cl[routine].Sync(s.GetVC())
+	vc[routine] = vc[routine].Sync(s.GetVC())
 
 	if fifo {
 		r := data.MostRecentReceive[routine][id]
 		if r.Elem != nil {
-			cl[routine] = cl[routine].Sync(r.Vc)
+			vc[routine] = vc[routine].Sync(r.Vc)
 		}
 	}
 
-	BufferedVCs[id] = append(BufferedVCs[id][1:], data.BufferedVC{
+	chanBuffer[id] = append(chanBuffer[id][1:], data.BufferedVC{
 		Occupied: false,
 		Send:     nil,
 	})
 
-	cl[routine].Inc(routine)
-	wCl[routine].Inc(routine)
-
+	vc[routine].Inc(routine)
+	wVc[routine].Inc(routine)
 }
 
 // StuckChan updates and calculates the vector clocks for a stuck channel element
 //
 // Parameter:
 //   - routine int: the route of the operation
-//   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weak vector clocks
-func StuckChan(routine int, vc, wVc map[int]*clock.VectorClock) {
-	vc[routine].Inc(routine)
-	wVc[routine].Inc(routine)
+func StuckChan(routine int) {
+	CurrentVC[routine].Inc(routine)
+	CurrentWVC[routine].Inc(routine)
 }
 
 // Close updates and calculates the vector clocks given a close on a channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weak vector clocks
-func Close(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
+func Close(ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
 
 	routine := ch.GetRoutine()
 
-	vc[routine].Inc(routine)
-	wVc[routine].Inc(routine)
+	CurrentVC[routine].Inc(routine)
+	CurrentWVC[routine].Inc(routine)
 }
 
 // RecvC updates and calculates the vector clocks given a receive on a closed channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - buffered bool: true if the channel is buffered
-func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffered bool) {
+func RecvC(ch *trace.ElementChannel, buffered bool) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -348,25 +324,25 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 
 	if _, ok := data.CloseData[id]; ok {
 		c := data.CloseData[id]
-		vc[routine] = vc[routine].Sync(c.GetVC())
+		CurrentVC[routine].Sync(c.GetVC())
 	}
 
-	vc[routine].Inc(routine)
-	wVc[routine].Inc(routine)
+	CurrentVC[routine].Inc(routine)
+	CurrentVC[routine].Inc(routine)
 }
 
 // Create a new map of buffered vector clocks for a channel if not already in
-// vc.BufferedVCs.
+// data.BufferedVCs.
 //
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
 func newBufferedVCs(id int, qSize int) {
-	if _, ok := BufferedVCs[id]; !ok {
-		BufferedVCs[id] = make([]data.BufferedVC, 1)
-		BufferedVCsCount[id] = 0
-		BufferedVCsSize[id] = qSize
-		BufferedVCs[id][0] = data.BufferedVC{
+	if _, ok := chanBuffer[id]; !ok {
+		chanBuffer[id] = make([]data.BufferedVC, 1)
+		chanBufferCount[id] = 0
+		chanBufferSize[id] = qSize
+		chanBuffer[id][0] = data.BufferedVC{
 			Occupied: false,
 			Send:     nil,
 		}

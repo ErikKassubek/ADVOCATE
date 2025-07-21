@@ -26,7 +26,6 @@ var (
 
 func InitCSSTs(numberRoutines int, lengths []int) {
 	bufferedVCs = make(map[int]([]data.BufferedVC))
-	// the current buffer position
 	bufferedVCsCount = make(map[int]int)
 	bufferedVCsSize = make(map[int]int)
 

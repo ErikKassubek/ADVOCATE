@@ -76,22 +76,22 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	// set which hb structures should be calculated
 	// NOTE: Do not use predictive analysis if the first parameter is false
-	hb.SetHbSettings(true, fuzzing, false)
+	hb.SetHbSettings(true, false, false)
 
 	data.AnalysisCases = analysisCasesMap
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
 
-	if hb.CalcVC {
-		vc.InitVC()
-	}
+	// if hb.CalcVC {
+	vc.InitVC()
+	// }
 
-	if hb.CalcPog {
-		pog.InitPOG()
-	}
+	// if hb.CalcPog {
+	pog.InitPOG()
+	// }
 
-	if hb.CalcCssts {
-		cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
-	}
+	// if hb.CalcCssts {
+	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
+	// }
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		scenarios.ResetState()

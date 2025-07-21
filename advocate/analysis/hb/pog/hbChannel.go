@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: hbAtomic.go
-// Brief: Update the pog for channels
+// Brief: Update the vc for channels
 //
 // Author: Erik Kassubek
 // Created: 2025-07-20
@@ -18,37 +18,25 @@ import (
 )
 
 var (
-	// storage for the buffered vector spaces
-	bufferedVCs = make(map[int]([]data.BufferedVC))
+	chanBuffer = make(map[int]([]data.BufferedVC))
 	// the current buffer position
-	bufferedVCsCount = make(map[int]int)
-	bufferedVCsSize  = make(map[int]int)
+	chanBufferCount = make(map[int]int)
+	chanBufferSize  = make(map[int]int)
 )
 
-// UpdateHBChannel updates the vector clocks to a channel element
+// UpdateHBChannel updates the vecto clocks to a channel element
 //
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateHBChannel(ch *trace.ElementChannel) {
-	id := ch.GetID()
-	oID := ch.GetOID()
-	opC := ch.GetOpC()
-	cl := ch.GetClosed()
-
 	if ch.GetTPost() == 0 {
 		return
 	}
 
-	if ch.IsBuffered() {
-		if opC == trace.SendOp {
-			data.MaxOpID[id] = oID
-		} else if opC == trace.RecvOp {
-			if oID > data.MaxOpID[id] && !cl {
-				data.WaitingReceive = append(data.WaitingReceive, ch)
-				return
-			}
-		}
+	opC := ch.GetOpC()
+	cl := ch.GetClosed()
 
+	if ch.IsBuffered() {
 		switch opC {
 		case trace.SendOp:
 			Send(ch, data.Fifo)
@@ -69,12 +57,14 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 			partner := ch.GetPartner()
 			if partner != nil {
 				Unbuffered(ch, partner)
+				// increase index for recv is done in analysis/elements/channel.go
 			}
 
 		case trace.RecvOp: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
 				Unbuffered(partner, ch)
+				// increase index for recv is done in analysis/elements/channel.go
 			} else {
 				if cl { // recv on closed channel
 					RecvC(ch, false)
@@ -88,7 +78,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	}
 }
 
-// UpdateHBSelect stores and updates the pog for the select element.
+// UpdateHBSelect stores and updates the vector clock of the select element.
 //
 // Parameter:
 //   - se *trace.TraceElementSelect: the select element
@@ -97,11 +87,13 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
+		chosenCase.SetVc(se.GetVC())
+
 		UpdateHBChannel(chosenCase)
 	}
 }
 
-// Unbuffered updates the pog given a send/receive pair on a unbuffered
+// Unbuffered updates and calculates the vector clocks given a send/receive pair on a unbuffered
 // channel.
 //
 // Parameter:
@@ -116,7 +108,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 	}
 }
 
-// Send updates the pog given a send on a buffered channel.
+// Send updates and calculates the vector clocks given a send on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -130,11 +122,11 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		return
 	}
 
-	newBufferedVCs(id, qSize)
+	newbufferedVCs(id, qSize)
 
-	count := bufferedVCsCount[id]
+	count := chanBufferCount[id]
 
-	if bufferedVCsSize[id] <= count {
+	if chanBufferSize[id] <= count {
 		data.HoldSend = append(data.HoldSend, data.HoldObj{
 			Ch:   ch,
 			Vc:   nil,
@@ -147,17 +139,17 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(bufferedVCs[id]) >= count && len(bufferedVCs[id]) < bufferedVCsSize[id] {
-		bufferedVCs[id] = append(bufferedVCs[id], data.BufferedVC{
+	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
+		chanBuffer[id] = append(chanBuffer[id], data.BufferedVC{
 			Occupied: false,
 			Send:     nil})
 	}
 
-	if count > qSize || bufferedVCs[id][count].Occupied {
+	if count > qSize || chanBuffer[id][count].Occupied {
 		log.Error("Write to occupied buffer position or to big count")
 	}
 
-	s := bufferedVCs[id][count].Send
+	s := chanBuffer[id][count].Send
 	if s != nil {
 		AddEdge(s, ch, false)
 	}
@@ -169,20 +161,18 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		}
 	}
 
-	bufferedVCs[id][count] = data.BufferedVC{
+	chanBuffer[id][count] = data.BufferedVC{
 		Occupied: true,
 		Send:     ch,
 	}
 
-	bufferedVCsCount[id]++
+	chanBufferCount[id]++
 }
 
-// Recv updates the pog given a receive on a buffered channel.
+// Recv updates and calculates the vector clocks given a receive on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - cl map[int]*VectorClock: the current vector clocks
-//   - wCl map[int]*VectorClock: the current weak vector clocks
 //   - fifo bool: true if the channel buffer is assumed to be fifo
 func Recv(ch *trace.ElementChannel, fifo bool) {
 	id := ch.GetID()
@@ -194,13 +184,9 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		return
 	}
 
-	if data.MostRecentReceive[routine] == nil {
-		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
-	}
+	newbufferedVCs(id, qSize)
 
-	newBufferedVCs(id, qSize)
-
-	if bufferedVCsCount[id] == 0 {
+	if chanBufferCount[id] == 0 {
 		data.HoldRecv = append(data.HoldRecv, data.HoldObj{
 			Ch:   ch,
 			Vc:   nil,
@@ -210,15 +196,15 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		return
 		// results.Debug("Read operation on empty buffer position", results.ERROR)
 	}
-	bufferedVCsCount[id]--
+	chanBufferCount[id]--
 
-	if bufferedVCs[id][0].Send.GetOID() != oID {
+	if chanBuffer[id][0].Send.GetOID() != oID {
 		found := false
-		for i := 1; i < len(bufferedVCs[id]); i++ {
-			if bufferedVCs[id][i].Send.GetOID() == oID {
+		for i := 1; i < len(chanBuffer[id]); i++ {
+			if chanBuffer[id][i].Send.GetOID() == oID {
 				found = true
-				bufferedVCs[id][0] = bufferedVCs[id][i]
-				bufferedVCs[id][i] = data.BufferedVC{
+				chanBuffer[id][0] = chanBuffer[id][i]
+				chanBuffer[id][i] = data.BufferedVC{
 					Occupied: false,
 					Send:     nil,
 				}
@@ -231,7 +217,8 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		}
 	}
 
-	s := bufferedVCs[id][0].Send
+	s := chanBuffer[id][0].Send
+
 	AddEdge(s, ch, false)
 
 	if fifo {
@@ -241,14 +228,13 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		}
 	}
 
-	bufferedVCs[id] = append(bufferedVCs[id][1:], data.BufferedVC{
+	chanBuffer[id] = append(chanBuffer[id][1:], data.BufferedVC{
 		Occupied: false,
 		Send:     nil,
 	})
-
 }
 
-// RecvC updates the pog given a receive on a closed channel.
+// RecvC updates and calculates the vector clocks given a receive on a closed channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -262,22 +248,24 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 
 	if _, ok := data.CloseData[id]; ok {
 		c := data.CloseData[id]
+
 		AddEdge(c, ch, false)
 	}
+
 }
 
 // Create a new map of buffered vector clocks for a channel if not already in
-// vc.BufferedVCs.
+// data.bufferedVCs.
 //
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
-func newBufferedVCs(id int, qSize int) {
-	if _, ok := bufferedVCs[id]; !ok {
-		bufferedVCs[id] = make([]data.BufferedVC, 1)
-		bufferedVCsCount[id] = 0
-		bufferedVCsSize[id] = qSize
-		bufferedVCs[id][0] = data.BufferedVC{
+func newbufferedVCs(id int, qSize int) {
+	if _, ok := chanBuffer[id]; !ok {
+		chanBuffer[id] = make([]data.BufferedVC, 1)
+		chanBufferCount[id] = 0
+		chanBufferSize[id] = qSize
+		chanBuffer[id][0] = data.BufferedVC{
 			Occupied: false,
 			Send:     nil,
 		}

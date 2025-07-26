@@ -90,7 +90,6 @@ func ExitReplayPanic(msg any) {
 	hasPanicked = true
 
 	SetExitCodeFromPanicMsg(msg)
-
 	if IsAdvocateFuzzingEnabled() {
 		finishFuzzingFunc()
 	} else if IsTracingEnabled() {

@@ -14,7 +14,7 @@ package elements
 import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
-	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/hbCalc"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -23,7 +23,7 @@ import (
 // Parameter:
 //   - wa *TraceElementWait: the wait trace element
 func AnalyzeWait(wa *trace.ElementWait) {
-	hb.UpdateHBWait(wa)
+	hbCalc.UpdateHBWait(wa)
 
 	switch wa.GetOpW() {
 	case trace.ChangeOp:

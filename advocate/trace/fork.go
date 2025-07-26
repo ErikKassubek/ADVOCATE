@@ -29,18 +29,26 @@ import (
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
+//   - concurrent: concurrent elements
+//   - concurrentWeak: weak concurrent elements
 type ElementFork struct {
-	traceID              int
-	index                int
-	routine              int
-	tPost                int
-	id                   int
-	file                 string
-	line                 int
-	vc                   *clock.VectorClock
-	wVc                  *clock.VectorClock
-	numberConcurrent     int
-	numberConcurrentWeak int
+	traceID                  int
+	index                    int
+	routine                  int
+	tPost                    int
+	id                       int
+	file                     string
+	line                     int
+	vc                       *clock.VectorClock
+	wVc                      *clock.VectorClock
+	numberConcurrent         int
+	numberConcurrentWeak     int
+	concurrent               []Element
+	concurrentWeak           []Element
+	numberConcurrentSame     int
+	numberConcurrentWeakSame int
+	concurrentSame           []Element
+	concurrentWeakSame       []Element
 }
 
 // AddTraceElementFork adds a new go statement element to the main trace
@@ -67,16 +75,22 @@ func (t *Trace) AddTraceElementFork(routine int, tPost string, id string, pos st
 	}
 
 	elem := ElementFork{
-		index:                t.numberElemsInTrace[routine],
-		routine:              routine,
-		tPost:                tPostInt,
-		id:                   idInt,
-		file:                 file,
-		line:                 line,
-		vc:                   nil,
-		wVc:                  nil,
-		numberConcurrent:     -1,
-		numberConcurrentWeak: -1,
+		index:                    t.numberElemsInTrace[routine],
+		routine:                  routine,
+		tPost:                    tPostInt,
+		id:                       idInt,
+		file:                     file,
+		line:                     line,
+		vc:                       nil,
+		wVc:                      nil,
+		numberConcurrent:         -1,
+		numberConcurrentWeak:     -1,
+		concurrent:               make([]Element, 0),
+		concurrentWeak:           make([]Element, 0),
+		numberConcurrentSame:     -1,
+		numberConcurrentWeakSame: -1,
+		concurrentSame:           make([]Element, 0),
+		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -188,11 +202,11 @@ func (fo *ElementFork) GetVC() *clock.VectorClock {
 	return fo.vc
 }
 
-// GetWVc returns the weak vector clock of the element
+// GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (fo *ElementFork) GetWVc() *clock.VectorClock {
+func (fo *ElementFork) GetWVC() *clock.VectorClock {
 	return fo.wVc
 }
 
@@ -291,18 +305,33 @@ func (fo *ElementFork) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (fo *ElementFork) Copy() Element {
+	copyConcurrent := make([]Element, 0)
+	copy(copyConcurrent, fo.concurrent)
+	copyConcurrentWeak := make([]Element, 0)
+	copy(copyConcurrentWeak, fo.concurrentWeak)
+	copyConcurrentSame := make([]Element, 0)
+	copy(copyConcurrentSame, fo.concurrentSame)
+	copyConcurrentWeakSame := make([]Element, 0)
+	copy(copyConcurrentWeakSame, fo.concurrentWeakSame)
+
 	return &ElementFork{
-		traceID:              fo.traceID,
-		index:                fo.index,
-		routine:              fo.routine,
-		tPost:                fo.tPost,
-		id:                   fo.id,
-		file:                 fo.file,
-		line:                 fo.line,
-		vc:                   fo.vc.Copy(),
-		wVc:                  fo.wVc.Copy(),
-		numberConcurrent:     fo.numberConcurrent,
-		numberConcurrentWeak: fo.numberConcurrentWeak,
+		traceID:                  fo.traceID,
+		index:                    fo.index,
+		routine:                  fo.routine,
+		tPost:                    fo.tPost,
+		id:                       fo.id,
+		file:                     fo.file,
+		line:                     fo.line,
+		vc:                       fo.vc.Copy(),
+		wVc:                      fo.wVc.Copy(),
+		numberConcurrent:         fo.numberConcurrent,
+		numberConcurrentWeak:     fo.numberConcurrentWeak,
+		concurrent:               copyConcurrent,
+		concurrentWeak:           copyConcurrentWeak,
+		numberConcurrentSame:     fo.numberConcurrentSame,
+		numberConcurrentWeakSame: fo.numberConcurrentWeakSame,
+		concurrentSame:           copyConcurrentSame,
+		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 }
 
@@ -311,12 +340,19 @@ func (fo *ElementFork) Copy() Element {
 //
 // Parameter:
 //   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (fo *ElementFork) GetNumberConcurrent(weak bool) int {
+func (fo *ElementFork) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
+		if sameElem {
+			return fo.numberConcurrentWeakSame
+		}
 		return fo.numberConcurrentWeak
+	}
+	if sameElem {
+		return fo.numberConcurrentSame
 	}
 	return fo.numberConcurrent
 }
@@ -325,11 +361,65 @@ func (fo *ElementFork) GetNumberConcurrent(weak bool) int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-//   - weak bool: set number of weak concurrent
-func (fo *ElementFork) SetNumberConcurrent(c int, weak bool) {
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (fo *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
-		fo.numberConcurrentWeak = c
+		if sameElem {
+			fo.numberConcurrentWeakSame = c
+		} else {
+			fo.numberConcurrentWeak = c
+		}
 	} else {
-		fo.numberConcurrent = c
+		if sameElem {
+			fo.numberConcurrentSame = c
+		} else {
+			fo.numberConcurrent = c
+		}
+	}
+}
+
+// GetConcurrent returns the elements that are concurrent to the element
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - []Element: the concurrent elements
+func (fo *ElementFork) GetConcurrent(weak, sameElem bool) []Element {
+	if weak {
+		if sameElem {
+			return fo.concurrentWeakSame
+		}
+		return fo.concurrentWeak
+	}
+	if sameElem {
+		return fo.concurrentSame
+	}
+	return fo.concurrent
+}
+
+// SetConcurrent sets the concurrent elements
+//
+// Parameter:
+//   - []Element: the concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (fo *ElementFork) SetConcurrent(elem []Element, weak, sameElem bool) {
+	fo.SetNumberConcurrent(len(elem), weak, sameElem)
+
+	if weak {
+		if sameElem {
+			fo.concurrentWeakSame = elem
+		} else {
+			fo.concurrentWeak = elem
+		}
+	} else {
+		if sameElem {
+			fo.concurrentSame = elem
+		} else {
+			fo.concurrent = elem
+		}
 	}
 }

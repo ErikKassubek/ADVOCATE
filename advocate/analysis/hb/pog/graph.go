@@ -35,7 +35,6 @@ func newPoGraph() poGraph {
 
 func InitPOG() {
 	chanBuffer = make(map[int]([]data.BufferedVC))
-	chanBufferCount = make(map[int]int)
 	chanBufferSize = make(map[int]int)
 
 	po = newPoGraph()

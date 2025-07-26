@@ -11,16 +11,15 @@
 package gopie
 
 import (
-	"advocate/analysis/data"
 	anaData "advocate/analysis/data"
 	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/concurrent"
+	"advocate/analysis/hb/hbCalc"
+	"advocate/fuzzing/data"
 	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/types"
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // Chain is a representation of a scheduling Chain
@@ -46,29 +45,63 @@ func NewChain() Chain {
 func startChain() Chain {
 	res := NewChain()
 
-	maxQuality := math.MinInt
-	var elemMax types.Pair[trace.Element, trace.Element]
+	if data.UseHBInfoFuzzing {
+		c := 0
+		cMax := 100
+		maxQuality := -1
+		var maxElem trace.Element
+		traces := anaData.MainTrace.GetTraces()
 
-	for elem1, rel := range rel2 {
-		qElem1 := quality(elem1)
-		for elem2 := range rel {
-			q := qElem1 + quality(elem2)
-			if q > maxQuality {
-				p := types.NewPair(elem1, elem2)
-				if !helper.Contains(usedStartPos, p) {
-					maxQuality = q
-					elemMax = p
-				}
-			}
-
+		if len(traces) == 0 {
 			return res
 		}
-	}
 
-	if maxQuality > math.MaxInt {
-		res.add(elemMax.X)
-		res.add(elemMax.Y)
-		usedStartPos = append(usedStartPos, elemMax)
+		for i := 0; i < 1000; i++ {
+			key := rand.Intn(len(traces)) + 1
+			trace := traces[key]
+			if len(trace) == 0 {
+				continue
+			}
+
+			ind := rand.Intn(len(trace))
+			elem := trace[ind]
+
+			if !data.CanBeAddedToChain(elem) {
+				continue
+			}
+
+			if concurrent.GetNumberConcurrent(elem, true, false) == 0 {
+				continue
+			}
+
+			q := quality(elem)
+			if q > maxQuality {
+				maxQuality = q
+				maxElem = elem
+				c++
+				if c >= cMax {
+					break
+				}
+			}
+		}
+
+		if maxQuality == -1 {
+			return res
+		}
+
+		posPartner := maxElem.GetConcurrent(true, true)
+		partner := posPartner[rand.Intn(len(posPartner))]
+		res.add(maxElem)
+		res.add(partner)
+	} else {
+		// start with two random elements in rel2
+		for elem1, rel := range rel2 {
+			for elem2 := range rel {
+				res.add(elem1)
+				res.add(elem2)
+				return res
+			}
+		}
 	}
 
 	return res
@@ -84,7 +117,7 @@ func startChain() Chain {
 // Returns:
 //   - the quality
 func quality(elem trace.Element) int {
-	numberOps, _ := data.GetOpsPerID(elem.GetID())
+	numberOps, _ := anaData.GetOpsPerID(elem.GetID())
 	numberConcurrent := concurrent.GetNumberConcurrent(elem, true, true)
 	return int(math.Log(float64(1+numberOps)) + math.Log(float64(numberConcurrent)))
 }
@@ -176,10 +209,17 @@ func (ch *Chain) lastElem() trace.Element {
 // Parameter:
 //   - i int: index of the first element
 //   - j int: index of the second element
-func (ch *Chain) swap(i, j int) {
+//
+// Return:
+//   - bool: true if swap was possible, false otherwise
+func (ch *Chain) swap(i, j int) bool {
+	if hbCalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true) != hb.Concurrent {
+		return false
+	}
 	if i >= 0 && i < len(ch.Elems) && j >= 0 && j < len(ch.Elems) {
 		ch.Elems[i], ch.Elems[j] = ch.Elems[j], ch.Elems[i]
 	}
+	return true
 }
 
 // Create a copy of the chain
@@ -226,12 +266,8 @@ func (ch *Chain) toString() string {
 // Returns:
 //   - bool: True if the mutation is valid, false otherwise
 func (ch *Chain) isValid() bool {
-	if !anaData.HBWasCalc() {
-		return true
-	}
-
 	for i := range ch.Len() - 1 {
-		hbInfo := clock.GetHappensBefore(ch.Elems[i].GetWVc(), ch.Elems[i+1].GetWVc())
+		hbInfo := hbCalc.GetHappensBefore(ch.Elems[i], ch.Elems[i+1], true)
 		if hbInfo == hb.After {
 			return false
 		}

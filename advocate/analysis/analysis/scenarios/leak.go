@@ -659,11 +659,11 @@ func CheckForStuckRoutine(simple bool) bool {
 
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
-			ObjType: "RE", File: lastElem.GetFile(), Line: lastElem.GetLine(),
+			ObjType: "XX", File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
 		results.Result(results.CRITICAL, helper.LUnknown,
-			"fork", []results.ResultElem{arg}, "", []results.ResultElem{})
+			"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
 
 		res = true
 	}

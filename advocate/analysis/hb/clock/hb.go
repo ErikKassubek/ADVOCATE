@@ -10,9 +10,7 @@
 
 package clock
 
-import (
-	"advocate/analysis/hb"
-)
+import "advocate/analysis/hb"
 
 // Check if vc1 happens before vc2
 //

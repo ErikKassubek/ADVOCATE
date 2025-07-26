@@ -56,7 +56,7 @@ var bugNames = map[string]string{
 	"P04": "Possible unlock of not locked mutex",
 	"P05": "Possible cyclic deadlock",
 
-	"L00": "Leak on routine",
+	"L00": "Leak",
 	"L01": "Leak on unbuffered channel with possible partner",
 	"L02": "Leak on unbuffered channel without possible partner",
 	"L03": "Leak on buffered Channel with possible partner",
@@ -94,8 +94,8 @@ var bugExplanations = map[string]string{
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
-	"R00": "During the execution of the program, a unknown panic occured",
-	"R01": "The execution of the program timed out",
+	"R01": "During the execution of the program, a unknown panic occured",
+	"R02": "The execution of the program timed out",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
@@ -116,7 +116,7 @@ var bugExplanations = map[string]string{
 		"If this deadlock contains or influences the run of the main routine, this can " +
 		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
 		"resources.",
-	"L00": "The analyzer detected a leak on a routine without a blocking operations.\n" +
+	"L00": "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +
 		"This can be a desired behavior, but it can also be a signal for a not otherwise detected block.",
@@ -250,6 +250,7 @@ var objectTypes = map[string]string{
 	"RE": "Routine: End",
 	"DH": "Mutex: Causing deadlock",
 	"DC": "Mutex: Part of deadlock",
+	"XX": "Unknown",
 }
 
 // GetCodeFromDescription returns the code key from the description

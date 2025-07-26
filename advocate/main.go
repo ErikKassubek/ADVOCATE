@@ -278,6 +278,7 @@ func modeFuzzing() {
 	progPath, err := helper.CheckPath(progPath)
 	if err != nil {
 		log.Error("Error on checking prog path: ", err)
+		log.Error("Set path with -path [path]")
 		panic(err)
 	}
 

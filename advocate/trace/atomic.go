@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"strconv"
@@ -46,19 +47,27 @@ const (
 //   - line int: the line of the operation
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
+//   - concurrent: concurrent elements
+//   - concurrentWeak: weak concurrent elements
 type ElementAtomic struct {
-	traceID              int
-	index                int
-	routine              int
-	tPost                int
-	id                   int
-	opA                  OpAtomic
-	vc                   *clock.VectorClock
-	wVc                  *clock.VectorClock
-	file                 string
-	line                 int
-	numberConcurrent     int
-	numberConcurrentWeak int
+	traceID                  int
+	index                    int
+	routine                  int
+	tPost                    int
+	id                       int
+	opA                      OpAtomic
+	vc                       *clock.VectorClock
+	wVc                      *clock.VectorClock
+	file                     string
+	line                     int
+	numberConcurrent         int
+	numberConcurrentWeak     int
+	concurrent               []Element
+	concurrentWeak           []Element
+	numberConcurrentSame     int
+	numberConcurrentWeakSame int
+	concurrentSame           []Element
+	concurrentWeakSame       []Element
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -103,21 +112,28 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 
 	file, line, err := PosFromPosString(pos)
 	if err != nil {
+		log.Error("Cannot read pos string ", pos)
 		return err
 	}
 
 	elem := ElementAtomic{
-		index:                t.numberElemsInTrace[routine],
-		routine:              routine,
-		tPost:                tPostInt,
-		id:                   idInt,
-		opA:                  opAInt,
-		file:                 file,
-		line:                 line,
-		vc:                   nil,
-		wVc:                  nil,
-		numberConcurrent:     -1,
-		numberConcurrentWeak: -1,
+		index:                    t.numberElemsInTrace[routine],
+		routine:                  routine,
+		tPost:                    tPostInt,
+		id:                       idInt,
+		opA:                      opAInt,
+		file:                     file,
+		line:                     line,
+		vc:                       nil,
+		wVc:                      nil,
+		numberConcurrent:         -1,
+		numberConcurrentWeak:     -1,
+		concurrent:               make([]Element, 0),
+		concurrentWeak:           make([]Element, 0),
+		numberConcurrentSame:     -1,
+		numberConcurrentWeakSame: -1,
+		concurrentSame:           make([]Element, 0),
+		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -237,11 +253,11 @@ func (at *ElementAtomic) GetVC() *clock.VectorClock {
 	return at.vc
 }
 
-// GetWVc returns the weak vector clock of the element
+// GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (at *ElementAtomic) GetWVc() *clock.VectorClock {
+func (at *ElementAtomic) GetWVC() *clock.VectorClock {
 	return at.wVc
 }
 
@@ -374,17 +390,34 @@ func (at *ElementAtomic) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (at *ElementAtomic) Copy() Element {
+	copyConcurrent := make([]Element, 0)
+	copy(copyConcurrent, at.concurrent)
+	copyConcurrentWeak := make([]Element, 0)
+	copy(copyConcurrentWeak, at.concurrentWeak)
+	copyConcurrentSame := make([]Element, 0)
+	copy(copyConcurrentSame, at.concurrentSame)
+	copyConcurrentWeakSame := make([]Element, 0)
+	copy(copyConcurrentWeak, at.concurrentWeakSame)
+
 	return &ElementAtomic{
-		traceID:              at.traceID,
-		index:                at.index,
-		routine:              at.routine,
-		tPost:                at.tPost,
-		id:                   at.id,
-		opA:                  at.opA,
-		vc:                   at.vc.Copy(),
-		wVc:                  at.wVc.Copy(),
-		numberConcurrent:     at.numberConcurrent,
-		numberConcurrentWeak: at.numberConcurrentWeak,
+		traceID:                  at.traceID,
+		index:                    at.index,
+		routine:                  at.routine,
+		tPost:                    at.tPost,
+		id:                       at.id,
+		opA:                      at.opA,
+		vc:                       at.vc.Copy(),
+		wVc:                      at.wVc.Copy(),
+		numberConcurrent:         at.numberConcurrent,
+		numberConcurrentWeak:     at.numberConcurrentWeak,
+		concurrent:               copyConcurrent,
+		concurrentWeak:           copyConcurrentWeak,
+		numberConcurrentSame:     at.numberConcurrentSame,
+		numberConcurrentWeakSame: at.numberConcurrentWeakSame,
+		concurrentSame:           copyConcurrentSame,
+		concurrentWeakSame:       copyConcurrentWeakSame,
+		file:                     at.file,
+		line:                     at.line,
 	}
 }
 
@@ -393,12 +426,19 @@ func (at *ElementAtomic) Copy() Element {
 //
 // Parameter:
 //   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (at *ElementAtomic) GetNumberConcurrent(weak bool) int {
+func (at *ElementAtomic) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
+		if sameElem {
+			return at.numberConcurrentWeakSame
+		}
 		return at.numberConcurrentWeak
+	}
+	if sameElem {
+		return at.numberConcurrentSame
 	}
 	return at.numberConcurrent
 }
@@ -408,10 +448,64 @@ func (at *ElementAtomic) GetNumberConcurrent(weak bool) int {
 // Parameter:
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
-func (at *ElementAtomic) SetNumberConcurrent(c int, weak bool) {
+//   - sameElem bool: only operation on the same variable
+func (at *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
-		at.numberConcurrentWeak = c
+		if sameElem {
+			at.numberConcurrentWeakSame = c
+		} else {
+			at.numberConcurrentWeak = c
+		}
 	} else {
-		at.numberConcurrent = c
+		if sameElem {
+			at.numberConcurrentSame = c
+		} else {
+			at.numberConcurrent = c
+		}
+	}
+}
+
+// GetConcurrent returns the elements that are concurrent to the element
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - []Element: the concurrent elements
+func (at *ElementAtomic) GetConcurrent(weak, sameElem bool) []Element {
+	if weak {
+		if sameElem {
+			return at.concurrentWeakSame
+		}
+		return at.concurrentWeak
+	}
+	if sameElem {
+		return at.concurrentSame
+	}
+	return at.concurrent
+}
+
+// SetConcurrent sets the concurrent elements
+//
+// Parameter:
+//   - []Element: the concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (at *ElementAtomic) SetConcurrent(elem []Element, weak, sameElem bool) {
+	at.SetNumberConcurrent(len(elem), weak, sameElem)
+
+	if weak {
+		if sameElem {
+			at.concurrentWeakSame = elem
+		} else {
+			at.concurrentWeak = elem
+		}
+	} else {
+		if sameElem {
+			at.concurrentSame = elem
+		} else {
+			at.concurrent = elem
+		}
 	}
 }

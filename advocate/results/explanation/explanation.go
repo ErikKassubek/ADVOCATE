@@ -71,6 +71,13 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 		file, _ := os.ReadFile(result)
 		numberResults := len(strings.Split(string(file), "\n"))
 
+		leakTypeDescription := make(map[string]string)
+		leakPos := make(map[int][]string)
+		leakElemType := make(map[int]string)
+		leakCode := make(map[int][]string)
+		leakReplay := make(map[string]string)
+		leakFound := false
+
 		for index := 1; index < numberResults; index++ {
 			id := ""
 			if strings.HasSuffix(result, "results_machine.log") {
@@ -105,8 +112,23 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				continue
 			}
 
+			if strings.HasPrefix(bugType, "L") {
+				leakTypeDescription = bugTypeDescription
+				leakPos[len(leakPos)+1] = bugPos[1]
+				leakElemType[len(leakElemType)+1] = bugElemType[1]
+				leakCode[len(leakCode)+1] = code[1]
+				leakReplay = replay
+				leakFound = true
+				continue
+			}
+
 			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
 				replay, progInfo, fuzzing)
+		}
+
+		if leakFound {
+			writeFile(path, "L", leakTypeDescription, leakPos, leakElemType, leakCode,
+				leakReplay, progInfo, fuzzing)
 		}
 	}
 
@@ -159,7 +181,6 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 		bugPos[i] = make([]string, 0)
 
 		for j, elem := range bugElems {
-			log.Important(bugElems)
 			fields := strings.Split(elem, ":")
 
 			if fields[0] != "T" {

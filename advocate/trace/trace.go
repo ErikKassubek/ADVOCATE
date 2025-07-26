@@ -723,7 +723,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 					thread int
 					vc     *clock.VectorClock
 					wVc    *clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVc()})
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
 			}
 		}
 	}

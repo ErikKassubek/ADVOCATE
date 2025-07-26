@@ -604,10 +604,10 @@ send:
 	if asanenabled {
 		asanread(cas.elem, c.elemtype.Size_)
 	}
+	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
-	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
 	}
@@ -1076,11 +1076,11 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 
+	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
-	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
 	}

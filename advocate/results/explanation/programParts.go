@@ -37,16 +37,6 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 				fmt.Println("Invalid line: ", pos[1])
 			}
 
-			// headerLine, _ := strconv.Atoi(progInfo["headerLine"])
-
-			// if file == progInfo["file"] {
-			// 	if line > headerLine {
-			// 		line -= 5 // header and import
-			// 	} else {
-			// 		line-- // only import
-			// 	}
-			// }
-
 			code, err := GetProgramCode(file, line, true)
 			if err != nil {
 				res[i] = append(res[i], "")
@@ -82,13 +72,17 @@ func GetProgramCode(file string, line int, numbers bool) (string, error) {
 
 	res := "```go\n"
 
-	start := line - 10
-	if start < 0 {
+	buffer := 10
+
+	start := line - buffer
+	diff := 0
+	if start <= 0 {
+		diff = buffer - line + 1
 		start = 0
 	} else {
 		res += "...\n\n"
 	}
-	end := line + 10
+	end := line + buffer
 	isEnd := false
 	if end >= len(lines) {
 		end = len(lines)
@@ -113,8 +107,8 @@ func GetProgramCode(file string, line int, numbers bool) (string, error) {
 			resWithLines += l + "\n"
 			continue
 		}
-		resWithLines += strconv.Itoa(i+start-2) + " " + l
-		if i+start-2 == line {
+		resWithLines += strconv.Itoa(i+start-2+diff) + " " + l
+		if i+start-2+diff == line {
 			resWithLines += "           // <-------\n"
 		} else {
 			resWithLines += "\n"

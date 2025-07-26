@@ -71,9 +71,11 @@ func SetExitCodeFromPanicMsg(msg any) {
 		} else if m == "sync: RUnlock of unlocked RWMutex" {
 			advocateExitCode = ExitCodeUnlockBeforeLock
 			skip = 5
+		} else if m == "Timeout" {
+			advocateExitCode = ExitCodeTimeout
+			skip = 0
 		}
 	default:
-		println("SetExitCode: other")
 		var p _panic
 		p.arg = msg
 		preprintpanics(&p)
@@ -84,6 +86,7 @@ func SetExitCodeFromPanicMsg(msg any) {
 
 	_, file, line, _ := Caller(skip)
 	advocateExitCodePos = file + ":" + intToString(line)
+	println("AECP: ", advocateExitCodePos)
 
 	if advocateExitCode == 0 {
 		advocateExitCode = ExitCodePanic

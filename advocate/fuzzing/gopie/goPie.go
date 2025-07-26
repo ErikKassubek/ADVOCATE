@@ -12,6 +12,7 @@ package gopie
 
 import (
 	anadata "advocate/analysis/data"
+	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/io"
 	"advocate/utils/helper"
@@ -74,11 +75,11 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	}
 
 	fuzzingPath := filepath.Join(pkgPath, "fuzzingTraces")
-	if numberFuzzingRuns == 0 {
+	if numberFuzzingRuns <= 1 {
 		addFuzzingTraceFolder(fuzzingPath)
 	}
 
-	log.Infof("Write %d mutations to file", min(len(mutations), data.MaxNumberRuns-numberWrittenGoPieMuts))
+	log.Infof("Write %d mutations to file", max(0, min(len(mutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
 	for _, mut := range mutations {
 		if data.MaxNumberRuns != -1 && numberWrittenGoPieMuts > data.MaxNumberRuns {
 			break
@@ -171,7 +172,18 @@ func getEnergy() int {
 	w1 := helper.GoPieW1
 	w2 := helper.GoPieW2
 
-	score := int(w1*float64(counterCPOP1) + w2*math.Log(float64(counterCPOP2)))
+	score := 0
+
+	if data.UseHBInfoFuzzing {
+		for _, sc := range SchedulingChains {
+			for _, elem := range sc.Elems {
+				c := concurrent.GetNumberConcurrent(elem, true, true)
+				score += c
+			}
+		}
+	} else {
+		score = int(w1*float64(counterCPOP1) + w2*math.Log(float64(counterCPOP2)))
+	}
 
 	if score > maxGoPieScore {
 		maxGoPieScore = score

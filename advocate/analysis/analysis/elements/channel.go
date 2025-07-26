@@ -15,13 +15,13 @@ import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
 	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/hbCalc"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
 	"advocate/utils/log"
 )
 
-// UpdateChannel updates the vecto clocks to a channel element
+// UpdateChannel updates the vector clocks to a channel element
 //
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
@@ -30,6 +30,16 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	opC := ch.GetOpC()
 	oID := ch.GetOID()
 	cl := ch.GetClosed()
+
+	// run hold back recvs if the send has been processed
+	for _, elem := range data.WaitingReceive {
+		if elem.GetOID() <= data.MaxOpID[id] {
+			if len(data.WaitingReceive) != 0 {
+				data.WaitingReceive = data.WaitingReceive[1:]
+			}
+			UpdateChannel(elem)
+		}
+	}
 
 	// hold back receive operations, until the send operation is processed
 	if ch.IsBuffered() {
@@ -43,17 +53,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 		}
 	}
 
-	// run hold back recvs if the send has been processed
-	for _, elem := range data.WaitingReceive {
-		if elem.GetOID() <= data.MaxOpID[id] {
-			if len(data.WaitingReceive) != 0 {
-				data.WaitingReceive = data.WaitingReceive[1:]
-			}
-			UpdateChannel(elem)
-		}
-	}
-
-	hb.UpdateHBChannel(ch)
+	hbCalc.UpdateHBChannel(ch)
 
 	if ch.GetTPost() == 0 {
 		return
@@ -70,7 +70,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				Recv(ch, vc.CurrentVC, vc.CurrentWVC, data.Fifo)
 			}
 		case trace.CloseOp:
-			Close(ch, vc.CurrentVC, vc.CurrentWVC)
+			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -103,7 +103,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				}
 			}
 		case trace.CloseOp:
-			Close(ch, vc.CurrentVC, vc.CurrentWVC)
+			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -347,9 +347,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - vc map[int]*VectorClock: the current vector clocks
-//   - wVc map[int]*VectorClock: the current weak vector clocks
-func Close(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
+func Close(ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -370,12 +368,12 @@ func Close(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 
 	if data.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerClose(ch, vc[routine])
+		scenarios.CheckForSelectCaseWithPartnerClose(ch, vc.CurrentVC[routine])
 	}
 
 	if data.AnalysisCases["leak"] {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   vc[routine].Copy(),
+			Vc:   vc.CurrentVC[routine].Copy(),
 			Elem: ch,
 		}, 2, true)
 	}

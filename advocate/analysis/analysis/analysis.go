@@ -15,14 +15,14 @@ import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
 	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/hbCalc"
+	hb "advocate/analysis/hb/hbCalc"
 	"advocate/analysis/hb/pog"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
 	"advocate/utils/timer"
-	"time"
 )
 
 // RunAnalysis starts the analysis of the main trace
@@ -49,14 +49,17 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
 
+	scenarios.RunAnalysisOnExitCodes(true)
+
 	if onlyAPanicAndLeak {
-		scenarios.RunAnalysisOnExitCodes(true)
 		scenarios.CheckForStuckRoutine(true)
-		return
+
+		if !fuzzing {
+			return
+		}
 	}
 
-	scenarios.RunAnalysisOnExitCodes(fuzzing)
-	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing)
+	RunHBAnalysis(assumeFifo, ignoreCriticalSections, analysisCasesMap, fuzzing, !onlyAPanicAndLeak)
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis
@@ -66,38 +69,44 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 //   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
 //   - data.AnalysisCasesMap map[string]bool: The analysis cases to run
 //   - fuzzing bool: true if run with fuzzing
+//   - runAna bool: true to run the predictive analysis
 //
 // Returns:
 //   - bool: true if something has been found
 func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
-	analysisCasesMap map[string]bool, fuzzing bool) {
+	analysisCasesMap map[string]bool, fuzzing bool, runAna bool) {
+	log.Info("Start analysis")
+
 	data.Fifo = assumeFifo
 	data.ModeIsFuzzing = fuzzing
 
 	// set which hb structures should be calculated
 	// NOTE: Do not use predictive analysis if the first parameter is false
-	hb.SetHbSettings(true, false, false)
+	hbCalc.SetHbSettings(true, false, false)
+	if !hbCalc.CalcVC {
+		for key := range analysisCasesMap {
+			analysisCasesMap[key] = false
+		}
+	}
 
 	data.AnalysisCases = analysisCasesMap
 	data.InitAnalysisData(data.AnalysisCases, fuzzing)
 
-	// if hb.CalcVC {
-	vc.InitVC()
-	// }
+	if hb.CalcVC {
+		vc.InitVC()
+	}
 
-	// if hb.CalcPog {
-	pog.InitPOG()
-	// }
+	if hb.CalcPog {
+		pog.InitPOG()
+	}
 
-	// if hb.CalcCssts {
-	cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
-	// }
+	if hb.CalcCssts {
+		cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
+	}
 
 	if data.AnalysisCases["resourceDeadlock"] {
 		scenarios.ResetState()
 	}
-
-	log.Info("Start HB analysis")
 
 	if hb.CalcVC {
 		vc.CurrentVC[1].Inc(1)
@@ -105,7 +114,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	}
 
 	traceIter := data.MainTrace.AsIterator()
-	start := time.Now()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		// add edge between element of same routine to partial order trace
 		if hb.CalcPog {
@@ -183,10 +191,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		}
 	}
 
-	end := time.Since(start)
-	log.Important(end.String())
-
-	data.MainTrace.SetHBWasCalc(true)
+	data.MainTrace.SetHBWasCalc(hb.CalcVC)
 
 	log.Info("Finished HB analysis")
 

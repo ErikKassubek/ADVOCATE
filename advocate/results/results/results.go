@@ -45,7 +45,7 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 
-	helper.LUnknown:           "Leak on routine",
+	helper.LUnknown:           "Leak on routine or unknown element",
 	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
 	helper.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
 	helper.LBufferedWith:      "Leak on buffered channel with possible partner",

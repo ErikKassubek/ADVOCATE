@@ -115,7 +115,12 @@ func mutate(c Chain, energy int) map[string]Chain {
 			break
 		}
 
-		if (rand.Int() % 200) < energy {
+		prob := 200
+		if data.UseHBInfoFuzzing {
+			prob = 100
+		}
+
+		if (rand.Int() % prob) < energy {
 			break
 		}
 	}
@@ -156,8 +161,10 @@ func flip(c Chain) []Chain {
 	// for each flip create a new chain
 	for i := 0; i < c.Len()-1; i++ {
 		nc := c.copy()
-		nc.swap(i, i+1)
-		res = append(res, nc)
+		suc := nc.swap(i, i+1)
+		if suc {
+			res = append(res, nc)
+		}
 	}
 	return res
 }

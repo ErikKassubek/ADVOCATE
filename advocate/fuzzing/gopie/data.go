@@ -50,7 +50,6 @@ func ClearData() {
 	counterCPOP1 = 0
 	counterCPOP2 = 0
 	ElemsByID = make(map[int][]trace.Element)
-	numberWrittenGoPieMuts = 0
 	maxGoPieScore = 0
 	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
 }

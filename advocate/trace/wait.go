@@ -44,22 +44,30 @@ const (
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
+//   - concurrent: concurrent elements
+//   - concurrentWeak: weak concurrent elements
 type ElementWait struct {
-	traceID              int
-	index                int
-	routine              int
-	tPre                 int
-	tPost                int
-	ID                   int
-	opW                  OpWait
-	delta                int
-	val                  int
-	file                 string
-	line                 int
-	vc                   *clock.VectorClock
-	wVc                  *clock.VectorClock
-	numberConcurrent     int
-	numberConcurrentWeak int
+	traceID                  int
+	index                    int
+	routine                  int
+	tPre                     int
+	tPost                    int
+	ID                       int
+	opW                      OpWait
+	delta                    int
+	val                      int
+	file                     string
+	line                     int
+	vc                       *clock.VectorClock
+	wVc                      *clock.VectorClock
+	numberConcurrent         int
+	numberConcurrentWeak     int
+	concurrent               []Element
+	concurrentWeak           []Element
+	numberConcurrentSame     int
+	numberConcurrentWeakSame int
+	concurrentSame           []Element
+	concurrentWeakSame       []Element
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -113,20 +121,26 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:                t.numberElemsInTrace[routine],
-		routine:              routine,
-		tPre:                 tPreInt,
-		tPost:                tPostInt,
-		ID:                   idInt,
-		opW:                  opWOp,
-		delta:                deltaInt,
-		val:                  valInt,
-		file:                 file,
-		line:                 line,
-		vc:                   nil,
-		wVc:                  nil,
-		numberConcurrent:     -1,
-		numberConcurrentWeak: -1,
+		index:                    t.numberElemsInTrace[routine],
+		routine:                  routine,
+		tPre:                     tPreInt,
+		tPost:                    tPostInt,
+		ID:                       idInt,
+		opW:                      opWOp,
+		delta:                    deltaInt,
+		val:                      valInt,
+		file:                     file,
+		line:                     line,
+		vc:                       nil,
+		wVc:                      nil,
+		numberConcurrent:         -1,
+		numberConcurrentWeak:     -1,
+		concurrent:               make([]Element, 0),
+		concurrentWeak:           make([]Element, 0),
+		numberConcurrentSame:     -1,
+		numberConcurrentWeakSame: -1,
+		concurrentSame:           make([]Element, 0),
+		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -269,11 +283,11 @@ func (wa *ElementWait) GetVC() *clock.VectorClock {
 	return wa.vc
 }
 
-// GetWVc returns the weak vector clock of the element
+// GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (wa *ElementWait) GetWVc() *clock.VectorClock {
+func (wa *ElementWait) GetWVC() *clock.VectorClock {
 	return wa.wVc
 }
 
@@ -399,22 +413,37 @@ func (wa *ElementWait) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (wa *ElementWait) Copy() Element {
+	copyConcurrent := make([]Element, 0)
+	copy(copyConcurrent, wa.concurrent)
+	copyConcurrentWeak := make([]Element, 0)
+	copy(copyConcurrentWeak, wa.concurrentWeak)
+	copyConcurrentSame := make([]Element, 0)
+	copy(copyConcurrentSame, wa.concurrentSame)
+	copyConcurrentWeakSame := make([]Element, 0)
+	copy(copyConcurrentWeakSame, wa.concurrentWeakSame)
+
 	return &ElementWait{
-		traceID:              wa.traceID,
-		index:                wa.index,
-		routine:              wa.routine,
-		tPre:                 wa.tPre,
-		tPost:                wa.tPost,
-		ID:                   wa.ID,
-		opW:                  wa.opW,
-		delta:                wa.delta,
-		val:                  wa.val,
-		file:                 wa.file,
-		line:                 wa.line,
-		vc:                   wa.vc.Copy(),
-		wVc:                  wa.wVc.Copy(),
-		numberConcurrent:     wa.numberConcurrent,
-		numberConcurrentWeak: wa.numberConcurrentWeak,
+		traceID:                  wa.traceID,
+		index:                    wa.index,
+		routine:                  wa.routine,
+		tPre:                     wa.tPre,
+		tPost:                    wa.tPost,
+		ID:                       wa.ID,
+		opW:                      wa.opW,
+		delta:                    wa.delta,
+		val:                      wa.val,
+		file:                     wa.file,
+		line:                     wa.line,
+		vc:                       wa.vc.Copy(),
+		wVc:                      wa.wVc.Copy(),
+		numberConcurrent:         wa.numberConcurrent,
+		numberConcurrentWeak:     wa.numberConcurrentWeak,
+		concurrent:               copyConcurrent,
+		concurrentWeak:           copyConcurrentWeak,
+		numberConcurrentSame:     wa.numberConcurrentSame,
+		numberConcurrentWeakSame: wa.numberConcurrentWeakSame,
+		concurrentSame:           copyConcurrentSame,
+		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 }
 
@@ -423,12 +452,19 @@ func (wa *ElementWait) Copy() Element {
 //
 // Parameter:
 //   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (wa *ElementWait) GetNumberConcurrent(weak bool) int {
+func (wa *ElementWait) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
+		if sameElem {
+			return wa.numberConcurrentWeakSame
+		}
 		return wa.numberConcurrentWeak
+	}
+	if sameElem {
+		return wa.numberConcurrentSame
 	}
 	return wa.numberConcurrent
 }
@@ -437,11 +473,65 @@ func (wa *ElementWait) GetNumberConcurrent(weak bool) int {
 //
 // Parameter:
 //   - c int: the number of concurrent elements
-//   - weak bool: get number of weak concurrent
-func (wa *ElementWait) SetNumberConcurrent(c int, weak bool) {
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (wa *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
-		wa.numberConcurrentWeak = c
+		if sameElem {
+			wa.numberConcurrentWeakSame = c
+		} else {
+			wa.numberConcurrentWeak = c
+		}
 	} else {
-		wa.numberConcurrent = c
+		if sameElem {
+			wa.numberConcurrentSame = c
+		} else {
+			wa.numberConcurrent = c
+		}
+	}
+}
+
+// GetConcurrent returns the elements that are concurrent to the element
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - []Element: the concurrent elements
+func (wa *ElementWait) GetConcurrent(weak, sameElem bool) []Element {
+	if weak {
+		if sameElem {
+			return wa.concurrentWeakSame
+		}
+		return wa.concurrentWeak
+	}
+	if sameElem {
+		return wa.concurrentSame
+	}
+	return wa.concurrent
+}
+
+// SetConcurrent sets the concurrent elements
+//
+// Parameter:
+//   - []Element: the concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (wa *ElementWait) SetConcurrent(elem []Element, weak, sameElem bool) {
+	wa.SetNumberConcurrent(len(elem), weak, sameElem)
+
+	if weak {
+		if sameElem {
+			wa.concurrentWeakSame = elem
+		} else {
+			wa.concurrentWeak = elem
+		}
+	} else {
+		if sameElem {
+			wa.concurrentSame = elem
+		} else {
+			wa.concurrent = elem
+		}
 	}
 }

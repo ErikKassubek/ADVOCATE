@@ -15,7 +15,6 @@ import (
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"advocate/utils/log"
-	"strconv"
 )
 
 // UpdateHBChannel updates the vecto clocks to a channel element
@@ -151,9 +150,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 //   - ch *TraceElementChannel: The trace element
 //   - fifo bool: true if the channel buffer is assumed to be fifo
 func Send(ch *trace.ElementChannel, fifo bool) {
-	id := ch.GetID()
 	routine := ch.GetRoutine()
-	qSize := ch.GetQSize()
 
 	if ch.GetTPost() == 0 {
 		CurrentVC[routine].Inc(routine)
@@ -161,19 +158,25 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		return
 	}
 
-	newBufferedVCs(id, qSize)
+	id := ch.GetID()
+	qSize := ch.GetQSize()
+	qCount := ch.GetQCount()
 
-	count := chanBufferCount[id]
+	if fifo {
+		r := data.MostRecentSend[routine][id]
+		if r.Elem != nil {
+			CurrentVC[routine].Sync(r.Vc)
+		}
+	}
 
-	if chanBufferSize[id] <= count {
-		data.HoldSend = append(data.HoldSend, data.HoldObj{
-			Ch:   ch,
-			Vc:   CurrentVC,
-			WVc:  CurrentWVC,
-			Fifo: fifo,
-		})
+	// direct communication without using the buffer
+	if qCount == 0 {
 		return
 	}
+
+	newBuffer(id, qSize)
+
+	count := qCount - 1
 
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
@@ -194,13 +197,6 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		CurrentVC[routine].Sync(v)
 	}
 
-	if fifo {
-		r := data.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			CurrentVC[routine].Sync(r.Vc)
-		}
-	}
-
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
 
@@ -208,8 +204,6 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		Occupied: true,
 		Send:     ch,
 	}
-
-	chanBufferCount[id]++
 }
 
 // Recv updates and calculates the vector clocks given a receive on a buffered channel.
@@ -222,7 +216,6 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
-	oID := ch.GetOID()
 	qSize := ch.GetQSize()
 
 	if ch.GetTPost() == 0 {
@@ -231,43 +224,12 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 		return
 	}
 
-	newBufferedVCs(id, qSize)
-
-	if chanBufferCount[id] == 0 {
-		data.HoldRecv = append(data.HoldRecv, data.HoldObj{
-			Ch:   ch,
-			Vc:   vc,
-			WVc:  wVc,
-			Fifo: fifo,
-		})
-		return
-		// results.Debug("Read operation on empty buffer position", results.ERROR)
-	}
-
-	chanBufferCount[id]--
-
-	if chanBuffer[id][0].Send.GetOID() != oID {
-		found := false
-		for i := 1; i < len(chanBuffer[id]); i++ {
-			if chanBuffer[id][i].Send.GetOID() == oID {
-				found = true
-				chanBuffer[id][0] = chanBuffer[id][i]
-				chanBuffer[id][i] = data.BufferedVC{
-					Occupied: false,
-					Send:     nil,
-				}
-				break
-			}
-		}
-		if !found {
-			err := "Read operation on wrong buffer position - ID: " + strconv.Itoa(id) + ", OID: " + strconv.Itoa(oID) + ", SIZE: " + strconv.Itoa(qSize)
-			log.Error(err)
-		}
-	}
-
+	newBuffer(id, qSize)
 	s := chanBuffer[id][0].Send
 
-	vc[routine] = vc[routine].Sync(s.GetVC())
+	if s != nil {
+		vc[routine] = vc[routine].Sync(s.GetVC())
+	}
 
 	if fifo {
 		r := data.MostRecentReceive[routine][id]
@@ -337,10 +299,9 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
-func newBufferedVCs(id int, qSize int) {
+func newBuffer(id int, qSize int) {
 	if _, ok := chanBuffer[id]; !ok {
 		chanBuffer[id] = make([]data.BufferedVC, 1)
-		chanBufferCount[id] = 0
 		chanBufferSize[id] = qSize
 		chanBuffer[id][0] = data.BufferedVC{
 			Occupied: false,

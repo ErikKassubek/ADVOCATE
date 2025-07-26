@@ -50,13 +50,12 @@ type AdvocateTraceChannel struct {
 // Parameters:
 //   - id uint64: id of the channel
 //   - op Operation: operation send/recv
-//   - opId opID: id of the operation
 //   - qSize uint: size of the channel, 0 for unbuffered
 //   - isNil bool: true if the channel is nil
 //
 // Returns:
 //   - int: index of the operation in the trace, return -1 if it is a atomic operation
-func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil bool) int {
+func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 	if advocateTracingDisabled {
 		return -1
 	}
@@ -73,7 +72,7 @@ func AdvocateChanPre(id uint64, op Operation, opID uint64, qSize uint, isNil boo
 		tPre:  timer,
 		id:    id,
 		op:    op,
-		oId:   opID,
+		oId:   0,
 		qSize: qSize,
 		file:  file,
 		line:  line,
@@ -122,8 +121,9 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 //
 // Parameters:
 //   - index: index of the operation in the trace
-//   - qCount: number of elements in the queue after the operations has finished
-func AdvocateChanPost(index int, qCount uint) {
+//   - c: the channel
+//   - op: the operation
+func AdvocateChanPost(index int, c *hchan, op Operation) {
 	if advocateTracingDisabled {
 		return
 	}
@@ -169,7 +169,17 @@ func AdvocateChanPost(index int, qCount uint) {
 	if !set {
 		elem.tPost = time
 	}
-	elem.qCount = qCount
+	elem.qCount = c.qcount
+
+	if c != nil {
+		if op == OperationChannelSend {
+			c.numberSend++
+			elem.oId = c.numberSend
+		} else if op == OperationChannelRecv {
+			c.numberRecv++
+			elem.oId = c.numberRecv
+		}
+	}
 
 	currentGoRoutineInfo().updateElement(index, elem)
 }

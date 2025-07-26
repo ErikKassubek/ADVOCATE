@@ -38,7 +38,7 @@ func ParseTrace(tr *trace.Trace) {
 	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
-		if data.FuzzingModeGoPie {
+		if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing {
 			gopie.CalculateRelRule1(routine)
 		}
 
@@ -47,11 +47,11 @@ func ParseTrace(tr *trace.Trace) {
 		}
 
 		for _, elem := range routine {
-			if ignoreFuzzing(elem, false) {
+			if data.IgnoreFuzzing(elem, false) {
 				continue
 			}
 
-			if data.FuzzingModeGoPie && canBeAddedToChain(elem) {
+			if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing && data.CanBeAddedToChain(elem) {
 				gopie.CalculateRelRule2AddElem(elem)
 			}
 
@@ -80,7 +80,7 @@ func ParseTrace(tr *trace.Trace) {
 		gopie.CurrentChain = gopie.NewChain()
 	}
 
-	if data.FuzzingModeGoPie {
+	if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing {
 		gopie.CalculateRelRule2And4()
 		gopie.CalculateRelRule3()
 	}
@@ -92,39 +92,6 @@ func ParseTrace(tr *trace.Trace) {
 	gfuzz.SortSelects()
 
 	gfuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
-}
-
-// Decides if an element can be added to a scheduling chain
-// For GoPie without improvements (!useHBInfoFuzzing) those are only mutex and channel (incl. select)
-// With improvements those are all not ignored fuzzing elements
-//
-// Parameter:
-//   - elem analysis.TraceElement: Element to check
-//
-// Returns:
-//   - true if it can be added to a scheduling chain, false otherwise
-func canBeAddedToChain(elem trace.Element) bool {
-	if data.FuzzingMode == data.GoPie {
-		// for standard GoPie, only mutex, channel and select operations are considered
-		t := elem.GetObjType(false)
-		return t == trace.ObjectTypeMutex || t == trace.ObjectTypeChannel || t == trace.ObjectTypeSelect
-	}
-
-	return !ignoreFuzzing(elem, true)
-}
-
-// For the creation of mutations we ignore all elements that do not directly
-// correspond to relevant operations. Those are , replay, routineEnd
-//
-// Parameter:
-//   - elem *trace.TraceElementFork: The element to check
-//   - ignoreNew bool: if true, new elem is ignored elem, otherwise not
-//
-// Returns:
-//   - True if the element is of one of those types, false otherwise
-func ignoreFuzzing(elem trace.Element, ignoreNew bool) bool {
-	t := elem.GetObjType(false)
-	return (ignoreNew && t == trace.ObjectTypeNew) || t == trace.ObjectTypeReplay || t == trace.ObjectTypeRoutineEnd
 }
 
 // Parse a new elem element.

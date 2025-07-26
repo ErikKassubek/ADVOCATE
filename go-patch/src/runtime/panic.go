@@ -748,7 +748,6 @@ func gopanic(e any) {
 		<-advocatePanicDone
 	}
 	// ADVOCATE-END
-
 	if e == nil {
 		if debug.panicnil.Load() != 1 {
 			e = new(PanicNilError)

@@ -10,7 +10,9 @@
 
 package trace
 
-import "advocate/analysis/hb/clock"
+import (
+	"advocate/analysis/hb/clock"
+)
 
 // Values possible primitive types
 const (
@@ -50,10 +52,12 @@ type Element interface {
 	SetVc(vc *clock.VectorClock)
 	SetWVc(vc *clock.VectorClock)
 	GetVC() *clock.VectorClock
-	GetWVc() *clock.VectorClock
+	GetWVC() *clock.VectorClock
 	Copy() Element
 	setTraceID(ID int)
 	GetTraceID() int
-	GetNumberConcurrent(weak bool) int
-	SetNumberConcurrent(c int, weak bool)
+	GetNumberConcurrent(weak, sameElem bool) int
+	SetNumberConcurrent(c int, weak, sameElem bool)
+	GetConcurrent(weak, sameElem bool) []Element
+	SetConcurrent(elems []Element, weak, sameElem bool)
 }

@@ -12,7 +12,7 @@
 package elements
 
 import (
-	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/hbCalc"
 	"advocate/trace"
 )
 
@@ -20,12 +20,12 @@ import (
 // Parameter:
 //   - n *trace.TraceElementNew: the new trace element
 func AnalyzeNew(n *trace.ElementNew) {
-	hb.UpdateHBNew(n)
+	hbCalc.UpdateHBNew(n)
 }
 
 // AnalyzeRoutineEnd store the vector clock of the element
 // Parameter:
 //   - re *trace.TraceElementRoutineEnd: the new trace element
 func AnalyzeRoutineEnd(re *trace.ElementRoutineEnd) {
-	hb.UpdateHBRoutineEnd(re)
+	hbCalc.UpdateHBRoutineEnd(re)
 }

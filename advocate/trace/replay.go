@@ -148,8 +148,8 @@ func (er *ElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
-// GetWVc is a dummy function to implement the TraceElement interface
-func (er *ElementReplay) GetWVc() *clock.VectorClock {
+// GetWVC is a dummy function to implement the TraceElement interface
+func (er *ElementReplay) GetWVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
@@ -264,18 +264,26 @@ func (er *ElementReplay) Copy() Element {
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//
 // Returns:
-//   - number of concurrent element, or -1
-func (er *ElementReplay) GetNumberConcurrent(weak bool) int {
+//   - int: -1
+func (er *ElementReplay) GetNumberConcurrent(_, _ bool) int {
 	return -1
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
+func (er *ElementReplay) SetNumberConcurrent(_ int, _, _ bool) {}
+
+// GetConcurrent returns the elements that are concurrent to the element
 //
 // Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: set number of weak concurrent
-func (er *ElementReplay) SetNumberConcurrent(c int, weak bool) {}
+//   - weak bool: get number of weak concurrent
+//
+// Returns:
+//   - []Element: empty
+func (er *ElementReplay) GetConcurrent(_, _ bool) []Element {
+	return []Element{}
+}
+
+// SetConcurrent sets the concurrent elements
+func (er *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
+}

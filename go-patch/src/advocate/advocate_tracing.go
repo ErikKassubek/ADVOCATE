@@ -99,7 +99,8 @@ func FinishTracing() {
 	err := os.RemoveAll(tracePathRecorded)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			panic(err)
+			println("Cannot remove: ", err.Error())
+			return
 		}
 	}
 
@@ -107,7 +108,8 @@ func FinishTracing() {
 	err = os.Mkdir(tracePathRecorded, 0755)
 	if err != nil {
 		if !os.IsExist(err) {
-			panic(err)
+			println("Cannot write: ", err.Error())
+			return
 		}
 	}
 

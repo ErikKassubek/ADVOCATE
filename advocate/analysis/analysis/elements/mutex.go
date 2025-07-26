@@ -14,7 +14,7 @@ package elements
 import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
-	"advocate/analysis/hb/hb"
+	"advocate/analysis/hb/hbCalc"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -26,7 +26,7 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - alt bool: if IgnoreCriticalSections is set
 func UpdateMutex(mu *trace.ElementMutex, alt bool) {
-	hb.UpdateHBMutex(mu, alt)
+	hbCalc.UpdateHBMutex(mu, alt)
 
 	routine := mu.GetRoutine()
 	id := mu.GetID()

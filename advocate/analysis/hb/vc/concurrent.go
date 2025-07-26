@@ -29,13 +29,11 @@ var (
 	// the map key is the channel id. The slice is used for the buffer positions
 	chanBuffer = make(map[int]([]data.BufferedVC))
 	// the current buffer position
-	chanBufferCount = make(map[int]int)
-	chanBufferSize  = make(map[int]int)
+	chanBufferSize = make(map[int]int)
 )
 
 func InitVC() {
 	chanBuffer = make(map[int][]data.BufferedVC)
-	chanBufferCount = make(map[int]int)
 	chanBufferSize = make(map[int]int)
 	CurrentVC = make(map[int]*clock.VectorClock)
 	CurrentWVC = make(map[int]*clock.VectorClock)
@@ -82,7 +80,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 			}
 
 			if weak {
-				if clock.IsConcurrent(elem.GetWVc(), tElem.GetWVc()) {
+				if clock.IsConcurrent(elem.GetWVC(), tElem.GetWVC()) {
 					res = append(res, tElem)
 					if !all {
 						return res

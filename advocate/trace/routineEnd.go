@@ -163,11 +163,11 @@ func (re *ElementRoutineEnd) GetVC() *clock.VectorClock {
 	return re.vc
 }
 
-// GetWVc returns the weak vector clock of the element
+// GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (re *ElementRoutineEnd) GetWVc() *clock.VectorClock {
+func (re *ElementRoutineEnd) GetWVC() *clock.VectorClock {
 	return re.wVc
 }
 
@@ -283,19 +283,18 @@ func (re *ElementRoutineEnd) Copy() Element {
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//
-// Returns:
-//   - number of concurrent element, or -1
-func (at *ElementRoutineEnd) GetNumberConcurrent(weak bool) int {
+func (re *ElementRoutineEnd) GetNumberConcurrent(_, _ bool) int {
 	return -1
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
-//
-// Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: get number of weak concurrent
-func (at *ElementRoutineEnd) SetNumberConcurrent(c int, weak bool) {}
+func (re *ElementRoutineEnd) SetNumberConcurrent(_ int, _, _ bool) {}
+
+// GetConcurrent returns the elements that are concurrent to the element
+func (re *ElementRoutineEnd) GetConcurrent(_, _ bool) []Element {
+	return []Element{}
+}
+
+// SetConcurrent sets the concurrent elements
+func (re *ElementRoutineEnd) SetConcurrent(_ []Element, _, _ bool) {
+}

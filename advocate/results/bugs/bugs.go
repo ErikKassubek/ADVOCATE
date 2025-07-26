@@ -160,7 +160,7 @@ func (b Bug) ToString() string {
 		arg2Str = "tail: "
 	case helper.LUnknown:
 		typeStr = "Leak on routine"
-		arg1Str = "fork: "
+		arg1Str = "elem: "
 	case helper.LUnbufferedWith:
 		typeStr = "Leak on unbuffered channel with possible partner:"
 		arg1Str = "channel: "

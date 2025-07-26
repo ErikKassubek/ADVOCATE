@@ -25,9 +25,8 @@ var (
 )
 
 func InitCSSTs(numberRoutines int, lengths []int) {
-	bufferedVCs = make(map[int]([]data.BufferedVC))
-	bufferedVCsCount = make(map[int]int)
-	bufferedVCsSize = make(map[int]int)
+	chanBuffer = make(map[int]([]data.BufferedVC))
+	chanBufferSize = make(map[int]int)
 
 	Csst = NewIncrementalCSST(lengths)
 	CsstInverted = NewIncrementalCSST(lengths)

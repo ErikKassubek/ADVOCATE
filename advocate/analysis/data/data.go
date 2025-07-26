@@ -15,8 +15,8 @@ package data
 // Parameters:
 //   - analysisCasesMap map[string]bool: map with information about which
 //     analysis parts should be run
-//   - anaFuzzing bool: true if fuzzing, false otherwise
-func InitAnalysisData(analysisCasesMap map[string]bool, anaFuzzing bool) {
+//   - anaFuzzingFlow bool: true if fuzzing flow, false otherwise
+func InitAnalysisData(analysisCasesMap map[string]bool, anaFuzzingFlow bool) {
 	AnalysisCases = analysisCasesMap
-	AnalysisFuzzing = anaFuzzing
+	AnalysisFuzzingFlow = anaFuzzingFlow
 }

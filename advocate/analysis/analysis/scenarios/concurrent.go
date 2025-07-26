@@ -75,7 +75,7 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 // Parameter:
 //   - ch *TraceElementChannel: recv trace element
 func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorClock) {
-	if data.AnalysisFuzzing {
+	if data.AnalysisFuzzingFlow {
 		timer.Start(timer.FuzzingAna)
 		defer timer.Stop(timer.FuzzingAna)
 	}
@@ -101,30 +101,34 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 
 			elem2 := elem[id].Elem
 
-			if ch.GetTPost() == 0 {
-				data.FuzzingFlowRecv = append(data.FuzzingFlowRecv, data.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: data.CERecv})
+			if data.AnalysisFuzzingFlow {
+				if ch.GetTPost() == 0 {
+					data.FuzzingFlowRecv = append(data.FuzzingFlowRecv, data.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: data.CERecv})
+				}
 			}
 
-			arg1 := results.TraceElementResult{
-				RoutineID: routine,
-				ObjID:     id,
-				TPre:      ch.GetTPre(),
-				ObjType:   "CR",
-				File:      ch.GetFile(),
-				Line:      ch.GetLine(),
-			}
+			if data.AnalysisCases["concurrentRecv"] {
+				arg1 := results.TraceElementResult{
+					RoutineID: routine,
+					ObjID:     id,
+					TPre:      ch.GetTPre(),
+					ObjType:   "CR",
+					File:      ch.GetFile(),
+					Line:      ch.GetLine(),
+				}
 
-			arg2 := results.TraceElementResult{
-				RoutineID: r,
-				ObjID:     id,
-				TPre:      elem2.GetTPre(),
-				ObjType:   "CR",
-				File:      elem2.GetFile(),
-				Line:      elem2.GetLine(),
-			}
+				arg2 := results.TraceElementResult{
+					RoutineID: r,
+					ObjID:     id,
+					TPre:      elem2.GetTPre(),
+					ObjType:   "CR",
+					File:      elem2.GetFile(),
+					Line:      elem2.GetLine(),
+				}
 
-			results.Result(results.WARNING, helper.AConcurrentRecv,
-				"recv", []results.ResultElem{arg1}, "recv", []results.ResultElem{arg2})
+				results.Result(results.WARNING, helper.AConcurrentRecv,
+					"recv", []results.ResultElem{arg1}, "recv", []results.ResultElem{arg2})
+			}
 		}
 	}
 

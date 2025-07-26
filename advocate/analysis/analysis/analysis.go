@@ -83,7 +83,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 	// set which hb structures should be calculated
 	// NOTE: Do not use predictive analysis if the first parameter is false
 	hbCalc.SetHbSettings(true, false, false)
-	if !hbCalc.CalcVC {
+	if !runAna || !hbCalc.CalcVC {
 		for key := range analysisCasesMap {
 			analysisCasesMap[key] = false
 		}
@@ -139,7 +139,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			} else {
 				elements.UpdateMutex(e, false)
 			}
-			if data.AnalysisFuzzing {
+			if data.AnalysisFuzzingFlow {
 				scenarios.GetConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
@@ -165,7 +165,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			elements.AnalyzeCond(e)
 		case *trace.ElementOnce:
 			elements.AnalyzeOnce(e)
-			if data.AnalysisFuzzing {
+			if data.AnalysisFuzzingFlow {
 				scenarios.GetConcurrentOnceForFuzzing(e)
 			}
 		case *trace.ElementRoutineEnd:

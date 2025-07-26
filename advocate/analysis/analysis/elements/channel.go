@@ -173,7 +173,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzing { // or fuzzing
+	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzingFlow { // or fuzzing
 		switch r := recv.(type) {
 		case *trace.ElementChannel:
 			scenarios.CheckForConcurrentRecv(r, vc.CurrentVC)
@@ -182,7 +182,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	if data.AnalysisFuzzing {
+	if data.AnalysisFuzzingFlow {
 		switch s := sender.(type) {
 		case *trace.ElementChannel:
 			scenarios.GetConcurrentSendForFuzzing(s)
@@ -299,7 +299,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzing {
+	if data.AnalysisCases["concurrentRecv"] || data.AnalysisFuzzingFlow {
 		scenarios.CheckForConcurrentRecv(ch, vc)
 	}
 

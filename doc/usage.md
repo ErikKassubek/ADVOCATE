@@ -3,7 +3,41 @@
 
 This file provides a detailed explanation on how to use the ADVOCATE framework.
 
-## Preparation
+## Docker
+
+We provide a docker file to create the environment.
+
+To build the docker file, run
+
+```shell
+docker build -t advocate-app .
+```
+
+To run the analysis or fuzzing on a program, you can call the following:
+
+```shell
+docker run --rm -it \
+  -v <pathToProg>:/prog \
+  advocate-app [mode] -path /prog [args]
+```
+
+e.g.
+
+```shell
+docker run --rm -it \
+  -v /home/erik/progToTest:/prog \
+  advocate-app fuzzing -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+```
+
+For the modes and args, see [usage](#usage).
+Note that the -path argument has already been set and does not need to be set again.
+
+
+## Local
+
+If you do not want to use the Docker container, you can also
+build al the required parts yourself.
+
 
 Before Advocate can be used, it must first be build.
 

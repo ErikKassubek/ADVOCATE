@@ -1,7 +1,6 @@
 package main
 
 import (
-	"advocate"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -25,10 +24,6 @@ import (
 // a flip mutation.
 
 func TestFlip(t *testing.T) {
-	// ======= Preamble Start =======
-  advocate.InitFuzzing("/home/erik/Uni/Advocate/ADVOCATE/examples/fuzzing/goPie/fuzzingTraces/fuzzingTrace_2", 600)
-  defer advocate.FinishFuzzing()
-  // ======= Preamble End =======
 	c := make(chan int, 2) // buffered to allow non-blocking send
 	var x atomic.Int32
 

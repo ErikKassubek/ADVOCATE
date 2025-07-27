@@ -56,7 +56,7 @@ func Supervisor() {
 	}
 
 	thresholdRAM := uint64(float64(v.Total) * 0.02)
-	thresholdSwap := uint64(10 * 1024 * 1024) // 1MB
+	thresholdSwap := uint64(1025 * 1024 * 1024) // 1GB
 
 	startSwap := s.Used
 

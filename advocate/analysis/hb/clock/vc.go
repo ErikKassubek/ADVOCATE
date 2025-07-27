@@ -90,6 +90,10 @@ func (vc VectorClock) GetSize() int {
 // Returns:
 //   - uint32: the value at the given index
 func (vc *VectorClock) GetValue(index int) uint32 {
+	if index > vc.size {
+		return 0
+	}
+
 	if val, ok := vc.clock[uint32(index)]; ok {
 		return val
 	}

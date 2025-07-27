@@ -18,6 +18,7 @@ import (
 	"advocate/utils/log"
 )
 
+// Current vector clocks
 var (
 	// current happens before vector clocks
 	CurrentVC = make(map[int]*clock.VectorClock)
@@ -32,6 +33,7 @@ var (
 	chanBufferSize = make(map[int]int)
 )
 
+// InitVC initializes the current vector clocks
 func InitVC() {
 	chanBuffer = make(map[int][]data.BufferedVC)
 	chanBufferSize = make(map[int]int)
@@ -45,7 +47,7 @@ func InitVC() {
 	}
 }
 
-// For a given element, find a/all element(s) that are concurrent to it
+// GetConcurrent find a/all element(s) that are concurrent to a given element
 // This function assumes that the vector clocks have already been calculated
 // The function iterates over all elements, and compares the vector clocks
 //

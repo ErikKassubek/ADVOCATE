@@ -15,7 +15,7 @@ import (
 	"advocate/trace"
 )
 
-// For an atomic write, add the element to be the last write
+// AddAtomic  add the element to be the last write for an atomic write
 // For an atomic read, add a constraint between the last writer and the element
 //
 // Parameter:

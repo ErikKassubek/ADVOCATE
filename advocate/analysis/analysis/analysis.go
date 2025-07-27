@@ -15,8 +15,8 @@ import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
 	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/hbCalc"
-	hb "advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
+	hb "advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/pog"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
@@ -80,8 +80,8 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 
 	// set which hb structures should be calculated
 	// NOTE: Do not use predictive analysis if the first parameter is false
-	hbCalc.SetHbSettings(true, false, false)
-	if !runAna || !hbCalc.CalcVC {
+	hbcalc.SetHbSettings(true, false, false)
+	if !runAna || !hbcalc.CalcVC {
 		for key := range data.AnalysisCasesMap {
 			data.AnalysisCasesMap[key] = false
 		}
@@ -96,7 +96,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 	}
 
 	if hb.CalcCssts {
-		cssts.InitCSSTs(data.GetNoRoutines(), data.GetTraceLengths())
+		cssts.InitCSSTs(data.GetTraceLengths())
 	}
 
 	if data.AnalysisCasesMap[data.ResourceDeadlock] {
@@ -216,7 +216,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		return
 	}
 
-	if data.AnalysisCasesMap["doneBeforeAdd"] {
+	if data.AnalysisCasesMap[data.DoneBeforeAdd] {
 		log.Info("Check for done before add")
 		scenarios.CheckForDoneBeforeAdd()
 		log.Info("Finish check for done before add")
@@ -230,7 +230,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 	// 	return
 	// }
 
-	if data.AnalysisCasesMap["resourceDeadlock"] {
+	if data.AnalysisCasesMap[data.ResourceDeadlock] {
 		log.Info("Check for cyclic deadlock")
 		scenarios.CheckForResourceDeadlock()
 		log.Info("Finish check for cyclic deadlock")
@@ -240,7 +240,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		return
 	}
 
-	if data.AnalysisCasesMap["unlockBeforeLock"] {
+	if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")

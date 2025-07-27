@@ -19,10 +19,11 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
+	"advocate/utils/types"
 	"fmt"
 )
 
-// Collect all adds and dones for the analysis
+// CheckForDoneBeforeAddChange collect all adds and dones for the analysis
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait or done element
@@ -41,7 +42,7 @@ func CheckForDoneBeforeAddChange(wa *trace.ElementWait) {
 	}
 }
 
-// Collect all adds for the analysis
+// CheckForDoneBeforeAddAdd collect all adds for the analysis
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
@@ -57,7 +58,7 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 	data.WgAdd[id] = append(data.WgAdd[id], wa)
 }
 
-// Collect all dones for the analysis
+// CheckForDoneBeforeAddDone collect all dones for the analysis
 //
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
@@ -74,7 +75,7 @@ func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
 	data.WgDone[id] = append(data.WgDone[id], wa)
 }
 
-// Check if a wait group counter could become negative
+// CheckForDoneBeforeAdd checks if a wait group counter could become negative
 // For each done operation, build a bipartite st graph.
 // Use the Ford-Fulkerson algorithm to find the maximum flow.
 // If the maximum flow is smaller than the number of done operations, a negative wait group counter is possible.
@@ -100,7 +101,7 @@ func CheckForDoneBeforeAdd() {
 			// i-th done in the result message
 
 			for _, add := range data.WgAdd[id] {
-				if !helper.Contains(graph[drain], add) {
+				if !types.Contains(graph[drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}
 			}

@@ -17,7 +17,8 @@ import (
 	"path/filepath"
 )
 
-// Write a given mutation to a mutation file. These files are used to run the mutation
+// WriteMutationToFile writes a given mutation to a mutation file.
+// These files are used to run the mutation
 //
 // Parameter:
 //   - pathToFolder string: path to where the mutation should be created
@@ -73,6 +74,7 @@ func WriteMutationToFile(pathToFolder string, mut Mutation) error {
 	return nil
 }
 
+// GetPath returns a path for a path
 // Given a path, if it a dir, return the path, otherwise return the
 // path to the dir the file is in
 //

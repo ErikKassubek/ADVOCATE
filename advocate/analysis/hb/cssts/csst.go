@@ -16,6 +16,7 @@ import (
 	"advocate/utils/types"
 )
 
+// Data for the csst
 var (
 	Csst         IncrementalCSST
 	CsstInverted IncrementalCSST
@@ -24,7 +25,11 @@ var (
 	CsstWeakInverted IncrementalCSST
 )
 
-func InitCSSTs(numberRoutines int, lengths []int) {
+// InitCSSTs initializes the cssts
+//
+// Parameter:
+//   - lengths []int: the number of elements per routine
+func InitCSSTs(lengths []int) {
 	chanBuffer = make(map[int]([]data.BufferedVC))
 	chanBufferSize = make(map[int]int)
 

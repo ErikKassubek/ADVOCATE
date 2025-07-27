@@ -17,7 +17,7 @@ import (
 	"advocate/trace"
 )
 
-// Add an edge between start and end
+// AddEdge adds an edge between start and end
 //
 // Parameter:
 //   - start trace.Element: the start element
@@ -37,7 +37,7 @@ func AddEdge(start, end trace.Element, weak bool) {
 	}
 }
 
-// For a given element, find one or all elements that are concurrent to it
+// GetConcurrent find one or all elements that are concurrent to a given element
 //
 // Parameter
 //   - elem TraceElement: the element the results should be concurrent with

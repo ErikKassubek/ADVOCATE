@@ -21,6 +21,7 @@ const (
 	GoPieHB     = "GoPieHB"     // goPie with HB relation
 )
 
+// Possible mut types
 const (
 	MutSelType  = 0
 	MutPiType   = 1

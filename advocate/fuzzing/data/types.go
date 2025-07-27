@@ -10,8 +10,9 @@
 
 package data
 
-// Struct to handle the selects for fuzzing
+// FuzzingSelect is a struct to handle the selects for fuzzing
 //
+// Fields:
 //   - Id string: replay id
 //   - T int: tPost of the select execution, used for order
 //   - ChosenCase int: id of the chosen case, -1 for default
@@ -27,7 +28,13 @@ type FuzzingSelect struct {
 	CasiWithPos     []int
 }
 
-// Encapsulating type for the different mutations
+// Mutation encapsulates type for the different mutations
+//
+// Fields:
+//   - MutType int: the type of the mutation
+//   - MutSel map[string][]FuzzingSelect: gFuzz mutations
+//   - MutFLow map[string][]FuzzingSelect: flow mutations
+//   - MutPie int: index for a goPie mutation
 type Mutation struct {
 	MutType int
 	MutSel  map[string][]FuzzingSelect

@@ -19,6 +19,7 @@ import (
 	"github.com/shirou/gopsutil/mem"
 )
 
+// variables for memory management
 var (
 	wasCanceled    atomic.Bool
 	WasCanceledRAM atomic.Bool
@@ -26,7 +27,7 @@ var (
 	MaxNumberElements int
 )
 
-// Set max number elements
+// SetMaxNumberElem sets the max number elements
 //
 // Parameter:
 //   - maxNumberElem int: max number elements
@@ -72,7 +73,7 @@ func Supervisor() {
 			log.Errorf("Error getting swap info: %v", err)
 		}
 
-		// cancel if available RAM is below the threshold or the used swap is above the threshhold
+		// cancel if available RAM is below the threshold or the used swap is above the threshold
 		if v.Available < thresholdRAM {
 			cancelRAM()
 			return

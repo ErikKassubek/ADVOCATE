@@ -13,9 +13,9 @@ package trace
 import (
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
-	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/memory"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
@@ -58,12 +58,10 @@ func NewTrace() Trace {
 
 // Clear the trace
 func (t *Trace) Clear() {
-	t = &Trace{
-		traces:             make(map[int][]Element),
-		hbWasCalc:          false,
-		numberElemsInTrace: make(map[int]int),
-		minTraceID:         0,
-	}
+	t.traces = make(map[int][]Element)
+	t.hbWasCalc = false
+	t.numberElemsInTrace = make(map[int]int)
+	t.minTraceID = 0
 }
 
 // AddElement adds an element to the trace
@@ -703,9 +701,9 @@ func (t *Trace) PrintTrace() {
 // PrintTraceArgs print the elements of given types sorted by tPost
 //
 // Parameter:
-//   - types: types of the elements to print. If empty, all elements will be printed
+//   - ty: types of the elements to print. If empty, all elements will be printed
 //   - clocks: if true, the clocks will be printed
-func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
+func (t *Trace) PrintTraceArgs(ty []string, clocks bool) {
 	elements := make([]struct {
 		string
 		time   int
@@ -716,7 +714,7 @@ func (t *Trace) PrintTraceArgs(types []string, clocks bool) {
 	for _, tra := range t.traces {
 		for _, elem := range tra {
 			elemStr := elem.ToString()
-			if len(types) == 0 || helper.Contains(types, elemStr[0:1]) {
+			if len(ty) == 0 || types.Contains(ty, elemStr[0:1]) {
 				elements = append(elements, struct {
 					string
 					time   int
@@ -782,11 +780,12 @@ func (t *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element {
 
 			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == hb.Concurrent {
 				e := elem.(*ElementCond)
-				if e.opC == SignalOp {
+				switch e.opC {
+				case SignalOp:
 					res["signal"] = append(res["signal"], elem)
-				} else if e.opC == BroadcastOp {
+				case BroadcastOp:
 					res["broadcast"] = append(res["broadcast"], elem)
-				} else if e.opC == WaitCondOp {
+				case WaitCondOp:
 					res["wait"] = append(res["wait"], elem)
 				}
 			}

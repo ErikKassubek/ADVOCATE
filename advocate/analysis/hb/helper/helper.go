@@ -12,7 +12,7 @@ package helper
 
 import "advocate/trace"
 
-// Function to filter out element which do not correspond to valid operations, e.g.
+// Valid filters out elements which do not correspond to valid operations, e.g.
 // end of a routine
 //
 // Parameter:

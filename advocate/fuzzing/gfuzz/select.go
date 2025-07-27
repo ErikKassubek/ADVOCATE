@@ -16,7 +16,7 @@ import (
 	"sort"
 )
 
-// Add a select to selectInfoTrace
+// AddFuzzingSelect adds a select to selectInfoTrace
 //
 // Parameter:
 //   - e *trace.TraceElementSelect: the select trace element to add
@@ -34,7 +34,7 @@ func AddFuzzingSelect(e *trace.ElementSelect) {
 	NumberSelects++
 }
 
-// Sort the list of occurrences of each select by the time value
+// SortSelects sorts the list of occurrences of each select by the time value
 func SortSelects() {
 	for key := range SelectInfoTrace {
 		sort.Slice(SelectInfoTrace[key], func(i, j int) bool {

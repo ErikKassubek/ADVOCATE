@@ -16,7 +16,7 @@ import (
 	"advocate/utils/types"
 )
 
-// Add an edge to the cssts
+// AddEdge adds an edge to the cssts
 //
 // Parameter:
 //   - from trace.Element: start node
@@ -53,7 +53,7 @@ func addEdgeIndex(from, to types.Pair[int, int], weak bool) {
 	}
 }
 
-// Add an edge between a fork element and the first element in the newly
+// AddEdgeFork adds an edge between a fork element and the first element in the newly
 // crated routine
 //
 // Parameter:

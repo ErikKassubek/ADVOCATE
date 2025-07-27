@@ -12,7 +12,7 @@ package elements
 
 import (
 	"advocate/analysis/data"
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 	"advocate/utils/timer"
 )
@@ -27,7 +27,7 @@ func AnalyzeFork(fo *trace.ElementFork) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	hbCalc.UpdateHBFork(fo)
+	hbcalc.UpdateHBFork(fo)
 
 	// store fork operations for each routine
 	data.ForkOperations[fo.GetID()] = fo

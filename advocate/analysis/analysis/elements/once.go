@@ -12,7 +12,7 @@ package elements
 
 import (
 	"advocate/analysis/data"
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
 
@@ -20,7 +20,7 @@ import (
 // Parameter:
 //   - on *trace.TraceElementOnce: the once trace element
 func AnalyzeOnce(on *trace.ElementOnce) {
-	hbCalc.UpdateHBOnce(on)
+	hbcalc.UpdateHBOnce(on)
 
 	if on.GetSuc() {
 		id := on.GetID()

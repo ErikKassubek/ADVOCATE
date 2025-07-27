@@ -18,7 +18,7 @@ import (
 	"strconv"
 )
 
-// enum for OpWait
+// OpWait enum
 type OpWait int
 
 // Values for the opW enum

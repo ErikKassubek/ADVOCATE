@@ -13,8 +13,8 @@ package gopie
 import (
 	"advocate/fuzzing/data"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"advocate/utils/memory"
+	"advocate/utils/types"
 	"sort"
 )
 
@@ -27,7 +27,7 @@ import (
 // Rule 3: exists c, c', c'', c' in Rel1(c), c'' in Rel2(c') -> c'' in Rel2(c)
 // Rule 4: exists c, c', c'', c' in Rel2(c), c'' in Rel2(c') -> c'' in Rel2(c)
 
-// For each element in a routine trace, store the rule 1 information
+// CalculateRelRule1 store the rule 1 information for each element in a routine trace
 //
 // Parameter:
 //   - routineTrace []analysis.TraceElement: the list of elems in the same trace
@@ -59,7 +59,7 @@ func CalculateRelRule1(routineTrace []trace.Element) {
 	}
 }
 
-// For each element in a routine trace, add it to the map from id to operation
+// CalculateRelRule2AddElem add each element in a routine trace to the map from id to operation
 //
 // Parameter:
 //   - elem analysis.TraceElement: Element to add
@@ -76,7 +76,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 	counterCPOP2++
 }
 
-// For all elements apply rule 2 and directly rule 4
+// CalculateRelRule2And4 applies rule 2 and directly rule 4 for all elements
 // This calculates rel2 as the tuples, of elements on the same primitive
 // but in different routines
 func CalculateRelRule2And4() {
@@ -109,7 +109,7 @@ func CalculateRelRule2And4() {
 	}
 }
 
-// For all elements apply rule 3
+// CalculateRelRule3 applies rule 3 for all elements
 func CalculateRelRule3() {
 	changed := true
 	for changed {
@@ -153,6 +153,7 @@ func CalculateRelRule3() {
 	}
 }
 
+// isGoPieElem returns if an element is part of the original goPie
 // GoPie only looks at fork, mutex, rwmutex and channel (and select)
 // GoPieHB uses all repayable elements
 //
@@ -168,10 +169,10 @@ func isGoPieElem(elem trace.Element) bool {
 		validTypes := []string{
 			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
 			trace.ObjectTypeSelect}
-		return helper.Contains(validTypes, elemTypeShort)
+		return types.Contains(validTypes, elemTypeShort)
 	}
 
 	invalidTypes := []string{trace.ObjectTypeNew,
 		trace.ObjectTypeReplay, trace.ObjectTypeRoutineEnd}
-	return !helper.Contains(invalidTypes, elemTypeShort)
+	return !types.Contains(invalidTypes, elemTypeShort)
 }

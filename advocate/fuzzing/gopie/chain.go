@@ -14,7 +14,7 @@ import (
 	anaData "advocate/analysis/data"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/concurrent"
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/fuzzing/data"
 	"advocate/trace"
 	"fmt"
@@ -213,7 +213,7 @@ func (ch *Chain) lastElem() trace.Element {
 // Return:
 //   - bool: true if swap was possible, false otherwise
 func (ch *Chain) swap(i, j int) bool {
-	if hbCalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true) != hb.Concurrent {
+	if hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true) != hb.Concurrent {
 		return false
 	}
 	if i >= 0 && i < len(ch.Elems) && j >= 0 && j < len(ch.Elems) {
@@ -237,7 +237,7 @@ func (ch *Chain) copy() Chain {
 	return newChain
 }
 
-// Get the number of elements in a scheduling chain
+// Len returns the number of elements in a scheduling chain
 //
 // Returns:
 //   - the number of elements in the chain
@@ -267,7 +267,7 @@ func (ch *Chain) toString() string {
 //   - bool: True if the mutation is valid, false otherwise
 func (ch *Chain) isValid() bool {
 	for i := range ch.Len() - 1 {
-		hbInfo := hbCalc.GetHappensBefore(ch.Elems[i], ch.Elems[i+1], true)
+		hbInfo := hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[i+1], true)
 		if hbInfo == hb.After {
 			return false
 		}

@@ -19,7 +19,7 @@ import (
 	"advocate/utils/timer"
 )
 
-// runAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
+// RunAnalysisOnExitCodes checks the exit codes for the recording for actual bugs
 //
 // Parameter:
 //   - all bool: If true, check for all, else only check for the once, that are not detected by the full analysis

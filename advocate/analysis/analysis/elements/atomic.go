@@ -11,7 +11,7 @@
 package elements
 
 import (
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
 
@@ -21,5 +21,5 @@ import (
 //   - at *trace.ElementAtomic: the element
 //   - alt bool: if ignoreCriticalSections is set
 func AnalyzeAtomic(at *trace.ElementAtomic, alt bool) {
-	hbCalc.UpdateHBAtomic(at, alt)
+	hbcalc.UpdateHBAtomic(at, alt)
 }

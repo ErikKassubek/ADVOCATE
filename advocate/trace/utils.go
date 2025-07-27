@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/utils/helper"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -31,7 +31,7 @@ import (
 //   - int: the tPre
 //   - error: the error
 func InfoFromTID(tID string) (string, int, int, error) {
-	spilt1 := helper.SplitAtLast(tID, "@")
+	spilt1 := types.SplitAtLast(tID, "@")
 
 	if len(spilt1) != 2 {
 		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no @: ", tID))

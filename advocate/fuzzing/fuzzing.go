@@ -23,6 +23,7 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/memory"
 	"advocate/utils/timer"
+	"advocate/utils/types"
 	"fmt"
 	"path/filepath"
 	"time"
@@ -57,7 +58,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	modes := []string{data.GoPie, data.GoPiePlus, data.GoPieHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
-	if !helper.Contains(modes, fm) {
+	if !types.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 

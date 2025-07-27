@@ -159,9 +159,10 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 			}
 		}
 		var cOpC = SendOp
-		if caseList[2] == "R" {
+		switch caseList[2] {
+		case "R":
 			cOpC = RecvOp
-		} else if caseList[2] == "C" {
+		case "C":
 			return errors.New("Close in select case list")
 		}
 
@@ -432,8 +433,8 @@ func (se *ElementSelect) SetT(time int) {
 
 	se.chosenCase.tPost = time
 
-	for _, c := range se.cases {
-		c.tPre = time
+	for i := range se.cases {
+		se.cases[i].tPre = time
 	}
 }
 

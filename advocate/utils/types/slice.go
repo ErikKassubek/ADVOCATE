@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package helper
+package types
 
 import (
 	"strings"
@@ -91,18 +91,32 @@ func MergeLists[T comparable](l1, l2 []T) []T {
 	return res
 }
 
-func CopyOfRange[T any](arr []T, from, to int) []T {
-	if from < 0 || to > len(arr) || from > to {
-		panic("copyOfRange: invalid indices")
+// CopyOfRange copies the content of the slice in a given range
+//
+// Parameters:
+//   - s []T: the slice to copy
+//   - from int: the start index to copy from
+//   - to int: the end index to copy to
+//
+// Returns:
+//   - []T: the copy
+func CopyOfRange[T any](s []T, from, to int) []T {
+	if from < 0 || to > len(s) || from > to {
+		panic("copyOfRange: indices out of range")
 	}
 
 	sub := make([]T, to-from)
-	copy(sub, arr[from:to])
+	copy(sub, s[from:to])
 	return sub
 }
 
-func Fill[T any](arr []T, v T) {
-	for i := range arr {
-		arr[i] = v
+// Fill takes a slice and set all value in it to a given value
+//
+// Parameter:
+//   - s []T: the slice to set the values from
+//   - v T: the value to set all fields in the slice to
+func Fill[T any](s []T, v T) {
+	for i := range s {
+		s[i] = v
 	}
 }

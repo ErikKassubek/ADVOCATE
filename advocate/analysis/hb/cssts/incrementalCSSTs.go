@@ -24,12 +24,20 @@ import (
 	"math"
 )
 
+// IncrementalCSST implements a Collective Sparse Segment Trees
 type IncrementalCSST struct {
 	width   int
 	lengths []int
 	ssts    []map[int]sparseSegmentTree
 }
 
+// NewIncrementalCSST creates a new Collective Sparse Segment Trees
+//
+// Parameter:
+//   - lengths []int: number of elements for each routine
+//
+// Returns:
+//   - IncrementalCSST: the new tree
 func NewIncrementalCSST(lengths []int) IncrementalCSST {
 	iCSST := IncrementalCSST{
 		len(lengths), lengths, make([]map[int]sparseSegmentTree, 0),
@@ -68,7 +76,7 @@ func (iCSST *IncrementalCSST) getSuccessor2(p types.Pair[int, int], i int) int {
 		return -1
 	}
 
-	v := iCSST.ssts[p.X][i].sumRange1(p.Y, iCSST.getChainLength(p.X)-1)
+	v := iCSST.ssts[p.X][i].sumRange1(p.Y)
 	if v < math.MaxInt {
 		return v
 	}
@@ -114,6 +122,14 @@ func (iCSST *IncrementalCSST) addSuccessor(from, to types.Pair[int, int]) {
 	}
 }
 
+// AddEdge adds a new edge to the tree
+//
+// Parameter:
+//   - from types.Pair[int, int]: indices of the start node
+//   - from types.Pair[int, int]: indices of the end node
+//
+// Returns:
+//   - types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]: the added edge
 func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]]] {
 	addedEdges := types.NewSet[types.Pair[types.Pair[int, int], types.Pair[int, int]]]()
 
@@ -137,13 +153,13 @@ func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[t
 		iCSST.addSuccessor(f, t)
 		addedEdges.Add(e)
 
-		succ := iCSST.getSuccessor1(t)
+		suc := iCSST.getSuccessor1(t)
 		pred := iCSST.getPredecessor1(f)
 
 		for i := 0; i < iCSST.width; i++ {
 			if i != f.X && i != t.X {
-				tt := types.NewPair(i, succ[i])
-				if succ[i] >= 0 {
+				tt := types.NewPair(i, suc[i])
+				if suc[i] >= 0 {
 					q.Push(types.NewPair(f, tt))
 				}
 				ff := types.NewPair(i, pred[i])

@@ -14,12 +14,15 @@ import (
 	"advocate/trace"
 )
 
+// MainTrace is the trace that is created and the trace on which most
+// normal operations and the analysis is performed
 var (
-	// MainTrace is the trace that is created and the trace on which most
-	// normal operations and the analysis is performed
 	MainTrace     trace.Trace
 	MainTraceIter trace.Iterator
+)
 
+// Data required for the analysis
+var (
 	numberOpsPerID = make(map[int]int) // id -> number of ops on this elem
 
 	HoldSend = make([]HoldObj, 0)
@@ -377,17 +380,6 @@ func SetTrace(trace trace.Trace) {
 // PrintTrace prints the main trace sorted by tPost
 func PrintTrace() {
 	MainTrace.PrintTrace()
-}
-
-// numberElemsInTrace returns how many elements are in a given routine of the main trace
-//
-// Parameter:
-//   - routine int: routine to check for
-//
-// Returns:
-//   - number of elements in routine
-func numberElemsInTrace(routine int) int {
-	return MainTrace.NumberElemInTrace(routine)
 }
 
 // AddOpsPerID increases the counter for numberOpsPerId by one for a given element id

@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package hbCalc
+package hbcalc
 
 import (
 	"advocate/analysis/hb/cssts"
@@ -103,7 +103,7 @@ func UpdateHBCond(co *trace.ElementCond) {
 	}
 }
 
-// UpdateHBCond updates the hb info of the trace for a conditional variables
+// UpdateHBFork updates the hb info of the trace for a fork
 //
 // Parameter
 //   - co *trace.TraceElementCond: the conditional trace operation

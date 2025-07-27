@@ -12,7 +12,7 @@ package complete
 
 import (
 	"advocate/results/explanation"
-	"advocate/utils/helper"
+	"advocate/utils/types"
 	"fmt"
 	"os"
 	"strings"
@@ -73,7 +73,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 		}
 
 		for _, line := range lines {
-			if !helper.Contains(traceElems[file], line) {
+			if !types.Contains(traceElems[file], line) {
 				if _, ok := res[file]; !ok {
 					res[file] = make([]int, 0)
 				}
@@ -175,7 +175,7 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 			if err != nil {
 				return err
 			}
-			fileFile.WriteString(fmt.Sprintf("## Not selected select cases\n"))
+			fileFile.WriteString("## Not selected select cases\n")
 
 			for line, cases := range lines {
 				notExecutedSelectFile.WriteString(fmt.Sprintf("%s:%d:[", file, line))

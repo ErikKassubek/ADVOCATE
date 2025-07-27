@@ -12,7 +12,7 @@ package data
 
 import "advocate/trace"
 
-// Add a mutation to the queue. If a maximum number of mutation runs in set,
+// AddMutToQueue adds a mutation to the queue. If a maximum number of mutation runs in set,
 // only add the mutation if it does not exceed this max number
 //
 // Parameter:
@@ -23,7 +23,7 @@ func AddMutToQueue(mut Mutation) {
 	}
 }
 
-// Decides if an element can be added to a scheduling chain
+// CanBeAddedToChain decides if an element can be added to a scheduling chain
 // For GoPie without improvements (!useHBInfoFuzzing) those are only mutex and channel (incl. select)
 // With improvements those are all not ignored fuzzing elements
 //
@@ -42,8 +42,9 @@ func CanBeAddedToChain(elem trace.Element) bool {
 	return !IgnoreFuzzing(elem, true)
 }
 
+// IgnoreFuzzing checks if an element should be ignored for fuzzing
 // For the creation of mutations we ignore all elements that do not directly
-// correspond to relevant operations. Those are , replay, routineEnd
+// correspond to relevant operations. Those are new, replay, routineEnd
 //
 // Parameter:
 //   - elem *trace.TraceElementFork: The element to check

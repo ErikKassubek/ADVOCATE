@@ -11,7 +11,7 @@
 package complete
 
 import (
-	"advocate/utils/helper"
+	"advocate/utils/types"
 	"errors"
 	"os"
 	"path/filepath"
@@ -136,7 +136,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 			}
 
 			for _, line := range lines {
-				if !helper.Contains(res[file], line) {
+				if !types.Contains(res[file], line) {
 					res[file] = append(res[file], line)
 				}
 			}

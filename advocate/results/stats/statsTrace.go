@@ -11,7 +11,7 @@
 package stats
 
 import (
-	"advocate/utils/helper"
+	"advocate/utils/types"
 	"bufio"
 	"errors"
 	"fmt"
@@ -138,7 +138,7 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			(*stats)["numberOfSpawns"]++
 		case "A":
 			(*stats)["numberAtomicOperations"]++
-			if !helper.Contains((*known)["atomic"], fields[2]) {
+			if !types.Contains((*known)["atomic"], fields[2]) {
 				(*stats)["numberAtomics"]++
 				(*known)["atomic"] = append((*known)["atomic"], fields[2])
 			}
@@ -149,7 +149,7 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			} else {
 				(*stats)["numberBufferedOps"]++
 			}
-			if !helper.Contains((*known)["channel"], fields[3]) {
+			if !types.Contains((*known)["channel"], fields[3]) {
 				(*stats)["numberChannels"]++
 				if fields[7] == "0" {
 					(*stats)["numberUnbufferedChannels"]++
@@ -169,25 +169,25 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 			}
 		case "M":
 			(*stats)["numberMutexOperations"]++
-			if !helper.Contains((*known)["mutex"], fields[3]) {
+			if !types.Contains((*known)["mutex"], fields[3]) {
 				(*stats)["numberMutexes"]++
 				(*known)["mutex"] = append((*known)["mutex"], fields[3])
 			}
 		case "W":
 			(*stats)["numberWaitGroupOperations"]++
-			if !helper.Contains((*known)["waitGroup"], fields[3]) {
+			if !types.Contains((*known)["waitGroup"], fields[3]) {
 				(*stats)["numberWaitGroups"]++
 				(*known)["waitGroup"] = append((*known)["waitGroup"], fields[3])
 			}
 		case "O":
 			(*stats)["numberOnceOperations"]++
-			if !helper.Contains((*known)["once"], fields[3]) {
+			if !types.Contains((*known)["once"], fields[3]) {
 				(*stats)["numberOnce"]++
 				(*known)["once"] = append((*known)["once"], fields[3])
 			}
 		case "D":
 			(*stats)["numberCondVarOperations"]++
-			if !helper.Contains((*known)["condVar"], fields[3]) {
+			if !types.Contains((*known)["condVar"], fields[3]) {
 				(*stats)["numberCondVars"]++
 				(*known)["condVar"] = append((*known)["condVar"], fields[3])
 			}

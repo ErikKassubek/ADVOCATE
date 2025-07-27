@@ -8,15 +8,16 @@
 //
 // License: BSD-3-Clause
 
-package hbCalc
+package hbcalc
 
+// Settings for which hb structures should be calculated
 var (
 	CalcVC    = false
 	CalcPog   = false
 	CalcCssts = false
 )
 
-// SetHBSettings sets which hb structure should be calculated
+// SetHbSettings sets which hb structure should be calculated
 //
 // Parameter:
 //   - vc bool: calculate vector clocks

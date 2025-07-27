@@ -19,7 +19,8 @@ import (
 	"strconv"
 )
 
-// Add a lock to the lockSet of a routine. Also save the vector clock of the acquire
+// LockSetAddLock adds a lock to the lockSet of a routine. It also saves the
+// vector clock of the acquire
 //
 // Parameter:
 //   - routine int: The routine id
@@ -62,7 +63,7 @@ func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	}
 }
 
-// Remove a lock from the lockSet of a routine
+// LockSetRemoveLock removes a lock from the lockSet of a routine
 //
 // Parameter:
 //   - routine int: The routine id
@@ -82,7 +83,7 @@ func LockSetRemoveLock(routine int, lock int) {
 	delete(data.LockSet[routine], lock)
 }
 
-// Check for mixed deadlocks
+// CheckForMixedDeadlock checks for mixed deadlocks
 //
 // Parameter:
 //   - routineSend int: The routine id of the send operation

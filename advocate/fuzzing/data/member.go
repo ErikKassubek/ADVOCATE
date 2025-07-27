@@ -12,7 +12,7 @@ package data
 
 import "math/rand"
 
-// Get a copy of fs with a randomly selected case id.
+// GetCopyRandom returns a copy of fs with a randomly selected case id.
 //
 // Parameter:
 //   - def bool: if true, default is a possible value, if false it is not

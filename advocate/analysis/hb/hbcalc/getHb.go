@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package hbCalc
+package hbcalc
 
 import (
 	"advocate/analysis/hb"

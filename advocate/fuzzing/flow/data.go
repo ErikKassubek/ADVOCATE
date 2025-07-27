@@ -16,6 +16,7 @@ var (
 	alreadyDelayedElems = make(map[string][]int)
 )
 
+// ClearData deletes the data of flow mutation
 func ClearData() {
 	alreadyDelayedElems = make(map[string][]int)
 }

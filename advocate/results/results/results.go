@@ -13,6 +13,7 @@ package results
 import (
 	"advocate/utils/helper"
 	"advocate/utils/memory"
+	"advocate/utils/types"
 	"fmt"
 	"os"
 	"strconv"
@@ -240,19 +241,19 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	resultMachine += "\n"
 
 	if level == WARNING {
-		if !helper.Contains(resultWithoutTime, resultMachineShort) {
+		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultsWarningReadable = append(resultsWarningReadable, resultReadable)
 			resultsWarningMachine = append(resultsWarningMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	} else if level == CRITICAL {
-		if !helper.Contains(resultWithoutTime, resultMachineShort) {
+		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultsCriticalReadable = append(resultsCriticalReadable, resultReadable)
 			resultCriticalMachine = append(resultCriticalMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	} else if level == INFORMATION {
-		if !helper.Contains(resultWithoutTime, resultMachineShort) {
+		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultInformationMachine = append(resultInformationMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}

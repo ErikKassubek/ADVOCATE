@@ -19,10 +19,11 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
+	"advocate/utils/types"
 	"fmt"
 )
 
-// Collect all locks for the analysis
+// CheckForUnlockBeforeLockLock collects all locks for the analysis
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
@@ -39,7 +40,7 @@ func CheckForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 	data.AllLocks[id] = append(data.AllLocks[id], mu)
 }
 
-// Collect all unlocks for the analysis
+// CheckForUnlockBeforeLockUnlock collects all unlocks for the analysis
 //
 // Parameter:
 //   - mu *TraceElementMutex: the trace mutex element
@@ -56,7 +57,7 @@ func CheckForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 	data.AllUnlocks[id] = append(data.AllUnlocks[id], mu)
 }
 
-// Check if we can get a unlock of a not locked mutex
+// CheckForUnlockBeforeLock check if we can get a unlock of a not locked mutex
 // For each done operation, build a bipartite st graph.
 // Use the Ford-Fulkerson algorithm to find the maximum flow.
 // If the maximum flow is smaller than the number of unlock operations, a unlock before lock is possible.
@@ -84,7 +85,7 @@ func CheckForUnlockBeforeLock() {
 
 		if maxFlow < nrUnlock {
 			for _, l := range data.AllLocks[id] {
-				if !helper.Contains(graph[drain], l) {
+				if !types.Contains(graph[drain], l) {
 					locks = append(locks, l)
 				}
 			}

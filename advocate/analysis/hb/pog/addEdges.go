@@ -7,6 +7,7 @@
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause
+
 package pog
 
 import (
@@ -15,7 +16,7 @@ import (
 	"advocate/trace"
 )
 
-// For a given element, add it to the children of the last element that
+// AddEdgeSameRoutineAndFork adds a given element to the children of the last element that
 // was analyzed in the same routine.
 // Then set this element to be the last element analyzed in the routine
 // If it is the first element in a routine, add an edge to the corresponding fork

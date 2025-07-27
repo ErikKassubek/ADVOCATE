@@ -18,7 +18,7 @@ import (
 	"advocate/utils/types"
 )
 
-// For a given element, return concurrent events
+// GetConcurrentAllPairs return concurrent events for a given event based on the CSST
 // Parameter:
 //   - elem trace.TraceElem: the element to search for
 //   - all bool: if true, return all concurrent events, otherwise return one
@@ -75,7 +75,7 @@ func isConcurrent(elem1, elem2 trace.Element, weak bool) bool {
 	return hbInfo == hb.Concurrent
 }
 
-// For a given element, find one or all elements that are concurrent to it
+// GetConcurrent find one or all elements that are concurrent to a given event
 //
 // Parameter
 //   - elem TraceElement: the element the results should be concurrent with
@@ -210,18 +210,18 @@ func dfsCSST(from types.Pair[int, int], reachable types.Set[types.Pair[int, int]
 		}
 
 		// Traverse all cross-chain successors
-		succs := make([]int, 0)
+		sucs := make([]int, 0)
 		if inverted {
-			succs = stInverted.getSuccessor1(current)
+			sucs = stInverted.getSuccessor1(current)
 		} else {
-			succs = st.getSuccessor1(current)
+			sucs = st.getSuccessor1(current)
 		}
-		for targetChain, succY := range succs {
-			if targetChain == current.X || succY == -1 {
+		for targetChain, sucY := range sucs {
+			if targetChain == current.X || sucY == -1 {
 				continue
 			}
-			succ := types.NewPair(targetChain, succY)
-			queue = append(queue, succ)
+			suc := types.NewPair(targetChain, sucY)
+			queue = append(queue, suc)
 		}
 	}
 

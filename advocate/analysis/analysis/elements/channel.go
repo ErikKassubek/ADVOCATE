@@ -15,7 +15,7 @@ import (
 	"advocate/analysis/analysis/scenarios"
 	"advocate/analysis/data"
 	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -31,7 +31,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	oID := ch.GetOID()
 	cl := ch.GetClosed()
 
-	// run hold back recvs if the send has been processed
+	// run hold back recv if the send has been processed
 	for _, elem := range data.WaitingReceive {
 		if elem.GetOID() <= data.MaxOpID[id] {
 			if len(data.WaitingReceive) != 0 {
@@ -43,9 +43,10 @@ func UpdateChannel(ch *trace.ElementChannel) {
 
 	// hold back receive operations, until the send operation is processed
 	if ch.IsBuffered() {
-		if opC == trace.SendOp {
+		switch opC {
+		case trace.SendOp:
 			data.MaxOpID[id] = oID
-		} else if opC == trace.RecvOp {
+		case trace.RecvOp:
 			if oID > data.MaxOpID[id] && !cl {
 				data.WaitingReceive = append(data.WaitingReceive, ch)
 				return
@@ -53,7 +54,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 		}
 	}
 
-	hbCalc.UpdateHBChannel(ch)
+	hbcalc.UpdateHBChannel(ch)
 
 	if ch.GetTPost() == 0 {
 		return
@@ -126,9 +127,10 @@ func UpdateSelect(se *trace.ElementSelect) {
 
 	for _, c := range cases {
 		opC := c.GetOpC()
-		if opC == trace.SendOp {
+		switch opC {
+		case trace.SendOp:
 			setChannelAsLastSend(&c)
-		} else if opC == trace.RecvOp {
+		case trace.RecvOp:
 			setChannelAsLastReceive(&c)
 		}
 	}
@@ -143,9 +145,10 @@ func UpdateSelect(se *trace.ElementSelect) {
 			opC := c.GetOpC()
 
 			if _, ok := data.CloseData[c.GetID()]; ok {
-				if opC == trace.SendOp {
+				switch opC {
+				case trace.SendOp:
 					scenarios.FoundSendOnClosedChannel(&c, false)
-				} else if opC == trace.RecvOp {
+				case trace.RecvOp:
 					scenarios.FoundReceiveOnClosedChannel(&c, false)
 				}
 			}

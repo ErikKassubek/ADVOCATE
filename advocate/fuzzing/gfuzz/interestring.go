@@ -12,7 +12,7 @@ package gfuzz
 
 import (
 	"advocate/fuzzing/data"
-	"advocate/utils/helper"
+	"advocate/utils/types"
 	"math"
 )
 
@@ -69,7 +69,7 @@ func isInterestingSelect() bool {
 			}
 
 			for _, sel := range sit { // case has been executed for the first time
-				if !helper.Contains(alreadyExecCase, sel.ChosenCase) {
+				if !types.Contains(alreadyExecCase, sel.ChosenCase) {
 					return true
 				}
 			}

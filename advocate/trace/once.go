@@ -33,7 +33,6 @@ import (
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - concurrent: concurrent elements
 //   - concurrentWeak: weak concurrent elements
-
 type ElementOnce struct {
 	traceID                  int
 	index                    int

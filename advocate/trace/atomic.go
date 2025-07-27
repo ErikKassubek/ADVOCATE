@@ -18,7 +18,7 @@ import (
 	"strconv"
 )
 
-// enum for operation
+// OpAtomic is an enum for an atomic operation
 type OpAtomic int
 
 // Values for the opAtomic enum

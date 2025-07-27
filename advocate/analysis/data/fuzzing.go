@@ -10,8 +10,8 @@
 
 package data
 
+// for fuzzing flow
 var (
-	// for fuzzing flow
 	FuzzingFlowOnce  = make([]ConcurrentEntry, 0)
 	FuzzingFlowMutex = make([]ConcurrentEntry, 0)
 	FuzzingFlowSend  = make([]ConcurrentEntry, 0)

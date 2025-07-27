@@ -20,7 +20,6 @@
 package cssts
 
 import (
-	"advocate/utils/helper"
 	"advocate/utils/types"
 	"math"
 )
@@ -61,39 +60,39 @@ func newBlock1(length, maxLevel, offset int) *block {
 	}
 }
 
-func newBlock2(nums []int, maxLevel int) *block {
-	return &block{
-		root:     buildTreeBlock3(nums, 0, len(nums)-1, 0, maxLevel),
-		maxLevel: maxLevel,
-	}
-}
+// func newBlock2(nums []int, maxLevel int) *block {
+// 	return &block{
+// 		root:     buildTreeBlock3(nums, 0, len(nums)-1, 0, maxLevel),
+// 		maxLevel: maxLevel,
+// 	}
+// }
 
-func newBlock3(other *block) *block {
-	return &block{
-		root:     buildTreeBlock1(other, other.root),
-		maxLevel: other.maxLevel,
-	}
-}
+// func newBlock3(other *block) *block {
+// 	return &block{
+// 		root:     buildTreeBlock1(other, other.root),
+// 		maxLevel: other.maxLevel,
+// 	}
+// }
 
-func buildTreeBlock1(other *block, otherCurrent *segmentTreeNodeBlock) *segmentTreeNodeBlock {
-	if otherCurrent == nil {
-		return nil
-	}
-	thisCurrent := newSegmentTreeNodeBlock(otherCurrent.start, otherCurrent.end)
-	thisCurrent.min = otherCurrent.min
-	thisCurrent.isLeaf = otherCurrent.isLeaf
-	thisCurrent.pos = otherCurrent.pos
-	if otherCurrent.block != nil {
-		copy(thisCurrent.block, otherCurrent.block)
-	}
-	if otherCurrent.left != nil {
-		thisCurrent.left = buildTreeBlock1(other, otherCurrent.left)
-	}
-	if otherCurrent.right != nil {
-		thisCurrent.right = buildTreeBlock1(other, otherCurrent.right)
-	}
-	return &thisCurrent
-}
+// func buildTreeBlock1(other *block, otherCurrent *segmentTreeNodeBlock) *segmentTreeNodeBlock {
+// 	if otherCurrent == nil {
+// 		return nil
+// 	}
+// 	thisCurrent := newSegmentTreeNodeBlock(otherCurrent.start, otherCurrent.end)
+// 	thisCurrent.min = otherCurrent.min
+// 	thisCurrent.isLeaf = otherCurrent.isLeaf
+// 	thisCurrent.pos = otherCurrent.pos
+// 	if otherCurrent.block != nil {
+// 		copy(thisCurrent.block, otherCurrent.block)
+// 	}
+// 	if otherCurrent.left != nil {
+// 		thisCurrent.left = buildTreeBlock1(other, otherCurrent.left)
+// 	}
+// 	if otherCurrent.right != nil {
+// 		thisCurrent.right = buildTreeBlock1(other, otherCurrent.right)
+// 	}
+// 	return &thisCurrent
+// }
 
 func buildTreeBlock2(start, end, level, maxLevel int) *segmentTreeNodeBlock {
 	if start > end {
@@ -124,39 +123,39 @@ func buildTreeBlock2(start, end, level, maxLevel int) *segmentTreeNodeBlock {
 	return &ret
 }
 
-func buildTreeBlock3(nums []int, start, end, level, maxLevel int) *segmentTreeNodeBlock {
-	if start > end {
-		return nil
-	}
+// func buildTreeBlock3(nums []int, start, end, level, maxLevel int) *segmentTreeNodeBlock {
+// 	if start > end {
+// 		return nil
+// 	}
 
-	ret := newSegmentTreeNodeBlock(start, end)
+// 	ret := newSegmentTreeNodeBlock(start, end)
 
-	if level >= maxLevel {
-		ret.block = helper.CopyOfRange(nums, start, end+1)
-		minPos := getBlockMin(&ret, start, end)
-		ret.min = minPos.X
-		ret.pos = minPos.Y
-		ret.isLeaf = true
-		return &ret
-	}
-	if start == end {
-		ret.min = nums[start]
-		ret.pos = start
-		ret.block = helper.CopyOfRange(nums, start, end+1)
-		ret.isLeaf = true
-	} else {
-		mid := start + (end-start)/2
-		ret.left = buildTreeBlock3(nums, start, mid, level+1, maxLevel)
-		ret.right = buildTreeBlock3(nums, mid+1, end, level+1, maxLevel)
-		ret.min = min(ret.left.min, ret.right.min)
-		if ret.left.min < ret.right.min {
-			ret.pos = ret.left.pos
-		} else {
-			ret.pos = ret.right.pos
-		}
-	}
-	return &ret
-}
+// 	if level >= maxLevel {
+// 		ret.block = types.CopyOfRange(nums, start, end+1)
+// 		minPos := getBlockMin(&ret, start, end)
+// 		ret.min = minPos.X
+// 		ret.pos = minPos.Y
+// 		ret.isLeaf = true
+// 		return &ret
+// 	}
+// 	if start == end {
+// 		ret.min = nums[start]
+// 		ret.pos = start
+// 		ret.block = types.CopyOfRange(nums, start, end+1)
+// 		ret.isLeaf = true
+// 	} else {
+// 		mid := start + (end-start)/2
+// 		ret.left = buildTreeBlock3(nums, start, mid, level+1, maxLevel)
+// 		ret.right = buildTreeBlock3(nums, mid+1, end, level+1, maxLevel)
+// 		ret.min = min(ret.left.min, ret.right.min)
+// 		if ret.left.min < ret.right.min {
+// 			ret.pos = ret.left.pos
+// 		} else {
+// 			ret.pos = ret.right.pos
+// 		}
+// 	}
+// 	return &ret
+// }
 
 func getBlockMin(node *segmentTreeNodeBlock, start, end int) types.Pair[int, int] {
 	min := math.MaxInt
@@ -198,7 +197,7 @@ func (bl block) update2(root *segmentTreeNodeBlock, pos, val int) {
 	if root.isLeaf {
 		if root.block == nil {
 			root.block = make([]int, root.end+1-root.start)
-			helper.Fill(root.block, math.MaxInt)
+			types.Fill(root.block, math.MaxInt)
 		}
 		if val > root.block[pos-root.start] {
 			return

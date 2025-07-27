@@ -10,8 +10,10 @@
 
 package hb
 
+// HappensBefore is an enum for the possible hb values
 type HappensBefore int
 
+// Possible hb values
 const (
 	Before = iota
 	After

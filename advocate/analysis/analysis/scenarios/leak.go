@@ -248,7 +248,7 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 	return res
 }
 
-// After all operations have been analyzed, check if there are still leaking
+// CheckForLeak is run after all operations have been analyzed, and checks if there are still leaking
 // operations without a possible partner.
 func CheckForLeak() {
 	timer.Start(timer.AnaLeak)
@@ -569,7 +569,7 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 		"mutex", []results.ResultElem{arg1}, "last", []results.ResultElem{arg2})
 }
 
-// Add the most recent acquire operation for a mutex
+// AddMostRecentAcquireTotal adds the most recent acquire operation for a mutex
 //
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
@@ -626,7 +626,7 @@ func CheckForLeakCond(co *trace.ElementCond) {
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{})
 }
 
-// Iterate over all routines and check if the routines finished.
+// CheckForStuckRoutine iterates over all routines and checks if the routines finished.
 // Only record leaking routines, that don't have a leaking element (tPost = 0)
 // as its last element, since they are recorded separately
 //

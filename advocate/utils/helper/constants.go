@@ -17,6 +17,7 @@ import (
 	"strings"
 )
 
+// constants for fuzzing calculations
 var (
 	GFuzzW1 = 10.0
 	GFuzzW2 = 10.0

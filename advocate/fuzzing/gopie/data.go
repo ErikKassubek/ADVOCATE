@@ -16,6 +16,7 @@ import (
 	"advocate/utils/types"
 )
 
+// Data for goPie fuzzing
 var (
 	// store all created mutations to avoid doubling
 	allGoPieMutations = make(map[string]struct{})
@@ -44,6 +45,7 @@ var (
 	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
 )
 
+// ClearData deletes all the GoPie data
 func ClearData() {
 	rel1 = make(map[trace.Element]map[trace.Element]struct{})
 	rel2 = make(map[trace.Element]map[trace.Element]struct{})

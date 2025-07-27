@@ -10,7 +10,8 @@
 
 package gfuzz
 
-// For each pair of channel operations, that have communicated, store the following information:
+// FuzzingPair stores the following information for each pair of channel
+// operations, that have communicated,
 //
 //   - sendID: file:line:caseSend of the send
 //   - caseSend: If the send is in a select, the case ID, otherwise 0
@@ -29,14 +30,15 @@ type FuzzingPair struct {
 	Com     float64
 }
 
-// For each channel that has ever been created, store the
-// following information:
+// FuzzingChannel store the // following information for each channel tha
 //
-//   - globalId: file:line of creation with new
-//   - localId: id in this run
-//   - qSize: buffer size of the channel
-//   - maxQSize: maximum buffer fullness over all runs
-//   - whether the channel has always/never/sometimes been closed
+//	has ever been created,
+//
+//	 - GlobalId: file:line of creation with new
+//	 - LocalId: id in this run
+//	 - CLoseInfo whether the channel has always/never/sometimes been closed
+//	 - qSize: buffer size of the channel
+//	 - MaxQCount: maximum buffer fullness over all runs
 type FuzzingChannel struct {
 	GlobalID  string
 	LocalID   int
@@ -49,6 +51,7 @@ type FuzzingChannel struct {
 // never closed or in some runs closed and in others not
 type closeInfo string
 
+// Whether the channel has always/never/sometimes been closed
 const (
 	Always    closeInfo = "a"
 	Never     closeInfo = "n"

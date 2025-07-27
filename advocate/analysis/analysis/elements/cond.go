@@ -12,7 +12,7 @@ package elements
 
 import (
 	"advocate/analysis/data"
-	"advocate/analysis/hb/hbCalc"
+	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
 
@@ -22,7 +22,7 @@ import (
 // Parameter:
 //   - co *trace.ElementCond: the element
 func AnalyzeCond(co *trace.ElementCond) {
-	hbCalc.UpdateHBCond(co)
+	hbcalc.UpdateHBCond(co)
 
 	// update currently waiting elements
 	id := co.GetID()

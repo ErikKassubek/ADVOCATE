@@ -249,7 +249,8 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 	}
 }
 
-// Rerun the CheckForSelectCaseWithPartnerChannel for all channel. This
+// RerunCheckForSelectCaseWithPartnerChannel reruns the
+// CheckForSelectCaseWithPartnerChannel for all channel. This
 // is needed to find potential communication partners for not executed
 // select cases, if the select was executed after the channel
 func RerunCheckForSelectCaseWithPartnerChannel() {

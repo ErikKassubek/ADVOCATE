@@ -10,8 +10,10 @@
 
 package data
 
+// AnalysisCases represent a possible type ob bug/leak/info the HB info should look for
 type AnalysisCases string
 
+// Possible type ob bug/leak/info the HB info should look for
 const (
 	All              AnalysisCases = "all"
 	SendOnClosed     AnalysisCases = "sendOnClosed"
@@ -25,6 +27,7 @@ const (
 	ResourceDeadlock AnalysisCases = "resourceDeadlock"
 )
 
+// Settings for the analysis
 var (
 	Fifo          bool
 	ModeIsFuzzing bool

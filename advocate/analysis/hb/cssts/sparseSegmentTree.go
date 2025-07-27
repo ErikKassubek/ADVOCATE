@@ -83,33 +83,33 @@ func newSparseSegmentTree1(length int) sparseSegmentTree {
 	}
 }
 
-func newSparseSegmentTree2(other sparseSegmentTree) sparseSegmentTree {
-	root := buildTree(other, other.root)
-	return sparseSegmentTree{
-		root:     root,
-		maxLevel: other.maxLevel,
-	}
-}
+// func newSparseSegmentTree2(other sparseSegmentTree) sparseSegmentTree {
+// 	root := buildTree(other, other.root)
+// 	return sparseSegmentTree{
+// 		root:     root,
+// 		maxLevel: other.maxLevel,
+// 	}
+// }
 
-func buildTree(other sparseSegmentTree, otherCurrent *segmentTreeNode) *segmentTreeNode {
-	if otherCurrent == nil {
-		return nil
-	}
+// func buildTree(other sparseSegmentTree, otherCurrent *segmentTreeNode) *segmentTreeNode {
+// 	if otherCurrent == nil {
+// 		return nil
+// 	}
 
-	thisCurrent := newSegmentTreeNode1(otherCurrent.start, otherCurrent.end, otherCurrent.level)
-	thisCurrent.min = otherCurrent.min
-	thisCurrent.pos = otherCurrent.pos
+// 	thisCurrent := newSegmentTreeNode1(otherCurrent.start, otherCurrent.end, otherCurrent.level)
+// 	thisCurrent.min = otherCurrent.min
+// 	thisCurrent.pos = otherCurrent.pos
 
-	if otherCurrent.left != nil {
-		thisCurrent.left = buildTree(other, otherCurrent.left)
-	}
+// 	if otherCurrent.left != nil {
+// 		thisCurrent.left = buildTree(other, otherCurrent.left)
+// 	}
 
-	if otherCurrent.right != nil {
-		thisCurrent.right = buildTree(other, otherCurrent.right)
-	}
+// 	if otherCurrent.right != nil {
+// 		thisCurrent.right = buildTree(other, otherCurrent.right)
+// 	}
 
-	return &thisCurrent
-}
+// 	return &thisCurrent
+// }
 
 func (sst sparseSegmentTree) update1(i, val int) {
 	sst.update2(sst.root, i, val)
@@ -133,7 +133,8 @@ func (sst sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
 		return
 	}
 
-	if root.pos == pos {
+	switch root.pos {
+	case pos:
 		if val <= root.min {
 			root.min = val
 		} else if val > root.min {
@@ -141,13 +142,13 @@ func (sst sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
 		} else {
 			panic("Invalid root in sparseSegmentTree::update2 (2)")
 		}
-	} else if root.pos == -1 {
+	case -1:
 		root.min = val
 		root.pos = pos
 		root.activeStart = pos
 		root.activeEnd = pos
 		return
-	} else {
+	default:
 		if pos < root.activeStart {
 			root.activeStart = pos
 		}
@@ -167,19 +168,19 @@ func (sst sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
 		mid := root.start + (root.end-root.start)/2
 		if pos <= mid {
 			if root.left == nil {
-				root.left = sst.createIntermediatNode(root.start, mid, pos, val, root.level+1)
+				root.left = sst.createIntermediateNode(root.start, mid, pos, val, root.level+1)
 			} else {
 				sst.update2(root.left, pos, val)
 			}
 		} else {
 			if root.right == nil {
-				root.right = sst.createIntermediatNode(mid+1, root.end, pos, val, root.level+1)
+				root.right = sst.createIntermediateNode(mid+1, root.end, pos, val, root.level+1)
 			}
 		}
 	}
 }
 
-func (sst *sparseSegmentTree) createIntermediatNode(start, end, pos, val, level int) *segmentTreeNode {
+func (sst *sparseSegmentTree) createIntermediateNode(start, end, pos, val, level int) *segmentTreeNode {
 	if level >= sst.maxLevel {
 		transitionNode := newSegmentTreeNode2(start, end, pos, val, level)
 		transitionNode.block = newBlock1(end-start+1, 0, start)
@@ -225,7 +226,7 @@ func (sst sparseSegmentTree) argMin2(root *segmentTreeNode, x int) int {
 	}
 }
 
-func (sst sparseSegmentTree) sumRange1(i, j int) int {
+func (sst sparseSegmentTree) sumRange1(i int) int {
 	return sst.sumRange2(sst.root, i)
 }
 

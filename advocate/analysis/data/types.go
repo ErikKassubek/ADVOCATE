@@ -78,13 +78,13 @@ const (
 	CERecv
 )
 
-// elements for buffered channel internal vector clock
+// BufferedVC are elements for buffered channel internal vector clock
 type BufferedVC struct {
 	Occupied bool
 	Send     *trace.ElementChannel
 }
 
-// holdObj can temporarily hold an channel operations with additional information
+// HoldObj can temporarily hold an channel operations with additional information
 // it is used in the case that for a synchronous communication, the recv is
 // recorded before the send
 type HoldObj struct {
@@ -94,14 +94,14 @@ type HoldObj struct {
 	Fifo bool
 }
 
-// State for ressource deadlock detection
+// State for resource deadlock detection
 type State struct {
 	Threads map[ThreadID]Thread // Recording lock dependencies in phase 1
 	Cycles  []Cycle             // Computing cycles in phase 2
 	Failed  bool                // Analysis failed (encountered unsupported lock action)
 }
 
-// Lock dependencies for resource deadlock detection
+// LockDependency represents a Lock dependencies for resource deadlock detection
 type LockDependency struct {
 	Thread   ThreadID
 	Lock     LockID
@@ -109,8 +109,10 @@ type LockDependency struct {
 	Requests []LockEvent
 }
 
+// Cycle is a set of mutex operations, that could constitute a resource deadlock
 type Cycle []LockDependency
 
+// Thread represents a routine
 // Lock dependencies are computed thread-local. We make use of the following structures.
 type Thread struct {
 	LockDependencies map[LockID][]Dependency
@@ -118,6 +120,7 @@ type Thread struct {
 	ReaderCounter    map[LockID]int // Store how many readers a readlock has
 }
 
+// Dependency represents a set of lock dependencies
 // Unfortunately, we can't use double-indexed map of the following form in Go.
 // type Deps map[Lock]map[Lockset][]Event
 // Hence, we introduce some intermediate structure.
@@ -128,6 +131,7 @@ type Dependency struct {
 
 // Representation of vector clocks, events, threads, lock and lockset.
 
+// LockEvent represents a lock operations
 type LockEvent struct {
 	ThreadID    ThreadID
 	TraceID     string
@@ -135,15 +139,24 @@ type LockEvent struct {
 	VectorClock *clock.VectorClock
 }
 
+// ThreadID implements the id of a routine
 type ThreadID int
+
+// LockID represents a lock operation
 type LockID struct {
 	ID       int
 	ReadLock bool
 }
+
+// Lockset implements a lockset
 type Lockset map[LockID]struct{}
 
 // Lock Dependency methods.
 
+// Clone creates a copy of a lock dependency
+//
+// Returns:
+//   - LockDependency: The copy
 func (l LockDependency) Clone() LockDependency {
 	reqs := make([]LockEvent, len(l.Requests))
 	for i, r := range l.Requests {
@@ -159,6 +172,10 @@ func (l LockDependency) Clone() LockDependency {
 
 // Event methods.
 
+// Clone creates a copy of a lock event
+//
+// Returns:
+//   - LockEvent: The copy
 func (e LockEvent) Clone() LockEvent {
 	return LockEvent{
 		ThreadID:    e.ThreadID,
@@ -170,18 +187,36 @@ func (e LockEvent) Clone() LockEvent {
 
 // Lock methods.
 
+// IsRead checks if the lock is a reader lock
+//
+// Returns:
+//   - bool: true if it is a reader lock, false otherwise
 func (l LockID) IsRead() bool {
 	return l.ReadLock
 }
 
+// IsWrite checks if the lock is not a reader lock
+//
+// Returns:
+//   - bool: false if it is a reader lock, true otherwise
 func (l LockID) IsWrite() bool {
 	return !l.ReadLock
 }
 
+// AddReader increases the reader counter of a thread for the lock id
+//
+// Parameter:
+//   - s Thread: the thread to increase the ReaderCounter for
 func (l LockID) AddReader(s Thread) {
 	s.ReaderCounter[l]++
 }
 
+// RemoveReader decreases the reader counter of a thread for the lock id
+// if it has readers at a given thread
+// If the counter gets zero, the reader counter is removed
+//
+// Parameter:
+//   - s Thread: the thread to increase the ReaderCounter for
 func (l LockID) RemoveReader(s Thread) {
 	if !l.HasReaders(s) {
 		return
@@ -192,6 +227,13 @@ func (l LockID) RemoveReader(s Thread) {
 	}
 }
 
+// HasReaders checks if a lock has reader given a thread
+//
+// Parameter:
+//   - s Thread: the thread
+//
+// Returns:
+//   - bool: true if it has reader, false otherwise
 func (l LockID) HasReaders(s Thread) bool {
 	if _, exists := s.ReaderCounter[l]; !exists {
 		return false
@@ -199,12 +241,24 @@ func (l LockID) HasReaders(s Thread) bool {
 	return s.ReaderCounter[l] > 0
 }
 
-// Check if two locks are equal ignoring whether they are read or write locks.
+// EqualsIgnoreRW checks if two locks are equal ignoring whether they are read or write locks.
+//
+// Parameter:
+//   - other LockID: the other lock
+//
+// Returns:
+//   - bool: true if two locks are equal ignoring whether they are read or write locks, false otherwise
 func (l LockID) EqualsIgnoreRW(other LockID) bool {
 	return l.ID == other.ID
 }
 
-// Check if two locks are the same and at least one of them is a write lock.
+// EqualsCouldBlock checks if two locks are the same and at least one of them is a write lock.
+//
+// Parameter:
+//   - other LockID: the other lock
+//
+// Returns:
+//   - true if l and other are the same and at least one of them is a write lock.
 func (l LockID) EqualsCouldBlock(other LockID) bool {
 	if !l.EqualsIgnoreRW(other) {
 		return false
@@ -214,15 +268,30 @@ func (l LockID) EqualsCouldBlock(other LockID) bool {
 
 // Lockset methods.
 
+// Empty returns if a lockset is empty
+//
+// Returns:
+//   - bool: if ls is empty
 func (ls Lockset) Empty() bool {
 	return len(ls) == 0
 
 }
 
+// Add adds a lockID to the lockset
+//
+// Parameter:
+//   - x LockID: the lock id to add
 func (ls Lockset) Add(x LockID) {
 	ls[x] = struct{}{}
 }
 
+// Remove removes a lock id from a lockset
+//
+// Parameter:
+//   - x LockID: the id to remove
+//
+// Returns:
+//   - bool: true if x was in the lockset, false otherwise
 func (ls Lockset) Remove(x LockID) bool {
 	if _, contains := ls[x]; !contains {
 		return false
@@ -231,6 +300,10 @@ func (ls Lockset) Remove(x LockID) bool {
 	return true
 }
 
+// Clone creates a copy of a lockset
+//
+// Returns:
+//   - Lockset: the copy
 func (ls Lockset) Clone() Lockset {
 	clone := make(Lockset, 0)
 	for l := range ls {
@@ -239,6 +312,10 @@ func (ls Lockset) Clone() Lockset {
 	return clone
 }
 
+// String returns a string representation of a lockset
+//
+// Returns:
+//   - string: the string representation of ls
 func (ls Lockset) String() string {
 	b := strings.Builder{}
 	b.WriteString("Lockset{")
@@ -249,6 +326,13 @@ func (ls Lockset) String() string {
 	return b.String()
 }
 
+// Equal checks if the lockset is equal to another lockset
+//
+// Parameter:
+//   - ls2 Lockset: the lockset to compare to
+//
+// Returns:
+//   - bool: if ls and ls2 contain the same elements
 func (ls Lockset) Equal(ls2 Lockset) bool {
 	if len(ls) != len(ls2) {
 		return false
@@ -262,6 +346,13 @@ func (ls Lockset) Equal(ls2 Lockset) bool {
 	return true
 }
 
+// Disjoint checks if no element is in both ls and ls2
+//
+// Parameter:
+//   - ls2 Lockset: the second lockset
+//
+// Returns:
+//   - bool: true if ls and ls2 are disjoint, false otherwise
 func (ls Lockset) Disjoint(ls2 Lockset) bool {
 	for l := range ls {
 		if _, contains := ls2[l]; contains {
@@ -271,6 +362,15 @@ func (ls Lockset) Disjoint(ls2 Lockset) bool {
 	return true
 }
 
+// DisjointCouldBlock checks for no pair of elements in ls and ls2
+// if they are the same and at least one of them is a write lock
+//
+// Parameter:
+//   - ls2 Lockset: the other lockset
+//
+// Returns:
+//   - bool: false if there is a pair of elements in ls and ls2 such that they
+//     are the same and at least one of them is a write lock, true otherwise
 func (ls Lockset) DisjointCouldBlock(ls2 Lockset) bool {
 	for l := range ls {
 		for l2 := range ls2 {

@@ -22,6 +22,8 @@ import (
 	"fmt"
 )
 
+// TODO: fix comments
+
 // Computation of "abstract" lock dependencies
 // Lock dependencies are 3-tuples of the following form:
 //    (ThreadID, Lock, LockSet)
@@ -87,7 +89,7 @@ func release(s *data.State, readLock bool, event data.LockEvent) {
 		s.Threads[event.ThreadID].CurrentLockset.Remove(lockID)
 	} else {
 		if !s.Threads[event.ThreadID].CurrentLockset.Remove(lockID) {
-			logAbortReason("Lock not found in lockset! Has probably been released in another thread, this is an unsupported case.")
+			// "Lock not found in lockset! Has probably been released in another thread, this is an unsupported case."
 			s.Failed = true
 		}
 	}
@@ -256,13 +258,13 @@ func isChain(chainStack *[]data.LockDependency, dependency data.LockDependency) 
 	for _, d := range *chainStack {
 		// Exit early. No two deps can hold the same lock. - Except for read locks
 		if d.Lock == dependency.Lock && dependency.Lock.IsWrite() {
-			logAbortReason("Two dependencies hold the same lock (early exit)")
+			// Two dependencies hold the same lock (early exit)
 			return false
 		}
 		// Check (LD-1) LS(ls_j) cap LS(ls_i+1) for j in {1,..,i}
 		// Also (RW-LD-1)
 		if !d.Lockset.DisjointCouldBlock(dependency.Lockset) {
-			logAbortReason("Locksets are not disjoint (guard)")
+			// Locksets are not disjoint (guard)
 			return false
 		}
 	}
@@ -276,7 +278,7 @@ func isChain(chainStack *[]data.LockDependency, dependency data.LockDependency) 
 		}
 
 	}
-	logAbortReason("Previous lock not in current lockset or both are read locks")
+	// Previous lock not in current lockset or both are read locks
 	return false
 }
 
@@ -288,11 +290,18 @@ func isCycleChain(chainStack *[]data.LockDependency, dependency data.LockDepende
 			return true
 		}
 	}
-	logAbortReason("Cycle Chain does not close")
+	// Cycle Chain does not close
 	return false
 }
 
-// Check if there is one ore more chains of concurrent requests and filter out any requests that are not part of them
+// checkAndFilterConcurrentRequests checks if there is one ore more chains of
+// concurrent requests and filter out any requests that are not part of them
+//
+// Parameter:
+//   - cycle *data.Cycle: a cycle to check
+//
+// Returns:
+//   - bool: true if the cycle is valid regarding hb, false otherwise
 func checkAndFilterConcurrentRequests(cycle *data.Cycle) bool {
 	for i := range *cycle {
 		// Check if each request has a concurrent request in the element before and after
@@ -322,14 +331,14 @@ func checkAndFilterConcurrentRequests(cycle *data.Cycle) bool {
 			(*cycle)[i].Requests = requestsWithBoth
 		} else {
 			// An entry with no requests mean that we no longer have a valid cycle
-			logAbortReason("Cycle Entry with no concurrent requests")
+			// Cycle Entry with no concurrent requests
 			return false
 		}
 	}
 	return true
 }
 
-// High level functions for integration with Advocate
+// ResetState resets the current state of the resource deadlock detection
 func ResetState() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
@@ -341,6 +350,11 @@ func ResetState() {
 	}
 }
 
+// HandleMutexEventForRessourceDeadlock processes an mutex operation for the
+// resource deadlock detection
+//
+// Parameter:
+//   - element trace.ElementMutex: the trace element
 func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
@@ -371,6 +385,8 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 	}
 }
 
+// CheckForResourceDeadlock searches for cycles which imply a cyclic resource
+// deadlock
 func CheckForResourceDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
@@ -459,20 +475,6 @@ func findEarliestRequest(cycle []data.LockDependency) data.LockEvent {
 		}
 	}
 	return earliest
-}
-
-// Debug logging.
-
-// func debugLog(v ...any) {
-// 	log.Println(v...)
-// }
-
-func logAbortReason(reason ...any) {
-	return
-	r := []any{"No Deadlock:"}
-	r = append(r, reason...)
-	log.Info(r...)
-	// log.Println(r...)
 }
 
 // Further notes.

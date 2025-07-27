@@ -148,7 +148,7 @@ func PrintHelp() {
 	printHeader()
 }
 
-// Print the help for a specific mode
+// PrintHelpMode prints the help for a specific mode
 //
 // Parameter:
 //   - mode string: the mode
@@ -169,7 +169,7 @@ func PrintHelpMode(mode string) {
 
 }
 
-// Print the main help header
+// printHeader prints the main help header
 func printHeader() {
 	fmt.Println("Usage: ./advocate [mode] [args]")
 	fmt.Println("")

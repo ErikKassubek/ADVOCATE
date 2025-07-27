@@ -18,6 +18,7 @@ import (
 
 const factorCaseWithPartner = 3
 
+// General data for fuzzing
 var (
 	MaxNumberRuns     = 100
 	MaxTime           = 7 * time.Minute
@@ -33,16 +34,14 @@ var (
 	FuzzingModeFlow  = false
 
 	CancelTestIfBugFound = false
-)
 
-var (
 	NumberOfPreviousRuns = 0
 
 	UseHBInfoFuzzing = true
 	runFullAnalysis  = true
 )
 
-// Reset the fuzzing data that is unique for each test but used for each fuzzing
+// ClearDataFull resets the fuzzing data that is unique for each test but used for each fuzzing
 // run of a test
 func ClearDataFull() {
 	results.Reset()

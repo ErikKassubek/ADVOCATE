@@ -414,6 +414,22 @@ func parseAnalysisCases(cases string) (map[data.AnalysisCases]bool, error) {
 			return nil, fmt.Errorf("Invalid analysis case: %c", c)
 		}
 	}
+
+	all := true
+	for key, val := range analysisCases {
+		if key == data.All {
+			continue
+		}
+		if !val {
+			all = false
+			break
+		}
+	}
+
+	if all {
+		analysisCases[data.All] = true
+	}
+
 	return analysisCases, nil
 }
 

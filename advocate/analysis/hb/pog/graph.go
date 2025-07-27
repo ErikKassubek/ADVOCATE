@@ -33,6 +33,7 @@ func newPoGraph() poGraph {
 	return poGraph{make(map[trace.Element]map[trace.Element]struct{})}
 }
 
+// InitPOG initializes the directed acyclic partial order graph
 func InitPOG() {
 	chanBuffer = make(map[int]([]data.BufferedVC))
 	chanBufferSize = make(map[int]int)
@@ -55,6 +56,10 @@ func (g *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
 	return g.data[from]
 }
 
+// Print prints the current graph
+//
+// Parameter:
+//   - weak bool: if true, print the weak hb tree, otherwise print the string
 func Print(weak bool) {
 	if weak {
 		log.Important(poWeak.toString())
@@ -67,7 +72,7 @@ func (g *poGraph) toString() string {
 	res := ""
 	for start, end := range g.data {
 		res += fmt.Sprintf("%d -> ", start.GetLine())
-		for e, _ := range end {
+		for e := range end {
 			res += fmt.Sprintf("%d, ", e.GetLine())
 		}
 	}

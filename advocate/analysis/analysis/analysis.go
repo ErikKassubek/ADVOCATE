@@ -202,8 +202,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		scenarios.CheckForSelectCaseWithPartner()
 	}
 
-	log.Important("A")
-
 	if memory.CheckCanceled() {
 		return
 	}
@@ -211,12 +209,9 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 	if data.AnalysisCasesMap[data.Leak] {
 		log.Info("Check for leak")
 		scenarios.CheckForLeak()
-		log.Important("A-!")
 		scenarios.CheckForStuckRoutine(false)
 		log.Info("Finish check for leak")
 	}
-
-	log.Important("B")
 
 	if memory.CheckCanceled() {
 		return
@@ -228,7 +223,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		log.Info("Finish check for done before add")
 	}
 
-	log.Important("C")
 	if memory.CheckCanceled() {
 		return
 	}
@@ -243,15 +237,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		return
 	}
 
-	log.Important("D")
-
 	if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")
 	}
-
-	log.Important("E")
 }
 
 // checkLeak checks for a given element if it leaked (has no tPost). If so,

@@ -63,7 +63,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 
 	if err != nil && fuzzingRun <= 0 {
-		log.Error("Could not open trace: ", err.Error())
+		log.Error("Could not read trace: ", err.Error())
 		return err
 	}
 
@@ -90,10 +90,10 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		// analysis.LogSizes()
 		data.Clear()
-		if memory.WasCanceledRAM() {
+		if memory.CheckCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		}
 		return fmt.Errorf("Analysis was canceled due to unexpected panic")
@@ -151,12 +151,12 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 
-		if memory.WasCanceled() {
+		if memory.CheckCanceled() {
 			failedRewrites += max(0, numberOfResults-resultIndex-1)
 			break
 		}
 	}
-	if memory.WasCanceledRAM() {
+	if memory.CheckCanceledRAM() {
 		log.Error("Rewrite Canceled: Not enough RAM")
 	} else {
 		log.Info("Finished Rewrite")

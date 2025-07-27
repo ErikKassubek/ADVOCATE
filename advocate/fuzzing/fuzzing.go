@@ -152,6 +152,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
+				clearData()
 			}
 
 			timer.Stop(timer.TotalTest)
@@ -247,6 +248,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			fileNumber, testNumber)
 		if err != nil {
 			log.Error("Fuzzing run failed: ", err.Error())
+			data.NumberFuzzingRuns++
 		} else {
 			data.NumberFuzzingRuns++
 
@@ -262,7 +264,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// and to create the mutations
 			ParseTrace(&anaData.MainTrace)
 
-			if memory.WasCanceled() {
+			if memory.CheckCanceled() {
 				continue
 			}
 
@@ -288,6 +290,9 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 			gfuzz.MergeTraceInfoIntoFileInfo()
 		}
+
+		anaData.ClearTrace()
+		anaData.ClearData()
 
 		if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
 			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(data.MaxTime.Minutes()))

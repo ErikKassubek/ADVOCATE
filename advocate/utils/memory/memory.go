@@ -12,6 +12,7 @@ package memory
 
 import (
 	"advocate/utils/log"
+	"math"
 	"sync/atomic"
 	"time"
 
@@ -20,8 +21,22 @@ import (
 
 var (
 	wasCanceled    atomic.Bool
-	wasCanceledRAM atomic.Bool
+	WasCanceledRAM atomic.Bool
+
+	MaxNumberElements int
 )
+
+// Set max number elements
+//
+// Parameter:
+//   - maxNumberElem int: max number elements
+func SetMaxNumberElem(maxNumberElem int) {
+	if maxNumberElem < 0 {
+		MaxNumberElements = math.MaxInt
+		return
+	}
+	MaxNumberElements = maxNumberElem
+}
 
 // Supervisor periodically checks the used and free memory
 // If the trace is to big and the available RAM to small, this can lead
@@ -81,29 +96,29 @@ func Cancel() {
 // Cancel the analysis if not enough ram is available
 func cancelRAM() {
 	wasCanceled.Store(true)
-	wasCanceledRAM.Store(true)
+	WasCanceledRAM.Store(true)
 	printAllGoroutines()
 	log.Error("Not enough RAM")
 }
 
-// WasCanceled returns if the analysis was canceled
+// CheckCanceled returns if the analysis was canceled
 //
 // Returns:
 //   - bool: true if the analysis was canceled
-func WasCanceled() bool {
+func CheckCanceled() bool {
 	return wasCanceled.Load()
 }
 
-// WasCanceledRAM returns if the analysis was canceled because of insufficient ram
+// CheckCanceledRAM returns if the analysis was canceled because of insufficient ram
 //
 // Returns:
 //   - bool: true if the analysis was canceled because of insufficient ram*
-func WasCanceledRAM() bool {
-	return wasCanceledRAM.Load()
+func CheckCanceledRAM() bool {
+	return WasCanceledRAM.Load()
 }
 
 // Reset the cancel values to false
 func Reset() {
 	wasCanceled.Store(false)
-	wasCanceledRAM.Store(false)
+	WasCanceledRAM.Store(false)
 }

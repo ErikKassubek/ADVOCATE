@@ -53,7 +53,7 @@ func CalculateRelRule1(routineTrace []trace.Element) {
 			counterCPOP1++
 			break
 		}
-		if memory.WasCanceled() {
+		if memory.CheckCanceled() {
 			return
 		}
 	}
@@ -102,7 +102,7 @@ func CalculateRelRule2And4() {
 					counterCPOP2++
 				}
 			}
-			if memory.WasCanceled() {
+			if memory.CheckCanceled() {
 				return
 			}
 		}

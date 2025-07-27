@@ -115,6 +115,12 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 
 	traceIter := data.MainTrace.AsIterator()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+
+		// not enough memory
+		if memory.WasCanceledRAM.Load() {
+			return
+		}
+
 		// add edge between element of same routine to partial order trace
 		if hb.CalcPog {
 			pog.AddEdgeSameRoutineAndFork(elem)
@@ -186,7 +192,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 			checkLeak(elem)
 		}
 
-		if memory.WasCanceled() {
+		if memory.CheckCanceled() {
 			return
 		}
 	}
@@ -200,7 +206,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		scenarios.CheckForSelectCaseWithPartner()
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 
@@ -211,7 +217,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		log.Info("Finish check for leak")
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 
@@ -221,7 +227,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		log.Info("Finish check for done before add")
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 
@@ -235,7 +241,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool,
 		log.Info("Finish check for cyclic deadlock")
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 

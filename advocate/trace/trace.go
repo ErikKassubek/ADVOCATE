@@ -676,7 +676,7 @@ func (t *Trace) Copy() (Trace, error) {
 		for i, elem := range trace {
 			tracesCopy[routine][i] = elem.Copy()
 
-			if memory.WasCanceled() {
+			if memory.CheckCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 			}
 		}

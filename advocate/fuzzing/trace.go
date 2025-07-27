@@ -42,7 +42,7 @@ func ParseTrace(tr *trace.Trace) {
 			gopie.CalculateRelRule1(routine)
 		}
 
-		if memory.WasCanceled() {
+		if memory.CheckCanceled() {
 			return
 		}
 
@@ -68,7 +68,7 @@ func ParseTrace(tr *trace.Trace) {
 				parseSelectOp(e)
 			}
 
-			if memory.WasCanceled() {
+			if memory.CheckCanceled() {
 				return
 			}
 
@@ -85,7 +85,7 @@ func ParseTrace(tr *trace.Trace) {
 		gopie.CalculateRelRule3()
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 

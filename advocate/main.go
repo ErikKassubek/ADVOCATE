@@ -23,6 +23,7 @@ import (
 	"advocate/toolchain"
 	"advocate/utils/helper"
 	"advocate/utils/log"
+	"advocate/utils/memory"
 	"advocate/utils/timer"
 )
 
@@ -77,6 +78,10 @@ var (
 	output   bool
 
 	cancelTestIfBugFound bool
+
+	noMemorySupervisor bool
+
+	maxNumberElements int
 )
 
 // Main function
@@ -98,6 +103,8 @@ func main() {
 	flag.IntVar(&maxFuzzingRun, "maxFuzzingRun", 100, "Maximum number of fuzzing runs per test/prog. Default: 100s. To Disable, set to -1")
 
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
+
+	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
 	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
@@ -123,6 +130,8 @@ func main() {
 	flag.BoolVar(&alwaysPanic, "panic", false, "Panic if the analysis panics")
 
 	flag.BoolVar(&output, "output", false, "Show the output of the executed programs in the terminal. Otherwise it is only in output.log file.")
+
+	flag.IntVar(&maxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
@@ -198,6 +207,11 @@ func main() {
 	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
 		log.Error("Could not determine ADVOCATE folder. Keep the toolchain and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
 		return
+	}
+
+	memory.SetMaxNumberElem(maxNumberElements)
+	if !noMemorySupervisor {
+		go memory.Supervisor() // cancel analysis if not enough ram
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+

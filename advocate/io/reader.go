@@ -76,7 +76,11 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		elemCounter += numberElems
 		numberRoutines++
 
-		if memory.WasCanceled() {
+		if elemCounter > memory.MaxNumberElements {
+			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
+		}
+
+		if memory.CheckCanceled() {
 			return numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
 		}
 	}

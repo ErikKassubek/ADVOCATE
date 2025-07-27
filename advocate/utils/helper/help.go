@@ -66,6 +66,10 @@ var (
 	cont         = newFlagVal("cont", "false", "", "Continue a partial analysis of tests")
 	skipExisting = newFlagVal("skipExisting", "false", "", "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
+	// memory
+	noMemorySupervisor = newFlagVal("noMemorySupervisor", "false", "", "Disable the memory supervisor")
+	maxNumberElem      = newFlagVal("maxNumberElements", "10000000", "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set to -1")
+
 	// panic
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
@@ -222,6 +226,10 @@ func printHelpRecord() {
 	fmt.Println(cont.toString(false))
 	fmt.Println(skipExisting.toString(false))
 
+	// memory
+	fmt.Println(maxNumberElem.toString(false))
+	fmt.Println(noMemorySupervisor.toString(false))
+
 	// panic
 	fmt.Println(alwaysPanic.toString(false))
 
@@ -253,6 +261,10 @@ func printHelpReplay() {
 	fmt.Println(timeoutRep.toString(false))
 
 	fmt.Println(output.toString(false))
+
+	// memory
+	fmt.Println(maxNumberElem.toString(false))
+	fmt.Println(noMemorySupervisor.toString(false))
 
 	// panic
 	fmt.Println(alwaysPanic.toString(false))
@@ -302,6 +314,10 @@ func printHelpAnalysis() {
 	// continue
 	fmt.Println(cont.toString(false))
 	fmt.Println(skipExisting.toString(false))
+
+	// memory
+	fmt.Println(maxNumberElem.toString(false))
+	fmt.Println(noMemorySupervisor.toString(false))
 
 	// panic
 	fmt.Println(alwaysPanic.toString(false))
@@ -355,6 +371,10 @@ func printHelpFuzzing() {
 	fmt.Println(noInfo.toString(false))
 	fmt.Println(noProgress.toString(false))
 	fmt.Println(output.toString(false))
+
+	// memory
+	fmt.Println(maxNumberElem.toString(false))
+	fmt.Println(maxNumberElem.toString(false))
 
 	// panic
 	fmt.Println(alwaysPanic.toString(false))

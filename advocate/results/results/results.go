@@ -189,7 +189,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		return
 	}
 
-	if memory.WasCanceled() {
+	if memory.CheckCanceled() {
 		return
 	}
 

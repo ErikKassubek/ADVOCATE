@@ -31,8 +31,8 @@ import (
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - concurrent: concurrent elements
-//   - concurrentWeak: weak concurrent elements
+//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
+//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementOnce struct {
 	traceID                  int
 	index                    int
@@ -47,12 +47,8 @@ type ElementOnce struct {
 	wVc                      *clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
-	concurrent               []Element
-	concurrentWeak           []Element
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
-	concurrentSame           []Element
-	concurrentWeakSame       []Element
 }
 
 // AddTraceElementOnce adds a new mutex trace element to the main trace
@@ -104,12 +100,8 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 		wVc:                      nil,
 		numberConcurrent:         -1,
 		numberConcurrentWeak:     -1,
-		concurrent:               make([]Element, 0),
-		concurrentWeak:           make([]Element, 0),
 		numberConcurrentSame:     -1,
 		numberConcurrentWeakSame: -1,
-		concurrentSame:           make([]Element, 0),
-		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -360,15 +352,6 @@ func (on *ElementOnce) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (on *ElementOnce) Copy() Element {
-	copyConcurrent := make([]Element, 0)
-	copy(copyConcurrent, on.concurrent)
-	copyConcurrentWeak := make([]Element, 0)
-	copy(copyConcurrentWeak, on.concurrentWeak)
-	copyConcurrentSame := make([]Element, 0)
-	copy(copyConcurrentSame, on.concurrentSame)
-	copyConcurrentWeakSame := make([]Element, 0)
-	copy(copyConcurrentWeakSame, on.concurrentWeakSame)
-
 	return &ElementOnce{
 		traceID:                  on.traceID,
 		index:                    on.index,
@@ -383,12 +366,8 @@ func (on *ElementOnce) Copy() Element {
 		wVc:                      on.wVc.Copy(),
 		numberConcurrent:         on.numberConcurrent,
 		numberConcurrentWeak:     on.numberConcurrentWeak,
-		concurrent:               copyConcurrent,
-		concurrentWeak:           copyConcurrentWeak,
 		numberConcurrentSame:     on.numberConcurrentSame,
 		numberConcurrentWeakSame: on.numberConcurrentWeakSame,
-		concurrentSame:           copyConcurrentSame,
-		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 }
 
@@ -432,51 +411,6 @@ func (on *ElementOnce) SetNumberConcurrent(c int, weak, sameElem bool) {
 			on.numberConcurrentSame = c
 		} else {
 			on.numberConcurrent = c
-		}
-	}
-}
-
-// GetConcurrent returns the elements that are concurrent to the element
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - []Element: the concurrent elements
-func (on *ElementOnce) GetConcurrent(weak, sameElem bool) []Element {
-	if weak {
-		if sameElem {
-			return on.concurrentWeakSame
-		}
-		return on.concurrentWeak
-	}
-	if sameElem {
-		return on.concurrentSame
-	}
-	return on.concurrent
-}
-
-// SetConcurrent sets the concurrent elements
-//
-// Parameter:
-//   - []Element: the concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (on *ElementOnce) SetConcurrent(elem []Element, weak, sameElem bool) {
-	on.SetNumberConcurrent(len(elem), weak, sameElem)
-
-	if weak {
-		if sameElem {
-			on.concurrentWeakSame = elem
-		} else {
-			on.concurrentWeak = elem
-		}
-	} else {
-		if sameElem {
-			on.concurrentSame = elem
-		} else {
-			on.concurrent = elem
 		}
 	}
 }

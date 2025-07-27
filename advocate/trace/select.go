@@ -40,8 +40,8 @@ import (
 //   - casesWithPosPartner []int: casi of cases with possible partner based on HB
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - concurrent: concurrent elements
-//   - concurrentWeak: weak concurrent elements
+//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
+//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementSelect struct {
 	traceID                  int
 	index                    int
@@ -61,12 +61,8 @@ type ElementSelect struct {
 	casesWithPosPartner      []int
 	numberConcurrent         int
 	numberConcurrentWeak     int
-	concurrent               []Element
-	concurrentWeak           []Element
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
-	concurrentSame           []Element
-	concurrentWeakSame       []Element
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -121,12 +117,8 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		wVc:                      nil,
 		numberConcurrent:         -1,
 		numberConcurrentWeak:     -1,
-		concurrent:               make([]Element, 0),
-		concurrentWeak:           make([]Element, 0),
 		numberConcurrentSame:     -1,
 		numberConcurrentWeakSame: -1,
-		concurrentSame:           make([]Element, 0),
-		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	cs := strings.Split(cases, "~")
@@ -676,16 +668,6 @@ func (se *ElementSelect) Copy() Element {
 
 	chosenCase := *se.chosenCase.Copy().(*ElementChannel)
 
-	copyConcurrent := make([]Element, 0)
-	copy(copyConcurrent, se.concurrent)
-	copyConcurrentWeak := make([]Element, 0)
-	copy(copyConcurrentWeak, se.concurrentWeak)
-
-	copyConcurrentSame := make([]Element, 0)
-	copy(copyConcurrentSame, se.concurrentSame)
-	copyConcurrentWeakSame := make([]Element, 0)
-	copy(copyConcurrentWeakSame, se.concurrentWeakSame)
-
 	return &ElementSelect{
 		traceID:                  se.traceID,
 		index:                    se.index,
@@ -704,12 +686,8 @@ func (se *ElementSelect) Copy() Element {
 		wVc:                      se.wVc.Copy(),
 		numberConcurrent:         se.numberConcurrent,
 		numberConcurrentWeak:     se.numberConcurrentWeak,
-		concurrent:               copyConcurrent,
-		concurrentWeak:           copyConcurrentWeak,
 		numberConcurrentSame:     se.numberConcurrentSame,
 		numberConcurrentWeakSame: se.numberConcurrentWeakSame,
-		concurrentSame:           copyConcurrentSame,
-		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 }
 
@@ -758,54 +736,5 @@ func (se *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 
 	if se.GetChosenCase() != nil {
 		se.GetChosenCase().SetNumberConcurrent(c, weak, sameElem)
-	}
-}
-
-// GetConcurrent returns the elements that are concurrent to the element
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - []Element: the concurrent elements
-func (se *ElementSelect) GetConcurrent(weak, sameElem bool) []Element {
-	if weak {
-		if sameElem {
-			return se.concurrentWeakSame
-		}
-		return se.concurrentWeak
-	}
-	if sameElem {
-		return se.concurrentSame
-	}
-	return se.concurrent
-}
-
-// SetConcurrent sets the concurrent elements
-//
-// Parameter:
-//   - []Element: the concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (se *ElementSelect) SetConcurrent(elem []Element, weak, sameElem bool) {
-	se.SetNumberConcurrent(len(elem), weak, sameElem)
-
-	if weak {
-		if sameElem {
-			se.concurrentWeakSame = elem
-		} else {
-			se.concurrentWeak = elem
-		}
-	} else {
-		if sameElem {
-			se.concurrentSame = elem
-		} else {
-			se.concurrent = elem
-		}
-	}
-
-	if se.GetChosenCase() != nil {
-		se.GetChosenCase().SetConcurrent(elem, weak, sameElem)
 	}
 }

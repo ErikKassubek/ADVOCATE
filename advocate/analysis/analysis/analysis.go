@@ -19,6 +19,7 @@ import (
 	hb "advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/pog"
 	"advocate/analysis/hb/vc"
+	fuzzdata "advocate/fuzzing/data"
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/memory"
@@ -196,10 +197,12 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 
 	log.Info("Finished HB analysis")
 
-	if data.ModeIsFuzzing {
+	if fuzzdata.FuzzingModeGFuzz || data.AnalysisCasesMap[data.Leak] {
 		scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		scenarios.CheckForSelectCaseWithPartner()
 	}
+
+	log.Important("A")
 
 	if memory.CheckCanceled() {
 		return
@@ -208,9 +211,12 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 	if data.AnalysisCasesMap[data.Leak] {
 		log.Info("Check for leak")
 		scenarios.CheckForLeak()
+		log.Important("A-!")
 		scenarios.CheckForStuckRoutine(false)
 		log.Info("Finish check for leak")
 	}
+
+	log.Important("B")
 
 	if memory.CheckCanceled() {
 		return
@@ -222,13 +228,10 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		log.Info("Finish check for done before add")
 	}
 
+	log.Important("C")
 	if memory.CheckCanceled() {
 		return
 	}
-
-	// if memory.WasCanceled() {
-	// 	return
-	// }
 
 	if data.AnalysisCasesMap[data.ResourceDeadlock] {
 		log.Info("Check for cyclic deadlock")
@@ -240,11 +243,15 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		return
 	}
 
+	log.Important("D")
+
 	if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")
 	}
+
+	log.Important("E")
 }
 
 // checkLeak checks for a given element if it leaked (has no tPost). If so,

@@ -51,10 +51,10 @@ const (
 //   - partner *ElementChannel: The partner of the channel operation
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - concurrent: concurrent elements
-//   - concurrentWeak: weak concurrent elements
+//   - numberConcurrent int: number of concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentWeak int: number of weak concurrent elements in the trace, -1 if not calculated
+//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
+//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementChannel struct {
 	traceID                  int
 	index                    int
@@ -75,12 +75,8 @@ type ElementChannel struct {
 	wCl                      *clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
-	concurrent               []Element
-	concurrentWeak           []Element
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
-	concurrentSame           []Element
-	concurrentWeakSame       []Element
 }
 
 // AddTraceElementChannel adds a new channel element to the main trace
@@ -175,12 +171,8 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		wCl:                      nil,
 		numberConcurrent:         -1,
 		numberConcurrentWeak:     -1,
-		concurrent:               make([]Element, 0),
-		concurrentWeak:           make([]Element, 0),
 		numberConcurrentSame:     -1,
 		numberConcurrentWeakSame: -1,
-		concurrentSame:           make([]Element, 0),
-		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	elem.findPartner(t)
@@ -617,15 +609,6 @@ func (ch *ElementChannel) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (ch *ElementChannel) Copy() Element {
-	copyConcurrent := make([]Element, 0)
-	copy(copyConcurrent, ch.concurrent)
-	copyConcurrentWeak := make([]Element, 0)
-	copy(copyConcurrentWeak, ch.concurrentWeak)
-	copyConcurrentSame := make([]Element, 0)
-	copy(copyConcurrentSame, ch.concurrentSame)
-	copyConcurrentWeakSame := make([]Element, 0)
-	copy(copyConcurrentWeakSame, ch.concurrentWeakSame)
-
 	newCh := ElementChannel{
 		traceID:                  ch.traceID,
 		index:                    ch.index,
@@ -645,12 +628,8 @@ func (ch *ElementChannel) Copy() Element {
 		wCl:                      ch.wCl.Copy(),
 		numberConcurrent:         ch.numberConcurrent,
 		numberConcurrentWeak:     ch.numberConcurrentWeak,
-		concurrent:               copyConcurrent,
-		concurrentWeak:           copyConcurrentWeak,
 		numberConcurrentSame:     ch.numberConcurrentSame,
 		numberConcurrentWeakSame: ch.numberConcurrentWeakSame,
-		concurrentSame:           copyConcurrentSame,
-		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 	return &newCh
 }
@@ -740,51 +719,6 @@ func (ch *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
 			ch.numberConcurrentSame = c
 		} else {
 			ch.numberConcurrent = c
-		}
-	}
-}
-
-// GetConcurrent returns the elements that are concurrent to the element
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - []Element: the concurrent elements
-func (ch *ElementChannel) GetConcurrent(weak, sameElem bool) []Element {
-	if weak {
-		if sameElem {
-			return ch.concurrentWeakSame
-		}
-		return ch.concurrentWeak
-	}
-	if sameElem {
-		return ch.concurrentSame
-	}
-	return ch.concurrent
-}
-
-// SetConcurrent sets the concurrent elements
-//
-// Parameter:
-//   - []Element: the concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (ch *ElementChannel) SetConcurrent(elem []Element, weak, sameElem bool) {
-	ch.SetNumberConcurrent(len(elem), weak, sameElem)
-
-	if weak {
-		if sameElem {
-			ch.concurrentWeakSame = elem
-		} else {
-			ch.concurrentWeak = elem
-		}
-	} else {
-		if sameElem {
-			ch.concurrentSame = elem
-		} else {
-			ch.concurrent = elem
 		}
 	}
 }

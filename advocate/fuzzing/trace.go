@@ -128,12 +128,13 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 		op := elem.GetObjType(true)
 
 		// close -> update channelInfoTrace
-		if op == "CC" {
+		switch op {
+		case "CC":
 			e := gfuzz.ChannelInfoTrace[elem.GetID()]
 			e.CloseInfo = gfuzz.Always // before is always unknown
 			gfuzz.ChannelInfoTrace[elem.GetID()] = e
 			gfuzz.NumberClose++
-		} else if op == "CS" {
+		case "CS":
 			if elem.GetTPost() == 0 {
 				return
 			}

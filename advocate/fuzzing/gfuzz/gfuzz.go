@@ -34,7 +34,7 @@ func CreateGFuzzMut() {
 // Additionally the flip probability is at least 10% for each select.
 func getFlipProbability() float64 {
 	p := 0.99   // min prob that at least one case is flipped
-	pMin := 0.1 // min prob that a select is flipt
+	pMin := 0.1 // min prob that a select gets flipped
 
 	return max(pMin, 1-math.Pow(1-p, 1/float64(NumberSelects)))
 }

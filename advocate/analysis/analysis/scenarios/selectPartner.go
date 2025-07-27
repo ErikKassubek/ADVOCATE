@@ -91,7 +91,7 @@ func CheckForSelectCaseWithPartner() {
 // partner. Call whenever a select is processed.
 //
 // Parameter:
-//   - se *TraceElementSelect: The trace elemen
+//   - se *TraceElementSelect: The trace elem
 //   - vc *VectorClock: The vector clock
 func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.VectorClock) {
 	timer.Start(timer.AnaSelWithoutPartner)

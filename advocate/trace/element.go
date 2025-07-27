@@ -58,6 +58,4 @@ type Element interface {
 	GetTraceID() int
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
-	GetConcurrent(weak, sameElem bool) []Element
-	SetConcurrent(elems []Element, weak, sameElem bool)
 }

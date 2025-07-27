@@ -19,7 +19,6 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
-	"fmt"
 )
 
 // TODO: fix comments
@@ -120,54 +119,54 @@ func insert(dependencies []data.Dependency, ls data.Lockset, event data.LockEven
 // if in between f and e no intra-thread synchronization took place.
 // This can be checked via helper function equalModuloTID.
 // Assumption: Vector clocks underapproximate the must happen-before relation.
-func insert2(dependencies []data.Dependency, lockset data.Lockset, event data.LockEvent) []data.Dependency {
-	// Helper function.
-	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
-	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
-	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
-	equalModuloTID := func(tid data.ThreadID, vc1 *clock.VectorClock, vc2 *clock.VectorClock) bool {
-		if vc1.GetSize() != vc2.GetSize() {
-			return false
-		}
+// func insert2(dependencies []data.Dependency, lockset data.Lockset, event data.LockEvent) []data.Dependency {
+// 	// Helper function.
+// 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
+// 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
+// 	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
+// 	equalModuloTID := func(tid data.ThreadID, vc1 *clock.VectorClock, vc2 *clock.VectorClock) bool {
+// 		if vc1.GetSize() != vc2.GetSize() {
+// 			return false
+// 		}
 
-		for i := 1; i <= vc1.GetSize(); i++ {
-			// if i == int(tid) {
-			// 	continue
-			// }
+// 		for i := 1; i <= vc1.GetSize(); i++ {
+// 			// if i == int(tid) {
+// 			// 	continue
+// 			// }
 
-			if vc1.GetValue(i) != vc2.GetValue(i) {
-				return false
-			}
-		}
+// 			if vc1.GetValue(i) != vc2.GetValue(i) {
+// 				return false
+// 			}
+// 		}
 
-		return true
-	}
+// 		return true
+// 	}
 
-	for i, v := range dependencies {
-		if v.Lockset.Equal(lockset) {
-			addVc := true
+// 	for i, v := range dependencies {
+// 		if v.Lockset.Equal(lockset) {
+// 			addVc := true
 
-			for _, f := range dependencies[i].Requests {
-				if equalModuloTID(event.ThreadID, event.VectorClock, f.VectorClock) {
-					// dependencies[i].requests[j] = event // We want to keep the first request for a better replay
-					fmt.Println("Ignoring an event because it is concurrent with an already stored event")
-					addVc = false
-				}
+// 			for _, f := range dependencies[i].Requests {
+// 				if equalModuloTID(event.ThreadID, event.VectorClock, f.VectorClock) {
+// 					// dependencies[i].requests[j] = event // We want to keep the first request for a better replay
+// 					fmt.Println("Ignoring an event because it is concurrent with an already stored event")
+// 					addVc = false
+// 				}
 
-			}
+// 			}
 
-			if addVc {
-				dependencies[i].Requests = append(dependencies[i].Requests, event)
-			}
+// 			if addVc {
+// 				dependencies[i].Requests = append(dependencies[i].Requests, event)
+// 			}
 
-			return dependencies
-		}
-	}
-	return append(dependencies, data.Dependency{
-		Lockset:  lockset.Clone(),
-		Requests: []data.LockEvent{event},
-	})
-}
+// 			return dependencies
+// 		}
+// 	}
+// 	return append(dependencies, data.Dependency{
+// 		Lockset:  lockset.Clone(),
+// 		Requests: []data.LockEvent{event},
+// 	})
+// }
 
 // Algorithm phase 2
 

@@ -39,11 +39,12 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 
 	if id == -1 {
 		objType := "C"
-		if opC == trace.SendOp {
+		switch opC {
+		case trace.SendOp:
 			objType += "S"
-		} else if opC == trace.RecvOp {
+		case trace.RecvOp:
 			objType += "R"
-		} else {
+		default:
 			return // close
 		}
 
@@ -59,7 +60,8 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	// if !buffered {
 	foundPartner := false
 
-	if opC == trace.SendOp { // send
+	switch opC {
+	case trace.SendOp: // send
 		for partnerRout, mrr := range data.MostRecentReceive {
 			if _, ok := mrr[id]; ok {
 				if clock.GetHappensBefore(mrr[id].Vc, vc) == hb.Concurrent {
@@ -92,7 +94,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 				}
 			}
 		}
-	} else if opC == trace.RecvOp { // recv
+	case trace.RecvOp: // recv
 		for partnerRout, mrs := range data.MostRecentSend {
 			if _, ok := mrs[id]; ok {
 				if clock.GetHappensBefore(mrs[id].Vc, vc) == hb.Concurrent {
@@ -199,11 +201,12 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 	} else if opType == 1 { // recv
 		for i, vcTID2 := range data.LeakingChannels[objID] {
 			objType := "C"
-			if vcTID2.Val == 0 {
+			switch vcTID2.Val {
+			case 0:
 				objType += "S"
-			} else if vcTID2.Val == 2 {
+			case 2:
 				objType += "C"
-			} else {
+			default:
 				continue
 			}
 
@@ -421,7 +424,8 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 	}
 
 	for i, id := range ids {
-		if opTypes[i] == 0 { // send
+		switch opTypes[i] {
+		case 0: // send
 			for routinePartner, mrr := range data.MostRecentReceive {
 				if recv, ok := mrr[id]; ok {
 					if clock.GetHappensBefore(vc, mrr[id].Vc) == hb.Concurrent {
@@ -447,7 +451,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 					}
 				}
 			}
-		} else if opTypes[i] == 1 { // recv
+		case 1: // recv
 			for routinePartner, mrs := range data.MostRecentSend {
 				if send, ok := mrs[id]; ok {
 					if clock.GetHappensBefore(vc, mrs[id].Vc) == hb.Concurrent {
@@ -538,11 +542,12 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
 
 	objType1 := "M"
-	if opM == trace.LockOp { // lock
+	switch opM {
+	case trace.LockOp: // lock
 		objType1 += "L"
-	} else if opM == trace.RLockOp { // rlock
+	case trace.RLockOp: // rlock
 		objType1 += "R"
-	} else { // only lock and rlock can lead to leak
+	default: // only lock and rlock can lead to leak
 		return
 	}
 

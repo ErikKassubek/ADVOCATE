@@ -47,8 +47,8 @@ const (
 //   - line int: the line of the operation
 //   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - concurrent: concurrent elements
-//   - concurrentWeak: weak concurrent elements
+//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
+//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementAtomic struct {
 	traceID                  int
 	index                    int
@@ -62,12 +62,8 @@ type ElementAtomic struct {
 	line                     int
 	numberConcurrent         int
 	numberConcurrentWeak     int
-	concurrent               []Element
-	concurrentWeak           []Element
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
-	concurrentSame           []Element
-	concurrentWeakSame       []Element
 }
 
 // AddTraceElementAtomic adds a new atomic trace element to the main trace
@@ -128,12 +124,8 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		wVc:                      nil,
 		numberConcurrent:         -1,
 		numberConcurrentWeak:     -1,
-		concurrent:               make([]Element, 0),
-		concurrentWeak:           make([]Element, 0),
 		numberConcurrentSame:     -1,
 		numberConcurrentWeakSame: -1,
-		concurrentSame:           make([]Element, 0),
-		concurrentWeakSame:       make([]Element, 0),
 	}
 
 	t.AddElement(&elem)
@@ -390,14 +382,6 @@ func (at *ElementAtomic) setTraceID(ID int) {
 // Returns:
 //   - TraceElement: The copy of the element
 func (at *ElementAtomic) Copy() Element {
-	copyConcurrent := make([]Element, 0)
-	copy(copyConcurrent, at.concurrent)
-	copyConcurrentWeak := make([]Element, 0)
-	copy(copyConcurrentWeak, at.concurrentWeak)
-	copyConcurrentSame := make([]Element, 0)
-	copy(copyConcurrentSame, at.concurrentSame)
-	copyConcurrentWeakSame := make([]Element, 0)
-	copy(copyConcurrentWeak, at.concurrentWeakSame)
 
 	return &ElementAtomic{
 		traceID:                  at.traceID,
@@ -410,12 +394,8 @@ func (at *ElementAtomic) Copy() Element {
 		wVc:                      at.wVc.Copy(),
 		numberConcurrent:         at.numberConcurrent,
 		numberConcurrentWeak:     at.numberConcurrentWeak,
-		concurrent:               copyConcurrent,
-		concurrentWeak:           copyConcurrentWeak,
 		numberConcurrentSame:     at.numberConcurrentSame,
 		numberConcurrentWeakSame: at.numberConcurrentWeakSame,
-		concurrentSame:           copyConcurrentSame,
-		concurrentWeakSame:       copyConcurrentWeakSame,
 		file:                     at.file,
 		line:                     at.line,
 	}
@@ -461,51 +441,6 @@ func (at *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
 			at.numberConcurrentSame = c
 		} else {
 			at.numberConcurrent = c
-		}
-	}
-}
-
-// GetConcurrent returns the elements that are concurrent to the element
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - []Element: the concurrent elements
-func (at *ElementAtomic) GetConcurrent(weak, sameElem bool) []Element {
-	if weak {
-		if sameElem {
-			return at.concurrentWeakSame
-		}
-		return at.concurrentWeak
-	}
-	if sameElem {
-		return at.concurrentSame
-	}
-	return at.concurrent
-}
-
-// SetConcurrent sets the concurrent elements
-//
-// Parameter:
-//   - []Element: the concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (at *ElementAtomic) SetConcurrent(elem []Element, weak, sameElem bool) {
-	at.SetNumberConcurrent(len(elem), weak, sameElem)
-
-	if weak {
-		if sameElem {
-			at.concurrentWeakSame = elem
-		} else {
-			at.concurrentWeak = elem
-		}
-	} else {
-		if sameElem {
-			at.concurrentSame = elem
-		} else {
-			at.concurrent = elem
 		}
 	}
 }

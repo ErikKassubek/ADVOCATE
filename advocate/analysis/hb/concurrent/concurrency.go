@@ -39,7 +39,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	// c1 := cssts.GetConcurrentAllPairs(elem, all, sameElem, weak)
 	// c2 := cssts.GetConcurrent(elem, all, sameElem, weak)
 
-	elem.SetConcurrent(b, weak, sameElem)
+	elem.SetNumberConcurrent(len(b), weak, sameElem)
 
 	// if all concurrent are selected, filter out sameElement concurrent and set
 	// as well
@@ -50,7 +50,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 				res = append(res, e)
 			}
 		}
-		elem.SetConcurrent(b, weak, true)
+		elem.SetNumberConcurrent(len(res), weak, true)
 	}
 	return b
 }
@@ -72,6 +72,6 @@ func GetNumberConcurrent(elem trace.Element, sameElem, weak bool) int {
 	}
 
 	n := GetConcurrent(elem, true, sameElem, weak)
-	elem.SetConcurrent(n, weak, sameElem)
+	elem.SetNumberConcurrent(len(n), weak, sameElem)
 	return len(n)
 }

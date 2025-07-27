@@ -38,7 +38,6 @@ import (
 //   - ignoreAtomics bool: if true, atomics are ignored for replay
 //   - fifo bool: assume, that the channels work as a fifo queue
 //   - ignoreCriticalSection bool: ignore the ordering of lock/unlock for the hb analysis
-//   - rewriteAll bool: rewrite bugs that have been rewritten before
 //   - newTrace string: path to where the rewritten trace should be created
 //   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
 //   - onlyAPanicAndLeak bool: only check for actual leaks and panics, do not calculate HB information
@@ -48,7 +47,7 @@ import (
 func runAnalyzer(pathTrace string, noRewrite bool,
 	outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	rewriteAll bool, newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
+	newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -137,7 +136,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
 		needed, err := rewriteTrace(outMachine,
-			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, numberOfRoutines, &rewrittenBugs)
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, &rewrittenBugs)
 
 		if !needed {
 			notNeededRewrites++
@@ -178,14 +177,13 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 //   - outMachine string: The path to the analysis result file
 //   - newTrace string: The path where the new traces folder will be created
 //   - resultIndex int: The index of the result to use for the reordered trace file
-//   - numberOfRoutines int: The number of routines in the trace
 //   - rewrittenTrace *map[helper.ResultType][]string: set of bugs that have been already rewritten
 //
 // Returns:
 //   - bool: true, if a rewrite was necessary, false if not (e.g. actual bug, warning)
 //   - error: An error if the trace file could not be created
 func rewriteTrace(outMachine string, newTrace string, resultIndex int,
-	numberOfRoutines int, rewrittenTrace *map[helper.ResultType][]string) (bool, error) {
+	rewrittenTrace *map[helper.ResultType][]string) (bool, error) {
 	timer.Start(timer.Rewrite)
 	defer timer.Stop(timer.Rewrite)
 

@@ -111,7 +111,7 @@ func startChains(num int) []Chain {
 		}
 
 		for _, e := range top {
-			posPartner := e.elem.GetConcurrent(true, sameElement)
+			posPartner := concurrent.GetConcurrent(e.elem, true, sameElement, true)
 			if len(posPartner) == 0 {
 				continue
 			}

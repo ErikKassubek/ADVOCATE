@@ -163,7 +163,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 		err = runAnalyzer(analyzerOutput, noRewriteFlag,
 			"results_readable.log", "results_machine.log",
-			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
+			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag,
 			"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
 
 		if err != nil {

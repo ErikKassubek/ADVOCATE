@@ -33,7 +33,7 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	switch mu.GetOpM() {
 	case trace.LockOp:
-		if data.AnalysisCases["leak"] {
+		if data.AnalysisCasesMap[data.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 0)
 		}
 
@@ -43,7 +43,7 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		data.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
-		if data.AnalysisCases["unlockBeforeLock"] {
+		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 
@@ -52,18 +52,18 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		data.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
-		if data.AnalysisCases["unlockBeforeLock"] {
+		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 	case trace.TryLockOp:
 		if mu.IsSuc() {
-			if data.AnalysisCases["unlockBeforeLock"] {
+			if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
 	case trace.TryRLockOp:
 		if mu.IsSuc() {
-			if data.AnalysisCases["unlockBeforeLock"] {
+			if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
@@ -78,27 +78,31 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		scenarios.LockSetRemoveLock(routine, id)
+		if data.AnalysisCasesMap[data.MixedDeadlock] {
+			scenarios.LockSetRemoveLock(routine, id)
+		}
 
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = nil
 
-		if data.AnalysisCases["unlockBeforeLock"] {
+		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
 	case trace.RUnlockOp:
 		data.RelR[id].Elem = mu
-		if data.AnalysisCases["leak"] {
+		if data.AnalysisCasesMap[data.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 1)
 		}
 
-		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
+		if data.AnalysisCasesMap[data.MixedDeadlock] {
+			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
+			scenarios.LockSetRemoveLock(routine, id)
+		}
 
-		scenarios.LockSetRemoveLock(routine, id)
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = nil
 
-		if data.AnalysisCases["unlockBeforeLock"] {
+		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
 	default:

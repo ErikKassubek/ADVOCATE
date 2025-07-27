@@ -33,7 +33,6 @@ import (
 // Parameter:
 //   - pathTrace string: path to the trace to be analyzed
 //   - noRewrite bool: if set, rewrite is disabled
-//   - analysisCases map[string]bool: map of analysis cases to run
 //   - outReadable string: path to the readable result file
 //   - outMachine string: path to the machine result file
 //   - ignoreAtomics bool: if true, atomics are ignored for replay
@@ -47,7 +46,7 @@ import (
 // Returns:
 //   - error
 func runAnalyzer(pathTrace string, noRewrite bool,
-	analysisCases map[string]bool, outReadable string, outMachine string,
+	outReadable string, outMachine string,
 	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
 	rewriteAll bool, newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
 
@@ -76,19 +75,19 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	if onlyAPanicAndLeak {
 		log.Info("Start Analysis for actual panics and leaks")
-	} else if analysisCases["all"] {
+	} else if data.AnalysisCasesMap[data.All] {
 		log.Info("Start Analysis for all scenarios")
 	} else {
 		info := "Start Analysis for the following scenarios: "
-		for key, value := range analysisCases {
+		for key, value := range data.AnalysisCasesMap {
 			if value {
-				info += (key + ",")
+				info += (string(key) + ",")
 			}
 		}
 		log.Info(info)
 	}
 
-	analysis.RunAnalysis(fifo, ignoreCriticalSection, analysisCases, fuzzingRun >= 0, onlyAPanicAndLeak)
+	analysis.RunAnalysis(fifo, ignoreCriticalSection, fuzzingRun >= 0, onlyAPanicAndLeak)
 
 	if memory.CheckCanceled() {
 		// analysis.LogSizes()

@@ -10,12 +10,27 @@
 
 package data
 
+type AnalysisCases string
+
+const (
+	All              AnalysisCases = "all"
+	SendOnClosed     AnalysisCases = "sendOnClosed"
+	ReceiveOnClosed  AnalysisCases = "receiveOnClosed"
+	DoneBeforeAdd    AnalysisCases = "doneBeforeAdd"
+	CloseOnClosed    AnalysisCases = "closeOnClosed"
+	ConcurrentRecv   AnalysisCases = "concurrentRecv"
+	Leak             AnalysisCases = "leak"
+	UnlockBeforeLock AnalysisCases = "unlockBeforeLock"
+	MixedDeadlock    AnalysisCases = "mixedDeadlock"
+	ResourceDeadlock AnalysisCases = "resourceDeadlock"
+)
+
 var (
 	Fifo          bool
 	ModeIsFuzzing bool
 
 	// analysis cases to run
-	AnalysisCases       = make(map[string]bool)
+	AnalysisCasesMap    = make(map[AnalysisCases]bool)
 	AnalysisFuzzingFlow = false
 
 	// exit code info

@@ -29,7 +29,7 @@ func AnalyzeWait(wa *trace.ElementWait) {
 	case trace.ChangeOp:
 		data.LastChangeWG[wa.GetID()] = wa
 
-		if data.AnalysisCases["doneBeforeAdd"] {
+		if data.AnalysisCasesMap[data.DoneBeforeAdd] {
 			scenarios.CheckForDoneBeforeAddChange(wa)
 		}
 	case trace.WaitOp:

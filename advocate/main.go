@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"advocate/analysis/data"
 	"advocate/fuzzing"
 	fuzzingdata "advocate/fuzzing/data"
 	"advocate/results/stats"
@@ -221,13 +222,14 @@ func main() {
 		onlyAPanicAndLeak = true
 	}
 
-	analysisCases, err := parseAnalysisCases(scenarios)
+	var err error
+	data.AnalysisCasesMap, err = parseAnalysisCases(scenarios)
 	if err != nil {
 		log.Error("Could not read analysis cases: ", err)
 		return
 	}
 
-	toolchain.SetFlags(noRewrite, analysisCases, ignoreAtomics,
+	toolchain.SetFlags(noRewrite, ignoreAtomics,
 		!noFifo, ignoreCriticalSection, rewriteAll, onlyAPanicAndLeak,
 		timeoutRecording, timeoutReplay, rewriteAll, noWarning, tracePath, output)
 
@@ -357,20 +359,20 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 //   - cases string: The string of analysis cases to parse
 //
 // Returns:
-//   - map[string]bool: A map of the analysis cases and if they are set
+//   - map[data.AnalysisCases]bool: A map of the analysis cases and if they are set
 //   - error: An error if the cases could not be parsed
-func parseAnalysisCases(cases string) (map[string]bool, error) {
-	analysisCases := map[string]bool{
-		"all":              false, // all cases enabled
-		"sendOnClosed":     false,
-		"receiveOnClosed":  false,
-		"doneBeforeAdd":    false,
-		"closeOnClosed":    false,
-		"concurrentRecv":   false,
-		"leak":             false,
-		"unlockBeforeLock": false,
-		"mixedDeadlock":    false,
-		"resourceDeadlock": false,
+func parseAnalysisCases(cases string) (map[data.AnalysisCases]bool, error) {
+	analysisCases := map[data.AnalysisCases]bool{
+		data.All:              false, // all cases enabled
+		data.SendOnClosed:     false,
+		data.ReceiveOnClosed:  false,
+		data.DoneBeforeAdd:    false,
+		data.CloseOnClosed:    false,
+		data.ConcurrentRecv:   false,
+		data.Leak:             false,
+		data.UnlockBeforeLock: false,
+		data.MixedDeadlock:    false,
+		data.ResourceDeadlock: false,
 	}
 
 	if cases == "-" {
@@ -383,7 +385,7 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 		}
 
 		// remove when implemented
-		analysisCases["mixedDeadlock"] = false
+		analysisCases[data.MixedDeadlock] = false
 
 		return analysisCases, nil
 	}
@@ -391,23 +393,23 @@ func parseAnalysisCases(cases string) (map[string]bool, error) {
 	for _, c := range cases {
 		switch c {
 		case 's':
-			analysisCases["sendOnClosed"] = true
+			analysisCases[data.SendOnClosed] = true
 		case 'r':
-			analysisCases["receiveOnClosed"] = true
+			analysisCases[data.ReceiveOnClosed] = true
 		case 'w':
-			analysisCases["doneBeforeAdd"] = true
+			analysisCases[data.DoneBeforeAdd] = true
 		case 'n':
-			analysisCases["closeOnClosed"] = true
+			analysisCases[data.CloseOnClosed] = true
 		case 'b':
-			analysisCases["concurrentRecv"] = true
+			analysisCases[data.ConcurrentRecv] = true
 		case 'l':
-			analysisCases["leak"] = true
+			analysisCases[data.Leak] = true
 		case 'u':
-			analysisCases["unlockBeforeLock"] = true
+			analysisCases[data.UnlockBeforeLock] = true
 		case 'c':
-			analysisCases["resourceDeadlock"] = true
+			analysisCases[data.ResourceDeadlock] = true
 		// case 'm':
-		// analysisCases["mixedDeadlock"] = true
+		// analysisCases[data.MixedDeadlock] = true
 		default:
 			return nil, fmt.Errorf("Invalid analysis case: %c", c)
 		}

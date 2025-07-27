@@ -161,7 +161,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	if runAnalysis {
 		analyzerOutput := filepath.Join(dir, "advocateTrace")
 
-		err = runAnalyzer(analyzerOutput, noRewriteFlag, analysisCasesFlag,
+		err = runAnalyzer(analyzerOutput, noRewriteFlag,
 			"results_readable.log", "results_machine.log",
 			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 			"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)

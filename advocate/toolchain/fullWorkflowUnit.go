@@ -611,7 +611,7 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 	outM := filepath.Join(pkgPath, "results_machine.log")
 	outR := filepath.Join(pkgPath, "results_readable.log")
 	outT := filepath.Join(pkgPath, "rewrittenTrace")
-	err := runAnalyzer(tracePath, noRewriteFlag, analysisCasesFlag, outR,
+	err := runAnalyzer(tracePath, noRewriteFlag, outR,
 		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, rewriteAllFlag,
 		outT, fuzzing, onlyAPanicAndLeakFlag)
 

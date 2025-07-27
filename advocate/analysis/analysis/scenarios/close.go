@@ -34,7 +34,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	id := ch.GetID()
 
 	// check if there is an earlier send, that could happen concurrently to close
-	if data.AnalysisCases["sendOnClosed"] && data.HasSend[id] {
+	if data.AnalysisCasesMap[data.SendOnClosed] && data.HasSend[id] {
 		for routine, mrs := range data.MostRecentSend {
 			happensBefore := clock.GetHappensBefore(mrs[id].Vc, data.CloseData[id].GetVC())
 
@@ -76,7 +76,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		}
 	}
 	// check if there is an earlier receive, that could happen concurrently to close
-	if data.AnalysisCases["receiveOnClosed"] && data.HasReceived[id] {
+	if data.AnalysisCasesMap[data.ReceiveOnClosed] && data.HasReceived[id] {
 		for routine, mrr := range data.MostRecentReceive {
 			happensBefore := clock.GetHappensBefore(data.CloseData[id].GetVC(), mrr[id].Vc)
 			if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {

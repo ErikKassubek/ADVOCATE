@@ -46,10 +46,10 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	}
 
 	if len(SchedulingChains) == 0 {
-		for range maxSCStart {
-			sc := startChain()
-			if sc.Len() > 0 {
-				SchedulingChains = append(SchedulingChains, sc)
+		sc := startChains(maxSCStart)
+		for _, c := range sc {
+			if c.Len() != 0 {
+				SchedulingChains = append(SchedulingChains, c)
 			}
 		}
 	}

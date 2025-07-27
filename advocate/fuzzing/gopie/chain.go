@@ -37,24 +37,32 @@ func NewChain() Chain {
 	return Chain{elems}
 }
 
-// startChain returns a chain consisting of a
+type elemWithQual struct {
+	elem    trace.Element
+	quality int
+}
+
+// startChains returns a slice of chain consisting of a
 // pair of operations that are in a rel2 relation
+//
+// Parameter:
+//   - num int: number of chains to return
 //
 // Returns:
 //   - the chain, or an empty chain if no pair exists
-func startChain() Chain {
-	res := NewChain()
+func startChains(num int) []Chain {
+	res := make([]Chain, 0)
+
+	var sameElement = false
 
 	if data.UseHBInfoFuzzing {
-		c := 0
-		cMax := 100
-		maxQuality := -1
-		var maxElem trace.Element
 		traces := anaData.MainTrace.GetTraces()
 
 		if len(traces) == 0 {
 			return res
 		}
+
+		top := []elemWithQual{}
 
 		for i := 0; i < 1000; i++ {
 			key := rand.Intn(len(traces)) + 1
@@ -70,36 +78,63 @@ func startChain() Chain {
 				continue
 			}
 
-			if concurrent.GetNumberConcurrent(elem, true, false) == 0 {
+			if concurrent.GetNumberConcurrent(elem, sameElement, false) == 0 {
 				continue
 			}
 
-			q := quality(elem)
-			if q > maxQuality {
-				maxQuality = q
-				maxElem = elem
-				c++
-				if c >= cMax {
+			q := quality(elem, sameElement)
+
+			e := elemWithQual{elem, q}
+
+			// find the num with the best quality
+			inserted := false
+			for i, v := range top {
+				if e.quality > v.quality {
+					top = append(top[:i+1], top[i:]...)
+					top[i] = e
+					inserted = true
 					break
 				}
 			}
+			if !inserted && len(top) < num {
+				top = append(top, e)
+			}
+
+			// Trim if longer than n
+			if len(top) > num {
+				top = top[:num]
+			}
 		}
 
-		if maxQuality == -1 {
+		if len(top) == 0 {
 			return res
 		}
 
-		posPartner := maxElem.GetConcurrent(true, true)
-		partner := posPartner[rand.Intn(len(posPartner))]
-		res.add(maxElem)
-		res.add(partner)
+		for _, e := range top {
+			posPartner := e.elem.GetConcurrent(true, sameElement)
+			if len(posPartner) == 0 {
+				continue
+			}
+
+			partner := posPartner[rand.Intn(len(posPartner))]
+			c := NewChain()
+			c.add(e.elem)
+			c.add(partner)
+			res = append(res, c)
+		}
 	} else {
 		// start with two random elements in rel2
+		i := 0
 		for elem1, rel := range rel2 {
 			for elem2 := range rel {
-				res.add(elem1)
-				res.add(elem2)
-				return res
+				c := NewChain()
+				c.add(elem1)
+				c.add(elem2)
+				res = append(res, c)
+				i++
+				if i > num {
+					return res
+				}
 			}
 		}
 	}
@@ -113,13 +148,14 @@ func startChain() Chain {
 //
 // Parameters:
 //   - elem trace.Element: the element to check for
+//   - sameElem bool: only consider concurrent elements on the same element
 //
 // Returns:
 //   - the quality
-func quality(elem trace.Element) int {
+func quality(elem trace.Element, sameElem bool) int {
 	numberOps, _ := anaData.GetOpsPerID(elem.GetID())
-	numberConcurrent := concurrent.GetNumberConcurrent(elem, true, true)
-	return int(math.Log(float64(1+numberOps)) + math.Log(float64(numberConcurrent)))
+	numberConcurrent := concurrent.GetNumberConcurrent(elem, sameElem, true)
+	return int(math.Log(float64(1+numberOps)) + math.Log(float64(1+numberConcurrent)))
 }
 
 // Add a new element to the chain

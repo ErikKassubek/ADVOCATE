@@ -104,6 +104,10 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	ranTest := false
 	// Process each test file
 	for _, file := range testFiles {
+		if pathToTest != "" && pathToTest != file {
+			continue
+		}
+
 		if testName == "" {
 			log.Progressf("Progress %s: %d/%d", progName, currentFile, totalFiles)
 			log.Progressf("Processing file: %s", file)
@@ -203,7 +207,13 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 			if !isFuzzing {
 				timer.Stop(timer.TotalTest)
+			} else {
+				break
 			}
+		}
+
+		if isFuzzing && ranTest {
+			break
 		}
 
 		currentFile++

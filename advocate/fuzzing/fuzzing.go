@@ -266,6 +266,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			ParseTrace(&anaData.MainTrace)
 
 			if memory.CheckCanceled() {
+				log.Error("Fuzzing was canceled due to memory")
 				continue
 			}
 

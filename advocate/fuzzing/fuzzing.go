@@ -19,9 +19,9 @@ import (
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
+	"advocate/utils/control"
 	"advocate/utils/helper"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 	"advocate/utils/types"
 	"fmt"
@@ -92,7 +92,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 		clearData()
 		timer.ResetFuzzing()
-		memory.Reset()
+		control.Reset()
 
 		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
@@ -141,7 +141,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		for j, testFunc := range testFunctions {
 			resetFuzzing()
 			timer.ResetTest()
-			memory.Reset()
+			control.Reset()
 
 			timer.Start(timer.TotalTest)
 
@@ -209,7 +209,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		// clean up
 		clearData()
 		timer.ResetFuzzing()
-		memory.Reset()
+		control.Reset()
 
 		if data.CancelTestIfBugFound && results.GetBugWasFound() {
 			log.Resultf(false, false, "", "Cancel test after %d runs", data.NumberFuzzingRuns)
@@ -265,7 +265,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			// and to create the mutations
 			ParseTrace(&anaData.MainTrace)
 
-			if memory.CheckCanceled() {
+			if control.CheckCanceled() {
 				log.Error("Fuzzing was canceled due to memory")
 				continue
 			}

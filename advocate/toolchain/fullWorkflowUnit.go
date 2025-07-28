@@ -16,9 +16,9 @@ import (
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
+	"advocate/utils/control"
 	"advocate/utils/helper"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 	"errors"
 	"fmt"
@@ -126,7 +126,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 
 			data.Clear()
-			memory.Reset()
+			control.Reset()
 
 			if !isFuzzing {
 				timer.ResetTest()

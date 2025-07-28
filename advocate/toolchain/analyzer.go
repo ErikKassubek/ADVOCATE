@@ -16,9 +16,9 @@ import (
 	"advocate/analysis/rewriter"
 	"advocate/io"
 	"advocate/results/results"
+	"advocate/utils/control"
 	"advocate/utils/helper"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 	"fmt"
 	"path/filepath"
@@ -88,10 +88,10 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	analysis.RunAnalysis(fifo, ignoreCriticalSection, fuzzingRun >= 0, onlyAPanicAndLeak)
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		// analysis.LogSizes()
 		data.Clear()
-		if memory.CheckCanceledRAM() {
+		if control.CheckCanceledRAM() {
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		}
 		return fmt.Errorf("Analysis was canceled due to unexpected panic")
@@ -149,12 +149,12 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 
-		if memory.CheckCanceled() {
+		if control.CheckCanceled() {
 			failedRewrites += max(0, numberOfResults-resultIndex-1)
 			break
 		}
 	}
-	if memory.CheckCanceledRAM() {
+	if control.CheckCanceledRAM() {
 		log.Error("Rewrite Canceled: Not enough RAM")
 	} else {
 		log.Info("Finished Rewrite")

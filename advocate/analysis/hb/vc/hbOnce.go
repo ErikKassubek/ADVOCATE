@@ -52,7 +52,9 @@ func DoFail(on *trace.ElementOnce) {
 
 	suc := data.OSuc[id]
 
-	CurrentVC[routine].Sync(suc.GetVC())
+	if suc != nil {
+		CurrentVC[routine].Sync(suc.GetVC())
+	}
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
 }

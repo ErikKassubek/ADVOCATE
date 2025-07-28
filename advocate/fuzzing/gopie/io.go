@@ -18,7 +18,7 @@ import (
 )
 
 // WriteMutActive writes the element in the chain into a rewriteActive.log
-// file for use in GoPie (only in original, not in GoPi+ or GoPieHB)
+// file for use in GoPie
 //
 // Parameter
 //   - fuzzingTracePath string: path to the trace folder

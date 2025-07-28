@@ -45,6 +45,7 @@ const (
 var (
 	timer       = make([]Timer, numberTimer)
 	measureTime = false
+	paused      = make([]int, 0)
 )
 
 // Init time measurement
@@ -125,4 +126,22 @@ func ToString() string {
 	}
 
 	return res
+}
+
+// Pause all running timer and store which timer have been paused
+func Pause() {
+	for id, t := range timer {
+		if t.IsRunning() {
+			paused = append(paused, id)
+			t.Stop()
+		}
+	}
+}
+
+// Resume all paused timer
+func Resume() {
+	for _, id := range paused {
+		timer[id].Start()
+	}
+	paused = make([]int, 0)
 }

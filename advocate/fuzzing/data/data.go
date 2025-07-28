@@ -20,7 +20,7 @@ const factorCaseWithPartner = 3
 
 // General data for fuzzing
 var (
-	MaxNumberRuns     = 40
+	MaxNumberRuns     = 100
 	MaxTime           = 7 * time.Minute
 	MaxTimeSet        = false
 	NumberFuzzingRuns = 0

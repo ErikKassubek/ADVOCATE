@@ -50,7 +50,7 @@ var (
 	timeoutRec    = newFlagVal("timeoutRec", "600", "", "Set the timeout in seconds for the recording. To disable set to -1")
 	timeoutRep    = newFlagVal("timeoutRep", "900", "", "Set a timeout in seconds for the replay. To disable set to -1")
 	timeoutFuz    = newFlagVal("timeoutFuz", "420", "", "Timeout of fuzzing per test/program in seconds. To Disable, set to -1")
-	maxFuzzingRun = newFlagVal("maxFuzzingRun", "100", "", "Maximum number of fuzzing runs per test/prog. To Disable, set to -1")
+	maxFuzzingRun = newFlagVal("maxFuzzingRuns", "100", "", "Maximum number of fuzzing runs per test/prog. To Disable, set to -1")
 
 	// statistics
 	time    = newFlagVal("time", "false", "", "Measure the execution times of programs/tests and analysis")

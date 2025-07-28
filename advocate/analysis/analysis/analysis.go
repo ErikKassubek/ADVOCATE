@@ -21,8 +21,8 @@ import (
 	"advocate/analysis/hb/vc"
 	fuzzdata "advocate/fuzzing/data"
 	"advocate/trace"
+	"advocate/utils/control"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 )
 
@@ -39,7 +39,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 	if log.IsPanicPrevent() {
 		defer func() {
 			if r := recover(); r != nil {
-				memory.Cancel()
+				control.Cancel()
 				log.Error(r)
 			}
 		}()
@@ -60,7 +60,9 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 		}
 	}
 
-	RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
+	if fuzzdata.FuzzingMode != fuzzdata.GoPie {
+		RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
+	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis
@@ -113,7 +115,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 
 		// not enough memory
-		if memory.WasCanceledRAM.Load() {
+		if control.WasCanceledRAM.Load() {
 			return
 		}
 
@@ -188,7 +190,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 			checkLeak(elem)
 		}
 
-		if memory.CheckCanceled() {
+		if control.CheckCanceled() {
 			return
 		}
 	}
@@ -202,7 +204,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		scenarios.CheckForSelectCaseWithPartner()
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 
@@ -213,7 +215,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		log.Info("Finish check for leak")
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 
@@ -223,7 +225,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		log.Info("Finish check for done before add")
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 
@@ -233,7 +235,7 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		log.Info("Finish check for cyclic deadlock")
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 

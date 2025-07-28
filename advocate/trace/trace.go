@@ -13,8 +13,8 @@ package trace
 import (
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
+	"advocate/utils/control"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/types"
 	"errors"
 	"fmt"
@@ -674,7 +674,7 @@ func (t *Trace) Copy() (Trace, error) {
 		for i, elem := range trace {
 			tracesCopy[routine][i] = elem.Copy()
 
-			if memory.CheckCanceled() {
+			if control.CheckCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 			}
 		}

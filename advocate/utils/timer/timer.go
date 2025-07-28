@@ -43,7 +43,6 @@ func (t *Timer) Stop() {
 	}
 	t.elapsed += time.Since(t.startTime)
 	t.running = false
-	return
 }
 
 // GetTime returns the elapsed time of the timer
@@ -61,4 +60,9 @@ func (t *Timer) GetTime() time.Duration {
 func (t *Timer) Reset() {
 	t.running = false
 	t.elapsed = time.Duration(0)
+}
+
+// IsRunning returns if the timer is currently running
+func (t *Timer) IsRunning() bool {
+	return t.running
 }

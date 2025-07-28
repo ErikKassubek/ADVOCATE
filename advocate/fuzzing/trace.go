@@ -16,8 +16,8 @@ import (
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
 	"advocate/trace"
+	"advocate/utils/control"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 )
 
 var currentTrace *trace.Trace
@@ -42,7 +42,7 @@ func ParseTrace(tr *trace.Trace) {
 			gopie.CalculateRelRule1(routine)
 		}
 
-		if memory.CheckCanceled() {
+		if control.CheckCanceled() {
 			return
 		}
 
@@ -61,14 +61,20 @@ func ParseTrace(tr *trace.Trace) {
 
 			switch e := elem.(type) {
 			case *trace.ElementNew:
-				parseNew(e)
+				if data.FuzzingModeGFuzz {
+					parseNew(e)
+				}
 			case *trace.ElementChannel:
-				parseChannelOp(e, -2) // -2: not part of select
+				if data.FuzzingModeGFuzz {
+					parseChannelOp(e, -2) // -2: not part of select
+				}
 			case *trace.ElementSelect:
-				parseSelectOp(e)
+				if data.FuzzingModeGFuzz {
+					parseSelectOp(e)
+				}
 			}
 
-			if memory.CheckCanceled() {
+			if control.CheckCanceled() {
 				return
 			}
 
@@ -85,13 +91,15 @@ func ParseTrace(tr *trace.Trace) {
 		gopie.CalculateRelRule3()
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 
-	gfuzz.SortSelects()
+	if data.FuzzingModeGFuzz {
+		gfuzz.SortSelects()
 
-	gfuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
+		gfuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
+	}
 }
 
 // Parse a new elem element.

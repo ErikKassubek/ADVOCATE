@@ -13,7 +13,7 @@ package data
 import (
 	"advocate/results/results"
 	"advocate/trace"
-	"advocate/utils/memory"
+	"advocate/utils/control"
 )
 
 // Clear the data structures used for the analysis
@@ -21,7 +21,7 @@ func Clear() {
 	ClearTrace()
 	ClearData()
 	results.Reset()
-	memory.Reset()
+	control.Reset()
 }
 
 // ClearData resets all data structures used in th analysis

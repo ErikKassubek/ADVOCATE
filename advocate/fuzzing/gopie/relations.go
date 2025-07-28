@@ -13,7 +13,7 @@ package gopie
 import (
 	"advocate/fuzzing/data"
 	"advocate/trace"
-	"advocate/utils/memory"
+	"advocate/utils/control"
 	"advocate/utils/types"
 	"sort"
 )
@@ -53,7 +53,7 @@ func CalculateRelRule1(routineTrace []trace.Element) {
 			counterCPOP1++
 			break
 		}
-		if memory.CheckCanceled() {
+		if control.CheckCanceled() {
 			return
 		}
 	}
@@ -102,7 +102,7 @@ func CalculateRelRule2And4() {
 					counterCPOP2++
 				}
 			}
-			if memory.CheckCanceled() {
+			if control.CheckCanceled() {
 				return
 			}
 		}

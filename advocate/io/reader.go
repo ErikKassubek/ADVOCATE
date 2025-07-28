@@ -13,8 +13,8 @@ package io
 import (
 	"advocate/analysis/data"
 	"advocate/trace"
+	"advocate/utils/control"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 	"bufio"
 	"errors"
@@ -76,17 +76,16 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 		elemCounter += numberElems
 		numberRoutines++
 
-		if elemCounter > memory.MaxNumberElements {
+		if elemCounter > control.MaxNumberElements {
 			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
 		}
 
-		if memory.CheckCanceled() {
+		if control.CheckCanceled() {
 			return numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
 		}
 	}
 
 	tr.Sort()
-
 	data.SetMainTrace(&tr)
 
 	return numberRoutines, elemCounter, nil

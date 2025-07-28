@@ -187,9 +187,9 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 			Send:     nil})
 	}
 
-	if count > qSize || chanBuffer[id][count].Occupied {
-		log.Error("Write to occupied buffer position or to big count")
-	}
+	// if count > qSize || chanBuffer[id][count].Occupied {
+	// 	log.Error("Write to occupied buffer position or to big count")
+	// }
 
 	s := chanBuffer[id][count].Send
 	if s != nil {

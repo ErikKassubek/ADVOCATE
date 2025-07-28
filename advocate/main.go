@@ -22,9 +22,9 @@ import (
 	fuzzingdata "advocate/fuzzing/data"
 	"advocate/results/stats"
 	"advocate/toolchain"
+	"advocate/utils/control"
 	"advocate/utils/helper"
 	"advocate/utils/log"
-	"advocate/utils/memory"
 	"advocate/utils/timer"
 )
 
@@ -101,7 +101,7 @@ func main() {
 	flag.IntVar(&timeoutReplay, "timeoutRep", 900, "Set a timeout in seconds for the replay. Default: 600s. To disable set to -1")
 
 	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
-	flag.IntVar(&maxFuzzingRun, "maxFuzzingRun", 100, "Maximum number of fuzzing runs per test/prog. Default: 100s. To Disable, set to -1")
+	flag.IntVar(&maxFuzzingRun, "maxFuzzingRuns", 100, "Maximum number of fuzzing runs per test/prog. Default: 100s. To Disable, set to -1")
 
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 
@@ -210,9 +210,9 @@ func main() {
 		return
 	}
 
-	memory.SetMaxNumberElem(maxNumberElements)
+	control.SetMaxNumberElem(maxNumberElements)
 	if !noMemorySupervisor {
-		go memory.Supervisor() // cancel analysis if not enough ram
+		go control.Supervisor() // cancel analysis if not enough ram
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+
@@ -282,7 +282,7 @@ func main() {
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")
-	log.Info("Total time: ", timer.GetTime(timer.Total))
+	log.Important("Total time: ", timer.GetTime(timer.Total))
 }
 
 // modeFuzzing starts the fuzzing

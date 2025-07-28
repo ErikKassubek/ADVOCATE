@@ -11,8 +11,8 @@
 package results
 
 import (
+	"advocate/utils/control"
 	"advocate/utils/helper"
-	"advocate/utils/memory"
 	"advocate/utils/types"
 	"fmt"
 	"os"
@@ -190,7 +190,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		return
 	}
 
-	if memory.CheckCanceled() {
+	if control.CheckCanceled() {
 		return
 	}
 

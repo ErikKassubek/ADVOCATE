@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: memory.go
+// File: control.go
 // Brief: Cancel analysis when not enough memory
 //
 // Author: Erik Kassubek
@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package memory
+package control
 
 import (
 	"advocate/utils/log"

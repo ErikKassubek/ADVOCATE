@@ -105,7 +105,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 	}
 }
 
-// Send updates and calculates the vector clocks given a send on a buffered channel.
+// Send updates and calculates the pog given a send on a buffered channel.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -145,9 +145,9 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 			Send:     nil})
 	}
 
-	if count > qSize || chanBuffer[id][count].Occupied {
-		log.Error("Write to occupied buffer position or to big count")
-	}
+	// if count > qSize || chanBuffer[id][count].Occupied {
+	// 	log.Error("Write to occupied buffer position or to big count")
+	// }
 
 	s := chanBuffer[id][count].Send
 	if s != nil {

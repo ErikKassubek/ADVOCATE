@@ -24,6 +24,8 @@ import (
 	"sort"
 )
 
+const sameElem = true
+
 // CreateGoPieMut create new mutations for GoPie
 //
 // Parameter:
@@ -54,7 +56,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		}
 	}
 
-	energy := getEnergy()
+	energy := getEnergy(sameElem)
 
 	log.Infof("Mutate %d scheduling chains", len(SchedulingChains))
 
@@ -162,7 +164,10 @@ func addFuzzingTraceFolder(path string) {
 
 // Calculate the energy for a schedule. This determines how many mutations
 // are created
-func getEnergy() int {
+//
+// Parameter:
+//   - sameElem bool: only count elements as concurrent, if they are on the same element
+func getEnergy(sameElem bool) int {
 
 	// not interesting
 	if anadata.GetTimeoutHappened() {
@@ -177,7 +182,7 @@ func getEnergy() int {
 	if data.UseHBInfoFuzzing {
 		for _, sc := range SchedulingChains {
 			for _, elem := range sc.Elems {
-				c := concurrent.GetNumberConcurrent(elem, true, true)
+				c := concurrent.GetNumberConcurrent(elem, sameElem, true)
 				score += c
 			}
 		}

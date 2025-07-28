@@ -53,8 +53,6 @@ type elemWithQual struct {
 func startChains(num int) []Chain {
 	res := make([]Chain, 0)
 
-	var sameElement = false
-
 	if data.UseHBInfoFuzzing {
 		traces := anaData.MainTrace.GetTraces()
 
@@ -78,11 +76,11 @@ func startChains(num int) []Chain {
 				continue
 			}
 
-			if concurrent.GetNumberConcurrent(elem, sameElement, false) == 0 {
+			if concurrent.GetNumberConcurrent(elem, sameElem, false) == 0 {
 				continue
 			}
 
-			q := quality(elem, sameElement)
+			q := quality(elem, sameElem)
 
 			e := elemWithQual{elem, q}
 
@@ -111,7 +109,7 @@ func startChains(num int) []Chain {
 		}
 
 		for _, e := range top {
-			posPartner := concurrent.GetConcurrent(e.elem, true, sameElement, true)
+			posPartner := concurrent.GetConcurrent(e.elem, true, sameElem, true)
 			if len(posPartner) == 0 {
 				continue
 			}

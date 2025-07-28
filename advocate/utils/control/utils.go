@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package memory
+package control
 
 import (
 	"advocate/utils/log"

@@ -29,12 +29,14 @@ import (
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - numberElemsInTrace map[int]int: per routine number of elems in trace, routineId -> number
+//   - numberElems: total number of elems in trace
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
 type Trace struct {
 	traces                map[int][]Element
 	hbWasCalc             bool
 	numberElemsInTrace    map[int]int
+	numberElems           int
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
@@ -51,6 +53,7 @@ func NewTrace() Trace {
 		traces:                make(map[int][]Element),
 		hbWasCalc:             false,
 		numberElemsInTrace:    make(map[int]int),
+		numberElems:           0,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
 	}
@@ -76,6 +79,7 @@ func (t *Trace) AddElement(elem Element) {
 
 	t.traces[routine] = append(t.traces[routine], elem)
 	t.numberElemsInTrace[routine]++
+	t.numberElems++
 }
 
 // AddRoutine adds an empty routine if not exists
@@ -151,6 +155,14 @@ func (t *Trace) GetTraceSize() (int, int) {
 //   - []traceElement: The trace of the routine
 func (t *Trace) GetRoutineTrace(id int) []Element {
 	return t.traces[id]
+}
+
+// GetNumberElements returns the total number of elements in the trace
+//
+// Returns:
+//   - int: total number of elems in trace
+func (t *Trace) GetNumberElements() int {
+	return t.numberElems
 }
 
 // GetTraceElementFromTID returns the routine and index of the element

@@ -18,7 +18,7 @@ import (
 	"sort"
 )
 
-// We define <c, c'> in CPOP1, if c and c' are operations in the same routine.
+// We define <c, c'> in CPOP1, if c and c' are neighboring operations in the same routine.
 // We define <c, c'> in CPOP2, if c and c' are operations in different routines
 // but on the same primitive.
 // From this we define the relations Rel1 and Rel2 with the following rules:
@@ -32,30 +32,31 @@ import (
 // Parameter:
 //   - routineTrace []analysis.TraceElement: the list of elems in the same trace
 func CalculateRelRule1(routineTrace []trace.Element) {
+	if len(routineTrace) < 2 {
+		return
+	}
+
 	for i := 0; i < len(routineTrace)-1; i++ {
 		elem1 := routineTrace[i]
 		if !isGoPieElem(elem1) {
 			continue
 		}
-		for j := i + 1; j < len(routineTrace); j++ {
-			elem2 := routineTrace[j]
-			if !isGoPieElem(elem2) {
-				continue
-			}
-			if _, ok := rel1[elem1]; !ok {
-				rel1[elem1] = make(map[trace.Element]struct{})
-			}
-			if _, ok := rel1[elem2]; !ok {
-				rel1[elem2] = make(map[trace.Element]struct{})
-			}
-			rel1[elem1][elem2] = struct{}{}
-			rel1[elem2][elem1] = struct{}{}
-			counterCPOP1++
-			break
+		elem2 := routineTrace[i+1]
+		if !isGoPieElem(elem2) {
+			continue
 		}
-		if control.CheckCanceled() {
-			return
+		if _, ok := rel1[elem1]; !ok {
+			rel1[elem1] = make(map[trace.Element]struct{})
 		}
+		if _, ok := rel1[elem2]; !ok {
+			rel1[elem2] = make(map[trace.Element]struct{})
+		}
+		rel1[elem1][elem2] = struct{}{}
+		rel1[elem2][elem1] = struct{}{}
+		counterCPOP1++
+	}
+	if control.CheckCanceled() {
+		return
 	}
 }
 
@@ -153,7 +154,7 @@ func CalculateRelRule3() {
 	}
 }
 
-// isGoPieElem returns if an element is part of the original goPie
+// isGoPieElem returns if an element is part of goPie
 // GoPie only looks at fork, mutex, rwmutex and channel (and select)
 // GoPieHB uses all repayable elements
 //

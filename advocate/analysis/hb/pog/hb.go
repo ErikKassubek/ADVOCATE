@@ -15,6 +15,7 @@ import (
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
+	"reflect"
 )
 
 // AddEdge adds an edge between start and end
@@ -157,6 +158,9 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 		}
 
 		for child := range g.getChildren(curr) {
+			if child == nil || reflect.ValueOf(child).IsNil() {
+				continue
+			}
 			if !reachable[child.GetTraceID()] {
 				stack = append(stack, child)
 			}

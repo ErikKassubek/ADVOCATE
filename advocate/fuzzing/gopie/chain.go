@@ -39,7 +39,7 @@ func NewChain() Chain {
 
 type elemWithQual struct {
 	elem    trace.Element
-	quality int
+	quality float64
 }
 
 // startChains returns a slice of chain consisting of a
@@ -149,11 +149,21 @@ func startChains(num int) []Chain {
 //   - sameElem bool: only consider concurrent elements on the same element
 //
 // Returns:
-//   - the quality
-func quality(elem trace.Element, sameElem bool) int {
+//   - float64: the quality
+func quality(elem trace.Element, sameElem bool) float64 {
+	w1 := 0.3
+	w2 := 0.3
+	w3 := 0.4
+
 	numberOps, _ := anaData.GetOpsPerID(elem.GetID())
-	numberConcurrent := concurrent.GetNumberConcurrent(elem, sameElem, true)
-	return int(math.Log(float64(1+numberOps)) + math.Log(float64(1+numberConcurrent)))
+	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, true)
+	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, true)
+
+	q := w1*math.Log1p(float64(numberOps)) +
+		w2*float64(numberConcurrentSame)/float64(numberConcurrentTotal+1) +
+		w3*math.Log1p(float64(numberConcurrentTotal))
+
+	return q * ((rand.Float64() * 0.2) - 0.1)
 }
 
 // Add a new element to the chain

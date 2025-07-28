@@ -138,6 +138,10 @@ func (vc *VectorClock) ToString() string {
 // Parameter:
 //   - routine int: The routine to increment
 func (vc *VectorClock) Inc(routine int) {
+	if vc == nil {
+		return
+	}
+
 	if routine > int(vc.size) {
 		return
 	}

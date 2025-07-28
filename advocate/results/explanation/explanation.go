@@ -17,9 +17,46 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 )
+
+type bug struct {
+	bugType string
+	pos     string
+}
+
+var printedExplanations = make(map[bug]struct{})
+
+func writeBug(bugType string, positions map[int][]string) bool {
+	posSet := make(map[string]struct{})
+	for _, p := range positions {
+		for _, l := range p {
+			posSet[l] = struct{}{}
+		}
+	}
+
+	unique := make([]string, 0, len(posSet))
+	for s := range posSet {
+		unique = append(unique, s)
+	}
+	sort.Strings(unique)
+
+	// Join into single string
+	pos := strings.Join(unique, ",")
+
+	b := bug{
+		bugType: bugType,
+		pos:     pos,
+	}
+
+	if _, ok := printedExplanations[b]; ok {
+		return false
+	}
+	printedExplanations[b] = struct{}{}
+	return true
+}
 
 // create an overview over an analyzed, and if possible replayed
 // bug. It is mostly meant to give an explanation of a found
@@ -78,6 +115,8 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 		leakReplay := make(map[string]string)
 		leakFound := false
 
+		timeoutFound := false
+
 		for index := 1; index < numberResults; index++ {
 			id := ""
 			if strings.HasSuffix(result, "results_machine.log") {
@@ -94,6 +133,11 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 
 			if strings.HasPrefix(bugType, "S") {
 				break
+			}
+
+			if bugType == "R02" {
+				timeoutFound = true
+				continue
 			}
 
 			// get the bug type description
@@ -122,12 +166,24 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				continue
 			}
 
+			if !writeBug(bugType, bugPos) {
+				continue
+			}
+
 			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
 				replay, progInfo, fuzzing)
 		}
 
 		if leakFound {
-			writeFile(path, "L", leakTypeDescription, leakPos, leakElemType, leakCode,
+			bugType := "L00"
+			if timeoutFound {
+				leakTypeDescription = getBugTypeDescription("R02")
+				bugType = "R02"
+			}
+			if !writeBug(bugType, leakPos) {
+				continue
+			}
+			writeFile(path, "0", leakTypeDescription, leakPos, leakElemType, leakCode,
 				leakReplay, progInfo, fuzzing)
 		}
 	}

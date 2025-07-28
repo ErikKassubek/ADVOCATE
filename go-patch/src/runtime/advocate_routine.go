@@ -117,6 +117,10 @@ func (gi *AdvocateRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
 }
 
+func (gi *AdvocateRoutine) getLastElement() traceElem {
+	return gi.Trace[len(gi.Trace)-1]
+}
+
 // Update an element in the trace of the current routine
 // Params:
 //   - index: the index of the element to update

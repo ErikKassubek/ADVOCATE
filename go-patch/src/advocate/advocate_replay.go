@@ -107,7 +107,7 @@ func startReplay(timeout int) {
 		// start time timeout
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
-			println("Timeout")
+			runtime.ExitReplayTimeout()
 			os.Exit(10)
 		}()
 	}

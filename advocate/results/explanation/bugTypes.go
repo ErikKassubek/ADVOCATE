@@ -13,7 +13,7 @@ package explanation
 // type (bug / diagnostics)
 var bugCrit = map[string]string{
 	"R01": "Bug",
-	"R02": "Diagnostic",
+	"R02": "Bug",
 	"A01": "Bug",
 	"A02": "Diagnostics",
 	"A03": "Bug",

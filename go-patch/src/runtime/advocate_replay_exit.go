@@ -106,5 +106,15 @@ func ExitReplayPanic(msg any) {
 // ExitReplayTimeout exits the program, when a timeout in tracing or replay
 // was triggered
 func ExitReplayTimeout() {
+	// top := ""
+	// currentRunning := getCurrentOps()
+	// for id, elem := range currentRunning {
+	// 	id_str := uint64ToString(id)
+	// 	elem_str := elem.getPos()
+	// 	top += id_str + "->" + elem_str
+	// }
+
+	// println("ExitPosition:" + top)
+
 	ExitReplayPanic("Timeout")
 }

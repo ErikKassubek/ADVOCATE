@@ -194,11 +194,6 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		return
 	}
 
-	if resType == helper.RTimeout {
-		// log.Resultf(false, false, "", "Info: %s", resultTypeMap[resType])
-		return
-	}
-
 	foundBug = true
 
 	resultReadable := resultTypeMap[resType] + ":\n\t" + argType1 + ": "

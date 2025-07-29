@@ -2,7 +2,6 @@ package main
 
 import (
 	"testing"
-	"time"
 )
 
 // The following code is an example in which GoPie is helpful.
@@ -19,23 +18,26 @@ import (
 // The same effect can be reached if all the sends are replaced by receives and
 // the receive is replaced by a send.
 
-func TestGoPieChannel(_ *testing.T) {
+func TestGoPieChannel(t *testing.T) {
 	c := make(chan int)
+	d := make(chan int)
 
 	go func() {
-		// some code
-		time.Sleep(100 * time.Second)
 
 		c <- 1 // send 1
 	}()
 
 	go func() {
 		// some code
-		time.Sleep(300 * time.Second)
-
+		// time.Sleep(100 * time.Millisecond)
 		c <- 1 // send 2
-		panic("CODE WITH PANIC")
+
+		close(d)
+		d <- 1
 	}()
 
 	<-c
+	println("DONE")
+
+	// time.Sleep(200 * time.Millisecond)
 }

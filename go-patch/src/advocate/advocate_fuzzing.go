@@ -20,6 +20,7 @@ import (
 )
 
 var isFuzzing = false
+var finishFuzzingStarted = false
 
 // Initialize fuzzing
 //
@@ -53,6 +54,10 @@ func InitFuzzing(tracePath string, timeout int) {
 // Run when fuzzing is finished (normally as defer)
 // This records the traces and some additional info
 func FinishFuzzing() {
+	if finishFuzzingStarted {
+		return
+	}
+	finishFuzzingStarted = true
 	runtime.DisableReplay()
 	FinishTracing()
 }

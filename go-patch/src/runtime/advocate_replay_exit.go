@@ -79,13 +79,7 @@ var hasPanicked = false
 //   - msg: the panic message
 func ExitReplayPanic(msg any) {
 	if hasPanicked {
-		println("Circular Panic")
-		var p _panic
-		p.arg = msg
-		preprintpanics(&p)
-		printpanics(&p)
-		print("\n")
-		return
+		exit(1)
 	}
 	hasPanicked = true
 

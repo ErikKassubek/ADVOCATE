@@ -239,7 +239,16 @@ func (ch *Chain) firstElement() trace.Element {
 	if ch.Len() == 0 {
 		return nil
 	}
-	return ch.Elems[0]
+
+	var min trace.Element
+
+	for _, c := range ch.Elems {
+		if min == nil || c.GetTPost() < min.GetTPost() {
+			min = c
+		}
+	}
+
+	return min
 }
 
 // Return the last element of a chain

@@ -52,7 +52,7 @@ type Locker interface {
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
 	// ADVOCATE-START
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
@@ -97,7 +97,7 @@ func (m *Mutex) Lock() {
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
 	// ADVOCATE-START
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexTryLock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
@@ -142,7 +142,7 @@ func (m *Mutex) TryLock() bool {
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
 	// ADVOCATE-START
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch

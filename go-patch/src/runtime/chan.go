@@ -229,7 +229,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _ := WaitForReplay(OperationChannelSend, 3, false)
+		wait, ch, _, _ := WaitForReplay(OperationChannelSend, 3, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -526,7 +526,7 @@ func closechan(c *hchan) {
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
-		wait, chWait, chAck := WaitForReplay(OperationChannelClose, 2, true)
+		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, 2, true)
 		if wait {
 			defer func() { chAck <- struct{}{} }()
 			<-chWait
@@ -682,7 +682,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _ := WaitForReplay(OperationChannelRecv, 3, false)
+		wait, ch, _, _ := WaitForReplay(OperationChannelRecv, 3, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -990,7 +990,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	// ADVOCATE-START
 	var replayElem ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -1057,7 +1057,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	// see selectnbsend
 	var replayElem ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {

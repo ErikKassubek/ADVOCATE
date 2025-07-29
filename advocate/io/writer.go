@@ -16,6 +16,7 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -73,6 +74,9 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 			for index, element := range trace {
 				if !replay || !isReplay(element) {
 					continue
+				}
+				if element.GetTPost() == 0 {
+					element.SetTSort(math.MaxInt)
 				}
 				elementString := element.ToString()
 				if _, err := file.WriteString(elementString); err != nil {

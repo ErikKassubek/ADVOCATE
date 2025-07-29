@@ -10,6 +10,8 @@
 
 package runtime
 
+var mgcRoutine uint64 = 0
+
 // Called by operations during replay. If the operations is the next operation
 // to be executed it is release, otherwise the operation is stored into the
 // waiting operations. The function provides channels to the operation
@@ -26,13 +28,24 @@ package runtime
 //     and ignore all replay mechanisms, e.g. used if replay is enabled
 //   - chan ReplayElement: channel to wait on
 //   - chan struct{}: chan to report back on when finished
-func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
+//   - bool: true if released because not active, false otherwise
+func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}, bool) {
 	// without this the runtime build runs into an deadlock message, no idea why
 	if !replayEnabled {
-		return false, nil, nil
+		return false, nil, nil, false
+	}
+
+	// if Caller is run in the garbage collector, the execution stops
+	// this should prevent this
+	if currentGoRoutineInfo() != nil && currentGoRoutineInfo().id == mgcRoutine {
+		return false, nil, nil, false
 	}
 
 	_, file, line, _ := Caller(skip)
+
+	if currentGoRoutineInfo() != nil && containsStr(file, "/src/runtime/mgc.go") {
+		mgcRoutine = currentGoRoutineInfo().id
+	}
 
 	return WaitForReplayPath(op, file, line, waitForResponse)
 }
@@ -54,13 +67,14 @@ func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan Rep
 //     and ignore all replay mechanisms, e.g. used if replay is enabled
 //   - chan ReplayElement: channel to wait on
 //   - chan struct{}: chan to report back on when finished
-func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}) {
+//   - bool: true if released because not active, false otherwise
+func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool) (bool, chan ReplayElement, chan struct{}, bool) {
 	if !replayEnabled {
-		return false, nil, nil
+		return false, nil, nil, false
 	}
 
 	if AdvocateIgnoreReplay(op, file) {
-		return false, nil, nil
+		return false, nil, nil, false
 	}
 
 	routine := GetReplayRoutineID()
@@ -73,9 +87,10 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		c, ok := active[key]
 		if !ok {
 			if printDebug {
-				println("ReleaseNonActive: ", key)
+				println("ReleaseNonActiveN: ", key)
 			}
-			return false, nil, nil
+			lastKey = ""
+			return false, nil, nil, true
 		}
 
 		lock(&partialReplayMutex)
@@ -86,14 +101,19 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		// the operation is sometimes active, but not this time
 		if !isInSlice(c, currentCounter) {
 			if printDebug {
-				println("ReleaseNonActive: ", key)
+				println("ReleaseNonActiveT: ", key, c, currentCounter)
 			}
-			return false, nil, nil
+			lastKey = ""
+			return false, nil, nil, true
 		}
+
 	}
 
 	if printDebug {
-		println("Wait: ", key)
+		println("Wait: ", key, partialReplay)
+		if partialReplay {
+			println(partialReplayCounter[key])
+		}
 	}
 
 	chWait := make(chan ReplayElement, 1)
@@ -102,7 +122,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false}
 
 	_, nextElem := getNextReplayElement()
-	if key == nextElem.key() && !waitForAck.waitForAck {
+	if key == nextElem.Key() && !waitForAck.waitForAck {
 		// if it is the next element, release directly and add elems to waitForAck
 		replayElem.chWait <- nextElem
 		if printDebug {
@@ -125,9 +145,11 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		}
 		waitingOps[key] = replayElem
 		unlock(&waitingOpsMutex)
+
+		CheckForPartialReplay(nextElem)
 	}
 
-	return true, chWait, chAck
+	return true, chWait, chAck, false
 }
 
 // Release a waiting operation and, if required, wait for the acknowledgement
@@ -143,7 +165,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) bool {
 	if elem.released {
 		if printDebug {
-			println("Already released: ", elemReplay.key())
+			println("Already released: ", elemReplay.Key())
 		}
 		return false
 	}
@@ -152,22 +174,22 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 		elem.chWait <- elemReplay
 		elem.released = true
 		if printDebug {
-			println("Release: ", elemReplay.key())
+			println("Release: ", elemReplay.Key())
 		}
 	}
 
 	if elem.waitAck {
 		if printDebug {
-			println("Wait Ack: ", elemReplay.key())
+			println("Wait Ack: ", elemReplay.Key())
 		}
 		select {
 		case <-elem.chAck:
 			if printDebug {
-				println("Ack: ", elemReplay.key())
+				println("Ack: ", elemReplay.Key())
 			}
 		case <-after(sToNs(acknowledgementMaxWaitSec)):
 			if printDebug {
-				println("AckTimeout: ", elemReplay.key())
+				println("AckTimeout: ", elemReplay.Key())
 			}
 			if tPostWhenAckFirstTimeout == 0 {
 				tPostWhenAckFirstTimeout = elemReplay.Time
@@ -176,7 +198,7 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	}
 
 	if printDebug {
-		println("Complete: ", elemReplay.key())
+		println("Complete: ", elemReplay.Key())
 	}
 
 	lastTime = currentTime()
@@ -185,7 +207,7 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 		releaseOldestWait = releaseOldestWaitLastMax
 		foundReplayElement()
 	} else {
-		releasedElementOldest(elemReplay.key())
+		releasedElementOldest(elemReplay.Key())
 	}
 
 	return true

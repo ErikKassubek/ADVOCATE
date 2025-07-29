@@ -74,7 +74,7 @@ func startReplay(timeout int) {
 	}
 
 	foundTraceFiles := false
-	replayData := runtime.GetReplayTrace()
+	replayData, spawns := runtime.GetReplayTrace()
 	for _, file := range files {
 		// if the file is a directory, ignore it
 		if file.IsDir() {
@@ -89,7 +89,7 @@ func startReplay(timeout int) {
 		if strings.HasSuffix(file.Name(), ".log") &&
 			file.Name() != "rewrite_info.log" &&
 			file.Name() != activeFile {
-			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData)
+			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData, spawns)
 			foundTraceFiles = true
 		}
 	}
@@ -177,6 +177,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 		}
 
 		active[fields[0]] = append(active[fields[0]], counter)
+		println(fields[0], " -> ", counter)
 
 		activeTPre[tPre] = struct{}{}
 	}
@@ -204,7 +205,8 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //     has been replayed. If 0, start with active from the beginning,
 //     if -1 never switch to active replay
 //   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
-func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace) {
+//   - spawns map[int][]int: for each routine store the ids of all routines spawned from this routine
+func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace, spawns map[int][]int) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -256,6 +258,10 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			index, _ = strconv.Atoi(fields[2])
+			if _, ok := spawns[routineID]; !ok {
+				spawns[routineID] = make([]int, 0)
+			}
+			spawns[routineID] = append(spawns[routineID], index)
 		case "C":
 			switch fields[4] {
 			case "S":

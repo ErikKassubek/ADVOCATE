@@ -5068,12 +5068,24 @@ func newproc(fn *funcval) {
 	}
 	file, line := funcline(f, tracepc)
 
-	wait, ch, ack := WaitForReplayPath(OperationSpawn, file, int(line), true)
+	wait, ch, ack, notActive := WaitForReplayPath(OperationSpawn, file, int(line), true)
 	index := 1
 	if wait {
 		elem := <-ch
 		index = elem.Index
 		defer func() { ack <- struct{}{} }()
+	} else {
+		// get the spawn info from spawns slice if the fork is directly released by partial replay
+		if gp.advocateRoutineInfo != nil && notActive {
+			if s, ok := spawns[gp.advocateRoutineInfo.replayID]; ok && len(s) > 0 {
+				index = s[0]
+			}
+		}
+	}
+	if gp.advocateRoutineInfo != nil && (wait || notActive) {
+		if s, ok := spawns[gp.advocateRoutineInfo.replayID]; ok && len(s) > 0 {
+			spawns[gp.advocateRoutineInfo.replayID] = spawns[gp.advocateRoutineInfo.replayID][1:]
+		}
 	}
 	// ADVOCATE-END
 

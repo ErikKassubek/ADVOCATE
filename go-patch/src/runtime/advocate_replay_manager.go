@@ -40,7 +40,7 @@ func ReplayManager() {
 		counter++
 		routine, replayElem := getNextReplayElement()
 
-		if routine == -1 {
+		if routine == -1 && !partialReplay {
 			break
 		}
 
@@ -88,7 +88,7 @@ func ReplayManager() {
 			return
 		}
 
-		key := replayElem.key()
+		key := replayElem.Key()
 
 		if key == lastKey {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
@@ -148,9 +148,20 @@ func ReplayManager() {
 		}
 
 		if key != lastKey {
+			CheckForPartialReplay(replayElem)
 			lastKey = key
 			if printDebug {
-				println("\n\n===================\nNext: ", key)
+				println("\n\n===================\n")
+				println("Next: ", key)
+				if i, ok := active[key]; ok {
+					print("AC: ")
+					for _, a := range i {
+						print(a, ", ")
+					}
+					println("")
+				} else {
+					print("AC: XX")
+				}
 				println("Currently Waiting: ", len(waitingOps))
 				for key := range waitingOps {
 					println(key)

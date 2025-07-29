@@ -129,6 +129,20 @@ func (ro Operation) ToString() string {
 		return "OperationCondWait"
 	case OperationReplayEnd:
 		return "OperationReplayEnd"
+	case OperationAtomicLoad:
+		return "OperationAtomicLoad"
+	case OperationAtomicStore:
+		return "OperationAtomicStore"
+	case OperationAtomicAdd:
+		return "OperationAtomicAdd"
+	case OperationAtomicSwap:
+		return "OperationAtomicSwap"
+	case OperationAtomicCompareAndSwap:
+		return "OperationAtomicCompareAndSwap"
+	case OperationAtomicAnd:
+		return "OperationAtomicAnd"
+	case OperationAtomicOr:
+		return "OperationAtomicOr"
 	default:
 		return "Unknown"
 	}
@@ -152,6 +166,7 @@ var (
 	numberElementsInTrace int
 	active                map[string][]int
 	startTimeActive       = -1
+	spawns                = make(map[int][]int)
 
 	replayIndex = 0
 
@@ -182,7 +197,7 @@ func EnableReplay() {
 	numberElementsInTrace = len(replayData)
 
 	if printDebug {
-		println("\nTrace\n")
+		println("\nTRACE\n")
 		replayData.Print()
 		println("\n\n")
 	}

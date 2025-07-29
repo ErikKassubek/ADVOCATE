@@ -73,7 +73,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 		}
 
 		for _, tElem := range trace {
-			if sameElem && elem.GetID() != tElem.GetID() {
+			if sameElem && elem.GetID() != tElem.GetID() || tElem.GetTPost() == 0 {
 				continue
 			}
 

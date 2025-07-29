@@ -17,7 +17,7 @@ import "runtime"
 // They are identical to the others except for the WaitForReplay skip counter
 
 func SwapInt32AdvocateType(addr *int32, new int32) (old int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -27,7 +27,7 @@ func SwapInt32AdvocateType(addr *int32, new int32) (old int32) {
 }
 
 func SwapInt64AdvocateType(addr *int64, new int64) (old int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -37,7 +37,7 @@ func SwapInt64AdvocateType(addr *int64, new int64) (old int64) {
 }
 
 func SwapUint32AdvocateType(addr *uint32, new uint32) (old uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -47,7 +47,7 @@ func SwapUint32AdvocateType(addr *uint32, new uint32) (old uint32) {
 }
 
 func SwapUint64AdvocateType(addr *uint64, new uint64) (old uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -57,7 +57,7 @@ func SwapUint64AdvocateType(addr *uint64, new uint64) (old uint64) {
 }
 
 func SwapUintptrAdvocateType(addr *uintptr, new uintptr) (old uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -67,7 +67,7 @@ func SwapUintptrAdvocateType(addr *uintptr, new uintptr) (old uintptr) {
 }
 
 func CompareAndSwapInt32AdvocateType(addr *int32, old, new int32) (swapped bool) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -77,7 +77,7 @@ func CompareAndSwapInt32AdvocateType(addr *int32, old, new int32) (swapped bool)
 }
 
 func CompareAndSwapInt64AdvocateType(addr *int64, old, new int64) (swapped bool) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -87,7 +87,7 @@ func CompareAndSwapInt64AdvocateType(addr *int64, old, new int64) (swapped bool)
 }
 
 func CompareAndSwapUint32AdvocateType(addr *uint32, old, new uint32) (swapped bool) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -97,7 +97,7 @@ func CompareAndSwapUint32AdvocateType(addr *uint32, old, new uint32) (swapped bo
 }
 
 func CompareAndSwapUint64AdvocateType(addr *uint64, old, new uint64) (swapped bool) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -107,7 +107,7 @@ func CompareAndSwapUint64AdvocateType(addr *uint64, old, new uint64) (swapped bo
 }
 
 func CompareAndSwapUintptrAdvocateType(addr *uintptr, old, new uintptr) (swapped bool) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -117,7 +117,7 @@ func CompareAndSwapUintptrAdvocateType(addr *uintptr, old, new uintptr) (swapped
 }
 
 func AddInt32AdvocateType(addr *int32, delta int32) (new int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -127,7 +127,7 @@ func AddInt32AdvocateType(addr *int32, delta int32) (new int32) {
 }
 
 func AddUint32AdvocateType(addr *uint32, delta uint32) (new uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -137,7 +137,7 @@ func AddUint32AdvocateType(addr *uint32, delta uint32) (new uint32) {
 }
 
 func AddInt64AdvocateType(addr *int64, delta int64) (new int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -147,7 +147,7 @@ func AddInt64AdvocateType(addr *int64, delta int64) (new int64) {
 }
 
 func AddUint64AdvocateType(addr *uint64, delta uint64) (new uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -157,7 +157,7 @@ func AddUint64AdvocateType(addr *uint64, delta uint64) (new uint64) {
 }
 
 func AddUintptrAdvocateType(addr *uintptr, delta uintptr) (new uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -167,7 +167,7 @@ func AddUintptrAdvocateType(addr *uintptr, delta uintptr) (new uintptr) {
 }
 
 func LoadInt32AdvocateType(addr *int32) (val int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -177,7 +177,7 @@ func LoadInt32AdvocateType(addr *int32) (val int32) {
 }
 
 func LoadInt64AdvocateType(addr *int64) (val int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -187,7 +187,7 @@ func LoadInt64AdvocateType(addr *int64) (val int64) {
 }
 
 func LoadUint32AdvocateType(addr *uint32) (val uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -197,7 +197,7 @@ func LoadUint32AdvocateType(addr *uint32) (val uint32) {
 }
 
 func LoadUint64AdvocateType(addr *uint64) (val uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -207,7 +207,7 @@ func LoadUint64AdvocateType(addr *uint64) (val uint64) {
 }
 
 func LoadUintptrAdvocateType(addr *uintptr) (val uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -217,7 +217,7 @@ func LoadUintptrAdvocateType(addr *uintptr) (val uintptr) {
 }
 
 func StoreInt32AdvocateType(addr *int32, val int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -227,7 +227,7 @@ func StoreInt32AdvocateType(addr *int32, val int32) {
 }
 
 func StoreInt64AdvocateType(addr *int64, val int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -237,7 +237,7 @@ func StoreInt64AdvocateType(addr *int64, val int64) {
 }
 
 func StoreUint32AdvocateType(addr *uint32, val uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -247,7 +247,7 @@ func StoreUint32AdvocateType(addr *uint32, val uint32) {
 }
 
 func StoreUint64AdvocateType(addr *uint64, val uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -257,7 +257,7 @@ func StoreUint64AdvocateType(addr *uint64, val uint64) {
 }
 
 func StoreUintptrAdvocateType(addr *uintptr, val uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -267,7 +267,7 @@ func StoreUintptrAdvocateType(addr *uintptr, val uintptr) {
 }
 
 func AndInt64AdvocateType(addr *int64, mask int64) (old int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -277,7 +277,7 @@ func AndInt64AdvocateType(addr *int64, mask int64) (old int64) {
 }
 
 func AndUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -287,7 +287,7 @@ func AndUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
 }
 
 func AndInt32AdvocateType(addr *int32, mask int32) (old int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -297,7 +297,7 @@ func AndInt32AdvocateType(addr *int32, mask int32) (old int32) {
 }
 
 func AndUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -307,7 +307,7 @@ func AndUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
 }
 
 func AndUintptrAdvocateType(addr *uintptr, mask uintptr) (old uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -317,7 +317,7 @@ func AndUintptrAdvocateType(addr *uintptr, mask uintptr) (old uintptr) {
 }
 
 func OrInt64AdvocateType(addr *int64, mask int64) (old int64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -327,7 +327,7 @@ func OrInt64AdvocateType(addr *int64, mask int64) (old int64) {
 }
 
 func OrUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -337,7 +337,7 @@ func OrUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
 }
 
 func OrInt32AdvocateType(addr *int32, mask int32) (old int32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -347,7 +347,7 @@ func OrInt32AdvocateType(addr *int32, mask int32) (old int32) {
 }
 
 func OrUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
@@ -357,7 +357,7 @@ func OrUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
 }
 
 func OrUintptrAdvocateType(addr *uintptr, mask uintptr) (old uintptr) {
-	wait, chWait, chAck := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
+	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, 3, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait

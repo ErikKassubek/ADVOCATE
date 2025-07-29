@@ -589,6 +589,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 			}
 		}
 	}
+	log.Info("Text executed")
 
 	err = os.Unsetenv("GOROOT")
 

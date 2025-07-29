@@ -137,7 +137,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		if data.FuzzingMode == data.GoPie {
 			writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 		} else {
-			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTSort())
+			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
 		}
 
 		traceCopy.Clear()

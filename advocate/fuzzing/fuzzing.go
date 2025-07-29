@@ -216,7 +216,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			break
 		}
 
-		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns+1)
+		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns)
 
 		fuzzingPath := ""
 		progPathDir := helper.GetDirectory(progPath)

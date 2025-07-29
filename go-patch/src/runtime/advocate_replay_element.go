@@ -49,11 +49,11 @@ type ReplayElement struct {
 	Index   int
 }
 
-// Get the key (id) of a replay element
+// Get the Key (id) of a replay element
 //
 // Returns:
-//   - the key of elem
-func (elem *ReplayElement) key() string {
+//   - the Key of elem
+func (elem *ReplayElement) Key() string {
 	return BuildReplayKey(elem.Routine, elem.File, elem.Line)
 }
 

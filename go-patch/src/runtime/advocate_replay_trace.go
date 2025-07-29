@@ -16,8 +16,9 @@ type AdvocateReplayTrace []ReplayElement
 //
 // Parameters:
 //   - trace trace: the replay trace
-func GetReplayTrace() *AdvocateReplayTrace {
-	return &replayData
+//   - map[int][]int: for each routine replay id store the replay ids of all spawns
+func GetReplayTrace() (*AdvocateReplayTrace, map[int][]int) {
+	return &replayData, spawns
 }
 
 // Print the replay trace for one routine.
@@ -67,14 +68,12 @@ func getNextReplayElement() (int, ReplayElement) {
 	elem := replayData[replayIndex]
 
 	// if the elem was already executed as an oldest before, do not get again
-	elemKey := elem.key()
+	elemKey := elem.Key()
 	if val, ok := alreadyExecutedAsOldest[elemKey]; ok && val > 0 {
 		foundReplayElement()
 		alreadyExecutedAsOldest[elemKey]--
 		return getNextReplayElement()
 	}
-
-	CheckForPartialReplay(elem)
 
 	return elem.Routine, elem
 }
@@ -111,5 +110,6 @@ func foundReplayElement() {
 	replayIndex++
 	if printDebug {
 		println("Advance: ", replayIndex)
+		lastKey = ""
 	}
 }

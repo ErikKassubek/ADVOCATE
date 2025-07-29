@@ -25,6 +25,7 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 			println("Switch to active replay")
 		}
 		partialReplay = true
+
 		lock(&waitingOpsMutex)
 
 		for key, ops := range waitingOps {

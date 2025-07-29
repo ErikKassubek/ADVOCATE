@@ -122,7 +122,7 @@ func block() {
 // ADVOCATE-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
 	var replayElem ReplayElement
-	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
+	wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 
 	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
 

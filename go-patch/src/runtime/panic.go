@@ -741,6 +741,7 @@ var panicnil = &godebugInc{name: "panicnil"}
 //go:linkname gopanic
 func gopanic(e any) {
 	// ADVOCATE-START
+	println("PANIC")
 	ExitReplayPanic(e)
 	// write the trace
 	if !advocateTracingDisabled {

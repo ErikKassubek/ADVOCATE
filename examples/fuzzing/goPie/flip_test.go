@@ -35,7 +35,10 @@ func TestFlip(t *testing.T) {
 	}()
 
 	time.Sleep(100 * time.Millisecond)
+
 	<-c // recv
+
+	println("A")
 	if x.Load() == 0 {
 		close(c)
 		c <- 1

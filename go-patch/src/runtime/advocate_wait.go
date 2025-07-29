@@ -17,6 +17,7 @@ package runtime
 // Parameter:
 //   - seconds float64: seconds to sleep for
 func sleep(seconds float64) {
+	println("SLEEP: ", seconds)
 	timeSleep(sToNs(seconds))
 }
 

@@ -83,7 +83,7 @@ var bugExplanations = map[string]string{
 		"The occurrence of a close on a closed channel lead to a panic.",
 	"A04": "During the execution of the program, a close on a nil channel occurred.\n" +
 		"The occurrence of a close on a nil channel lead to a panic.",
-	"A05": "During the execution, a negative waitgroup counter occured.\n" +
+	"A05": "During the execution, a negative waitgroup counter occurred.\n" +
 		"The occurrence of a negative wait group counter lead to a panic.",
 	"A06": "During the execution, a not locked mutex was unlocked.\n" +
 		"The occurrence of this lead to a panic.",
@@ -94,7 +94,7 @@ var bugExplanations = map[string]string{
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
-	"R01": "During the execution of the program, a unknown panic occured",
+	"R01": "During the execution of the program, a unknown panic occurred",
 	"R02": "The execution of the program timed out",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +

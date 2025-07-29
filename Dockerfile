@@ -29,6 +29,8 @@ WORKDIR /ADVOCATE
 COPY --from=goruntime-builder /ADVOCATE/go-patch ./go-patch
 COPY --from=app-builder /ADVOCATE/advocate/app ./advocate/app
 
+WORKDIR /prog
+
 WORKDIR /ADVOCATE/advocate
 
 ENTRYPOINT ["./app"]

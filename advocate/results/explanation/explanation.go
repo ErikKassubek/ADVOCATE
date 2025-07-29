@@ -104,8 +104,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
 	resultsMachine = append(resultsMachine, filepath.Join(path, "results_machine.log"))
 
-	containsRes := false
-
 	for _, result := range resultsMachine {
 		file, _ := os.ReadFile(result)
 		numberResults := len(strings.Split(string(file), "\n"))
@@ -118,10 +116,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 		leakFound := false
 
 		timeoutFound := false
-
-		if numberResults > 0 {
-			containsRes = true
-		}
 
 		for index := 1; index < numberResults; index++ {
 			id := ""
@@ -193,8 +187,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				leakReplay, progInfo, fuzzing)
 		}
 	}
-
-	log.FuzzingRun(containsRes)
 
 	return err
 

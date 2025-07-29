@@ -80,7 +80,7 @@ func startChains(num int) []Chain {
 				continue
 			}
 
-			q := quality(elem, sameElem)
+			q := quality(elem)
 
 			e := elemWithQual{elem, q}
 
@@ -109,9 +109,12 @@ func startChains(num int) []Chain {
 		}
 
 		for _, e := range top {
-			posPartner := concurrent.GetConcurrent(e.elem, true, sameElem, true)
+			posPartner := concurrent.GetConcurrent(e.elem, true, true, true)
 			if len(posPartner) == 0 {
-				continue
+				posPartner = concurrent.GetConcurrent(e.elem, true, false, true)
+				if len(posPartner) == 0 {
+					continue
+				}
 			}
 
 			partner := posPartner[rand.Intn(len(posPartner))]
@@ -146,18 +149,21 @@ func startChains(num int) []Chain {
 //
 // Parameters:
 //   - elem trace.Element: the element to check for
-//   - sameElem bool: only consider concurrent elements on the same element
 //
 // Returns:
 //   - float64: the quality
-func quality(elem trace.Element, sameElem bool) float64 {
-	w1 := 0.3
+func quality(elem trace.Element) float64 {
+	w1 := 0.2
 	w2 := 0.3
-	w3 := 0.4
+	w3 := 0.5
 
 	numberOps, _ := anaData.GetOpsPerID(elem.GetID())
 	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, true)
 	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, true)
+
+	if numberConcurrentSame == 0 && numberConcurrentTotal == 0 {
+		return 0
+	}
 
 	q := w1*math.Log1p(float64(numberOps)) +
 		w2*float64(numberConcurrentSame)/float64(numberConcurrentTotal+1) +

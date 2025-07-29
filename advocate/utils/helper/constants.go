@@ -27,10 +27,10 @@ var (
 	GFuzzFlipP    = 0.99
 	GFuzzFlipPMin = 0.1
 
-	GoPieW1        = 1.0
-	GoPieW2        = 1.0
-	GoPieBound     = 3
-	GoPieMutabound = 128
+	GoPieW1          = 1.0
+	GoPieW2          = 1.0
+	GoPieMaxSCLength = 9
+	GoPieMutabound   = 128
 
 	GoPieSCStart = 5
 )
@@ -84,7 +84,7 @@ func SetSettings(settings string, maxFuzzingRun int, fuzzingMode string) {
 		case "GoPieW2":
 			GoPieW2 = value
 		case "GoPieBound":
-			GoPieBound = int(clamp(value, 2.0, math.MaxFloat64))
+			GoPieMaxSCLength = int(clamp(value, 2.0, math.MaxFloat64))
 		case "GoPieMutabound":
 			GoPieMutabound = int(clamp(value, 1, math.MaxFloat64))
 		case "GoPieSCStart":

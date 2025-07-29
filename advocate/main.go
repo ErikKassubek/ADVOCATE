@@ -261,7 +261,7 @@ func main() {
 		helper.PrintHelp()
 	}
 
-	_, _, numberTestWithRes, numberErr, numberTimeout, numberFuzzingRuns, numberFuzzingRunsInd := log.GetLoggingNumbers()
+	numberBugs, _, numberTestWithRes, numberErr, numberTimeout := log.GetLoggingNumbers()
 	if numberErr == 0 {
 		log.Info("Finished with 0 errors")
 	} else {
@@ -277,8 +277,7 @@ func main() {
 			log.Info("No bugs have been found/indicated")
 		} else {
 			log.Resultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
-			log.Resultf(false, false, "", "Number of fuzzing runs:  %d", numberFuzzingRuns)
-			log.Resultf(false, false, "", "Number of fuzzing runs with bug:  %d", numberFuzzingRunsInd)
+			log.Resultf(false, false, "", "Number indicated bugs:  %d", numberBugs)
 		}
 	}
 	timer.UpdateTimeFileOverview(progName, "*Total*")

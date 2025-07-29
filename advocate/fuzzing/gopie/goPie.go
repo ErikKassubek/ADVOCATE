@@ -56,7 +56,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		}
 	}
 
-	energy := getEnergy(sameElem)
+	energy := getEnergy()
 
 	log.Infof("Mutate %d scheduling chains", len(SchedulingChains))
 
@@ -164,10 +164,7 @@ func addFuzzingTraceFolder(path string) {
 
 // Calculate the energy for a schedule. This determines how many mutations
 // are created
-//
-// Parameter:
-//   - sameElem bool: only count elements as concurrent, if they are on the same element
-func getEnergy(sameElem bool) int {
+func getEnergy() int {
 
 	// not interesting
 	if anadata.GetTimeoutHappened() {

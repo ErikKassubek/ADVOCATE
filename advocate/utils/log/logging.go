@@ -30,9 +30,6 @@ var numberResults = 0
 var numberTestWithRes = 0
 var numberResultsConf = 0
 
-var numberFuzzingRuns = 0
-var numberFuzzingRunsWithIndBug = 0
-
 var seenTests = make(map[string]struct{})
 
 var noInfoFlag bool
@@ -145,13 +142,6 @@ func Resultf(count, confirmed bool, name string, format string, v ...any) {
 	}
 }
 
-func FuzzingRun(ind bool) {
-	numberFuzzingRuns++
-	if ind {
-		numberFuzzingRunsWithIndBug++
-	}
-}
-
 // Progress logs a the progress to the terminal
 // Printed in green
 //
@@ -231,10 +221,8 @@ func Errorf(format string, v ...any) {
 //   - int: number of tests with found bug
 //   - int: number of errors
 //   - int: number of timeouts
-//   - int: number of fuzzing runs
-//   - int: number of runs where bug was indicated
-func GetLoggingNumbers() (int, int, int, int, int, int, int) {
-	return numberResults, numberResultsConf, numberTestWithRes, numberErr, numberTimeout, numberFuzzingRuns, numberFuzzingRunsWithIndBug
+func GetLoggingNumbers() (int, int, int, int, int) {
+	return numberResults, numberResultsConf, numberTestWithRes, numberErr, numberTimeout
 }
 
 // IsPanicPrevent returns if panic should be suppressed

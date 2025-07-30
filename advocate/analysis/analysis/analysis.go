@@ -76,7 +76,7 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 // Returns:
 //   - bool: true if something has been found
 func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, runAna bool) {
-	log.Info("Start analysis")
+	log.Info("Start Analysis")
 
 	data.Fifo = assumeFifo
 	data.ModeIsFuzzing = fuzzing

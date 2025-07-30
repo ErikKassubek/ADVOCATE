@@ -14,6 +14,9 @@ import (
 	"advocate/trace"
 )
 
+// MaxNumberElements is the maximum number of elements fow which a HB analysis is run
+const MaxNumberElements = 10000000
+
 // MainTrace is the trace that is created and the trace on which most
 // normal operations and the analysis is performed
 var (

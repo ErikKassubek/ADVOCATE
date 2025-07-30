@@ -32,7 +32,7 @@ var (
 	GoPieMaxSCLength = 9
 	GoPieMutabound   = 128
 
-	GoPieSCStart = 5
+	GoPieSCStart = 12
 )
 
 // SetSettings sets different constants and settings used in the program
@@ -44,7 +44,7 @@ var (
 //   - fuzzingMode string: fuzzingMode flag value
 func SetSettings(settings string, maxFuzzingRun int, fuzzingMode string) {
 	if fuzzingMode != "GoPie" {
-		GoPieMutabound = min(int(maxFuzzingRun/GoPieSCStart), 128)
+		GoPieMutabound = 2 * min(int(maxFuzzingRun/GoPieSCStart), GoPieMutabound)
 	}
 
 	if settings == "" {

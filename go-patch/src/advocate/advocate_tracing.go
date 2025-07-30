@@ -35,34 +35,6 @@ var currentlyWriting atomic.Bool
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
 func InitTracing(timeout int) {
-	// if the program panics, but is not in the main routine, no trace is written
-	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
-	blocked := make(chan struct{})
-	writingDone := make(chan struct{}, 1)
-	runtime.GetAdvocatePanicChannels(blocked, writingDone)
-	// go func() {
-	// 	<-blocked
-	// 	FinishTracing()
-	// 	writingDone <- struct{}{}
-	// }()
-
-	// if the program is terminated by the user, the defer in the header
-	// is not executed. Therefore capture the signal and write the trace.
-	// interuptSignal := make(chan os.Signal, 1)
-	// signal.Notify(interuptSignal, os.Interrupt)
-	// go func() {
-	// 	<-interuptSignal
-	// 	println("\nCancel Run. Write trace. Cancel again to force exit.")
-	// 	go func() {
-	// 		<-interuptSignal
-	// 		os.Exit(1)
-	// 	}()
-	// 	if runtime.IsTracingEnabled() {
-	// 		FinishTracing()
-	// 	}
-	// 	os.Exit(1)
-	// }()
-
 	startTime = time.Now()
 	timerStarted = true
 

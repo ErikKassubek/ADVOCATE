@@ -212,9 +212,6 @@ func EnableReplay() {
  * encountered.
  */
 func DisableReplay() {
-	lock(&replayLock)
-	defer unlock(&replayLock)
-
 	if !replayEnabled {
 		return
 	}

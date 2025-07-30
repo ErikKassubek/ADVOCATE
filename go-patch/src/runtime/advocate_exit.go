@@ -12,21 +12,8 @@
 
 package runtime
 
-var advocatePanicWriteBlock chan struct{}
-var advocatePanicDone chan struct{}
-
 var advocateExitCode = 0
 var advocateExitCodePos = ""
-
-// Get the channels used to write the trace on certain panics
-//
-// Parameters:
-//   - apwb (chan struct{}): advocatePanicWriteBlock
-//   - apd (chan struct{}): advocatePanicDone
-func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
-	advocatePanicWriteBlock = apwb
-	advocatePanicDone = apd
-}
 
 // GetExitCode returns the exit code and exit position
 //

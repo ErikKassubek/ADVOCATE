@@ -11,6 +11,7 @@
 package gopie
 
 import (
+	anadata "advocate/analysis/data"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/utils/helper"
@@ -235,5 +236,29 @@ func augment(c Chain) []Chain {
 		}
 	}
 
+	return res
+}
+
+// Pass the trace and look for
+//
+//	channel close with concurrent send on the same channel
+//
+// # Based on those, create chains where the close if before the send
+//
+// Returns:
+//   - map[string]Chain: map with the special chains
+func getSpecialMuts() map[string]Chain {
+	res := make(map[string]Chain)
+	for _, c := range anadata.CloseData {
+		conc := concurrent.GetConcurrent(c, true, true, false)
+		for _, s := range conc {
+			if s.GetObjType(true) == "CS" {
+				chain := NewChain()
+				chain.add(c)
+				chain.add(s)
+				res[chain.toString()] = chain
+			}
+		}
+	}
 	return res
 }

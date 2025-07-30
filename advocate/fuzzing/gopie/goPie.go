@@ -35,6 +35,22 @@ const sameElem = true
 //   - error
 func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error {
 	mutations := make(map[string]Chain)
+	specMutations := make(map[string]Chain) // special mutations that should be run first
+
+	// check for special chains, that could indicate a bug
+	if data.FuzzingMode != data.GoPie && data.UseHBInfoFuzzing {
+		specialMuts := getSpecialMuts()
+		log.Importantf("SPECIAL: %d", len(specialMuts))
+
+		for key, mut := range specialMuts {
+			if _, ok := allGoPieMutations[key]; !ok {
+				if !data.UseHBInfoFuzzing || mut.isValid() {
+					specMutations[key] = mut
+				}
+				allGoPieMutations[key] = struct{}{}
+			}
+		}
+	}
 
 	// Original GoPie does not mutate all possible scheduling chains
 	// If no SC is given, it creates a new one consisting of two random
@@ -81,73 +97,114 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		addFuzzingTraceFolder(fuzzingPath)
 	}
 
-	log.Infof("Write %d mutations to file", max(0, min(len(mutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
-	for _, mut := range mutations {
-		if data.MaxNumberRuns != -1 && numberWrittenGoPieMuts > data.MaxNumberRuns {
+	if len(specMutations) > 0 {
+		log.Importantf("Write %d special mutation to file", len(specMutations))
+	} else {
+		log.Important("No special mutations")
+	}
+
+	log.Infof("Write %d mutations to file", max(0, min(len(mutations)+len(specMutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
+
+	for _, mut := range specMutations {
+		done, err := writeMut(mut, fuzzingPath)
+
+		if done { // max number mutations has been reached
 			break
 		}
-		numberWrittenGoPieMuts++
 
-		traceCopy, err := anadata.CopyMainTrace()
 		if err != nil {
-			return err
+			log.Error(err.Error())
+		}
+	}
+
+	for _, mut := range mutations {
+		done, err := writeMut(mut, fuzzingPath)
+
+		if done { // max number mutations has been reached
+			break
 		}
 
-		tPosts := make([]int, len(mut.Elems))
-		routines := make(map[int]struct{})
-		for i, elem := range mut.Elems {
-			tPosts[i] = elem.GetTPost()
-			routines[elem.GetRoutine()] = struct{}{}
-		}
-
-		sort.Ints(tPosts)
-
-		changedRoutinesMap := make(map[int]struct{})
-
-		for i, elem := range mut.Elems {
-			routine, index := elem.GetTraceIndex()
-			traceCopy.SetTSortAtIndex(tPosts[i], routine, index)
-			changedRoutinesMap[routine] = struct{}{}
-		}
-
-		changedRoutines := make([]int, 0, len(changedRoutinesMap))
-		for k := range changedRoutinesMap {
-			changedRoutines = append(changedRoutines, k)
-		}
-
-		traceCopy.SortRoutines(changedRoutines)
-
-		// remove all elements after the last elem in the chain
-		lastTPost := tPosts[len(tPosts)-1]
-		traceCopy.RemoveLater(lastTPost + 1)
-
-		// add a replayEndElem
-		traceCopy.AddTraceElementReplay(lastTPost+2, 0)
-
-		fuzzingTracePath := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberWrittenGoPieMuts))
-		chainFiles[numberWrittenGoPieMuts] = mut
-
-		err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 		if err != nil {
-			log.Error("Could not create pie mutation: ", err.Error())
-			continue
+			log.Error(err.Error())
 		}
-
-		// write the active map to a "replay_active.log"
-		if data.FuzzingMode == data.GoPie {
-			writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
-		} else {
-			writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
-		}
-
-		traceCopy.Clear()
-
-		mut := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
-
-		data.AddMutToQueue(mut)
 	}
 
 	return nil
+}
+
+// Write the mutation to file and add it to the queue
+//
+// Parameter:
+//   - mut Chain: the mutation to write
+//   - fuzzingPath string: path to where the muts are written
+//
+// Returns:
+//   - bool: true if max number muts in reached
+//   - error
+func writeMut(mut Chain, fuzzingPath string) (bool, error) {
+	if data.MaxNumberRuns != -1 && numberWrittenGoPieMuts > data.MaxNumberRuns {
+		return true, nil
+	}
+	numberWrittenGoPieMuts++
+
+	traceCopy, err := anadata.CopyMainTrace()
+	if err != nil {
+		return false, err
+	}
+
+	tPosts := make([]int, len(mut.Elems))
+	routines := make(map[int]struct{})
+	for i, elem := range mut.Elems {
+		tPosts[i] = elem.GetTPost()
+		routines[elem.GetRoutine()] = struct{}{}
+	}
+
+	sort.Ints(tPosts)
+
+	changedRoutinesMap := make(map[int]struct{})
+
+	for i, elem := range mut.Elems {
+		routine, index := elem.GetTraceIndex()
+		traceCopy.SetTSortAtIndex(tPosts[i], routine, index)
+		changedRoutinesMap[routine] = struct{}{}
+	}
+
+	changedRoutines := make([]int, 0, len(changedRoutinesMap))
+	for k := range changedRoutinesMap {
+		changedRoutines = append(changedRoutines, k)
+	}
+
+	traceCopy.SortRoutines(changedRoutines)
+
+	// remove all elements after the last elem in the chain
+	lastTPost := tPosts[len(tPosts)-1]
+	traceCopy.RemoveLater(lastTPost + 1)
+
+	// add a replayEndElem
+	traceCopy.AddTraceElementReplay(lastTPost+2, 0)
+
+	fuzzingTracePath := filepath.Join(fuzzingPath, fmt.Sprintf("fuzzingTrace_%d", numberWrittenGoPieMuts))
+	chainFiles[numberWrittenGoPieMuts] = mut
+
+	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
+	if err != nil {
+		return false, fmt.Errorf("Could not create pie mutation: ", err.Error())
+	}
+
+	// write the active map to a "replay_active.log"
+	if data.FuzzingMode == data.GoPie {
+		writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+	} else {
+		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
+	}
+
+	traceCopy.Clear()
+
+	muta := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
+
+	data.AddMutToQueue(muta)
+
+	return false, nil
 }
 
 // Create the folder for the fuzzing traces

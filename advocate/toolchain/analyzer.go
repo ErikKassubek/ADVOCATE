@@ -67,7 +67,6 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	if numberElems == 0 {
 		log.Infof("Trace at %s does not contain any elements", pathTrace)
-		return nil
 	}
 
 	log.Infof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)

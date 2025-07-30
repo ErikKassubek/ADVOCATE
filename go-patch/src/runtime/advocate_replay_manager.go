@@ -41,6 +41,7 @@ func ReplayManager() {
 		routine, replayElem := getNextReplayElement()
 
 		if routine == -1 && !partialReplay {
+			println("BREAK1")
 			break
 		}
 
@@ -183,7 +184,6 @@ func ReplayManager() {
 
 		if !replayEnabled {
 			return
-
 		}
 	}
 }

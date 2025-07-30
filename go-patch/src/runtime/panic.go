@@ -743,11 +743,6 @@ func gopanic(e any) {
 	// ADVOCATE-START
 	println("PANIC")
 	ExitReplayPanic(e)
-	// write the trace
-	if !advocateTracingDisabled {
-		advocatePanicWriteBlock <- struct{}{}
-		<-advocatePanicDone
-	}
 	// ADVOCATE-END
 	if e == nil {
 		if debug.panicnil.Load() != 1 {

@@ -325,10 +325,12 @@ func (ch *Chain) toString() string {
 // Returns:
 //   - bool: True if the mutation is valid, false otherwise
 func (ch *Chain) isValid() bool {
-	for i := range ch.Len() - 1 {
-		hbInfo := hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[i+1], true)
-		if hbInfo == hb.After {
-			return false
+	for i := 0; i < len(ch.Elems)-1; i++ {
+		for j := 1; j < len(ch.Elems); j++ {
+			hbInfo := hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true)
+			if hbInfo == hb.After {
+				return false
+			}
 		}
 	}
 

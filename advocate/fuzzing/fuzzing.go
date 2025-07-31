@@ -63,13 +63,14 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	data.MaxNumberRuns = mRun
-	if data.MaxTime > 0 {
+	if mTime > 0 {
 		data.MaxTime = time.Duration(mTime) * time.Second
 		data.MaxTimeSet = true
 	}
 
 	data.FuzzingMode = fm
 	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
+	data.FuzzingModeGoPieHBPlus = (data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
 	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
 	data.FuzzingModeFlow = (data.FuzzingMode == data.Flow || data.FuzzingMode == data.GFuzzHBFlow)
 	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
@@ -79,7 +80,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	if cont {
 		log.Info("Continue fuzzing")
 	} else {
-		log.Info("Start fuzzing")
+		log.Infof("Start fuzzing in mode %s", data.FuzzingMode)
 	}
 
 	// run either fuzzing on main or fuzzing on one test

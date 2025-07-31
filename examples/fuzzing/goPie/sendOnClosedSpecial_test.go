@@ -1,16 +1,11 @@
 package main
 
 import (
-	"advocate"
 	"testing"
 	"time"
 )
 
 func TestSendOnClosed(t *testing.T) {
-	// ======= Preamble Start =======
-  advocate.InitFuzzing("/home/erik/Uni/Advocate/ADVOCATE/examples/fuzzing/goPie/fuzzingTraces/fuzzingTrace_1", 30)
-  defer advocate.FinishFuzzing()
-  // ======= Preamble End =======
 
 	c := make(chan int)
 

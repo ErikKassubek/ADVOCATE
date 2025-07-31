@@ -249,16 +249,35 @@ func augment(c Chain) []Chain {
 //   - map[string]Chain: map with the special chains
 func getSpecialMuts() map[string]Chain {
 	res := make(map[string]Chain)
+
+	// send on closed
 	for _, c := range anadata.CloseData {
 		conc := concurrent.GetConcurrent(c, true, true, false)
 		for _, s := range conc {
 			if s.GetObjType(true) == "CS" {
 				chain := NewChain()
-				chain.add(c)
-				chain.add(s)
+				chain.add(c, s)
 				res[chain.toString()] = chain
 			}
 		}
 	}
+
+	// negative wg counter
+	for id, dones := range anadata.WgDoneData {
+		for _, done := range dones {
+			for _, add := range anadata.WGAddData[id] {
+				if add.GetTPost() > done.GetTPost() {
+					continue
+				}
+
+				if concurrent.IsConcurrent(done, add) {
+					chain := NewChain()
+					chain.add(done, add)
+					res[chain.toString()] = chain
+				}
+			}
+		}
+	}
+
 	return res
 }

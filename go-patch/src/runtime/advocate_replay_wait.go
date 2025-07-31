@@ -37,7 +37,7 @@ func WaitForReplay(op Operation, skip int, waitForResponse bool) (bool, chan Rep
 
 	// if Caller is run in the garbage collector, the execution stops
 	// this should prevent this
-	if currentGoRoutineInfo() != nil && currentGoRoutineInfo().id == mgcRoutine {
+	if currentGoRoutineInfo() != nil && mgcRoutine != 0 && currentGoRoutineInfo().id == mgcRoutine {
 		return false, nil, nil, false
 	}
 
@@ -80,6 +80,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	routine := GetReplayRoutineID()
 
 	key := BuildReplayKey(routine, file, line)
+	println("WAIT: ", key)
 
 	// ignore not active operations if partial replay is active
 	if partialReplay {
@@ -124,7 +125,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	_, nextElem := getNextReplayElement()
 	if key == nextElem.Key() && !waitForAck.waitForAck {
 		// if it is the next element, release directly and add elems to waitForAck
-		replayElem.chWait <- nextElem
+		chWait <- nextElem
 		if printDebug {
 			println("ReleaseDir: ", key, waitForResponse)
 		}

@@ -206,7 +206,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //     if -1 never switch to active replay
 //   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
 //   - spawns map[int][]int: for each routine store the ids of all routines spawned from this routine
-func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace, spawns map[int][]int) {
+func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace, spawns *map[int][]int) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -258,10 +258,10 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			index, _ = strconv.Atoi(fields[2])
-			if _, ok := spawns[routineID]; !ok {
-				spawns[routineID] = make([]int, 0)
+			if _, ok := (*spawns)[routineID]; !ok {
+				(*spawns)[routineID] = make([]int, 0)
 			}
-			spawns[routineID] = append(spawns[routineID], index)
+			(*spawns)[routineID] = append((*spawns)[routineID], index)
 		case "C":
 			switch fields[4] {
 			case "S":

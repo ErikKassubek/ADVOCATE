@@ -38,54 +38,15 @@ func ReplayManager() {
 		}
 
 		counter++
-		routine, replayElem := getNextReplayElement()
+		_, replayElem := getNextReplayElement()
 
-		if routine == -1 && !partialReplay {
-			println("BREAK1")
-			break
-		}
+		// if routine == -1 && !partialReplay {
+		// 	println("BREAK1")
+		// 	break
+		// }
 
-		if replayElem.Op == OperationReplayEnd {
-			println("Found ReplayEnd Marker with exit code", replayElem.Line)
-			// wait long enough, that all operations that have been released but not
-			// finished executing can execute
-			if replayElem.Line == ExitCodeCyclic {
-				lock(&waitDeadlockDetectLock)
-				waitDeadlockDetect = true
-				unlock(&waitDeadlockDetectLock)
-			}
-			sleep(0.5)
-
-			DisableReplay()
-			// foundReplayElement()
-			sleep(0.1)
-
-			// Check if a deadlock has been reached
-			if replayElem.Line == ExitCodeCyclic {
-				stuckRoutines := checkForStuckRoutines(1.0, 100)
-
-				stuckMutexCounter := 0
-				for id, reason := range stuckRoutines {
-					println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
-					// TODO invert to everything that could NOT be a deadlock
-					if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
-						stuckMutexCounter++
-					}
-				}
-
-				println("Number of routines waiting on mutexes:", stuckMutexCounter)
-
-				if stuckMutexCounter > 0 {
-					// SetForceExit(true)
-					ExitReplayWithCode(replayElem.Line, "")
-				}
-
-				lock(&waitDeadlockDetectLock)
-				waitDeadlockDetect = false
-				unlock(&waitDeadlockDetectLock)
-			} else if isExitCodeConfOnEndElem(replayElem.Line) {
-				ExitReplayWithCode(replayElem.Line, "")
-			}
+		if !partialReplay && replayElem.Op == OperationReplayEnd {
+			replayElementFound(replayElem)
 			return
 		}
 
@@ -93,47 +54,7 @@ func ReplayManager() {
 
 		if key == lastKey {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
-				if printDebug {
-					println("TIMEOUT")
-				}
-				if tPostWhenFirstTimeout == 0 {
-					tPostWhenAckFirstTimeout = replayElem.Time
-				}
-
-				// we either release the longest waiting operation
-				// or skip the current next element in the trace
-				// If no elements are waiting we always skip the current element in the trace
-				// otherwise we choose either option with a prop of 0.5 (we use nanotime()%2 == 0 as a quasi random number generator from {0,1})
-				if len(waitingOps) == 0 || nanotime()%2 == 0 {
-					// skip the next element in the trace
-					foundReplayElement()
-				} else {
-					// release the currently waiting element
-					var oldest = replayChan{nil, nil, -1, false, false}
-					oldestKey := ""
-					lock(&waitingOpsMutex)
-					for key, ch := range waitingOps {
-						if oldest.counter == -1 || ch.counter < oldest.counter {
-							oldest = ch
-							oldestKey = key
-						}
-					}
-					unlock(&waitingOpsMutex)
-
-					suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
-
-					if releaseOldestWait > 1 {
-						releaseOldestWait--
-					}
-
-					lock(&waitingOpsMutex)
-					if printDebug && suc {
-						println("Release Oldes: ", oldestKey)
-					}
-					delete(waitingOps, oldestKey)
-					unlock(&waitingOpsMutex)
-				}
-
+				replayTimeout(replayElem)
 				continue
 			}
 		}
@@ -148,29 +69,13 @@ func ReplayManager() {
 			continue
 		}
 
+		// check if switch to partial replay
 		if key != lastKey {
 			CheckForPartialReplay(replayElem)
 			lastKey = key
-			if printDebug {
-				println("\n\n===================\n")
-				println("Next: ", key)
-				if i, ok := active[key]; ok {
-					print("AC: ")
-					for _, a := range i {
-						print(a, ", ")
-					}
-					println("")
-				} else {
-					print("AC: XX")
-				}
-				println("Currently Waiting: ", len(waitingOps))
-				for key := range waitingOps {
-					println(key)
-				}
-				println("===================\n\n")
-			}
 		}
 
+		// release element if in waiting ops
 		lock(&waitingOpsMutex)
 		if waitOp, ok := waitingOps[key]; ok {
 			unlock(&waitingOpsMutex)
@@ -185,6 +90,93 @@ func ReplayManager() {
 		if !replayEnabled {
 			return
 		}
+	}
+}
+
+func replayElementFound(replayElem ReplayElement) {
+	println("Found ReplayEnd Marker with exit code", replayElem.Line)
+	// wait long enough, that all operations that have been released but not
+	// finished executing can execute
+	if replayElem.Line == ExitCodeCyclic {
+		lock(&waitDeadlockDetectLock)
+		waitDeadlockDetect = true
+		unlock(&waitDeadlockDetectLock)
+	}
+	sleep(0.5)
+
+	DisableReplay()
+	// foundReplayElement()
+	sleep(0.1)
+
+	// Check if a deadlock has been reached
+	if replayElem.Line == ExitCodeCyclic {
+		stuckRoutines := checkForStuckRoutines(1.0, 100)
+
+		stuckMutexCounter := 0
+		for id, reason := range stuckRoutines {
+			println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
+			// TODO invert to everything that could NOT be a deadlock
+			if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
+				stuckMutexCounter++
+			}
+		}
+
+		println("Number of routines waiting on mutexes:", stuckMutexCounter)
+
+		if stuckMutexCounter > 0 {
+			// SetForceExit(true)
+			ExitReplayWithCode(replayElem.Line, "")
+		}
+
+		lock(&waitDeadlockDetectLock)
+		waitDeadlockDetect = false
+		unlock(&waitDeadlockDetectLock)
+	} else if isExitCodeConfOnEndElem(replayElem.Line) {
+		ExitReplayWithCode(replayElem.Line, "")
+	}
+}
+
+func replayTimeout(replayElem ReplayElement) {
+	if printDebug {
+		println("TIMEOUT")
+	}
+	if tPostWhenFirstTimeout == 0 {
+		tPostWhenAckFirstTimeout = replayElem.Time
+	}
+
+	// we either release the longest waiting operation
+	// or skip the current next element in the trace
+	// If no elements are waiting we always skip the current element in the trace
+	// otherwise we choose either option with a prop of 0.5 (we use nanotime()%2 == 0 as a quasi random number generator from {0,1})
+	if len(waitingOps) == 0 || nanotime()%2 == 0 {
+		// skip the next element in the trace
+		foundReplayElement()
+	} else {
+		// release the currently waiting element
+		var oldest = replayChan{nil, nil, -1, false, false}
+		oldestKey := ""
+		lock(&waitingOpsMutex)
+		for key, ch := range waitingOps {
+			if oldest.counter == -1 || ch.counter < oldest.counter {
+				oldest = ch
+				oldestKey = key
+			}
+		}
+		unlock(&waitingOpsMutex)
+
+		suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
+
+		if releaseOldestWait > 1 {
+			releaseOldestWait--
+		}
+
+		lock(&waitingOpsMutex)
+		if printDebug && suc {
+			println("Release Oldes: ", oldestKey)
+		}
+		println("DELTE2", oldestKey)
+		delete(waitingOps, oldestKey)
+		unlock(&waitingOpsMutex)
 	}
 }
 

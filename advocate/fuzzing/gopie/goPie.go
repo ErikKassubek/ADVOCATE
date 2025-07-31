@@ -40,7 +40,6 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	// check for special chains, that could indicate a bug
 	if data.FuzzingMode != data.GoPie && data.UseHBInfoFuzzing {
 		specialMuts := getSpecialMuts()
-		log.Importantf("SPECIAL: %d", len(specialMuts))
 
 		for key, mut := range specialMuts {
 			if _, ok := allGoPieMutations[key]; !ok {
@@ -98,12 +97,14 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	}
 
 	if len(specMutations) > 0 {
-		log.Importantf("Write %d special mutation to file", len(specMutations))
-	} else {
-		log.Important("No special mutations")
+		log.Info("Write %d special mutation to file", len(specMutations))
 	}
 
-	log.Infof("Write %d mutations to file", max(0, min(len(mutations)+len(specMutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
+	if data.MaxNumberRuns > 0 {
+		log.Infof("Write %d mutations to file", max(0, min(len(mutations)+len(specMutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
+	} else {
+		log.Infof("Write %d mutations to file", max(0, len(mutations)+len(specMutations)))
+	}
 
 	for _, mut := range specMutations {
 		done, err := writeMut(mut, fuzzingPath)

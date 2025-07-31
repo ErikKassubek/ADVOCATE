@@ -88,8 +88,8 @@ var (
 	AllUnlocks = make(map[int][]trace.Element) // id -> []TraceElement
 
 	// add/done on waitGroup
-	WgAdd  = make(map[int][]trace.Element) // id  -> []TraceElement
-	WgDone = make(map[int][]trace.Element) // id -> []TraceElement
+	WGAddData  = make(map[int][]trace.Element) // id  -> []TraceElement
+	WgDoneData = make(map[int][]trace.Element) // id -> []TraceElement
 
 	// last analyzed element per routine
 	LastAnalyzedElementPerRoutine = make(map[int]trace.Element) // routine -> elem

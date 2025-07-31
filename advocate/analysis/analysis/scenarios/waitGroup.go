@@ -50,12 +50,12 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
-	if _, ok := data.WgAdd[id]; !ok {
-		data.WgAdd[id] = make([]trace.Element, 0)
+	if _, ok := data.WGAddData[id]; !ok {
+		data.WGAddData[id] = make([]trace.Element, 0)
 	}
 
 	// add the vector clock and position to the list
-	data.WgAdd[id] = append(data.WgAdd[id], wa)
+	data.WGAddData[id] = append(data.WGAddData[id], wa)
 }
 
 // CheckForDoneBeforeAddDone collect all dones for the analysis
@@ -66,13 +66,13 @@ func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
 	id := wa.GetID()
 
 	// if necessary, create maps and lists
-	if _, ok := data.WgDone[id]; !ok {
-		data.WgDone[id] = make([]trace.Element, 0)
+	if _, ok := data.WgDoneData[id]; !ok {
+		data.WgDoneData[id] = make([]trace.Element, 0)
 
 	}
 
 	// add the vector clock and position to the list
-	data.WgDone[id] = append(data.WgDone[id], wa)
+	data.WgDoneData[id] = append(data.WgDoneData[id], wa)
 }
 
 // CheckForDoneBeforeAdd checks if a wait group counter could become negative
@@ -83,14 +83,14 @@ func CheckForDoneBeforeAdd() {
 	timer.Start(timer.AnaWait)
 	defer timer.Stop(timer.AnaWait)
 
-	for id := range data.WgAdd { // for all waitgroups
-		graph := buildResidualGraph(data.WgAdd[id], data.WgDone[id])
+	for id := range data.WGAddData { // for all waitgroups
+		graph := buildResidualGraph(data.WGAddData[id], data.WgDoneData[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
 			fmt.Println("Could not check for done before add: ", err)
 		}
-		nrDone := len(data.WgDone[id])
+		nrDone := len(data.WgDoneData[id])
 
 		addsNegWg := make([]trace.Element, 0)
 		donesNegWg := make([]trace.Element, 0)
@@ -100,7 +100,7 @@ func CheckForDoneBeforeAdd() {
 			// that the i-th add in the result message is concurrent with the
 			// i-th done in the result message
 
-			for _, add := range data.WgAdd[id] {
+			for _, add := range data.WGAddData[id] {
 				if !types.Contains(graph[drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}

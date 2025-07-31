@@ -11,8 +11,11 @@
 package concurrent
 
 import (
+	"advocate/analysis/data"
+	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
+	"advocate/utils/log"
 )
 
 // GetConcurrent returns all concurrent elements for an element
@@ -73,4 +76,21 @@ func GetNumberConcurrent(elem trace.Element, sameElem, weak bool) int {
 
 	n := GetConcurrent(elem, true, sameElem, weak)
 	return len(n)
+}
+
+// IsConcurrent returns if two elements are concurrent.
+// The function assumes, that the vcs have been calculated
+//
+// Parameter:
+//   - elem1: trace.Element: the first element
+//   - elem2: trace.Element: the second element
+//
+// Returns:
+//   - bool: true if the elements are concurrent, false otherwise
+func IsConcurrent(elem1, elem2 trace.Element) bool {
+	if !data.HBWasCalc() {
+		log.Error("Cannot check for concurrency: VCs have not been calculated")
+		return false
+	}
+	return clock.IsConcurrent(elem1.GetVC(), elem2.GetVC())
 }

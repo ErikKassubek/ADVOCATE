@@ -119,8 +119,7 @@ func startChains(num int) []Chain {
 
 			partner := posPartner[rand.Intn(len(posPartner))]
 			c := NewChain()
-			c.add(e.elem)
-			c.add(partner)
+			c.add(e.elem, partner)
 			res = append(res, c)
 		}
 	} else {
@@ -129,8 +128,7 @@ func startChains(num int) []Chain {
 		for elem1, rel := range rel2 {
 			for elem2 := range rel {
 				c := NewChain()
-				c.add(elem1)
-				c.add(elem2)
+				c.add(elem1, elem2)
 				res = append(res, c)
 				i++
 				if i > num {
@@ -175,13 +173,18 @@ func quality(elem trace.Element) float64 {
 // Add a new element to the chain
 //
 // Parameter:
-//   - elem analysis.TraceElement: Element to add
-func (ch *Chain) add(elem trace.Element) {
-	if elem == nil {
+//   - elems ...analysis.TraceElement: Elements to add, in the order they are added
+func (ch *Chain) add(elems ...trace.Element) {
+	if elems == nil {
 		return
 	}
 
-	ch.Elems = append(ch.Elems, elem)
+	for _, elem := range elems {
+		if elem == nil {
+			continue
+		}
+		ch.Elems = append(ch.Elems, elem)
+	}
 }
 
 // replace replaces the element at a given index in a chain with another element

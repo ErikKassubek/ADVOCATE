@@ -1,7 +1,6 @@
 package main
 
 import (
-	"advocate"
 	"fmt"
 	"sync/atomic"
 	"testing"
@@ -18,10 +17,6 @@ import (
 // the load, the code can be detected.
 
 func TestGoPieAtomic(_ *testing.T) {
-	// ======= Preamble Start =======
-  advocate.InitFuzzing("/home/erik/Uni/Advocate/ADVOCATE/examples/fuzzing/goPie/fuzzingTraces/fuzzingTrace_7", 30)
-  defer advocate.FinishFuzzing()
-  // ======= Preamble End =======
 	a := atomic.Int32{}
 	c := make(chan int)
 

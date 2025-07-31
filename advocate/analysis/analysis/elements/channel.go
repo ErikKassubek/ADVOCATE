@@ -123,6 +123,8 @@ func UpdateSelect(se *trace.ElementSelect) {
 		scenarios.CheckForSelectCaseWithPartnerSelect(se, vc.CurrentVC[routine])
 	}
 
+	hbcalc.UpdateHBSelect(se)
+
 	cases := se.GetCases()
 
 	for _, c := range cases {

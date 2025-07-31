@@ -337,7 +337,7 @@ func (se *ElementSelect) GetWVC() *clock.VectorClock {
 // Returns:
 //   - the chosen case
 func (se *ElementSelect) GetChosenCase() *ElementChannel {
-	if se.chosenDefault {
+	if se.chosenDefault || se.tPost == 0 {
 		return nil
 	}
 	return &se.chosenCase

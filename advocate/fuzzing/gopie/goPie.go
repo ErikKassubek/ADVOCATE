@@ -97,7 +97,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	}
 
 	if len(specMutations) > 0 {
-		log.Info("Write %d special mutation to file", len(specMutations))
+		log.Infof("Write %d special mutation to file", len(specMutations))
 	}
 
 	if data.MaxNumberRuns > 0 {

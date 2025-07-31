@@ -48,10 +48,21 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	// as well
 	if !sameElem {
 		res := make([]trace.Element, 0)
+
 		for _, e := range b {
-			if e.GetID() == elem.GetID() {
-				res = append(res, e)
+			switch a := e.(type) {
+			case *trace.ElementSelect:
+				for _, c := range a.GetCases() {
+					if elem.GetID() == c.GetID() {
+						res = append(res, e)
+					}
+				}
+			default:
+				if e.GetID() == elem.GetID() {
+					res = append(res, e)
+				}
 			}
+
 		}
 		elem.SetNumberConcurrent(len(res), weak, true)
 	}

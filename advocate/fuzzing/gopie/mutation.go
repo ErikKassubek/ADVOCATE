@@ -14,7 +14,9 @@ import (
 	anadata "advocate/analysis/data"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
+	"advocate/trace"
 	"advocate/utils/helper"
+	"advocate/utils/log"
 	"math/rand/v2"
 )
 
@@ -248,16 +250,28 @@ func augment(c Chain) []Chain {
 // Returns:
 //   - map[string]Chain: map with the special chains
 func getSpecialMuts() map[string]Chain {
+	log.Important("Check for special muts")
 	res := make(map[string]Chain)
 
 	// send on closed
 	for _, c := range anadata.CloseData {
-		conc := concurrent.GetConcurrent(c, true, true, false)
+		conc := concurrent.GetConcurrent(c, true, false, false)
 		for _, s := range conc {
-			if s.GetObjType(true) == "CS" {
-				chain := NewChain()
-				chain.add(c, s)
-				res[chain.toString()] = chain
+			switch t := s.(type) {
+			case *trace.ElementSelect:
+				for _, cc := range t.GetCases() {
+					if cc.GetObjType(true) == "CS" {
+						chain := NewChain()
+						chain.add(c, s)
+						res[chain.toString()] = chain
+					}
+				}
+			default:
+				if s.GetObjType(true) == "CS" {
+					chain := NewChain()
+					chain.add(c, s)
+					res[chain.toString()] = chain
+				}
 			}
 		}
 	}

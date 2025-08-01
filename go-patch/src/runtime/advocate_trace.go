@@ -322,7 +322,7 @@ func DeleteTrace() {
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnore(file string) bool {
-	return containsStr(file, "go-patch/src/")
+	return containsStr(file, "go-patch/src/") && !containsStr(file, "go-patch/src/time/tick.go")
 }
 
 // ADVOCATE-FILE-END

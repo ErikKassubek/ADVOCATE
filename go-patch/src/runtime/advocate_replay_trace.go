@@ -17,8 +17,9 @@ type AdvocateReplayTrace []ReplayElement
 // Parameters:
 //   - trace trace: the replay trace
 //   - map[int][]int: for each routine replay id store the replay ids of all spawns
-func GetReplayTrace() (*AdvocateReplayTrace, *map[int][]int) {
-	return &replayData, &spawns
+//   - map[string][]ReplayElement: for each routPath with a select, store the replay elements
+func GetReplayTrace() (*AdvocateReplayTrace, *map[int][]int, *map[string][]ReplayElement) {
+	return &replayData, &spawns, &selects
 }
 
 // Print the replay trace for one routine.

@@ -989,8 +989,10 @@ func chanparkcommit(gp *g, chanLock unsafe.Pointer) bool {
 func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	// ADVOCATE-START
 	var replayElem ReplayElement
+	var wait bool
+	var ch chan ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ = WaitForReplay(OperationSelect, 2, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -1009,7 +1011,11 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
+
+	if wait {
+		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
+	}
 
 	res := false
 	if !fuzzingEnabled {
@@ -1019,7 +1025,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 			startTime := currentTime()
 			for {
 				res = chansend(c, elem, false, sys.GetCallerPC(), true)
-				if res || hasTimePast(startTime, fuzzingTimeout) {
+				if res || hasTimePast(startTime, selectPreferredTimeoutSec*2) {
 					break
 				}
 			}
@@ -1056,8 +1062,10 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	// ADVOCATE-START
 	// see selectnbsend
 	var replayElem ReplayElement
+	var wait bool
+	var ch chan ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ = WaitForReplay(OperationSelect, 2, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -1076,18 +1084,22 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 		unlock(&c.lock)
 	}
 
-	fuzzingEnabled, fuzzingIndex, fuzzingTimeout := AdvocateFuzzingGetPreferredCase(2)
+	fuzzingEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
+
+	if wait {
+		fuzzingIndex = min(fuzzingIndex, replayElem.Index)
+	}
 
 	res := false
 	recv := false
-	if !fuzzingEnabled {
+	if !fuzzingEnabled && !wait {
 		res, recv = chanrecv(c, elem, false, true)
 	} else {
 		if fuzzingIndex != -1 { // not the default
 			startTime := currentTime()
 			for {
 				res, recv = chanrecv(c, elem, false, true)
-				if res || hasTimePast(startTime, fuzzingTimeout) {
+				if recv || hasTimePast(startTime, selectPreferredTimeoutSec*2) {
 					break
 				}
 			}

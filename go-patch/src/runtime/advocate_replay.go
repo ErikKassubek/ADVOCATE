@@ -167,6 +167,7 @@ var (
 	active                map[string][]int
 	startTimeActive       = -1
 	spawns                = make(map[int][]int)
+	selects               = make(map[string][]ReplayElement)
 
 	replayIndex = 0
 

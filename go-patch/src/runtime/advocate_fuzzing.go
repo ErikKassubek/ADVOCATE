@@ -79,30 +79,29 @@ func IsAdvocateFuzzingEnabled() bool {
 // Returns:
 //   - bool: true if a preferred case exists, false otherwise
 //   - int: preferred case, -1 for default
-//   - int64: fuzzing timeout in seconds
-func AdvocateFuzzingGetPreferredCase(skip int) (bool, int, int64) {
+func AdvocateFuzzingGetPreferredCase(skip int) (bool, int) {
 	if !advocateFuzzingEnabled {
-		return false, 0, selectPreferredTimeoutSec
+		return false, 0
 	}
 
 	routine := GetReplayRoutineID()
 
 	_, file, line, _ := Caller(skip)
 	if AdvocateIgnore(file) {
-		return false, 0, selectPreferredTimeoutSec
+		return false, 0
 	}
 	key := BuildReplayKey(routine, file, line)
 
 	if val, ok := fuzzingSelectData[key]; ok {
 		index := fuzzingSelectDataIndex[key]
 		if index >= len(val) {
-			return false, 0, selectPreferredTimeoutSec
+			return false, 0
 		}
 		fuzzingSelectDataIndex[key]++
-		return true, val[index], selectPreferredTimeoutSec
+		return true, val[index]
 	}
 
-	return false, 0, selectPreferredTimeoutSec
+	return false, 0
 }
 
 // FuzzingFlowWait is called by the operations to check if they should wait for

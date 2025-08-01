@@ -32,7 +32,8 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 			// the operation is never active
 			c, ok := active[key]
 			if !ok {
-				ops.chWait <- ReplayElement{Blocked: false}
+				repEl, _ := getSelect(key)
+				ops.chWait <- repEl
 				if printDebug {
 					println("ReleaseNotActive: ", key)
 				}
@@ -47,7 +48,9 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 
 			// the operation is sometimes active, but not this time
 			if !isInSlice(c, currentCounter) {
-				ops.chWait <- ReplayElement{Blocked: false}
+				repEl, _ := getSelect(key)
+
+				ops.chWait <- repEl
 				if printDebug {
 					println("ReleaseNotActive: ", key)
 				}
@@ -56,4 +59,16 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 		}
 		unlock(&waitingOpsMutex)
 	}
+}
+
+func getSelect(key string) (ReplayElement, bool) {
+	re := ReplayElement{Blocked: false}
+	found := false
+	if s, ok := selects[key]; ok && len(s) > 0 {
+		re = s[0]
+		selects[key] = selects[key][1:]
+		found = true
+	}
+
+	return re, found
 }

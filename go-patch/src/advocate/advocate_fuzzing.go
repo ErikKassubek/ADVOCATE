@@ -58,6 +58,7 @@ func FinishFuzzing() {
 		return
 	}
 	finishFuzzingStarted = true
+	runtime.WaitForReplayFinish(true)
 	runtime.DisableReplay()
 	FinishTracing()
 }

@@ -124,21 +124,19 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 	var replayElem ReplayElement
 	wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 
-	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
+	gFuzzEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
 
 	ai := -1
 
 	if wait {
 		replayElem = <-ch
-		if !partialReplay { // for partial replay in goPie, do not set fixed select case
-			if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, timeout); ok {
-				return i, b
-			} else {
-				ai = index
-			}
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec); ok {
+			return i, b
+		} else {
+			ai = index
 		}
-	} else if fuzzingEnabled {
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, timeout); ok {
+	} else if gFuzzEnabled {
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, selectPreferredTimeoutSec); ok {
 			return i, b
 		} else {
 			ai = index

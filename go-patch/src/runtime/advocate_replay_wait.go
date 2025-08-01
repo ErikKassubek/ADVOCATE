@@ -80,55 +80,71 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	routine := GetReplayRoutineID()
 
 	key := BuildReplayKey(routine, file, line)
-	println("WAIT: ", key)
+
+	lock(&partialReplayMutex)
+	partialReplayCounter[key] += 1
+	currentCounter := partialReplayCounter[key]
+	unlock(&partialReplayMutex)
+
+	chWait := make(chan ReplayElement, 1)
+	chAck := make(chan struct{}, 1)
 
 	// ignore not active operations if partial replay is active
 	if partialReplay {
 		// the operation is never active
 		c, ok := active[key]
 		if !ok {
+			repEl, found := getSelect(key)
+
+			chWait <- repEl
+
 			if printDebug {
 				println("ReleaseNonActiveN: ", key)
 			}
 			lastKey = ""
-			return false, nil, nil, true
+			return found, chWait, nil, true
 		}
-
-		lock(&partialReplayMutex)
-		partialReplayCounter[key] += 1
-		currentCounter := partialReplayCounter[key]
-		unlock(&partialReplayMutex)
 
 		// the operation is sometimes active, but not this time
 		if !isInSlice(c, currentCounter) {
 			if printDebug {
-				println("ReleaseNonActiveT: ", key, c, currentCounter)
+				print("ReleaseNonActiveT: ", key)
+				for _, d := range c {
+					print(", ", d, ", ")
+				}
+				println(currentCounter)
 			}
+			repEl, found := getSelect(key)
+
+			chWait <- repEl
+
 			lastKey = ""
-			return false, nil, nil, true
+			return found, chWait, nil, true
 		}
 
 	}
 
 	if printDebug {
-		println("Wait: ", key, partialReplay)
 		if partialReplay {
-			println(partialReplayCounter[key])
+			for _, c := range active[key] {
+				print(", ", c, ", ")
+			}
+			println("PRC: ", partialReplayCounter[key])
 		}
 	}
-
-	chWait := make(chan ReplayElement, 1)
-	chAck := make(chan struct{}, 1)
 
 	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false}
 
 	_, nextElem := getNextReplayElement()
-	if key == nextElem.Key() && !waitForAck.waitForAck {
+	nextElemKey := nextElem.Key()
+	if key == nextElemKey && !waitForAck.waitForAck {
+		_, _ = getSelect(key)
 		// if it is the next element, release directly and add elems to waitForAck
 		chWait <- nextElem
 		if printDebug {
 			println("ReleaseDir: ", key, waitForResponse)
 		}
+
 		if replayElem.waitAck {
 			waitForAck = released{
 				replayC:    replayElem,
@@ -172,6 +188,8 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	}
 
 	if rel {
+		key := elemReplay.Key()
+		_, _ = getSelect(key)
 		elem.chWait <- elemReplay
 		elem.released = true
 		if printDebug {

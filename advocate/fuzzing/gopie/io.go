@@ -40,29 +40,32 @@ func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Chain, partTi
 	f.WriteString(fmt.Sprintf("%d\n", partTime))
 
 	// find the counter for all elements in the mut
-	mutCounter := make(map[int]int)
+	mutCounter := make(map[string]int)
 	posCounter := make(map[string]int)
-	mutTime := make(map[int]int)
+	mutTime := make(map[string]int)
 	for _, elem := range mut.Elems {
-		mutCounter[elem.GetTraceID()] = 0
+		mutCounter[getRoutPos(elem)] = 0
 	}
 
 	traceIter := tr.AsIterator()
 
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
-		traceID := elem.GetTraceID()
-		pos := elem.GetPos()
-		posCounter[pos]++
-		if _, ok := mutCounter[traceID]; ok { // is in chain
-			mutCounter[traceID] = posCounter[pos]
-			mutTime[traceID] = elem.GetTSort()
+		routPos := getRoutPos(elem)
+		posCounter[routPos]++
+		if _, ok := mutCounter[routPos]; ok { // is in chain
+			mutCounter[routPos] = posCounter[routPos]
+			mutTime[routPos] = elem.GetTSort()
 		}
 	}
 
 	for _, elem := range mut.Elems {
-		traceID := elem.GetTraceID()
+		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[traceID], mutCounter[traceID])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[routPos], mutCounter[routPos])
 		f.WriteString(key)
 	}
+}
+
+func getRoutPos(elem trace.Element) string {
+	return fmt.Sprintf("%d:%s", elem.GetRoutine(), elem.GetPos())
 }

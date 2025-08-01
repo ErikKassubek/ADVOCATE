@@ -56,13 +56,11 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	// operations that are in rel2 relation. Otherwise it always mutates the
 	// original SC, not newly recorded once
 	SchedulingChains = []Chain{}
-	if data.FuzzingMode == data.GoPie {
-		if c, ok := chainFiles[mutNumber]; ok {
-			SchedulingChains = []Chain{c}
-		}
+	if c, ok := chainFiles[mutNumber]; ok {
+		SchedulingChains = []Chain{c}
 	}
 
-	if len(SchedulingChains) == 0 {
+	if data.FuzzingMode != data.GoPie || len(SchedulingChains) == 0 {
 		sc := startChains(maxSCStart)
 		for _, c := range sc {
 			if c.Len() != 0 {

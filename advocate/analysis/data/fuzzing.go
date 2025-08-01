@@ -18,4 +18,6 @@ var (
 	FuzzingFlowRecv  = make([]ConcurrentEntry, 0)
 
 	FuzzingCounter = make(map[int]map[string]int) // id -> pos -> counter
+
+	T1 = false
 )

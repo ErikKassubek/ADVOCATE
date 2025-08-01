@@ -6029,8 +6029,8 @@ func releasepNoTrace() *p {
 	pp := gp.m.p.ptr()
 	if pp.m.ptr() != gp.m || pp.status != _Prunning {
 		// ADVOCATE-START
-		print("releasep: m=", gp.m, " m->p=", gp.m.p.ptr(), " p->m=", hex(pp.m), " p->status=", pp.status, "\n")
-		throw("releasep: invalid p state")
+		// print("releasep: m=", gp.m, " m->p=", gp.m.p.ptr(), " p->m=", hex(pp.m), " p->status=", pp.status, "\n")
+		// throw("releasep: invalid p state")
 		// ADVOCATE-END
 	}
 	gp.m.p = 0

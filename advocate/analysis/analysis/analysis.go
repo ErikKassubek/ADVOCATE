@@ -60,7 +60,8 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 		}
 	}
 
-	if fuzzdata.FuzzingMode != fuzzdata.GoPie {
+	// TODO T1: remove T1 back in, when tests are done
+	if fuzzdata.FuzzingMode != fuzzdata.GoPie || data.T1 {
 		RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
 	}
 }

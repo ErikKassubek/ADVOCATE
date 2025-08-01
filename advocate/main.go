@@ -134,6 +134,8 @@ func main() {
 
 	flag.IntVar(&maxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
+	flag.BoolVar(&data.T1, "T1", false, "T1")
+
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+

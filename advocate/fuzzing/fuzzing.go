@@ -161,7 +161,10 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			timer.UpdateTimeFileOverview(progName, testFunc)
 		}
+	}
 
+	if anaData.T1 {
+		log.Importantf("Invalid mutation: %d/%d")
 	}
 
 	if createStats {

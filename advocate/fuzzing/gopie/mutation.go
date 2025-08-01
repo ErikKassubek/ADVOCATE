@@ -16,7 +16,6 @@ import (
 	"advocate/fuzzing/data"
 	"advocate/trace"
 	"advocate/utils/helper"
-	"advocate/utils/log"
 	"math/rand/v2"
 )
 
@@ -250,7 +249,6 @@ func augment(c Chain) []Chain {
 // Returns:
 //   - map[string]Chain: map with the special chains
 func getSpecialMuts() map[string]Chain {
-	log.Important("Check for special muts")
 	res := make(map[string]Chain)
 
 	// send on closed

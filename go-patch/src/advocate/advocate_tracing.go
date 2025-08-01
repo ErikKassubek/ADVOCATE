@@ -58,12 +58,14 @@ func FinishTracing() {
 	if hasFinished {
 		// needed to prevent program stop while still writing
 		// otherwise, trace may be empty
-		for currentlyWriting.Load() {
-			time.Sleep(10 * time.Millisecond)
-		}
 		return
 	}
+
+	// give program time to finish running
+	time.Sleep(time.Second)
+
 	hasFinished = true
+
 	currentlyWriting.Store(true)
 	defer currentlyWriting.Store(false)
 
@@ -86,8 +88,6 @@ func FinishTracing() {
 	}
 
 	runtime.AdvocatRoutineExit()
-
-	time.Sleep(100 * time.Millisecond)
 
 	runtime.DisableTracing()
 

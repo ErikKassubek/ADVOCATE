@@ -190,34 +190,26 @@ func replayTimeout(replayElem ReplayElement) {
 func WaitForReplayFinish(exit bool) {
 	if printDebug {
 		println("Wait for replay finish")
+		defer println("Finish Wait")
 	}
 
 	startTime := currentTime()
 
-	println(IsReplayEnabled(), partialReplay)
 	if IsReplayEnabled() || partialReplay {
 		for {
-			println(replayIndex)
-			println(numberElementsInTrace)
-			println(len(active))
-			println("==============")
 			if !partialReplay && replayIndex >= numberElementsInTrace {
-				println("BREAK1")
 				break
 			}
 
 			if partialReplay && len(active) == 0 {
-				println("BREAK2")
 				break
 			}
 
 			if !partialReplay && !replayEnabled {
-				println("BREAK3")
 				break
 			}
 
 			if hasTimePast(startTime, 10) {
-				println("BREAK4")
 				break
 			}
 
@@ -231,8 +223,6 @@ func WaitForReplayFinish(exit bool) {
 		sleep(0.5)
 	}
 
-	println("WAIT FOR FINISHED 1")
-
 	// Ensure that the deadlock detector is finished
 	for {
 		lock(&waitDeadlockDetectLock)
@@ -244,8 +234,6 @@ func WaitForReplayFinish(exit bool) {
 
 		sleep(0.001)
 	}
-
-	println("WAIT FOR FINISHED 2 ", stuckReplayExecutedSuc)
 
 	if stuckReplayExecutedSuc {
 		ExitReplayWithCode(expectedExitCode, "")

@@ -616,11 +616,13 @@ func (t *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 //   - tPost int: Remove elements after tPost
 func (t *Trace) RemoveLater(tPost int) {
 	for routine, trace := range t.traces {
-		for i, elem := range trace {
+		newElems := make([]Element, 0)
+		for _, elem := range trace {
 			if elem.GetTPost() > tPost {
-				t.traces[routine] = t.traces[routine][:i]
+				newElems = append(newElems, elem.Copy())
 			}
 		}
+		t.traces[routine] = newElems
 	}
 }
 

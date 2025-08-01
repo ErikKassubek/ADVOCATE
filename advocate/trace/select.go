@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"math"
@@ -77,6 +78,8 @@ type ElementSelect struct {
 //   - pos string: The position of the select statement in the code
 func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 	tPost string, id string, cases string, chosenIndex string, pos string) error {
+
+	log.Important("ADD ", routine, " ", tPre, " ", tPost, " ", pos)
 
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
@@ -668,7 +671,7 @@ func (se *ElementSelect) Copy() Element {
 
 	chosenCase := *se.chosenCase.Copy().(*ElementChannel)
 
-	return &ElementSelect{
+	elem := &ElementSelect{
 		traceID:                  se.traceID,
 		index:                    se.index,
 		routine:                  se.routine,
@@ -689,6 +692,12 @@ func (se *ElementSelect) Copy() Element {
 		numberConcurrentSame:     se.numberConcurrentSame,
 		numberConcurrentWeakSame: se.numberConcurrentWeakSame,
 	}
+
+	for _, c := range elem.cases {
+		c.sel = elem
+	}
+
+	return elem
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

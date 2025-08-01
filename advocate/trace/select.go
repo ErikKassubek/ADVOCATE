@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
-	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"math"
@@ -78,8 +77,6 @@ type ElementSelect struct {
 //   - pos string: The position of the select statement in the code
 func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 	tPost string, id string, cases string, chosenIndex string, pos string) error {
-
-	log.Important("ADD ", routine, " ", tPre, " ", tPost, " ", pos)
 
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {

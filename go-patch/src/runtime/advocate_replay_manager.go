@@ -176,7 +176,6 @@ func replayTimeout(replayElem ReplayElement) {
 		if printDebug && suc {
 			println("Release Oldes: ", oldestKey)
 		}
-		println("DELTE2", oldestKey)
 		delete(waitingOps, oldestKey)
 		unlock(&waitingOpsMutex)
 	}

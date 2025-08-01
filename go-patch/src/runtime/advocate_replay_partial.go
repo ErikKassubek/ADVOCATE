@@ -72,3 +72,14 @@ func getSelect(key string) (ReplayElement, bool) {
 
 	return re, found
 }
+
+func releaseActive(key string) {
+	if _, ok := active[key]; !ok {
+		return
+	}
+
+	active[key] = active[key][1:]
+	if len(active[key]) == 0 {
+		delete(active, key)
+	}
+}

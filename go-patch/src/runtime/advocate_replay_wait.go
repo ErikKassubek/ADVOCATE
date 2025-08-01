@@ -141,6 +141,11 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		_, _ = getSelect(key)
 		// if it is the next element, release directly and add elems to waitForAck
 		chWait <- nextElem
+
+		releaseActive(key)
+
+		lastTime = currentTime()
+
 		if printDebug {
 			println("ReleaseDir: ", key, waitForResponse)
 		}

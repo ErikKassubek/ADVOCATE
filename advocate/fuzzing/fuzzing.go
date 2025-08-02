@@ -264,6 +264,11 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 				return nil
 			}
 
+			if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
+				log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(data.MaxTime.Minutes()))
+				return nil
+			}
+
 			log.Info("Parse recorded trace to calculate fuzzing relations")
 
 			// collect the required data to decide whether run is interesting
@@ -272,6 +277,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 			if control.CheckCanceled() {
 				log.Error("Fuzzing was canceled due to memory")
+				anaData.ClearTrace()
+				anaData.ClearData()
 				continue
 			}
 
@@ -294,7 +301,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			}
 
 			if createStats {
-				err := stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns)
+				err := stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns-1)
 				if err != nil {
 					log.Error("Could not create statistics: ", err.Error())
 				}
@@ -308,10 +315,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		anaData.ClearTrace()
 		anaData.ClearData()
 
-		if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
-			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(data.MaxTime.Minutes()))
-			return nil
-		}
 	}
 
 	if data.FuzzingModeGoPie {

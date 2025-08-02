@@ -12,6 +12,7 @@ package stats
 
 import (
 	"advocate/results/explanation"
+	"advocate/utils/log"
 	"bufio"
 	"fmt"
 	"os"
@@ -87,6 +88,8 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 		if info.IsDir() {
 			return nil
 		}
+
+		log.Important("FILE: ", info.Name(), " ", strconv.Itoa(fuzzing))
 
 		if fuzzing == -1 {
 			if strings.HasPrefix(info.Name(), "bug_") ||

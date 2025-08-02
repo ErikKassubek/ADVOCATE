@@ -105,7 +105,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 //
 // Parameter:
 //   - path string: path to the folder containing the traces
-func removeTraces(path string) {
+func RemoveTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",

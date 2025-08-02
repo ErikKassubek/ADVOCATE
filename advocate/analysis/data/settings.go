@@ -47,6 +47,9 @@ var (
 	replayTimeoutDisabled int
 	replayTimeoutAck      int
 
+	// replay partial info
+	ActiveReleased int
+
 	durationInSeconds = -1 // the duration of the recording in seconds
 )
 
@@ -60,24 +63,22 @@ func SetExitInfo(code int, pos string) {
 	ExitPos = pos
 }
 
-// SetReplayTimeoutInfo stores information about wether a run that was guided
+// SetReplayInfo stores information about wether a run that was guided
 // by replay (especially in GoPie fuzzing) had a timeout
 //
 // Parameter:
-//
 //   - oldest int: the timer when the the replay released the oldest waiting
-//
 //     or the current next for the first time, if never it should be 0
-//
 //   - disabled int: the timer when the the replay was so stuck, that the
 //     replay had to be disabled for the first time, if never it should be 0
-//
 //   - ack int: the timer when the the replay timed out on an acknowledgement,
 //     if never it should be 0
-func SetReplayTimeoutInfo(oldest, disabled, ack int) {
+//   - activeReached int: 1 if at least one active element was released, false otherwise
+func SetReplayInfo(oldest, disabled, ack, activeReached int) {
 	replayTimeoutOldest = oldest
 	replayTimeoutDisabled = disabled
 	replayTimeoutAck = ack
+	ActiveReleased = activeReached
 }
 
 // GetTimeoutHappened return if any kind of timeout happened

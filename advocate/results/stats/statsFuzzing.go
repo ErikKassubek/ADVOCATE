@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -34,14 +35,15 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	resultPath := filepath.Join(pathFolder, "advocateResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
+	statsFuzzPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
 
 	log.Info("Create fuzzing statistics")
 
-	headers := "TestName,NoRuns"
+	headers := "TestName,NrRuns,NrMuts,NrMutsInvalid,NrMutsDouble"
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
-			headers += fmt.Sprintf(",No%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
+			headers += fmt.Sprintf(",Nr%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
 		}
 	}
 	headers += "\n"
@@ -52,7 +54,6 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	counter := 0
 
 	// get the test names and number of fuzzing runs
-
 	analysisFile, err := os.Open(statsAnalyzerPath)
 	if err != nil {
 		return err
@@ -130,6 +131,46 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 
 		td := data[testName]
 		td.results = res
+		data[testName] = td
+	}
+
+	// read the fuzz data
+	fuzzFile, err := os.Open(statsFuzzPath)
+	if err != nil {
+		return err
+	}
+	defer analysisFile.Close()
+
+	scannerFuzz := bufio.NewScanner(fuzzFile)
+
+	// skip the first line
+	scannerFuzz.Scan()
+
+	for scannerFuzz.Scan() {
+		line := scanner.Text()
+		fields := strings.Split(line, ",")
+
+		if len(fields) < 4 {
+			continue
+		}
+
+		testName := fields[0]
+
+		td := data[testName]
+		if td.fuzzData == nil {
+			td.fuzzData = make(map[string]int)
+		}
+
+		nrMut, _ := strconv.Atoi(fields[1])
+		nrMutInvalid, _ := strconv.Atoi(fields[2])
+		nrMutDouble, _ := strconv.Atoi(fields[3])
+		nrActiveReleased, _ := strconv.Atoi(fields[4])
+
+		td.fuzzData["nrMut"] += nrMut
+		td.fuzzData["nrMutInvalid"] += nrMutInvalid
+		td.fuzzData["nrMutDouble"] += nrMutDouble
+		td.fuzzData["ActiveReleased"] += nrActiveReleased
+
 		data[testName] = td
 	}
 

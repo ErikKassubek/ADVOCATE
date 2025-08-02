@@ -45,15 +45,16 @@ func ReplayManager() {
 		// 	break
 		// }
 
-		if !partialReplay && replayElem.Op == OperationReplayEnd {
+		if !PartialReplay && replayElem.Op == OperationReplayEnd {
 			replayEndFound(replayElem)
-			println("REPLAY END ELEMENT")
 			return
 		}
 
 		key := replayElem.Key()
 
-		if key == lastKey && !partialReplay {
+		//	comment
+
+		if key == lastKey && !PartialReplay {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
 				replayTimeout(replayElem)
 				continue
@@ -83,6 +84,7 @@ func ReplayManager() {
 			unlock(&waitingOpsMutex)
 
 			releaseElement(waitOp, replayElem, true, true)
+			releaseActive(key)
 
 			lock(&waitingOpsMutex)
 			delete(waitingOps, key)
@@ -174,7 +176,7 @@ func replayTimeout(replayElem ReplayElement) {
 
 		lock(&waitingOpsMutex)
 		if printDebug && suc {
-			println("Release Oldes: ", oldestKey)
+			println("Release Oldest: ", oldestKey)
 		}
 		delete(waitingOps, oldestKey)
 		unlock(&waitingOpsMutex)
@@ -194,17 +196,17 @@ func WaitForReplayFinish(exit bool) {
 
 	startTime := currentTime()
 
-	if IsReplayEnabled() || partialReplay {
+	if IsReplayEnabled() || PartialReplay {
 		for {
-			if !partialReplay && replayIndex >= numberElementsInTrace {
+			if !PartialReplay && replayIndex >= numberElementsInTrace {
 				break
 			}
 
-			if partialReplay && len(active) == 0 {
+			if PartialReplay && numberActive == NumberActiveReleased {
 				break
 			}
 
-			if !partialReplay && !replayEnabled {
+			if !PartialReplay && !replayEnabled {
 				break
 			}
 

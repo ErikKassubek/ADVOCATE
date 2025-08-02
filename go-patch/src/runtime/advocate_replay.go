@@ -153,7 +153,7 @@ var (
 	replayLock    mutex
 
 	// only run partial replay based on active
-	partialReplay        bool
+	PartialReplay        bool
 	partialReplayCounter = make(map[string]int)
 	partialReplayMutex   = mutex{}
 

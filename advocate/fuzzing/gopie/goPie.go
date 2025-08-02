@@ -25,10 +25,6 @@ import (
 
 const sameElem = true
 
-// TODO T1: remove if Test is done
-var counterIsNotValid = 0
-var counterTotal = 0
-
 // CreateGoPieMut create new mutations for GoPie
 //
 // Parameter:
@@ -45,18 +41,19 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		specialMuts := getSpecialMuts()
 
 		for key, mut := range specialMuts {
+			isValid := mut.isValid()
 			if _, ok := allGoPieMutations[key]; !ok {
-				if !data.UseHBInfoFuzzing || mut.isValid() {
+				if !data.UseHBInfoFuzzing || isValid {
 					specMutations[key] = mut
 				}
 
-				// TODO T1: remove after tests have finished
-				if anadata.T1 {
-					if mut.isValid() {
-					} else {
-						counterIsNotValid++
-					}
-					counterTotal++
+				if !isValid {
+					NumberInvalidMuts++
+				}
+				NumberTotalMuts++
+
+				if ok {
+					NumberDoubleMuts++
 				}
 
 				allGoPieMutations[key] = struct{}{}
@@ -90,14 +87,23 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		muts := mutate(sc, energy)
 		for key, mut := range muts {
 			if data.FuzzingMode != data.GoPie && mut.Len() <= 1 {
+				NumberTotalMuts++
 				continue
 			}
 			if _, ok := allGoPieMutations[key]; data.FuzzingMode == data.GoPie || !ok {
 				// only add if not invalidated by hb
+				isValid := mut.isValid()
 				if !data.UseHBInfoFuzzing || mut.isValid() {
 					mutations[key] = mut
 				}
+
+				if !isValid {
+					NumberInvalidMuts++
+				}
+				NumberTotalMuts++
 				allGoPieMutations[key] = struct{}{}
+			} else if data.FuzzingMode == data.GoPie && !ok {
+				NumberDoubleMuts++
 			}
 		}
 	}

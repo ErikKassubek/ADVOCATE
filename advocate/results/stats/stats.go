@@ -28,6 +28,7 @@ import (
 type testData struct {
 	name       string
 	numberRuns int
+	fuzzData   map[string]int
 	results    map[string]map[string]int
 }
 
@@ -36,7 +37,7 @@ type testData struct {
 // Returns:
 //   - string: the string representation
 func (td *testData) toString() string {
-	res := fmt.Sprintf("%s,%d", td.name, td.numberRuns)
+	res := fmt.Sprintf("%s,%d,%d,%d,%d", td.name, td.numberRuns, td.fuzzData["nrMut"], td.fuzzData["nrMutInvalid"], td.fuzzData["nrMutDouble"])
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
@@ -71,7 +72,7 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 		return err
 	}
 
-	statsMisc, err := statsMisc(pathFolder, testName)
+	statsFuzz, err := statsFuzz(pathFolder, testName)
 	if err != nil {
 		return err
 	}
@@ -81,7 +82,7 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 		return err
 	}
 
-	err = writeStatsToFile(filepath.Dir(pathFolder), progName, testName, statsTrace, statsMisc, statsAnalyzerTotal, statsAnalyzerUnique)
+	err = writeStatsToFile(filepath.Dir(pathFolder), progName, testName, statsTrace, statsFuzz, statsAnalyzerTotal, statsAnalyzerUnique)
 	if err != nil {
 		return err
 	}
@@ -98,23 +99,23 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 //   - testName string: name of the test
 //   - statsProg map[string]int: statistics about the program
 //   - statsTraces map[string]int: statistics about the trace
-//   - statsMisc map[string]int: miscellaneous statistics
+//   - statsFuzz map[string]int: miscellaneous statistics
 //   - statsAnalyzerTotal map[string]map[string]int: statistics about the total analysis and replay
 //   - statsAnalyzerUnique map[string]map[string]int: statistics about the unique analysis and replay
 //
 // Returns:
 //   - error
-func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int, statsMisc map[string]int,
+func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int, statsFuzz map[string]int,
 	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
 
-	fileMiscPath := filepath.Join(path, "statsMisc_"+progName+".csv")
+	fileFuzzPath := filepath.Join(path, "statsFuzz_"+progName+".csv")
 	fileTracingPath := filepath.Join(path, "statsTrace_"+progName+".csv")
 	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+progName+".csv")
 	fileAllPath := filepath.Join(path, "statsAll_"+progName+".csv")
 
-	headerTracing := "TestName,NoEvents,NoGoroutines,NoAtomicEvents," +
-		"NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents," +
-		"NoCondVariablesEvents,NoOnceOperations"
+	headerTracing := "TestName,NrEvents,NrGoroutines,NrAtomicEvents," +
+		"NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents," +
+		"NrCondVariablesEvents,NrOnceOperations"
 	dataTracing := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName,
 		statsTraces["numberElements"], statsTraces["numberRoutines"],
 		statsTraces["numberAtomicOperations"], statsTraces["numberChannelOperations"],
@@ -184,7 +185,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberProbInRecord += statsAnalyzerTotal["detected"][code]
 	}
 
-	headerAnalysis := "TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique"
+	headerAnalysis := "TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique"
 	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal,
 		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, numberUnexpectedPanicsInReplayTotal, numberProbInRecord, numberOfActualBugsUnique, numberOfLeaksUnique,
 		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, numberUnexpectedPanicsInReplayUnique)
@@ -192,11 +193,11 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	writeStatsFile(fileAnalysisPath, headerAnalysis, dataAnalysis)
 
 	headerDetails := "TestName," +
-		"NoEvents,NoGoroutines,NoNotEmptyGoroutines,NoSpawnEvents,NoRoutineEndEvents," +
-		"NoAtomics,NoAtomicEvents,NoChannels,NoBufferedChannels,NoUnbufferedChannels," +
-		"NoChannelEvents,NoBufferedChannelEvents,NoUnbufferedChannelEvents,NoSelectEvents," +
-		"NoSelectCases,NoSelectNonDefaultEvents,NoSelectDefaultEvents,NoMutex,NoMutexEvents," +
-		"NoWaitgroup,NoWaitgroupEvent,NoCondVariables,NoCondVariablesEvents,NoOnce,NoOnceOperations,"
+		"NrEvents,NrGoroutines,NrNotEmptyGoroutines,NrSpawnEvents,NrRoutineEndEvents," +
+		"NrAtomics,NrAtomicEvents,NrChannels,NrBufferedChannels,NrUnbufferedChannels," +
+		"NrChannelEvents,NrBufferedChannelEvents,NrUnbufferedChannelEvents,NrSelectEvents," +
+		"NrSelectCases,NrSelectNonDefaultEvents,NrSelectDefaultEvents,NrMutex,NrMutexEvents," +
+		"NrWaitgroup,NrWaitgroupEvent,NrCondVariables,NrCondVariablesEvents,NrOnce,NrOnceOperations,"
 	dataDetails := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
 		testName, statsTraces["numberElements"],
 		statsTraces["numberRoutines"], statsTraces["numberNonEmptyRoutines"],
@@ -231,20 +232,20 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 
 	writeStatsFile(fileAllPath, headerDetails, dataDetails)
 
-	miscData := make([]string, len(miscStats))
-	for i, header := range miscStats {
-		if header == TestName {
+	miscData := make([]string, len(fuzzStats))
+	for i, header := range fuzzStats {
+		if header == "TestName" {
 			miscData[i] = testName
 			continue
 		}
-		if val, exists := statsMisc[header]; exists {
+		if val, exists := statsFuzz[header]; exists {
 			miscData[i] = strconv.Itoa(val)
 		} else {
 			miscData[i] = "0"
 		}
 	}
 
-	writeStatsFile(fileMiscPath, strings.Join(miscStats, ","), strings.Join(miscData, ","))
+	writeStatsFile(fileFuzzPath, strings.Join(fuzzStats, ","), strings.Join(miscData, ","))
 
 	return nil
 }

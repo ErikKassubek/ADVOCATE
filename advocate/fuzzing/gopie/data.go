@@ -43,6 +43,10 @@ var (
 	ElemsByID = make(map[int][]trace.Element) // id -> chan/sel/mutex elem
 
 	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
+
+	NumberInvalidMuts = 0
+	NumberDoubleMuts  = 0
+	NumberTotalMuts   = 0
 )
 
 // ClearData deletes all the GoPie data
@@ -54,4 +58,8 @@ func ClearData() {
 	ElemsByID = make(map[int][]trace.Element)
 	maxGoPieScore = 0
 	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
+
+	NumberInvalidMuts = 0
+	NumberTotalMuts = 0
+	NumberDoubleMuts = 0
 }

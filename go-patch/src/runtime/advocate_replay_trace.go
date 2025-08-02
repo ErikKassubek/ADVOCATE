@@ -42,15 +42,17 @@ func (t AdvocateReplayTrace) Print() {
 //     e.g. if the value is [3, 4], the operation in the key is scheduled by
 //     the replay if it is executed the 3rd and 4th time, but not for the
 //     1st and 2nd time.
-func AddActiveTrace(startTime int, activeMap map[string][]int) {
+//   - numActive int: number of active elements
+func AddActiveTrace(startTime int, activeMap map[string][]int, numActive int) {
 	active = activeMap
 	startTimeActive = startTime
 	if printDebug {
 		println("Add active with start time ", startTimeActive, " and ", len(active), " active elements")
 	}
 	if startTime == 0 {
-		partialReplay = true
+		PartialReplay = true
 	}
+	numberActive = numActive
 }
 
 // Get the next element to be executed from the replay trace
@@ -109,8 +111,4 @@ func foundReplayElement() {
 	lock(&replayLock)
 	defer unlock(&replayLock)
 	replayIndex++
-	if printDebug {
-		println("Advance: ", replayIndex)
-		lastKey = ""
-	}
 }

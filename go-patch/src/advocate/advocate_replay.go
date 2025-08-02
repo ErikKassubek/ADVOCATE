@@ -61,10 +61,10 @@ func startReplay(timeout int) {
 	}
 
 	// check for and if exists, read the rewrite_active.log file
-	activeStartTime, active, activeTime := readReplayActive(tracePathRewritten)
+	activeStartTime, active, activeTime, numberActive := readReplayActive(tracePathRewritten)
 
 	if active != nil {
-		runtime.AddActiveTrace(activeStartTime, active)
+		runtime.AddActiveTrace(activeStartTime, active, numberActive)
 	}
 
 	// traverse all files in the trace folder
@@ -127,12 +127,13 @@ func startReplay(timeout int) {
 //     if 0, start with active replay, if -1 never start active replay
 //   - map[string][]int: the map from key to counter for the active elements
 //   - map[int]struct{}: the map containing the time of all elements that are active
-func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int]struct{}) {
+//   - int: number of active operations
+func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int]struct{}, int) {
 	path := filepath.Join(tracePathRewritten, activeFile)
 	file, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return -1, nil, nil
+			return -1, nil, nil, 0
 		}
 		panic(err)
 	}
@@ -140,6 +141,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 
 	active := make(map[string][]int)
 	activeTPre := make(map[int]struct{})
+	numberActive := 0
 	firstTime := -1
 
 	// The elements in the active file should be separated by new line and have
@@ -177,12 +179,13 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 		}
 
 		active[fields[0]] = append(active[fields[0]], counter)
+		numberActive++
 		println(fields[0], " -> ", counter)
 
 		activeTPre[tPre] = struct{}{}
 	}
 
-	return firstTime, active, activeTPre
+	return firstTime, active, activeTPre, numberActive
 }
 
 // Import the trace.
@@ -459,6 +462,7 @@ func FinishReplay() {
 		println("Replay failed.")
 	}
 
+	println("FinishReplay")
 	runtime.WaitForReplayFinish(false)
 
 	time.Sleep(time.Second)

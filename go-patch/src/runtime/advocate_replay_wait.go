@@ -89,8 +89,12 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 	chWait := make(chan ReplayElement, 1)
 	chAck := make(chan struct{}, 1)
 
+	if printDebug {
+		println("Wait: ", key)
+	}
+
 	// ignore not active operations if partial replay is active
-	if partialReplay {
+	if PartialReplay {
 		// the operation is never active
 		c, ok := active[key]
 		if !ok {
@@ -122,15 +126,6 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 			return found, chWait, nil, true
 		}
 
-	}
-
-	if printDebug {
-		if partialReplay {
-			for _, c := range active[key] {
-				print(", ", c, ", ")
-			}
-			println("PRC: ", partialReplayCounter[key])
-		}
 	}
 
 	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false}
@@ -203,26 +198,13 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	}
 
 	if elem.waitAck {
-		if printDebug {
-			println("Wait Ack: ", elemReplay.Key())
-		}
 		select {
 		case <-elem.chAck:
-			if printDebug {
-				println("Ack: ", elemReplay.Key())
-			}
 		case <-after(sToNs(acknowledgementMaxWaitSec)):
-			if printDebug {
-				println("AckTimeout: ", elemReplay.Key())
-			}
 			if tPostWhenAckFirstTimeout == 0 {
 				tPostWhenAckFirstTimeout = elemReplay.Time
 			}
 		}
-	}
-
-	if printDebug {
-		println("Complete: ", elemReplay.Key())
 	}
 
 	lastTime = currentTime()

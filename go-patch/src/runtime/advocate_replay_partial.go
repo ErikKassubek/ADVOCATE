@@ -10,21 +10,21 @@
 
 package runtime
 
+var numberActive = 0
+var NumberActiveReleased = 0
+
 // Check if it is time to switch to active replay, and if so, switch
 func CheckForPartialReplay(elemReplay ReplayElement) {
-	if partialReplay {
+	if PartialReplay {
 		return
 	}
-	// switch to replay that only looks for active elements
-	if printDebug {
-		println("Check for partial replay ", elemReplay.Time, startTimeActive)
-	}
+	// switch to replay that only looks for active element
 
 	if startTimeActive != -1 && elemReplay.Time >= startTimeActive {
 		if printDebug {
 			println("Switch to active replay")
 		}
-		partialReplay = true
+		PartialReplay = true
 
 		lock(&waitingOpsMutex)
 
@@ -35,14 +35,13 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 				repEl, _ := getSelect(key)
 				ops.chWait <- repEl
 				if printDebug {
-					println("ReleaseNotActive: ", key)
+					println("ReleaseNotActiveN: ", key)
 				}
 				delete(waitingOps, key)
 				continue
 			}
 
 			lock(&partialReplayMutex)
-			partialReplayCounter[key] += 1
 			currentCounter := partialReplayCounter[key]
 			unlock(&partialReplayMutex)
 
@@ -50,9 +49,11 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 			if !isInSlice(c, currentCounter) {
 				repEl, _ := getSelect(key)
 
+				println(currentCounter)
+
 				ops.chWait <- repEl
 				if printDebug {
-					println("ReleaseNotActive: ", key)
+					println("ReleaseNotActiveT: ", key)
 				}
 				delete(waitingOps, key)
 			}
@@ -61,6 +62,15 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 	}
 }
 
+// For a select, get the ReplayElement with teh preferred case
+// Used for non active elements in partial replay
+//
+// Parameter:
+//   - key string: the select element key
+//
+// Returns:
+//   - ReplayElement: the select element
+//   - bool: t
 func getSelect(key string) (ReplayElement, bool) {
 	re := ReplayElement{Blocked: false}
 	found := false
@@ -73,13 +83,18 @@ func getSelect(key string) (ReplayElement, bool) {
 	return re, found
 }
 
+// Call if an element is released. It will check if this element is in active
+// and remove if necessary
+//
+// Parameter:
+//   - key: the key of the element
 func releaseActive(key string) {
-	if _, ok := active[key]; !ok {
+	if !PartialReplay {
 		return
 	}
 
-	active[key] = active[key][1:]
-	if len(active[key]) == 0 {
-		delete(active, key)
+	if _, ok := active[key]; !ok {
+		return
 	}
+	NumberActiveReleased++
 }

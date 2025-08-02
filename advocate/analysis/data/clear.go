@@ -55,6 +55,7 @@ func ClearData() {
 	replayTimeoutOldest = 0
 	replayTimeoutDisabled = 0
 	replayTimeoutAck = 0
+	ActiveReleased = 0
 	FuzzingFlowOnce = make([]ConcurrentEntry, 0)
 	FuzzingFlowMutex = make([]ConcurrentEntry, 0)
 	FuzzingFlowSend = make([]ConcurrentEntry, 0)

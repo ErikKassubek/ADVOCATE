@@ -20,8 +20,7 @@ import (
 )
 
 const (
-	maxNoNew  = 5
-	maxLength = 10
+	maxNoNew = 5
 )
 
 // TODO: limit the number of mutations that can be created from one mutation step
@@ -40,6 +39,10 @@ func mutate(c Chain, energy int) map[string]Chain {
 	}
 
 	bound := helper.GoPieMaxSCLength
+	if data.FuzzingMode == data.GoPie {
+		bound = 3
+	}
+
 	mutateBound := helper.GoPieMutabound
 
 	// in the original goPie, the fuzzing bound is 4

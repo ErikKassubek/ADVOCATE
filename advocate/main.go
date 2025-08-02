@@ -119,7 +119,7 @@ func main() {
 	flag.BoolVar(&skipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	flag.BoolVar(&notExec, "notExec", false, "Find never executed operations")
-	flag.BoolVar(&statistics, "stats", false, "Create statistics")
+	flag.BoolVar(&statistics, "stats", false, "Create statistics.")
 
 	flag.BoolVar(&noWarning, "noWarning", false, "Only show critical bugs")
 
@@ -133,8 +133,6 @@ func main() {
 	flag.BoolVar(&output, "output", false, "Show the output of the executed programs in the terminal. Otherwise it is only in output.log file.")
 
 	flag.IntVar(&maxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
-
-	flag.BoolVar(&data.T1, "T1", false, "T1")
 
 	flag.StringVar(&scenarios, "scen", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d."+
 		"If not set, all scenarios are run.\n"+
@@ -205,12 +203,6 @@ func main() {
 
 	execPath, _ := os.Executable()
 	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
-
-	advocatePathSplit := strings.Split(pathToAdvocate, string(os.PathSeparator))
-	if advocatePathSplit[len(advocatePathSplit)-1] != "ADVOCATE" {
-		log.Error("Could not determine ADVOCATE folder. Keep the toolchain and go-patch in the ADVOCATE folder. Do not rename the ADVOCATE folder.")
-		return
-	}
 
 	control.SetMaxNumberElem(maxNumberElements)
 	if !noMemorySupervisor {
@@ -338,7 +330,7 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 		panic("When running replay of test without recording, -exec [TestName] must be set")
 	}
 
-	err = toolchain.Run(mode, pathToAdvocate, progPath, "", record, analysis,
+	_, _, err = toolchain.Run(mode, pathToAdvocate, progPath, "", record, analysis,
 		replay, execName, progName, execName, -1, "", ignoreAtomics, recordTime,
 		notExec, statistics, keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {

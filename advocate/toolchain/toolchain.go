@@ -45,11 +45,16 @@ var (
 //   - keepTraces bool: keep the traces after analysis
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - cont bool: continue an already started run
+//
+// Returns:
+//   - string: current result folder path
+//   - int: TraceID
+//   - error
 func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 	runRecord, runAnalysis, runReplay bool,
 	execName, progName, test string, fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
-	firstRun, cont bool, fileNumber, testNumber int) error {
+	firstRun, cont bool, fileNumber, testNumber int) (string, int, error) {
 	pathToAdvocate = helper.CleanPathHome(advocate)
 	pathToFileOrDir = helper.CleanPathHome(pathToMainFileOrTestDir)
 
@@ -67,13 +72,13 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 	switch mode {
 	case "main":
 		if pathToAdvocate == "" {
-			return fmt.Errorf("Path to advocate required for mode main")
+			return "", 0, fmt.Errorf("Path to advocate required for mode main")
 		}
 		if pathToFileOrDir == "" {
-			return fmt.Errorf("Path to file required")
+			return "", 0, fmt.Errorf("Path to file required")
 		}
 		if executableName == "" {
-			return fmt.Errorf("Name of the executable required")
+			return "", 0, fmt.Errorf("Name of the executable required")
 		}
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
@@ -82,18 +87,18 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
 	case "test", "tests":
 		if pathToAdvocate == "" {
-			return fmt.Errorf("Path to advocate required")
+			return "", 0, fmt.Errorf("Path to advocate required")
 		}
 		if pathToFileOrDir == "" {
-			return fmt.Errorf("Path to test folder required for mode main")
+			return "", 0, fmt.Errorf("Path to test folder required for mode main")
 		}
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
-			pathToTest, progName, notExecuted, stats, fuzzing, fuzzingTrace, keepTraces,
+			pathToTest, progName, notExecuted, stats && fuzzing == -1, fuzzing, fuzzingTrace, keepTraces,
 			firstRun, skipExisting, cont, fileNumber, testNumber)
 	default:
-		return fmt.Errorf("Choose one mode from 'main' or 'test'")
+		return "", 0, fmt.Errorf("Choose one mode from 'main' or 'test'")
 	}
 }

@@ -127,9 +127,11 @@ func (fv *flagValue) toString(req bool) string {
 		res += fmt.Sprintf("%-33s", fv.req)
 	}
 
-	res += fv.desc[0]
-	for _, line := range fv.desc[1:] {
-		res += fmt.Sprintf("\n%-68s%s", "", line)
+	if len(fv.desc) != 0 {
+		res += fv.desc[0]
+		for _, line := range fv.desc[1:] {
+			res += fmt.Sprintf("\n%-68s%s", "", line)
+		}
 	}
 	return res
 }

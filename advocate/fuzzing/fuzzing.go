@@ -91,10 +91,6 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			log.Info("Run fuzzing on test ", name)
 		}
 
-		clearData()
-		timer.ResetFuzzing()
-		control.Reset()
-
 		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
@@ -108,6 +104,10 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 				log.Error("Failed to create total stats: ", err.Error())
 			}
 		}
+
+		clearData()
+		timer.ResetFuzzing()
+		control.Reset()
 
 		return err
 	}
@@ -163,10 +163,6 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		}
 	}
 
-	if anaData.T1 {
-		log.Importantf("Invalid mutation: %d/%d")
-	}
-
 	if createStats {
 		err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
 		if err != nil {
@@ -176,6 +172,10 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		if err != nil {
 			log.Error("Failed to create total stats: ", err.Error())
 		}
+	}
+
+	if !keepTraces {
+		toolchain.RemoveTraces(progPath)
 	}
 
 	return nil
@@ -247,7 +247,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		if modeMain {
 			mode = "main"
 		}
-		err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
+
+		currentResultPath, traceID, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
 			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)
@@ -290,6 +291,13 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			if data.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
 				gopie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
+			}
+
+			if createStats {
+				err := stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns)
+				if err != nil {
+					log.Error("Could not create statistics: ", err.Error())
+				}
 			}
 
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))

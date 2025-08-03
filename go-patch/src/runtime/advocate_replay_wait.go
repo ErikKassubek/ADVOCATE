@@ -105,7 +105,6 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 			if printDebug {
 				println("ReleaseNonActiveN: ", key)
 			}
-			lastKey = ""
 			return found, chWait, nil, true
 		}
 
@@ -122,7 +121,6 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 
 			chWait <- repEl
 
-			lastKey = ""
 			return found, chWait, nil, true
 		}
 

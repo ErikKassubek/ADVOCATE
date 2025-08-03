@@ -301,10 +301,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			}
 
 			if createStats {
-				err := stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns-1)
-				if err != nil {
-					log.Error("Could not create statistics: ", err.Error())
-				}
+				_ = stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns-1)
 			}
 
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))

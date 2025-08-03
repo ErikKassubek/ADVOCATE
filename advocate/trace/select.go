@@ -178,17 +178,18 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 		}
 
 		elemCase := ElementChannel{
-			routine: routine,
-			tPre:    tPreInt,
-			tPost:   cTPost,
-			id:      cID,
-			opC:     cOpC,
-			cl:      cCl,
-			oID:     cOID,
-			qSize:   cOSize,
-			sel:     &elem,
-			file:    file,
-			line:    line,
+			routine:  routine,
+			tPre:     tPreInt,
+			tPost:    cTPost,
+			id:       cID,
+			opC:      cOpC,
+			cl:       cCl,
+			oID:      cOID,
+			qSize:    cOSize,
+			sel:      &elem,
+			selIndex: len(caseList),
+			file:     file,
+			line:     line,
 		}
 
 		casesList = append(casesList, elemCase)
@@ -297,7 +298,7 @@ func (se *ElementSelect) GetLine() int {
 // Returns:
 //   - string: The tID of the element
 func (se *ElementSelect) GetTID() string {
-	return se.GetPos() + "@" + strconv.Itoa(se.tPre)
+	return "S@" + se.GetPos() + "@" + strconv.Itoa(se.tPre)
 }
 
 // SetVc sets the vector clock
@@ -658,15 +659,18 @@ func (se *ElementSelect) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - mapping map[string]Element: map containing all already copied elements.
+//     This avoids double copy of referenced elements
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (se *ElementSelect) Copy() Element {
-	cases := make([]ElementChannel, 0)
-	for _, c := range se.cases {
-		cases = append(cases, *c.Copy().(*ElementChannel))
-	}
+func (se *ElementSelect) Copy(mapping map[string]Element) Element {
+	tID := se.GetTID()
 
-	chosenCase := *se.chosenCase.Copy().(*ElementChannel)
+	if existing, ok := mapping[tID]; ok {
+		return existing
+	}
 
 	elem := &ElementSelect{
 		traceID:                  se.traceID,
@@ -675,8 +679,6 @@ func (se *ElementSelect) Copy() Element {
 		tPre:                     se.tPre,
 		tPost:                    se.tPost,
 		id:                       se.id,
-		cases:                    cases,
-		chosenCase:               chosenCase,
 		chosenIndex:              se.chosenIndex,
 		containsDefault:          se.containsDefault,
 		chosenDefault:            se.chosenDefault,
@@ -689,6 +691,15 @@ func (se *ElementSelect) Copy() Element {
 		numberConcurrentSame:     se.numberConcurrentSame,
 		numberConcurrentWeakSame: se.numberConcurrentWeakSame,
 	}
+
+	mapping[tID] = elem
+
+	elem.cases = make([]ElementChannel, 0)
+	for _, c := range se.cases {
+		elem.cases = append(elem.cases, *c.Copy(mapping).(*ElementChannel))
+	}
+
+	elem.chosenCase = *se.chosenCase.Copy(mapping).(*ElementChannel)
 
 	for _, c := range elem.cases {
 		c.sel = elem

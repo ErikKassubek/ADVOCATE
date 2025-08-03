@@ -62,9 +62,7 @@ func FinishFuzzing() {
 	time.Sleep(time.Second)
 
 	finishFuzzingStarted = true
-	println("FinishFuzzing")
-	runtime.WaitForReplayFinish(true)
-	runtime.DisableReplay()
+	runtime.WaitForReplayFinish()
 	FinishTracing()
 }
 

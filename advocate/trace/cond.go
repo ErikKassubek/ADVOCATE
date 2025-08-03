@@ -203,12 +203,12 @@ func (co *ElementCond) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form D@[file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
 func (co *ElementCond) GetTID() string {
-	return co.GetPos() + "@" + strconv.Itoa(co.tPre)
+	return "D@" + co.GetPos() + "@" + strconv.Itoa(co.tPre)
 }
 
 // GetOpC returns the operation of the element
@@ -375,9 +375,14 @@ func (co *ElementCond) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since conds do not contain reference to other elements and no other
+//     elements contain referents to conds, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (co *ElementCond) Copy() Element {
+func (co *ElementCond) Copy(_ map[string]Element) Element {
 	return &ElementCond{
 		traceID:                  co.traceID,
 		index:                    co.index,

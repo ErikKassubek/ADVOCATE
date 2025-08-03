@@ -193,10 +193,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 			if createStats {
 				// create statistics
-				err := stats.CreateStats(currentResFolder, progName, testFunc, movedTraces, fuzzing)
-				if err != nil {
-					log.Error("Could not create statistics: ", err.Error())
-				}
+				_ = stats.CreateStats(currentResFolder, progName, testFunc, movedTraces, fuzzing)
 			}
 
 			if !keepTraces && !createStats {

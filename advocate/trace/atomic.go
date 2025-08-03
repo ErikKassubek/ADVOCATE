@@ -205,12 +205,12 @@ func (at *ElementAtomic) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form A@[file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
 func (at *ElementAtomic) GetTID() string {
-	return at.GetPos() + "@" + strconv.Itoa(at.tPost)
+	return "A@" + at.GetPos() + "@" + strconv.Itoa(at.tPost)
 }
 
 // GetOpA returns the atomic operation type
@@ -379,9 +379,14 @@ func (at *ElementAtomic) setTraceID(ID int) {
 
 // Copy the atomic element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since atomics do not contain reference to other elements and no other
+//     elements contain referents to atomics, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (at *ElementAtomic) Copy() Element {
+func (at *ElementAtomic) Copy(_ map[string]Element) Element {
 
 	return &ElementAtomic{
 		traceID:                  at.traceID,

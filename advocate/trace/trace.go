@@ -615,11 +615,12 @@ func (t *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 // Parameter:
 //   - tPost int: Remove elements after tPost
 func (t *Trace) RemoveLater(tPost int) {
+	mapping := make(map[string]Element)
 	for routine, trace := range t.traces {
 		newElems := make([]Element, 0)
 		for _, elem := range trace {
 			if elem.GetTPost() > tPost {
-				newElems = append(newElems, elem.Copy())
+				newElems = append(newElems, elem.Copy(mapping))
 			}
 		}
 		t.traces[routine] = newElems
@@ -682,11 +683,12 @@ func (t *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element {
 //   - Trace: The copy of the trace
 //   - error
 func (t *Trace) Copy() (Trace, error) {
+	mapping := make(map[string]Element)
 	tracesCopy := make(map[int][]Element)
 	for routine, trace := range t.traces {
 		tracesCopy[routine] = make([]Element, len(trace))
 		for i, elem := range trace {
-			tracesCopy[routine][i] = elem.Copy()
+			tracesCopy[routine][i] = elem.Copy(mapping)
 
 			if control.CheckCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient small RAM")

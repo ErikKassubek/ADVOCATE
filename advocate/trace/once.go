@@ -191,7 +191,7 @@ func (on *ElementOnce) GetLine() int {
 // Returns:
 //   - string: The tID of the element
 func (on *ElementOnce) GetTID() string {
-	return on.GetPos() + "@" + strconv.Itoa(on.tPre)
+	return "O@" + on.GetPos() + "@" + strconv.Itoa(on.tPre)
 }
 
 // SetVc sets the vector clock
@@ -349,9 +349,14 @@ func (on *ElementOnce) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since once do not contain reference to other elements and no other
+//     elements contain referents to once, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (on *ElementOnce) Copy() Element {
+func (on *ElementOnce) Copy(_ map[string]Element) Element {
 	return &ElementOnce{
 		traceID:                  on.traceID,
 		index:                    on.index,

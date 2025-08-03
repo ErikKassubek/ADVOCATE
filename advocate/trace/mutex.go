@@ -234,12 +234,12 @@ func (mu *ElementMutex) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form "M@[file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
 func (mu *ElementMutex) GetTID() string {
-	return mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
+	return "M@" + mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
 // GetOpM returns the operation
@@ -453,9 +453,14 @@ func (mu *ElementMutex) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since mutex do not contain reference to other elements and no other
+//     elements contain referents to mutex, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (mu *ElementMutex) Copy() Element {
+func (mu *ElementMutex) Copy(_ map[string]Element) Element {
 	return &ElementMutex{
 		traceID:                  mu.traceID,
 		index:                    mu.index,

@@ -263,7 +263,6 @@ func IsConcurrent(vc1 *VectorClock, vc2 *VectorClock) bool {
 	}
 
 	if vc1.size != vc2.size {
-		log.Errorf("Tried to check concurrency on vc of different sizes: %d != %d", vc1.size, vc2.size)
 		return false
 	}
 

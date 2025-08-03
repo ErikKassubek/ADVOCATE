@@ -52,9 +52,7 @@ func ReplayManager() {
 
 		key := replayElem.Key()
 
-		//	comment
-
-		if key == lastKey && !PartialReplay {
+		if !PartialReplay {
 			if !waitForAck.waitForAck && hasTimePast(lastTime, releaseOldestWait) { // timeout
 				replayTimeout(replayElem)
 				continue
@@ -73,10 +71,7 @@ func ReplayManager() {
 		}
 
 		// check if switch to partial replay
-		if key != lastKey {
-			CheckForPartialReplay(replayElem)
-			lastKey = key
-		}
+		CheckForPartialReplay(replayElem)
 
 		// release element if in waiting ops
 		lock(&waitingOpsMutex)
@@ -188,7 +183,7 @@ func replayTimeout(replayElem ReplayElement) {
  * This function should be called after the main routine is finished, to prevent
  * the program to terminate before the trace is finished.
  */
-func WaitForReplayFinish(exit bool) {
+func WaitForReplayFinish() {
 	if printDebug {
 		println("Wait for replay finish")
 		defer println("Finish Wait")
@@ -210,18 +205,13 @@ func WaitForReplayFinish(exit bool) {
 				break
 			}
 
-			if hasTimePast(startTime, 10) {
+			if hasTimePast(startTime, 5) {
 				break
 			}
 
 			sleep(0.001)
 		}
-
 		DisableReplay()
-
-		// wait long enough, that all operations that have been released in the displayReplay
-		// can record the pre
-		sleep(0.5)
 	}
 
 	// Ensure that the deadlock detector is finished
@@ -234,9 +224,5 @@ func WaitForReplayFinish(exit bool) {
 		unlock(&waitDeadlockDetectLock)
 
 		sleep(0.001)
-	}
-
-	if stuckReplayExecutedSuc {
-		ExitReplayWithCode(expectedExitCode, "")
 	}
 }

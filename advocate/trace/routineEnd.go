@@ -268,9 +268,14 @@ func (re *ElementRoutineEnd) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since conds do not contain reference to other elements and no other
+//     elements contain referents to conds, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (re *ElementRoutineEnd) Copy() Element {
+func (re *ElementRoutineEnd) Copy(_ map[string]Element) Element {
 	return &ElementRoutineEnd{
 		traceID: re.traceID,
 		index:   re.index,

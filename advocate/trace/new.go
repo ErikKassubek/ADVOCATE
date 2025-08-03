@@ -209,12 +209,12 @@ func (n *ElementNew) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form "N@[file]:[line]@[tPre]
 //
 // Returns:
 //   - int: The tID of the element
 func (n *ElementNew) GetTID() string {
-	return n.GetPos() + "@" + strconv.Itoa(n.tPost)
+	return "N@" + n.GetPos() + "@" + strconv.Itoa(n.tPost)
 }
 
 // GetObjType returns the string representation of the object type
@@ -369,9 +369,14 @@ func (n *ElementNew) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since New do not contain reference to other elements and no other
+//     elements contain referents to New, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (n *ElementNew) Copy() Element {
+func (n *ElementNew) Copy(_ map[string]Element) Element {
 
 	return &ElementNew{
 		traceID:                  n.traceID,

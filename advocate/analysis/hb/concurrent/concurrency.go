@@ -103,5 +103,6 @@ func IsConcurrent(elem1, elem2 trace.Element) bool {
 		log.Error("Cannot check for concurrency: VCs have not been calculated")
 		return false
 	}
+
 	return clock.IsConcurrent(elem1.GetVC(), elem2.GetVC())
 }

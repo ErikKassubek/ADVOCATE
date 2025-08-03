@@ -251,9 +251,14 @@ func (er *ElementReplay) setTraceID(ID int) {
 
 // Copy creates a copy of the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since conds do not contain reference to other elements and no other
+//     elements contain referents to conds, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (er *ElementReplay) Copy() Element {
+func (er *ElementReplay) Copy(_ map[string]Element) Element {
 	return &ElementReplay{
 		traceID:  er.traceID,
 		tPost:    er.tPost,

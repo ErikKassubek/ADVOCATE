@@ -48,6 +48,7 @@ const (
 //   - line int: The line of the channel operation
 //   - sel *traceElementSelect: The select operation, if the channel operation
 //     is part of a select, otherwise nil
+//   - selIndex int: index of the channel in sel.chases if sel != nil, otherwise -1
 //   - partner *ElementChannel: The partner of the channel operation
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
@@ -70,6 +71,7 @@ type ElementChannel struct {
 	file                     string
 	line                     int
 	sel                      *ElementSelect
+	selIndex                 int
 	partner                  *ElementChannel
 	vc                       *clock.VectorClock
 	wCl                      *clock.VectorClock
@@ -167,6 +169,7 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		qCount:                   qCountInt,
 		file:                     file,
 		line:                     line,
+		selIndex:                 -1,
 		vc:                       nil,
 		wCl:                      nil,
 		numberConcurrent:         -1,
@@ -257,12 +260,17 @@ func (ch *ElementChannel) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form C@[file]:[line]@[tPre]. If it is part of a select,
+// it has the form C@[file]:[line]@[tPre]@[index]
 //
 // Returns:
 //   - string: The tID of the element
 func (ch *ElementChannel) GetTID() string {
-	return ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
+	tID := "C@" + ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
+	if ch.selIndex != -1 {
+		tID += "@" + strconv.Itoa(ch.selIndex)
+	}
+	return tID
 }
 
 // GetOID returns the operation ID of the element
@@ -606,9 +614,17 @@ func (ch *ElementChannel) setTraceID(ID int) {
 
 // Copy creates a copy of the channel element
 //
+//   - mapping map[string]Element: map containing all already copied elements.
+//     Used to avoid double copy of references
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (ch *ElementChannel) Copy() Element {
+func (ch *ElementChannel) Copy(mapping map[string]Element) Element {
+	tID := ch.GetTID()
+	if existing, ok := mapping[tID]; ok {
+		return existing
+	}
+
 	newCh := ElementChannel{
 		traceID:                  ch.traceID,
 		index:                    ch.index,
@@ -622,8 +638,7 @@ func (ch *ElementChannel) Copy() Element {
 		qSize:                    ch.qSize,
 		file:                     ch.file,
 		line:                     ch.line,
-		sel:                      ch.sel,
-		partner:                  ch.partner,
+		selIndex:                 ch.selIndex,
 		vc:                       ch.vc.Copy(),
 		wCl:                      ch.wCl.Copy(),
 		numberConcurrent:         ch.numberConcurrent,
@@ -631,6 +646,22 @@ func (ch *ElementChannel) Copy() Element {
 		numberConcurrentSame:     ch.numberConcurrentSame,
 		numberConcurrentWeakSame: ch.numberConcurrentWeakSame,
 	}
+
+	mapping[tID] = &newCh
+
+	var newPartner *ElementChannel
+	if ch.partner != nil {
+		newPartner = ch.partner.Copy(mapping).(*ElementChannel)
+	}
+
+	var newSelect *ElementSelect
+	if ch.sel != nil {
+		newSelect = ch.sel.Copy(mapping).(*ElementSelect)
+	}
+
+	newCh.partner = newPartner
+	newCh.sel = newSelect
+
 	return &newCh
 }
 

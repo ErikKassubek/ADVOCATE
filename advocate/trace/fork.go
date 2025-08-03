@@ -170,12 +170,12 @@ func (fo *ElementFork) GetLine() int {
 }
 
 // GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
+// The tID is a string of form F@[file]:[line]@[tPre]
 //
 // Returns:
 //   - string: The tID of the element
 func (fo *ElementFork) GetTID() string {
-	return fo.GetPos() + "@" + strconv.Itoa(fo.tPost)
+	return "F@" + fo.GetPos() + "@" + strconv.Itoa(fo.tPost)
 }
 
 // SetVc sets the vector clock
@@ -302,17 +302,14 @@ func (fo *ElementFork) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since forks do not contain reference to other elements and no other
+//     elements contain referents to forks, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (fo *ElementFork) Copy() Element {
-	copyConcurrent := make([]Element, 0)
-	copy(copyConcurrent, fo.concurrent)
-	copyConcurrentWeak := make([]Element, 0)
-	copy(copyConcurrentWeak, fo.concurrentWeak)
-	copyConcurrentSame := make([]Element, 0)
-	copy(copyConcurrentSame, fo.concurrentSame)
-	copyConcurrentWeakSame := make([]Element, 0)
-	copy(copyConcurrentWeakSame, fo.concurrentWeakSame)
+func (fo *ElementFork) Copy(_ map[string]Element) Element {
 
 	return &ElementFork{
 		traceID:                  fo.traceID,
@@ -326,12 +323,8 @@ func (fo *ElementFork) Copy() Element {
 		wVc:                      fo.wVc.Copy(),
 		numberConcurrent:         fo.numberConcurrent,
 		numberConcurrentWeak:     fo.numberConcurrentWeak,
-		concurrent:               copyConcurrent,
-		concurrentWeak:           copyConcurrentWeak,
 		numberConcurrentSame:     fo.numberConcurrentSame,
 		numberConcurrentWeakSame: fo.numberConcurrentWeakSame,
-		concurrentSame:           copyConcurrentSame,
-		concurrentWeakSame:       copyConcurrentWeakSame,
 	}
 }
 
@@ -375,51 +368,6 @@ func (fo *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 			fo.numberConcurrentSame = c
 		} else {
 			fo.numberConcurrent = c
-		}
-	}
-}
-
-// GetConcurrent returns the elements that are concurrent to the element
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - []Element: the concurrent elements
-func (fo *ElementFork) GetConcurrent(weak, sameElem bool) []Element {
-	if weak {
-		if sameElem {
-			return fo.concurrentWeakSame
-		}
-		return fo.concurrentWeak
-	}
-	if sameElem {
-		return fo.concurrentSame
-	}
-	return fo.concurrent
-}
-
-// SetConcurrent sets the concurrent elements
-//
-// Parameter:
-//   - []Element: the concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (fo *ElementFork) SetConcurrent(elem []Element, weak, sameElem bool) {
-	fo.SetNumberConcurrent(len(elem), weak, sameElem)
-
-	if weak {
-		if sameElem {
-			fo.concurrentWeakSame = elem
-		} else {
-			fo.concurrentWeak = elem
-		}
-	} else {
-		if sameElem {
-			fo.concurrentSame = elem
-		} else {
-			fo.concurrent = elem
 		}
 	}
 }

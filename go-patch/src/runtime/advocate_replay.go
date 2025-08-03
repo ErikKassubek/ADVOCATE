@@ -179,7 +179,6 @@ var (
 	stuckReplayExecutedSuc = false
 
 	// for replay timeout
-	lastKey               string
 	lastTime              int64
 	lastTimeWithoutOldest int64
 	releaseOldestWait     = releaseOldestWaitLastMax

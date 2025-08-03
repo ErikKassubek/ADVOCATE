@@ -463,7 +463,7 @@ func FinishReplay() {
 	}
 
 	println("FinishReplay")
-	runtime.WaitForReplayFinish(false)
+	runtime.WaitForReplayFinish()
 
 	time.Sleep(time.Second)
 

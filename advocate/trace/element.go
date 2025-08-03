@@ -53,7 +53,7 @@ type Element interface {
 	SetWVc(vc *clock.VectorClock)
 	GetVC() *clock.VectorClock
 	GetWVC() *clock.VectorClock
-	Copy() Element
+	Copy(mapping map[string]Element) Element
 	setTraceID(ID int)
 	GetTraceID() int
 	GetNumberConcurrent(weak, sameElem bool) int

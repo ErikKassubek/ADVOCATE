@@ -16,7 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"sync"
 	"sync/atomic"
 	"time"
 )
@@ -61,9 +60,6 @@ func FinishTracing() {
 		return
 	}
 
-	// give program time to finish running
-	time.Sleep(time.Second)
-
 	hasFinished = true
 
 	currentlyWriting.Store(true)
@@ -107,17 +103,12 @@ func FinishTracing() {
 //	tracePath string:t path to where the trace should be written
 func writeToTraceFiles(tracePath string) {
 	numRout := runtime.GetNumberOfRoutines()
-
 	writeToTraceFileInfo(tracePath, numRout)
 
-	var wg sync.WaitGroup
 	for i := 1; i <= numRout; i++ {
 		// write the trace to the file
-		wg.Add(1)
-		go writeToTraceFile(i, &wg, tracePath)
+		writeToTraceFile(i, tracePath)
 	}
-
-	wg.Wait()
 }
 
 // Write the trace of a routine to a file.
@@ -126,12 +117,9 @@ func writeToTraceFiles(tracePath string) {
 //
 // Parameter:
 //   - routine: The id of the routine
-//   - wg *sync.WaitGroup: wait group used to make writing of different routines concurrent
 //   - tracePath string: path to where the trace should be written
-func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
+func writeToTraceFile(routine int, tracePath string) {
 	// create the file if it does not exist and open it
-	defer wg.Done()
-
 	fileName := filepath.Join(tracePath, "trace_"+strconv.Itoa(routine)+".log")
 
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -141,15 +129,11 @@ func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
 	defer file.Close()
 
 	// get the runtime to send the trace
-	advocateChan := make(chan string)
-	go func() {
-		runtime.TraceToStringByIDChannel(routine, advocateChan)
-		close(advocateChan)
-	}()
+	t, b := runtime.TraceToStringByID(uint64(routine))
 
 	// receive the trace and write it to the file
-	for trace := range advocateChan {
-		if _, err := file.WriteString(trace); err != nil {
+	if b {
+		if _, err := file.WriteString(t); err != nil {
 			panic(err)
 		}
 	}

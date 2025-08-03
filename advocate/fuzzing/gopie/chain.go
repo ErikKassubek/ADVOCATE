@@ -27,6 +27,7 @@ import (
 // where two neighboring elements must be from different routines
 type Chain struct {
 	Elems []trace.Element
+	old   bool
 }
 
 // NewChain create a new, empty chain
@@ -34,7 +35,7 @@ type Chain struct {
 // Returns: chain: the new chain
 func NewChain() Chain {
 	elems := make([]trace.Element, 0)
-	return Chain{elems}
+	return Chain{elems, false}
 }
 
 type elemWithQual struct {

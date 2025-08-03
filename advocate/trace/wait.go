@@ -222,7 +222,7 @@ func (wa *ElementWait) GetLine() int {
 // Returns:
 //   - string: The tID of the element
 func (wa *ElementWait) GetTID() string {
-	return wa.GetPos() + "@" + strconv.Itoa(wa.tPre)
+	return "W@" + wa.GetPos() + "@" + strconv.Itoa(wa.tPre)
 }
 
 // IsWait returns if the operation is a wait op
@@ -402,9 +402,14 @@ func (wa *ElementWait) setTraceID(ID int) {
 
 // Copy the element
 //
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//     since atomics do not contain reference to other elements and no other
+//     elements contain referents to atomics, this is not used
+//
 // Returns:
 //   - TraceElement: The copy of the element
-func (wa *ElementWait) Copy() Element {
+func (wa *ElementWait) Copy(_ map[string]Element) Element {
 	return &ElementWait{
 		traceID:                  wa.traceID,
 		index:                    wa.index,

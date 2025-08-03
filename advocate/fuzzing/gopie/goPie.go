@@ -15,6 +15,7 @@ import (
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/io"
+	"advocate/trace"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"fmt"
@@ -67,6 +68,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	// original SC, not newly recorded once
 	SchedulingChains = []Chain{}
 	if c, ok := chainFiles[mutNumber]; ok {
+		c.old = true
 		SchedulingChains = []Chain{c}
 	}
 
@@ -182,8 +184,9 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 	traceCopy.ShortenTrace(t1, false)
 
 	// add in all the elements in the chain
+	mapping := make(map[string]trace.Element)
 	for i, elem := range mut.Elems {
-		c := elem.Copy()
+		c := elem.Copy(mapping)
 		c.SetTSort(t1 + i*2)
 		traceCopy.AddElement(c)
 	}

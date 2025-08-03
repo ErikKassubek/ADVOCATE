@@ -115,7 +115,7 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 		leakReplay := make(map[string]string)
 		leakFound := false
 
-		timeoutFound := false
+		// timeoutFound := false
 
 		for index := 1; index < numberResults; index++ {
 			id := ""
@@ -135,10 +135,10 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				break
 			}
 
-			if bugType == "R02" {
-				timeoutFound = true
-				continue
-			}
+			// if bugType == "R02" {
+			// 	// timeoutFound = true
+			// 	continue
+			// }
 
 			// get the bug type description
 			bugTypeDescription := getBugTypeDescription(bugType)
@@ -163,6 +163,7 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				leakCode[len(leakCode)+1] = code[1]
 				leakReplay = replay
 				leakFound = true
+				println("LEAK SKIP")
 				continue
 			}
 
@@ -176,10 +177,10 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 
 		if leakFound {
 			bugType := "L00"
-			if timeoutFound {
-				leakTypeDescription = getBugTypeDescription("R02")
-				bugType = "R02"
-			}
+			// if timeoutFound {
+			// 	leakTypeDescription = getBugTypeDescription("R02")
+			// 	bugType = "R02"
+			// }
 			if !writeBug(bugType, leakPos) {
 				continue
 			}

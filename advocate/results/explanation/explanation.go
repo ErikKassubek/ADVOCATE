@@ -163,7 +163,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				leakCode[len(leakCode)+1] = code[1]
 				leakReplay = replay
 				leakFound = true
-				println("LEAK SKIP")
 				continue
 			}
 

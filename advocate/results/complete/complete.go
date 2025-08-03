@@ -12,6 +12,7 @@ package complete
 
 import (
 	"advocate/results/explanation"
+	"advocate/utils/log"
 	"advocate/utils/types"
 	"fmt"
 	"os"
@@ -29,13 +30,13 @@ import (
 func Check(resultFolderPath string, progPath string) error {
 	progElems, err := getProgramElements(progPath)
 	if err != nil {
-		println("Error in getProgramElements")
+		log.Error("Error in getProgramElements")
 		return err
 	}
 
 	traceElems, err := getTraceElements(resultFolderPath)
 	if err != nil {
-		println("Error in getTraceElements")
+		log.Error("Error in getTraceElements")
 		return err
 	}
 

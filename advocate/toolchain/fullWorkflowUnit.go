@@ -163,7 +163,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 					if !isFuzzing {
 						timer.Stop(timer.TotalTest)
 					}
-					continue
+					// continue
 				}
 			}
 

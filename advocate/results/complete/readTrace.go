@@ -11,6 +11,7 @@
 package complete
 
 import (
+	"advocate/utils/log"
 	"advocate/utils/types"
 	"errors"
 	"os"
@@ -35,7 +36,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 	// for each subfolder in resultFolderPath, not recursively
 	subfolder, err := getSubfolders(resultFolderPath)
 	if err != nil {
-		println("Error in getting subfolders")
+		log.Error("Error in getting subfolders")
 		return nil, err
 	}
 
@@ -47,7 +48,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 
 		err := filepath.Walk(folder, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				println("Error in walking trace: ", filepath.Clean(path))
+				log.Error("Error in walking trace: ", filepath.Clean(path))
 				return err
 			}
 
@@ -61,7 +62,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 			if fileName == "output.log" {
 				headerFile, importLine, headerLine, err = readCommandFile(path)
 				if err != nil {
-					println("Error in reading command: ", filepath.Clean(path))
+					log.Error("Error in reading command: ", filepath.Clean(path))
 					return err
 				}
 				return nil
@@ -74,7 +75,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 
 			content, err := os.ReadFile(path)
 			if err != nil {
-				println("Error in reading trace: ", filepath.Clean(path))
+				log.Error("Error in reading trace: ", filepath.Clean(path))
 				return err
 			}
 
@@ -115,7 +116,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 		})
 
 		if err != nil {
-			println("Error in walking trace")
+			log.Error("Error in walking trace")
 			return nil, err
 		}
 
@@ -200,7 +201,7 @@ func readCommandFile(path string) (string, int, int, error) {
 	// read the command file
 	content, err := os.ReadFile(path)
 	if err != nil {
-		println("Error in reading command: ", filepath.Clean(path))
+		log.Error("Error in reading command: ", filepath.Clean(path))
 		return headerFile, importLine, headerLine, err
 	}
 	// find the line starting with Import added at line:
@@ -210,14 +211,14 @@ func readCommandFile(path string) (string, int, int, error) {
 			line := strings.TrimPrefix(line, "Import added at line: ")
 			importLine, err = strconv.Atoi(line)
 			if err != nil {
-				println("Error in converting import line: ", line)
+				log.Error("Error in converting import line: ", line)
 				return headerFile, importLine, headerLine, err
 			}
 		} else if strings.Contains(line, "Header added at line: ") {
 			line := strings.TrimPrefix(line, "Header added at line: ")
 			headerLine, err = strconv.Atoi(line)
 			if err != nil {
-				println("Error in converting header line: ", line)
+				log.Error("Error in converting header line: ", line)
 				return headerFile, importLine, headerLine, err
 			}
 		} else if strings.Contains(line, "Header added at file: ") {
@@ -226,7 +227,7 @@ func readCommandFile(path string) (string, int, int, error) {
 	}
 
 	if importLine == -1 || headerLine == -1 {
-		println("Error in reading import or header line")
+		log.Error("Error in reading import or header line")
 		return headerFile, importLine, headerLine, errors.New("Error in reading import or header line")
 	}
 

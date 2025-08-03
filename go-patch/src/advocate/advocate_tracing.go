@@ -59,8 +59,11 @@ func FinishTracing() {
 		// otherwise, trace may be empty
 		return
 	}
-
 	hasFinished = true
+
+	if !finishFuzzingStarted {
+		time.Sleep(time.Second)
+	}
 
 	currentlyWriting.Store(true)
 	defer currentlyWriting.Store(false)
@@ -129,11 +132,15 @@ func writeToTraceFile(routine int, tracePath string) {
 	defer file.Close()
 
 	// get the runtime to send the trace
-	t, b := runtime.TraceToStringByID(uint64(routine))
+	advocateChan := make(chan string)
+	go func() {
+		runtime.TraceToStringByIDChannel(routine, advocateChan)
+		close(advocateChan)
+	}()
 
 	// receive the trace and write it to the file
-	if b {
-		if _, err := file.WriteString(t); err != nil {
+	for trace := range advocateChan {
+		if _, err := file.WriteString(trace); err != nil {
 			panic(err)
 		}
 	}

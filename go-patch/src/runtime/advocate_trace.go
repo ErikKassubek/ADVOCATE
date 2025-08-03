@@ -139,12 +139,14 @@ func traceToString(trace *[]traceElem) string {
 	res := ""
 
 	// if atomic recording is disabled
+	println("START TTS: ", len(*trace))
 	for i, elem := range *trace {
 		if i != 0 {
 			res += "\n"
 		}
 		res += elem.toString()
 	}
+	println("END TTS")
 	return res
 }
 

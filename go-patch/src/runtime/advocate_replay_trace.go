@@ -52,7 +52,7 @@ func AddActiveTrace(startTime int, activeMap map[string][]int, numActive int) {
 	if startTime == 0 {
 		PartialReplay = true
 	}
-	numberActive = numActive
+	NumberActive = numActive
 }
 
 // Get the next element to be executed from the replay trace

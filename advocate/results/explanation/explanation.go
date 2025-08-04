@@ -104,16 +104,14 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
 	resultsMachine = append(resultsMachine, filepath.Join(path, "results_machine.log"))
 
+	// remove possible partner information if not searched for
+	if fuzzing >= 0 {
+		adaptExplanationMaps()
+	}
+
 	for _, result := range resultsMachine {
 		file, _ := os.ReadFile(result)
 		numberResults := len(strings.Split(string(file), "\n"))
-
-		leakTypeDescription := make(map[string]string)
-		leakPos := make(map[int][]string)
-		leakElemType := make(map[int]string)
-		leakCode := make(map[int][]string)
-		leakReplay := make(map[string]string)
-		leakFound := false
 
 		// timeoutFound := false
 
@@ -135,11 +133,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				break
 			}
 
-			// if bugType == "R02" {
-			// 	// timeoutFound = true
-			// 	continue
-			// }
-
 			// get the bug type description
 			bugTypeDescription := getBugTypeDescription(bugType)
 
@@ -156,35 +149,12 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 				continue
 			}
 
-			if strings.HasPrefix(bugType, "L") {
-				leakTypeDescription = bugTypeDescription
-				leakPos[len(leakPos)+1] = bugPos[1]
-				leakElemType[len(leakElemType)+1] = bugElemType[1]
-				leakCode[len(leakCode)+1] = code[1]
-				leakReplay = replay
-				leakFound = true
-				continue
-			}
-
 			if !writeBug(bugType, bugPos) {
 				continue
 			}
 
 			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
 				replay, progInfo, fuzzing)
-		}
-
-		if leakFound {
-			bugType := "L00"
-			// if timeoutFound {
-			// 	leakTypeDescription = getBugTypeDescription("R02")
-			// 	bugType = "R02"
-			// }
-			if !writeBug(bugType, leakPos) {
-				continue
-			}
-			writeFile(path, "0", leakTypeDescription, leakPos, leakElemType, leakCode,
-				leakReplay, progInfo, fuzzing)
 		}
 	}
 

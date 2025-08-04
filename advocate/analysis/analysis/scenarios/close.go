@@ -275,8 +275,6 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 			Line:      line2,
 		}
 
-		log.Error("Found Close on Close: ", ch.ToString())
-
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
 	}

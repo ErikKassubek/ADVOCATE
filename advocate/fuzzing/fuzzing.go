@@ -207,8 +207,6 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 	startTime := time.Now()
 
-	var currentResultPath string
-
 	// while there are available mutations, run them
 	for data.NumberFuzzingRuns == 0 || len(data.MutationQueue) != 0 {
 
@@ -250,9 +248,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 
-		var traceID int
-		var err error
-		currentResultPath, traceID, err = toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
+		currentResultPath, traceID, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
 			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)
@@ -319,7 +315,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 	}
 
 	if data.FuzzingModeGoPie {
-		toolchain.ClearFuzzingTrace(currentResultPath, keepTraces)
+		toolchain.ClearFuzzingTrace(progDir, keepTraces)
 	}
 
 	log.Infof("Finish fuzzing after %d runs\n", data.NumberFuzzingRuns)

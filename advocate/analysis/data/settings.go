@@ -48,7 +48,8 @@ var (
 	replayTimeoutAck      int
 
 	// replay partial info
-	ActiveReleased int
+	ActiveReleased    int
+	AllActiveReleased int
 
 	durationInSeconds = -1 // the duration of the recording in seconds
 )
@@ -73,12 +74,14 @@ func SetExitInfo(code int, pos string) {
 //     replay had to be disabled for the first time, if never it should be 0
 //   - ack int: the timer when the the replay timed out on an acknowledgement,
 //     if never it should be 0
-//   - activeReached int: 1 if at least one active element was released, false otherwise
-func SetReplayInfo(oldest, disabled, ack, activeReached int) {
+//   - activeReached int: 1 if at least one active element was released, 0 otherwise
+//   - allActiveReleased int: 1 if all active elements have been released, 0 otherwise
+func SetReplayInfo(oldest, disabled, ack, activeReached, allActiveReleased int) {
 	replayTimeoutOldest = oldest
 	replayTimeoutDisabled = disabled
 	replayTimeoutAck = ack
 	ActiveReleased = activeReached
+	AllActiveReleased = allActiveReleased
 }
 
 // GetTimeoutHappened return if any kind of timeout happened

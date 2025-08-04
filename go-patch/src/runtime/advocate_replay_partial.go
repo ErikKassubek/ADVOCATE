@@ -10,7 +10,7 @@
 
 package runtime
 
-var numberActive = 0
+var NumberActive = 0
 var NumberActiveReleased = 0
 
 // Check if it is time to switch to active replay, and if so, switch

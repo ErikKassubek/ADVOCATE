@@ -19,8 +19,8 @@ var fuzzStats = []string{
 	"TestName",
 	"NrMut",
 	"NrMutInvalid",
-	"NrMutDouble",
 	"ActiveReleased",
+	"AllActiveReleased",
 }
 
 // Collect stats about each fuzzing run
@@ -36,8 +36,8 @@ func statsFuzz(dataPath, testName string) (map[string]int, error) {
 
 	stats["NrMut"] = gopie.NumberTotalMuts
 	stats["NrMutInvalid"] = gopie.NumberInvalidMuts
-	stats["NrMutDouble"] = gopie.NumberDoubleMuts
 	stats["ActiveReleased"] = data.ActiveReleased
+	stats["AllActiveReleased"] = data.AllActiveReleased
 
 	return stats, nil
 }

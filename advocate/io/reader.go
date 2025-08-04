@@ -114,6 +114,7 @@ func getTraceInfoFromFile(filePath string) error {
 	timeoutDisabled := 0
 	timeoutAck := 0
 	activeReleased := 0
+	allActiveReleased := 0
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -146,12 +147,13 @@ func getTraceInfoFromFile(filePath string) error {
 			if activeReplayReached > 0 {
 				activeReleased = 1
 			}
-
+		case "AllActiveReleased":
+			allActiveReleased, _ = strconv.Atoi(lineSplit[1])
 		}
 	}
 
 	data.SetExitInfo(exitCode, exitPos)
-	data.SetReplayInfo(timeoutOldest, timeoutDisabled, timeoutAck, activeReleased)
+	data.SetReplayInfo(timeoutOldest, timeoutDisabled, timeoutAck, activeReleased, allActiveReleased)
 
 	return nil
 }

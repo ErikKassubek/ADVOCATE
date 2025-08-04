@@ -197,7 +197,7 @@ func WaitForReplayFinish() {
 				break
 			}
 
-			if PartialReplay && numberActive == NumberActiveReleased {
+			if PartialReplay && NumberActive == NumberActiveReleased {
 				break
 			}
 

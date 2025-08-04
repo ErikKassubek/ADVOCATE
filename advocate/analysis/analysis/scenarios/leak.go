@@ -647,7 +647,7 @@ func CheckForStuckRoutine(simple bool) bool {
 	res := false
 
 	for routine, tr := range data.MainTrace.GetTraces() {
-		if len(tr) < 1 {
+		if len(tr) == 0 {
 			continue
 		}
 
@@ -657,17 +657,53 @@ func CheckForStuckRoutine(simple bool) bool {
 			continue
 		}
 
+		lastTPost := lastElem.GetTPost()
+
+		leakType := helper.LUnknown
+		objectType := "XX"
 		// do not record extra if a leak with a blocked operation is present
-		if !simple && len(tr) > 0 && tr[len(tr)-1].GetTPost() == 0 {
-			continue
+		// if simple, find the type of blocking
+		if lastTPost == 0 {
+			if simple {
+				ot := lastElem.GetObjType(true)
+				objectType = ot
+				switch ot {
+				case "CS":
+					c := lastElem.(*trace.ElementChannel)
+					if c.GetID() == -1 {
+						leakType = helper.LNilChan
+					} else if lastElem.(*trace.ElementChannel).IsBuffered() {
+						leakType = helper.LBufferedWithout
+					} else {
+						leakType = helper.LUnbufferedWithout
+					}
+				case "DW":
+					leakType = helper.LCond
+				case "ML", "MR":
+					leakType = helper.LMutex
+				case "WW":
+					leakType = helper.LWaitGroup
+				case "SS":
+					if lastElem.(*trace.ElementSelect).GetContainsDefault() {
+						leakType = helper.LUnknown
+						objectType = "XX"
+					} else {
+						leakType = helper.LSelectWithout
+					}
+				default:
+					objectType = "XX"
+				}
+			} else {
+				continue
+			}
 		}
 
 		arg := results.TraceElementResult{
 			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
-			ObjType: "XX", File: lastElem.GetFile(), Line: lastElem.GetLine(),
+			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
-		results.Result(results.CRITICAL, helper.LUnknown,
+		results.Result(results.CRITICAL, leakType,
 			"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
 
 		res = true

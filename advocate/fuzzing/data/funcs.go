@@ -33,13 +33,13 @@ func AddMutToQueue(mut Mutation) {
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
 func CanBeAddedToChain(elem trace.Element) bool {
+	t := elem.GetObjType(false)
 	if FuzzingMode == GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
-		t := elem.GetObjType(false)
 		return t == trace.ObjectTypeMutex || t == trace.ObjectTypeChannel || t == trace.ObjectTypeSelect
 	}
 
-	return !IgnoreFuzzing(elem, true)
+	return t != trace.ObjectTypeAtomic && !IgnoreFuzzing(elem, true)
 }
 
 // IgnoreFuzzing checks if an element should be ignored for fuzzing

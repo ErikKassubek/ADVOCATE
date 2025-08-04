@@ -253,6 +253,35 @@ var objectTypes = map[string]string{
 	"XX": "Unknown",
 }
 
+// adaptExplanationMaps changes the bugNames and bugExplanation maps, if
+// the analysis did not search for possible partners
+func adaptExplanationMaps() {
+	bugNames["L01"] = "Leak on unbuffered channel"
+	bugNames["L02"] = "Leak on unbuffered channel"
+	bugNames["L03"] = "Leak on buffered Channel"
+	bugNames["L04"] = "Leak on buffered Channel"
+	bugNames["L05"] = "Leak on nil channel"
+	bugNames["L06"] = "Leak on select"
+	bugNames["L07"] = "Leak on select"
+
+	bugExplanations["L01"] = "The analyzer detected a Leak on an unbuffered channel .\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
+		"still blocking at the end of the program.\n"
+	bugExplanations["L02"] = "The analyzer detected a Leak on an unbuffered channel.\n" +
+		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
+		"still blocking at the end of the program.\n"
+	bugExplanations["L03"] = "The analyzer detected a Leak on a buffered channel.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
+		"still blocking at the end of the program.\n"
+	bugExplanations["L04"] = "The analyzer detected a Leak on a buffered channel.\n" +
+		"A Leak on a buffered channel is a situation, where a buffered channel is " +
+		"still blocking at the end of the program.\n"
+	bugExplanations["L06"] = "The analyzer detected a Leak on a select.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
+	bugExplanations["L07"] = "The analyzer detected a Leak on a select.\n" +
+		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
+}
+
 // GetCodeFromDescription returns the code key from the description
 //
 // Parameter:

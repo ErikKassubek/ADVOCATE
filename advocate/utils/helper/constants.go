@@ -32,7 +32,7 @@ var (
 	GoPieMaxSCLength = 9
 	GoPieMutabound   = 128
 
-	GoPieSCStart = 12
+	GoPieSCStart = 24
 )
 
 // SetSettings sets different constants and settings used in the program

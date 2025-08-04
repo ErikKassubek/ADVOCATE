@@ -164,10 +164,10 @@ func ClearFuzzingTrace(path string, keepTrace bool) {
 	fuzzingPath := filepath.Join(path, "fuzzingTraces")
 
 	if keepTrace {
-		err := os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
-		if err != nil {
-			log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
-		}
+		_ = os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
+		// if err != nil {
+		// 	log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
+		// }
 	} else {
 		err := os.RemoveAll(fuzzingPath)
 		if err != nil {

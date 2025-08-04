@@ -19,10 +19,6 @@ import (
 	"math/rand/v2"
 )
 
-const (
-	maxNoNew = 5
-)
-
 // TODO: limit the number of mutations that can be created from one mutation step
 
 // Create the mutations for a GoPie chain
@@ -45,7 +41,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 
 	mutateBound := helper.GoPieMutabound
 
-	// in the original goPie, the fuzzing bound is 4
+	// in the original goPie, the fuzzing bound is 3
 	if data.FuzzingMode == data.GoPie {
 		bound = 3
 	}
@@ -62,18 +58,21 @@ func mutate(c Chain, energy int) map[string]Chain {
 
 	res[c.toString()] = c
 
-	countNoNew := 0
+	maxMutPerStep := 6
+	if data.FuzzingMode == data.GoPie {
+		maxMutPerStep = -1
+	}
 
 	for {
 		noNew := false
 		for _, ch := range res {
-			tset := make(map[string]Chain, 0)
+			tSet := make(map[string]Chain, 0)
 
 			// Rule 1 -> abridge
 			if ch.Len() >= 2 && rand.Int()%2 == 1 {
 				newCh1, newCh2 := abridge(ch)
-				tset[newCh1.toString()] = newCh1
-				tset[newCh2.toString()] = newCh2
+				tSet[newCh1.toString()] = newCh1
+				tSet[newCh2.toString()] = newCh2
 			}
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
@@ -81,8 +80,13 @@ func mutate(c Chain, energy int) map[string]Chain {
 			if data.FuzzingMode != data.GoPie {
 				if ch.Len() >= 2 && rand.Int()%2 == 1 {
 					newChs := flip(ch)
+
+					if maxMutPerStep != -1 {
+						shuffle(&newChs, maxMutPerStep)
+					}
+
 					for _, newCh := range newChs {
-						tset[newCh.toString()] = newCh
+						tSet[newCh.toString()] = newCh
 					}
 				}
 			}
@@ -91,30 +95,31 @@ func mutate(c Chain, energy int) map[string]Chain {
 			// if ch.len() <= bound && rand.Int()%2 == 1 {
 			if rand.Int()%2 == 1 {
 				newChs := substitute(ch)
+
+				if maxMutPerStep != -1 {
+					shuffle(&newChs, maxMutPerStep)
+				}
+
 				for _, newCh := range newChs {
-					tset[newCh.toString()] = newCh
+					tSet[newCh.toString()] = newCh
 				}
 			}
 
 			// Rule 4 -> augment
 			if ch.Len() <= bound && rand.Int()%2 == 1 {
 				newChs := augment(c)
+
+				if maxMutPerStep != -1 {
+					shuffle(&newChs, maxMutPerStep)
+				}
+
 				for _, newCh := range newChs {
-					tset[newCh.toString()] = newCh
+					tSet[newCh.toString()] = newCh
 				}
 			}
 
-			lenBefore := len(res)
-			for k, v := range tset {
+			for k, v := range tSet {
 				res[k] = v
-			}
-
-			if len(res) == lenBefore { // if no new elements where added
-				countNoNew++
-				// if no new mutation has been added for maxNoNew rounds, end creation of mutations
-				if countNoNew > maxNoNew {
-					noNew = true
-				}
 			}
 		}
 
@@ -126,12 +131,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 			break
 		}
 
-		prob := 200
-		if data.UseHBInfoFuzzing {
-			prob = 100
-		}
-
-		if (rand.Int() % prob) < energy {
+		if (rand.Int() % 200) < energy {
 			break
 		}
 	}
@@ -295,4 +295,16 @@ func getSpecialMuts() map[string]Chain {
 	}
 
 	return res
+}
+
+func shuffle(c *[]Chain, n int) {
+	if len(*c) <= n {
+		return
+	}
+
+	rand.Shuffle(len(*c), func(i, j int) {
+		(*c)[i], (*c)[j] = (*c)[j], (*c)[i]
+	})
+
+	*c = (*c)[:n]
 }

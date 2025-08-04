@@ -101,7 +101,7 @@ func main() {
 	flag.IntVar(&timeoutReplay, "timeoutRep", 900, "Set a timeout in seconds for the replay. Default: 600s. To disable set to -1")
 
 	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
-	flag.IntVar(&maxFuzzingRun, "maxFuzzingRuns", 100, "Maximum number of fuzzing runs per test/prog. Default: 100. To Disable, set to -1")
+	flag.IntVar(&maxFuzzingRun, "maxFuzzingRuns", -1, "Maximum number of fuzzing runs per test/prog. Default: -1. To Disable, set to -1")
 
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
 

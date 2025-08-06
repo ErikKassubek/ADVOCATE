@@ -20,6 +20,7 @@ import (
 	"advocate/analysis/data"
 	"advocate/fuzzing"
 	fuzzingdata "advocate/fuzzing/data"
+	"advocate/fuzzing/gopie"
 	"advocate/results/stats"
 	"advocate/toolchain"
 	"advocate/utils/control"
@@ -83,6 +84,10 @@ var (
 	noMemorySupervisor bool
 
 	maxNumberElements int
+
+	sameElemTypeInSC     bool
+	scSize               int
+	fuzzingWithoutReplay bool
 )
 
 // Main function
@@ -159,6 +164,11 @@ func main() {
 	flag.StringVar(&settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
 
 	flag.BoolVar(&cancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
+
+	// for experiments
+	flag.BoolVar(&sameElemTypeInSC, "sameElemTypeInSC", false, "Only allow elements of the same type in the same SC")
+	flag.IntVar(&scSize, "scSize", 4, "max number of elements in SC")
+	flag.BoolVar(&fuzzingWithoutReplay, "fuzzingWithoutReplay", false, "Disable replay before SC in fuzzing")
 
 	flag.Parse()
 
@@ -290,6 +300,10 @@ func modeFuzzing() {
 		log.Error("Set path with -path [path]")
 		panic(err)
 	}
+
+	helper.GoPieSCStart = scSize
+	gopie.SameElementTypeInSC = sameElemTypeInSC
+	gopie.WithoutReplay = fuzzingWithoutReplay
 
 	err = fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath,
 		progName, execName, ignoreAtomics, recordTime, notExec, statistics,

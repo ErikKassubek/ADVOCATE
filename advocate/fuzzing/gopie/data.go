@@ -47,6 +47,9 @@ var (
 	NumberInvalidMuts = 0
 	NumberDoubleMuts  = 0
 	NumberTotalMuts   = 0
+
+	SameElementTypeInSC = false
+	WithoutReplay       = false
 )
 
 // ClearData deletes all the GoPie data

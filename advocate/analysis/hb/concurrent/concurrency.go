@@ -25,6 +25,7 @@ import (
 //   - all bool: if true, return all concurrent elements, otherwise only the first
 //   - sameElem bool: if true, only return concurrent operations on the same element,
 //     otherwise return all concurrent elements
+//   - sameType bool: only count values on the same type (no effect if same element is true)
 //   - weak bool: get based on weak happens before
 //
 // Returns:
@@ -32,12 +33,12 @@ import (
 //
 // testGetHB: VC: 1m12.514176153s/12.104044486s; OG: 1m59.067111952s/3.901911481s; ST1: 395.051728ms/861.348032ms
 // testGetConcurrent: VC: 9m7.457251619s/50.972716941s; OG: 982.252538ms/672.449538ms; ST1: 1.084918573s/1.430036096s, ST2: 14m19.141553283s/4.613264804s
-func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element {
+func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []trace.Element {
 	// if elem.GetNumberConcurrent(weak, sameElem) != -1 {
 	// 	return elem.GetConcurrent(weak, sameElem)
 	// }
 
-	b := vc.GetConcurrent(elem, all, sameElem, weak)
+	b := vc.GetConcurrent(elem, all, sameElem, sameType, weak)
 	// b := pog.GetConcurrent(elem, all, sameElem, weak)
 	// b := cssts.GetConcurrentAllPairs(elem, all, sameElem, weak)
 	// b := cssts.GetConcurrent(elem, all, sameElem, weak)
@@ -46,7 +47,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 
 	// if all concurrent are selected, filter out sameElement concurrent and set
 	// as well
-	if !sameElem {
+	if !sameElem && !sameType {
 		res := make([]trace.Element, 0)
 
 		for _, e := range b {
@@ -75,17 +76,18 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 //   - elem trace.Element
 //   - sameElem bool: if true, only return concurrent operations on the same element,
 //     otherwise return all concurrent elements
+//   - sameType bool: only count values on the same type (no effect if same element is true)
 //   - weak bool: get based on weak happens before
 //
 // Returns:
 //   - int: number of elements that are concurrent to the element
-func GetNumberConcurrent(elem trace.Element, sameElem, weak bool) int {
+func GetNumberConcurrent(elem trace.Element, sameElem, sameType, weak bool) int {
 	m := elem.GetNumberConcurrent(weak, sameElem)
 	if m != -1 {
 		return m
 	}
 
-	n := GetConcurrent(elem, true, sameElem, weak)
+	n := GetConcurrent(elem, true, sameElem, sameType, weak)
 	return len(n)
 }
 

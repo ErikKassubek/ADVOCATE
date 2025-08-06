@@ -202,7 +202,7 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 	}
 
 	// write the active map to a "replay_active.log"
-	if data.FuzzingMode == data.GoPie {
+	if data.FuzzingMode == data.GoPie || WithoutReplay {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
@@ -244,7 +244,7 @@ func getEnergy() int {
 	if data.UseHBInfoFuzzing {
 		for _, sc := range SchedulingChains {
 			for _, elem := range sc.Elems {
-				c := concurrent.GetNumberConcurrent(elem, sameElem, true)
+				c := concurrent.GetNumberConcurrent(elem, sameElem, false, true)
 				score += c
 			}
 		}

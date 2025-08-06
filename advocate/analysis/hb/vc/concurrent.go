@@ -56,11 +56,12 @@ func InitVC() {
 //   - all bool: if true, find all concurrent elements, if false, find only one
 //   - sameElem bool: if true, only return concurrent operations on the same element,
 //     otherwise return all concurrent elements
+//   - sameType bool: only count values on the same type (no effect if same element is true)
 //   - weak bool: use the weak happens before relation
 //
 // Returns:
 //   - []trace.Element: set of elements concurrent to elem
-func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element {
+func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []trace.Element {
 	if !data.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
 		return make([]trace.Element, 0)
@@ -73,7 +74,17 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 		}
 
 		for _, tElem := range trace {
-			if (sameElem && elem.GetID() != tElem.GetID()) || tElem.GetTPost() == 0 {
+			if tElem.GetTPost() == 0 {
+				continue
+			}
+
+			if sameElem && elem.GetID() != tElem.GetID() {
+				continue
+			}
+
+			if sameType && elem.GetObjType(false) != tElem.GetObjType(false) &&
+				!((elem.GetObjType(false) == "S" && tElem.GetObjType(false) == "C") ||
+					(elem.GetObjType(false) == "C" && tElem.GetObjType(false) == "S")) {
 				continue
 			}
 

@@ -17,6 +17,7 @@ import (
 	"advocate/analysis/hb/hbcalc"
 	"advocate/fuzzing/data"
 	"advocate/trace"
+	"advocate/utils/helper"
 	"fmt"
 	"math"
 	"math/rand"
@@ -77,7 +78,7 @@ func startChains(num int) []Chain {
 				continue
 			}
 
-			if concurrent.GetNumberConcurrent(elem, sameElem, false) == 0 {
+			if concurrent.GetNumberConcurrent(elem, sameElem, SameElementTypeInSC, false) == 0 {
 				continue
 			}
 
@@ -109,19 +110,37 @@ func startChains(num int) []Chain {
 			return res
 		}
 
-		for _, e := range top {
-			posPartner := concurrent.GetConcurrent(e.elem, true, true, true)
-			if len(posPartner) == 0 {
-				posPartner = concurrent.GetConcurrent(e.elem, true, false, true)
-				if len(posPartner) == 0 {
-					continue
+		for i := 0; i < helper.GoPieMaxSCLength; i++ {
+			if len(res) == 0 {
+				for _, e := range top {
+					posPartner := concurrent.GetConcurrent(e.elem, true, true, SameElementTypeInSC, true)
+					if len(posPartner) == 0 {
+						posPartner = concurrent.GetConcurrent(e.elem, true, false, SameElementTypeInSC, true)
+						if len(posPartner) == 0 {
+							continue
+						}
+					}
+
+					partner := posPartner[rand.Intn(len(posPartner))]
+					c := NewChain()
+					c.add(e.elem, partner)
+					res = append(res, c)
+				}
+			} else {
+				for i, c := range res {
+					lastElem := c.lastElem()
+					if lastElem == nil {
+						continue
+					}
+
+					posNext := concurrent.GetConcurrent(lastElem, true, true, SameElementTypeInSC, true)
+					if len(posNext) == 0 {
+						continue
+					}
+					next := posNext[rand.Intn(len(posNext))]
+					res[i].add(next)
 				}
 			}
-
-			partner := posPartner[rand.Intn(len(posPartner))]
-			c := NewChain()
-			c.add(e.elem, partner)
-			res = append(res, c)
 		}
 	} else {
 		// start with two random elements in rel2
@@ -157,8 +176,8 @@ func quality(elem trace.Element) float64 {
 	w3 := 0.5
 
 	numberOps, _ := anaData.GetOpsPerID(elem.GetID())
-	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, true)
-	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, true)
+	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, false, true)
+	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, false, true)
 
 	if numberConcurrentSame == 0 && numberConcurrentTotal == 0 {
 		return 0

@@ -126,7 +126,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 
 	}
 
-	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false}
+	replayElem := replayChan{chWait, chAck, counter, waitForResponse, false, currentTime()}
 
 	_, nextElem := getNextReplayElement()
 	nextElemKey := nextElem.Key()

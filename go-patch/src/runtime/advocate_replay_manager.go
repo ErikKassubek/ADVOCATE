@@ -11,11 +11,12 @@
 package runtime
 
 type replayChan struct {
-	chWait   chan ReplayElement
-	chAck    chan struct{}
-	counter  int
-	waitAck  bool
-	released bool
+	chWait    chan ReplayElement
+	chAck     chan struct{}
+	counter   int
+	waitAck   bool
+	released  bool
+	startTime int64
 }
 
 type released struct {
@@ -84,7 +85,29 @@ func ReplayManager() {
 			lock(&waitingOpsMutex)
 			delete(waitingOps, key)
 		}
-		unlock(&waitingOpsMutex)
+
+		// release partial waiting if timeout has finished
+		if PartialReplay {
+			opsToRelease := make([]replayChan, 0)
+			keysToRelease := make([]string, 0)
+			for key, ops := range waitingOps {
+				if hasTimePast(ops.startTime, timeoutPartialSec) {
+					opsToRelease = append(opsToRelease, ops)
+					keysToRelease = append(keysToRelease, key)
+				}
+			}
+			unlock(&waitingOpsMutex)
+
+			for i, ops := range opsToRelease {
+				releaseElement(ops, ReplayElement{Blocked: false}, true, false)
+				releaseActive(keysToRelease[i])
+				lock(&waitingOpsMutex)
+				delete(waitingOps, keysToRelease[i])
+				unlock(&waitingOpsMutex)
+			}
+		} else {
+			unlock(&waitingOpsMutex)
+		}
 
 		if !replayEnabled {
 			return
@@ -152,7 +175,7 @@ func replayTimeout(replayElem ReplayElement) {
 		foundReplayElement()
 	} else {
 		// release the currently waiting element
-		var oldest = replayChan{nil, nil, -1, false, false}
+		var oldest = replayChan{nil, nil, -1, false, false, 0}
 		oldestKey := ""
 		lock(&waitingOpsMutex)
 		for key, ch := range waitingOps {

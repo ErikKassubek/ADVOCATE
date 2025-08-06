@@ -13,6 +13,8 @@ package runtime
 var NumberActive = 0
 var NumberActiveReleased = 0
 
+const timeoutPartialSec = 4
+
 // Check if it is time to switch to active replay, and if so, switch
 func CheckForPartialReplay(elemReplay ReplayElement) {
 	if PartialReplay {
@@ -97,4 +99,5 @@ func releaseActive(key string) {
 		return
 	}
 	NumberActiveReleased++
+	println("RELEASE ACTIVE: ", key)
 }

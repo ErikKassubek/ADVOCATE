@@ -668,7 +668,7 @@ func CheckForStuckRoutine(simple bool) bool {
 				ot := lastElem.GetObjType(true)
 				objectType = ot
 				switch ot {
-				case "CS":
+				case "CS", "CR":
 					c := lastElem.(*trace.ElementChannel)
 					if c.GetID() == -1 {
 						leakType = helper.LNilChan

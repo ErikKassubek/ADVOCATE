@@ -12,6 +12,7 @@ package stats
 
 import (
 	"advocate/results/explanation"
+	"advocate/utils/log"
 	"bufio"
 	"fmt"
 	"os"
@@ -94,7 +95,7 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 				strings.HasPrefix(info.Name(), "leak_") {
 				err := processBugFile(path, foundBugs, resTotal, resUnique)
 				if err != nil {
-					fmt.Println(err)
+					log.Error(err)
 				}
 			}
 		} else {
@@ -103,7 +104,7 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 				strings.HasPrefix(info.Name(), "leak_"+strconv.Itoa(fuzzing)+"_") {
 				err := processBugFile(path, foundBugs, resTotal, resUnique)
 				if err != nil {
-					fmt.Println(err)
+					log.Error(err)
 				}
 			}
 		}
@@ -191,7 +192,7 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 
 			bugType = explanation.GetCodeFromDescription(line)
 			if bugType == "" {
-				return fmt.Errorf("unknown error type %s", line)
+				return fmt.Errorf("Unknown error type %s", line)
 			}
 			bug.bugType = bugType
 		} else if strings.HasPrefix(line, "-> ") { // get paths

@@ -16,7 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"sync/atomic"
 	"time"
 )
 
@@ -28,8 +27,6 @@ var hasFinished = false
 var timerStarted = false
 var startTime time.Time
 var duration time.Duration
-
-var currentlyWriting atomic.Bool
 
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
@@ -64,9 +61,6 @@ func FinishTracing() {
 	if !finishFuzzingStarted {
 		time.Sleep(time.Second)
 	}
-
-	currentlyWriting.Store(true)
-	defer currentlyWriting.Store(false)
 
 	// remove the trace folder if it exists
 	err := os.RemoveAll(tracePathRecorded)

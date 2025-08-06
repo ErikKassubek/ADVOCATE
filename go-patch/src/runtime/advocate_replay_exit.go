@@ -83,6 +83,8 @@ func ExitReplayPanic(msg any) {
 	}
 	hasPanicked = true
 
+	ReleaseAllWaiting()
+
 	SetExitCodeFromPanicMsg(msg)
 	if IsAdvocateFuzzingEnabled() {
 		finishFuzzingFunc()

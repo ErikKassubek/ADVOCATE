@@ -87,6 +87,10 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	// get the code info (main file, test name, commands)
 	log.Info("Create bug reports")
 
+	// remove possible partner information if not searched for
+	if fuzzing >= 0 {
+		adaptExplanationMaps()
+	}
 	buildBugCodes()
 
 	replayCodes := getOutputCodes(path)
@@ -103,11 +107,6 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
 	resultsMachine = append(resultsMachine, filepath.Join(path, "results_machine.log"))
-
-	// remove possible partner information if not searched for
-	if fuzzing >= 0 {
-		adaptExplanationMaps()
-	}
 
 	for _, result := range resultsMachine {
 		file, _ := os.ReadFile(result)

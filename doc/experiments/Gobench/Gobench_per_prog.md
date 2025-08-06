@@ -1,0 +1,10 @@
+| Test  |    Gfuzz  |    GoPie  |    GoPie+  |    Number |
+| --- | --- | --- | --- | --- |
+| Cockroach  |    13  |    19  |    20  |    21 |
+| Etcd  |    8  |    11  |    13  |    16 |
+| Grpc  |    5  |    7  |    7  |    9 |
+| Istio  |    3  |    3  |    4  |    7 |
+| Kubernetes  |    8  |    17  |    21  |    25 |
+| Moby  |    11  |    10  |    12  |    16 |
+| Serving  |    4  |    6  |    7  |    9 |
+| Total  |    52  |    73  |    84  |    103 |

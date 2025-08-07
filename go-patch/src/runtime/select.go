@@ -130,16 +130,16 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 
 	if wait {
 		replayElem = <-ch
-		if replayElem.Index == -1 {
-			return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
-		}
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec, true); ok {
+		// if replayElem.Index == -1 {
+		// 	return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
+		// }
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec); ok {
 			return i, b
 		} else {
 			ai = index
 		}
 	} else if gFuzzEnabled {
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, selectPreferredTimeoutSec, true); ok {
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, selectPreferredTimeoutSec); ok {
 			return i, b
 		} else {
 			ai = index
@@ -153,7 +153,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
  * Run the fuzzing for select. If successful, the first bool return is true, if it ran into timeout
  * the first bool is false
  */
-func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64, withTimeout bool) (bool, int, bool, int) {
+func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, preferredIndex int, preferredTimeout int64) (bool, int, bool, int) {
 	gp := getg()
 	if debugSelect {
 		print("select: cas0=", cas0, "\n")
@@ -409,11 +409,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	if withTimeout {
-		goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
-	} else {
-		gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
-	}
+	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)

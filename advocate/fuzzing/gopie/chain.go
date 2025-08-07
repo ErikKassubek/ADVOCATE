@@ -338,7 +338,12 @@ func (ch *Chain) Len() int {
 func (ch *Chain) toString() string {
 	res := ""
 	for _, e := range ch.Elems {
-		res += fmt.Sprintf("%d:%s&", e.GetRoutine(), e.GetPos())
+		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
+		switch f := e.(type) {
+		case *trace.ElementSelect:
+			res += fmt.Sprintf("%d", f.GetChosenIndex())
+		}
+		res += "&"
 	}
 	return res
 }
@@ -362,4 +367,41 @@ func (ch *Chain) isValid() bool {
 	}
 
 	return true
+}
+
+func (ch *Chain) mutSelect() map[string]Chain {
+	res := make(map[string]Chain)
+
+	for i, elem := range ch.Elems {
+		if t := elem.GetObjType(false); t != trace.ObjectTypeSelect {
+			continue
+		}
+
+		sel := elem.(*trace.ElementSelect)
+		chosen := sel.GetChosenCase()
+		if chosen != nil {
+			partner := sel.GetChosenCase().GetPartner()
+			if partner != nil && ch.contains(partner) {
+				continue
+			}
+		}
+
+		if sel.GetContainsDefault() && !sel.GetChosenDefault() {
+			c := ch.copy()
+			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(-1)
+			res[c.toString()] = c
+		}
+
+		for ca := range sel.GetCases() {
+			if ca == sel.GetChosenIndex() {
+				continue
+			}
+
+			c := ch.copy()
+			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(ca)
+			res[c.toString()] = c
+		}
+	}
+
+	return res
 }

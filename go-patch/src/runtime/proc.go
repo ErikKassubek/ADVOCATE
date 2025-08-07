@@ -436,35 +436,46 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason w
 }
 
 // ADVOCATE-START
-func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int, timeout int64) {
+func goparkWithTimeout(
+	unlockf func(*g, unsafe.Pointer) bool,
+	lock unsafe.Pointer,
+	reason waitReason,
+	traceReason traceBlockReason,
+	traceskip int,
+	timeout int64,
+) {
 	mp := acquirem()
 	gp := mp.curg
 
-	// Setup timer if timeout is non-zero
 	if timeout > 0 {
-		go func() {
-			sleep(float64(timeout))
-			if readgstatus(gp) == _Gwaiting {
-				goready(gp, traceskip)
-			}
-		}()
+		if gp.timer == nil {
+			gp.timer = new(timer)
+			gp.timer.init(goroutineReady, gp)
+		}
+		now := nanotime()
+		when := now + timeout
+		if when < 0 {
+			when = maxWhen
+		}
+		gp.sleepWhen = when
 	}
 
-	// Run the original gopark logic
 	if reason != waitReasonSleep {
-		checkTimeouts() // timeouts may expire while two goroutines keep the scheduler busy
+		checkTimeouts()
 	}
+
 	status := readgstatus(gp)
 	if status != _Grunning && status != _Gscanrunning {
-		throw("gopark: bad g status")
+		throw("goparkWithTimeout: bad g status")
 	}
 	mp.waitlock = lock
 	mp.waitunlockf = unlockf
 	gp.waitreason = reason
 	mp.waitTraceBlockReason = traceReason
 	mp.waitTraceSkip = traceskip
+
 	releasem(mp)
-	// can't do anything that might move the G between Ms here.
+
 	mcall(park_m)
 }
 

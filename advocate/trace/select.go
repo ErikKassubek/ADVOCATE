@@ -561,6 +561,34 @@ func (se *ElementSelect) GetChosenDefault() bool {
 	return se.chosenDefault
 }
 
+// SetCaseByIndex set the case to the case at the given index or default if index = -1
+//
+// Parameter:
+//   - index of the case, -1 for default
+//
+// Returns:
+//   - error
+func (se *ElementSelect) SetCaseByIndex(index int) error {
+	if index > len(se.cases) {
+		return fmt.Errorf("Invalid index for select: %d [%d]", index, len(se.cases))
+	}
+
+	for i := range se.cases {
+		se.cases[i].SetTPost(0)
+	}
+
+	if index < 0 {
+		se.chosenDefault = true
+		se.chosenIndex = -1
+		return nil
+	}
+
+	se.cases[index].SetTPost(se.GetTPost())
+	se.chosenIndex = index
+	se.chosenDefault = false
+	return nil
+}
+
 // SetCase set the case where the channel id and direction is correct as the active one
 //
 // Parameter:

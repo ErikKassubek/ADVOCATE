@@ -16,6 +16,7 @@ import (
 	"advocate/fuzzing/data"
 	"advocate/trace"
 	"advocate/utils/helper"
+	"maps"
 	"math/rand/v2"
 )
 
@@ -134,6 +135,12 @@ func mutate(c Chain, energy int) map[string]Chain {
 		if (rand.Int() % 200) < energy {
 			break
 		}
+	}
+
+	// mutates selects
+	for _, mut := range res {
+		new := mut.mutSelect()
+		maps.Copy(res, new)
 	}
 
 	return res

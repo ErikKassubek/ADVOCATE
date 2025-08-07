@@ -89,6 +89,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 
 	for _, sc := range SchedulingChains {
 		muts := mutate(sc, energy)
+
 		for key, mut := range muts {
 			if data.FuzzingMode != data.GoPie && mut.Len() <= 1 {
 				NumberTotalMuts++

@@ -369,9 +369,9 @@ type sudog struct {
 	waittail *sudog // semaRoot
 	c        *hchan // channel
 
-	// ADVOCATE-START
+	// GOCP-START
 	replayEnabled bool
-	// ADVOCATE-END
+	// GOCP-END
 }
 
 type libcall struct {
@@ -510,12 +510,12 @@ type g struct {
 	// determines how this corresponds to scan work debt.
 	gcAssistBytes int64
 
-	// ADVOCATE-START
-	// For each routine a g is automaticcaly created. In this g the advocateRoutineInfo
+	// GOCP-START
+	// For each routine a g is automaticcaly created. In this g the goCRRoutineInfo
 	// element is added to store the information about the routine.
 	// This includes the Id and the trace of the routine.
-	advocateRoutineInfo *AdvocateRoutine
-	// ADVOCATE-END
+	goCRRoutineInfo *GoCRRoutine
+	// GOCP-END
 }
 
 // gTrackingPeriod is the number of transitions out of _Grunning between

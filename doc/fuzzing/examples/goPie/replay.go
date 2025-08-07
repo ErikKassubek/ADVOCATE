@@ -8,7 +8,7 @@ import (
 
 // This program is an example, of how the partial replay in GoPie
 // may miss the execution of the mutated section, while the partially full replay
-// in GoPie+ and GoPieHB can avoid this.
+// in GoCR and GoPieHB can avoid this.
 // Lets assume in the recorded run, the TryLock was executed before to Lock,
 // therefore being able to acquire the mutex. Let's also assume, that the
 // mutated code position is fully in the mutatedCode function.
@@ -17,7 +17,7 @@ import (
 // before the TryLock and the TryLock is not able to acquire the lock.
 // In this case, the program would never get to the relevant, mutated section.
 // By enforcing the exact order of the code before the relevant section,
-// like it is done in GoPie+ and GoPieHB, we can avoid this, since the replay
+// like it is done in GoCR and GoPieHB, we can avoid this, since the replay
 // mechanism makes sure, that the Lock and TryLock are executed in the
 // correct order.
 

@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// GOCP-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCP-END
 )
 
 // Cond implements a condition variable, a rendezvous point
@@ -47,9 +47,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-START
+	// GOCP-START
 	id uint64
-	// ADVOCATE-END
+	// GOCP-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -73,9 +73,9 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-START
+	// GOCP-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetGoCRObjectID()
 	}
 
 	// replay
@@ -86,9 +86,9 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondWait)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	goCRIndex := runtime.GoCRCondPre(c.id, runtime.OperationCondWait)
+	defer runtime.GoCRCondPost(goCRIndex)
+	// GOCP-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -105,9 +105,9 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-START
+	// GOCP-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetGoCRObjectID()
 	}
 
 	// replay
@@ -118,9 +118,9 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondSignal)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	goCRIndex := runtime.GoCRCondPre(c.id, runtime.OperationCondSignal)
+	defer runtime.GoCRCondPost(goCRIndex)
+	// GOCP-END
 
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
@@ -131,9 +131,9 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-START
+	// GOCP-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetGoCRObjectID()
 	}
 
 	// replay
@@ -144,9 +144,9 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondBroadcast)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	goCRIndex := runtime.GoCRCondPre(c.id, runtime.OperationCondBroadcast)
+	defer runtime.GoCRCondPost(goCRIndex)
+	// GOCP-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

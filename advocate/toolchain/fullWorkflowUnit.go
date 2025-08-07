@@ -56,25 +56,26 @@ import (
 // Returns:
 //   - string: current result folder path
 //   - int: TraceID
+//   - int: number results
 //   - error
 func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runReplay bool,
 	pathToTest, progName string,
 	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
 	keepTraces, firstRun, skipExisting, cont bool, fileNumber,
-	testNumber int) (string, int, error) {
+	testNumber int) (string, int, int, error) {
 	// Validate required inputs
 	if pathToAdvocate == "" {
-		return "", 0, errors.New("Path to advocate is empty")
+		return "", 0, 0, errors.New("Path to advocate is empty")
 	}
 	if dir == "" {
-		return "", 0, errors.New("Directory is empty")
+		return "", 0, 0, errors.New("Directory is empty")
 	}
 
 	isFuzzing := (fuzzing != -1)
 
 	// Change to the directory
 	if err := os.Chdir(dir); err != nil {
-		return "", 0, fmt.Errorf("Failed to change directory: %v", dir)
+		return "", 0, 0, fmt.Errorf("Failed to change directory: %v", dir)
 	}
 
 	if firstRun && !cont {
@@ -84,7 +85,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 		if info, _ := os.Stat("advocateResult"); info == nil {
 			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-				return "", 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
+				return "", 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
 			}
 		}
 
@@ -96,12 +97,13 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	// Find all _test.go files in the directory
 	testFiles, _, totalFiles, err := FindTestFiles(dir, cont && testName == "")
 	if err != nil {
-		return "", 0, fmt.Errorf("Failed to find test files: %v", err)
+		return "", 0, 0, fmt.Errorf("Failed to find test files: %v", err)
 	}
 
 	attemptedTests, skippedTests, currentFile := 0, 0, fileNumber
 
 	// resultPath := filepath.Join(dir, "advocateResult")
+	var numberResults int
 
 	ranTest := false
 	// Process each test file
@@ -189,7 +191,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 
 			if anaPassed {
-				generateBugReports(currentResFolder, fuzzing)
+				numberResults += generateBugReports(currentResFolder, fuzzing)
 			}
 			if createStats {
 				// create statistics
@@ -219,7 +221,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	}
 
 	if testName != "" && !ranTest {
-		return "", 0, fmt.Errorf("could not find test function %s", testName)
+		return "", 0, 0, fmt.Errorf("could not find test function %s", testName)
 	}
 
 	// Check for untriggered selects
@@ -239,7 +241,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 		log.Infof("Finished run for %s", testName)
 	}
 
-	return currentResFolder, movedTraces, nil
+	return currentResFolder, movedTraces, numberResults, nil
 }
 
 // FindTestFiles finds all _test.go files in the specified directory

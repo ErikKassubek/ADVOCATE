@@ -248,27 +248,16 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 
-		currentResultPath, traceID, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
+		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
 			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)
+
+		data.NumberFuzzingRuns++
+
 		if err != nil {
 			log.Error("Fuzzing run failed: ", err.Error())
-			data.NumberFuzzingRuns++
 		} else {
-			data.NumberFuzzingRuns++
-
-			// cancel if max number of mutations have been reached
-			if data.MaxNumberRuns != -1 && data.NumberFuzzingRuns >= data.MaxNumberRuns {
-				log.Infof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", data.MaxNumberRuns)
-				return nil
-			}
-
-			if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
-				log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min)has been reached", int(data.MaxTime.Minutes()))
-				return nil
-			}
-
 			log.Info("Parse recorded trace to calculate fuzzing relations")
 
 			// collect the required data to decide whether run is interesting
@@ -307,6 +296,23 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))
 
 			gfuzz.MergeTraceInfoIntoFileInfo()
+		}
+
+		// cancel if max number of mutations have been reached
+		if data.MaxNumberRuns != -1 && data.NumberFuzzingRuns >= data.MaxNumberRuns {
+			log.Infof("Finish fuzzing because maximum number of mutation runs (%d) have been reached", data.MaxNumberRuns)
+			return nil
+		}
+
+		// cancel if max fuzzing time has been reached
+		if data.MaxTimeSet && time.Since(startTime) > data.MaxTime {
+			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min) has been reached", int(data.MaxTime.Minutes()))
+			return nil
+		}
+
+		// cancel if bug was found
+		if data.FinishIfBugFound && numberResults > 0 {
+			return nil
 		}
 
 		anaData.ClearTrace()

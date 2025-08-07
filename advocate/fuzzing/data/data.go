@@ -40,6 +40,8 @@ var (
 
 	UseHBInfoFuzzing = true
 	runFullAnalysis  = true
+
+	FinishIfBugFound = false
 )
 
 // ClearDataFull resets the fuzzing data that is unique for each test but used for each fuzzing

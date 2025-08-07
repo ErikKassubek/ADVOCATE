@@ -82,8 +82,9 @@ func writeBug(bugType string, positions map[int][]string) bool {
 //   - ignoreDouble: if true, only write one bug report for each bug
 //
 // Returns:
+//   - int: number of results
 //   - error: if an error occurred
-func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
+func CreateOverview(path string, ignoreDouble bool, fuzzing int) (int, error) {
 	// get the code info (main file, test name, commands)
 	log.Info("Create bug reports")
 
@@ -108,9 +109,10 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
 	resultsMachine = append(resultsMachine, filepath.Join(path, "results_machine.log"))
 
+	var numberResults int
 	for _, result := range resultsMachine {
 		file, _ := os.ReadFile(result)
-		numberResults := len(strings.Split(string(file), "\n"))
+		numberResults = len(strings.Split(string(file), "\n"))
 
 		// timeoutFound := false
 
@@ -157,7 +159,7 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) error {
 		}
 	}
 
-	return err
+	return numberResults - 1, err
 
 }
 

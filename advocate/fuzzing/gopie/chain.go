@@ -110,7 +110,11 @@ func startChains(num int) []Chain {
 			return res
 		}
 
-		for i := 0; i < helper.GoPieMaxSCLength; i++ {
+		rounds := helper.GoPieMaxSCLength
+		if !helper.GoPieMaxSCLengthSet {
+			rounds = 1
+		}
+		for i := 0; i < rounds; i++ {
 			if len(res) == 0 {
 				for _, e := range top {
 					posPartner := concurrent.GetConcurrent(e.elem, true, true, SameElementTypeInSC, true)

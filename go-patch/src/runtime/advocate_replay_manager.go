@@ -253,7 +253,7 @@ func WaitForReplayFinish() {
 func ReleaseAllWaiting() {
 	lock(&waitingOpsMutex)
 	for _, w := range waitingOps {
-		w.chWait <- ReplayElement{Blocked: false}
+		w.chWait <- ReplayElement{Blocked: false, Index: -1}
 	}
 	waitingOps = make(map[string]replayChan)
 	unlock(&waitingOpsMutex)

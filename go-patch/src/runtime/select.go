@@ -130,7 +130,10 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 
 	if wait {
 		replayElem = <-ch
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec, false); ok {
+		if replayElem.Index == -1 {
+			return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
+		}
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec, true); ok {
 			return i, b
 		} else {
 			ai = index

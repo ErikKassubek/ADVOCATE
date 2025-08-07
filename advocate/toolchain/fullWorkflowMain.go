@@ -44,13 +44,14 @@ import (
 // Returns:
 //   - string: current result folder path
 //   - int: TraceID
+//   - int: number results
 //   - error
 func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	runRecord, runAnalysis, runReplay bool,
 	executableName string, keepTraces bool, fuzzing int, fuzzingTrace string,
-	firstRun bool) (string, int, error) {
+	firstRun bool) (string, int, int, error) {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
-		return "", 0, fmt.Errorf("file %s does not exist", pathToFile)
+		return "", 0, 0, fmt.Errorf("file %s does not exist", pathToFile)
 	}
 
 	log.Info("Run main")
@@ -66,14 +67,14 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	// Change to the directory of the main file
 	dir := filepath.Dir(pathToFile)
 	if err := os.Chdir(dir); err != nil {
-		return "", 0, fmt.Errorf("Failed to change directory: %v", err)
+		return "", 0, 0, fmt.Errorf("Failed to change directory: %v", err)
 	}
 	resultPath := filepath.Join(dir, "advocateResult")
 
 	if firstRun {
 		os.RemoveAll("advocateResult")
 		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-			return "", 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
+			return "", 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
 		}
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
@@ -84,7 +85,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	output := "output.log"
 	outFile, err := os.OpenFile(output, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return "", 0, fmt.Errorf("Failed to open log file: %v", err)
+		return "", 0, 0, fmt.Errorf("Failed to open log file: %v", err)
 	}
 	defer outFile.Close()
 
@@ -101,14 +102,14 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 	// Set GOROOT environment variable
 	if err := os.Setenv("GOROOT", pathToGoRoot); err != nil {
-		return "", 0, fmt.Errorf("Failed to set GOROOT: %v", err)
+		return "", 0, 0, fmt.Errorf("Failed to set GOROOT: %v", err)
 	}
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
 	if runRecord {
 		// Remove header
 		if err := headerRemoverMain(pathToFile); err != nil {
-			return "", 0, fmt.Errorf("Error removing header: %v", err)
+			return "", 0, 0, fmt.Errorf("Error removing header: %v", err)
 		}
 
 		// build the program
@@ -118,7 +119,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build"); err != nil {
 				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(pathToFile)
-				return "", 0, err
+				return "", 0, 0, err
 			}
 
 			// run the program
@@ -133,7 +134,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 		// Add header
 		if err := headerInserterMain(pathToFile, false, "1", timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
-			return "", 0, fmt.Errorf("Error in adding header: %v", err)
+			return "", 0, 0, fmt.Errorf("Error in adding header: %v", err)
 		}
 
 		// build the program
@@ -141,7 +142,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
 			log.Error("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(pathToFile)
-			return "", 0, err
+			return "", 0, 0, err
 		}
 
 		// run the recording
@@ -155,7 +156,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 		// Remove header
 		if err := headerRemoverMain(pathToFile); err != nil {
-			return "", 0, fmt.Errorf("Error removing header: %v", err)
+			return "", 0, 0, fmt.Errorf("Error removing header: %v", err)
 		}
 	}
 
@@ -169,7 +170,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
 
 		if err != nil {
-			return "", 0, err
+			return "", 0, 0, err
 		}
 	}
 
@@ -180,7 +181,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		if runAnalysis {
 			rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
 			if err != nil {
-				return "", 0, fmt.Errorf("Error finding rewritten traces: %v", err)
+				return "", 0, 0, fmt.Errorf("Error finding rewritten traces: %v", err)
 			}
 		} else {
 			if tracePathFlag != "" {
@@ -193,7 +194,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 			traceNum := extractTraceNum(trace)
 			fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
 			if err := headerInserterMain(pathToFile, true, traceNum, timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
-				return "", 0, err
+				return "", 0, 0, err
 			}
 
 			// build the program
@@ -211,7 +212,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 			fmt.Printf("Remove replay header from %s\n", pathToFile)
 			if err := headerRemoverMain(pathToFile); err != nil {
-				return "", 0, err
+				return "", 0, 0, err
 			}
 		}
 		timer.Stop(timer.Replay)
@@ -225,9 +226,10 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	collect(dir, dir, resultPath, total)
 
 	// Generate Bug Reports
+	var numberResults int
 	if runAnalysis {
 		fmt.Println("Generate Bug Reports")
-		generateBugReports(resultPath, fuzzing)
+		numberResults = generateBugReports(resultPath, fuzzing)
 
 		timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
 	}
@@ -246,7 +248,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 		removeLogs(dir)
 	}
 
-	return dir, movedTraces, nil
+	return dir, movedTraces, numberResults, nil
 }
 
 // Given a path to a trace file, return the trace number

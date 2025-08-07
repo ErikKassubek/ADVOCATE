@@ -167,8 +167,9 @@ func main() {
 
 	// for experiments
 	flag.BoolVar(&sameElemTypeInSC, "sameElemTypeInSC", false, "Only allow elements of the same type in the same SC")
-	flag.IntVar(&scSize, "scSize", 4, "max number of elements in SC")
+	flag.IntVar(&scSize, "scSize", -1, "max number of elements in SC")
 	flag.BoolVar(&fuzzingWithoutReplay, "fuzzingWithoutReplay", false, "Disable replay before SC in fuzzing")
+	flag.BoolVar(&fuzzingdata.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
 
 	flag.Parse()
 
@@ -301,7 +302,11 @@ func modeFuzzing() {
 		panic(err)
 	}
 
-	helper.GoPieSCStart = scSize
+	if scSize != -1 {
+		helper.GoPieMaxSCLength = scSize
+		helper.GoPieMaxSCLengthSet = true
+
+	}
 	gopie.SameElementTypeInSC = sameElemTypeInSC
 	gopie.WithoutReplay = fuzzingWithoutReplay
 
@@ -344,7 +349,7 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 		panic("When running replay of test without recording, -exec [TestName] must be set")
 	}
 
-	_, _, err = toolchain.Run(mode, pathToAdvocate, progPath, "", record, analysis,
+	_, _, _, err = toolchain.Run(mode, pathToAdvocate, progPath, "", record, analysis,
 		replay, execName, progName, execName, -1, "", ignoreAtomics, recordTime,
 		notExec, statistics, keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {

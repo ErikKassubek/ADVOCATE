@@ -188,6 +188,9 @@ func releaseElement(elem replayChan, elemReplay ReplayElement, rel, next bool) b
 	if rel {
 		key := elemReplay.Key()
 		_, _ = getSelect(key)
+		// if PartialReplay {
+		// 	elemReplay.Index = -1
+		// }
 		elem.chWait <- elemReplay
 		elem.released = true
 		if printDebug {

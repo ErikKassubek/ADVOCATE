@@ -77,7 +77,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 			}
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
-			// but in GoPie+ and GoPieHB)
+			// but in GoCR and GoCRHB)
 			if data.FuzzingMode != data.GoPie {
 				if ch.Len() >= 2 && rand.Int()%2 == 1 {
 					newChs := flip(ch)

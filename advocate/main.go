@@ -156,7 +156,7 @@ func main() {
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoPie+\n\tGoPieHB")
+		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
@@ -220,9 +220,9 @@ func main() {
 		go control.Supervisor() // cancel analysis if not enough ram
 	}
 
-	// don't run any HB Analysis for direct GFuzz, GoPie and GoPie+
+	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
 	if mode == "fuzzing" && (fuzzingMode == fuzzingdata.GFuzz ||
-		fuzzingMode == fuzzingdata.GoPie || fuzzingMode == fuzzingdata.GoPiePlus) {
+		fuzzingMode == fuzzingdata.GoPie || fuzzingMode == fuzzingdata.GoCR) {
 		scenarios = "-"
 		onlyAPanicAndLeak = true
 	}

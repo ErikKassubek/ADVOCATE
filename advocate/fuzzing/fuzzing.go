@@ -54,12 +54,12 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	cancelTestIfFound bool) error {
 
 	if fm == "" {
-		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
+		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
 	}
 
-	modes := []string{data.GoPie, data.GoPiePlus, data.GoPieHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
+	modes := []string{data.GoPie, data.GoCR, data.GoCRHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
 	if !types.Contains(modes, fm) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoPie+, GoPieHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
 
 	data.MaxNumberRuns = mRun
@@ -69,11 +69,11 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	}
 
 	data.FuzzingMode = fm
-	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
-	data.FuzzingModeGoPieHBPlus = (data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
+	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
+	data.FuzzingModeGoCRHBPlus = (data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
 	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
 	data.FuzzingModeFlow = (data.FuzzingMode == data.Flow || data.FuzzingMode == data.GFuzzHBFlow)
-	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoPiePlus || data.FuzzingMode == data.GoPieHB)
+	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
 
 	data.CancelTestIfBugFound = cancelTestIfFound
 

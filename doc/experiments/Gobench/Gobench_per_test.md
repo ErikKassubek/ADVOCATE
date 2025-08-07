@@ -1,4 +1,4 @@
-| Nr  | Test            | gGFuzz | GoPie | GoPie+ |
+| Nr  | Test            | gGFuzz | GoPie | GoCR |
 | --- | --------------- |       | ----- | ------ |
 | 1   | Cockroach10214  | 0     | 1     | 1      |
 | 2   | Cockroach1055   | 1     | 1     | 1      |
@@ -68,39 +68,4 @@
 | 66  | Serving2137     | 0     | 1     | 1      |
 | 67  | Serving4829     | 1     | 1     | 1      |
 | 68  | Serving5795     | 1     | 1     | 1      |
-| 69  | Cockroach35501  | 0     | 0     | 1      |
-| 70  | Cockroach4407   | 0     | 1     | 0      |
-| 71  | Etcd3077        | 0     | 0     | 1      |
-| 72  | Etcd4876        | 0     | 0     | 0      |
-| 73  | Etcd8194        | 0     | 0     | 0      |
-| 74  | Etcd9446        | 0     | 0     | 0      |
-| 75  | Grpc1687        | 0     | 0     | 0      |
-| 76  | Grpc1748        | 0     | 1     | 1      |
-| 77  | Grpc2371        | 0     | 0     | 0      |
-| 78  | Grpc3090        | 0     | 1     | 1      |
-| 79  | Istio16742      | 0     | 0     | 1      |
-| 80  | Istio8144       | 0     | 0     | 0      |
-| 81  | Istio8214       | 0     | 0     | 0      |
-| 82  | Istio8967       | 1     | 1     | 1      |
-| 83  | Kubernetes13058 | 0     | 0     | 1      |
-| 84  | Kubernetes49404 | 0     | 0     | 0      |
-| 85  | Kubernetes70892 | 0     | 1     | 1      |
-| 86  | Kubernetes77796 | 0     | 1     | 1      |
-| 87  | Kubernetes79631 | 1     | 1     | 1      |
-| 88  | Kubernetes80284 | 0     | 0     | 1      |
-| 89  | Kubernetes81091 | 0     | 1     | 1      |
-| 90  | Kubernetes81148 | 0     | 0     | 1      |
-| 91  | Kubernetes82239 | 0     | 0     | 0      |
-| 92  | Kubernetes82550 | 0     | 0     | 0      |
-| 93  | Kubernetes88331 | 1     | 1     | 1      |
-| 94  | Kubernetes89164 | 0     | 1     | 1      |
-| 95  | Moby18412       | 1     | 0     | 1      |
-| 96  | Moby22941       | 0     | 0     | 0      |
-| 97  | Moby27037       | 0     | 0     | 0      |
-| 98  | Serving3068     | 1     | 1     | 1      |
-| 99  | Serving3148     | 0     | 0     | 1      |
-| 100 | Serving4908     | 0     | 0     | 0      |
-| 101 | Serving5865     | 1     | 1     | 1      |
-| 102 | Serving6171     | 0     | 0     | 0      |
-| 103 | Serving6472     | 0     | 1     | 1      |
-|     | Total           | 52    | 73    | 84     |
+|     | Total           | 46    | 60    | 64     |

@@ -30,7 +30,7 @@ func AnalyzeWait(wa *trace.ElementWait) {
 	case trace.ChangeOp:
 		data.LastChangeWG[wa.GetID()] = wa
 
-		if data.AnalysisCasesMap[data.DoneBeforeAdd] || fuzzdata.FuzzingModeGoPieHBPlus {
+		if data.AnalysisCasesMap[data.DoneBeforeAdd] || fuzzdata.FuzzingModeGoCRHBPlus {
 			scenarios.CheckForDoneBeforeAddChange(wa)
 		}
 	case trace.WaitOp:

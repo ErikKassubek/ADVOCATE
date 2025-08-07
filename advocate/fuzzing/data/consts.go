@@ -17,8 +17,8 @@ const (
 	GFuzzHBFlow = "GFuzzHBFlow" // GFuzz with use of hb info and flow mutation
 	Flow        = "Flow"        // only flow mutation
 	GoPie       = "GoPie"       // only goPie
-	GoPiePlus   = "GoPie+"      // improved goPie without HB
-	GoPieHB     = "GoPieHB"     // goPie with HB relation
+	GoCR        = "GoCR"        // improved goPie without predictive analysis
+	GoCRHB      = "GoCRHB"      // improved goPie with predictive analysis
 )
 
 // Possible mut types

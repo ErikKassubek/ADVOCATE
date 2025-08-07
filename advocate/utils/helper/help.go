@@ -21,7 +21,7 @@ var (
 
 	// submodes
 	runMain      = newFlagVal("main", "false", "", "Set to run on main function. If not set, the unit tests are run")
-	fuzzingModes = newFlagVal("fuzzingMode", "", "", "Mode for fuzzing. Possible values are:", "\tGFuzz", "\tGFuzzHB", "\tGFuzzHBFlow", "\tFlow", "\tGoPie", "\tGoPie+", "\tGoPieHB")
+	fuzzingModes = newFlagVal("fuzzingMode", "", "", "Mode for fuzzing. Possible values are:", "\tGFuzz", "\tGFuzzHB", "\tGFuzzHBFlow", "\tFlow", "\tGoPie", "\tGoCR", "\tGoCRHB")
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")

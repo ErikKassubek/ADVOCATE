@@ -156,7 +156,7 @@ func CalculateRelRule3() {
 
 // isGoPieElem returns if an element is part of goPie
 // GoPie only looks at fork, mutex, rwmutex and channel (and select)
-// GoPieHB uses all repayable elements
+// GoCRHB uses all repayable elements
 //
 // Parameter:
 //   - elem analysis.TraceElement: the element to check

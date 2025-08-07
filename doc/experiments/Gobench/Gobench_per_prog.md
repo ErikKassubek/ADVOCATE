@@ -1,4 +1,4 @@
-| Test  |    Gfuzz  |    GoPie  |    GoPie+  |    Number |
+| Test  |    GFuzz  |    GoPie  |    GoCR  |    Number |
 | --- | --- | --- | --- | --- |
 | Cockroach  |    13  |    19  |    20  |    21 |
 | Etcd  |    8  |    11  |    13  |    16 |

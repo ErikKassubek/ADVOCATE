@@ -27,12 +27,12 @@ var (
 	MutationQueue     = make([]Mutation, 0)
 
 	// count how often a specific mutation has been in the queue
-	AllMutations           = make(map[string]int)
-	FuzzingMode            = ""
-	FuzzingModeGFuzz       = false
-	FuzzingModeGoPie       = false
-	FuzzingModeGoPieHBPlus = false
-	FuzzingModeFlow        = false
+	AllMutations          = make(map[string]int)
+	FuzzingMode           = ""
+	FuzzingModeGFuzz      = false
+	FuzzingModeGoPie      = false
+	FuzzingModeGoCRHBPlus = false
+	FuzzingModeFlow       = false
 
 	CancelTestIfBugFound = false
 

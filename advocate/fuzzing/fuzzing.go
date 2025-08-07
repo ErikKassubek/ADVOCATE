@@ -216,7 +216,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		control.Reset()
 
 		if data.CancelTestIfBugFound && results.GetBugWasFound() {
-			log.Resultf(false, false, "", "Cancel test after %d runs", data.NumberFuzzingRuns)
+			log.Infof("Cancel test after %d runs", data.NumberFuzzingRuns)
 			break
 		}
 

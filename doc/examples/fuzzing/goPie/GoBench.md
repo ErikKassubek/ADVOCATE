@@ -9,7 +9,7 @@ the number given in the [GFuzz paper](../../doc_proj/relatedWorks/PaperAndTools/
 
 With this, we get the following results for the number of found bugs:
 
-| GoPie Paper | GoPie Tests | GoPie Bugs | GoPie+ Tests | GoPie+ Bugs |
+| GoPie Paper | GoPie Tests | GoPie Bugs | GoCR Tests | GoCR Bugs |
 | --- | --- | --- | --- | --- |
 | 66 | 46 | 65 | 48 | 69 |
 
@@ -26,7 +26,7 @@ on how long fuzzing is run (not really clear from the paper) and also
 some lock in choosing mutations, we can say, that the numbers indicate, that
 our GoPie implementation can replicate the results of the original GoPie.
 
-The number of bugs found with GoPie+ is slightly larger than both the
+The number of bugs found with GoCR is slightly larger than both the
 values given in the GoPie paper, as well as the number of our GoPie
 implementation. This may indicate, that the improvements have a positive
 effect, but it cannot be ruled out, that this is also an effect of luck.

@@ -10,12 +10,12 @@ GoPie directly mutates different operations. For GoPie only the order of
 operations of channels and mutexes can be mutated. Examples where this is helpful
 can be found for [mutexe](./goPie/mutex.go) and [channel](./goPie/channel.go).
 
-When using the improved version GoPie+, we are also able to mutate the
+When using the improved version GoCR, we are also able to mutate the
 order of other operations. An example where the order of atomic operations
 may lead lead to a buggy code function being executed can be found
 [here](./goPie/atomic.go).
 
-GoPie+ also introduces a better replay system, forcing the exact replay
+GoCR also introduces a better replay system, forcing the exact replay
 of the mutated run, until the muted position in the execution is reached.
 This can reduce the possibility of the program getting lost or changing
 before the mutated operations is reached. An example where this can be helpful can
@@ -23,7 +23,7 @@ be found [here](./goPie/replay.go).
 
 Improving GoPie again to also use the HB relation (GoPieHB) has two main
 benefits. For one, a bug does not need to be triggered directly, since
-GoPieHB can infer possible bugs from the HB information. In GoPie and GoPie+,
+GoPieHB can infer possible bugs from the HB information. In GoPie and GoCR,
 this is not possible, which can lead to bugs being missed, even if the relevant
 code is executed.
 

@@ -151,7 +151,7 @@ We implement three different versions of the order based fuzzing.
 description in the [GoPie paper](../relatedWorks/PaperAndTools/Fuzzing/GoPie.md).
 Here we stay as close as possible with the ideas of the implementation).
 
-[GoPie+](#gopie-1) adds some improvements to GoPie, including implementing
+[GoCR](#gopie-1) adds some improvements to GoPie, including implementing
 some of the points that are in the GoPie paper but not in its implementation.
 
 [GoPieHB](#gopiehb) merges the GoPie approach with the [HB analysis], both by
@@ -257,7 +257,7 @@ is more than one operation in it, which helps GoPie to limit the length of an $S
 The Flip operation is described in the paper, but not implemented in the original goPie implementation.
 We assume the reason for leaving it out of the implementation is, that flipping two elements in
 a scheduling chain, may result in a chain, that is not a valid scheduling chain, which may lead to
-impossible schedules. For this reason, we exclude it in our GoPie implementation, but add it in the [GoPie+](#gopie-1) implementation.
+impossible schedules. For this reason, we exclude it in our GoPie implementation, but add it in the [GoCR](#gopie-1) implementation.
 3. Substitute: This tries to replace an operation with another one from the set of $Rel_1$ $$\exists o_i, o_j \in Rel_1(o_i), \{...,o_i,...\} \in SC \to \{...,o_j,...\} \in SC$$
 4. Augment: This tries to increase the length of $SC$ by adding another operation from the set of $Rel_2$ to its tail, which aims to explore those effective interleaving in a further step. $$\exists o_j, o_j \in Rel_2(o_i), \{...,o_j\}\in SC \to \{...,o_j, o_j\}\in SC$$
 
@@ -279,7 +279,7 @@ for {
     }
 
     // Rule 2 -> flip (in paper, but not in original implementation)
-    // therefore in GoPie+ and GoPieHB, but not in GoPie
+    // therefore in GoCR and GoPieHB, but not in GoPie
     if fuzzingMode != GoPie {
       if ch.len() >= 2 {
         newChs := flip(ch)
@@ -420,9 +420,9 @@ implementation of the relevant operations as described in [recording](../recordi
 and [replay](../replay.md).
 
 
-### GoPie+
+### GoCR
 
-In the GoPie+ implementation we improve multiple points compared to the
+In the GoCR implementation we improve multiple points compared to the
 original GoPie implementation. In this step we do not use our HB information.
 
 We improve the following points:
@@ -437,7 +437,7 @@ We improve the following points:
 #### Operations
 
 Instead of just considering and mutating Channel, Select and Mutex operations,
-GoPie+ also considers all other operations that are recorded
+GoCR also considers all other operations that are recorded
 in our trace.
 
 #### New Chains
@@ -447,7 +447,7 @@ from the new trace to be executed, but only continues to execute the
 original chain. This is a limitation, that can prevent a bug that can only
 be triggered if multiple positions are mutated at the same time from being discovered.
 
-We change this for GoPie+. When a mutation was run, we choose new random
+We change this for GoCR. When a mutation was run, we choose new random
 scheduling chains based on this trace, to create new mutations. This
 will increase the number of mutations, but increases the probability of
 uncovering more complex and unlikely, but still possible bugs.
@@ -459,7 +459,7 @@ The first point is the already mentioned flip mutation. For an
 unknown reason, the Flip operation is not present in the original GoPie
 implementation (we assume that is was an implementation oversight, since the
 implementation at multiple points seems unfinished, including multiple
-never implemented TODO notes). We include the flip operation in GoPie+.
+never implemented TODO notes). We include the flip operation in GoCR.
 
 All chains start as a random pair of two elements with Rel2. The length of a
 chain can only be increased by the augment mutation. In the implementation,
@@ -596,7 +596,7 @@ we limit the number of how often the same chain can be executed.
 
 For GoPieHB, we use the happens-before analysis in GoPie. With this, we are able to
 reduce the number of runs the fuzzing needs to find potential bugs.
-As a basis, we use our GoPie+ implementation.
+As a basis, we use our GoCR implementation.
 
 The HB data is used in two ways:
 

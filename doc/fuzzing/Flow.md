@@ -99,7 +99,7 @@ Because of the channels, `do 1` will normally be executed before the
 
 GoPie only reorders channel and mutex operations. It is therefore not
 able to rewrite the schedule in such a way, that the `codeWithPosBug` is triggered (unless it is accidentally created by some mutation).
-But even vor GoPie+, which includes all operations, this approach can be beneficial.
+But even vor GoCR, which includes all operations, this approach can be beneficial.
 
 To see the general advantage of out approach, assume it could reschedule the `Do`.\
 GoPie will always create scheduling chains such that two neighboring operations in this chain are in different routines and then randomly

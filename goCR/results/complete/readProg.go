@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: readProg.go
 // Brief: Functions to read in a program an extract all relevant operations
 //
-// Author: Erik Kassubek
 // Created: 2024-06-26
 //
 // License: BSD-3-Clause
@@ -11,13 +9,13 @@
 package complete
 
 import (
-	"advocate/utils/log"
 	"fmt"
 	"go/ast"
 	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -102,7 +100,7 @@ func collectGoFiles(dir string) ([]string, error) {
 			return nil
 		}
 
-		if info.IsDir() && info.Name() == "advocateResult" {
+		if info.IsDir() && info.Name() == "goCRResult" {
 			return filepath.SkipDir
 		}
 

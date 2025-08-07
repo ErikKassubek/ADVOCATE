@@ -1,9 +1,6 @@
-// Copyright (c) 2025 Sebastian Pohsner
-//
 // File: statsMisc.go
-// Brief: Collect miscellaneous statistics about the advocate run
+// Brief: Collect miscellaneous statistics about the goCR run
 //
-// Author: Erik Kassubek
 // Created: 2025-02-25
 //
 // License: BSD-3-Clause
@@ -11,8 +8,8 @@
 package stats
 
 import (
-	"advocate/analysis/data"
-	"advocate/fuzzing/gopie"
+	"goCR/analysis/data"
+	"goCR/fuzzing/gopie"
 )
 
 var fuzzStats = []string{

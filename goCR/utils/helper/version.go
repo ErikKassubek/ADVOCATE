@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: version.go
 // Brief: Check the go version and exec name of a given program
 //
-// Author: Erik Kassubek
 // Created: 2025-05-19
 //
 // License: BSD-3-Clause
@@ -11,16 +9,16 @@
 package helper
 
 import (
-	"advocate/utils/log"
 	"bufio"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strings"
 )
 
 // CheckGoMod checks the version of the program to be analyzed and finds the exec name
-// Advocate is implemented in and for go1.24. It the analyzed program has another
+// GoCR is implemented in and for go1.24. It the analyzed program has another
 // version, especially if the other version is also installed on the machine,
 // this can lead to problems. checkGoMod therefore reads the version of the
 // analyzed program and if its not 1.24, a warning and information is printed
@@ -97,8 +95,8 @@ func CheckGoMod(progPath string, modeMain bool, execName string) string {
 				errString := "ADVOCATE is implemented for go version 1.24. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
-				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."
-				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
+				errString += "The message 'package goCR is not in std' in the output.log file may indicate this."
+				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/goCR' or 'package goCR is not in std' in the output files may indicate an incompatible go version.`
 				log.Important(errString)
 			}
 

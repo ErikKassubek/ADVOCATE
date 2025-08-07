@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: addEdges.go
 // Brief: Add edges to the graph
 //
-// Author: Erik Kassubek
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package pog
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/helper"
-	"advocate/trace"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/helper"
+	"goCR/trace"
 )
 
 // AddEdgeSameRoutineAndFork adds a given element to the children of the last element that

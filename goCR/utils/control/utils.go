@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: helper.go
 // Brief: Utils for memory
 //
-// Author: Erik Kassubek
 // Created: 2025-03-11
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package control
 
 import (
-	"advocate/utils/log"
+	"goCR/utils/log"
 	"runtime"
 )
 

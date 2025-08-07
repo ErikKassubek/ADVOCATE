@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisUtil.go
 // Brief: Collection of utility functiond for trace analysis
 //
-// Author: Erik Kassubek
 // Created: 2024-05-29
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package trace
 
 import (
-	"advocate/utils/types"
 	"errors"
 	"fmt"
+	"goCR/utils/types"
 	"strconv"
 	"strings"
 )

@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hbAtomic.go
 // Brief: Update the cssts for atomics
 //
-// Author: Erik Kassubek
 // Created: 2025-07-20
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // UpdateHBAtomic update the cssts for an atomic operation

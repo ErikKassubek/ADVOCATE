@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: logging.go
 // Brief: Logging function
 //
-// Author: Erik Kassubek
 // Created: 2025-02-18
 //
 // License: BSD-3-Clause

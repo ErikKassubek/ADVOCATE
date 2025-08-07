@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: flow-mutation.go
 // Brief: Add mutations based on flow
 //
-// Author: Erik Kassubek
 // Created: 2025-02-24
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package flow
 
 import (
-	"advocate/analysis/analysis/scenarios"
-	anadata "advocate/analysis/data"
-	"advocate/fuzzing/data"
-	"advocate/utils/log"
+	"goCR/analysis/analysis/scenarios"
+	anadata "goCR/analysis/data"
+	"goCR/fuzzing/data"
+	"goCR/utils/log"
 )
 
 // if true, a new mutation run is created for each flow mutations,

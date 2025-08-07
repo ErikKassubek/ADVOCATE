@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hb.go
 // Brief: Function to find concurrent operations by building direct order graph
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package pog
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/helper"
-	"advocate/trace"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/helper"
+	"goCR/trace"
 	"reflect"
 )
 

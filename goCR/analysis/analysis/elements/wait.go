@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: vcWait.go
 // Brief: Update functions for happens before info for wait group operations
 //        Some function start analysis functions
 //
-// Author: Erik Kassubek
 // Created: 2023-07-25
 //
 // License: BSD-3-Clause
@@ -12,12 +10,12 @@
 package elements
 
 import (
-	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
-	"advocate/analysis/hb/hbcalc"
-	fuzzdata "advocate/fuzzing/data"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/analysis/scenarios"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/hbcalc"
+	fuzzdata "goCR/fuzzing/data"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // AnalyzeWait updates and stores the vector clock of the element

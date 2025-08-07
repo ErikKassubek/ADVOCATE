@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementWait.go
 // Brief: Struct and functions for wait group operations in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
 	"errors"
 	"fmt"
+	"goCR/analysis/hb/clock"
 	"math"
 	"strconv"
 )

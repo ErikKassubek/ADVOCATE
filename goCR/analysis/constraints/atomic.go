@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: atomic.go
 // Brief: Create constraint from atomics
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package constraints
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
+	"goCR/analysis/data"
+	"goCR/trace"
 )
 
 // AddAtomic  add the element to be the last write for an atomic write

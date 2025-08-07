@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: control.go
 // Brief: Cancel analysis when not enough memory
 //
-// Author: Erik Kassubek
 // Created: 2025-03-03
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package control
 
 import (
-	"advocate/utils/log"
+	"goCR/utils/log"
 	"math"
 	"sync/atomic"
 	"time"

@@ -1,16 +1,14 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: neg.go
 // Brief: Negative constraints
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
 package constraints
 
-import "advocate/trace"
+import "goCR/trace"
 
 // A negative constraint consisting of two elements
 // The positive constraints signals, that the first element does not influences the

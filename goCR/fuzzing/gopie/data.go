@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: data.go
 // Brief: Data for GoPie
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package gopie
 
 import (
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/types"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/types"
 )
 
 // Data for goPie fuzzing

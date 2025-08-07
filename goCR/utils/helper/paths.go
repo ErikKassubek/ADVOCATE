@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: paths.go
 // Brief: Utils using paths
 //
-// Author: Erik Kassubek
 // Created: 2025-04-23
 //
 // License: BSD-3-Clause

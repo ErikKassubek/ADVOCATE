@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: goPie-sc.go
 // Brief: scheduling Chains for GoPie
 //
-// Author: Erik Kassubek
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause
@@ -11,14 +9,14 @@
 package gopie
 
 import (
-	anaData "advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/concurrent"
-	"advocate/analysis/hb/hbcalc"
-	"advocate/fuzzing/data"
-	"advocate/trace"
-	"advocate/utils/helper"
 	"fmt"
+	anaData "goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/concurrent"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/fuzzing/data"
+	"goCR/trace"
+	"goCR/utils/helper"
 	"math"
 	"math/rand"
 )

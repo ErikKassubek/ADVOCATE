@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElements.go
 // Brief: Interface for all trace element types
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"goCR/analysis/hb/clock"
 )
 
 // Values possible primitive types

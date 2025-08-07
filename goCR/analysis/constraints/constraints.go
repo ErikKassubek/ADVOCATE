@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: constraints.go
 // Brief: Main file for fuzzing using constraints
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package constraints
 
 import (
-	"advocate/trace"
 	"fmt"
+	"goCR/trace"
 )
 
 var (

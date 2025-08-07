@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: bugs.go
 // Brief: Operations for handeling found bugs
 //
-// Author: Erik Kassubek
 // Created: 2023-11-30
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package bugs
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
 	"errors"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
 	"sort"
 	"strconv"
 	"strings"

@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementNew.go
 // Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
-// Author: Erik Kassubek
 // Created: 2024-11-29
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
 	"errors"
 	"fmt"
+	"goCR/analysis/hb/clock"
 	"strconv"
 )
 

@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: goPie.go
 // Brief: Main file for goPie fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2025-03-22
 //
 // License: BSD-3-Clause
@@ -11,14 +9,14 @@
 package gopie
 
 import (
-	anadata "advocate/analysis/data"
-	"advocate/analysis/hb/concurrent"
-	"advocate/fuzzing/data"
-	"advocate/io"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
 	"fmt"
+	anadata "goCR/analysis/data"
+	"goCR/analysis/hb/concurrent"
+	"goCR/fuzzing/data"
+	"goCR/io"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
 	"math"
 	"os"
 	"path/filepath"

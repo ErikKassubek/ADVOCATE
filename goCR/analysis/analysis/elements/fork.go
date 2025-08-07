@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: hbFork.go
 // Brief: Update function for happens before info for forks (creation of new routine)
 //
-// Author: Erik Kassubek
 // Created: 2023-07-26
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package elements
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/hbcalc"
-	"advocate/trace"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/trace"
+	"goCR/utils/timer"
 )
 
 // AnalyzeFork update and calculate happens before information for fork operations

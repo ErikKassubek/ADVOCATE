@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: hbChannel.go
 // Brief: Update functions for happens before info for channel operations
 //        Some of the update function also start analysis functions
 //
-// Author: Erik Kassubek
 // Created: 2023-07-27
 //
 // License: BSD-3-Clause
@@ -12,13 +10,13 @@
 package elements
 
 import (
-	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
-	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/hbcalc"
-	"advocate/analysis/hb/vc"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/analysis/scenarios"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/clock"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/analysis/hb/vc"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // UpdateChannel updates the vector clocks to a channel element

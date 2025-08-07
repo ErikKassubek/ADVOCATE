@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: complete.go
 // Brief: Functions to check if all program elements have been executed at least once
 //
-// Author: Erik Kassubek
 // Created: 2024-06-26
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package complete
 
 import (
-	"advocate/results/explanation"
-	"advocate/utils/log"
-	"advocate/utils/types"
 	"fmt"
+	"goCR/results/explanation"
+	"goCR/utils/log"
+	"goCR/utils/types"
 	"os"
 	"strings"
 )
@@ -96,7 +94,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[int][]int,
 	path string) error {
 
-	path = fmt.Sprintf("%s/AdvocateNotExecuted", path)
+	path = fmt.Sprintf("%s/GoCRNotExecuted", path)
 
 	// create a folder to store results
 	err := os.MkdirAll(path, os.ModePerm)
@@ -104,8 +102,8 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 		return err
 	}
 
-	pathOperations := fmt.Sprintf("%s/AdvocateNotExecutedOperations.txt", path)
-	pathSelects := fmt.Sprintf("%s/AdvocateNotExecutedSelectCases.txt", path)
+	pathOperations := fmt.Sprintf("%s/GoCRNotExecutedOperations.txt", path)
+	pathSelects := fmt.Sprintf("%s/GoCRNotExecutedSelectCases.txt", path)
 
 	notExecutedOperationsFile, err := os.Create(pathOperations)
 	if err != nil {

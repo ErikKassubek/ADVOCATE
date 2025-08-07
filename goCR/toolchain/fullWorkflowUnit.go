@@ -1,10 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
-//
 // File: runFullWorkflowMain.go
 // Brief: Function to run the whole ADVOCATE workflow, including running,
 //    analysis and replay on all unit tests of a program
 //
-// Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
@@ -12,16 +9,16 @@
 package toolchain
 
 import (
-	"advocate/analysis/data"
-	"advocate/results/complete"
-	"advocate/results/results"
-	"advocate/results/stats"
-	"advocate/utils/control"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
 	"errors"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/results/complete"
+	"goCR/results/results"
+	"goCR/results/stats"
+	"goCR/utils/control"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -33,7 +30,7 @@ import (
 // Run ADVOCATE for all given unit tests
 //
 // Parameter:
-//   - pathToAdvocate string: pathToAdvocate
+//   - pathToGoCR string: pathToGoCR
 //   - dir string: path to the folder containing the unit tests
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
@@ -58,14 +55,14 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runReplay bool,
+func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis, runReplay bool,
 	pathToTest, progName string,
 	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
 	keepTraces, firstRun, skipExisting, cont bool, fileNumber,
 	testNumber int) (string, int, int, error) {
 	// Validate required inputs
-	if pathToAdvocate == "" {
-		return "", 0, 0, errors.New("Path to advocate is empty")
+	if pathToGoCR == "" {
+		return "", 0, 0, errors.New("Path to goCR is empty")
 	}
 	if dir == "" {
 		return "", 0, 0, errors.New("Directory is empty")
@@ -80,12 +77,12 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 	if firstRun && !cont {
 		if !skipExisting {
-			os.RemoveAll("advocateResult")
+			os.RemoveAll("goCRResult")
 		}
 
-		if info, _ := os.Stat("advocateResult"); info == nil {
-			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-				return "", 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		if info, _ := os.Stat("goCRResult"); info == nil {
+			if err := os.MkdirAll("goCRResult", os.ModePerm); err != nil {
+				return "", 0, 0, fmt.Errorf("Failed to create goCRResult directory: %v", err)
 			}
 		}
 
@@ -102,7 +99,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 	attemptedTests, skippedTests, currentFile := 0, 0, fileNumber
 
-	// resultPath := filepath.Join(dir, "advocateResult")
+	// resultPath := filepath.Join(dir, "goCRResult")
 	var numberResults int
 
 	ranTest := false
@@ -152,9 +149,9 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 				adjustedPackagePath = adjustedPackagePath + string(filepath.Separator)
 			}
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
-			directoryName := filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc))
+			directoryName := filepath.Join("goCRResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc))
 			if cont && fileNumber != 0 {
-				directoryName = filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
+				directoryName = filepath.Join("goCRResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
 			}
 			currentResFolder = filepath.Join(dir, directoryName)
 
@@ -170,7 +167,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 
 			// Execute full workflow
-			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToAdvocate,
+			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToGoCR,
 				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
@@ -226,7 +223,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 
 	// Check for untriggered selects
 	if notExecuted && testName != "" {
-		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
+		err := complete.Check(filepath.Join(dir, "goCRResult"), dir)
 		if err != nil {
 			fmt.Println("Could not run check for untriggered select and not executed progs")
 		}
@@ -248,7 +245,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 //
 // Parameter:
 //   - dir string: folder to search in
-//   - cont bool: only return test files not already in the advocateResult
+//   - cont bool: only return test files not already in the goCRResult
 //
 // Returns:
 //   - []string: found files
@@ -303,7 +300,7 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
 	res := make(map[string]struct{})
 
-	path := filepath.Join(dir, "advocateResult")
+	path := filepath.Join(dir, "goCRResult")
 
 	patternPrefix := `file\([0-9]+\)-test\([0-9]+\)-`
 	patternFileNum := `^file\((\d+)\)-test\(\d+\)-.+$`
@@ -391,7 +388,7 @@ func FindTestFunctions(file string) ([]string, error) {
 // This will run, record, analyzer and, if necessary, rewrite and replay the test
 //
 // Parameter:
-//   - pathToAdvocate string: path to advocate
+//   - pathToGoCR string: path to goCR
 //   - dir string: path to the package to test
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
@@ -409,7 +406,7 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - int: number of run replays
 //   - bool: true if analysis passed without error
 //   - error
-func unitTestFullWorkflow(pathToAdvocate, dir string,
+func unitTestFullWorkflow(pathToGoCR, dir string,
 	runRecord, runAnalysis, runReplay bool,
 	testName, pkg, file string,
 	fuzzing int, fuzzingTrace string) (int, bool, error) {
@@ -434,8 +431,8 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	}()
 
 	// Validate required inputs
-	if pathToAdvocate == "" {
-		return 0, false, errors.New("Path to advocate is empty")
+	if pathToGoCR == "" {
+		return 0, false, errors.New("Path to goCR is empty")
 	}
 	if dir == "" {
 		return 0, false, errors.New("Directory is empty")
@@ -450,8 +447,8 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 		return 0, false, errors.New("Test file is empty")
 	}
 
-	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
-	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
+	pathToPatchedGoRuntime := filepath.Join(pathToGoCR, "go-patch/bin/go")
+	pathToGoRoot := filepath.Join(pathToGoCR, "go-patch")
 
 	if runtime.GOOS == "windows" {
 		pathToPatchedGoRuntime += ".exe"
@@ -483,7 +480,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	if runAnalysis {
 		pkgPath := filepath.Join(dir, pkg)
-		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
+		err = unitTestAnalyzer(pkgPath, "goCRTrace", fuzzing)
 		if err != nil {
 			return 0, false, err
 		}

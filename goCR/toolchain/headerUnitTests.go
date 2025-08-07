@@ -1,10 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
-//
 // File: headerUnitTests.go
 // Brief: Functions to add and remove the ADVOCATE header into file containing
 //    unit tests
 //
-// Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
@@ -145,11 +142,11 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 		lines = append(lines, line)
 
 		if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import \"advocate\"")
+			lines = append(lines, "import \"goCR\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t\"advocate\"")
+			lines = append(lines, "\t\"goCR\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
@@ -162,28 +159,28 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 				} else if tracePathFlag != "" {
 					replayPath = filepath.Base(tracePathFlag)
 				} else {
-					replayPath = "advocateTrace"
+					replayPath = "goCRTrace"
 				}
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplayTracing("%s", false, %d, %s)
-  defer advocate.FinishReplayTracing()
+  goCR.InitReplayTracing("%s", false, %d, %s)
+  defer goCR.FinishReplayTracing()
   // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", %d, %s)
-  defer advocate.FinishReplay()
+  goCR.InitReplay("%s", %d, %s)
+  defer goCR.FinishReplay()
   // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s", %d)
-  defer advocate.FinishFuzzing()
+  goCR.InitFuzzing("%s", %d)
+  defer goCR.FinishFuzzing()
   // ======= Preamble End =======`, replayInfo, timeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitTracing(%d)
-  defer advocate.FinishTracing()
+  goCR.InitTracing(%d)
+  defer goCR.FinishTracing()
   // ======= Preamble End =======`, timeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)
@@ -240,7 +237,7 @@ func removeHeaderUnit(fileName string) error {
 			continue
 		}
 
-		if strings.Contains(line, "import \"advocate\"") {
+		if strings.Contains(line, "import \"goCR\"") {
 			continue
 		}
 
@@ -248,7 +245,7 @@ func removeHeaderUnit(fileName string) error {
 			inImports = true
 		}
 
-		if inImports && strings.Contains(line, "\"advocate\"") {
+		if inImports && strings.Contains(line, "\"goCR\"") {
 			continue
 		}
 

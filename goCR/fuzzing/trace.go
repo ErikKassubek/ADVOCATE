@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: trace.go
 // Brief: Function to parse the trace and get all relevant information
 //
-// Author: Erik Kassubek
 // Created: 2024-11-29
 //
 // License: BSD-3-Clause
@@ -11,13 +9,13 @@
 package fuzzing
 
 import (
-	anadata "advocate/analysis/data"
-	"advocate/fuzzing/data"
-	"advocate/fuzzing/gfuzz"
-	"advocate/fuzzing/gopie"
-	"advocate/trace"
-	"advocate/utils/control"
-	"advocate/utils/log"
+	anadata "goCR/analysis/data"
+	"goCR/fuzzing/data"
+	"goCR/fuzzing/gfuzz"
+	"goCR/fuzzing/gopie"
+	"goCR/trace"
+	"goCR/utils/control"
+	"goCR/utils/log"
 )
 
 var currentTrace *trace.Trace

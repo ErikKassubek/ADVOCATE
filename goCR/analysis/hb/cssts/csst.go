@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: csst.go
 // Brief: functions to use the csst
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/types"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/types"
 )
 
 // Data for the csst

@@ -1,16 +1,14 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: hb.go
 // Brief: Type for happens before
 //
-// Author: Erik Kassubek
 // Created: 2023-11-30
 //
 // License: BSD-3-Clause
 
 package clock
 
-import "advocate/analysis/hb"
+import "goCR/analysis/hb"
 
 // Check if vc1 happens before vc2
 //

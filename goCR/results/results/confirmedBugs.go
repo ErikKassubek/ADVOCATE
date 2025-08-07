@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: confirmedBugs.go
 // Brief: Collect confirmed bug string
 //
-// Author: Erik Kassubek
 // Created: 2025-04-14
 //
 // License: BSD-3-Clause

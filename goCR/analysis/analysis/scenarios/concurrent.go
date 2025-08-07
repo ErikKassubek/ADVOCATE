@@ -1,11 +1,9 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisConcurrentCommunication.go
 // Brief: Find concurrent operations on the same element
 //   For concurrent receive: add panic
 //   For concurrent send, receive, (try)(r)lock, once.Do: store to use in fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-01-27
 //
 // License: BSD-3-Clause
@@ -13,15 +11,15 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/vc"
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/analysis/hb/vc"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 )
 
 // GetConcurrentSendForFuzzing checks if for the given send, if there is a

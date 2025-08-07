@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: types.go
 // Brief: Types used in analysis data
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package data
 
 import (
-	"advocate/analysis/hb/clock"
-	"advocate/trace"
+	"goCR/analysis/hb/clock"
+	"goCR/trace"
 	"strconv"
 	"strings"
 )

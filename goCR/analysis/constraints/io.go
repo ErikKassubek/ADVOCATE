@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: io.go
 // Brief: write the constraints to a file
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause

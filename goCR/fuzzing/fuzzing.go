@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: fuzzing.go
 // Brief: Main file for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-12-03
 //
 // License: BSD-3-Clause
@@ -11,20 +9,20 @@
 package fuzzing
 
 import (
-	anaData "advocate/analysis/data"
-	"advocate/fuzzing/data"
-	"advocate/fuzzing/flow"
-	"advocate/fuzzing/gfuzz"
-	"advocate/fuzzing/gopie"
-	"advocate/results/results"
-	"advocate/results/stats"
-	"advocate/toolchain"
-	"advocate/utils/control"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
-	"advocate/utils/types"
 	"fmt"
+	anaData "goCR/analysis/data"
+	"goCR/fuzzing/data"
+	"goCR/fuzzing/flow"
+	"goCR/fuzzing/gfuzz"
+	"goCR/fuzzing/gopie"
+	"goCR/results/results"
+	"goCR/results/stats"
+	"goCR/toolchain"
+	"goCR/utils/control"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
+	"goCR/utils/types"
 	"path/filepath"
 	"time"
 )
@@ -34,7 +32,7 @@ import (
 // Parameter:
 //   - modeMain bool: if true, run fuzzing on main function, otherwise on test
 //   - fm bool: the mode used for fuzzing
-//   - advocate string: path to advocate
+//   - goCR string: path to goCR
 //   - progPath string: path to the folder containing the prog/test
 //   - progName string: name of the program
 //   - name string: If modeMain, name of the executable, else name of the test
@@ -49,7 +47,7 @@ import (
 //   - mRun int: maximum number of times a test/prog is run
 //   - cancelTestIfFound int: do not run further fuzzing runs on tests if one
 //     bug has been found, mainly used for benchmarks
-func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
+func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int,
 	cancelTestIfFound bool) error {
 
@@ -91,7 +89,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			log.Info("Run fuzzing on test ", name)
 		}
 
-		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
+		err := runFuzzing(modeMain, goCR, progPath, progName, "", name, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
@@ -150,7 +148,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			firstRun := (i == 0 && j == 0)
 
-			err := runFuzzing(false, advocate, progPath, progName, testFile, testFunc, ignoreAtomic,
+			err := runFuzzing(false, goCR, progPath, progName, testFile, testFunc, ignoreAtomic,
 				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
@@ -185,7 +183,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 //
 // Parameter:
 //   - modeMain bool: if true, run fuzzing on main function, otherwise on test
-//   - advocate string: path to advocate
+//   - goCR string: path to goCR
 //   - progName string: name of the program
 //   - testPath string: path to the test file
 //   - name string: If modeMain, name of the executable, else name of the test
@@ -198,7 +196,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 //   - skipExisting bool: skip existing runs
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - cont bool: continue with an already started run
-func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
+func runFuzzing(modeMain bool, goCR, progPath, progName, testPath, name string, ignoreAtomic,
 	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
 	progDir := data.GetPath(progPath)
@@ -248,7 +246,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			mode = "main"
 		}
 
-		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
+		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, goCR, progPath, testPath, true, true, true,
 			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
 			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)

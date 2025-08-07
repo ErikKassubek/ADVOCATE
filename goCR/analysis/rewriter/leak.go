@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: leak.go
 // Brief: Rewrite trace for leaked channel
 //
-// Author: Erik Kassubek
 // Created: 2024-04-07
 //
 // License: BSD-3-Clause
@@ -11,14 +9,14 @@
 package rewriter
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/results/bugs"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
 	"errors"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/results/bugs"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
 )
 
 // Rewrite a trace where a leaking routine was found.

@@ -1,10 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: vcOther.go
 // Brief: Function for happens before info for
 //   elements that do not change, but only store the vc
 //
-// Author: Erik Kassubek
 // Created: 2025-04-26
 //
 // License: BSD-3-Clause
@@ -12,8 +10,8 @@
 package elements
 
 import (
-	"advocate/analysis/hb/hbcalc"
-	"advocate/trace"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/trace"
 )
 
 // AnalyzeNew store the vector clock of the element

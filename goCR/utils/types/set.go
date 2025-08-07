@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: pair.go
 // Brief: Implement a set data type
 //
-// Author: Erik Kassubek
 // Created: 2025-07-02
 //
 // License: BSD-3-Clause

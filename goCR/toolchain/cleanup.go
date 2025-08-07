@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: cleanup.go
 // Brief: Cleanup traces and files
 //
-// Author: Erik Kassubek
 // Created: 2025-02-28
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package toolchain
 
 import (
-	"advocate/utils/log"
+	"goCR/utils/log"
 	"io"
 	"os"
 	"path/filepath"
@@ -27,7 +25,7 @@ import (
 //   - total bool: merge all already created logs into total log, for fuzzing
 func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{
-		"advocateTrace",
+		"goCRTrace",
 		"results_machine.log",
 		"results_readable.log",
 		"output.log",
@@ -81,7 +79,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 		}
 		dest := filepath.Join(destination, file)
 
-		if file == "advocateTrace" {
+		if file == "goCRTrace" {
 			movedTraces++
 			dest += "_" + strconv.Itoa(movedTraces)
 		}
@@ -107,7 +105,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 //   - path string: path to the folder containing the traces
 func RemoveTraces(path string) {
 	pattersToMove := []string{
-		"advocateTrace_*",
+		"goCRTrace_*",
 		"rewrittenTrace*",
 		"fuzzingData.log",
 		// "fuzzingTrace_*",

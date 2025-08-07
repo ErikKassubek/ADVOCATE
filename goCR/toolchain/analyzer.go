@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: analyzer.go
 // Brief: Starting point for the analyzer and replay
 //
-// Author: Erik Kassubek
 // Created: 2025-04-26
 //
 // License: BSD-3-Clause
@@ -11,16 +9,16 @@
 package toolchain
 
 import (
-	"advocate/analysis/analysis"
-	"advocate/analysis/data"
-	"advocate/analysis/rewriter"
-	"advocate/io"
-	"advocate/results/results"
-	"advocate/utils/control"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
 	"fmt"
+	"goCR/analysis/analysis"
+	"goCR/analysis/data"
+	"goCR/analysis/rewriter"
+	"goCR/io"
+	"goCR/results/results"
+	"goCR/utils/control"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"path/filepath"
 	"strconv"
 	"strings"

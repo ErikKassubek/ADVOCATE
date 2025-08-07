@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: select.go
 // Brief: File for the selects for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-12-04
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package gfuzz
 
 import (
-	fuzzingdata "advocate/fuzzing/data"
-	"advocate/trace"
+	fuzzingdata "goCR/fuzzing/data"
+	"goCR/trace"
 	"sort"
 )
 

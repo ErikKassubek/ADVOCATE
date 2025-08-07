@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: sparseSegmentTree.go
 // Brief: Implementation of SparseSegmentTree.java from CSST paper (see csst.go)
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause

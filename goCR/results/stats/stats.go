@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: stats.go
 // Brief: Create statistics about programs and traces
 //
-// Author: Erik Kassubek
 // Created: 2023-07-13
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package stats
 
 import (
-	"advocate/utils/log"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strconv"

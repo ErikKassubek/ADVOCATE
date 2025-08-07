@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: headerUnitTests.go
 // Brief: Functions to add and remove the ADVOCATE header into file containing
 //    unit tests
 //
-// Author: Erik Kassubek
 // Created: 2024-10-29
 //
 // License: BSD-3-Clause
@@ -12,8 +10,8 @@
 package toolchain
 
 import (
-	"advocate/utils/helper"
 	"bufio"
+	"goCR/utils/helper"
 	"io"
 	"os"
 	"path/filepath"

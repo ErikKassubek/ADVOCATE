@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: statsFuzzing.go
 // Brief: Create stats about fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2025-02-17
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package stats
 
 import (
-	"advocate/utils/log"
 	"bufio"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -32,7 +30,7 @@ import (
 //   - error
 func CreateStatsFuzzing(pathFolder, progName string) error {
 	// collect the info from the analyzer
-	resultPath := filepath.Join(pathFolder, "advocateResult")
+	resultPath := filepath.Join(pathFolder, "goCRResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
 	statsFuzzPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")

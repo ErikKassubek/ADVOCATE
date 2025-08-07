@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: gfuzz.go
 // Brief: Main function to run gfuzz
 //
-// Author: Erik Kassubek
 // Created: 2025-03-22
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package gfuzz
 
 import (
-	"advocate/utils/log"
+	"goCR/utils/log"
 	"math"
 )
 

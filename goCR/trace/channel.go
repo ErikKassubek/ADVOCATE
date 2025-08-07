@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementChannel.go
 // Brief: Struct and functions for channel operations in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -16,8 +14,8 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/hb/clock"
-	"advocate/utils/log"
+	"goCR/analysis/hb/clock"
+	"goCR/utils/log"
 )
 
 // OpChannel is an enum for opC

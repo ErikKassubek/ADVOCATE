@@ -1,10 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
-//
 // File: runFullWorkflowMain.go
 // Brief: Function to run the whole ADVOCATE workflow, including running,
 //    analysis and replay on a program with a main function
 //
-// Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
@@ -12,12 +9,12 @@
 package toolchain
 
 import (
-	"advocate/results/complete"
-	"advocate/results/stats"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
 	"fmt"
+	"goCR/results/complete"
+	"goCR/results/stats"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -27,7 +24,7 @@ import (
 // Run ADVOCATE on a program with a main function
 //
 // Parameter:
-//   - pathToAdvocate string: path to the ADVOCATE folder
+//   - pathToGoCR string: path to the ADVOCATE folder
 //   - pathToFile string: path to the file containing the main function
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
@@ -46,7 +43,7 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowMain(pathToAdvocate string, pathToFile string,
+func runWorkflowMain(pathToGoCR string, pathToFile string,
 	runRecord, runAnalysis, runReplay bool,
 	executableName string, keepTraces bool, fuzzing int, fuzzingTrace string,
 	firstRun bool) (string, int, int, error) {
@@ -56,25 +53,25 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 	log.Info("Run main")
 
-	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
+	pathToPatchedGoRuntime := filepath.Join(pathToGoCR, "go-patch/bin/go")
 
 	if runtime.GOOS == "windows" {
 		pathToPatchedGoRuntime += ".exe"
 	}
 
-	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
+	pathToGoRoot := filepath.Join(pathToGoCR, "go-patch")
 
 	// Change to the directory of the main file
 	dir := filepath.Dir(pathToFile)
 	if err := os.Chdir(dir); err != nil {
 		return "", 0, 0, fmt.Errorf("Failed to change directory: %v", err)
 	}
-	resultPath := filepath.Join(dir, "advocateResult")
+	resultPath := filepath.Join(dir, "goCRResult")
 
 	if firstRun {
-		os.RemoveAll("advocateResult")
-		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-			return "", 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
+		os.RemoveAll("goCRResult")
+		if err := os.MkdirAll("goCRResult", os.ModePerm); err != nil {
+			return "", 0, 0, fmt.Errorf("Failed to create goCRResult directory: %v", err)
 		}
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
@@ -162,7 +159,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 	// Apply analyzer
 	if runAnalysis {
-		analyzerOutput := filepath.Join(dir, "advocateTrace")
+		analyzerOutput := filepath.Join(dir, "goCRTrace")
 
 		err = runAnalyzer(analyzerOutput, noRewriteFlag,
 			"results_readable.log", "results_machine.log",
@@ -235,7 +232,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	}
 
 	if notExecuted {
-		complete.Check(filepath.Join(dir, "advocateResult"), dir)
+		complete.Check(filepath.Join(dir, "goCRResult"), dir)
 	}
 
 	if createStats {

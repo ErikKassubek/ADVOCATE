@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: graph.go
 // Brief: Store the partial order graph
 //
-// Author: Erik Kassubek
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package pog
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/log"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 var (

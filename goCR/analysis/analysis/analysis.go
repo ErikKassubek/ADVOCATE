@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysis.go
 // Brief: analysis of traces if performed from here
 //
-// Author: Erik Kassubek, Sebastian Pohsner
 // Created: 2025-01-01
 //
 // License: BSD-3-Clause
@@ -11,19 +9,19 @@
 package analysis
 
 import (
-	"advocate/analysis/analysis/elements"
-	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
-	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/hbcalc"
-	hb "advocate/analysis/hb/hbcalc"
-	"advocate/analysis/hb/pog"
-	"advocate/analysis/hb/vc"
-	fuzzdata "advocate/fuzzing/data"
-	"advocate/trace"
-	"advocate/utils/control"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/analysis/analysis/elements"
+	"goCR/analysis/analysis/scenarios"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/cssts"
+	"goCR/analysis/hb/hbcalc"
+	hb "goCR/analysis/hb/hbcalc"
+	"goCR/analysis/hb/pog"
+	"goCR/analysis/hb/vc"
+	fuzzdata "goCR/fuzzing/data"
+	"goCR/trace"
+	"goCR/utils/control"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 )
 
 // RunAnalysis starts the analysis of the main trace

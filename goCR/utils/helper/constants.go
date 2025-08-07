@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: constants.go
 // Brief: Constants that can be set via the setting flag
 //
-// Author: Erik Kassubek
 // Created: 2025-05-06
 //
 // License: BSD-3-Clause
@@ -11,7 +9,7 @@
 package helper
 
 import (
-	"advocate/utils/log"
+	"goCR/utils/log"
 	"math"
 	"strconv"
 	"strings"

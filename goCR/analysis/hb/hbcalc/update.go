@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hbAtomic.go
 // Brief: Update hb info for the different types
 //
-// Author: Erik Kassubek
 // Created: 2025-07-20
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package hbcalc
 
 import (
-	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/pog"
-	"advocate/analysis/hb/vc"
-	"advocate/trace"
-	"advocate/utils/timer"
+	"goCR/analysis/hb/cssts"
+	"goCR/analysis/hb/pog"
+	"goCR/analysis/hb/vc"
+	"goCR/trace"
+	"goCR/utils/timer"
 )
 
 // UpdateHBAtomic update the vector clocks for an atomic operation

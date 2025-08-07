@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisWaitGroup.go
 // Brief: Trace analysis for possible negative wait group counter
 //
-// Author: Erik Kassubek
 // Created: 2023-11-24
 //
 // License: BSD-3-Clause
@@ -11,16 +9,16 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
-	"advocate/utils/types"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
+	"goCR/utils/types"
 )
 
 // CheckForDoneBeforeAddChange collect all adds and dones for the analysis

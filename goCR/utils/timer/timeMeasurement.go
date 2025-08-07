@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: timeMeasurement.go
 // Brief: The actual timer
 //
-// Author: Erik Kassubek
 // Created: 2025-02-25
 //
 // License: BSD-3-Clause
@@ -56,7 +54,7 @@ var (
 func Init(mt bool, progPath string) {
 	measureTime = mt
 
-	resultFolder = filepath.Join(progPath, "advocateResult")
+	resultFolder = filepath.Join(progPath, "goCRResult")
 
 	for i := range numberTimer {
 		timer[i] = Timer{}

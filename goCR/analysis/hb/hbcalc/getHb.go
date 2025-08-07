@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: getHb.go
 // Brief: Get the HB info between two elements
 //
-// Author: Erik Kassubek
 // Created: 2025-07-21
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package hbcalc
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/cssts"
-	"advocate/analysis/hb/pog"
-	"advocate/analysis/hb/vc"
-	"advocate/trace"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/cssts"
+	"goCR/analysis/hb/pog"
+	"goCR/analysis/hb/vc"
+	"goCR/trace"
 )
 
 // GetHappensBefore returns the happens before relation between two operations

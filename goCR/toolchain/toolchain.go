@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: headerUnitTests.go
 // Brief: Functions to add and remove the ADVOCATE header into file containing
 //    unit tests
 //
-// Author: Erik Kassubek
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
@@ -12,9 +10,9 @@
 package toolchain
 
 import (
-	"advocate/analysis/data"
-	"advocate/utils/helper"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/utils/helper"
 )
 
 var (
@@ -25,7 +23,7 @@ var (
 //
 // Parameter:
 //   - mode string: mode of the toolchain (main or test or explain)
-//   - advocate string: path to the root ADVOCATE folder.
+//   - goCR string: path to the root ADVOCATE folder.
 //   - pathToMainFileOrTestDir string: if mode is main, path to main file, if mode test, path to test folder
 //   - pathToTest string: specify specific test path, only used for fuzzing
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
@@ -51,12 +49,12 @@ var (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
+func Run(mode, goCR, pathToMainFileOrTestDir, pathToTest string,
 	runRecord, runAnalysis, runReplay bool,
 	execName, progName, test string, fuzzing int, fuzzingTrace string,
 	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
 	firstRun, cont bool, fileNumber, testNumber int) (string, int, int, error) {
-	pathToAdvocate = helper.CleanPathHome(advocate)
+	pathToGoCR = helper.CleanPathHome(goCR)
 	pathToFileOrDir = helper.CleanPathHome(pathToMainFileOrTestDir)
 
 	executableName = execName
@@ -72,8 +70,8 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 
 	switch mode {
 	case "main":
-		if pathToAdvocate == "" {
-			return "", 0, 0, fmt.Errorf("Path to advocate required for mode main")
+		if pathToGoCR == "" {
+			return "", 0, 0, fmt.Errorf("Path to goCR required for mode main")
 		}
 		if pathToFileOrDir == "" {
 			return "", 0, 0, fmt.Errorf("Path to file required")
@@ -84,11 +82,11 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
-		return runWorkflowMain(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
+		return runWorkflowMain(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
 	case "test", "tests":
-		if pathToAdvocate == "" {
-			return "", 0, 0, fmt.Errorf("Path to advocate required")
+		if pathToGoCR == "" {
+			return "", 0, 0, fmt.Errorf("Path to goCR required")
 		}
 		if pathToFileOrDir == "" {
 			return "", 0, 0, fmt.Errorf("Path to test folder required for mode main")
@@ -96,7 +94,7 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
-		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
+		return runWorkflowUnit(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis, runReplay,
 			pathToTest, progName, notExecuted, stats && fuzzing == -1, fuzzing, fuzzingTrace, keepTraces,
 			firstRun, skipExisting, cont, fileNumber, testNumber)
 	default:

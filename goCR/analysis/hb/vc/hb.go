@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hb.go
 // Brief: Get the happens before info
 //
-// Author: Erik Kassubek
 // Created: 2025-07-21
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package vc
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/trace"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/trace"
 )
 
 // GetHappensBefore returns the happens before relation between two operations given there

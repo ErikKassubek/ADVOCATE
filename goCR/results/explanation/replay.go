@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: replay.go
 // Brief: Read the info about the rewrite and replay of the bug
 //
-// Author: Erik Kassubek
 // Created: 2024-06-18
 //
 // License: BSD-3-Clause
@@ -102,14 +100,14 @@ func getOutputCodes(path string) map[string]string {
 	output := filepath.Join(path, "output.log")
 	if _, err := os.Stat(output); os.IsNotExist(err) {
 		res := "No replay info available. Output.log does not exist."
-		return map[string]string{"AdvocateFailExplanationInfo": res, "AdvocateFailResplaySucInfo": "information not available"}
+		return map[string]string{"GoCRFailExplanationInfo": res, "GoCRFailResplaySucInfo": "information not available"}
 	}
 
 	// read the output file
 	content, err := os.ReadFile(output)
 	if err != nil {
 		res := "No replay info available. Could not read output.log file"
-		return map[string]string{"AdvocateFailExplanationInfo": res, "AdvocateFailResplaySucInfo": "information not available"}
+		return map[string]string{"GoCRFailExplanationInfo": res, "GoCRFailResplaySucInfo": "information not available"}
 	}
 
 	lines := strings.Split(string(content), "\n")
@@ -173,9 +171,9 @@ func getOutputCodes(path string) map[string]string {
 //   - string: replay success info
 //   - error
 func getReplayInfo(codes map[string]string, index string) (string, string, string, error) {
-	if _, ok := codes["AdvocateFailExplanationInfo"]; ok {
+	if _, ok := codes["GoCRFailExplanationInfo"]; ok {
 		fmt.Println("Could not read")
-		return "", codes["AdvocateFailExplanationInfo"], codes["AdvocateFailResplaySucInfo"], fmt.Errorf("Could not read output file")
+		return "", codes["GoCRFailExplanationInfo"], codes["GoCRFailResplaySucInfo"], fmt.Errorf("Could not read output file")
 	}
 
 	exitCode := codes[index]

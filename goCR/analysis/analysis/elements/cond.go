@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: hbCond.go
 // Brief: Update functions for happens before info for conditional variables operations
 //
-// Author: Erik Kassubek
 // Created: 2024-01-09
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package elements
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/hbcalc"
-	"advocate/trace"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/trace"
 )
 
 // AnalyzeCond calculates the hb info for cond events and updates relevant

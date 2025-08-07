@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: goPie-relations.go
 // Brief: Calculate the relation for goPie
 //
-// Author: Erik Kassubek
 // Created: 2025-03-24
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package gopie
 
 import (
-	"advocate/fuzzing/data"
-	"advocate/trace"
-	"advocate/utils/control"
-	"advocate/utils/types"
+	"goCR/fuzzing/data"
+	"goCR/trace"
+	"goCR/utils/control"
+	"goCR/utils/types"
 	"sort"
 )
 

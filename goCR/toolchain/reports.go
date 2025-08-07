@@ -1,9 +1,6 @@
-// Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
-//
 // File: headerUnitTests.go
 // Brief: Functions to generate bug reports
 //
-// Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
@@ -11,8 +8,8 @@
 package toolchain
 
 import (
-	"advocate/results/explanation"
-	"advocate/utils/log"
+	"goCR/results/explanation"
+	"goCR/utils/log"
 )
 
 var movedTraces int = 0

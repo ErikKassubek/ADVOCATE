@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: goPie-mutation.go
 // Brief: Mutations for gopie
 //
-// Author: Erik Kassubek
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package gopie
 
 import (
-	anadata "advocate/analysis/data"
-	"advocate/analysis/hb/concurrent"
-	"advocate/fuzzing/data"
-	"advocate/trace"
-	"advocate/utils/helper"
+	anadata "goCR/analysis/data"
+	"goCR/analysis/hb/concurrent"
+	"goCR/fuzzing/data"
+	"goCR/trace"
+	"goCR/utils/helper"
 	"maps"
 	"math/rand/v2"
 )

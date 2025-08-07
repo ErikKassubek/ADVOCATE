@@ -1,4 +1,4 @@
-module advocate
+module goCR
 
 go 1.24
 

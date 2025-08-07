@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: io.go
 // Brief: Functions to read ans write the fuzzing files
 //
-// Author: Erik Kassubek
 // Created: 2024-11-28
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package data
 
 import (
-	"advocate/utils/timer"
 	"fmt"
+	"goCR/utils/timer"
 	"os"
 	"path/filepath"
 )

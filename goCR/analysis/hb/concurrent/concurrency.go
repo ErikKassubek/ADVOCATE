@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: concurrency.go
 // Brief: Functions to find concurrent elements
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package concurrent
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/vc"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/clock"
+	"goCR/analysis/hb/vc"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // GetConcurrent returns all concurrent elements for an element

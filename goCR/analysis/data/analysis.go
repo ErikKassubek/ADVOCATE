@@ -1,18 +1,14 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: vc.go
 // Brief: Data required for the trace
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause
 
 package data
 
-import (
-	"advocate/trace"
-)
+import "goCR/trace"
 
 // MaxNumberElements is the maximum number of elements fow which a HB analysis is run
 const MaxNumberElements = 10000000

@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: types.go
 // Brief: types for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause

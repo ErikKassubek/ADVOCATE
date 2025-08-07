@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisUnlockBeforeLock.go
 // Brief: Analysis for unlock of not locked mutex
 //
-// Author: Erik Kassubek
 // Created: 2024-09-23
 //
 // License: BSD-3-Clause
@@ -11,16 +9,16 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
-	"advocate/utils/types"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
+	"goCR/utils/types"
 )
 
 // CheckForUnlockBeforeLockLock collects all locks for the analysis

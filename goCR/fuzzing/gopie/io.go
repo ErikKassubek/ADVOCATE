@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: io.go
 // Brief: Write goPie active to file
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package gopie
 
 import (
-	"advocate/trace"
 	"fmt"
+	"goCR/trace"
 	"os"
 	"path/filepath"
 )

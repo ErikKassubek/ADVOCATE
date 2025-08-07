@@ -1,16 +1,14 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: pos.go
 // Brief: Positive constraints
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
 package constraints
 
-import "advocate/trace"
+import "goCR/trace"
 
 // A positive constraint consisting of two elements
 // The positive constraints signals, that the first element influences the

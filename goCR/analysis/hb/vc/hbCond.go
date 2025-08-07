@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hbAtomic.go
 // Brief: Update the vc for conds
 //
-// Author: Erik Kassubek
 // Created: 2025-07-20
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package vc
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
+	"goCR/analysis/data"
+	"goCR/trace"
 )
 
 // UpdateHBCond updates the vector clock of the trace for a conditional variables

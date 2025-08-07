@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: rewriter.go
 // Brief: Main functions to rewrite the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-11-30
 //
 // License: BSD-3-Clause
@@ -12,10 +10,10 @@
 package rewriter
 
 import (
-	"advocate/results/bugs"
-	"advocate/trace"
-	"advocate/utils/helper"
 	"errors"
+	"goCR/results/bugs"
+	"goCR/trace"
+	"goCR/utils/helper"
 )
 
 // RewriteTrace creates a new trace from the given bug

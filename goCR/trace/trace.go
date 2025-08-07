@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: trace.go
 // Brief: Functions and structs for the trace
 //
-// Author: Erik Kassubek
 // Created: 2024-08-08
 //
 // License: BSD-3-Clause
@@ -11,13 +9,13 @@
 package trace
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/utils/control"
-	"advocate/utils/log"
-	"advocate/utils/types"
 	"errors"
 	"fmt"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/utils/control"
+	"goCR/utils/log"
+	"goCR/utils/types"
 	"math"
 	"sort"
 	"strconv"

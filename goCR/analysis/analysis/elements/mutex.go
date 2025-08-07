@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: hbMutex.go
 // Brief: Update functions for happens before info for mutex operation
 //        Some of the functions start analysis functions
 //
-// Author: Erik Kassubek
 // Created: 2023-07-25
 //
 // License: BSD-3-Clause
@@ -12,12 +10,12 @@
 package elements
 
 import (
-	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
-	"advocate/analysis/hb/hbcalc"
-	"advocate/analysis/hb/vc"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/analysis/scenarios"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/analysis/hb/vc"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // UpdateMutex store and update the vector clock of the trace and element

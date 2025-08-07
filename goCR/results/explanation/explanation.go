@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: explanation.go
 // Brief: Create an explanation file for a found bug
 //
-// Author: Erik Kassubek
 // Created: 2024-06-14
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package explanation
 
 import (
-	"advocate/utils/log"
 	"errors"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"slices"

@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: cyclicDeadlock.go
 // Brief: Rewrite trace for cyclic deadlocks
 //
-// Author: Erik Kassubek
 // Created: 2024-04-05
 //
 // License: BSD-3-Clause
@@ -11,13 +9,13 @@
 package rewriter
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/results/bugs"
-	"advocate/trace"
-	"advocate/utils/helper"
 	"errors"
 	"fmt"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/results/bugs"
+	"goCR/trace"
+	"goCR/utils/helper"
 )
 
 // rewriteCyclicDeadlock rewrites the trace in such a way, that it should

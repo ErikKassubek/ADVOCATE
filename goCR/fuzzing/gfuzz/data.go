@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: data.go
 // Brief: Data for gFuzz
 //
-// Author: Erik Kassubek
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
-	"advocate/utils/types"
+	"goCR/fuzzing/data"
+	"goCR/utils/types"
 )
 
 const (

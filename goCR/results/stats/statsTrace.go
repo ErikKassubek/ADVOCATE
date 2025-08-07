@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: statsTrace.go
 // Brief: Collect statistics about the trace
 //
-// Author: Erik Kassubek
 // Created: 2024-09-20
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package stats
 
 import (
-	"advocate/utils/types"
 	"bufio"
 	"errors"
 	"fmt"
+	"goCR/utils/types"
 	"os"
 	"path/filepath"
 	"strings"
@@ -67,7 +65,7 @@ func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 		"numberOnceOperations": 0,
 	}
 
-	tracePath := filepath.Join(dataPath, fmt.Sprintf("advocateTrace_%d", traceID))
+	tracePath := filepath.Join(dataPath, fmt.Sprintf("goCRTrace_%d", traceID))
 
 	// do not count the same twice
 	known := map[string][]string{

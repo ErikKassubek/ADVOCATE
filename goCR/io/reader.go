@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: reader.go
 // Brief: Read trace files and create the internal trace
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -11,14 +9,14 @@
 package io
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/control"
-	"advocate/utils/log"
-	"advocate/utils/timer"
 	"bufio"
 	"errors"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/control"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"os"
 	"path/filepath"
 	"strconv"

@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: io.go
 // Brief: Function to write the time file
 //
-// Author: Erik Kassubek
 // Created: 2025-02-25
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package timer
 
 import (
-	"advocate/utils/log"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 )

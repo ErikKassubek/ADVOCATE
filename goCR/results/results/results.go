@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: results.go
 // Brief: Function for debug results and for results found bugs
 //
-// Author: Erik Kassubek
 // Created: 2023-08-30
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package results
 
 import (
-	"advocate/utils/control"
-	"advocate/utils/helper"
-	"advocate/utils/types"
 	"fmt"
+	"goCR/utils/control"
+	"goCR/utils/helper"
+	"goCR/utils/types"
 	"os"
 	"strconv"
 )

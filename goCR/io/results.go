@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: results.go
 // Brief: Read the analysis result file and analyze its content
 //
-// Author: Erik Kassubek
 // Created: 2023-11-30
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package io
 
 import (
-	"advocate/results/bugs"
-	"advocate/utils/log"
-	"advocate/utils/timer"
 	"bufio"
 	"fmt"
+	"goCR/results/bugs"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"os"
 )
 

@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: data.go
 // Brief: File to define and contain the fuzzing data
 //
-// Author: Erik Kassubek
 // Created: 2024-11-28
 //
 // License: BSD-3-Clause
@@ -11,8 +9,7 @@
 package data
 
 import (
-	"advocate/results/results"
-
+	"goCR/results/results"
 	"time"
 )
 

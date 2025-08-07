@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: exitCodes.go
 // Brief: Check exit codes
 //
-// Author: Erik Kassubek
 // Created: 2025-07-21
 //
 // License: BSD-3-Clause
@@ -11,12 +9,12 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 )
 
 // RunAnalysisOnExitCodes checks the exit codes for the recording for actual bugs

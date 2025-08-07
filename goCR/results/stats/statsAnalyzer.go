@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: statsAnalyzer.go
 // Brief: Collect stats about the analysis and the replay
 //
-// Author: Erik Kassubek
 // Created: 2024-09-20
 //
 // License: BSD-3-Clause
@@ -11,10 +9,10 @@
 package stats
 
 import (
-	"advocate/results/explanation"
-	"advocate/utils/log"
 	"bufio"
 	"fmt"
+	"goCR/results/explanation"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -59,7 +57,7 @@ func getNewDataMapMap() map[string]map[string]int {
 // Parse the analyzer and replay output to collect the corresponding information
 //
 // Parameter:
-//   - pathToResults string: path to the advocateResult folder
+//   - pathToResults string: path to the goCRResult folder
 //   - fuzzing int: number of fuzzing run, -1 for not fuzzing
 //
 // Returns:

@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisClose.go
 // Brief: Trace analysis for send, receive and close on closed channel
 //
-// Author: Erik Kassubek
 // Created: 2024-01-04
 //
 // License: BSD-3-Clause
@@ -11,14 +9,14 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 )
 
 // CheckForCommunicationOnClosedChannel checks if a send or receive on a

@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: atomic.go
 // Brief: Update the data for an atomic element
 //
-// Author: Erik Kassubek
 // Created: 2025-07-20
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package elements
 
 import (
-	"advocate/analysis/hb/hbcalc"
-	"advocate/trace"
+	"goCR/analysis/hb/hbcalc"
+	"goCR/trace"
 )
 
 // AnalyzeAtomic update the hb info for an atomic event

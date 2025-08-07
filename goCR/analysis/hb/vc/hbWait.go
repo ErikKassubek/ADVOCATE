@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: hbAtomic.go
 // Brief: Update the vc for wait group
 //
-// Author: Erik Kassubek
 // Created: 2025-07-20
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package vc
 
 import (
-	"advocate/analysis/data"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/data"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // UpdateHBWait update the vector clocks for a wait group operation

@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: waitGroup.go
 // Brief: Rewrite for negative wait group counter
 //
-// Author: Erik Kassubek
 // Created: 2024-04-05
 //
 // License: BSD-3-Clause
@@ -11,10 +9,11 @@
 package rewriter
 
 import (
-	"advocate/results/bugs"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
+	"goCR/results/bugs"
+	"goCR/trace"
+
+	"goCR/utils/helper"
+	"goCR/utils/log"
 )
 
 // Create a new trace for a negative wait group counter (done before add)

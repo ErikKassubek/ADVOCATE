@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisSelectPartner.go
 // Brief: Trace analysis for detection of select cases without any possible partners
 //
-// Author: Erik Kassubek
 // Created: 2024-03-04
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/trace"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/trace"
+	"goCR/utils/timer"
 )
 
 // CheckForSelectCaseWithPartner checks for select cases with a valid

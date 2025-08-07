@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: progInfo.go
 // Brief: Read the info required for running the program
 //
-// Author: Erik Kassubek
 // Created: 2024-06-18
 //
 // License: BSD-3-Clause

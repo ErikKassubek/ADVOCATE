@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: vc.go
 // Brief: Data required for how the analysis is run
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause

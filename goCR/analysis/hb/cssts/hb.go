@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: concurrent.go
 // Brief: Get concurrency information
 //
-// Author: Erik Kassubek
 // Created: 2025-07-07
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/helper"
-	"advocate/trace"
-	"advocate/utils/types"
+	"goCR/analysis/data"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/helper"
+	"goCR/trace"
+	"goCR/utils/types"
 )
 
 // GetConcurrentAllPairs return concurrent events for a given event based on the CSST

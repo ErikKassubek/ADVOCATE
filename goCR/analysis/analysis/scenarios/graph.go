@@ -1,10 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisGraph.go
 // Brief: Functions to use a graph for analysis. Used fop negative wait group
 //   counter and unlock before lock
 //
-// Author: Erik Kassubek
 // Created: 2024-09-23
 //
 // License: BSD-3-Clause
@@ -12,10 +10,10 @@
 package scenarios
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
-	"advocate/trace"
 	"fmt"
+	"goCR/analysis/hb"
+	"goCR/analysis/hb/clock"
+	"goCR/trace"
 	"math"
 )
 

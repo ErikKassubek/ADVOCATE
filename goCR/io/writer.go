@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: writer.go
 // Brief: Write the internal trace into files
 //
-// Author: Erik Kassubek
 // Created: 2023-12-01
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package io
 
 import (
-	"advocate/results/bugs"
-	"advocate/trace"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/results/bugs"
+	"goCR/trace"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"math"
 	"os"
 	"path/filepath"

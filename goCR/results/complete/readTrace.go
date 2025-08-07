@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: readTrace.go
 // Brief: Read in a trace
 //
-// Author: Erik Kassubek
 // Created: 2024-06-26
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package complete
 
 import (
-	"advocate/utils/log"
-	"advocate/utils/types"
 	"errors"
+	"goCR/utils/log"
+	"goCR/utils/types"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -190,7 +188,7 @@ func getSubfolders(path string) ([]string, error) {
 //
 // Returns:
 //   - string: path to the file containing the header
-//   - int: line of "import advocate"
+//   - int: line of "import goCR"
 //   - int: starting line of the header
 //   - error
 func readCommandFile(path string) (string, int, int, error) {

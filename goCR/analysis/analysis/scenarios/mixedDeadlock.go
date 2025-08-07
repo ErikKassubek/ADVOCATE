@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisMixedDeadlock.go
 // Brief: Trace analysis for mixed deadlocks. Currently not used.
 //
-// Author: Erik Kassubek
 // Created: 2024-01-27
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/clock"
-	"advocate/trace"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/clock"
+	"goCR/trace"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"strconv"
 )
 

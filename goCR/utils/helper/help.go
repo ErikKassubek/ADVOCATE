@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: help.go
 // Brief: Function to print help/how to use
 //
-// Author: Erik Kassubek
 // Created: 2025-05-19
 //
 // License: BSD-3-Clause
@@ -145,7 +143,7 @@ func printFlagHeader() {
 func PrintHelp() {
 	fmt.Println("Welcome to ADVOCATE")
 	fmt.Println("")
-	fmt.Println("AdvocateGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
+	fmt.Println("GoCRGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
 	fmt.Println("")
 	printHeader()
 }
@@ -173,9 +171,9 @@ func PrintHelpMode(mode string) {
 
 // printHeader prints the main help header
 func printHeader() {
-	fmt.Println("Usage: ./advocate [mode] [args]")
+	fmt.Println("Usage: ./goCR [mode] [args]")
 	fmt.Println("")
-	fmt.Println("Advocate contains four different mode. These are:")
+	fmt.Println("GoCR contains four different mode. These are:")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
 	fmt.Println("\tanalyzer")
@@ -189,7 +187,7 @@ func printHeader() {
 	fmt.Println("For more information about the mode and there functionality, see the doc folder in the repository.")
 	fmt.Println("For information on how to prepare the required runtime, see the usage file linked in the README")
 	fmt.Println("")
-	fmt.Println("To get information about one of the modes, including the required and optional tags, run\n\t./advocate [mode] -help.")
+	fmt.Println("To get information about one of the modes, including the required and optional tags, run\n\t./goCR [mode] -help.")
 }
 
 // print help for record mode

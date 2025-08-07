@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: clear.go
 // Brief: Clear trace and data
 //
-// Author: Erik Kassubek
 // Created: 2025-03-03
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package data
 
 import (
-	"advocate/results/results"
-	"advocate/trace"
-	"advocate/utils/control"
+	"goCR/results/results"
+	"goCR/trace"
+	"goCR/utils/control"
 )
 
 // Clear the data structures used for the analysis

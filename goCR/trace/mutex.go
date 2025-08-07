@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: traceElementMutex.go
 // Brief: Struct and functions for mutex operations in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -16,7 +14,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/hb/clock"
+	"goCR/analysis/hb/clock"
 )
 
 // OpMutex is an enum for opM

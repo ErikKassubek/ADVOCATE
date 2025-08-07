@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: slice.go
 // Brief: Utility functions on slices
 //
-// Author: Erik Kassubek
 // Created: 2024-04-06
 //
 // License: BSD-3-Clause

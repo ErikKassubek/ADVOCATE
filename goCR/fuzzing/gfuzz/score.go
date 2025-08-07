@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: score.go
 // Brief: Functions to compute the score for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-11-28
 //
 // License: BSD-3-Clause
@@ -11,8 +9,8 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
-	"advocate/utils/helper"
+	"goCR/fuzzing/data"
+	"goCR/utils/helper"
 	"math"
 )
 

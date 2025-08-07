@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: block.go
 // Brief: Implementation of Block.java from CSST paper (sea csst.go)
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause
@@ -20,7 +18,7 @@
 package cssts
 
 import (
-	"advocate/utils/types"
+	"goCR/utils/types"
 	"math"
 )
 

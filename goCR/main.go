@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: main.go
 // Brief: Main file and starting point for the toolchain
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause
@@ -13,26 +11,26 @@ package main
 import (
 	"flag"
 	"fmt"
+	"goCR/analysis/data"
+	"goCR/fuzzing"
+	"goCR/fuzzing/gopie"
+	"goCR/results/stats"
+	"goCR/toolchain"
+	"goCR/utils/control"
+	"goCR/utils/helper"
+	"goCR/utils/log"
+	"goCR/utils/timer"
 	"os"
 	"path/filepath"
 	"strings"
 
-	"advocate/analysis/data"
-	"advocate/fuzzing"
-	fuzzingdata "advocate/fuzzing/data"
-	"advocate/fuzzing/gopie"
-	"advocate/results/stats"
-	"advocate/toolchain"
-	"advocate/utils/control"
-	"advocate/utils/helper"
-	"advocate/utils/log"
-	"advocate/utils/timer"
+	fuzzingdata "goCR/fuzzing/data"
 )
 
 var (
 	help bool
 
-	pathToAdvocate string
+	pathToGoCR string
 
 	tracePath string
 	progPath  string
@@ -213,7 +211,7 @@ func main() {
 	defer timer.Stop(timer.Total)
 
 	execPath, _ := os.Executable()
-	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
+	pathToGoCR = filepath.Dir(filepath.Dir(execPath))
 
 	control.SetMaxNumberElem(maxNumberElements)
 	if !noMemorySupervisor {
@@ -310,7 +308,7 @@ func modeFuzzing() {
 	gopie.SameElementTypeInSC = sameElemTypeInSC
 	gopie.WithoutReplay = fuzzingWithoutReplay
 
-	err = fuzzing.Fuzzing(modeMain, fuzzingMode, pathToAdvocate, progPath,
+	err = fuzzing.Fuzzing(modeMain, fuzzingMode, pathToGoCR, progPath,
 		progName, execName, ignoreAtomics, recordTime, notExec, statistics,
 		keepTraces, cont, timeoutFuzzing, maxFuzzingRun, cancelTestIfBugFound)
 	if err != nil {
@@ -349,7 +347,7 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 		panic("When running replay of test without recording, -exec [TestName] must be set")
 	}
 
-	_, _, _, err = toolchain.Run(mode, pathToAdvocate, progPath, "", record, analysis,
+	_, _, _, err = toolchain.Run(mode, pathToGoCR, progPath, "", record, analysis,
 		replay, execName, progName, execName, -1, "", ignoreAtomics, recordTime,
 		notExec, statistics, keepTraces, skipExisting, true, cont, 0, 0)
 	if err != nil {

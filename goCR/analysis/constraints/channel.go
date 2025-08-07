@@ -1,16 +1,14 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: channel.go
 // Brief: Constraints for channels
 //
-// Author: Erik Kassubek
 // Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
 package constraints
 
-import "advocate/trace"
+import "goCR/trace"
 
 // AddChannel creates constraints for unbuffered channels
 // If creates a positive constraint between the send and corresponding recv

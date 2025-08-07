@@ -1,9 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
 //
 // File: statsProgram.go
 // Brief: Collect statistics about the program
 //
-// Author: Erik Kassubek
 // Created: 2024-09-20
 //
 // License: BSD-3-Clause
@@ -11,9 +9,9 @@
 package stats
 
 import (
-	"advocate/utils/log"
 	"bufio"
 	"fmt"
+	"goCR/utils/log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -26,7 +24,7 @@ import (
 //   - pathFolder string: path the where the stat files should be created
 //   - progName string: name of the analyzed program
 func CreateStatsTotal(pathFolder, progName string) error {
-	resultPath := filepath.Join(pathFolder, "advocateResult")
+	resultPath := filepath.Join(pathFolder, "goCRResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsTotalPath := filepath.Join(resultPath, "statsProgram_"+progName+".csv")
 

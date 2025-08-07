@@ -1,9 +1,7 @@
-// Copyright (c) 2025 Erik Kassubek
 //
 // File: vc.go
 // Brief: Data required for calculating the vector clocks
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause
@@ -11,11 +9,11 @@
 package vc
 
 import (
-	"advocate/analysis/data"
-	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/helper"
-	"advocate/trace"
-	"advocate/utils/log"
+	"goCR/analysis/data"
+	"goCR/analysis/hb/clock"
+	"goCR/analysis/hb/helper"
+	"goCR/trace"
+	"goCR/utils/log"
 )
 
 // Current vector clocks

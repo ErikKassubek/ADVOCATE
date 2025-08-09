@@ -245,6 +245,18 @@ func posToString(file string, line int) string {
 	return file + ":" + intToString(line)
 }
 
+// Get a pos from a caller
+//
+// Parameter:
+//   - skip int: the skip value as if the Caller was called at the position of the posFromCaller
+//
+// Returns:
+//   - string: the position in the form [file]:[line]
+func posFromCaller(skip int) string {
+	_, file, line, _ := Caller(skip + 1)
+	return file + ":" + intToString(line)
+}
+
 // Check if a list contains an element
 //
 // Parameter:

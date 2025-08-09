@@ -61,10 +61,10 @@ func startReplay(timeout int) {
 	}
 
 	// check for and if exists, read the rewrite_active.log file
-	activeStartTime, active, activeTime := readReplayActive(tracePathRewritten)
+	activeStartTime, active, activeTime, numberActive := readReplayActive(tracePathRewritten)
 
 	if active != nil {
-		runtime.AddActiveTrace(activeStartTime, active)
+		runtime.AddActiveTrace(activeStartTime, active, numberActive)
 	}
 
 	// traverse all files in the trace folder
@@ -74,7 +74,7 @@ func startReplay(timeout int) {
 	}
 
 	foundTraceFiles := false
-	replayData := runtime.GetReplayTrace()
+	replayData, spawns, selects := runtime.GetReplayTrace()
 	for _, file := range files {
 		// if the file is a directory, ignore it
 		if file.IsDir() {
@@ -89,7 +89,7 @@ func startReplay(timeout int) {
 		if strings.HasSuffix(file.Name(), ".log") &&
 			file.Name() != "rewrite_info.log" &&
 			file.Name() != activeFile {
-			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData)
+			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData, spawns, selects)
 			foundTraceFiles = true
 		}
 	}
@@ -107,12 +107,8 @@ func startReplay(timeout int) {
 		// start time timeout
 		go func() {
 			time.Sleep(time.Duration(timeout) * time.Second)
-			go func() {
-				maxWriteTime := min(timeout, 10)
-				time.Sleep(time.Duration(maxWriteTime) * time.Second)
-				os.Exit(10)
-			}()
-			panic("Timeout")
+			runtime.ExitReplayTimeout()
+			os.Exit(10)
 		}()
 	}
 
@@ -131,12 +127,13 @@ func startReplay(timeout int) {
 //     if 0, start with active replay, if -1 never start active replay
 //   - map[string][]int: the map from key to counter for the active elements
 //   - map[int]struct{}: the map containing the time of all elements that are active
-func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int]struct{}) {
+//   - int: number of active operations
+func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int]struct{}, int) {
 	path := filepath.Join(tracePathRewritten, activeFile)
 	file, err := os.Open(path)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return -1, nil, nil
+			return -1, nil, nil, 0
 		}
 		panic(err)
 	}
@@ -144,6 +141,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 
 	active := make(map[string][]int)
 	activeTPre := make(map[int]struct{})
+	numberActive := 0
 	firstTime := -1
 
 	// The elements in the active file should be separated by new line and have
@@ -181,11 +179,13 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 		}
 
 		active[fields[0]] = append(active[fields[0]], counter)
+		numberActive++
+		println(fields[0], " -> ", counter)
 
 		activeTPre[tPre] = struct{}{}
 	}
 
-	return firstTime, active, activeTPre
+	return firstTime, active, activeTPre, numberActive
 }
 
 // Import the trace.
@@ -208,7 +208,10 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //     has been replayed. If 0, start with active from the beginning,
 //     if -1 never switch to active replay
 //   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
-func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int, replayData *runtime.AdvocateReplayTrace) {
+//   - spawns map[int][]int: for each routine store the ids of all routines spawned from this routine
+//   - map[string][]ReplayElement: for each routPath with a select, store the replay elements
+func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int,
+	replayData *runtime.AdvocateReplayTrace, spawns *map[int][]int, selects *map[string][]runtime.ReplayElement) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))
 	if err != nil {
@@ -260,6 +263,10 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			index, _ = strconv.Atoi(fields[2])
+			if _, ok := (*spawns)[routineID]; !ok {
+				(*spawns)[routineID] = make([]int, 0)
+			}
+			(*spawns)[routineID] = append((*spawns)[routineID], index)
 		case "C":
 			switch fields[4] {
 			case "S":
@@ -424,18 +431,23 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 		}
 
 		// do not add element to the trace if it is not active
-		if activeTime != nil && activeStart != -1 && time > activeStart {
-			if _, ok := activeTime[time]; !ok {
-				continue
-			}
-		}
+		// if activeTime != nil && activeStart != -1 && time > activeStart {
+		// 	if _, ok := activeTime[time]; !ok {
+		// 		continue
+		// 	}
+		// }
 
 		if op != runtime.OperationNone && !runtime.AdvocateIgnoreReplay(op, file) {
-			*replayData = append(*replayData, runtime.ReplayElement{
+			newElem := runtime.ReplayElement{
 				Op: op, Routine: routineID, Time: time, TimePre: tPre, File: file, Line: line,
 				Blocked: blocked, Suc: suc,
-				Index: index})
+				Index: index}
+			*replayData = append(*replayData, newElem)
 
+			if op == runtime.OperationSelect || op == runtime.OperationSelectCase || op == runtime.OperationSelectDefault {
+				key := runtime.BuildReplayKey(routineID, file, line)
+				(*selects)[key] = append((*selects)[key], newElem)
+			}
 		}
 	}
 
@@ -450,69 +462,10 @@ func FinishReplay() {
 		println("Replay failed.")
 	}
 
-	runtime.WaitForReplayFinish(true)
+	println("FinishReplay")
+	runtime.WaitForReplayFinish()
 
 	time.Sleep(time.Second)
 
 	runtime.ExitReplayWithCode(runtime.ExitCodeDefault, "")
 }
-
-// func InitReplayTracing(index string, exitCode bool, timeout int, atomic bool) {
-// 	if index == "-1" {
-// 		InitTracing()
-// 		return
-// 	}
-
-// 	tracePathRecorded = "advocateTraceReplay_" + index
-
-// 	// if the program panics, but is not in the main routine, no trace is written
-// 	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
-// 	blocked := make(chan struct{})
-// 	writingDone := make(chan struct{})
-// 	runtime.GetAdvocatePanicChannels(blocked, writingDone)
-// 	go func() {
-// 		<-blocked
-// 		FinishReplayTracing()
-// 		writingDone <- struct{}{}
-// 	}()
-
-// 	// if the program is terminated by the user, the defer in the header
-// 	// is not executed. Therefore capture the signal and write the trace.
-// 	interuptSignal := make(chan os.Signal, 1)
-// 	signal.Notify(interuptSignal, os.Interrupt)
-// 	go func() {
-// 		<-interuptSignal
-// 		println("\nCancel Run. Write trace. Cancel again to force exit.")
-// 		go func() {
-// 			<-interuptSignal
-// 			os.Exit(1)
-// 		}()
-// 		if runtime.IsTracingEnabled() {
-// 			FinishReplayTracing()
-// 		}
-// 		os.Exit(1)
-// 	}()
-
-// 	// go writeTraceIfFull()
-// 	// go removeAtomicsIfFull()
-// 	runtime.InitTracing(FinishTracing)
-
-// 	InitReplay(index, exitCode, timeout, atomic)
-// }
-
-// func FinishReplayTracing() {
-// 	if !runtime.IsReplayEnabled() {
-// 		FinishTracing()
-// 		return
-// 	}
-
-// 	if r := recover(); r != nil {
-// 		println("Replay failed.")
-// 	}
-
-// 	runtime.WaitForReplayFinish(false)
-
-// 	// runtime.DisableReplay()
-
-// 	FinishTracing()
-// }

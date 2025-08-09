@@ -11,10 +11,12 @@
 package io
 
 import (
-	"advocate/bugs"
-	"advocate/timer"
+	"advocate/results/bugs"
 	"advocate/trace"
-	"advocate/utils"
+	"advocate/utils/helper"
+	"advocate/utils/log"
+	"advocate/utils/timer"
+	"math"
 	"os"
 	"path/filepath"
 	"sort"
@@ -34,7 +36,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 
 	// delete folder if exists
 	if _, err := os.Stat(path); err == nil {
-		utils.LogInfo(path + " already exists. Delete folder " + path)
+		log.Info(path + " already exists. Delete folder " + path)
 		if err := os.RemoveAll(path); err != nil {
 			return err
 		}
@@ -56,7 +58,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 			fileName := filepath.Join(path, "trace_"+strconv.Itoa(i)+".log")
 			file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				utils.LogError("Error in writing trace to file. Could not open file: ", err.Error())
+				log.Error("Error in writing trace to file. Could not open file: ", err.Error())
 			}
 			defer file.Close()
 
@@ -73,18 +75,21 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 				if !replay || !isReplay(element) {
 					continue
 				}
+				if element.GetTPost() == 0 {
+					element.SetTSort(math.MaxInt)
+				}
 				elementString := element.ToString()
 				if _, err := file.WriteString(elementString); err != nil {
-					utils.LogError("Error in writing trace to file. Could not write string: ", err.Error())
+					log.Error("Error in writing trace to file. Could not write string: ", err.Error())
 				}
 				if index < len(trace)-1 {
 					if _, err := file.WriteString("\n"); err != nil {
-						utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
+						log.Error("Error in writing trace to file. Could not wrote string: ", err.Error())
 					}
 				}
 			}
 			if _, err := file.WriteString("\n"); err != nil {
-				utils.LogError("Error in writing trace to file. Could not wrote string: ", err.Error())
+				log.Error("Error in writing trace to file. Could not wrote string: ", err.Error())
 			}
 			wg.Done()
 		}(i)
@@ -100,7 +105,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 //
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
-func isReplay(element trace.TraceElement) bool {
+func isReplay(element trace.Element) bool {
 	t := element.GetObjType(false)
 	return !(t == trace.ObjectTypeNew || t == trace.ObjectTypeRoutineEnd)
 }
@@ -119,7 +124,7 @@ func WriteRewriteInfoFile(path string, bug bugs.Bug, exitCode int, resultIndex i
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
-	fileName := filepath.Join(path, utils.RewrittenInfo)
+	fileName := filepath.Join(path, helper.RewrittenInfo)
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

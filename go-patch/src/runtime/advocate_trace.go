@@ -139,12 +139,14 @@ func traceToString(trace *[]traceElem) string {
 	res := ""
 
 	// if atomic recording is disabled
+	println("START TTS: ", len(*trace))
 	for i, elem := range *trace {
 		if i != 0 {
 			res += "\n"
 		}
 		res += elem.toString()
 	}
+	println("END TTS")
 	return res
 }
 
@@ -322,7 +324,7 @@ func DeleteTrace() {
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
 func AdvocateIgnore(file string) bool {
-	return containsStr(file, "go-patch/src/")
+	return (containsStr(file, "go-patch/src/") || containsStr(file, "go/pkg/mod")) && !containsStr(file, "go-patch/src/time/tick.go")
 }
 
 // ADVOCATE-FILE-END

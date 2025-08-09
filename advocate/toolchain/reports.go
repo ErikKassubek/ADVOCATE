@@ -11,8 +11,8 @@
 package toolchain
 
 import (
-	"advocate/explanation"
-	"advocate/utils"
+	"advocate/results/explanation"
+	"advocate/utils/log"
 )
 
 var movedTraces int = 0
@@ -22,9 +22,13 @@ var movedTraces int = 0
 // Parameter:
 //   - folderName string: path to folder containing the results
 //   - fuzzingRun int: number of fuzzing run, -1 for not fuzzing
-func generateBugReports(folder string, fuzzing int) {
-	err := explanation.CreateOverview(folder, true, fuzzing)
+//
+// Returns:
+//   - numberResults int: numberResults
+func generateBugReports(folder string, fuzzing int) int {
+	numberResults, err := explanation.CreateOverview(folder, true, fuzzing)
 	if err != nil {
-		utils.LogError("Error creating explanation: ", err.Error())
+		log.Error("Error creating explanation: ", err.Error())
 	}
+	return numberResults
 }

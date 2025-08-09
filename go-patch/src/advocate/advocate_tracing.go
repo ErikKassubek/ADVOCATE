@@ -16,8 +16,6 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
-	"sync"
-	"sync/atomic"
 	"time"
 )
 
@@ -30,39 +28,9 @@ var timerStarted = false
 var startTime time.Time
 var duration time.Duration
 
-var currentlyWriting atomic.Bool
-
 // InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
 func InitTracing(timeout int) {
-	// if the program panics, but is not in the main routine, no trace is written
-	// to prevent this, the following is done. The corresponding send/recv are in the panic definition
-	blocked := make(chan struct{})
-	writingDone := make(chan struct{}, 1)
-	runtime.GetAdvocatePanicChannels(blocked, writingDone)
-	// go func() {
-	// 	<-blocked
-	// 	FinishTracing()
-	// 	writingDone <- struct{}{}
-	// }()
-
-	// if the program is terminated by the user, the defer in the header
-	// is not executed. Therefore capture the signal and write the trace.
-	// interuptSignal := make(chan os.Signal, 1)
-	// signal.Notify(interuptSignal, os.Interrupt)
-	// go func() {
-	// 	<-interuptSignal
-	// 	println("\nCancel Run. Write trace. Cancel again to force exit.")
-	// 	go func() {
-	// 		<-interuptSignal
-	// 		os.Exit(1)
-	// 	}()
-	// 	if runtime.IsTracingEnabled() {
-	// 		FinishTracing()
-	// 	}
-	// 	os.Exit(1)
-	// }()
-
 	startTime = time.Now()
 	timerStarted = true
 
@@ -86,20 +54,20 @@ func FinishTracing() {
 	if hasFinished {
 		// needed to prevent program stop while still writing
 		// otherwise, trace may be empty
-		for currentlyWriting.Load() {
-			time.Sleep(10 * time.Millisecond)
-		}
 		return
 	}
 	hasFinished = true
-	currentlyWriting.Store(true)
-	defer currentlyWriting.Store(false)
+
+	if !finishFuzzingStarted {
+		time.Sleep(time.Second)
+	}
 
 	// remove the trace folder if it exists
 	err := os.RemoveAll(tracePathRecorded)
 	if err != nil {
 		if !os.IsNotExist(err) {
-			panic(err)
+			println("Cannot remove: ", err.Error())
+			return
 		}
 	}
 
@@ -107,13 +75,12 @@ func FinishTracing() {
 	err = os.Mkdir(tracePathRecorded, 0755)
 	if err != nil {
 		if !os.IsExist(err) {
-			panic(err)
+			println("Cannot write: ", err.Error())
+			return
 		}
 	}
 
 	runtime.AdvocatRoutineExit()
-
-	time.Sleep(100 * time.Millisecond)
 
 	runtime.DisableTracing()
 
@@ -133,17 +100,12 @@ func FinishTracing() {
 //	tracePath string:t path to where the trace should be written
 func writeToTraceFiles(tracePath string) {
 	numRout := runtime.GetNumberOfRoutines()
-
 	writeToTraceFileInfo(tracePath, numRout)
 
-	var wg sync.WaitGroup
 	for i := 1; i <= numRout; i++ {
 		// write the trace to the file
-		wg.Add(1)
-		go writeToTraceFile(i, &wg, tracePath)
+		writeToTraceFile(i, tracePath)
 	}
-
-	wg.Wait()
 }
 
 // Write the trace of a routine to a file.
@@ -152,12 +114,9 @@ func writeToTraceFiles(tracePath string) {
 //
 // Parameter:
 //   - routine: The id of the routine
-//   - wg *sync.WaitGroup: wait group used to make writing of different routines concurrent
 //   - tracePath string: path to where the trace should be written
-func writeToTraceFile(routine int, wg *sync.WaitGroup, tracePath string) {
+func writeToTraceFile(routine int, tracePath string) {
 	// create the file if it does not exist and open it
-	defer wg.Done()
-
 	fileName := filepath.Join(tracePath, "trace_"+strconv.Itoa(routine)+".log")
 
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
@@ -193,14 +152,26 @@ func writeToTraceFileInfo(tracePath string, numberRoutines int) {
 	}
 	defer file.Close()
 
+	reachedActive := 0
+	if runtime.NumberActiveReleased > 0 {
+		reachedActive = 1
+	}
+	allActiveReleased := 0
+	if runtime.NumberActiveReleased == runtime.NumberActive {
+		allActiveReleased = 1
+	}
+
 	exitCode, exitPos := runtime.GetExitCode()
 	replayOldest, replayDisabled, replayAck := runtime.GetReplayStatus()
+
 	file.WriteString(fmt.Sprintf("ExitCode!%d\n", exitCode))
 	file.WriteString(fmt.Sprintf("ExitPosition!%s\n", exitPos))
 	file.WriteString(fmt.Sprintf("ReplayTimeout!%d\n", replayOldest))
 	file.WriteString(fmt.Sprintf("ReplayDisabled!%d\n", replayDisabled))
 	file.WriteString(fmt.Sprintf("ReplayAck!%d\n", replayAck))
 	file.WriteString(fmt.Sprintf("NumberRoutines!%d\n", numberRoutines))
+	file.WriteString(fmt.Sprintf("ActiveReached!%d\n", reachedActive))
+	file.WriteString(fmt.Sprintf("AllActiveReleased!%d\n", allActiveReleased))
 	if timerStarted {
 		file.WriteString(fmt.Sprintf("Runtime!%d", int(duration.Seconds())))
 	} else {

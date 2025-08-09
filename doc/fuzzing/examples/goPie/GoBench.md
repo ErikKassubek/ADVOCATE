@@ -9,7 +9,7 @@ the number given in the [GoPie paper](../../../relatedWorks/PaperAndTools/Fuzzin
 
 With this, we get the following results for the number of found bugs:
 
-| GoPie Paper | GoPie, number of tests with found bugs | GoPie, number of fund bugs |  GoPie+, number of tests with found bugs | GoPie+, number of fund bugs |
+| GoPie Paper | GoPie, number of tests with found bugs | GoPie, number of fund bugs |  GoCR, number of tests with found bugs | GoCR, number of fund bugs |
 | --- | --- | --- | --- | --- |
 | 66 | 46 | 66 | 48 | 69 |
 
@@ -24,7 +24,7 @@ The number of bugs detected by our direct implementation of GoPie is equal to
 the number given by the paper, showing that our implementation correctly
 implements the functionality of the original GoPie.
 
-The number of bugs found with GoPie+ is larger than both the
+The number of bugs found with GoCR is larger than both the
 values given in the GoPie paper, as well as the number of our GoPie
 implementation. We also find bugs in two more of the given tests, that the
 original implementation. This indicates, that our improvements have a positive effect

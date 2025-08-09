@@ -25,7 +25,6 @@ var (
 	createStats      bool
 
 	noRewriteFlag             bool
-	analysisCasesFlag         map[string]bool
 	ignoreAtomicsFlag         bool
 	fifoFlag                  bool
 	ignoreCriticalSectionFlag bool
@@ -43,7 +42,6 @@ var (
 //
 // Parameter:
 //   - noRewrite bool: do not rewrite found bugs
-//   - analysisCases map[string]bool: set which analysis scenarios should be run
 //   - ignoreAtomics bool: if true atomics are ignored for replay
 //   - fifo bool: assume that channels work as fifo queue
 //   - ignoreCriticalSection bool: ignore order of lock/unlock
@@ -52,14 +50,12 @@ var (
 //   - timeoutRec int: timeout of recording in seconds
 //   - timeoutRepl int: timeout of replay in seconds
 //   - tracePath string: path to the trace for replay mode
-func SetFlags(noRewrite bool, analysisCases map[string]bool, ignoreAtomics,
+func SetFlags(noRewrite bool, ignoreAtomics,
 	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
 	timeoutRec, timeoutRepl int, replayAll bool, noWarning bool,
 	tracePath string, output bool) {
 
 	noRewriteFlag = noRewrite
-
-	analysisCasesFlag = analysisCases
 
 	ignoreAtomicsFlag = ignoreAtomics
 	fifoFlag = fifo

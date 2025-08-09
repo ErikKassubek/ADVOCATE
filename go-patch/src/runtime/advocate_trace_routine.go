@@ -109,3 +109,19 @@ func (elem AdvocateTraceSpawn) getOperation() Operation {
 func (elem AdvocateTraceRoutineExit) getOperation() Operation {
 	return OperationRoutineExit
 }
+
+// hasFinished checks if the operation has finished or is still running/waiting
+//
+// Returns:
+//   - bool: true if its finished, false otherwise
+func (elem AdvocateTraceSpawn) hasFinished() bool {
+	return true
+}
+
+// hasFinished checks if the operation has finished or is still running/waiting
+//
+// Returns:
+//   - bool: true if its finished, false otherwise
+func (elem AdvocateTraceRoutineExit) hasFinished() bool {
+	return true
+}

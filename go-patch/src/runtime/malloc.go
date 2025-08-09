@@ -1331,7 +1331,12 @@ func mallocgcSmallNoscan(size uintptr, typ *_type, needzero bool) (unsafe.Pointe
 
 	if checkGCTrigger {
 		if t := (gcTrigger{kind: gcTriggerHeap}); t.test() {
-			gcStart(t)
+			// ADVOCATE-START
+			// This gc can cause the program to freeze during replay. We therefore disable it
+			if !replayEnabled {
+				gcStart(t)
+			}
+			// END-ADVOCATE
 		}
 	}
 	return x, size
@@ -1422,7 +1427,12 @@ func mallocgcSmallScanNoHeader(size uintptr, typ *_type, needzero bool) (unsafe.
 
 	if checkGCTrigger {
 		if t := (gcTrigger{kind: gcTriggerHeap}); t.test() {
-			gcStart(t)
+			// ADVOCATE-START
+			// This gc can cause the program to freeze during replay. We therefore disable it
+			if !replayEnabled {
+				gcStart(t)
+			}
+			// END-ADVOCATE
 		}
 	}
 	return x, size

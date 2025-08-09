@@ -3,7 +3,41 @@
 
 This file provides a detailed explanation on how to use the ADVOCATE framework.
 
-## Preparation
+## Docker
+
+We provide a docker file to create the environment.
+
+To build the docker file, run
+
+```shell
+docker build -t advocate-app .
+```
+
+To run the analysis or fuzzing on a program, you can call the following:
+
+```shell
+docker run --rm -it \
+  -v <pathToProg>:/prog \
+  advocate-app [mode] -path /prog [args]
+```
+
+e.g.
+
+```shell
+docker run --rm -it \
+  -v /home/erik/progToTest:/prog \
+  advocate-app fuzzing -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+```
+
+For the modes and args, see [usage](#usage).
+Note that the -path argument has already been set and does not need to be set again.
+
+
+## Local
+
+If you do not want to use the Docker container, you can also
+build al the required parts yourself.
+
 
 Before Advocate can be used, it must first be build.
 
@@ -306,7 +340,7 @@ The available modes are:
 - `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
-- `GoPie+`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
+- `GoCR`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
 - `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
@@ -343,10 +377,6 @@ The created statistic and time files can also be found in the `advocateResult` f
 In some situations, especially when only limited storage is available, it may
 be useful to ignore atomic operations during recording and analysis. To do this,
 you can set the `-ignoreAtomics`.
-
-Insufficient memory (RAM) can cause the computer running advocate to crash
-during the analysis. To stop this, a [Memory Supervisor](./memory.md) has been implemented.
-Disable this supervisor, you can set the `- noMemorySupervisor` flag.
 
 If the analysis of multiple tests was interrupted, running the toolchain
 again would start from the beginning. If you want to skip all the already

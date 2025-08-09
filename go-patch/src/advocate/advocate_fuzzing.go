@@ -17,9 +17,11 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var isFuzzing = false
+var finishFuzzingStarted = false
 
 // Initialize fuzzing
 //
@@ -36,7 +38,7 @@ func InitFuzzing(tracePath string, timeout int) {
 	if tracePath == "" { // GoFuzz and Flow
 		fuzzingSelectPath := "fuzzingData.log"
 		var err error
-		prefSel, prefFlow, err = readFile(fuzzingSelectPath)
+		prefSel, prefFlow, err = readFuzzingSelectFile(fuzzingSelectPath)
 		if err != nil {
 			println("Error in reading ", fuzzingSelectPath, ": ", err.Error())
 			panic(err)
@@ -53,7 +55,14 @@ func InitFuzzing(tracePath string, timeout int) {
 // Run when fuzzing is finished (normally as defer)
 // This records the traces and some additional info
 func FinishFuzzing() {
-	runtime.DisableReplay()
+	if finishFuzzingStarted {
+		return
+	}
+	// give program time to finish running
+	time.Sleep(time.Second)
+
+	finishFuzzingStarted = true
+	runtime.WaitForReplayFinish()
 	FinishTracing()
 }
 
@@ -67,7 +76,7 @@ func FinishFuzzing() {
 //   - map[string][]int: key: file:line of select, values: list of preferred cases in select
 //   - map[string]int: key: file:line of select, values: counter of operation to delay
 //   - error
-func readFile(pathSelect string) (map[string][]int, map[string][]int, error) {
+func readFuzzingSelectFile(pathSelect string) (map[string][]int, map[string][]int, error) {
 	resSelect := make(map[string][]int)
 	resFlow := make(map[string][]int)
 

@@ -79,7 +79,7 @@ func (c *Cond) Wait() {
 	}
 
 	// replay
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondWait, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondWait, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
@@ -111,7 +111,7 @@ func (c *Cond) Signal() {
 	}
 
 	// replay
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondSignal, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
@@ -137,7 +137,7 @@ func (c *Cond) Broadcast() {
 	}
 
 	// replay
-	wait, ch, chAck := runtime.WaitForReplay(runtime.OperationCondBroadcast, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-ch

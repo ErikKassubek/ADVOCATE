@@ -122,21 +122,24 @@ func block() {
 // ADVOCATE-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
 	var replayElem ReplayElement
-	wait, ch, _ := WaitForReplay(OperationSelect, 2, false)
+	wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 
-	fuzzingEnabled, fuzzingIndex, timeout := AdvocateFuzzingGetPreferredCase(2)
+	gFuzzEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
 
 	ai := -1
 
 	if wait {
 		replayElem = <-ch
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, timeout); ok {
+		// if replayElem.Index == -1 {
+		// 	return originalSelect(cas0, order0, pc0, nsends, nrecvs, block, ai)
+		// }
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, replayElem.Index, selectPreferredTimeoutSec); ok {
 			return i, b
 		} else {
 			ai = index
 		}
-	} else if fuzzingEnabled {
-		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, timeout); ok {
+	} else if gFuzzEnabled {
+		if ok, i, b, index := selectWithPrefCase(cas0, order0, pc0, nsends, nrecvs, block, fuzzingIndex, selectPreferredTimeoutSec); ok {
 			return i, b
 		} else {
 			ai = index
@@ -604,10 +607,10 @@ send:
 	if asanenabled {
 		asanread(cas.elem, c.elemtype.Size_)
 	}
+	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
-	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
 	}
@@ -1076,11 +1079,11 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 
+	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
-	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
 	}

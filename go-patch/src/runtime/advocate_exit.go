@@ -12,21 +12,8 @@
 
 package runtime
 
-var advocatePanicWriteBlock chan struct{}
-var advocatePanicDone chan struct{}
-
 var advocateExitCode = 0
 var advocateExitCodePos = ""
-
-// Get the channels used to write the trace on certain panics
-//
-// Parameters:
-//   - apwb (chan struct{}): advocatePanicWriteBlock
-//   - apd (chan struct{}): advocatePanicDone
-func GetAdvocatePanicChannels(apwb, apd chan struct{}) {
-	advocatePanicWriteBlock = apwb
-	advocatePanicDone = apd
-}
 
 // GetExitCode returns the exit code and exit position
 //
@@ -71,9 +58,11 @@ func SetExitCodeFromPanicMsg(msg any) {
 		} else if m == "sync: RUnlock of unlocked RWMutex" {
 			advocateExitCode = ExitCodeUnlockBeforeLock
 			skip = 5
+		} else if m == "Timeout" {
+			advocateExitCode = ExitCodeTimeout
+			skip = 0
 		}
 	default:
-		println("SetExitCode: other")
 		var p _panic
 		p.arg = msg
 		preprintpanics(&p)
@@ -84,6 +73,9 @@ func SetExitCodeFromPanicMsg(msg any) {
 
 	_, file, line, _ := Caller(skip)
 	advocateExitCodePos = file + ":" + intToString(line)
+	if printDebug {
+		println("AECP: ", advocateExitCodePos, " ", advocateExitCode)
+	}
 
 	if advocateExitCode == 0 {
 		advocateExitCode = ExitCodePanic

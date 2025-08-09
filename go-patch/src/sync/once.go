@@ -73,7 +73,7 @@ func (o *Once) Do(f func()) {
 	// the o.done.Store must be delayed until after f returns.
 
 	// ADVOCATE-START
-	wait, ch, _ := runtime.WaitForReplay(runtime.OperationOnceDo, 2, false)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, 2, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {

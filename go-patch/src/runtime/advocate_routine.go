@@ -38,11 +38,11 @@ type AdvocateRoutine struct {
 // Params:
 //   - g: the g struct of the routine
 //   - replayRoutine int: when used in reply, id of the new routine in the replayed trace
+//   - the replay ids of the routines forked from this routine
 //
 // Return:
 //   - the new advocate routine
 func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
-
 	// ignore the internal routines that are run before the main/test function starts
 	if advocateTracingDisabled {
 		return &AdvocateRoutine{
@@ -115,6 +115,10 @@ func (gi *AdvocateRoutine) addToTrace(elem traceElem) int {
 
 func (gi *AdvocateRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
+}
+
+func (gi *AdvocateRoutine) getLastElement() traceElem {
+	return gi.Trace[len(gi.Trace)-1]
 }
 
 // Update an element in the trace of the current routine

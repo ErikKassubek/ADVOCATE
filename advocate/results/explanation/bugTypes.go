@@ -258,8 +258,8 @@ var objectTypes = map[string]string{
 func adaptExplanationMaps() {
 	bugNames["L01"] = "Leak on unbuffered channel"
 	bugNames["L02"] = "Leak on unbuffered channel"
-	bugNames["L03"] = "Leak on buffered Channel"
-	bugNames["L04"] = "Leak on buffered Channel"
+	bugNames["L03"] = "Leak on buffered channel"
+	bugNames["L04"] = "Leak on buffered channel"
 	bugNames["L05"] = "Leak on nil channel"
 	bugNames["L06"] = "Leak on select"
 	bugNames["L07"] = "Leak on select"

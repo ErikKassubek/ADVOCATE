@@ -33,7 +33,7 @@ func CreateStatsFuzzing(pathFolder, progName string) error {
 	resultPath := filepath.Join(pathFolder, "goCRResult")
 	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
 	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
-	statsFuzzPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
+	statsFuzzPath := filepath.Join(resultPath, "statsFuzz_"+progName+".csv")
 
 	log.Info("Create fuzzing statistics")
 

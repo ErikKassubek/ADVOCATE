@@ -7,9 +7,9 @@ package sync
 import (
 	"sync/atomic"
 
-	// ADVOCATE-START
+	// GOCP-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCP-END
 )
 
 // Once is an object that will perform exactly one action.
@@ -32,9 +32,9 @@ type Once struct {
 	done atomic.Uint32
 	m    Mutex
 
-	// ADVOCATE-START
+	// GOCP-START
 	id uint64 // id of the once
-	// ADVOCATE-END
+	// GOCP-END
 }
 
 // Do calls the function f if and only if Do is being called for the
@@ -72,15 +72,15 @@ func (o *Once) Do(f func()) {
 	// This is why the slow path falls back to a mutex, and why
 	// the o.done.Store must be delayed until after f returns.
 
-	// ADVOCATE-START
+	// GOCP-START
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, 2, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if o.id == 0 {
-				o.id = runtime.GetAdvocateObjectID()
+				o.id = runtime.GetGoCRObjectID()
 			}
-			_ = runtime.AdvocateOncePre(o.id)
+			_ = runtime.GoCROncePre(o.id)
 			runtime.BlockForever()
 		}
 	}
@@ -88,25 +88,25 @@ func (o *Once) Do(f func()) {
 	runtime.FuzzingFlowWait(2)
 
 	if o.id == 0 {
-		o.id = runtime.GetAdvocateObjectID()
+		o.id = runtime.GetGoCRObjectID()
 	}
-	index := runtime.AdvocateOncePre(o.id)
+	index := runtime.GoCROncePre(o.id)
 	res := false
-	// ADVOCATE-END
+	// GOCP-END
 
 	if o.done.Load() == 0 {
 		// Outlined slow-path to allow inlining of the fast-path.
-		// ADVOCATE-START
+		// GOCP-START
 		res = o.doSlow(f)
-		// ADVOCATE-END
+		// GOCP-END
 	}
 
-	// ADVOCATE-START
-	runtime.AdvocateOncePost(index, res)
-	// ADVOCATE-END
+	// GOCP-START
+	runtime.GoCROncePost(index, res)
+	// GOCP-END
 }
 
-// ADVOCATE-START
+// GOCP-START
 func (o *Once) doSlow(f func()) bool {
 	o.m.Lock()
 	defer o.m.Unlock()
@@ -118,4 +118,4 @@ func (o *Once) doSlow(f func()) bool {
 	return false
 }
 
-// ADVOCATE-END
+// GOCP-END

@@ -1,46 +1,8 @@
-# AdvocateGo
+# GoCR
 
-## What is AdvocateGo
+GoCR is an analysis tool for concurrent Go programs.
+It tries to detects blocking concurrency bugs in Go.
 
-AdvocateGo is an analysis tool for concurrent Go programs.
-It tries to detects concurrency bugs and gives diagnostic insight.
-
-AdvocateGo tries to detect the following situations:
-
-- A00: Unknown panic
-- A01: Send on closed channel
-- A02: Receive on closed channel (only warning)
-- A03: Close on closed channel
-- A04: Close on nil channel
-- A05: Negative wait group
-- A06: Unlock of not locked mutex
-- A07: Concurrent recv
-- P01: Possible send on closed channel
-- P02: Possible receive on closed channel (only warning)
-- P03: Possible negative waitgroup counter
-- L00: Leak on routine with unknown cause
-- L01: Leak on unbuffered channel with possible partner
-- L02: Leak on unbuffered channel without possible partner
-- L03: Leak on buffered channel with possible partner
-- L04: Leak on buffered channel without possible partner
-- L05: Leak on nil channel
-- L06: Leak on select with possible partner
-- L07: Leak on select without possible partner (includes nil channels)
-- L08: Leak on mutex
-- L09: Leak on waitgroup
-- L10: Leak on cond
-
-Additionally it is able to record and deterministically replay
-executions of concurrent GO programs.
-
-## Modes
-
-Advocate provides 4 different modes:
-
-- record: record the execution of a program or test into a trace
-- replay: given a trace file, execute a program in such a way, that it follows the trace
-- analysis: record a program and analyze the recorded trace to detect potential concurrency bugs. If a potential bug is found, rewrite the trace in such a way that the bug is triggered and replay this trace to confirm that the bug is possible.
-- fuzzing: Apply different fuzzing approaches to increase the reach of the analysis.
 
 ## Usage
 
@@ -48,12 +10,112 @@ Advocate provides 4 different modes:
 > This program currently only runs / is tested under Linux
 
 > [!IMPORTANT]
-> advocate is implemented for go version 1.24.
+> GoCR is implemented for go version 1.24.
 > Make sure, that the program does not choose another version/toolchain and is compatible with go 1.24.
-> The output `package advocate is not in std ` or similar indicates a problem with the used version.
+> The output `package GoCR is not in std ` or similar indicates a problem with the used version.
 
-For an explanation on how to use advocate, see [here](./doc/usage.md).
 
-## Documentation
+## Docker
 
-A detailed description of how advocate works can be found in the [doc](doc) folder.
+We provide a docker file to create the environment.
+
+To build the docker file, run
+
+```shell
+docker build -t gocr .
+```
+
+To run the analysis on a program, you can call the following:
+
+```shell
+docker run --rm -it \
+  -v <pathToProg>:/prog \
+  gocr -path /prog [args]
+```
+
+e.g.
+
+```shell
+docker run --rm -it \
+  -v /home/erik/progToTest:/prog \
+  gocr -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+```
+
+For the args, see [usage](#usage-1).
+Note that the -path argument has already been set and does not need to be set again.
+
+
+## Local
+
+If you do not want to use the Docker container, you can also
+build al the required parts yourself.
+
+
+Before GoCR can be used, it must first be build.
+
+There are two parts that need to be build.
+
+### Runtime
+
+To run the recording and replay for Go, a modified version of the Go runtime
+has been provided. It can be found in the [go-path](../go-patch/) folder.
+
+Before it can be used, it needs to be build. To do this, move into
+[go-path/src](../go-patch/src/) directory and run the
+
+```shell
+./src/make.bash
+```
+
+script. This will create a go executable in the `bin` directory.
+
+### GoCR
+
+Additionally, the goCR program needs to be build. This is a standard Go
+program. To build it, move into the [goCR](../goCR/) directory
+and build it with the standard
+
+```shell
+go build
+```
+
+command. This will create an `gocr` executable, which will be used to
+run the analysis
+
+
+## Usage
+
+To run the analysis, run the goPC program:
+
+```shell
+./goPC [args]
+```
+
+or the corresponding docker command
+
+```shell
+docker run --rm -it \
+  -v <pathToProg>:/prog \
+  gocr -path /prog [args]
+```
+
+The following args are required:
+
+- mode [mode]
+  - `GoCR`: Run our analysis version
+  - `GoPie`: Run an analysis version based on GoPie [^1]
+  - `GFuzz`: Run an analysis version based on GFuzz [^2]
+- path [path]
+  - path to the program to be analyzed
+
+For additional flags, call
+
+```shell
+./goCR -help
+```
+
+
+
+[^1]: Zongze Jiang, Ming Wen, Yixin Yang, Chao Peng, Ping Yang, and Hai Jin. 2023. Effective Concurrency Testing for Go via Directional Primitive-Constrained Interleaving Exploration. In 2023 38th IEEE/ACM International Conference on
+Automated Software Engineering (ASE). 1364–1376. https://doi.org/10.1109/ASE56229.2023.00086
+[^2]: Ziheng Liu, Shihao Xia, Yu Liang, Linhai Song, and Hong Hu. 2022. Who goes first? detecting go concurrency bugs via message reordering. In Proceedings of the 27th ACM International Conference on Architectural Support for Programming Languages and Operating Systems (Lausanne, Switzerland) (ASPLOS ’22). Association for Computing Machinery, New York, NY, USA, 888–902. https://doi.org/10.1145/3503222.3507753

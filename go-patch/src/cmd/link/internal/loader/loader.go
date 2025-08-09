@@ -2377,11 +2377,11 @@ var blockedLinknames = map[string][]string{
 	"runtime.mapdelete_fast32":   {"runtime"},
 	"runtime.mapdelete_fast64":   {"runtime"},
 	"runtime.mapdelete_faststr":  {"runtime"},
-	// ADVOCATE-START
+	// GOCP-START
 	"sync/atomic.StoreUintptr":          {"runtime"},
 	"sync/atomic.SwapUintptr":           {"runtime"},
 	"sync/atomic.CompareAndSwapUintptr": {"runtime"},
-	// ADVOCATE-END
+	// GOCP-END
 }
 
 // check if a linkname reference to symbol s from pkg is allowed

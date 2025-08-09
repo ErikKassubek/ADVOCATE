@@ -1,0 +1,58 @@
+//
+// File: hb.go
+// Brief: Type for happens before
+//
+// Created: 2023-11-30
+//
+// License: BSD-3-Clause
+
+package clock
+
+import "goCR/analysis/hb"
+
+// Check if vc1 happens before vc2
+//
+// Parameter:
+//   - vc1 *VectorClock: The first vector clock
+//   - vc2 *VectorClock: The second vector clock
+//
+// Returns:
+//   - bool: True if vc1 is a cause of vc2, false otherwise
+func happensBefore(vc1 *VectorClock, vc2 *VectorClock) bool {
+	atLeastOneSmaller := false
+	for i := 1; i <= vc1.size; i++ {
+		if vc1.GetValue(i) > vc2.GetValue(i) {
+			return false
+		} else if vc1.GetValue(i) < vc2.GetValue(i) {
+			atLeastOneSmaller = true
+		}
+	}
+	return atLeastOneSmaller
+}
+
+// GetHappensBefore returns the happens before relation between two operations given there
+// vector clocks
+//
+// Parameter:
+//   - vc1 *VectorClock: The first vector clock
+//   - vc2 *VectorClock: The second vector clock
+//
+// Returns:
+//   - happensBefore: The happens before relation between the two vector clocks
+func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) hb.HappensBefore {
+	if vc1 == nil || vc2 == nil {
+		return hb.None
+	}
+
+	if vc1.size != vc2.size {
+		return hb.None
+	}
+
+	if happensBefore(vc1, vc2) {
+		return hb.Before
+	}
+	if happensBefore(vc2, vc1) {
+		return hb.After
+	}
+	return hb.Concurrent
+}

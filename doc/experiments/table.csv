@@ -1,7 +1,0 @@
-ProjectName,TestsNumber,EventsMaxNumberAmongTests, EventsMinNumberAmongTests, EventsAverageNumberAmongTests,BlockingBugNumberChannel,BlockingBugNumberMutex,BlockingBugNumberWaitgroup,BlockingBugNumberConditional,LingeringBugNumber
-argo-cd,268,0,668,30,5,4,2,0,39
-bleve,185,0,319758,2131,5,6,1,0,35
-bosun,51,0,153,15,0,0,1,0,2
-caddy,72,0,1096,60,3,4,0,0,27
-frp,14,0,14,2,0,0,0,0,0
-gin,36,0,16,4,0,0,0,0,2

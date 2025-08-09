@@ -52,7 +52,7 @@ import (
 	"unsafe"
 )
 
-// ADVOCATE-START
+// GOCP-START
 
 // BUG(rsc): On 386, the 64-bit functions use instructions unavailable before the Pentium MMX.
 //
@@ -70,19 +70,19 @@ import (
 // Consider using the more ergonomic and less error-prone [Int32.Swap] instead.
 //
 //go:noescape
-func SwapInt32Advocate(addr *int32, new int32) (old int32)
+func SwapInt32GoCR(addr *int32, new int32) (old int32)
 
 // SwapUint32 atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Uint32.Swap] instead.
 //
 //go:noescape
-func SwapUint32Advocate(addr *uint32, new uint32) (old uint32)
+func SwapUint32GoCR(addr *uint32, new uint32) (old uint32)
 
 // SwapUintptr atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Uintptr.Swap] instead.
 //
 //go:noescape
-func SwapUintptrAdvocate(addr *uintptr, new uintptr) (old uintptr)
+func SwapUintptrGoCR(addr *uintptr, new uintptr) (old uintptr)
 
 // SwapPointer atomically stores new into *addr and returns the previous *addr value.
 // Consider using the more ergonomic and less error-prone [Pointer.Swap] instead.
@@ -92,19 +92,19 @@ func SwapPointer(addr *unsafe.Pointer, new unsafe.Pointer) (old unsafe.Pointer)
 // Consider using the more ergonomic and less error-prone [Int32.CompareAndSwap] instead.
 //
 //go:noescape
-func CompareAndSwapInt32Advocate(addr *int32, old, new int32) (swapped bool)
+func CompareAndSwapInt32GoCR(addr *int32, old, new int32) (swapped bool)
 
 // CompareAndSwapUint32 executes the compare-and-swap operation for a uint32 value.
 // Consider using the more ergonomic and less error-prone [Uint32.CompareAndSwap] instead.
 //
 //go:noescape
-func CompareAndSwapUint32Advocate(addr *uint32, old, new uint32) (swapped bool)
+func CompareAndSwapUint32GoCR(addr *uint32, old, new uint32) (swapped bool)
 
 // CompareAndSwapUintptr executes the compare-and-swap operation for a uintptr value.
 // Consider using the more ergonomic and less error-prone [Uintptr.CompareAndSwap] instead.
 //
 //go:noescape
-func CompareAndSwapUintptrAdvocate(addr *uintptr, old, new uintptr) (swapped bool)
+func CompareAndSwapUintptrGoCR(addr *uintptr, old, new uintptr) (swapped bool)
 
 // CompareAndSwapPointer executes the compare-and-swap operation for a unsafe.Pointer value.
 // Consider using the more ergonomic and less error-prone [Pointer.CompareAndSwap] instead.
@@ -114,7 +114,7 @@ func CompareAndSwapPointer(addr *unsafe.Pointer, old, new unsafe.Pointer) (swapp
 // Consider using the more ergonomic and less error-prone [Int32.Add] instead.
 //
 //go:noescape
-func AddInt32Advocate(addr *int32, delta int32) (new int32)
+func AddInt32GoCR(addr *int32, delta int32) (new int32)
 
 // AddUint32 atomically adds delta to *addr and returns the new value.
 // To subtract a signed positive constant value c from x, do AddUint32(&x, ^uint32(c-1)).
@@ -122,98 +122,98 @@ func AddInt32Advocate(addr *int32, delta int32) (new int32)
 // Consider using the more ergonomic and less error-prone [Uint32.Add] instead.
 //
 //go:noescape
-func AddUint32Advocate(addr *uint32, delta uint32) (new uint32)
+func AddUint32GoCR(addr *uint32, delta uint32) (new uint32)
 
 // AddUintptr atomically adds delta to *addr and returns the new value.
 // Consider using the more ergonomic and less error-prone [Uintptr.Add] instead.
 //
 //go:noescape
-func AddUintptrAdvocate(addr *uintptr, delta uintptr) (new uintptr)
+func AddUintptrGoCR(addr *uintptr, delta uintptr) (new uintptr)
 
 // AndInt32 atomically performs a bitwise AND operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Int32.And] instead.
 //
 //go:noescape
-func AndInt32Advocate(addr *int32, mask int32) (old int32)
+func AndInt32GoCR(addr *int32, mask int32) (old int32)
 
 // AndUint32 atomically performs a bitwise AND operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Uint32.And] instead.
 //
 //go:noescape
-func AndUint32Advocate(addr *uint32, mask uint32) (old uint32)
+func AndUint32GoCR(addr *uint32, mask uint32) (old uint32)
 
 // AndUintptr atomically performs a bitwise AND operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Uintptr.And] instead.
 //
 //go:noescape
-func AndUintptrAdvocate(addr *uintptr, mask uintptr) (old uintptr)
+func AndUintptrGoCR(addr *uintptr, mask uintptr) (old uintptr)
 
 // OrInt32 atomically performs a bitwise OR operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Int32.Or] instead.
 //
 //go:noescape
-func OrInt32Advocate(addr *int32, mask int32) (old int32)
+func OrInt32GoCR(addr *int32, mask int32) (old int32)
 
 // OrUint32 atomically performs a bitwise OR operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Uint32.Or] instead.
 //
 //go:noescape
-func OrUint32Advocate(addr *uint32, mask uint32) (old uint32)
+func OrUint32GoCR(addr *uint32, mask uint32) (old uint32)
 
 // OrUintptr atomically performs a bitwise OR operation on *addr using the bitmask provided as mask
 // and returns the old value.
 // Consider using the more ergonomic and less error-prone [Uintptr.Or] instead.
 //
 //go:noescape
-func OrUintptrAdvocate(addr *uintptr, mask uintptr) (old uintptr)
+func OrUintptrGoCR(addr *uintptr, mask uintptr) (old uintptr)
 
 // LoadInt32 atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Int32.Load] instead.
 //
 //go:noescape
-func LoadInt32Advocate(addr *int32) (val int32)
+func LoadInt32GoCR(addr *int32) (val int32)
 
 // LoadUint32 atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Uint32.Load] instead.
 //
 //go:noescape
-func LoadUint32Advocate(addr *uint32) (val uint32)
+func LoadUint32GoCR(addr *uint32) (val uint32)
 
 // LoadUintptr atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Uintptr.Load] instead.
 //
 //go:noescape
-func LoadUintptrAdvocate(addr *uintptr) (val uintptr)
+func LoadUintptrGoCR(addr *uintptr) (val uintptr)
 
 // LoadPointer atomically loads *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Load] instead.
-func LoadPointerAdvocate(addr *unsafe.Pointer) (val unsafe.Pointer)
+func LoadPointerGoCR(addr *unsafe.Pointer) (val unsafe.Pointer)
 
 // StoreInt32 atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Int32.Store] instead.
 //
 //go:noescape
-func StoreInt32Advocate(addr *int32, val int32)
+func StoreInt32GoCR(addr *int32, val int32)
 
 // StoreUint32 atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Uint32.Store] instead.
 //
 //go:noescape
-func StoreUint32Advocate(addr *uint32, val uint32)
+func StoreUint32GoCR(addr *uint32, val uint32)
 
 // StoreUintptr atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Uintptr.Store] instead.
 //
 //go:noescape
-func StoreUintptrAdvocate(addr *uintptr, val uintptr)
+func StoreUintptrGoCR(addr *uintptr, val uintptr)
 
 // StorePointer atomically stores val into *addr.
 // Consider using the more ergonomic and less error-prone [Pointer.Store] instead.
 func StorePointer(addr *unsafe.Pointer, val unsafe.Pointer)
 
-// ADVOCATE-END
+// GOCP-END

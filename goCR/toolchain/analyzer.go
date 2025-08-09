@@ -27,16 +27,12 @@ import (
 //   - outReadable string: path to the readable result file
 //   - outMachine string: path to the machine result file
 //   - ignoreAtomics bool: if true, atomics are ignored for replay
-//   - fifo bool: assume, that the channels work as a fifo queue
-//   - ignoreCriticalSection bool: ignore the ordering of lock/unlock for the hb analysis
 //   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
 //
 // Returns:
 //   - error
-func runAnalyzer(pathTrace string,
-	outReadable string, outMachine string,
-	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	fuzzingRun int) error {
+func runAnalyzer(pathTrace string, outReadable string, outMachine string,
+	ignoreAtomics bool, fuzzingRun int) error {
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -62,7 +58,7 @@ func runAnalyzer(pathTrace string,
 
 	log.Info("Start Analysis")
 
-	analysis.RunAnalysis(fifo, ignoreCriticalSection, fuzzingRun >= 0)
+	analysis.RunAnalysis(fuzzingRun >= 0)
 
 	if control.CheckCanceled() {
 		// analysis.LogSizes()

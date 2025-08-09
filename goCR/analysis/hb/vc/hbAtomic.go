@@ -17,14 +17,11 @@ import (
 //
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
-//   - alt bool: Store and update the vector clock of the element if the IgnoreCriticalSections tag has been set
-func UpdateHBAtomic(at *trace.ElementAtomic, alt bool) {
+func UpdateHBAtomic(at *trace.ElementAtomic) {
 	routine := at.GetRoutine()
 
 	at.SetVc(CurrentVC[routine])
-	if !alt {
-		at.SetWVc(CurrentWVC[routine])
-	}
+	at.SetWVc(CurrentWVC[routine])
 
 	switch at.GetOpA() {
 	case trace.LoadOp:

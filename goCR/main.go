@@ -42,9 +42,7 @@ var (
 
 	maxFuzzingRun int
 
-	noFifo                bool
-	ignoreCriticalSection bool
-	ignoreAtomics         bool
+	ignoreAtomics bool
 
 	keepTraces bool
 
@@ -101,8 +99,6 @@ func main() {
 
 	flag.BoolVar(&noMemorySupervisor, "noMemorySupervisor", false, "Disable the memory supervisor")
 
-	flag.BoolVar(&noFifo, "noFifo", false, "Do not assume a FIFO ordering for buffered channels")
-	flag.BoolVar(&ignoreCriticalSection, "ignCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&ignoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
 	flag.BoolVar(&keepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
@@ -176,7 +172,6 @@ func main() {
 	}
 
 	toolchain.SetFlags(ignoreAtomics,
-		!noFifo, ignoreCriticalSection,
 		timeoutRecording, timeoutReplay, noWarning, tracePath, output)
 
 	execName = helper.CheckGoMod(progPath, modeMain, execName)

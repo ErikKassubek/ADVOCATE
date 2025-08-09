@@ -160,7 +160,7 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 
 		err = runAnalyzer(analyzerOutput,
 			"results_readable.log", "results_machine.log",
-			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, fuzzing)
+			ignoreAtomicsFlag, fuzzing)
 
 		if err != nil {
 			return "", 0, 0, err

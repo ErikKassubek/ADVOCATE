@@ -597,9 +597,7 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 
 	outM := filepath.Join(pkgPath, "results_machine.log")
 	outR := filepath.Join(pkgPath, "results_readable.log")
-	err := runAnalyzer(tracePath, outR,
-		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag,
-		fuzzing)
+	err := runAnalyzer(tracePath, outR, outM, ignoreAtomicsFlag, fuzzing)
 
 	if err != nil {
 		return err

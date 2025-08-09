@@ -20,12 +20,11 @@ import (
 //
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
-//   - alt bool: update if the ignoreCriticalSections tag has been set
-func UpdateHBAtomic(at *trace.ElementAtomic, alt bool) {
+func UpdateHBAtomic(at *trace.ElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
-	vc.UpdateHBAtomic(at, alt)
+	vc.UpdateHBAtomic(at)
 }
 
 // UpdateHBChannel updates the hb info of the trace for a channel operation

@@ -102,8 +102,8 @@ func ReadFlags() bool {
 
 	flag.IntVar(&MaxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
-	flag.StringVar(&FuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
+	flag.StringVar(&FuzzingMode, "mode", "GoCR",
+		"Mode for fuzzing. Possible values are:\n\tGoCR\n\ttGoPie\n\tGFuzz")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&ModeMain, "main", false, "set to run on main function")

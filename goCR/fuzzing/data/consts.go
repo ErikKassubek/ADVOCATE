@@ -10,18 +10,13 @@ package data
 
 // Possible values for fuzzing mode
 const (
-	GFuzz       = "GFuzz"       // only GFuzz
-	GFuzzHB     = "GFuzzHB"     // GFuzz with use of hb info
-	GFuzzHBFlow = "GFuzzHBFlow" // GFuzz with use of hb info and flow mutation
-	Flow        = "Flow"        // only flow mutation
-	GoPie       = "GoPie"       // only goPie
-	GoCR        = "GoCR"        // improved goPie without predictive analysis
-	GoCRHB      = "GoCRHB"      // improved goPie with predictive analysis
+	GoPie = "GoPie" // only goPie
+	GFuzz = "GFuzz" // only GFuzz
+	GoCR  = "GoCR"  // improved goPie without predictive analysis
 )
 
 // Possible mut types
 const (
-	MutSelType  = 0
-	MutPiType   = 1
-	MutFlowType = 2
+	MutSelType = 0
+	MutPiType  = 1
 )

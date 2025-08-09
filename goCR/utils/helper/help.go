@@ -19,14 +19,12 @@ var (
 
 	// submodes
 	runMain      = newFlagVal("main", "false", "", "Set to run on main function. If not set, the unit tests are run")
-	fuzzingModes = newFlagVal("fuzzingMode", "", "", "Mode for fuzzing. Possible values are:", "\tGFuzz", "\tGFuzzHB", "\tGFuzzHBFlow", "\tFlow", "\tGoPie", "\tGoCR", "\tGoCRHB")
+	fuzzingModes = newFlagVal("mode", "", "", "Mode for fuzzing. Possible values are:", "\tGoCR", "\tGFuzz", "\tGoPie")
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
-	prog  = newFlagVal("prog", "", "-stat/-time/-notExec", "Name of the program")
-	prog2 = newFlagVal("prog", "", "", "Name of the program")
-	exec1 = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
-	exec2 = newFlagVal("exec", "", "", "Name of the executable or test")
+	prog  = newFlagVal("prog", "", "", "Name of the program")
+	exec  = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
 	trace = newFlagVal("trace", "", "", "Path to the trace folder to replay")
 
 	// scenarios
@@ -39,9 +37,8 @@ var (
 	maxFuzzingRun = newFlagVal("maxFuzzingRuns", "-1", "", "Maximum number of fuzzing runs per test/prog. To Disable, set to -1")
 
 	// statistics
-	time    = newFlagVal("time", "false", "", "Measure the execution times of programs/tests and analysis")
-	notExec = newFlagVal("notExec", "false", "", "Find never executed operations")
-	stats   = newFlagVal("stats", "false", "", "Create statistics")
+	time  = newFlagVal("time", "false", "", "Measure the execution times of programs/tests and analysis")
+	stats = newFlagVal("stats", "false", "", "Create statistics")
 
 	// logging and output
 	noInfo     = newFlagVal("noInfo", "false", "", "Do not show infos in the terminal (will only show results, errors, important and progress)")
@@ -56,12 +53,10 @@ var (
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
-	noFifo                = newFlagVal("noFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
-	ignoreCriticalSection = newFlagVal("ignCritSec", "false", "", "Ignore happens before relations of critical sections")
-	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
-	keepTrace             = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
-	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
-	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
+	ignoreAtomics     = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
+	keepTrace         = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	settings          = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
+	cancelTestIfFound = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
 )
 
 // flagValue is a struct to store one flag value and its description
@@ -154,8 +149,8 @@ func printHelpFuzzing() {
 
 	// paths
 	fmt.Println(path.toString(true))
-	fmt.Println(prog2.toString(true))
-	fmt.Println(exec1.toString(false))
+	fmt.Println(prog.toString(false))
+	fmt.Println(exec.toString(false))
 
 	// scenarios
 	fmt.Println(noWarning.toString(false))
@@ -168,7 +163,6 @@ func printHelpFuzzing() {
 
 	// statistics
 	fmt.Println(time.toString(false))
-	fmt.Println(notExec.toString(false))
 	fmt.Println(stats.toString(false))
 
 	// logging and output
@@ -178,14 +172,11 @@ func printHelpFuzzing() {
 
 	// memory
 	fmt.Println(maxNumberElem.toString(false))
-	fmt.Println(maxNumberElem.toString(false))
 
 	// panic
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
 	fmt.Println(keepTrace.toString(false))
 	fmt.Println(settings.toString(false))

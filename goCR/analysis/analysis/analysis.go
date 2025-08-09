@@ -23,11 +23,9 @@ import (
 // RunAnalysis starts the analysis of the main trace
 //
 // Parameter:
-//   - assume_fifo bool: True to assume fifo ordering in buffered channels
-//   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
 //   - fuzzing bool: true if run with fuzzing
 //   - onlyAPanicAndLeak bool: only test for actual panics and leaks
-func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool) {
+func RunAnalysis(fuzzing bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
 	if log.IsPanicPrevent() {
@@ -53,24 +51,20 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool) {
 	}
 
 	if fuzzdata.FuzzingMode != fuzzdata.GoPie {
-		RunHBAnalysis(assumeFifo, ignoreCriticalSections)
+		RunHBAnalysis()
 	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis
 //
 // Parameter:
-//   - assume_fifo bool: True to assume fifo ordering in buffered channels
-//   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
 //   - fuzzing bool: true if run with fuzzing
 //   - runAna bool: true to run the predictive analysis
 //
 // Returns:
 //   - bool: true if something has been found
-func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool) {
+func RunHBAnalysis() {
 	log.Info("Start Analysis")
-
-	data.Fifo = assumeFifo
 
 	vc.InitVC()
 
@@ -95,15 +89,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool) {
 
 		switch e := elem.(type) {
 		case *trace.ElementAtomic:
-			elements.AnalyzeAtomic(e, ignoreCriticalSections)
+			elements.AnalyzeAtomic(e)
 		case *trace.ElementChannel:
 			elements.UpdateChannel(e)
 		case *trace.ElementMutex:
-			if ignoreCriticalSections {
-				elements.UpdateMutex(e, true)
-			} else {
-				elements.UpdateMutex(e, false)
-			}
+			elements.UpdateMutex(e, false)
 		case *trace.ElementFork:
 			elements.AnalyzeFork(e)
 		case *trace.ElementSelect:

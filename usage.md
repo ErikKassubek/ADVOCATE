@@ -340,7 +340,7 @@ The available modes are:
 - `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
-- `GoPie+`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
+- `GoCR`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
 - `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
 
 All other required and additional args as well as the output files are the same as for the analysis mode.

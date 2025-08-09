@@ -8,29 +8,29 @@ ENV GOROOT_BOOTSTRAP=/usr/local/go
 
 RUN curl -fsSL https://go.dev/dl/go1.24.1.linux-amd64.tar.gz | tar -C /usr/local -xzf -
 
-COPY go-patch /ADVOCATE/go-patch
-WORKDIR /ADVOCATE/go-patch/src
+COPY go-patch /GoCR/go-patch
+WORKDIR /GoCR/go-patch/src
 RUN bash make.bash
 
 # Stage 2: Build the Go app using the standard Go runtime
 FROM golang:1.24 AS app-builder
 
-WORKDIR /ADVOCATE/advocate
-COPY advocate /ADVOCATE/advocate
-COPY go-patch /ADVOCATE/go-patch
+WORKDIR /GoCR/advocate
+COPY goCr /GoCR/goCr
+COPY go-patch /GoCr/go-patch
 
 RUN go build -o app .
 
 # Stage 3: Final runtime image
 FROM debian:bookworm-slim
 
-WORKDIR /ADVOCATE
+WORKDIR /GoCR
 
-COPY --from=goruntime-builder /ADVOCATE/go-patch ./go-patch
-COPY --from=app-builder /ADVOCATE/advocate/app ./advocate/app
+COPY --from=goruntime-builder /GoCR/go-patch ./go-patch
+COPY --from=app-builder /GoCR/goCR/app ./goCR/app
 
 WORKDIR /prog
 
-WORKDIR /ADVOCATE/advocate
+WORKDIR /GoCR/goCR
 
 ENTRYPOINT ["./app"]

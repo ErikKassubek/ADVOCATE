@@ -50,10 +50,10 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 	cancelTestIfFound bool) error {
 
 	if fm == "" {
-		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
+		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoCR, GoPie, GFuzz")
 	}
 
-	modes := []string{data.GoPie, data.GoCR, data.GoCRHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
+	modes := []string{data.GoPie, data.GoCR, data.GFuzz}
 	if !types.Contains(modes, fm) {
 		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
 	}
@@ -65,10 +65,10 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 	}
 
 	data.FuzzingMode = fm
-	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
-	data.FuzzingModeGoCRHBPlus = (data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
-	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
-	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
+	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoCR)
+	data.FuzzingModeGoCR = (data.FuzzingMode == data.GoCR)
+	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz)
+	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GoCR)
 
 	data.CancelTestIfBugFound = cancelTestIfFound
 

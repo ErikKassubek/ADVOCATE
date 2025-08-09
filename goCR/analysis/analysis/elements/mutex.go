@@ -31,40 +31,15 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	switch mu.GetOpM() {
 	case trace.LockOp:
-		if data.AnalysisCasesMap[data.Leak] {
-			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 0)
-		}
-
-		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
+		scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 0)
 
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = mu
-		scenarios.IncFuzzingCounter(mu)
-
-		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-			scenarios.CheckForUnlockBeforeLockLock(mu)
-		}
 
 	case trace.RLockOp:
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = mu
-		scenarios.IncFuzzingCounter(mu)
-
-		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-			scenarios.CheckForUnlockBeforeLockLock(mu)
-		}
-	case trace.TryLockOp:
-		if mu.IsSuc() {
-			if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-				scenarios.CheckForUnlockBeforeLockLock(mu)
-			}
-		}
-	case trace.TryRLockOp:
-		if mu.IsSuc() {
-			if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-				scenarios.CheckForUnlockBeforeLockLock(mu)
-			}
-		}
+	case trace.TryLockOp, trace.TryRLockOp:
 	case trace.UnlockOp:
 		data.RelW[id] = &data.ElemWithVc{
 			Elem: mu,
@@ -76,33 +51,15 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		if data.AnalysisCasesMap[data.MixedDeadlock] {
-			scenarios.LockSetRemoveLock(routine, id)
-		}
-
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = nil
-
-		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-			scenarios.CheckForUnlockBeforeLockUnlock(mu)
-		}
 	case trace.RUnlockOp:
 		data.RelR[id].Elem = mu
-		if data.AnalysisCasesMap[data.Leak] {
-			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 1)
-		}
-
-		if data.AnalysisCasesMap[data.MixedDeadlock] {
-			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
-			scenarios.LockSetRemoveLock(routine, id)
-		}
+		scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 1)
 
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = nil
 
-		if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-			scenarios.CheckForUnlockBeforeLockUnlock(mu)
-		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()
 		log.Error(err)

@@ -30,19 +30,7 @@ var (
 	trace = newFlagVal("trace", "", "", "Path to the trace folder to replay")
 
 	// scenarios
-	scenarios = newFlagVal("scen", "", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d",
-		"If not set, all scenarios are run.",
-		"Options:",
-		"\ts: Send on closed channel",
-		"\tr: Receive on closed channel",
-		"\tw: Done before add on waitGroup",
-		"\tn: Close of closed channel",
-		"\tb: Concurrent receive on channel",
-		"\tl: Leaking routine",
-		"\tu: Unlock of unlocked mutex",
-		"\tc: Cyclic deadlock")
 	noWarning = newFlagVal("noWarning", "false", "", "Only show critical bugs")
-	onlyA     = newFlagVal("onlyActual", "false", "", "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	// timeout
 	timeoutRec    = newFlagVal("timeoutRec", "600", "", "Set the timeout in seconds for the recording. To disable set to -1")
@@ -60,10 +48,6 @@ var (
 	noProgress = newFlagVal("noProgress", "false", "", "Do not show progress info")
 	output     = newFlagVal("output", "false", "", "Show the output of the executed programs in the terminal. Otherwise it is only in output.log file.")
 
-	// continue
-	cont         = newFlagVal("cont", "false", "", "Continue a partial analysis of tests")
-	skipExisting = newFlagVal("skipExisting", "false", "", "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
-
 	// memory
 	noMemorySupervisor = newFlagVal("noMemorySupervisor", "false", "", "Disable the memory supervisor")
 	maxNumberElem      = newFlagVal("maxNumberElements", "10000000", "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set to -1")
@@ -75,8 +59,6 @@ var (
 	noFifo                = newFlagVal("noFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
 	ignoreCriticalSection = newFlagVal("ignCritSec", "false", "", "Ignore happens before relations of critical sections")
 	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
-	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
-	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
 	keepTrace             = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
 	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
 	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
@@ -146,189 +128,13 @@ func PrintHelp() {
 	fmt.Println("GoCRGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
 	fmt.Println("")
 	printHeader()
-}
-
-// PrintHelpMode prints the help for a specific mode
-//
-// Parameter:
-//   - mode string: the mode
-func PrintHelpMode(mode string) {
-	switch mode {
-	case "analysis":
-		printHelpAnalysis()
-	case "fuzzing":
-		printHelpFuzzing()
-	case "record", "recording":
-		printHelpRecord()
-	case "replay":
-		printHelpReplay()
-	default:
-		fmt.Printf("Unknown mode '%s'\n\n", mode)
-		printHeader()
-	}
-
+	printHelpFuzzing()
 }
 
 // printHeader prints the main help header
 func printHeader() {
-	fmt.Println("Usage: ./goCR [mode] [args]")
+	fmt.Println("Usage: ./goCR[args]")
 	fmt.Println("")
-	fmt.Println("GoCR contains four different mode. These are:")
-	fmt.Println("\trecord")
-	fmt.Println("\treplay")
-	fmt.Println("\tanalyzer")
-	fmt.Println("\tfuzzing")
-	fmt.Println("")
-	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
-	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
-	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
-	fmt.Println("With 'fuzzing', different fuzzing approaches can be run on a program or test.")
-	fmt.Print("\n\n")
-	fmt.Println("For more information about the mode and there functionality, see the doc folder in the repository.")
-	fmt.Println("For information on how to prepare the required runtime, see the usage file linked in the README")
-	fmt.Println("")
-	fmt.Println("To get information about one of the modes, including the required and optional tags, run\n\t./goCR [mode] -help.")
-}
-
-// print help for record mode
-func printHelpRecord() {
-	fmt.Println("Mode: record")
-	fmt.Println("")
-
-	printFlagHeader()
-
-	// help
-	fmt.Println(help1.toString(false))
-	fmt.Println(help2.toString(false))
-
-	// submodes
-	fmt.Println(runMain.toString(false))
-
-	// paths
-	fmt.Println(path.toString(true))
-	fmt.Println(prog.toString(false))
-	fmt.Println(exec1.toString(false))
-
-	// timeout
-	fmt.Println(timeoutRec.toString(false))
-
-	// statistics
-	fmt.Println(time.toString(false))
-	fmt.Println(notExec.toString(false))
-	fmt.Println(stats.toString(false))
-
-	// logging and output
-	fmt.Println(noInfo.toString(false))
-	fmt.Println(noProgress.toString(false))
-	fmt.Println(output.toString(false))
-
-	// continue
-	fmt.Println(cont.toString(false))
-	fmt.Println(skipExisting.toString(false))
-
-	// memory
-	fmt.Println(maxNumberElem.toString(false))
-	fmt.Println(noMemorySupervisor.toString(false))
-
-	// panic
-	fmt.Println(alwaysPanic.toString(false))
-
-	// settings
-	fmt.Println(ignoreAtomics.toString(false))
-
-}
-
-// print help for REPLAY mode
-func printHelpReplay() {
-	fmt.Println("Mode: replay")
-	fmt.Println("")
-
-	printFlagHeader()
-
-	// help
-	fmt.Println(help1.toString(false))
-	fmt.Println(help2.toString(false))
-
-	// submodes
-	fmt.Println(runMain.toString(false))
-
-	// paths
-	fmt.Println(path.toString(true))
-	fmt.Println(exec2.toString(true))
-	fmt.Println(trace.toString(true))
-
-	// timeout
-	fmt.Println(timeoutRep.toString(false))
-
-	fmt.Println(output.toString(false))
-
-	// memory
-	fmt.Println(maxNumberElem.toString(false))
-	fmt.Println(noMemorySupervisor.toString(false))
-
-	// panic
-	fmt.Println(alwaysPanic.toString(false))
-
-	// settings
-	fmt.Println(ignoreAtomics.toString(false))
-}
-
-// print help for analysis mode
-func printHelpAnalysis() {
-	fmt.Println("Mode: analysis")
-	fmt.Println("")
-
-	printFlagHeader()
-
-	// help
-	fmt.Println(help1.toString(false))
-	fmt.Println(help2.toString(false))
-
-	// submodes
-	fmt.Println(runMain.toString(false))
-
-	// paths
-	fmt.Println(path.toString(true))
-	fmt.Println(prog.toString(false))
-	fmt.Println(exec1.toString(false))
-
-	// scenarios
-	fmt.Println(scenarios.toString(false))
-	fmt.Println(noWarning.toString(false))
-	fmt.Println(onlyA.toString(false))
-
-	// timeout
-	fmt.Println(timeoutRec.toString(false))
-	fmt.Println(timeoutRep.toString(false))
-
-	// statistics
-	fmt.Println(time.toString(false))
-	fmt.Println(notExec.toString(false))
-	fmt.Println(stats.toString(false))
-
-	// logging and output
-	fmt.Println(noInfo.toString(false))
-	fmt.Println(noProgress.toString(false))
-	fmt.Println(output.toString(false))
-
-	// continue
-	fmt.Println(cont.toString(false))
-	fmt.Println(skipExisting.toString(false))
-
-	// memory
-	fmt.Println(maxNumberElem.toString(false))
-	fmt.Println(noMemorySupervisor.toString(false))
-
-	// panic
-	fmt.Println(alwaysPanic.toString(false))
-
-	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
-	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
-	fmt.Println(keepTrace.toString(false))
 }
 
 // print help for fuzzing mode
@@ -352,9 +158,7 @@ func printHelpFuzzing() {
 	fmt.Println(exec1.toString(false))
 
 	// scenarios
-	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
-	fmt.Println(onlyA.toString(false))
 
 	// timeout
 	fmt.Println(timeoutRec.toString(false))
@@ -383,8 +187,6 @@ func printHelpFuzzing() {
 	fmt.Println(noFifo.toString(false))
 	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
 	fmt.Println(keepTrace.toString(false))
 	fmt.Println(settings.toString(false))
 	fmt.Println(cancelTestIfFound.toString(false))

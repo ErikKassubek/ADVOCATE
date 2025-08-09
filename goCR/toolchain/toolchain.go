@@ -38,7 +38,6 @@ var (
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - replayAt bool: replay atomics
 //   - meaTime bool: measure runtime
-//   - notExec bool: find never executed operations
 //   - stats bool: create statistics
 //   - keepTraces bool: keep the traces after analysis
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
@@ -52,7 +51,7 @@ var (
 func Run(mode, goCR, pathToMainFileOrTestDir, pathToTest string,
 	runRecord, runAnalysis, runReplay bool,
 	execName, progName, test string, fuzzing int, fuzzingTrace string,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
+	ignoreAtomic, meaTime, stats, keepTraces, skipExisting bool,
 	firstRun, cont bool, fileNumber, testNumber int) (string, int, int, error) {
 	pathToGoCR = helper.CleanPathHome(goCR)
 	pathToFileOrDir = helper.CleanPathHome(pathToMainFileOrTestDir)
@@ -63,7 +62,6 @@ func Run(mode, goCR, pathToMainFileOrTestDir, pathToTest string,
 
 	replayAtomic = !ignoreAtomic
 	measureTime = meaTime
-	notExecuted = notExec
 	createStats = stats
 
 	data.Clear()
@@ -82,7 +80,7 @@ func Run(mode, goCR, pathToMainFileOrTestDir, pathToTest string,
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
-		return runWorkflowMain(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis, runReplay,
+		return runWorkflowMain(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis,
 			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
 	case "test", "tests":
 		if pathToGoCR == "" {
@@ -94,8 +92,8 @@ func Run(mode, goCR, pathToMainFileOrTestDir, pathToTest string,
 		if (stats || measureTime) && progName == "" {
 			progName = helper.GetProgName(pathToMainFileOrTestDir)
 		}
-		return runWorkflowUnit(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis, runReplay,
-			pathToTest, progName, notExecuted, stats && fuzzing == -1, fuzzing, fuzzingTrace, keepTraces,
+		return runWorkflowUnit(pathToGoCR, pathToFileOrDir, runRecord, runAnalysis,
+			pathToTest, progName, stats && fuzzing == -1, fuzzing, fuzzingTrace, keepTraces,
 			firstRun, skipExisting, cont, fileNumber, testNumber)
 	default:
 		return "", 0, 0, fmt.Errorf("Choose one mode from 'main' or 'test'")

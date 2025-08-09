@@ -19,16 +19,11 @@ var (
 	numberRerecord   int
 	replayAtomic     bool
 	measureTime      bool
-	notExecuted      bool
 	createStats      bool
 
-	noRewriteFlag             bool
 	ignoreAtomicsFlag         bool
 	fifoFlag                  bool
 	ignoreCriticalSectionFlag bool
-	rewriteAllFlag            bool
-	onlyAPanicAndLeakFlag     bool
-	replayAllFlag             bool
 	noWarningFlag             bool
 	tracePathFlag             string
 
@@ -44,27 +39,20 @@ var (
 //   - fifo bool: assume that channels work as fifo queue
 //   - ignoreCriticalSection bool: ignore order of lock/unlock
 //   - rewriteAll bool: rewrite bugs that have been confirmed before
-//   - onlyAPanicAndLeak bool: do not run a HB analysis, but only detect actually occurring bugs
 //   - timeoutRec int: timeout of recording in seconds
 //   - timeoutRepl int: timeout of replay in seconds
 //   - tracePath string: path to the trace for replay mode
-func SetFlags(noRewrite bool, ignoreAtomics,
-	fifo, ignoreCriticalSection, rewriteAll bool, onlyAPanicAndLeak bool,
-	timeoutRec, timeoutRepl int, replayAll bool, noWarning bool,
+func SetFlags(ignoreAtomics,
+	fifo, ignoreCriticalSection bool,
+	timeoutRec, timeoutRepl int, noWarning bool,
 	tracePath string, output bool) {
-
-	noRewriteFlag = noRewrite
 
 	ignoreAtomicsFlag = ignoreAtomics
 	fifoFlag = fifo
 	ignoreCriticalSectionFlag = ignoreCriticalSection
-	rewriteAllFlag = rewriteAll
-	onlyAPanicAndLeakFlag = onlyAPanicAndLeak
 
 	timeoutRecording = timeoutRec
 	timeoutReplay = timeoutRepl
-
-	replayAllFlag = replayAll
 
 	noWarningFlag = noWarning
 

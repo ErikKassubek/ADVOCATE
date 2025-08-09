@@ -12,10 +12,6 @@ import (
 	"goCR/analysis/analysis/elements"
 	"goCR/analysis/analysis/scenarios"
 	"goCR/analysis/data"
-	"goCR/analysis/hb/cssts"
-	"goCR/analysis/hb/hbcalc"
-	hb "goCR/analysis/hb/hbcalc"
-	"goCR/analysis/hb/pog"
 	"goCR/analysis/hb/vc"
 	fuzzdata "goCR/fuzzing/data"
 	"goCR/trace"
@@ -31,7 +27,7 @@ import (
 //   - ignoreCriticalSections bool: True to ignore critical sections when updating vector clocks
 //   - fuzzing bool: true if run with fuzzing
 //   - onlyAPanicAndLeak bool: only test for actual panics and leaks
-func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onlyAPanicAndLeak bool) {
+func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool) {
 	// catch panics in analysis.
 	// Prevents the whole toolchain to panic if one analysis panics
 	if log.IsPanicPrevent() {
@@ -50,18 +46,15 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 
 	scenarios.RunAnalysisOnExitCodes(true)
 
-	if onlyAPanicAndLeak {
-		scenarios.CheckForStuckRoutine(true)
+	scenarios.CheckForStuckRoutine(true)
 
-		if !fuzzing {
-			return
-		}
+	if !fuzzing {
+		return
 	}
 
-	// TODO T1: remove T1 back in, when tests are done
-	// if fuzzdata.FuzzingMode != fuzzdata.GoPie || data.T1 {
-	RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
-	// }
+	if fuzzdata.FuzzingMode != fuzzdata.GoPie {
+		RunHBAnalysis(assumeFifo, ignoreCriticalSections)
+	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis
@@ -74,41 +67,15 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 //
 // Returns:
 //   - bool: true if something has been found
-func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, runAna bool) {
+func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool) {
 	log.Info("Start Analysis")
 
 	data.Fifo = assumeFifo
-	data.ModeIsFuzzing = fuzzing
 
-	// set which hb structures should be calculated
-	// NOTE: Do not use predictive analysis if the first parameter is false
-	hbcalc.SetHbSettings(true, false, false)
-	if !runAna || !hbcalc.CalcVC {
-		for key := range data.AnalysisCasesMap {
-			data.AnalysisCasesMap[key] = false
-		}
-	}
+	vc.InitVC()
 
-	if hb.CalcVC {
-		vc.InitVC()
-	}
-
-	if hb.CalcPog {
-		pog.InitPOG()
-	}
-
-	if hb.CalcCssts {
-		cssts.InitCSSTs(data.GetTraceLengths())
-	}
-
-	if data.AnalysisCasesMap[data.ResourceDeadlock] {
-		scenarios.ResetState()
-	}
-
-	if hb.CalcVC {
-		vc.CurrentVC[1].Inc(1)
-		vc.CurrentWVC[1].Inc(1)
-	}
+	vc.CurrentVC[1].Inc(1)
+	vc.CurrentWVC[1].Inc(1)
 
 	traceIter := data.MainTrace.AsIterator()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
@@ -116,11 +83,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		// not enough memory
 		if control.WasCanceledRAM.Load() {
 			return
-		}
-
-		// add edge between element of same routine to partial order trace
-		if hb.CalcPog {
-			pog.AddEdgeSameRoutineAndFork(elem)
 		}
 
 		// count how many operations where executed on the underlying structure
@@ -141,9 +103,6 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 				elements.UpdateMutex(e, true)
 			} else {
 				elements.UpdateMutex(e, false)
-			}
-			if data.AnalysisFuzzingFlow {
-				scenarios.GetConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
 			elements.AnalyzeFork(e)
@@ -168,24 +127,13 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 			elements.AnalyzeCond(e)
 		case *trace.ElementOnce:
 			elements.AnalyzeOnce(e)
-			if data.AnalysisFuzzingFlow {
-				scenarios.GetConcurrentOnceForFuzzing(e)
-			}
 		case *trace.ElementRoutineEnd:
 			elements.AnalyzeRoutineEnd(e)
 		case *trace.ElementNew:
 			elements.AnalyzeNew(e)
 		}
 
-		if data.AnalysisCasesMap[data.ResourceDeadlock] {
-			switch e := elem.(type) {
-			case *trace.ElementMutex:
-				scenarios.HandleMutexEventForRessourceDeadlock(*e)
-			}
-		}
-
-		// check for leak
-		if data.AnalysisCasesMap[data.Leak] && elem.GetTPost() == 0 {
+		if elem.GetTPost() == 0 {
 			checkLeak(elem)
 		}
 
@@ -194,11 +142,11 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		}
 	}
 
-	data.MainTrace.SetHBWasCalc(hb.CalcVC)
+	data.MainTrace.SetHBWasCalc(true)
 
 	log.Info("Finished HB analysis")
 
-	if fuzzdata.FuzzingModeGFuzz || data.AnalysisCasesMap[data.Leak] {
+	if fuzzdata.FuzzingModeGFuzz {
 		scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		scenarios.CheckForSelectCaseWithPartner()
 	}
@@ -207,42 +155,10 @@ func RunHBAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, r
 		return
 	}
 
-	if data.AnalysisCasesMap[data.Leak] {
-		log.Info("Check for leak")
-		scenarios.CheckForLeak()
-		scenarios.CheckForStuckRoutine(false)
-		log.Info("Finish check for leak")
-	}
-
-	if control.CheckCanceled() {
-		return
-	}
-
-	if data.AnalysisCasesMap[data.DoneBeforeAdd] {
-		log.Info("Check for done before add")
-		scenarios.CheckForDoneBeforeAdd()
-		log.Info("Finish check for done before add")
-	}
-
-	if control.CheckCanceled() {
-		return
-	}
-
-	if data.AnalysisCasesMap[data.ResourceDeadlock] {
-		log.Info("Check for cyclic deadlock")
-		scenarios.CheckForResourceDeadlock()
-		log.Info("Finish check for cyclic deadlock")
-	}
-
-	if control.CheckCanceled() {
-		return
-	}
-
-	if data.AnalysisCasesMap[data.UnlockBeforeLock] {
-		log.Info("Check for unlock before lock")
-		scenarios.CheckForUnlockBeforeLock()
-		log.Info("Finish check for unlock before lock")
-	}
+	log.Info("Check for leak")
+	scenarios.CheckForLeak()
+	scenarios.CheckForStuckRoutine(false)
+	log.Info("Finish check for leak")
 }
 
 // checkLeak checks for a given element if it leaked (has no tPost). If so,

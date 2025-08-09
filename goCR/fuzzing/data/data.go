@@ -29,7 +29,6 @@ var (
 	FuzzingModeGFuzz      = false
 	FuzzingModeGoPie      = false
 	FuzzingModeGoCRHBPlus = false
-	FuzzingModeFlow       = false
 
 	CancelTestIfBugFound = false
 

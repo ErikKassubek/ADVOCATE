@@ -12,7 +12,6 @@ import (
 	"fmt"
 	anaData "goCR/analysis/data"
 	"goCR/fuzzing/data"
-	"goCR/fuzzing/flow"
 	"goCR/fuzzing/gfuzz"
 	"goCR/fuzzing/gopie"
 	"goCR/results/results"
@@ -38,7 +37,6 @@ import (
 //   - name string: If modeMain, name of the executable, else name of the test
 //   - ignoreAtomic bool: if true, ignore atomics for replay
 //   - meaTime bool: measure runtime
-//   - notExec bool: find never executed operations
 //   - stats bool: create statistics
 //   - keepTraces bool: keep the traces after analysis
 //   - skipExisting bool: skip existing runs
@@ -48,7 +46,7 @@ import (
 //   - cancelTestIfFound int: do not run further fuzzing runs on tests if one
 //     bug has been found, mainly used for benchmarks
 func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int,
+	meaTime, createStats, keepTraces, cont bool, mTime, mRun int,
 	cancelTestIfFound bool) error {
 
 	if fm == "" {
@@ -70,7 +68,6 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
 	data.FuzzingModeGoCRHBPlus = (data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
 	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
-	data.FuzzingModeFlow = (data.FuzzingMode == data.Flow || data.FuzzingMode == data.GFuzzHBFlow)
 	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
 
 	data.CancelTestIfBugFound = cancelTestIfFound
@@ -90,7 +87,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 		}
 
 		err := runFuzzing(modeMain, goCR, progPath, progName, "", name, ignoreAtomic,
-			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
+			meaTime, createStats, keepTraces, true, cont, 0, 0)
 
 		if createStats {
 			err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
@@ -149,7 +146,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 			firstRun := (i == 0 && j == 0)
 
 			err := runFuzzing(false, goCR, progPath, progName, testFile, testFunc, ignoreAtomic,
-				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
+				meaTime, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
 				clearData()
@@ -197,7 +194,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 //   - cont bool: continue with an already started run
 func runFuzzing(modeMain bool, goCR, progPath, progName, testPath, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
+	meaTime, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
 
 	progDir := data.GetPath(progPath)
 
@@ -248,7 +245,7 @@ func runFuzzing(modeMain bool, goCR, progPath, progName, testPath, name string, 
 
 		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, goCR, progPath, testPath, true, true, true,
 			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
-			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
+			meaTime, createStats, keepTraces, false, firstRun, cont,
 			fileNumber, testNumber)
 
 		data.NumberFuzzingRuns++
@@ -273,12 +270,6 @@ func runFuzzing(modeMain bool, goCR, progPath, progName, testPath, name string, 
 			if data.FuzzingModeGFuzz {
 				log.Infof("Create GFuzz mutations")
 				gfuzz.CreateGFuzzMut()
-			}
-
-			// add new mutations based on flow path expansion
-			if data.FuzzingModeFlow {
-				log.Infof("Create Flow mutations")
-				flow.CreateMutationsFlow()
 			}
 
 			// add mutations based on GoPie
@@ -349,11 +340,9 @@ func clearDataFull() {
 	data.ClearDataFull()
 	gopie.ClearData()
 	gfuzz.ClearData()
-	flow.ClearData()
 }
 
 func clearData() {
 	gopie.ClearData()
 	gfuzz.ClearData()
-	flow.ClearData()
 }

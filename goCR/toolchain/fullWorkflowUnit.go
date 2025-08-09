@@ -12,8 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"goCR/analysis/data"
-	"goCR/results/complete"
-	"goCR/results/results"
 	"goCR/results/stats"
 	"goCR/utils/control"
 	"goCR/utils/helper"
@@ -35,12 +33,10 @@ import (
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
-//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - pathToTest string: path to the test file, should be set if exec is set
 //   - progName string: name of the analyzed program
 //   - measureTime bool: if true, measure the time for all steps. This
 //   - also runs the tests once without any recoding/replay to get a base value
-//   - notExecuted bool: if true, check for never executed operations
 //   - createStats bool: create a stats file
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
@@ -55,9 +51,9 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis, runReplay bool,
+func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis bool,
 	pathToTest, progName string,
-	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
+	createStats bool, fuzzing int, fuzzingTrace string,
 	keepTraces, firstRun, skipExisting, cont bool, fileNumber,
 	testNumber int) (string, int, int, error) {
 	// Validate required inputs
@@ -168,7 +164,7 @@ func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis, runReplay b
 
 			// Execute full workflow
 			nrReplay, anaPassed, err := unitTestFullWorkflow(pathToGoCR,
-				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
+				dir, runRecord, runAnalysis, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
@@ -219,14 +215,6 @@ func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis, runReplay b
 
 	if testName != "" && !ranTest {
 		return "", 0, 0, fmt.Errorf("could not find test function %s", testName)
-	}
-
-	// Check for untriggered selects
-	if notExecuted && testName != "" {
-		err := complete.Check(filepath.Join(dir, "goCRResult"), dir)
-		if err != nil {
-			fmt.Println("Could not run check for untriggered select and not executed progs")
-		}
 	}
 
 	// Output test summary
@@ -393,7 +381,6 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
-//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - progName string: name of the program
 //   - testName string: name of the test
 //   - pkg string: adjusted package path
@@ -407,7 +394,7 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - bool: true if analysis passed without error
 //   - error
 func unitTestFullWorkflow(pathToGoCR, dir string,
-	runRecord, runAnalysis, runReplay bool,
+	runRecord, runAnalysis bool,
 	testName, pkg, file string,
 	fuzzing int, fuzzingTrace string) (int, bool, error) {
 	output := "output.log"
@@ -484,18 +471,9 @@ func unitTestFullWorkflow(pathToGoCR, dir string,
 		if err != nil {
 			return 0, false, err
 		}
-
-		if onlyAPanicAndLeakFlag {
-			return 0, true, nil
-		}
 	}
 
-	numberReplay := 0
-	if runReplay {
-		numberReplay = unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file, testName, output, runAnalysis, origStdout, origStderr)
-	}
-
-	return numberReplay, true, nil
+	return 0, true, nil
 }
 
 // unitTestRun runs a test without recording/replay
@@ -619,86 +597,13 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 
 	outM := filepath.Join(pkgPath, "results_machine.log")
 	outR := filepath.Join(pkgPath, "results_readable.log")
-	outT := filepath.Join(pkgPath, "rewrittenTrace")
-	err := runAnalyzer(tracePath, noRewriteFlag, outR,
+	err := runAnalyzer(tracePath, outR,
 		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag,
-		outT, fuzzing, onlyAPanicAndLeakFlag)
+		fuzzing)
 
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-// unitTestReplay runs a replay for a test
-//
-// Parameter:
-//   - pathToFoRoot string: path to the root of the modified go runtime
-//   - pathToPatchedGoRuntime string: path to the patched runtime executable
-//   - dir: path to the root of the analyzed project
-//   - pkg string: path to the package containing the test, global path should be dir/pkg
-//   - file string: path to the file containing the test function
-//   - testName string: name of the test function to run
-//   - output string: path to the output file
-//   - runAnalysis bool: whether the rewritten traces from the analysis or the
-//     given trace path should be used
-//   - osOut *os.File: file/output to write to not being what os.Stdout points to
-//   - osErr *os.File: file/output to write to not being what os.Stdout points to
-//
-// Returns:
-//   - int: number of executed replays
-func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
-	testName, output string, fromAnalysis bool, osOut, osErr *os.File) int {
-	timer.Start(timer.Replay)
-	defer timer.Stop(timer.Replay)
-
-	log.Info("Start Replay")
-
-	pathPkg := filepath.Join(dir, pkg)
-
-	rewrittenTraces := make([]string, 0)
-
-	if fromAnalysis {
-		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
-	} else {
-		rewrittenTraces = append(rewrittenTraces, tracePathFlag)
-	}
-
-	log.Infof("Found %d rewritten traces", len(rewrittenTraces))
-
-	for i, trace := range rewrittenTraces {
-		traceNum, bugString := extractTraceNumber(trace)
-		// record := getRerecord(trace)
-		record := false
-
-		// we do not need to replay a bug that has already been replayed by
-		// another replay
-		if !replayAllFlag && results.WasAlreadyConfirmed(bugString) {
-			// TODO: check if the report are still working with this
-			continue
-		}
-
-		headerInserterUnit(file, testName, true, -1, traceNum, timeoutReplay, record)
-
-		os.Setenv("GOROOT", pathToGoRoot)
-
-		log.Infof("Run replay %d/%d", i+1, len(rewrittenTraces))
-		pkgPath := helper.MakePathLocal(pkg)
-		runCommand(osOut, osErr, pathToPatchedGoRuntime, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-		log.Infof("Finished replay %d/%d", i+1, len(rewrittenTraces))
-
-		if wasReplaySuc(output) {
-			results.AddBug(bugString, true)
-		} else {
-			results.AddBug(bugString, false)
-		}
-
-		os.Unsetenv("GOROOT")
-
-		// Remove reorder header
-		headerRemoverUnit(file)
-	}
-
-	return len(rewrittenTraces)
 }

@@ -10,10 +10,8 @@
 package elements
 
 import (
-	"goCR/analysis/analysis/scenarios"
 	"goCR/analysis/data"
 	"goCR/analysis/hb/hbcalc"
-	fuzzdata "goCR/fuzzing/data"
 	"goCR/trace"
 	"goCR/utils/log"
 )
@@ -27,10 +25,6 @@ func AnalyzeWait(wa *trace.ElementWait) {
 	switch wa.GetOpW() {
 	case trace.ChangeOp:
 		data.LastChangeWG[wa.GetID()] = wa
-
-		if data.AnalysisCasesMap[data.DoneBeforeAdd] || fuzzdata.FuzzingModeGoCRHBPlus {
-			scenarios.CheckForDoneBeforeAddChange(wa)
-		}
 	case trace.WaitOp:
 	default:
 		err := "Unknown operation on wait group: " + wa.ToString()

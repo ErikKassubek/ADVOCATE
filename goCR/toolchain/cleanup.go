@@ -99,7 +99,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 }
 
-// Remove all traces, both recorded and rewritten from the path
+// RemoveTraces removes all traces, both recorded and rewritten from the path
 //
 // Parameter:
 //   - path string: path to the folder containing the traces
@@ -108,7 +108,7 @@ func RemoveTraces(path string) {
 		"goCRTrace_*",
 		"rewrittenTrace*",
 		"fuzzingData.log",
-		// "fuzzingTrace_*",
+		"fuzzingTrace_*",
 	}
 
 	files := make([]string, 0)

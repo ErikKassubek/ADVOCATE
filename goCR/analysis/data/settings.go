@@ -31,7 +31,6 @@ var (
 	ModeIsFuzzing bool
 
 	// analysis cases to run
-	AnalysisCasesMap    = make(map[AnalysisCases]bool)
 	AnalysisFuzzingFlow = false
 
 	// exit code info

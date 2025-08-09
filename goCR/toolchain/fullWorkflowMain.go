@@ -10,14 +10,12 @@ package toolchain
 
 import (
 	"fmt"
-	"goCR/results/complete"
 	"goCR/results/stats"
 	"goCR/utils/helper"
 	"goCR/utils/log"
 	"goCR/utils/timer"
 	"os"
 	"path/filepath"
-	"regexp"
 	"runtime"
 )
 
@@ -29,7 +27,6 @@ import (
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
-//   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //     otherwise the trace at tracePath is replayed
 //   - executableName string: name of the executable
 //   - keepTraces bool: do not delete the traces after analysis
@@ -44,7 +41,7 @@ import (
 //   - int: number results
 //   - error
 func runWorkflowMain(pathToGoCR string, pathToFile string,
-	runRecord, runAnalysis, runReplay bool,
+	runRecord, runAnalysis bool,
 	executableName string, keepTraces bool, fuzzing int, fuzzingTrace string,
 	firstRun bool) (string, int, int, error) {
 	if _, err := os.Stat(pathToFile); os.IsNotExist(err) {
@@ -161,58 +158,13 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 	if runAnalysis {
 		analyzerOutput := filepath.Join(dir, "goCRTrace")
 
-		err = runAnalyzer(analyzerOutput, noRewriteFlag,
+		err = runAnalyzer(analyzerOutput,
 			"results_readable.log", "results_machine.log",
-			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag,
-			"rewrittenTrace", fuzzing, onlyAPanicAndLeakFlag)
+			ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag, fuzzing)
 
 		if err != nil {
 			return "", 0, 0, err
 		}
-	}
-
-	rewrittenTraces := make([]string, 0)
-	if runReplay {
-		log.Info("Run replay")
-		// Find rewrittenTrace directories
-		if runAnalysis {
-			rewrittenTraces, err = filepath.Glob(filepath.Join(dir, "rewrittenTrace*"))
-			if err != nil {
-				return "", 0, 0, fmt.Errorf("Error finding rewritten traces: %v", err)
-			}
-		} else {
-			if tracePathFlag != "" {
-				rewrittenTraces = append(rewrittenTraces, tracePathFlag)
-			}
-		}
-
-		timer.Start(timer.Replay)
-		for _, trace := range rewrittenTraces {
-			traceNum := extractTraceNum(trace)
-			fmt.Printf("Apply replay header for file f %s and trace %s\n", pathToFile, traceNum)
-			if err := headerInserterMain(pathToFile, true, traceNum, timeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
-				return "", 0, 0, err
-			}
-
-			// build the program
-			log.Info("Build program for replay")
-			if err := runCommand(origStdout, origStderr, pathToPatchedGoRuntime, "build", "-gcflags=all=-N -l"); err != nil {
-				log.Error("Error in building program, removing header and stopping workflow")
-				headerRemoverMain(pathToFile)
-				continue
-			}
-
-			// run the program
-			log.Info("Run program for replay")
-			execPath := helper.MakePathLocal(executableName)
-			runCommand(origStdout, origStderr, execPath)
-
-			fmt.Printf("Remove replay header from %s\n", pathToFile)
-			if err := headerRemoverMain(pathToFile); err != nil {
-				return "", 0, 0, err
-			}
-		}
-		timer.Stop(timer.Replay)
 	}
 
 	if !keepTraces && !createStats {
@@ -228,11 +180,7 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 		fmt.Println("Generate Bug Reports")
 		numberResults = generateBugReports(resultPath, fuzzing)
 
-		timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
-	}
-
-	if notExecuted {
-		complete.Check(filepath.Join(dir, "goCRResult"), dir)
+		timer.UpdateTimeFileDetail(programName, "Main", 0)
 	}
 
 	if createStats {
@@ -246,16 +194,4 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 	}
 
 	return dir, movedTraces, numberResults, nil
-}
-
-// Given a path to a trace file, return the trace number
-//
-// Parameter:
-//   - tracePath: path to the file
-//
-// Returns:
-//   - string: trace number
-func extractTraceNum(tracePath string) string {
-	re := regexp.MustCompile(`[0-9]+$`)
-	return re.FindString(tracePath)
 }

@@ -83,10 +83,6 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				Unbuffered(ch, partner)
 				// advance index of receive routine, send routine is already advanced
 				data.MainTraceIter.IncreaseIndex(partnerRout)
-			} else {
-				if cl { // recv on closed channel
-					SendC(ch)
-				}
 			}
 
 		case trace.RecvOp: // should not occur, but better save than sorry
@@ -135,34 +131,12 @@ func UpdateSelect(se *trace.ElementSelect) {
 		}
 	}
 
-	if data.AnalysisCasesMap[data.SendOnClosed] {
-		chosenIndex := se.GetChosenIndex()
-		for i, c := range cases {
-			if i == chosenIndex {
-				continue
-			}
-
-			opC := c.GetOpC()
-
-			if _, ok := data.CloseData[c.GetID()]; ok {
-				switch opC {
-				case trace.SendOp:
-					scenarios.FoundSendOnClosedChannel(&c, false)
-				case trace.RecvOp:
-					scenarios.FoundReceiveOnClosedChannel(&c, false)
-				}
-			}
-		}
-	}
-
-	if data.AnalysisCasesMap[data.Leak] {
-		for _, c := range cases {
-			scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
-				data.ElemWithVc{
-					Vc:   se.GetVC().Copy(),
-					Elem: se},
-				int(c.GetOpC()), c.IsBuffered())
-		}
+	for _, c := range cases {
+		scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
+			data.ElemWithVc{
+				Vc:   se.GetVC().Copy(),
+				Elem: se},
+			int(c.GetOpC()), c.IsBuffered())
 	}
 }
 
@@ -176,24 +150,6 @@ func UpdateSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if data.AnalysisCasesMap[data.ConcurrentRecv] || data.AnalysisFuzzingFlow { // or fuzzing
-		switch r := recv.(type) {
-		case *trace.ElementChannel:
-			scenarios.CheckForConcurrentRecv(r, vc.CurrentVC)
-		case *trace.ElementSelect:
-			scenarios.CheckForConcurrentRecv(r.GetChosenCase(), vc.CurrentVC)
-		}
-	}
-
-	if data.AnalysisFuzzingFlow {
-		switch s := sender.(type) {
-		case *trace.ElementChannel:
-			scenarios.GetConcurrentSendForFuzzing(s)
-		case *trace.ElementSelect:
-			scenarios.GetConcurrentSendForFuzzing(s.GetChosenCase())
-		}
-	}
-
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
 		if data.MostRecentReceive[recv.GetRoutine()] == nil {
 			data.MostRecentReceive[recv.GetRoutine()] = make(map[int]data.ElemWithVcVal)
@@ -217,25 +173,11 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	if data.AnalysisCasesMap[data.SendOnClosed] {
-		if _, ok := data.CloseData[sender.GetID()]; ok {
-			scenarios.FoundSendOnClosedChannel(sender, true)
-		}
-	}
+	scenarios.CheckForSelectCaseWithPartnerChannel(sender, vc.CurrentVC[sender.GetRoutine()], true, false)
+	scenarios.CheckForSelectCaseWithPartnerChannel(recv, vc.CurrentVC[recv.GetRoutine()], false, false)
 
-	if data.AnalysisCasesMap[data.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())
-	}
-
-	if data.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerChannel(sender, vc.CurrentVC[sender.GetRoutine()], true, false)
-		scenarios.CheckForSelectCaseWithPartnerChannel(recv, vc.CurrentVC[recv.GetRoutine()], false, false)
-	}
-
-	if data.AnalysisCasesMap[data.Leak] {
-		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, 0, false)
-		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, 1, false)
-	}
+	scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, 0, false)
+	scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, 1, false)
 }
 
 // Send updates and calculates the vector clocks given a send on a buffered channel.
@@ -265,22 +207,12 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 		Val:  id,
 	}
 
-	if data.AnalysisCasesMap[data.SendOnClosed] {
-		if _, ok := data.CloseData[id]; ok {
-			scenarios.FoundSendOnClosedChannel(ch, true)
-		}
-	}
+	scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 
-	if data.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
-	}
-
-	if data.AnalysisCasesMap[data.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, 0, true)
-	}
+	scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+		Vc:   vc[routine].Copy(),
+		Elem: ch,
+	}, 0, true)
 
 	for i, hold := range data.HoldRecv {
 		if hold.Ch.GetID() == id {
@@ -302,10 +234,6 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if data.AnalysisCasesMap[data.ConcurrentRecv] || data.AnalysisFuzzingFlow {
-		scenarios.CheckForConcurrentRecv(ch, vc)
-	}
-
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -326,16 +254,10 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if data.AnalysisCasesMap[data.MixedDeadlock] {
-		routSend := ch.GetPartner().GetRoutine()
-		scenarios.CheckForMixedDeadlock(routSend, routine)
-	}
-	if data.AnalysisCasesMap[data.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, 1, true)
-	}
+	scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+		Vc:   vc[routine].Copy(),
+		Elem: ch,
+	}, 1, true)
 
 	for i, hold := range data.HoldSend {
 		if hold.Ch.GetID() == id {
@@ -360,33 +282,16 @@ func Close(ch *trace.ElementChannel) {
 
 	ch.SetClosed(true)
 
-	if data.AnalysisCasesMap[data.CloseOnClosed] {
-		scenarios.CheckForClosedOnClosed(ch) // must be called before closePos is updated
-	}
-
 	data.CloseData[id] = ch
-
-	if data.AnalysisCasesMap[data.SendOnClosed] || data.AnalysisCasesMap[data.ReceiveOnClosed] {
-		scenarios.CheckForCommunicationOnClosedChannel(ch)
-	}
 
 	if data.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerClose(ch, vc.CurrentVC[routine])
 	}
 
-	if data.AnalysisCasesMap[data.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   vc.CurrentVC[routine].Copy(),
-			Elem: ch,
-		}, 2, true)
-	}
-}
-
-// SendC record an actual send on closed
-func SendC(ch *trace.ElementChannel) {
-	if data.AnalysisCasesMap[data.SendOnClosed] {
-		scenarios.FoundSendOnClosedChannel(ch, true)
-	}
+	scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+		Vc:   vc.CurrentVC[routine].Copy(),
+		Elem: ch,
+	}, 2, true)
 }
 
 // RecvC updates and calculates the vector clocks given a receive on a closed channel.
@@ -404,24 +309,14 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if data.AnalysisCasesMap[data.ReceiveOnClosed] {
-		scenarios.FoundReceiveOnClosedChannel(ch, true)
-	}
-
 	if data.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
 	}
 
-	if data.AnalysisCasesMap[data.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(data.CloseData[id].GetRoutine(), routine)
-	}
-
-	if data.AnalysisCasesMap[data.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, 1, buffered)
-	}
+	scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+		Vc:   vc[routine].Copy(),
+		Elem: ch,
+	}, 1, buffered)
 }
 
 // setChannelAsLastSend sets the channel as the last send operation.

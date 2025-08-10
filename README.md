@@ -37,8 +37,8 @@ e.g.
 
 ```shell
 docker run --rm -it \
-  -v /home/erik/progToTest:/prog \
-  gocr -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+  -v /home/erik/testFolder:/prog \
+  gocr -path /prog -exec TestLoadConcurrent -mode GoCR
 ```
 
 For the args, see [usage](#usage-1).
@@ -101,12 +101,22 @@ docker run --rm -it \
 
 The following args are required:
 
-- mode [mode]
+- \-mode [mode]
   - `GoCR`: Run our analysis version
   - `GoPie`: Run an analysis version based on GoPie [^1]
   - `GFuzz`: Run an analysis version based on GFuzz [^2]
-- path [path]
+- \-path [path]
   - path to the program to be analyzed
+
+To run a single test, add
+
+```shell
+-exec [testName]
+```
+
+Otherwise all tests will be executed.
+
+
 
 For additional flags, call
 

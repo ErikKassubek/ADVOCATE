@@ -92,7 +92,7 @@ func CheckGoMod(progPath string, modeMain bool, execName string) string {
 			}
 
 			if versionSplit[0] != "1" || versionSplit[1] != "24" {
-				errString := "ADVOCATE is implemented for go version 1.24. "
+				errString := "GoCR is implemented for go version 1.24. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
 				errString += "The message 'package goCR is not in std' in the output.log file may indicate this."

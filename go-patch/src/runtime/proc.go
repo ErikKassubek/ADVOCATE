@@ -4346,7 +4346,7 @@ func goexit1() {
 	}
 
 	// GOCP-START
-	AdvocatRoutineExit()
+	GoCRRoutineExit()
 	// GOCP-END
 
 	trace := traceAcquire()

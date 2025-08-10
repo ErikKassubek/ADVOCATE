@@ -77,7 +77,7 @@ func FinishTracing() {
 		}
 	}
 
-	runtime.AdvocatRoutineExit()
+	runtime.GoCRRoutineExit()
 
 	runtime.DisableTracing()
 

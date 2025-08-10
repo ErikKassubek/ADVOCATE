@@ -22,18 +22,16 @@ var (
 	fuzzingModes = newFlagVal("mode", "", "", "Mode for fuzzing. Possible values are:", "\tGoCR", "\tGFuzz", "\tGoPie")
 
 	// paths
-	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
-	prog  = newFlagVal("prog", "", "", "Name of the program")
-	exec  = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
-	trace = newFlagVal("trace", "", "", "Path to the trace folder to replay")
+	path = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+	prog = newFlagVal("prog", "", "", "Name of the program")
+	exec = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
 
 	// scenarios
 	noWarning = newFlagVal("noWarning", "false", "", "Only show critical bugs")
 
 	// timeout
-	timeoutRec    = newFlagVal("timeoutRec", "600", "", "Set the timeout in seconds for the recording. To disable set to -1")
-	timeoutRep    = newFlagVal("timeoutRep", "900", "", "Set a timeout in seconds for the replay. To disable set to -1")
-	timeoutFuz    = newFlagVal("timeoutFuz", "420", "", "Timeout of fuzzing per test/program in seconds. To Disable, set to -1")
+	timeoutExec   = newFlagVal("timeoutExec", "180", "", "Set a timeout in seconds for the execution of one run of a test. To disable set to -1")
+	timeoutTest   = newFlagVal("timeoutProg", "420", "", "Set a timeout in seconds per test/program in seconds. To Disable, set to -1")
 	maxFuzzingRun = newFlagVal("maxFuzzingRuns", "-1", "", "Maximum number of fuzzing runs per test/prog. To Disable, set to -1")
 
 	// statistics
@@ -118,7 +116,7 @@ func printFlagHeader() {
 
 // PrintHelp prints the main help header
 func PrintHelp() {
-	fmt.Println("Welcome to ADVOCATE")
+	fmt.Println("Welcome to GoCR")
 	fmt.Println("")
 	fmt.Println("GoCRGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
 	fmt.Println("")
@@ -156,9 +154,8 @@ func printHelpFuzzing() {
 	fmt.Println(noWarning.toString(false))
 
 	// timeout
-	fmt.Println(timeoutRec.toString(false))
-	fmt.Println(timeoutRep.toString(false))
-	fmt.Println(timeoutFuz.toString(false))
+	fmt.Println(timeoutExec.toString(false))
+	fmt.Println(timeoutTest.toString(false))
 	fmt.Println(maxFuzzingRun.toString(false))
 
 	// statistics

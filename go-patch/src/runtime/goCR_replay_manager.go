@@ -73,15 +73,17 @@ func ReplayManager() {
 
 		// release element if in waiting ops
 		lock(&waitingOpsMutex)
-		if waitOp, ok := waitingOps[key]; ok {
-			unlock(&waitingOpsMutex)
+		waitOp, ok := waitingOps[key]
+		unlock(&waitingOpsMutex)
 
+		if ok {
 			releaseElement(waitOp, replayElem, true, true)
 			releaseActive(key)
 
 			lock(&waitingOpsMutex)
 			delete(waitingOps, key)
 			unlock(&waitingOpsMutex)
+		} else {
 		}
 
 		// release partial waiting if timeout has finished

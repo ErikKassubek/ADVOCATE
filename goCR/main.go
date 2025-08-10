@@ -35,10 +35,9 @@ var (
 	progName string
 	execName string
 
-	timeoutRecording int
-	timeoutReplay    int
-	timeoutFuzzing   int
-	recordTime       bool
+	timeoutExec    int
+	timeoutFuzzing int
+	recordTime     bool
 
 	maxFuzzingRun int
 
@@ -87,12 +86,9 @@ func main() {
 	flag.StringVar(&progName, "prog", "", "Name of the program")
 	flag.StringVar(&execName, "exec", "", "Name of the executable or test")
 
-	flag.StringVar(&tracePath, "trace", "", "Path to the trace folder to replay")
+	flag.IntVar(&timeoutExec, "timeoutExec", 180, "Set a timeout in seconds for the execution of one run of a test. Default: 3min. To disable set to -1")
+	flag.IntVar(&timeoutFuzzing, "timeoutProg", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
 
-	flag.IntVar(&timeoutRecording, "timeoutRec", 600, "Set the timeout in seconds for the recording. Default: 600s. To disable set to -1")
-	flag.IntVar(&timeoutReplay, "timeoutRep", 900, "Set a timeout in seconds for the replay. Default: 600s. To disable set to -1")
-
-	flag.IntVar(&timeoutFuzzing, "timeoutFuz", 420, "Timeout of fuzzing per test/program in seconds. Default: 7min. To Disable, set to -1")
 	flag.IntVar(&maxFuzzingRun, "maxFuzzingRuns", -1, "Maximum number of fuzzing runs per test/prog. Default: -1. To Disable, set to -1")
 
 	flag.BoolVar(&recordTime, "time", false, "measure the runtime")
@@ -118,8 +114,8 @@ func main() {
 
 	flag.IntVar(&maxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
-	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
+	flag.StringVar(&fuzzingMode, "mode", "",
+		"Mode for fuzzing. Possible values are:\n\tGoCR\n\tGFuzz\n\tGoPie")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed
 	flag.BoolVar(&modeMain, "main", false, "set to run on main function")
@@ -172,7 +168,7 @@ func main() {
 	}
 
 	toolchain.SetFlags(ignoreAtomics,
-		timeoutRecording, timeoutReplay, noWarning, tracePath, output)
+		timeoutExec, timeoutExec, noWarning, tracePath, output)
 
 	execName = helper.CheckGoMod(progPath, modeMain, execName)
 

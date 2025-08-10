@@ -61,7 +61,7 @@ func GoCRSpawnCaller(callerRoutine *GoCRRoutine, newID uint64, file string,
 }
 
 // Record the finish of a routine
-func AdvocatRoutineExit() {
+func GoCRRoutineExit() {
 	if goCRTracingDisabled {
 		return
 	}

@@ -15,9 +15,9 @@ RUN bash make.bash
 # Stage 2: Build the Go app using the standard Go runtime
 FROM golang:1.24 AS app-builder
 
-WORKDIR /GoCR/advocate
-COPY goCr /GoCR/goCr
-COPY go-patch /GoCr/go-patch
+WORKDIR /GoCR/goCR/
+COPY goCR /GoCR/goCR
+COPY go-patch /GoCR/go-patch
 
 RUN go build -o app .
 

@@ -1,6 +1,6 @@
 //
 // File: headerUnitTests.go
-// Brief: Functions to add and remove the ADVOCATE header into file containing
+// Brief: Functions to add and remove the GoCR header into file containing
 //    unit tests
 //
 // Created: 2024-10-29

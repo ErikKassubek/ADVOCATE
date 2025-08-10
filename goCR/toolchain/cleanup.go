@@ -103,12 +103,16 @@ func collect(progPath, packagePath, destination string, total bool) {
 //
 // Parameter:
 //   - path string: path to the folder containing the traces
-func RemoveTraces(path string) {
+//   - total bool: if true, remove all traces, otherwise only remove traces that are only needed for one fuzzing run
+func RemoveTraces(path string, total bool) {
 	pattersToMove := []string{
 		"goCRTrace_*",
 		"rewrittenTrace*",
 		"fuzzingData.log",
-		"fuzzingTrace_*",
+	}
+
+	if total {
+		pattersToMove = append(pattersToMove, "fuzzingTrace_*")
 	}
 
 	files := make([]string, 0)

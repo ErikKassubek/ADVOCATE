@@ -1,6 +1,6 @@
 //
 // File: headerUnitTests.go
-// Brief: Functions to add and remove the ADVOCATE header into file containing
+// Brief: Functions to add and remove the GoCR header into file containing
 //    unit tests
 //
 // Created: 2024-09-18
@@ -23,7 +23,7 @@ var (
 //
 // Parameter:
 //   - mode string: mode of the toolchain (main or test or explain)
-//   - goCR string: path to the root ADVOCATE folder.
+//   - goCR string: path to the root goCR folder.
 //   - pathToMainFileOrTestDir string: if mode is main, path to main file, if mode test, path to test folder
 //   - pathToTest string: specify specific test path, only used for fuzzing
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is

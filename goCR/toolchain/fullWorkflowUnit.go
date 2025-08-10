@@ -1,5 +1,5 @@
 // File: runFullWorkflowMain.go
-// Brief: Function to run the whole ADVOCATE workflow, including running,
+// Brief: Function to run the whole GoCR workflow, including running,
 //    analysis and replay on all unit tests of a program
 //
 // Created: 2024-09-18
@@ -25,7 +25,7 @@ import (
 	"strings"
 )
 
-// Run ADVOCATE for all given unit tests
+// Run GoCR for all given unit tests
 //
 // Parameter:
 //   - pathToGoCR string: pathToGoCR
@@ -192,7 +192,7 @@ func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis bool,
 			}
 
 			if !keepTraces && !createStats {
-				RemoveTraces(dir)
+				RemoveTraces(dir, false)
 			}
 
 			if total {

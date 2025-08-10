@@ -1,5 +1,5 @@
 // File: headerMain.go
-// Brief: Functions to add and remove the ADVOCATE header into/from files containing
+// Brief: Functions to add and remove the GoCR header into/from files containing
 //    a main function
 //
 // Created: 2024-09-18
@@ -82,9 +82,9 @@ func headerRemoverMain(fileName string) error {
 		} else if inImportBlock && strings.Contains(line, ")") {
 			inImportBlock = false
 			lines = append(lines, line)
-		} else if inImportBlock && strings.Contains(line, "\"goCR\"") {
+		} else if inImportBlock && strings.Contains(line, "\"gocr\"") {
 			continue
-		} else if strings.Contains(line, "import \"goCR\"") {
+		} else if strings.Contains(line, "import \"gocr\"") {
 			continue
 		} else {
 			lines = append(lines, line)
@@ -182,15 +182,15 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 		lines = append(lines, line)
 
 		if strings.Contains(line, "package main") {
-			lines = append(lines, "import \"goCR\"")
+			lines = append(lines, "import \"gocr\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import \"goCR\"")
+			lines = append(lines, "import \"gocr\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t\"goCR\"")
+			lines = append(lines, "\t\"gocr\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
@@ -207,24 +207,24 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				}
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  goCR.InitReplayTracing("%s", false, %d, %s)
-  defer goCR.FinishReplayTracing()
+  gocr.InitReplayTracing("%s", false, %d, %s)
+  defer gocr.FinishReplayTracing()
   // ======= Preamble End =======`, replayPath, replayTimeout, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  goCR.InitReplay("%s", %d, %s)
-  defer goCR.FinishReplay()
+  gocr.InitReplay("%s", %d, %s)
+  defer gocr.FinishReplay()
   // ======= Preamble End =======`, replayPath, replayTimeout, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  goCR.InitFuzzing("%s", %d)
-  defer goCR.FinishFuzzing()
+  gocr.InitFuzzing("%s", %d)
+  defer gocr.FinishFuzzing()
   // ======= Preamble End =======`, fuzzingTrace, timeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  goCR.InitTracing(%d)
-  defer goCR.FinishTracing()
+  gocr.InitTracing(%d)
+  defer gocr.FinishTracing()
   // ======= Preamble End =======`, timeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)

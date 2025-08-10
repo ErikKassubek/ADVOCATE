@@ -170,7 +170,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 	}
 
 	if !keepTraces {
-		toolchain.RemoveTraces(progPath)
+		toolchain.RemoveTraces(progPath, true)
 	}
 
 	return nil

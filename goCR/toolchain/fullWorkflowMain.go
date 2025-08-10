@@ -1,5 +1,5 @@
 // File: runFullWorkflowMain.go
-// Brief: Function to run the whole ADVOCATE workflow, including running,
+// Brief: Function to run the whole GoCR workflow, including running,
 //    analysis and replay on a program with a main function
 //
 // Created: 2024-09-18
@@ -19,10 +19,10 @@ import (
 	"runtime"
 )
 
-// Run ADVOCATE on a program with a main function
+// Run GoCR on a program with a main function
 //
 // Parameter:
-//   - pathToGoCR string: path to the ADVOCATE folder
+//   - pathToGoCR string: path to the GoCR folder
 //   - pathToFile string: path to the file containing the main function
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
@@ -72,7 +72,9 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 		}
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
-		RemoveTraces(dir)
+		if !keepTraces && !createStats {
+			RemoveTraces(dir, false)
+		}
 		removeLogs(dir)
 	}
 
@@ -168,7 +170,7 @@ func runWorkflowMain(pathToGoCR string, pathToFile string,
 	}
 
 	if !keepTraces && !createStats {
-		RemoveTraces(dir)
+		RemoveTraces(dir, false)
 	}
 
 	total := fuzzing != -1

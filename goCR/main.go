@@ -12,7 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"goCR/fuzzing"
-	"goCR/fuzzing/gopie"
+	gopie "goCR/fuzzing/gocrpie"
 	"goCR/toolchain"
 	"goCR/utils/control"
 	"goCR/utils/helper"

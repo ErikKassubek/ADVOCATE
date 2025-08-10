@@ -1,12 +1,12 @@
 //
 // File: goPie.go
-// Brief: Main file for goPie fuzzing
+// Brief: Main file for goPie and GoCR
 //
 // Created: 2025-03-22
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	"fmt"
@@ -206,6 +206,8 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 	} else {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
 	}
+
+	traceCopy.Clear()
 
 	muta := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
 

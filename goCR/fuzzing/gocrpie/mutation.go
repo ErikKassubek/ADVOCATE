@@ -1,12 +1,12 @@
 //
 // File: goPie-mutation.go
-// Brief: Mutations for gopie
+// Brief: Mutations for gopie and GoCR
 //
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	anadata "goCR/analysis/data"

@@ -9,7 +9,7 @@ package stats
 
 import (
 	"goCR/analysis/data"
-	"goCR/fuzzing/gopie"
+	gopie "goCR/fuzzing/gocrpie"
 )
 
 var fuzzStats = []string{

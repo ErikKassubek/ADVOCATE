@@ -1,12 +1,12 @@
 //
 // File: io.go
-// Brief: Write goPie active to file
+// Brief: Write goPie and GoCR active to file
 //
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	"fmt"

@@ -1,12 +1,12 @@
 //
 // File: goPie-relations.go
-// Brief: Calculate the relation for goPie
+// Brief: Calculate the relation for goPie and GoCR
 //
 // Created: 2025-03-24
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	"goCR/fuzzing/data"

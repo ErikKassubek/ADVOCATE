@@ -13,7 +13,7 @@ import (
 	anaData "goCR/analysis/data"
 	"goCR/fuzzing/data"
 	"goCR/fuzzing/gfuzz"
-	"goCR/fuzzing/gopie"
+	"goCR/fuzzing/gocrpie"
 	"goCR/results/results"
 	"goCR/results/stats"
 	"goCR/toolchain"
@@ -275,7 +275,7 @@ func runFuzzing(modeMain bool, goCR, progPath, progName, testPath, name string, 
 			// add mutations based on GoPie
 			if data.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				gopie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
+				gocrpie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
 			}
 
 			if createStats {
@@ -338,11 +338,11 @@ func resetFuzzing() {
 
 func clearDataFull() {
 	data.ClearDataFull()
-	gopie.ClearData()
+	gocrpie.ClearData()
 	gfuzz.ClearData()
 }
 
 func clearData() {
-	gopie.ClearData()
+	gocrpie.ClearData()
 	gfuzz.ClearData()
 }

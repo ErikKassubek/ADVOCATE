@@ -319,7 +319,7 @@ func DeleteTrace() {
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
 func GoCRIgnore(file string) bool {
-	return (containsStr(file, "go-patch/src/") || containsStr(file, "go/pkg/mod")) && !containsStr(file, "go-patch/src/time/tick.go")
+	return (containsStr(file, "goPatch/src/") || containsStr(file, "go/pkg/mod")) && !containsStr(file, "goPatch/src/time/tick.go")
 }
 
 // GOCP-FILE-END

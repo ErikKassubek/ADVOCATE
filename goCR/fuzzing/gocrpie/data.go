@@ -1,12 +1,12 @@
 //
 // File: data.go
-// Brief: Data for GoPie
+// Brief: Data for GoPie and GoCR
 //
 // Created: 2025-07-03
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	"goCR/trace"

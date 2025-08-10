@@ -150,7 +150,7 @@ func writeToTraceFileInfo(tracePath string, numberRoutines int) {
 	defer file.Close()
 
 	reachedActive := 0
-	if runtime.NumberActiveReleased > 0 {
+	if runtime.NumberActiveReleased > 0 || runtime.NumberActive == 0 {
 		reachedActive = 1
 	}
 	allActiveReleased := 0

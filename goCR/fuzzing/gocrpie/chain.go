@@ -1,12 +1,11 @@
-//
 // File: goPie-sc.go
-// Brief: scheduling Chains for GoPie
+// Brief: scheduling Chains for GoPie and GoCR
 //
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause
 
-package gopie
+package gocrpie
 
 import (
 	"fmt"

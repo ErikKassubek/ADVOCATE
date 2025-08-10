@@ -434,8 +434,8 @@ func unitTestFullWorkflow(pathToGoCR, dir string,
 		return 0, false, errors.New("Test file is empty")
 	}
 
-	pathToPatchedGoRuntime := filepath.Join(pathToGoCR, "go-patch/bin/go")
-	pathToGoRoot := filepath.Join(pathToGoCR, "go-patch")
+	pathToPatchedGoRuntime := filepath.Join(pathToGoCR, "goPatch/bin/go")
+	pathToGoRoot := filepath.Join(pathToGoCR, "goPatch")
 
 	if runtime.GOOS == "windows" {
 		pathToPatchedGoRuntime += ".exe"

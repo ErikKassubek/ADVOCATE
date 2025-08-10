@@ -12,7 +12,7 @@ import (
 	anadata "goCR/analysis/data"
 	"goCR/fuzzing/data"
 	"goCR/fuzzing/gfuzz"
-	"goCR/fuzzing/gopie"
+	gopie "goCR/fuzzing/gocrpie"
 	"goCR/trace"
 	"goCR/utils/control"
 	"goCR/utils/log"

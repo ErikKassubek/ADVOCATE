@@ -81,12 +81,14 @@ func ReplayManager() {
 
 			lock(&waitingOpsMutex)
 			delete(waitingOps, key)
+			unlock(&waitingOpsMutex)
 		}
 
 		// release partial waiting if timeout has finished
 		if PartialReplay {
 			opsToRelease := make([]replayChan, 0)
 			keysToRelease := make([]string, 0)
+			lock(&waitingOpsMutex)
 			for key, ops := range waitingOps {
 				if hasTimePast(ops.startTime, timeoutPartialSec) {
 					opsToRelease = append(opsToRelease, ops)
@@ -102,8 +104,6 @@ func ReplayManager() {
 				delete(waitingOps, keysToRelease[i])
 				unlock(&waitingOpsMutex)
 			}
-		} else {
-			unlock(&waitingOpsMutex)
 		}
 
 		if !replayEnabled {

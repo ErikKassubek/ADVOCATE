@@ -1,7 +1,20 @@
-ProjectName,TestsNumber,EventsMaxNumberAmongTests, EventsMinNumberAmongTests, EventsAverageNumberAmongTests,BlockingBugNumberChannel,BlockingBugNumberMutex,BlockingBugNumberWaitgroup,BlockingBugNumberConditional,LingeringBugNumber
-argo-cd,268,0,668,30,5,4,2,0,39
-bleve,185,0,319758,2131,5,6,1,0,35
-bosun,51,0,153,15,0,0,1,0,2
-caddy,72,0,1096,60,3,4,0,0,27
-frp,14,0,14,2,0,0,0,0,0
-gin,36,0,16,4,0,0,0,0,2
+ProjectName,TestsNumber,EventsMaxNumberAmongTests,EventsAverageNumberAmongTests,BlockingBugNumberChannel,BlockingBugNumberMutex,BlockingBugNumberWaitgroup,BlockingBugNumberConditional,LingeringBugNumber
+argo-cd,268,668,30,5,4,2,0,39
+bleve,187,319758,3070,5,6,1,0,37
+bosun,51,153,15,0,0,1,0,2
+caddy,72,1096,60,3,4,0,0,27
+frp,14,14,2,0,0,0,0,0
+gin,36,16,4,0,0,0,0,2
+grpc,12,357638,26181,2,0,0,0,7
+hugo,32,2645,514,1,0,0,0,0
+nsq,13,1465,96,7,0,3,0,14
+ollama,82,77,5,2,0,0,0,2
+pholcus,24,50,9,0,0,0,0,0
+zinx,14,1086232,21452,0,2,0,0,18
+docker,1234,22,5,0,0,0,0,0
+flannel,16,32,5,0,0,0,0,0
+go-ethereum,32,873839,6611,5,0,0,0,9
+gofiber,39,983,97,5,0,0,0,7
+gorums,16,28100,1261,4,0,0,0,5
+kubernetes,1389,1024,39,8,0,0,2,4
+vmware-tanzu,146,72,11,0,0,0,0,0

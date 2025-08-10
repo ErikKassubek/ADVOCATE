@@ -131,7 +131,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	for i, testFile := range testFiles {
 		fileCounter++
 		log.Progressf("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
-		log.Progressf("Processing file: %s\n", testFile)
+		log.Infof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
 		if err != nil || len(testFunctions) == 0 {
@@ -146,7 +146,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			timer.Start(timer.TotalTest)
 
-			log.Progressf("Run fuzzing for %s->%s", testFile, testFunc)
+			log.Infof("Run fuzzing for %s->%s", testFile, testFunc)
 
 			firstRun := (i == 0 && j == 0)
 

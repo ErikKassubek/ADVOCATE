@@ -418,8 +418,19 @@ func CheckForLeak() {
 					arg1 := results.TraceElementResult{
 						RoutineID: vcTID.Routine, ObjID: vcTID.SelID, TPre: tPre, ObjType: "SS", File: file, Line: line}
 
-					results.Result(results.CRITICAL, helper.LSelectWithout,
-						"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, helper.LSelectWithout,
+								"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
+					} else {
+						results.Result(results.CRITICAL, helper.LUnknown,
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					}
 
 				} else {
 					objType := "C"

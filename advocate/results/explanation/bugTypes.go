@@ -68,7 +68,7 @@ var bugNames = map[string]string{
 	"L08": "Leak on sync.Mutex",
 	"L09": "Leak on sync.WaitGroup",
 	"L10": "Leak on sync.Cond",
-	"L11": "Leak on channel or select with timer or context",
+	"L11": "Leak on channel or select on context",
 
 	"R01": "Unknown Panic",
 	"R02": "Timeout",

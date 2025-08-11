@@ -36,6 +36,7 @@ var bugCrit = map[string]string{
 	"L08": "Leak",
 	"L09": "Leak",
 	"L10": "Leak",
+	"L11": "Leak",
 }
 
 var bugNames = map[string]string{
@@ -65,6 +66,7 @@ var bugNames = map[string]string{
 	"L08": "Leak on sync.Mutex",
 	"L09": "Leak on sync.WaitGroup",
 	"L10": "Leak on sync.Cond",
+	"L11": "Leak on channel or select on context",
 
 	"R01": "Unknown Panic",
 	"R02": "Timeout",
@@ -156,6 +158,8 @@ var bugExplanations = map[string]string{
 	"L10": "The analyzer detected a leak on a sync.Cond.\n" +
 		"A leak on a sync.Cond is a situation, where a sync.Cond wait is still blocking at the end of the program.\n" +
 		"A sync.Cond wait is blocking, because the condition is not met.",
+	"L11": "The analyzer detected a leak on a channel or select on a context\n" +
+		"This may or may not be a blocking bug.",
 }
 
 var exitCodeExplanation = map[string]string{

@@ -184,7 +184,7 @@ func runWorkflowUnit(pathToGoCR, dir string, runRecord, runAnalysis bool,
 			}
 
 			if anaPassed {
-				numberResults += generateBugReports(currentResFolder, fuzzing)
+				numberResults += generateBugReports(currentResFolder, movedTraces, fuzzing)
 			}
 			if createStats {
 				// create statistics

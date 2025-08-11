@@ -77,12 +77,13 @@ func writeBug(bugType string, positions map[int][]string) bool {
 // Parameter:
 //   - path: the path to the folder, where the results of the analysis and the trace are stored
 //   - index: the index of the bug in the results
+//   - traceID: id of the trace
 //   - ignoreDouble: if true, only write one bug report for each bug
 //
 // Returns:
 //   - int: number of results
 //   - error: if an error occurred
-func CreateOverview(path string, ignoreDouble bool, fuzzing int) (int, error) {
+func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, error) {
 	// get the code info (main file, test name, commands)
 	log.Info("Create bug reports")
 
@@ -98,6 +99,7 @@ func CreateOverview(path string, ignoreDouble bool, fuzzing int) (int, error) {
 	if err != nil {
 		log.Error("Error reading prog info: ", err)
 	}
+	progInfo["trace"] = fmt.Sprintf("advocateTrace_%d", traceID)
 
 	hl, err := strconv.Atoi(progInfo["headerLine"])
 	if err != nil {
@@ -283,6 +285,12 @@ func writeFile(path string, index string, description map[string]string,
 		res += "- File: " + progInfo["file"] + "\n\n"
 	} else {
 		res += "- File: unknown" + "\n\n"
+	}
+
+	if progInfo["trace"] != "" {
+		res += "- Trace: " + progInfo["trace"] + "\n\n"
+	} else {
+		res += "- Trace: unknown" + "\n\n"
 	}
 
 	// write the code of the bug elements

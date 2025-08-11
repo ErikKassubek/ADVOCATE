@@ -47,6 +47,7 @@ const (
 	LMutex             ResultType = "L08"
 	LWaitGroup         ResultType = "L09"
 	LCond              ResultType = "L10"
+	LContext           ResultType = "L11"
 
 	// recording
 	RUnknownPanic ResultType = "R01"

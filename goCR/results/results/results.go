@@ -55,6 +55,7 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.LMutex:             "Leak on mutex",
 	helper.LWaitGroup:         "Leak on wait group",
 	helper.LCond:              "Leak on conditional variable",
+	helper.LContext:           "Leak on a channel or select on context",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",

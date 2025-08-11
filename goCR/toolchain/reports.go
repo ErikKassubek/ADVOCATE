@@ -18,12 +18,13 @@ var movedTraces int = 0
 //
 // Parameter:
 //   - folderName string: path to folder containing the results
+//   - traceID int: id of the trace
 //   - fuzzingRun int: number of fuzzing run, -1 for not fuzzing
 //
 // Returns:
 //   - numberResults int: numberResults
-func generateBugReports(folder string, fuzzing int) int {
-	numberResults, err := explanation.CreateOverview(folder, true, fuzzing)
+func generateBugReports(folder string, traceID, fuzzing int) int {
+	numberResults, err := explanation.CreateOverview(folder, true, movedTraces, fuzzing)
 	if err != nil {
 		log.Error("Error creating explanation: ", err.Error())
 	}

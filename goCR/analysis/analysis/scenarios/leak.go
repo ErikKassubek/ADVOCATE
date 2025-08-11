@@ -88,13 +88,19 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 					arg2 := results.TraceElementResult{
 						RoutineID: partnerRout, ObjID: id, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
 
-					if !isLeakTimerOrCtx(ch) {
-						results.Result(results.CRITICAL, bugType,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
-						foundPartner = true
+					timer, ctx := isLeakTimerOrCtx(ch)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, bugType,
+								"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							foundPartner = true
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
 					} else {
 						results.Result(results.CRITICAL, helper.LUnknown,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					}
 				}
 			}
@@ -114,13 +120,19 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 					arg2 := results.TraceElementResult{
 						RoutineID: partnerRout, ObjID: id, TPre: mrs[id].Elem.GetTPre(), ObjType: "CS", File: mrs[id].Elem.GetFile(), Line: mrs[id].Elem.GetLine()}
 
-					if !isLeakTimerOrCtx(ch) {
-						results.Result(results.CRITICAL, bugType,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
-						foundPartner = true
+					timer, ctx := isLeakTimerOrCtx(ch)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, bugType,
+								"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							foundPartner = true
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
 					} else {
 						results.Result(results.CRITICAL, helper.LUnknown,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					}
 				}
 			}
@@ -190,9 +202,15 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 				arg2 := results.TraceElementResult{
 					RoutineID: vcTID2.Routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: objType, File: elem2.GetFile(), Line: elem2.GetLine()}
 
-				if chanIsTimerOrCtx(objID) {
+				timer, ctx := chanIsTimerOrCtx(objID)
+				if timer {
 					results.Result(results.CRITICAL, helper.LUnknown,
-						"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					continue
+				}
+				if ctx {
+					results.Result(results.CRITICAL, helper.LContext,
+						"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					continue
 				}
 
@@ -245,14 +263,21 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 				arg2 := results.TraceElementResult{
 					RoutineID: vcTID2.Routine, ObjID: objID, TPre: elem2.GetTPre(), ObjType: "CR", File: elem2.GetFile(), Line: elem2.GetLine()}
 
-				if chanIsTimerOrCtx(objID) {
+				timer, ctx := chanIsTimerOrCtx(objID)
+				if timer {
 					results.Result(results.CRITICAL, helper.LUnknown,
-						"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					continue
+				}
+				if ctx {
+					results.Result(results.CRITICAL, helper.LContext,
+						"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					continue
 				}
 
 				results.Result(results.CRITICAL, bugType,
 					"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+
 				res = true
 
 				// remove the stuck operation from the list. If it is a select, remove all operations with the same val
@@ -336,12 +361,18 @@ func CheckForLeak() {
 					arg2 := results.TraceElementResult{ // select
 						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
-					if !chanIsTimerOrCtx(vcTID.ID) {
-						results.Result(results.CRITICAL, helper.LSelectWith,
-							"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, helper.LSelectWith,
+								"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
 					} else {
 						results.Result(results.CRITICAL, helper.LUnknown,
-							"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					}
 				} else {
 					obType := "C"
@@ -362,12 +393,18 @@ func CheckForLeak() {
 					arg2 := results.TraceElementResult{ // select
 						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
-					if !chanIsTimerOrCtx(vcTID.ID) {
-						results.Result(results.CRITICAL, bugType,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, bugType,
+								"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
 					} else {
 						results.Result(results.CRITICAL, helper.LUnknown,
-							"channel", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
 					}
 				}
 
@@ -382,8 +419,19 @@ func CheckForLeak() {
 					arg1 := results.TraceElementResult{
 						RoutineID: vcTID.Routine, ObjID: vcTID.SelID, TPre: tPre, ObjType: "SS", File: file, Line: line}
 
-					results.Result(results.CRITICAL, helper.LSelectWithout,
-						"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, helper.LSelectWithout,
+								"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						} else {
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
+					} else {
+						results.Result(results.CRITICAL, helper.LUnknown,
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					}
 
 				} else {
 					objType := "C"
@@ -447,14 +495,19 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 		arg1 := results.TraceElementResult{
 			RoutineID: routine, ObjID: id, TPre: tPre, ObjType: "SS", File: file, Line: line}
 
-		if !isLeakTimerOrCtx(se) && !se.GetContainsDefault() {
-			results.Result(results.CRITICAL, helper.LSelectWithout,
-				"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+		timer, ctx := isLeakTimerOrCtx(se)
+		if !timer && !se.GetContainsDefault() {
+			if !ctx {
+				results.Result(results.CRITICAL, helper.LSelectWithout,
+					"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			} else {
+				results.Result(results.CRITICAL, helper.LContext,
+					"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+			}
 		} else {
 			results.Result(results.CRITICAL, helper.LUnknown,
 				"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 		}
-
 		return
 	}
 
@@ -480,10 +533,19 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 						arg2 := results.TraceElementResult{
 							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
 
-						if !isLeakTimerOrCtx(se) && !se.GetContainsDefault() {
-							results.Result(results.CRITICAL, helper.LSelectWith,
-								"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
-							foundPartner = true
+						timer, ctx := isLeakTimerOrCtx(se)
+						if !timer && !se.GetContainsDefault() {
+							if !ctx {
+								results.Result(results.CRITICAL, helper.LSelectWith,
+									"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+								foundPartner = true
+							} else {
+								results.Result(results.CRITICAL, helper.LContext,
+									"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+							}
+						} else {
+							results.Result(results.CRITICAL, helper.LUnknown,
+								"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 						}
 					}
 				}
@@ -508,12 +570,18 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 						arg2 := results.TraceElementResult{
 							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
 
-						if !isLeakTimerOrCtx(se) && !se.GetContainsDefault() {
-							results.Result(results.CRITICAL, helper.LSelectWith,
-								"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						timer, ctx := isLeakTimerOrCtx(se)
+						if !timer && !se.GetContainsDefault() {
+							if !ctx {
+								results.Result(results.CRITICAL, helper.LSelectWith,
+									"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+							} else {
+								results.Result(results.CRITICAL, helper.LContext,
+									"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+							}
 						} else {
 							results.Result(results.CRITICAL, helper.LUnknown,
-								"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+								"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 						}
 
 						foundPartner = true
@@ -537,12 +605,18 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 				arg2 := results.TraceElementResult{
 					RoutineID: cl.GetRoutine(), ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
 
-				if !isLeakTimerOrCtx(se) && !se.GetContainsDefault() {
-					results.Result(results.CRITICAL, helper.LSelectWith,
-						"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+				timer, ctx := isLeakTimerOrCtx(se)
+				if !timer && !se.GetContainsDefault() {
+					if !ctx {
+						results.Result(results.CRITICAL, helper.LSelectWith,
+							"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+					} else {
+						results.Result(results.CRITICAL, helper.LContext,
+							"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					}
 				} else {
 					results.Result(results.CRITICAL, helper.LUnknown,
-						"select", []results.ResultElem{arg1}, "partner", []results.ResultElem{arg2})
+						"select", []results.ResultElem{arg1}, "", []results.ResultElem{})
 				}
 
 				foundPartner = true
@@ -759,29 +833,34 @@ func CheckForStuckRoutine(simple bool) bool {
 	return res
 }
 
-func isLeakTimerOrCtx(elem trace.Element) bool {
+func isLeakTimerOrCtx(elem trace.Element) (bool, bool) {
+	isTimer, isContext := false, false
 	switch e := elem.(type) {
 	case *trace.ElementChannel:
 		return chanIsTimerOrCtx(elem.GetID())
 	case *trace.ElementSelect:
 		for _, c := range e.GetCases() {
-			if chanIsTimerOrCtx(c.GetID()) {
-				return true
+			ti, co := chanIsTimerOrCtx(c.GetID())
+			if ti {
+				isTimer = true
+			}
+			if co {
+				isContext = true
 			}
 		}
 	default:
-		return false
+		return false, false
 	}
 
-	return false
+	return isTimer, isContext
 }
 
-func chanIsTimerOrCtx(id int) bool {
+func chanIsTimerOrCtx(id int) (bool, bool) {
 	pos, ok := data.NewChan[id]
 
 	if !ok {
-		return false
+		return false, false
 	}
 
-	return strings.Contains(pos, "/src/time/") || strings.Contains(pos, "/src/context/")
+	return strings.Contains(pos, "/src/time/"), strings.Contains(pos, "/src/context/")
 }

@@ -209,6 +209,8 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
 	}
 
+	traceCopy.Clear()
+
 	muta := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
 
 	data.AddMutToQueue(muta)

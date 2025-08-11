@@ -32,8 +32,8 @@ if [ -z "$dir" ]; then
   exit 1
 fi
 
-pathToPatchedGoRuntime="$pathToAdvocate/go-patch/bin/go"
-pathToGoRoot="$pathToAdvocate/go-patch"
+pathToPatchedGoRuntime="$pathToAdvocate/goPatch/bin/go"
+pathToGoRoot="$pathToAdvocate/goPatch"
 pathToOverheadInserter="$pathToAdvocate/toolchain/unitTestOverheadInserter/unitTestOverheadInserter"
 pathToOverheadRemover="$pathToAdvocate/toolchain/unitTestOverheadRemover/unitTestOverheadRemover"
 pathToAnalyzer="$pathToAdvocate/analyzer/analyzer"

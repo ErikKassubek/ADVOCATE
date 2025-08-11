@@ -56,13 +56,13 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 
 	log.Info("Run main")
 
-	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "go-patch/bin/go")
+	pathToPatchedGoRuntime := filepath.Join(pathToAdvocate, "goPatch/bin/go")
 
 	if runtime.GOOS == "windows" {
 		pathToPatchedGoRuntime += ".exe"
 	}
 
-	pathToGoRoot := filepath.Join(pathToAdvocate, "go-patch")
+	pathToGoRoot := filepath.Join(pathToAdvocate, "goPatch")
 
 	// Change to the directory of the main file
 	dir := filepath.Dir(pathToFile)

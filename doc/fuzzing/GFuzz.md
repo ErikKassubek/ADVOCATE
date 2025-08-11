@@ -70,7 +70,6 @@ Different to the original GFuzz implementation, which needs to run in to a bug t
 
 This loop is repeated until the mutation queue is empty. Additionally a maximum number of runs or a maximum time can be set. -->
 
-
 ## Implementation
 
 <!-- - It is possible to determine all values needed to determine how interesting a run is from the trace
@@ -98,7 +97,7 @@ A run is interesting, if one of the following conditions is met. The underlying 
 - If a buffered channel gets a larger maximum fullness than in all previous executions
   - For each channel we must store the maximum fullness over all runs
 - Additionally (not in the original GFuzz), we determine a run interesting if
-a select case, that has never been selected before is selected
+  a select case, that has never been selected before is selected
 
 ### Determine the score
 
@@ -116,7 +115,6 @@ The score is then calculated as
 $$score = \sum\log_2 CountChOpPair + w_1 \cdot CreateCh + w_2 \cdot CloseCh + s_3 \cdot \sum MaxChBufFull$$
 where $w$ are scaling factors.
 
-
 ### Creating mutations
 
 From the score of an interesting mutation we get the number of mutations to create
@@ -127,11 +125,9 @@ We traverse all selects. We then decide whether the select should flip its
 preferred case (see [flip probability](#flip-probability)). If the select will
 flip its preferred case, it will chose one of the cases randomly.
 
-
 ### Flip Probability
 
 The flip probability is the probability that a single select in the fuzzingData will change its preferred case compared to the previous mutation. If its set to high, the mutation mechanism basically becomes completely random. If its to small, the program will result in the same mutation being created over and over again. For now the probability is calculated as $$P = max(0.1, 1 - (1 - 0.99)^{1/numSel})$$ where $numSel$ is the number of selects in the previous mutation. This is selected in such a way, that the probability of at least one of the selects to flip its preferred case is at least $99\%$, but the probability for each individual select to get flipped is at least $10\%$. This may be changed based on experimental results.
-
 
 ### Running a mutation
 
@@ -203,7 +199,7 @@ code, but instead change the implementation of the select in the runtime.
 We create a file `fuzzingData.log` containing for each select a list the preferred cases.
 The selects are identified by its position in the code base. When initializing the mutation run, the file is read in and stored in a `map[string][]int` `fuzzingSelectData` with an entry per select containing the list of preferred indexes. Additionally there is a map `fuzzingSelectDataIndex: map[string]int`, storing for each of the select the index of the next preferred case in `fuzzingSelectData`. Then a select is supposed to be executed, assuming it is not an internal select, the preferred case is retrieved via `fuzzingSelectData[selPos][fuzzingSelectDataIndex[selPos]]` followed by `fuzzingSelectDataIndex[selPos]++`.
 
-The select is implemented in the [selectgo](../../go-patch/src/runtime/select.go#L123) function. This
+The select is implemented in the [selectgo](../../goPatch/src/runtime/select.go#L123) function. This
 function is split into two parts. On of them is the modified version and is called if the fuzzing is active.The other part is the original select and
 is called if fuzzing is not active or if the fuzzing
 select was terminated by a time out.
@@ -251,6 +247,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
   // Run the original gopark logic
   ...
 ```
+
 This park method will first start a go routine with a timer. If the timer has run out, it will wake up the routine regardless of whether it has found a partner. Then the normal park function is run. If the routine was woken up because the enqueued channel found a partner, the select continues as in the unmodified version. If it was woken up by the timeout, it will remove the enqueued channel operation, do some clean up and return from the modified select returning $ok = false$. In this case the unmodified select will be run as can be seen in the `selectgo` func above.
 
 ## Improvement over original GFuzz

@@ -1,6 +1,5 @@
 # How To Use Advocate
 
-
 This file provides a detailed explanation on how to use the ADVOCATE framework.
 
 ## Docker
@@ -32,12 +31,10 @@ docker run --rm -it \
 For the modes and args, see [usage](#usage).
 Note that the -path argument has already been set and does not need to be set again.
 
-
 ## Local
 
 If you do not want to use the Docker container, you can also
 build al the required parts yourself.
-
 
 Before Advocate can be used, it must first be build.
 
@@ -46,10 +43,10 @@ There are two elements that need to be build.
 ### Runtime
 
 To run the recording and replay for Go, a modified version of the Go runtime
-has been provided. It can be found in the [go-path](../go-patch/) folder.
+has been provided. It can be found in the [go-path](../goPatch/) folder.
 
 Before it can be used, it needs to be build. To do this, move into
-[go-path/src](../go-patch/src/) directory and run the
+[go-path/src](../goPatch/src/) directory and run the
 
 ```shell
 ./src/make.bash
@@ -75,7 +72,6 @@ run all recordings, replays, analysis and fuzzing.
 > Make sure, that the correct version is installed on your system.\
 > Make sure, that the executed programs and tests do not choose another version/toolchain and are compatible with go 1.24.\
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
-
 
 ## Usage
 
@@ -356,13 +352,12 @@ An example command would therefore be
 ./advocate fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
 
-
 ## Additional Tags
 
 To set timeouts, you can set
 
 - `-timeoutRec [to in s]`: Timeout for the recording in seconds (Default: 10 min)
-- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 * recording time)
+- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 \* recording time)
 
 To get additional information, the following tags can also be set:
 
@@ -418,16 +413,16 @@ Make sure to not use spaces in this argument.
 
 The following values can be changed:
 
-| name  | default value | range | description |
-|---|---|---|---|
-| GFuzzW1 | 10 | $\mathbb{Q}$ | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW2 | 10 | $\mathbb{Q}$ | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW3 | 10 | $\mathbb{Q}$ | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW4 | 10 | $\mathbb{Q}$ | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzFlipP | 0.99 | $\mathbb{Q}, 0 <= val <= 1$ |probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GFuzzFlipPMin | 0.1 | $\mathbb{Q}, 0 <= val <= 1$ |minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GoPieW1 | 1 | $\mathbb{Q}$ | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieW2 | 1 | $\mathbb{Q}$ | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieBound | 3 | $\mathbb{N}, val \geq 2$ | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieMutabound | 3 | $\mathbb{N}_{\neq 0}$ | Mutabound as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieSCStart | 5 | $\mathbb{N}_{\neq 0}$ | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation) |
+| name           | default value | range                       | description                                                                                                            |
+| -------------- | ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| GFuzzW1        | 10            | $\mathbb{Q}$                | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW2        | 10            | $\mathbb{Q}$                | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW3        | 10            | $\mathbb{Q}$                | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW4        | 10            | $\mathbb{Q}$                | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzFlipP     | 0.99          | $\mathbb{Q}, 0 <= val <= 1$ | probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability)            |
+| GFuzzFlipPMin  | 0.1           | $\mathbb{Q}, 0 <= val <= 1$ | minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
+| GoPieW1        | 1             | $\mathbb{Q}$                | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
+| GoPieW2        | 1             | $\mathbb{Q}$                | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
+| GoPieBound     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation)                            |
+| GoPieMutabound | 3             | $\mathbb{N}_{\neq 0}$       | Mutabound as described [here](./fuzzing/GoPie.md#mutation)                                                             |
+| GoPieSCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation)                        |

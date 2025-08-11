@@ -6,7 +6,7 @@ interleaving in a trace. Those traces can be used to deterministically
 
 To record the relevant operation into traces, we have added the required
 functionality directly into the implementations of the operations. For this
-we provide a modified [modified runtime](../go-patch/src/runtime).
+we provide a modified [modified runtime](../goPatch/src/runtime).
 
 Running a test or program with the correct preamble (see below) using this runtime,
 will result in a trace being recorded.
@@ -25,7 +25,6 @@ We record the following operations:
 - [New Channel](trace/newChannel.md)
 - [Fork/Spawn](trace/fork.md) (Start of new routine)
 - [End of Routine](trace/routineEnd.md)
-
 
 ## Toolchain
 
@@ -51,17 +50,16 @@ elements. In total, we are able to do almost all of the recording
 trace local, except for two global counter, namely the ids for the routines and
 the [timestamps](#timestamp).
 
-
 ## Implementation
 
 To record the execution trace local, we add an new variable `advocateRoutineInfo`
-into the [g struct](../go-patch/src/runtime/runtime2.go#L517).
+into the [g struct](../goPatch/src/runtime/runtime2.go#L517).
 This struct is automatically created for each routine by the runtime.
-This variable (defined [here](../go-patch/src/runtime/advocate_routine.go#L28)), stores the routine id,
+This variable (defined [here](../goPatch/src/runtime/advocate_routine.go#L28)), stores the routine id,
 the maximum id of any element used in this routine and the
 trace of this routine as a list of elements.
 
-They are set [when the routine is started](../go-patch/src/runtime/proc.go#L5080).
+They are set [when the routine is started](../goPatch/src/runtime/proc.go#L5080).
 
 To prevent those elements from being removed by the garbage collector and to
 make it easy to collect them at the end, we store a reference to those elements
@@ -70,7 +68,7 @@ in a global map.
 Before the runtime starts to run the main functions, multiple routines are created
 and executed. They would always result in completely empty trace files, since
 the recording only starts after the
-[InitTracing](../go-patch/src/advocate/advocate_tracing.go#25) has been executed.
+[InitTracing](../goPatch/src/advocate/advocate_tracing.go#25) has been executed.
 We therefore ignore those routines by setting there IDs to 0
 and don't add there `advocateRoutineInfo` into the global map.
 
@@ -127,7 +125,7 @@ The reason for this is that for most uses (e.g. bug analysis), they are not rele
 and unnecessarily increase the trace file size and the replay and recording time.
 Additionally, they may be part of unpredictable operations like e.g. the garbage
 collector, which would make the replay much more complicated to implements.\
-If an internal operation is executed (meaning if the file path is in "go-patch/src/"),
+If an internal operation is executed (meaning if the file path is in "goPatch/src/"),
 it is ignored.
 
 ## Optimization and inlining
@@ -219,10 +217,9 @@ We therefore simply use a global, atomic
 variable (atomic.Int64) initialized to 0, which is incremented each time a new
 timestamp is requested.
 
-
 ## Writing
 
-When the main function terminates, it calls the [FinishTracing](../go-patch/src/advocate/advocate_tracing.go#65) function. This will collect all the local traces and write them into files.
+When the main function terminates, it calls the [FinishTracing](../goPatch/src/advocate/advocate_tracing.go#65) function. This will collect all the local traces and write them into files.
 We ignore all internal routines, that where created and run before the main
 routine started to execute.
 
@@ -236,7 +233,6 @@ explanations for the different types linked above.
 Additionally a `trace_info.log` file is created with some additional infos,
 e.g. whether the program terminated normally or because of a panic.
 
-
 [^1]: M. Knyszek. "Execution tracer overhaul". https://github.com/golang/proposal/blob/master/design/60773-execution-tracer-overhaul.md (Accessed 2025-03-29)\
-[^2]: [runtime/cputicks.go](../go-patch/src/runtime/cputicks.go#L11)\
+[^2]: [runtime/cputicks.go](../goPatch/src/runtime/cputicks.go#L11)\
 [^3]: S, White et al. "Acquiring high-resolution time stamps". https://learn.microsoft.com/en-us/windows/win32/sysinfo/acquiring-high-resolution-time-stamps#resolution-precision-accuracy-and-stability (Accessed 2025-03-29)

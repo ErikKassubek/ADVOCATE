@@ -38,6 +38,7 @@ func ClearData() {
 	AllLocks = make(map[int][]trace.Element)
 	AllUnlocks = make(map[int][]trace.Element)
 	LockSet = make(map[int]map[int]string)
+	NewChan = make(map[int]string)
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVcVal)
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)

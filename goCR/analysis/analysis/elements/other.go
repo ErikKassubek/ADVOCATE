@@ -10,6 +10,7 @@
 package elements
 
 import (
+	"goCR/analysis/data"
 	"goCR/analysis/hb/hbcalc"
 	"goCR/trace"
 )
@@ -19,6 +20,8 @@ import (
 //   - n *trace.TraceElementNew: the new trace element
 func AnalyzeNew(n *trace.ElementNew) {
 	hbcalc.UpdateHBNew(n)
+
+	data.NewChan[n.GetID()] = n.GetFile()
 }
 
 // AnalyzeRoutineEnd store the vector clock of the element

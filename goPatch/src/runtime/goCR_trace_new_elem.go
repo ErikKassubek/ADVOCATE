@@ -49,10 +49,6 @@ func GoCRChanMake(qSize int) uint64 {
 
 	id := GetGoCRObjectID()
 
-	if GoCRIgnore(file) {
-		return id
-	}
-
 	elem := GoCRTraceNewElem{
 		tPost:    timer,
 		id:       id,

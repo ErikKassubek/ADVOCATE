@@ -97,6 +97,9 @@ var (
 
 	// vector clocks for last write times
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
+
+	// channel creation position
+	NewChan = make(map[int]string) // id -> pos
 )
 
 // ClearTrace sets the main analysis trace to a new, empty trace

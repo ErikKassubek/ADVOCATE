@@ -155,7 +155,7 @@ func main() {
 
 	flag.BoolVar(&onlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
-	flag.StringVar(&fuzzingMode, "fuzzingMode", "",
+	flag.StringVar(&fuzzingMode, "mode", "",
 		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
 
 	// partially implemented by may not work, therefore disables, enable again when fixed

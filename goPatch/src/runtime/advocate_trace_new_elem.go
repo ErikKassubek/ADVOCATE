@@ -52,10 +52,6 @@ func AdvocateChanMake(qSize int) uint64 {
 
 	id := GetAdvocateObjectID()
 
-	if AdvocateIgnore(file) {
-		return id
-	}
-
 	elem := AdvocateTraceNewElem{
 		tPost:    timer,
 		id:       id,

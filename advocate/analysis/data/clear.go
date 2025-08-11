@@ -43,6 +43,7 @@ func ClearData() {
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVcVal)
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
+	NewChan = make(map[int]string)
 	CurrentlyWaiting = make(map[int][]*trace.ElementCond)
 	LeakingChannels = make(map[int][]VectorClockTID2)
 	SelectCases = make([]AllSelectCase, 0)

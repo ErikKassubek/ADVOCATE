@@ -30,7 +30,7 @@ func getNewDataMap() map[string]int {
 	keys := []string{
 		"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
 		"P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02",
-		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10",
+		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11",
 		"R01", "R02"}
 
 	m := make(map[string]int)

@@ -229,7 +229,7 @@ func runWorkflowMain(pathToAdvocate string, pathToFile string,
 	var numberResults int
 	if runAnalysis {
 		fmt.Println("Generate Bug Reports")
-		numberResults = generateBugReports(resultPath, fuzzing)
+		numberResults = generateBugReports(resultPath, movedTraces, fuzzing)
 
 		timer.UpdateTimeFileDetail(programName, "Main", len(rewrittenTraces))
 	}

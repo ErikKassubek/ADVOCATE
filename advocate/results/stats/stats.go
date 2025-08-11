@@ -40,7 +40,7 @@ func (td *testData) toString() string {
 	res := fmt.Sprintf("%s,%d,%d,%d,%d", td.name, td.numberRuns, td.fuzzData["nrMut"], td.fuzzData["nrMutInvalid"], td.fuzzData["nrMutDouble"])
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
+		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 			res += fmt.Sprintf(",%d", td.results[mode][code])
 		}
 	}
@@ -133,7 +133,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 		numberOfActualBugsUnique += statsAnalyzerUnique["detected"][code]
 	}
 
-	leakCodes := []string{"L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10"}
+	leakCodes := []string{"L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11"}
 
 	numberOfLeaksTotal := 0
 	numberOfLeaksUnique := 0
@@ -217,7 +217,7 @@ func writeStatsToFile(path string, progName string, testName string, statsTraces
 	data := make([]string, 0)
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, count := range []string{"Total", "Unique"} {
-			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
+			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 				headers = append(headers, "No"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))

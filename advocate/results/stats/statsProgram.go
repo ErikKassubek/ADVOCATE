@@ -106,7 +106,7 @@ func CreateStatsTotal(pathFolder, progName string) error {
 	headers := "NrFiles,NrLines,NrNonEmptyLines,NrTests,NrRuns"
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
+		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 			headers += fmt.Sprintf(",Nr%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
 		}
 	}
@@ -123,7 +123,7 @@ func CreateStatsTotal(pathFolder, progName string) error {
 	res += fmt.Sprintf("%d,%d", noTests, noRuns)
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "R01", "R02"} {
+		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 			res += fmt.Sprintf(",%d", data[mode][code])
 		}
 	}

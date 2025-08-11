@@ -191,7 +191,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 
 			if anaPassed {
-				numberResults += generateBugReports(currentResFolder, fuzzing)
+				numberResults += generateBugReports(currentResFolder, movedTraces, fuzzing)
 			}
 			if createStats {
 				// create statistics

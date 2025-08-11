@@ -195,6 +195,8 @@ func (b Bug) ToString() string {
 	case helper.LCond:
 		typeStr = "Leak on conditional variable:"
 		arg1Str = "cond: "
+	case helper.LContext:
+		typeStr = "Leak on channel or select on context"
 	// case helper.SNotExecutedWithPartner:
 	// 	typeStr = "Not executed select with potential partner"
 	// 	arg1Str = "select: "
@@ -330,6 +332,9 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		containsArg2 = false
 	case "L10":
 		bug.Type = helper.LCond
+		containsArg2 = false
+	case "L11":
+		bug.Type = helper.LContext
 		containsArg2 = false
 	// case "S00":
 	// 	bug.Type = SNotExecutedWithPartner

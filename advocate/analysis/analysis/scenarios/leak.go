@@ -454,8 +454,18 @@ func CheckForLeak() {
 						bugType = helper.LBufferedWithout
 					}
 
-					results.Result(results.CRITICAL, bugType,
-						"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
+					if !timer {
+						if !ctx {
+							results.Result(results.CRITICAL, bugType,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+							results.Result(results.CRITICAL, helper.LContext,
+								"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+						}
+					} else {
+						results.Result(results.CRITICAL, helper.LUnknown,
+							"channel", []results.ResultElem{arg1}, "", []results.ResultElem{})
+					}
 				}
 			}
 		}
@@ -820,12 +830,25 @@ func CheckForStuckRoutine(simple bool) bool {
 		}
 
 		arg := results.TraceElementResult{
-			RoutineID: routine, ObjID: -1, TPre: lastElem.GetTPre(),
+			RoutineID: routine, ObjID: lastElem.GetID(), TPre: lastElem.GetTPre(),
 			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
-		results.Result(results.CRITICAL, leakType,
-			"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
+		timer, ctx := isLeakTimerOrCtx(lastElem)
+
+		if leakType == helper.LUnknown {
+			results.Result(results.CRITICAL, leakType,
+				"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
+		} else if timer {
+			results.Result(results.CRITICAL, helper.LUnknown,
+				"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
+		} else if ctx {
+			results.Result(results.CRITICAL, helper.LContext,
+				"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
+		} else {
+			results.Result(results.CRITICAL, leakType,
+				"elem", []results.ResultElem{arg}, "", []results.ResultElem{})
+		}
 
 		res = true
 	}

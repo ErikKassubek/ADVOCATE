@@ -282,9 +282,9 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	if progInfo["file"] != "" {
-		res += "- File: " + progInfo["file"] + "\n\n"
+		res += "- File: " + progInfo["file"] + "\n"
 	} else {
-		res += "- File: unknown" + "\n\n"
+		res += "- File: unknown" + "\n"
 	}
 
 	if progInfo["trace"] != "" {

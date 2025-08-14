@@ -1,4 +1,5 @@
 | ProjectName | TestsNumber | EventsMaxNumberAmongTests | EventsAverageNumberAmongTestsGoCRBlockingBugNumberChannelSelect | GoCRBlockingBugNumberChannelSelectContext | GoCRBlockingBugNumberMutex | GoCRBlockingBugNumberWaitgroup | GoCRBlockingBugNumberConditional | GoCRLingeringBugNumber |  |GoCRTotalBugNumber | GoLeakBlockingBugNumberChannelSelect | GoLeakBlockingBugNumberChannelSelectContext | GoLeakBlockingBugNumberMutex | GoLeakBlockingBugNumberWaitgroup | GoLeakBlockingBugNumberConditional | GoLeakLingeringBugNumber | GoLeakTotalBugNumber
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | bleve | 188 | 319758 | 3070.916986 | 4 | 1 | 6 | 1 | 0 | 37 | 49 | 1 | 1 | 0 | 0 | 0 | 6 | 8 |
 | etcd | 187 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | nsq | 13 | 1465 | 96.762162 | 6 | 0 | 0 | 3 | 0 | 15 | 24 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |

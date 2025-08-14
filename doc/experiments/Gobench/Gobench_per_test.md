@@ -39,24 +39,24 @@
 | 37  | Istio16224      | 1     | 1     | 1      |
 | 38  | Istio17860      | 1     | 1     | 1      |
 | 39  | Istio18454      | 0     | 0     | 0      |
-| 40  | Kubernets10182  | 1     | 1     | 1      |
-| 41  | Kubernets11298  | 0     | 0     | 1      |
-| 42  | Kubernets13135  | 0     | 1     | 1      |
-| 43  | Kubernets1321   | 0     | 1     | 1      |
-| 44  | Kubernets25331  | 1     | 1     | 1      |
-| 45  | Kubernets26980  | 0     | 0     | 0      |
-| 46  | Kubernets30872  | 0     | 1     | 1      |
-| 47  | Kubernets38669  | 1     | 1     | 1      |
-| 48  | Kubernets5316   | 1     | 1     | 1      |
-| 49  | Kubernet58107   | 0     | 1     | 1      |
-| 50  | Kubernet2464    | 0     | 1     | 1      |
-| 51  | Kubernet6632    | 1     | 1     | 1      |
-| 52  | Kubernet70277   | 1     | 1     | 1      |
+| 40  | Kubernetes10182  | 1     | 1     | 1      |
+| 41  | Kubernetes11298  | 0     | 0     | 1      |
+| 42  | Kubernetes13135  | 0     | 1     | 1      |
+| 43  | Kubernetes1321   | 0     | 1     | 1      |
+| 44  | Kubernetes25331  | 1     | 1     | 1      |
+| 45  | Kubernetes26980  | 0     | 0     | 1      |
+| 46  | Kubernetes30872  | 0     | 1     | 1      |
+| 47  | Kubernetes38669  | 1     | 1     | 1      |
+| 48  | Kubernetes5316   | 1     | 1     | 1      |
+| 49  | Kubernetes58107   | 0     | 1     | 1      |
+| 50  | Kubernetes2464    | 0     | 1     | 1      |
+| 51  | Kubernetes6632    | 1     | 1     | 1      |
+| 52  | Kubernetes70277   | 1     | 1     | 1      |
 | 53  | Moby17176       | 1     | 1     | 1      |
 | 54  | Moby21233       | 1     | 1     | 1      |
 | 55  | Moby25384       | 1     | 1     | 1      |
 | 56  | Moby27782       | 0     | 0     | 1      |
-| 57  | Moby28462       | 1     | 0     | 0      |
+| 57  | Moby28462       | 1     | 0     | 1      |
 | 58  | Moby29733       | 1     | 1     | 1      |
 | 59  | Moby30408       | 1     | 1     | 1      |
 | 60  | Moby33293       | 1     | 1     | 1      |
@@ -68,4 +68,4 @@
 | 66  | Serving2137     | 0     | 1     | 1      |
 | 67  | Serving4829     | 1     | 1     | 1      |
 | 68  | Serving5795     | 1     | 1     | 1      |
-|     | Total           | 46    | 60    | 64     |
+|     | Total           | 46    | 60    | 65     |

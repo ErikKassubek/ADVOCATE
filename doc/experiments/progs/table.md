@@ -1,22 +1,30 @@
-| ProjectName | TestsNumber | EventsMaxNumberAmongTests | EventsAverageNumberAmongTests | BlockingBugNumberChannelSelect | BlockingBugNumberChannelSelectContext | BlockingBugNumberMutex | BlockingBugNumberWaitgroup | BlockingBugNumberConditional | LingeringBugNumber |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| argo-cd | 268 | 668 | 30 | 3 | 1 | 4 | 2 | 0 | 40 |
-| bleve | 188 | 319758 | 3070 | 4 | 1 | 6 | 1 | 0 | 37 |
-| bosun | 52 | 153 | 15 | 0 | 0 | 0 | 1 | 0 | 2 |
-| caddy | 73 | 1096 | 60 | 0 | 0 | 4 | 0 | 0 | 30 |
-| dns | 1 | 31 | 26 | 1 | 0 | 0 | 0 | 0 | 4 |
-| flannel | 16 | 32 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
-| frp | 14 | 14 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
-| gin | 36 | 16 | 4 | 0 | 0 | 0 | 0 | 0 | 2 |
-| gofiber | 39 | 983 | 97 | 1 | 0 | 0 | 0 | 0 | 10 |
-| gorums | 16 | 28100 | 1261 | 0 | 3 | 0 | 0 | 0 | 6 |
-| grpc | 12 | 357638 | 26181 | 1 | 1 | 0 | 0 | 0 | 7 |
-| hugo | 32 | 2645 | 514 | 0 | 0 | 0 | 0 | 0 | 1 |
-| kubernetes | 1389 | 1024 | 39 | 4 | 2 | 0 | 0 | 2 | 6 |
-| nsq | 13 | 1465 | 96 | 6 | 0 | 0 | 3 | 0 | 15 |
-| ollama | 82 | 77 | 5 | 0 | 2 | 0 | 0 | 0 | 2 |
-| pholcus | 24 | 50 | 9 | 0 | 0 | 0 | 0 | 0 | 0 |
-| syncthing | 24 | 304 | 49 | 0 | 0 | 0 | 0 | 0 | 1 |
-| terraform | 28 | 794 | 10 | 0 | 0 | 0 | 0 | 0 | 0 |
-| vmware-tanzu | 146 | 72 | 11 | 0 | 0 | 0 | 0 | 0 | 0 |
-| zinx | 14 | 1086232 | 21452 | 0 | 0 | 2 | 0 | 0 | 18 |
+| ProjectName | TestsNumber | EventsMaxNumberAmongTests | EventsAverageNumberAmongTestsGoCRBlockingBugNumberChannelSelect | GoCRBlockingBugNumberChannelSelectContext | GoCRBlockingBugNumberMutex | GoCRBlockingBugNumberWaitgroup | GoCRBlockingBugNumberConditional | GoCRLingeringBugNumber |  |GoCRTotalBugNumber | GoLeakBlockingBugNumberChannelSelect | GoLeakBlockingBugNumberChannelSelectContext | GoLeakBlockingBugNumberMutex | GoLeakBlockingBugNumberWaitgroup | GoLeakBlockingBugNumberConditional | GoLeakLingeringBugNumber | GoLeakTotalBugNumber
+| bleve | 188 | 319758 | 3070.916986 | 4 | 1 | 6 | 1 | 0 | 37 | 49 | 1 | 1 | 0 | 0 | 0 | 6 | 8 |
+| etcd | 187 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| nsq | 13 | 1465 | 96.762162 | 6 | 0 | 0 | 3 | 0 | 15 | 24 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| ponzu-cms | 19 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| traefik | 40 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| vmware-tanzu | 146 | 72 | 11.950000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| go-ethereum | 65 | 0 | 0.000000 | 2 | 0 | 0 | 0 | 0 | 9 | 11 | 1 | 0 | 0 | 0 | 0 | 1 | 2 |
+| grpc | 12 | 357638 | 26181.052632 | 1 | 1 | 0 | 0 | 0 | 7 | 9 | 0 | 1 | 0 | 0 | 0 | 0 | 1 |
+| prometheus | 1352 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| gorums | 16 | 28100 | 1261.437500 | 0 | 3 | 0 | 0 | 0 | 6 | 9 | 0 | 1 | 0 | 0 | 0 | 2 | 3 |
+| syncthing | 129 | 134398 | 834.238164 | 16 | 0 | 1 | 0 | 0 | 19 | 36 | 6 | 0 | 0 | 0 | 0 | 6 | 12 |
+| argo-cd | 268 | 668 | 30.382554 | 3 | 1 | 4 | 2 | 0 | 40 | 50 | 0 | 0 | 0 | 0 | 0 | 7 | 7 |
+| pholcus | 24 | 50 | 9.571429 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| frp | 14 | 14 | 2.096774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| gravitational | 24 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| kubernetes | 1389 | 1024 | 39.584112 | 4 | 2 | 0 | 0 | 2 | 6 | 14 | 4 | 2 | 0 | 0 | 2 | 2 | 10 |
+| ollama | 82 | 77 | 5.425134 | 0 | 2 | 0 | 0 | 0 | 2 | 4 | 0 | 2 | 0 | 0 | 0 | 0 | 2 |
+| zinx | 14 | 1086232 | 21452.777778 | 0 | 0 | 2 | 0 | 0 | 18 | 20 | 0 | 0 | 0 | 0 | 0 | 14 | 14 |
+| bosun | 52 | 153 | 15.271111 | 0 | 0 | 0 | 1 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| gin | 36 | 16 | 4.815081 | 0 | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| gofiber | 39 | 983 | 97.431373 | 1 | 0 | 0 | 0 | 0 | 10 | 11 | 0 | 0 | 0 | 0 | 0 | 5 | 5 |
+| pipeline | 19 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| terraform | 475 | 83173 | 115.309423 | 12 | 1 | 1 | 1 | 0 | 26 | 41 | 1 | 0 | 0 | 0 | 0 | 1 | 2 |
+| fabiolb | 41 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| flannel | 16 | 32 | 5.968750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| hugo | 32 | 2645 | 514.454545 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| moby | 566 | 0 | 0.000000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| caddy | 73 | 1096 | 60.457038 | 0 | 0 | 4 | 0 | 0 | 30 | 34 | 0 | 0 | 0 | 0 | 0 | 11 | 11 |
+| dns | 33 | 193 | 29.250441 | 0 | 1 | 5 | 2 | 0 | 18 | 26 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |

@@ -17,7 +17,6 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
-	"time"
 )
 
 var isFuzzing = false
@@ -58,8 +57,10 @@ func FinishFuzzing() {
 	if finishFuzzingStarted {
 		return
 	}
+
 	// give program time to finish running
-	time.Sleep(time.Second)
+	runtime.ReleaseAllWaiting()
+	runtime.SleepBusy(3)
 
 	finishFuzzingStarted = true
 	runtime.WaitForReplayFinish()

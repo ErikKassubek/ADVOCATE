@@ -127,4 +127,16 @@ func after(d int64) <-chan struct{} {
 	return newTimer2(d).C
 }
 
+// Sleep busy
+func SleepBusy(dInSec int) {
+	dInNS := sToNs(float64(dInSec))
+	startTime := currentTime()
+	for {
+		duration := currentTime() - startTime
+		if duration >= dInNS {
+			return
+		}
+	}
+}
+
 // ADVOCATE-FILE-END

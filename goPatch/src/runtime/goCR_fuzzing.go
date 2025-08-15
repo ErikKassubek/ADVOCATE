@@ -8,7 +8,7 @@
 package runtime
 
 const (
-	selectPreferredTimeoutSec int64   = 2
+	selectPreferredTimeoutSec int64   = 1
 	flowSleepTimeSec          float64 = 3
 )
 

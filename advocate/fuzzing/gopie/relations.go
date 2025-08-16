@@ -102,9 +102,9 @@ func CalculateRelRule2And4() {
 					rel2[elem2][elem1] = struct{}{}
 					counterCPOP2++
 				}
-			}
-			if control.CheckCanceled() {
-				return
+				if control.CheckCanceled() {
+					return
+				}
 			}
 		}
 	}

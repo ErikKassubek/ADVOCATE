@@ -105,7 +105,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 			}
 		}
 
-		clearData()
+		clearDataFull()
 		timer.ResetFuzzing()
 		control.Reset()
 
@@ -154,7 +154,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
-				clearData()
+				clearDataRun()
 			}
 
 			timer.Stop(timer.TotalTest)
@@ -211,7 +211,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 	for data.NumberFuzzingRuns == 0 || len(data.MutationQueue) != 0 {
 
 		// clean up
-		clearData()
+		clearDataRun()
 		timer.ResetFuzzing()
 		control.Reset()
 
@@ -255,6 +255,10 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 
 		data.NumberFuzzingRuns++
 
+		if numberResults > control.MaxNumberElements {
+			continue
+		}
+
 		if err != nil {
 			log.Error("Fuzzing run failed: ", err.Error())
 		} else {
@@ -265,7 +269,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 			ParseTrace(&anaData.MainTrace)
 
 			if control.CheckCanceled() {
-				log.Error("Fuzzing was canceled due to memory")
+				log.Error("Fuzzing run was canceled due to memory")
+				gopie.ClearDataRun()
 				anaData.ClearTrace()
 				anaData.ClearData()
 				continue
@@ -350,12 +355,12 @@ func resetFuzzing() {
 func clearDataFull() {
 	data.ClearDataFull()
 	gopie.ClearData()
-	gfuzz.ClearData()
+	gfuzz.ClearDataFull()
 	flow.ClearData()
 }
 
-func clearData() {
-	gopie.ClearData()
-	gfuzz.ClearData()
+func clearDataRun() {
+	gopie.ClearDataRun()
+	gfuzz.ClearDataRun()
 	flow.ClearData()
 }

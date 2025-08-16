@@ -60,10 +60,9 @@ func RunAnalysis(assumeFifo bool, ignoreCriticalSections bool, fuzzing bool, onl
 		}
 	}
 
-	// TODO T1: remove T1 back in, when tests are done
-	// if fuzzdata.FuzzingMode != fuzzdata.GoPie || data.T1 {
-	RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
-	// }
+	if !fuzzing || fuzzdata.UseHBInfoFuzzing {
+		RunHBAnalysis(assumeFifo, ignoreCriticalSections, fuzzing, !onlyAPanicAndLeak)
+	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis

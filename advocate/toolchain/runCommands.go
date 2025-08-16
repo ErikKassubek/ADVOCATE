@@ -11,6 +11,8 @@
 package toolchain
 
 import (
+	"advocate/utils/control"
+	"context"
 	"io"
 	"os"
 	"os/exec"
@@ -27,7 +29,11 @@ import (
 // Returns:
 //   - error
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
-	cmd := exec.Command(name, args...)
+	ctx, cancel := context.WithCancel(context.Background())
+	id := control.AddRunningCom(cancel)
+	defer control.RemoveRunningCom(id)
+
+	cmd := exec.CommandContext(ctx, name, args...)
 
 	if outputFlag {
 		if osOut != nil {

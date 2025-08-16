@@ -52,13 +52,18 @@ var (
 	WithoutReplay       = false
 )
 
-// ClearData deletes all the GoPie data
-func ClearData() {
+// ClearDataRun the data for one run in GoPie
+func ClearDataRun() {
 	rel1 = make(map[trace.Element]map[trace.Element]struct{})
 	rel2 = make(map[trace.Element]map[trace.Element]struct{})
 	counterCPOP1 = 0
 	counterCPOP2 = 0
 	ElemsByID = make(map[int][]trace.Element)
+}
+
+// ClearData deletes all the GoPie data
+func ClearData() {
+	ClearDataRun()
 	maxGoPieScore = 0
 	usedStartPos = make([]types.Pair[trace.Element, trace.Element], 0)
 

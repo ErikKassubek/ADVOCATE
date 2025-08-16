@@ -36,9 +36,13 @@ var (
 	NumberSelectCasesWithPartner = 0
 )
 
-// ClearData deletes all the data of gFuzz
-func ClearData() {
+// ClearDataFull deletes all the data of gFuzz
+func ClearDataFull() {
 	maxScore = 0.0
+	ClearDataRun()
+}
+
+func ClearDataRun() {
 	ChannelInfoTrace = make(map[int]FuzzingChannel)
 	PairInfoTrace = make(map[string]FuzzingPair)
 	SelectInfoTrace = make(map[string][]data.FuzzingSelect)

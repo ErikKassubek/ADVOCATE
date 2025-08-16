@@ -62,10 +62,11 @@ func runAnalyzer(pathTrace string, outReadable string, outMachine string,
 
 	if control.CheckCanceled() {
 		// analysis.LogSizes()
-		data.Clear()
 		if control.CheckCanceledRAM() {
+			data.Clear()
 			return fmt.Errorf("Analysis was canceled due to insufficient small RAM")
 		}
+		data.Clear()
 		return fmt.Errorf("Analysis was canceled due to unexpected panic")
 	}
 	log.Info("Analysis finished")

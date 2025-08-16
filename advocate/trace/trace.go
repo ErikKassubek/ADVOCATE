@@ -691,7 +691,7 @@ func (t *Trace) Copy() (Trace, error) {
 			tracesCopy[routine][i] = elem.Copy(mapping)
 
 			if control.CheckCanceled() {
-				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient small RAM")
+				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
 			}
 		}
 	}

@@ -83,11 +83,13 @@ func Supervisor() {
 		if v.Available < thresholdRAM {
 			cancelRAM()
 			time.Sleep(5 * time.Second)
+			continue
 		}
 
 		if s.Used > thresholdSwap+startSwap {
 			cancelRAM()
 			time.Sleep(5 * time.Second)
+			continue
 		}
 
 		// Sleep for a while before checking again

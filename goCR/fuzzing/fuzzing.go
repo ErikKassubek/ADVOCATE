@@ -55,7 +55,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 
 	modes := []string{data.GoPie, data.GoCR, data.GFuzz}
 	if !types.Contains(modes, fm) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoCR, GoPie, GFuzz", fm)
 	}
 
 	data.MaxNumberRuns = mRun
@@ -100,7 +100,7 @@ func Fuzzing(modeMain bool, fm, goCR, progPath, progName, name string, ignoreAto
 			}
 		}
 
-		clearData()
+		clearDataFull()
 		timer.ResetFuzzing()
 		control.Reset()
 
@@ -339,10 +339,10 @@ func resetFuzzing() {
 func clearDataFull() {
 	data.ClearDataFull()
 	gocrpie.ClearData()
-	gfuzz.ClearData()
+	gfuzz.ClearDataRun()
 }
 
 func clearData() {
 	gocrpie.ClearData()
-	gfuzz.ClearData()
+	gfuzz.ClearDataRun()
 }

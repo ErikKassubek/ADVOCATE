@@ -36,15 +36,19 @@ func ParseTrace(tr *trace.Trace) {
 	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
-		if data.FuzzingModeGoPie {
-			gopie.CalculateRelRule1(routine)
-		}
-
 		if control.CheckCanceled() {
 			return
 		}
 
+		if data.FuzzingModeGoPie {
+			gopie.CalculateRelRule1(routine)
+		}
+
 		for _, elem := range routine {
+			if control.CheckCanceled() {
+				return
+			}
+
 			if data.IgnoreFuzzing(elem, false) {
 				continue
 			}
@@ -72,10 +76,6 @@ func ParseTrace(tr *trace.Trace) {
 				}
 			}
 
-			if control.CheckCanceled() {
-				return
-			}
-
 		}
 	}
 
@@ -86,6 +86,9 @@ func ParseTrace(tr *trace.Trace) {
 
 	if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing {
 		gopie.CalculateRelRule2And4()
+		if control.CheckCanceled() {
+			return
+		}
 		gopie.CalculateRelRule3()
 	}
 

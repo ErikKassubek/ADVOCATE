@@ -45,10 +45,10 @@ func runAnalyzer(pathTrace string, outReadable string, outMachine string,
 
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
 
-	// if err != nil && fuzzingRun <= 0 {
-	// 	log.Error("Could not read trace: ", err.Error())
-	// 	return err
-	// }
+	if err != nil && fuzzingRun <= 0 {
+		// log.Error("Could not read trace: ", err.Error())
+		return err
+	}
 
 	if numberElems == 0 {
 		log.Infof("Trace at %s does not contain any elements", pathTrace)

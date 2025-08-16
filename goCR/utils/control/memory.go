@@ -9,8 +9,12 @@
 package control
 
 import (
+	"context"
 	"goCR/utils/log"
 	"math"
+	"runtime"
+	"runtime/debug"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -23,6 +27,10 @@ var (
 	WasCanceledRAM atomic.Bool
 
 	MaxNumberElements int
+
+	numberCommands  int
+	commandsLock    = sync.Mutex{}
+	runningCommands = make(map[int]context.CancelFunc)
 )
 
 // SetMaxNumberElem sets the max number elements
@@ -96,8 +104,14 @@ func Cancel() {
 func cancelRAM() {
 	wasCanceled.Store(true)
 	WasCanceledRAM.Store(true)
-	printAllGoroutines()
+	// printAllGoroutines()
+	cancelAllRunningCom()
 	log.Error("Not enough RAM")
+
+	// give all function time to cancel and then make sure to clear the memory
+	time.Sleep(3 * time.Second)
+	runtime.GC()
+	debug.FreeOSMemory()
 }
 
 // CheckCanceled returns if the analysis was canceled
@@ -120,4 +134,47 @@ func CheckCanceledRAM() bool {
 func Reset() {
 	wasCanceled.Store(false)
 	WasCanceledRAM.Store(false)
+}
+
+// AddRunningCom stores the cancel function for a context of a running command
+// It returns an ID, with which the command can be removed
+//
+// Parameter:
+//   - cancel context.CancelFunc: the context cancel function
+//
+// Runtime:
+//   - int: an id with which the element can be removed
+func AddRunningCom(cancel context.CancelFunc) int {
+	commandsLock.Lock()
+	defer commandsLock.Unlock()
+
+	numberCommands++
+
+	id := numberCommands
+	runningCommands[id] = cancel
+
+	return id
+}
+
+// RemoveRunningCom removes a cancel function from the memory monitor
+//
+// Paramter:
+//   - id int: the id of the parameter to remove
+func RemoveRunningCom(id int) {
+	commandsLock.Lock()
+	defer commandsLock.Unlock()
+
+	delete(runningCommands, id)
+}
+
+// cancelAllRunningCom cancels all currently running commands
+func cancelAllRunningCom() {
+	commandsLock.Lock()
+	defer commandsLock.Unlock()
+
+	for _, cancel := range runningCommands {
+		cancel()
+	}
+
+	runningCommands = make(map[int]context.CancelFunc)
 }

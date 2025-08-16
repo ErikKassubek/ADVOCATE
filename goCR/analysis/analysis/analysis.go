@@ -50,7 +50,7 @@ func RunAnalysis(fuzzing bool) {
 		return
 	}
 
-	if fuzzdata.FuzzingMode != fuzzdata.GoPie {
+	if !fuzzing || fuzzdata.UseHBInfoFuzzing {
 		RunHBAnalysis()
 	}
 }

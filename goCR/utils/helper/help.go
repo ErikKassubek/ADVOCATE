@@ -159,7 +159,7 @@ func printHelpFuzzing() {
 	fmt.Println(maxFuzzingRun.toString(false))
 
 	// statistics
-	fmt.Println(time.toString(false))
+	// fmt.Println(time.toString(false))
 	fmt.Println(stats.toString(false))
 
 	// logging and output

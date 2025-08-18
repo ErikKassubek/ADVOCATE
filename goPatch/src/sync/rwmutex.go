@@ -74,9 +74,8 @@ const rwmutexMaxReaders = 1 << 30
 // documentation on the [RWMutex] type.
 func (rw *RWMutex) RLock() {
 	// GOCP-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2, true)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2, false)
 	if wait {
-		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {
@@ -251,9 +250,8 @@ func (rw *RWMutex) rUnlockSlow(r int32) {
 // Lock blocks until the lock is available.
 func (rw *RWMutex) Lock() {
 	// GOCP-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexLock, 2, true)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexLock, 2, false)
 	if wait {
-		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if rw.id == 0 {

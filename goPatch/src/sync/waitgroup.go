@@ -137,9 +137,8 @@ func (wg *WaitGroup) Done() {
 // Wait blocks until the [WaitGroup] counter is zero.
 func (wg *WaitGroup) Wait() {
 	// GOCP-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, false)
 	if wait {
-		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if wg.id == 0 {

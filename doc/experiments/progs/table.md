@@ -1,22 +1,22 @@
-| ProjectName | TestsNumber | EventsMaxNumberAmongTests | EventsAverageNumberAmongTests | GoCRBlockingBugNumberChannelSelect | GoCRBlockingBugNumberChannelSelectContext | GoCRBlockingBugNumberMutex | GoCRBlockingBugNumberWaitgroup | GoCRBlockingBugNumberConditional | GoCRLingeringBugNumber | GoCRTotalBugNumber | GoLeakBlockingBugNumberChannelSelect | GoLeakBlockingBugNumberChannelSelectContext | GoLeakBlockingBugNumberMutex | GoLeakBlockingBugNumberWaitgroup | GoLeakBlockingBugNumberConditional | GoLeakTotalBugNumber | GoPieBlockingBugNumberChannelSelect | GoPieBlockingBugNumberChannelSelectContext | GoPieBlockingBugNumberMutex | GoPieBlockingBugNumberWaitgroup | GoPieBlockingBugNumberConditional | GoPieLingeringBugNumber | GoPieTotalBugNumber | GFuzzBlockingBugNumberChannelSelect | GFuzzBlockingBugNumberChannelSelectContext | GFuzzBlockingBugNumberMutex | GFuzzBlockingBugNumberWaitgroup | GFuzzBlockingBugNumberConditional | GFuzzLingeringBugNumber | GFuzzTotalBugNumber |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| argo-cd | 268 | 668 | 30.382554 | 3 | 1 | 3 | 2 | 0 | 28 | 37 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 1 | 0 | 0 | 0 | 23 | 27 | 2 | 0 | 0 | 0 | 0 | 15 | 17 |
-| bleve | 188 | 319758 | 3070.916986 | 4 | 1 | 3 | 1 | 0 | 26 | 35 | 1 | 1 | 0 | 0 | 0 | 2 | 4 | 0 | 0 | 1 | 0 | 10 | 15 | 3 | 0 | 0 | 0 | 0 | 9 | 12 |
-| bosun | 52 | 153 | 15.271111 | 0 | 0 | 0 | 1 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
-| caddy | 73 | 1096 | 60.457038 | 0 | 0 | 4 | 0 | 0 | 20 | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 17 | 18 | 0 | 0 | 1 | 0 | 0 | 16 | 17 |
-| dns | 33 | 193 | 29.292769 | 0 | 0 | 5 | 2 | 0 | 18 | 25 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| flannel | 16 | 32 | 5.968750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| frp | 14 | 14 | 2.096774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| gin | 36 | 16 | 4.815081 | 0 | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
-| gofiber | 39 | 983 | 97.431373 | 1 | 0 | 0 | 0 | 0 | 9 | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 7 |
-| gorums | 16 | 28100 | 1261.437500 | 0 | 3 | 0 | 0 | 0 | 6 | 9 | 0 | 1 | 0 | 0 | 0 | 1 | 0 | 1 | 0 | 0 | 0 | 5 | 6 | 0 | 1 | 0 | 0 | 0 | 5 | 6 |
-| grpc | 13 | 357638 | 26181.052632 | 1 | 1 | 0 | 0 | 0 | 7 | 9 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 2 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 3 |
-| hugo | 32 | 2645 | 514.454545 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| kubernetes | 1389 | 1024 | 39.584112 | 4 | 2 | 0 | 0 | 2 | 6 | 14 | 4 | 2 | 0 | 0 | 2 | 8 | 4 | 2 | 0 | 0 | 2 | 5 | 13 | 4 | 2 | 0 | 0 | 2 | 4 | 12 |
-| nsq | 13 | 1465 | 96.762162 | 6 | 0 | 0 | 3 | 0 | 15 | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 13 | 16 | 0 | 0 | 0 | 0 | 0 | 8 | 8 |
-| ollama | 82 | 77 | 5.425134 | 0 | 2 | 0 | 0 | 0 | 2 | 4 | 0 | 2 | 0 | 0 | 0 | 2 | 0 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 2 | 0 | 0 | 0 | 1 | 3 |
-| pholcus | 24 | 50 | 9.571429 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| syncthing | 129 | 134398 | 834.263989 | 8 | 2 | 1 | 0 | 0 | 19 | 30 | 2 | 0 | 0 | 0 | 0 | 2 | 6 | 0 | 0 | 0 | 0 | 7 | 13 | 6 | 0 | 0 | 0 | 0 | 4 | 10 |
-| terraform | 476 | 83173 | 115.309423 | 10 | 1 | 1 | 1 | 0 | 16 | 29 | 1 | 0 | 0 | 0 | 0 | 1 | 2 | 0 | 0 | 0 | 0 | 8 | 10 | 2 | 0 | 0 | 0 | 0 | 2 | 4 |
-| vmware-tanzu | 146 | 72 | 11.950000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| zinx | 14 | 1086232 | 21452.777778 | 0 | 0 | 2 | 0 | 0 | 17 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 10 | 10 | 0 | 0 | 0 | 0 | 0 | 9 | 9 |
+| ProjectName | TestsNumber | EventsMaxNumberAmongTests | EventsAverageNumberAmongTests | GoCRBlockingBugNumberChannelSelect | GoCRBlockingBugNumberChannelSelectContext | GoCRBlockingBugNumberMutex | GoCRBlockingBugNumberWaitgroup | GoCRBlockingBugNumberConditional | GoCRLingeringBugNumber | GoCRTotalBugNumber | GoLeakBlockingBugNumberChannelSelect | GoLeakBlockingBugNumberChannelSelectContext | GoLeakBlockingBugNumberMutex | GoLeakBlockingBugNumberWaitgroup | GoLeakBlockingBugNumberConditional | GoLeakTotalBugNumber | GoLeakTotalBugNumberWithLingering | GoPieBlockingBugNumberChannelSelect | GoPieBlockingBugNumberChannelSelectContext | GoPieBlockingBugNumberMutex | GoPieBlockingBugNumberWaitgroup | GoPieBlockingBugNumberConditional | GoPieLingeringBugNumber | GoPieTotalBugNumber | GFuzzBlockingBugNumberChannelSelect | GFuzzBlockingBugNumberChannelSelectContext | GFuzzBlockingBugNumberMutex | GFuzzBlockingBugNumberWaitgroup | GFuzzBlockingBugNumberConditional | GFuzzLingeringBugNumber | GFuzzTotalBugNumber |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| argo-cd | 268 | 668 | 30.382554 | 3 | 1 | 3 | 2 | 0 | 28 | 37 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 3 | 1 | 0 | 0 | 0 | 23 | 27 | 2 | 0 | 0 | 0 | 0 | 15 | 17 |
+| bleve | 188 | 319758 | 3070.916986 | 4 | 1 | 3 | 1 | 0 | 26 | 35 | 1 | 1 | 0 | 0 | 0 | 2 | 5 | 4 | 0 | 0 | 1 | 0 | 10 | 15 | 3 | 0 | 0 | 0 | 0 | 9 | 12 |
+| bosun | 52 | 153 | 15.271111 | 0 | 0 | 0 | 1 | 0 | 2 | 3 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| caddy | 73 | 1096 | 60.457038 | 0 | 0 | 4 | 0 | 0 | 20 | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 6 | 0 | 0 | 1 | 0 | 0 | 17 | 18 | 0 | 0 | 1 | 0 | 0 | 16 | 17 |
+| dns | 33 | 193 | 29.292769 | 0 | 0 | 5 | 2 | 0 | 18 | 25 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| flannel | 16 | 32 | 5.968750 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| frp | 14 | 14 | 2.096774 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| gin | 36 | 16 | 4.815081 | 0 | 0 | 0 | 0 | 0 | 2 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 1 |
+| gofiber | 39 | 983 | 97.431373 | 1 | 0 | 0 | 0 | 0 | 9 | 10 | 0 | 0 | 0 | 0 | 0 | 0 | 4 | 0 | 0 | 0 | 0 | 0 | 7 | 7 | 0 | 0 | 0 | 0 | 0 | 7 | 7 |
+| gorums | 16 | 28100 | 1261.437500 | 0 | 3 | 0 | 0 | 0 | 6 | 9 | 0 | 1 | 0 | 0 | 0 | 1 | 3 | 0 | 1 | 0 | 0 | 0 | 5 | 6 | 0 | 1 | 0 | 0 | 0 | 5 | 6 |
+| grpc | 13 | 357638 | 26181.052632 | 1 | 1 | 0 | 0 | 0 | 7 | 9 | 0 | 1 | 0 | 0 | 0 | 1 | 1 | 1 | 0 | 0 | 0 | 0 | 2 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 3 |
+| hugo | 32 | 2645 | 514.454545 | 0 | 0 | 0 | 0 | 0 | 1 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| kubernetes | 1389 | 1024 | 39.584112 | 4 | 2 | 0 | 0 | 2 | 6 | 14 | 4 | 2 | 0 | 0 | 2 | 8 | 10 | 4 | 2 | 0 | 0 | 2 | 5 | 13 | 4 | 2 | 0 | 0 | 2 | 4 | 12 |
+| nsq | 13 | 1465 | 96.762162 | 6 | 0 | 0 | 3 | 0 | 15 | 24 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 3 | 0 | 0 | 0 | 0 | 13 | 16 | 0 | 0 | 0 | 0 | 0 | 8 | 8 |
+| ollama | 82 | 77 | 5.425134 | 0 | 2 | 0 | 0 | 0 | 2 | 4 | 0 | 2 | 0 | 0 | 0 | 2 | 2 | 0 | 2 | 0 | 0 | 0 | 1 | 3 | 0 | 2 | 0 | 0 | 0 | 1 | 3 |
+| pholcus | 24 | 50 | 9.571429 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| syncthing | 129 | 134398 | 834.263989 | 8 | 2 | 1 | 0 | 0 | 19 | 30 | 2 | 0 | 0 | 0 | 0 | 2 | 7 | 6 | 0 | 0 | 0 | 0 | 7 | 13 | 6 | 0 | 0 | 0 | 0 | 4 | 10 |
+| terraform | 476 | 83173 | 115.309423 | 10 | 1 | 1 | 1 | 0 | 16 | 29 | 1 | 0 | 0 | 0 | 0 | 1 | 2 | 2 | 0 | 0 | 0 | 0 | 8 | 10 | 2 | 0 | 0 | 0 | 0 | 2 | 4 |
+| vmware-tanzu | 146 | 72 | 11.950000 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| zinx | 14 | 1086232 | 21452.777778 | 0 | 0 | 2 | 0 | 0 | 17 | 19 | 0 | 0 | 0 | 0 | 0 | 0 | 14 | 0 | 0 | 0 | 0 | 0 | 10 | 10 | 0 | 0 | 0 | 0 | 0 | 9 | 9 |

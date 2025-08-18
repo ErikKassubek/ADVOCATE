@@ -16,6 +16,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"time"
 )
 
 // runCommand runs a command line (shell) commands
@@ -29,7 +30,7 @@ import (
 // Returns:
 //   - error
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutReplay)*time.Second)
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)
 

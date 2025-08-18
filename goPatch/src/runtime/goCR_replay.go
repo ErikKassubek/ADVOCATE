@@ -215,11 +215,7 @@ func DisableReplay() {
 
 	replayEnabled = false
 
-	lock(&waitingOpsMutex)
-	for _, replCh := range waitingOps {
-		replCh.chWait <- ReplayElement{Blocked: false}
-	}
-	unlock(&waitingOpsMutex)
+	ReleaseAllWaiting()
 }
 
 func IsReplayEnabled() bool {

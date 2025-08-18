@@ -79,9 +79,8 @@ func (c *Cond) Wait() {
 	}
 
 	// replay
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondWait, 2, true)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, 2, false)
 	if wait {
-		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
 

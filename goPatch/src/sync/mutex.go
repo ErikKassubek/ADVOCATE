@@ -52,7 +52,7 @@ type Locker interface {
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexLock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexLock, 2, false)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch

@@ -100,11 +100,11 @@ And the metrics extracted from the artefacts and used for comparison are explain
 ### Examples_Simple
 This directory contains simple Go programs that include common concurrency bugs, to test Advocate's detection of specific issues. 
 They cover tests related to:
-- [`Channel`](/Examples/Examples_Simple/Channel/channel.md)
-- [`Deadlock`](/Examples/Examples_Simple/Deadlock/deadlock.md)
-- [`Select`](/Examples/Examples_Simple/SelectBlock/select.md)
-- [`WaitGroups`](/Examples/Examples_Simple/WaitGroups/waitgroups.md)
-- [`Scenarios`](/Examples/Examples_Simple/Scenarios/scenarios.md)
+- [`Channel`](Examples/Examples_Simple/Channel/channel.md)
+- [`Deadlock`](Examples/Examples_Simple/Deadlock/deadlock.md)
+- [`Select`](Examples/Examples_Simple/SelectBlock/select.md)
+- [`WaitGroups`](Examples/Examples_Simple/WaitGroups/waitgroups.md)
+- [`Scenarios`](Examples/Examples_Simple/Scenarios/scenarios.md)
 
 The specific test cases are each described in the respective document, containing the comparison regarding time and detected bugs across all modes and all tests. 
 
@@ -115,9 +115,9 @@ This directory contains cloned real-world Go projects to apply Advocate's analys
 
 | Project | Bug Types CSV | Total Time CSV |
 |---------|----------------|----------------|
-| [`caddy`](/Examples/Examples_Projects_Results/caddy-master/) | [Bug_Types](/Examples/Examples_Projects_Results/caddy-master/comparison_pivot_Bug_Types.csv) | [Time](/Examples/Examples_Projects_Results/caddy-master/comparison_pivot_Total_Time_s.csv) |
-| [`gin`](/Examples/Examples_Projects_Results/gin-master/)     | [Bug_Types](/Examples/Examples_Projects_Results/gin-master/comparison_pivot_Bug_Types.csv)   | [Time](/Examples/Examples_Projects_Results/gin-master/comparison_pivot_Total_Time_s.csv)   |
-| [`cobra`](/Examples/Examples_Projects_Results/cobra-main/)   | [Bug_Types](/Examples/Examples_Projects_Results/cobra-main/comparison_pivot_Bug_Types.csv)   | [Time](/Examples/Examples_Projects_Results/cobra-main/comparison_pivot_Total_Time_s.csv)   |
+| [`caddy`](Examples/Examples_Projects_Results/caddy-master/) | [Bug_Types](Examples/Examples_Projects_Results/caddy-master/comparison_pivot_Bug_Types.csv) | [Time](Examples/Examples_Projects_Results/caddy-master/comparison_pivot_Total_Time_s.csv) |
+| [`gin`](Examples/Examples_Projects_Results/gin-master/)     | [Bug_Types](Examples/Examples_Projects_Results/gin-master/comparison_pivot_Bug_Types.csv)   | [Time](Examples/Examples_Projects_Results/gin-master/comparison_pivot_Total_Time_s.csv)   |
+| [`cobra`](Examples/Examples_Projects_Results/cobra-main/)   | [Bug_Types](Examples/Examples_Projects_Results/cobra-main/comparison_pivot_Bug_Types.csv)   | [Time](Examples/Examples_Projects_Results/cobra-main/comparison_pivot_Total_Time_s.csv)   |
 
 
 ---

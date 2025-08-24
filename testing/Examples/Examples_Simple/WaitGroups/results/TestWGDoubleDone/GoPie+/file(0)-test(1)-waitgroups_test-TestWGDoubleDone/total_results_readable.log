@@ -1,0 +1,14 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```

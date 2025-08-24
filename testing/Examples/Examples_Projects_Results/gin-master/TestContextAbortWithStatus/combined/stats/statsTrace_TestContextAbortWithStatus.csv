@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GoPie,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextAbortWithStatus,2,1,1,0,0,0,0,0,0

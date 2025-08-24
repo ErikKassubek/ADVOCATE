@@ -1,0 +1,18 @@
+=== RUN   TestTreeCatchAllConflictRoot
+--- PASS: TestTreeCatchAllConflictRoot (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+TestName:  TestTreeCatchAllConflictRoot
+Import added at line: 7
+Header added at line: 525
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeCatchAllConflictRoot
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: catch-all wildcard '*filepath' in new path '/*filepath' conflicts with existing path segment '' in existing prefix '/'
+
+FAIL	github.com/gin-gonic/gin	0.110s
+FAIL
+Bugreport info: 0_1,fail

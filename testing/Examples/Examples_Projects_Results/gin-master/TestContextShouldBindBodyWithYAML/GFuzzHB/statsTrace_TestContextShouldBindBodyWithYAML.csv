@@ -1,0 +1,2 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestContextShouldBindBodyWithYAML,31,1,4,0,0,24,0,0,2

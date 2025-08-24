@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestGetMinVer,0.54349,0.63897,0.00041,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0

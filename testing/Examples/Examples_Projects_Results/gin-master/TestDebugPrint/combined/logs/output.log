@@ -1,0 +1,352 @@
+
+
+### Mode: GFuzz | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.00s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.10s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.119s
+
+
+### Mode: GFuzzHB | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.00s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.10s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: Flow | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.00s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.10s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.00s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+--- PASS: TestDebugPrint (0.10s)
+=== RUN   TestDebugPrintError
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+--- PASS: TestDebugPrintWARNINGSetHTMLTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+=== RUN   TestDebugPrintWARNINGNew
+--- PASS: TestDebugPrintWARNINGNew (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: GoPie | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrint (0.10s)
+=== RUN   TestDebugPrintError
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintError (0.00s)
+=== RUN   TestDebugPrintRoutes
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintRoutes (0.00s)
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+=== RUN   TestDebugPrintLoadTemplate
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintLoadTemplate (0.00s)
+=== RUN   TestDebugPrintWARNINGSetHTMLTemplate
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	github.com/gin-gonic/gin	60.066s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.055s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrint
+Import added at line: 7
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 61
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 82
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 92
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+Header added at line: 115
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrint
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.076s
+FAIL
+Bugreport info: 0_1,fail

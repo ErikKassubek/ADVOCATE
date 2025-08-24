@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GFuzz,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GFuzzHB,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GFuzzHBFlow,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GoPie+,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GoPie,TestFileDescriptor,11,5,6,0,0,0,0,0,0
+GoPieHB,TestFileDescriptor,11,5,6,0,0,0,0,0,0

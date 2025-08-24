@@ -1,0 +1,39 @@
+=== RUN   TestP02_PossibleRecvOnClosed
+--- PASS: TestP02_PossibleRecvOnClosed (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestP02_PossibleRecvOnClosed
+Import added at line: 3
+Header added at line: 68
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestP02_PossibleRecvOnClosed
+--- PASS: TestP02_PossibleRecvOnClosed (0.11s)
+PASS
+ok  	scenarios	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestP02_PossibleRecvOnClosed
+Import added at line: 3
+Header added at line: 68
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestP02_PossibleRecvOnClosed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestP02_PossibleRecvOnClosed (0.11s)
+PASS
+ok  	scenarios	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestP02_PossibleRecvOnClosed
+Import added at line: 3
+Header added at line: 68
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestP02_PossibleRecvOnClosed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+FAIL	scenarios	70.072s
+FAIL

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzz,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPie+,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPie,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPieHB,TestExactArgs_WithValidOnly_WithInvalidArgs,1,1,0,0,0,0,0,0,0

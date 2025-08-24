@@ -1,0 +1,3 @@
+TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+TestLoadHTMLFSFuncMap,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestLoadHTMLFSFuncMap,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0

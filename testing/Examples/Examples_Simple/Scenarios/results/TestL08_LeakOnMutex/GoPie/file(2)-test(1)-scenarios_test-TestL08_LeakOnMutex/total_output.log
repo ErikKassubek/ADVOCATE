@@ -1,0 +1,107 @@
+=== RUN   TestL08_LeakOnMutex
+--- PASS: TestL08_LeakOnMutex (0.02s)
+PASS
+ok  	scenarios	0.023s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL08_LeakOnMutex
+Import added at line: 3
+Header added at line: 150
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL08_LeakOnMutex
+--- PASS: TestL08_LeakOnMutex (0.12s)
+PASS
+ok  	scenarios	0.124s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL08_LeakOnMutex
+Import added at line: 3
+Header added at line: 150
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL08_LeakOnMutex
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestL08_LeakOnMutex (0.12s)
+PASS
+ok  	scenarios	0.124s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL08_LeakOnMutex
+Import added at line: 3
+Header added at line: 150
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL08_LeakOnMutex
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestL08_LeakOnMutex (0.12s)
+PASS
+ok  	scenarios	0.124s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL08_LeakOnMutex
+Import added at line: 3
+Header added at line: 150
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL08_LeakOnMutex
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc00015c1e0, {0x63142e, 0x13}, 0x63c0b8)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc00015c000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc00015c000, 0xc00014b918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc00014e000, {0x75d580, 0x1e, 0x1e}, {0xc20d2e883635cac4, 0x8bb2ce5ce8, 0x7622e0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc00012e210)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:103 +0xa5
+
+goroutine 18 [chan receive]:
+sync.(*Mutex).Lock(0xc000106430)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:58 +0x173
+scenarios.TestL08_LeakOnMutex(0xc00015c1e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:157 +0x7f
+testing.tRunner(0xc00015c1e0, 0x63c0b8)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 19 [semacquire]:
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x31
+created by advocate.startReplay in goroutine 18
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 38 [semacquire]:
+runtime.CallersFrames({0xc0004cffb0, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e
+runtime.WaitForReplay(0x19, 0xc0004efc60?, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:597 +0x28
+sync/atomic.LoadPointer(0xc0001124e8)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/advocate_atomic.go:285 +0x54
+sync/atomic.(*Pointer[...]).Load(0x64cc40)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/type.go:56 +0x32
+internal/sync.(*HashTrieMap[...]).iter(0x64dec0, 0xc00010a280, 0xc000147e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:515 +0x23c
+internal/sync.(*HashTrieMap[...]).Range(0x64dec0, 0xc0004efe78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:495 +0x92
+sync.(*Map).Range(0x762160, 0xc0004efe78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/hashtriemap.go:115 +0x35
+testing.runningList()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2492 +0x8c
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2475 +0x4a
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	scenarios	600.106s
+FAIL

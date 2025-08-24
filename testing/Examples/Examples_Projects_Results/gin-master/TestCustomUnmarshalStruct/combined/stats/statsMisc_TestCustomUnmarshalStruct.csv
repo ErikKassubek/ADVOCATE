@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCustomUnmarshalStruct,0,0,0,0,0,0,0,0,0,0,0

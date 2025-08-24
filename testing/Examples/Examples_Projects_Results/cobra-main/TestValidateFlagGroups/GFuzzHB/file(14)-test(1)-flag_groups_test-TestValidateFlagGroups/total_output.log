@@ -1,0 +1,682 @@
+=== RUN   TestValidateFlagGroups
+=== RUN   TestValidateFlagGroups/No_flags_no_problem
+=== RUN   TestValidateFlagGroups/No_flags_no_problem_even_with_conflicting_groups
+=== RUN   TestValidateFlagGroups/Required_flag_group_not_satisfied
+Error: if any flags in the group [a b c] are set they must all be set; missing [b c]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/One-required_flag_group_not_satisfied
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Exclusive_flag_group_not_satisfied
+Error: if any flags in the group [a b c] are set none of the others can be; [a b] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_required_flag_group_not_satisfied_returns_first_error
+Error: if any flags in the group [a b c] are set they must all be set; missing [a b]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_one-required_flag_group_not_satisfied_returns_first_error
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_exclusive_flag_group_not_satisfied_returns_first_error
+Error: if any flags in the group [a b c] are set none of the others can be; [a c] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_required_groups_occurs_on_groups_in_sorted_order
+Error: if any flags in the group [a b] are set they must all be set; missing [b]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_one-required_groups_occurs_on_groups_in_sorted_order
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_exclusive_groups_occurs_on_groups_in_sorted_order
+Error: if any flags in the group [a b] are set none of the others can be; [a b] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_required_groups
+Error: if any flags in the group [a e] are set they must all be set; missing [e]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_fail_one-required_groups
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_mutually_exclusive_groups
+Error: if any flags in the group [f g] are set none of the others can be; [f g] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_pass
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_pass
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_required_groups_using_inherited_flags
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags_and_fail_one-required_groups
+Error: at least one of the flags in the group [e subonly] is required
+Usage:
+  testcmd subcmd [flags]
+
+Flags:
+  -h, --help             help for subcmd
+      --subonly string
+
+Global Flags:
+      --e string   
+      --f string   
+      --g string
+
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags
+Error: if any flags in the group [e subonly] are set none of the others can be; [e subonly] were all set
+Usage:
+  testcmd subcmd [flags]
+
+Flags:
+  -h, --help             help for subcmd
+      --subonly string
+
+Global Flags:
+      --e string   
+      --f string   
+      --g string
+
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags_and_pass
+=== RUN   TestValidateFlagGroups/Flag_groups_not_applied_if_not_found_on_invoked_command
+--- PASS: TestValidateFlagGroups (0.00s)
+    --- PASS: TestValidateFlagGroups/No_flags_no_problem (0.00s)
+    --- PASS: TestValidateFlagGroups/No_flags_no_problem_even_with_conflicting_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Required_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/One-required_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/Exclusive_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_required_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_one-required_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_exclusive_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_required_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_one-required_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_exclusive_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_fail_one-required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_mutually_exclusive_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_required_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags_and_fail_one-required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags_and_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Flag_groups_not_applied_if_not_found_on_invoked_command (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/flag_groups_test.go
+TestName:  TestValidateFlagGroups
+Import added at line: 17
+Header added at line: 22
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/flag_groups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestValidateFlagGroups
+=== RUN   TestValidateFlagGroups/No_flags_no_problem
+=== RUN   TestValidateFlagGroups/No_flags_no_problem_even_with_conflicting_groups
+=== RUN   TestValidateFlagGroups/Required_flag_group_not_satisfied
+Error: if any flags in the group [a b c] are set they must all be set; missing [b c]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/One-required_flag_group_not_satisfied
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Exclusive_flag_group_not_satisfied
+Error: if any flags in the group [a b c] are set none of the others can be; [a b] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_required_flag_group_not_satisfied_returns_first_error
+Error: if any flags in the group [a b c] are set they must all be set; missing [a b]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_one-required_flag_group_not_satisfied_returns_first_error
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Multiple_exclusive_flag_group_not_satisfied_returns_first_error
+Error: if any flags in the group [a b c] are set none of the others can be; [a c] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_required_groups_occurs_on_groups_in_sorted_order
+Error: if any flags in the group [a b] are set they must all be set; missing [b]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_one-required_groups_occurs_on_groups_in_sorted_order
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Validation_of_exclusive_groups_occurs_on_groups_in_sorted_order
+Error: if any flags in the group [a b] are set none of the others can be; [a b] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_required_groups
+Error: if any flags in the group [a e] are set they must all be set; missing [e]
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_fail_one-required_groups
+Error: at least one of the flags in the group [a b] is required
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_mutually_exclusive_groups
+Error: if any flags in the group [f g] are set none of the others can be; [f g] were all set
+Usage:
+  testcmd [flags]
+  testcmd [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  subcmd      
+
+Flags:
+      --a string   
+      --b string   
+      --c string   
+      --d string   
+      --e string   
+      --f string   
+      --g string   
+  -h, --help       help for testcmd
+
+Use "testcmd [command] --help" for more information about a command.
+
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_pass
+=== RUN   TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_pass
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_required_groups_using_inherited_flags
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags_and_fail_one-required_groups
+Error: at least one of the flags in the group [e subonly] is required
+Usage:
+  testcmd subcmd [flags]
+
+Flags:
+  -h, --help             help for subcmd
+      --subonly string
+
+Global Flags:
+      --e string   
+      --f string   
+      --g string
+
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags
+Error: if any flags in the group [e subonly] are set none of the others can be; [e subonly] were all set
+Usage:
+  testcmd subcmd [flags]
+
+Flags:
+  -h, --help             help for subcmd
+      --subonly string
+
+Global Flags:
+      --e string   
+      --f string   
+      --g string
+
+=== RUN   TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags_and_pass
+=== RUN   TestValidateFlagGroups/Flag_groups_not_applied_if_not_found_on_invoked_command
+--- PASS: TestValidateFlagGroups (0.11s)
+    --- PASS: TestValidateFlagGroups/No_flags_no_problem (0.00s)
+    --- PASS: TestValidateFlagGroups/No_flags_no_problem_even_with_conflicting_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Required_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/One-required_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/Exclusive_flag_group_not_satisfied (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_required_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_one-required_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Multiple_exclusive_flag_group_not_satisfied_returns_first_error (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_required_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_one-required_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Validation_of_exclusive_groups_occurs_on_groups_in_sorted_order (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_fail_one-required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_fail_mutually_exclusive_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_required_and_exclusive_groups_and_can_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Persistent_flags_utilize_one-required_and_exclusive_groups_and_can_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_required_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_one-required_groups_using_inherited_flags_and_fail_one-required_groups (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags (0.00s)
+    --- PASS: TestValidateFlagGroups/Subcmds_can_use_exclusive_groups_using_inherited_flags_and_pass (0.00s)
+    --- PASS: TestValidateFlagGroups/Flag_groups_not_applied_if_not_found_on_invoked_command (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.115s

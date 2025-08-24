@@ -1,0 +1,39 @@
+=== RUN   TestLoadHTMLFSReleaseMode
+--- PASS: TestLoadHTMLFSReleaseMode (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFSReleaseMode
+Import added at line: 7
+Header added at line: 370
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFSReleaseMode
+--- PASS: TestLoadHTMLFSReleaseMode (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFSReleaseMode
+Import added at line: 7
+Header added at line: 370
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFSReleaseMode
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestLoadHTMLFSReleaseMode (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFSReleaseMode
+Import added at line: 7
+Header added at line: 370
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFSReleaseMode
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_2
+FAIL	github.com/gin-gonic/gin	70.078s
+FAIL

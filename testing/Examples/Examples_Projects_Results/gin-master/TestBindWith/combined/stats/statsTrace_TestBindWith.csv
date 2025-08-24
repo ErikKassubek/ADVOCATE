@@ -1,0 +1,10 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBindWith,13,2,1,2,0,2,3,0,1
+GFuzz,TestBindWith,13,2,1,2,0,2,3,0,1
+GFuzzHB,TestBindWith,13,2,1,2,0,2,3,0,1
+GFuzzHBFlow,TestBindWith,13,2,1,2,0,2,3,0,1
+GoPie+,TestBindWith,13,2,1,2,0,2,3,0,1
+GoPie,TestBindWith,13,2,1,2,0,2,3,0,1
+GoPie,TestBindWith,14,4,1,2,0,2,3,0,1
+GoPie,TestBindWith,14,4,1,2,0,2,3,0,1
+GoPieHB,TestBindWith,13,2,1,2,0,2,3,0,1

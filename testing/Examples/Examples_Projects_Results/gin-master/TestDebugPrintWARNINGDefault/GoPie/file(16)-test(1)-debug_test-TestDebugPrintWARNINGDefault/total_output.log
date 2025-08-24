@@ -1,0 +1,52 @@
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintWARNINGDefault
+Import added at line: 7
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintWARNINGDefault
+--- PASS: TestDebugPrintWARNINGDefault (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintWARNINGDefault
+Import added at line: 7
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintWARNINGDefault
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintWARNINGDefault (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintWARNINGDefault
+Import added at line: 7
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintWARNINGDefault
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestDebugPrintWARNINGDefault (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintWARNINGDefault
+Import added at line: 7
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintWARNINGDefault
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_3
+FAIL	github.com/gin-gonic/gin	70.078s
+FAIL

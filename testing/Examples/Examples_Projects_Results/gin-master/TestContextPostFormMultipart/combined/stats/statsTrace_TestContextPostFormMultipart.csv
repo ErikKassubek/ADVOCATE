@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GFuzz,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GFuzzHB,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GFuzzHBFlow,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GoPie+,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GoPie,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1
+GoPieHB,TestContextPostFormMultipart,5,1,1,0,0,2,0,0,1

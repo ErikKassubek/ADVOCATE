@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzz,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie+,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPieHB,TestFlagDirFilterCompletionInGo,1,1,0,0,0,0,0,0,0

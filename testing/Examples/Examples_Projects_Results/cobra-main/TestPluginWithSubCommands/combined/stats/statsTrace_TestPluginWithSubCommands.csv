@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GFuzz,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GoPie+,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GoPie,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0
+GoPieHB,TestPluginWithSubCommands,1,1,0,0,0,0,0,0,0

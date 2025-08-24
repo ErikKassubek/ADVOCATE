@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GFuzz,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GoPie+,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GoPie,TestExecuteContextC,1,1,0,0,0,0,0,0,0
+GoPieHB,TestExecuteContextC,1,1,0,0,0,0,0,0,0

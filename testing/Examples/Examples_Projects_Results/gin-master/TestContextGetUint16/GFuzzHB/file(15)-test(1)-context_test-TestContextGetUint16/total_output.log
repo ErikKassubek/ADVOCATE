@@ -1,0 +1,20 @@
+=== RUN   TestContextGetUint16
+--- PASS: TestContextGetUint16 (0.00s)
+=== RUN   TestContextGetUint16Slice
+--- PASS: TestContextGetUint16Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetUint16
+Import added at line: 7
+Header added at line: 384
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 489
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetUint16
+--- PASS: TestContextGetUint16 (0.10s)
+=== RUN   TestContextGetUint16Slice
+--- PASS: TestContextGetUint16Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s

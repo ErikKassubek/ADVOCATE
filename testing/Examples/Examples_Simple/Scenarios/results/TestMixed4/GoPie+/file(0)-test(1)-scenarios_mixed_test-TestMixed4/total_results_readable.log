@@ -1,0 +1,30 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:91@18
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:91@400
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:92@404
+
+
+```

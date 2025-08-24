@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GFuzz,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GFuzzHB,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GFuzzHBFlow,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GoPie+,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GoPie,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0
+GoPieHB,TestWithHttptestWithAutoSelectedPort,10,8,2,0,0,0,0,0,0

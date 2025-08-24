@@ -1,0 +1,11 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GFuzz,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GFuzzHB,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GFuzzHBFlow,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GoPie+,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GoPie,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GoPie,TestDebugPrintWARNINGDefault,13,4,3,2,0,0,3,0,0
+GoPie,TestDebugPrintWARNINGDefault,13,4,3,2,0,0,3,0,0
+GoPieHB,TestDebugPrintWARNINGDefault,12,2,3,2,0,0,3,0,0
+GoPieHB,TestDebugPrintWARNINGDefault,0,0,0,0,0,0,0,0,0

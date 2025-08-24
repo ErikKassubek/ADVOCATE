@@ -1,0 +1,5 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestSelectMultiple,0,0,0,0,0,0,0,0,0,0,0
+TestSelectMultiple,0,0,0,0,0,0,0,0,0,0,0
+TestSelectMultiple,0,0,0,0,0,0,0,0,0,0,0
+TestSelectMultiple,0,0,0,0,0,0,0,0,0,0,0

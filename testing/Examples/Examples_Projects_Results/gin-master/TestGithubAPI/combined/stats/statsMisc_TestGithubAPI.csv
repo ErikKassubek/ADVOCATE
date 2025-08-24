@@ -1,0 +1,7 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestGithubAPI,0,0,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,92 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestWrongGroupForCompletion ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209@0
+
+
+```

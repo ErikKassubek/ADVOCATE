@@ -1,0 +1,11 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/deprecated_test.go
+TestName:  TestBindWith
+Import added at line: 7
+Header added at line: 17
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/deprecated_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBindWith
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_3
+FAIL	github.com/gin-gonic/gin	70.076s
+FAIL

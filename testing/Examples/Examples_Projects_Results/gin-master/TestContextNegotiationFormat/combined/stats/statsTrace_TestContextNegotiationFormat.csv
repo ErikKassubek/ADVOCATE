@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GoPie,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextNegotiationFormat,2,1,1,0,0,0,0,0,0

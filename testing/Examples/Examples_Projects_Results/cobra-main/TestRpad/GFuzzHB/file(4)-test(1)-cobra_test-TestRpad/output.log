@@ -1,0 +1,30 @@
+=== RUN   TestRpad
+=== RUN   TestRpad/Padding_required
+=== RUN   TestRpad/No_padding_required
+=== RUN   TestRpad/Empty_string
+=== RUN   TestRpad/Zero_padding
+--- PASS: TestRpad (0.00s)
+    --- PASS: TestRpad/Padding_required (0.00s)
+    --- PASS: TestRpad/No_padding_required (0.00s)
+    --- PASS: TestRpad/Empty_string (0.00s)
+    --- PASS: TestRpad/Zero_padding (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestRpad
+Import added at line: 17
+Header added at line: 185
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRpad
+=== RUN   TestRpad/Padding_required
+=== RUN   TestRpad/No_padding_required
+=== RUN   TestRpad/Empty_string
+=== RUN   TestRpad/Zero_padding
+--- PASS: TestRpad (0.10s)
+    --- PASS: TestRpad/Padding_required (0.00s)
+    --- PASS: TestRpad/No_padding_required (0.00s)
+    --- PASS: TestRpad/Empty_string (0.00s)
+    --- PASS: TestRpad/Zero_padding (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

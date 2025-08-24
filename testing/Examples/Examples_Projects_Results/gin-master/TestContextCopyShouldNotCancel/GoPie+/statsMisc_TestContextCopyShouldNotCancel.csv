@@ -1,0 +1,3 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestContextCopyShouldNotCancel,0,0,0,0,0,0,0,0,0,0,0
+TestContextCopyShouldNotCancel,0,0,0,0,0,0,0,0,0,0,0

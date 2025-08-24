@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestNormPassedOnLocal,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

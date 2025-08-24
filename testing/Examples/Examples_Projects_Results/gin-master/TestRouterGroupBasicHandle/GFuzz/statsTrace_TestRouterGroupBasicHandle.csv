@@ -1,0 +1,2 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestRouterGroupBasicHandle,22,1,21,0,0,0,0,0,0

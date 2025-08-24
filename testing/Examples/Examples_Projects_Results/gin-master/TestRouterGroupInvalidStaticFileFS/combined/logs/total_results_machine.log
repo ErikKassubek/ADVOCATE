@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: GFuzzHB | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: Flow | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: GFuzzHBFlow | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: GoPie | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: GoPie+ | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183
+
+
+### Mode: GoPieHB | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupInvalidStaticFileFS ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup.go:183

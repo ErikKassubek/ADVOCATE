@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GFuzz,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GFuzzHB,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GFuzzHBFlow,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GoPie+,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GoPie,TestPathCleanLong,1,23,0,0,0,0,0,0,0
+GoPieHB,TestPathCleanLong,1,23,0,0,0,0,0,0,0

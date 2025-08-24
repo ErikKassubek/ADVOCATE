@@ -1,0 +1,14 @@
+=== RUN   TestForceConsoleColor
+--- PASS: TestForceConsoleColor (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+TestName:  TestForceConsoleColor
+Import added at line: 7
+Header added at line: 448
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestForceConsoleColor
+--- PASS: TestForceConsoleColor (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s

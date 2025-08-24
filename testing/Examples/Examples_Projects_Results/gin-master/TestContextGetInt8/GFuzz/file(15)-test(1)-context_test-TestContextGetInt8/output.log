@@ -1,0 +1,20 @@
+=== RUN   TestContextGetInt8
+--- PASS: TestContextGetInt8 (0.00s)
+=== RUN   TestContextGetInt8Slice
+--- PASS: TestContextGetInt8Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt8
+Import added at line: 7
+Header added at line: 340
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 441
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt8
+--- PASS: TestContextGetInt8 (0.10s)
+=== RUN   TestContextGetInt8Slice
+--- PASS: TestContextGetInt8Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s

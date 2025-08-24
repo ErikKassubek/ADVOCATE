@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.115s
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.114s
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.116s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.116s
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.116s
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.117s
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-select_test-TestSelectNoPartner ###
+
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.01s)
+PASS
+ok  	selectblock	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectNoPartner
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectNoPartner
+--- PASS: TestSelectNoPartner (0.11s)
+PASS
+ok  	selectblock	0.115s

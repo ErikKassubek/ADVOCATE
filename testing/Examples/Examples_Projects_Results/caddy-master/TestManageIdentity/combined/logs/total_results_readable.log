@@ -1,0 +1,624 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2638
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3192
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3194
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3344
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3778
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4412
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4414
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4426
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3032
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3154
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3306
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3812
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4370
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4372
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4384
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3168
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3160
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3164
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3180
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3704
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4474
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4476
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4488
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2578
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3154
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3306
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3680
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4370
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4372
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4384
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2450
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3166
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3168
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3318
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3744
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4382
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4384
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4396
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2704
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3168
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3170
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3320
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3812
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4384
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4386
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4398
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2486
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3166
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3168
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3318
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3674
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4382
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4384
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4396
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2562
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3160
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3162
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3312
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3906
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4378
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4380
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4392
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2544
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3172
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3174
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3324
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3804
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4390
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4392
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4404
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3154
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3152
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3306
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3766
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4376
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4378
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4390
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2364
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3120
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3122
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3272
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3926
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4520
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4522
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4534
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2522
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3166
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3168
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3318
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3688
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4382
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4384
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4396
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2654
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3154
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3306
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3704
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4370
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4372
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4384
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2384
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3178
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3180
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3330
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3672
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4396
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4398
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4410
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2436
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3164
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3166
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3316
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3726
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4380
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4382
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4394
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2416
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3130
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3132
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3282
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3658
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4350
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4352
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4364
+
+```
+
+### Mode: Flow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2608
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3140
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3142
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3292
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3790
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4360
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4362
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4374
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2390
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3096
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3098
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3248
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3570
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4314
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4316
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4328
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2470
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3118
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3120
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3270
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@4070
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4610
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4612
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4624
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3170
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3026
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3032
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3182
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3840
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4484
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4486
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4498
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2408
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3150
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3152
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3302
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3686
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4400
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4402
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4414
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2624
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3108
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3110
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3260
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3794
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4324
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4326
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4338
+
+```==================================
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3144
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3146
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3168
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3718
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4462
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4464
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4476
+
+```
+
+### Mode: GoPie | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2726
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3084
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3086
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3236
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3770
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4300
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4302
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4314
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```

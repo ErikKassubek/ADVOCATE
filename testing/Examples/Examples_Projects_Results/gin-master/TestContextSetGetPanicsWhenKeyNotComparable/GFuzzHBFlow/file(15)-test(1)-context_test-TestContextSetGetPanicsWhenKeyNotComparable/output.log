@@ -1,0 +1,65 @@
+=== RUN   TestContextSetGetPanicsWhenKeyNotComparable
+--- PASS: TestContextSetGetPanicsWhenKeyNotComparable (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextSetGetPanicsWhenKeyNotComparable
+Import added at line: 7
+Header added at line: 292
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextSetGetPanicsWhenKeyNotComparable
+SetExitCode: other
+panic: runtime error: hash of unhashable type []int
+
+goroutine 22 [running]:
+runtime.SetExitCodeFromPanicMsg({0x11deb80, 0xc0002cc920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_exit.go:82 +0x359
+runtime.ExitReplayPanic({0x11deb80, 0xc0002cc920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:937 +0x3c
+panic({0x11deb80, 0xc0002cc920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:744 +0x2f
+github.com/gin-gonic/gin.(*Context).Set(0xc0001c0ea0, {0x1186440, 0xc000126a20}, {0x1196880, 0x1395438})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:275 +0x158
+github.com/gin-gonic/gin.TestContextSetGetPanicsWhenKeyNotComparable.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:301 +0x8f
+github.com/stretchr/testify/assert.didPanic(0xc0002cc910)
+	/home/ilian/Projects/go/pkg/mod/github.com/stretchr/testify@v1.10.0/assert/assertions.go:1239 +0x119
+github.com/stretchr/testify/assert.Panics({0x139d7a0, 0xc0002d41e0}, 0xc0002cc910, {0x0, 0x0, 0x0})
+	/home/ilian/Projects/go/pkg/mod/github.com/stretchr/testify@v1.10.0/assert/assertions.go:1253 +0x126
+github.com/gin-gonic/gin.TestContextSetGetPanicsWhenKeyNotComparable(0xc0002d41e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:300 +0x126
+testing.tRunner(0xc0002d41e0, 0x1330090)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0002d41e0, {0x130fe8c, 0x2b}, 0x1330090)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0002d4000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0002d4000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc000126978, {0x19434e0, 0x16f, 0x16f}, {0xc20d2a711f330405, 0x8bb31152a7, 0x194b920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc0001662c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:815 +0xa5
+
+goroutine 23 [sleep]:
+time.Sleep(0xdf8475800)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:338 +0x13c
+advocate.InitTracing.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:72 +0x25
+created by advocate.InitTracing in goroutine 22
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:71 +0xd2
+
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: runtime error: hash of unhashable type []int
+
+FAIL	github.com/gin-gonic/gin	0.114s
+FAIL
+Bugreport info: 0_1,fail

@@ -1,0 +1,14 @@
+=== RUN   TestGetModules
+--- PASS: TestGetModules (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/modules_test.go
+TestName:  TestGetModules
+Import added at line: 17
+Header added at line: 22
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/modules_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestGetModules
+--- PASS: TestGetModules (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s

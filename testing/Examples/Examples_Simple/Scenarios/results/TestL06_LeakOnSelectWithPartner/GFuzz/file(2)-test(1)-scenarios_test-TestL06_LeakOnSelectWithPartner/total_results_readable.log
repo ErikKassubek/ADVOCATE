@@ -1,0 +1,25 @@
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+
+
+```

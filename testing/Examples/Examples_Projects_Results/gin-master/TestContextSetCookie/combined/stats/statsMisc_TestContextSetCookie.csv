@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextSetCookie,0,0,0,0,0,0,0,0,0,0,0

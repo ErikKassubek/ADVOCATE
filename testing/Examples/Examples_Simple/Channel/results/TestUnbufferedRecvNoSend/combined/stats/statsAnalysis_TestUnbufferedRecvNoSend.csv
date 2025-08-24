@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzz,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzzHB,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzzHBFlow,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPie+,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPie,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPieHB,TestUnbufferedRecvNoSend,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0

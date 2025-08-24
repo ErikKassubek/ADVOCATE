@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GFuzz,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GFuzzHB,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GFuzzHBFlow,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GoPie+,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GoPie,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0
+GoPieHB,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,12,12,0,0,0,0,0,0,0

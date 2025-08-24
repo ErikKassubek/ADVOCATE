@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestL07_LeakOnSelectWithoutPartner,0,0,0,0,0,0,0,0,0,0,0

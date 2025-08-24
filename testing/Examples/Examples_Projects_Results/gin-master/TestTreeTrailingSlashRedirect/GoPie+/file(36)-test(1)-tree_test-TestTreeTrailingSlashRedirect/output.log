@@ -1,0 +1,14 @@
+=== RUN   TestTreeTrailingSlashRedirect
+--- PASS: TestTreeTrailingSlashRedirect (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+TestName:  TestTreeTrailingSlashRedirect
+Import added at line: 7
+Header added at line: 570
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeTrailingSlashRedirect
+--- PASS: TestTreeTrailingSlashRedirect (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s

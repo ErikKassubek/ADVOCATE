@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSearchCredential ###
+

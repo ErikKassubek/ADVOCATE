@@ -1,0 +1,8 @@
+Mode,TestName,Time
+Flow,Total,0.77930
+GFuzz,Total,1.37965
+GFuzzHB,Total,0.82853
+GFuzzHBFlow,Total,0.76535
+GoPie+,Total,1.93456
+GoPie,Total,0.81374
+GoPieHB,Total,1.91186

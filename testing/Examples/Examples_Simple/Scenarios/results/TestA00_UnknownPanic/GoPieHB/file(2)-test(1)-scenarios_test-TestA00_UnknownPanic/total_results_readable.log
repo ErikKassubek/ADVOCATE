@@ -1,0 +1,10 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:17@0
+
+
+```

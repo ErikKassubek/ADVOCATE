@@ -1,0 +1,2 @@
+A01,T:0:0:0:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:70
+A01,T:1:1000000004:324:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:70,T:4:1000000004:304:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:68

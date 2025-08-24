@@ -1,0 +1,38 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+L00,T:1:-1:2:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+L00,T:1:-1:2:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+L00,T:1:-1:2:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestA06_UnlockUnlocked ###
+
+A06,T:0:0:0:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:52

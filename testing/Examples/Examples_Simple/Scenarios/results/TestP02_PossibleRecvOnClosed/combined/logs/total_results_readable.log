@@ -1,0 +1,86 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:81@12
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:77@16
+
+```
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:81@12
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:77@16
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:81@12
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:77@16
+
+```
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestP02_PossibleRecvOnClosed ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:81@12
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:77@16
+
+```

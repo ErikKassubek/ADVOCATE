@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: GFuzzHB | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: Flow | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: GFuzzHBFlow | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: GoPie | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: GoPie+ | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102
+
+
+### Mode: GoPieHB | Subdir: file(33)-test(1)-response_writer_test-TestResponseWriterHijack ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/iface.go:102

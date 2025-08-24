@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.18s)
+PASS
+ok  	github.com/gin-gonic/gin	0.185s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.17s)
+PASS
+ok  	github.com/gin-gonic/gin	0.183s
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.18s)
+PASS
+ok  	github.com/gin-gonic/gin	0.189s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.18s)
+PASS
+ok  	github.com/gin-gonic/gin	0.184s
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.18s)
+PASS
+ok  	github.com/gin-gonic/gin	0.184s
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.17s)
+PASS
+ok  	github.com/gin-gonic/gin	0.183s
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextRenderUTF8Attachment ###
+
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderUTF8Attachment
+Import added at line: 7
+Header added at line: 1338
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderUTF8Attachment
+--- PASS: TestContextRenderUTF8Attachment (0.17s)
+PASS
+ok  	github.com/gin-gonic/gin	0.182s

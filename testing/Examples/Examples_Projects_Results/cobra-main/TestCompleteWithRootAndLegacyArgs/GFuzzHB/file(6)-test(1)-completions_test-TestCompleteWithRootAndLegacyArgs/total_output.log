@@ -1,0 +1,14 @@
+=== RUN   TestCompleteWithRootAndLegacyArgs
+--- PASS: TestCompleteWithRootAndLegacyArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteWithRootAndLegacyArgs
+Import added at line: 17
+Header added at line: 2850
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteWithRootAndLegacyArgs
+--- PASS: TestCompleteWithRootAndLegacyArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s

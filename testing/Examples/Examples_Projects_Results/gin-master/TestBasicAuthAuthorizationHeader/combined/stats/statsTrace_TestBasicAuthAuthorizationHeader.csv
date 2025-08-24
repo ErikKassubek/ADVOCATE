@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GFuzz,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GoPie+,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GoPie,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0
+GoPieHB,TestBasicAuthAuthorizationHeader,1,1,0,0,0,0,0,0,0

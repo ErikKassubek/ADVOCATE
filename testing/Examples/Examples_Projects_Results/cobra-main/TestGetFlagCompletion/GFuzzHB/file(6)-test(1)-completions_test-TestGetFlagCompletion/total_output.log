@@ -1,0 +1,34 @@
+=== RUN   TestGetFlagCompletion
+=== RUN   TestGetFlagCompletion/get_flag_completion_function_for_command
+=== RUN   TestGetFlagCompletion/get_persistent_flag_completion_function_for_command
+=== RUN   TestGetFlagCompletion/get_flag_completion_function_for_child_command
+=== RUN   TestGetFlagCompletion/get_persistent_flag_completion_function_for_child_command
+=== RUN   TestGetFlagCompletion/cannot_get_flag_completion_function_for_local_parent_flag
+--- PASS: TestGetFlagCompletion (0.00s)
+    --- PASS: TestGetFlagCompletion/get_flag_completion_function_for_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_persistent_flag_completion_function_for_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_flag_completion_function_for_child_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_persistent_flag_completion_function_for_child_command (0.00s)
+    --- PASS: TestGetFlagCompletion/cannot_get_flag_completion_function_for_local_parent_flag (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestGetFlagCompletion
+Import added at line: 17
+Header added at line: 3647
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestGetFlagCompletion
+=== RUN   TestGetFlagCompletion/get_flag_completion_function_for_command
+=== RUN   TestGetFlagCompletion/get_persistent_flag_completion_function_for_command
+=== RUN   TestGetFlagCompletion/get_flag_completion_function_for_child_command
+=== RUN   TestGetFlagCompletion/get_persistent_flag_completion_function_for_child_command
+=== RUN   TestGetFlagCompletion/cannot_get_flag_completion_function_for_local_parent_flag
+--- PASS: TestGetFlagCompletion (0.10s)
+    --- PASS: TestGetFlagCompletion/get_flag_completion_function_for_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_persistent_flag_completion_function_for_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_flag_completion_function_for_child_command (0.00s)
+    --- PASS: TestGetFlagCompletion/get_persistent_flag_completion_function_for_child_command (0.00s)
+    --- PASS: TestGetFlagCompletion/cannot_get_flag_completion_function_for_local_parent_flag (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.107s

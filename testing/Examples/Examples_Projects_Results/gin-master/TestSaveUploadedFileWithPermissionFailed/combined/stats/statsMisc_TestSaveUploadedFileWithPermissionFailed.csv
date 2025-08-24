@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestSaveUploadedFileWithPermissionFailed,0,0,0,0,0,0,0,0,0,0,0

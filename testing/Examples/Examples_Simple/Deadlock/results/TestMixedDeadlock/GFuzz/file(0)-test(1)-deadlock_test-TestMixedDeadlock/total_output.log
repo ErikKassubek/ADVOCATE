@@ -1,0 +1,14 @@
+=== RUN   TestMixedDeadlock
+--- PASS: TestMixedDeadlock (0.00s)
+PASS
+ok  	deadlock	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+--- PASS: TestMixedDeadlock (0.10s)
+PASS
+ok  	deadlock	0.105s

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GFuzz,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GoPie+,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GoPie,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0
+GoPieHB,TestLoggerWithConfigFormatting,3,1,2,0,0,0,0,0,0

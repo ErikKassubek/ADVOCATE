@@ -1,0 +1,84 @@
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.01s)
+PASS
+ok  	selectblock	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.11s)
+PASS
+ok  	selectblock	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.13s)
+PASS
+ok  	selectblock	0.129s
+Bugreport info: 0_1,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+=== RUN   TestSelectMultiple
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 20
+
+Exit Replay with code  20 Leak: Leaking unbuffered channel or select was unstuck
+FAIL	selectblock	0.610s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.11s)
+PASS
+ok  	selectblock	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.11s)
+PASS
+ok  	selectblock	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectMultiple
+--- PASS: TestSelectMultiple (0.13s)
+PASS
+ok  	selectblock	0.130s
+Bugreport info: 0_1,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectMultiple
+Import added at line: 3
+Header added at line: 32
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+=== RUN   TestSelectMultiple
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 20
+
+Exit Replay with code  20 Leak: Leaking unbuffered channel or select was unstuck
+FAIL	selectblock	0.610s
+FAIL

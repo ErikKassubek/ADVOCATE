@@ -1,0 +1,30 @@
+=== RUN   TestError
+--- PASS: TestError (0.00s)
+=== RUN   TestErrorSlice
+--- PASS: TestErrorSlice (0.00s)
+=== RUN   TestErrorUnwrap
+--- PASS: TestErrorUnwrap (0.00s)
+=== RUN   TestErrorLogger
+--- PASS: TestErrorLogger (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/errors_test.go
+TestName:  TestError
+Import added at line: 7
+Header added at line: 17
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/errors_test.go
+Header added at line: 68
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/errors_test.go
+Header added at line: 116
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/errors_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestError
+--- PASS: TestError (0.10s)
+=== RUN   TestErrorSlice
+--- PASS: TestErrorSlice (0.00s)
+=== RUN   TestErrorUnwrap
+--- PASS: TestErrorUnwrap (0.00s)
+=== RUN   TestErrorLogger
+--- PASS: TestErrorLogger (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.115s

@@ -1,0 +1,36 @@
+=== RUN   TestETags
+{"level":"info","ts":1750381166.7283225,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381166.7284648,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381166.7287066,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381166.7288327,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381166.7321372,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestETags
+{"level":"info","ts":1750381167.0795245,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//[::1]:2999","//127.0.0.1:2999","//localhost:2999"]}
+{"level":"info","ts":1750381167.0797496,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381167.0804598,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381167.0809908,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381167.0834074,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.11s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.121s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestETags
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/caddyserver/caddy/v2	70.075s
+FAIL

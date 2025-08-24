@@ -1,0 +1,14 @@
+=== RUN   TestLoadHTMLFilesTestMode
+--- PASS: TestLoadHTMLFilesTestMode (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFilesTestMode
+Import added at line: 7
+Header added at line: 221
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFilesTestMode
+--- PASS: TestLoadHTMLFilesTestMode (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s

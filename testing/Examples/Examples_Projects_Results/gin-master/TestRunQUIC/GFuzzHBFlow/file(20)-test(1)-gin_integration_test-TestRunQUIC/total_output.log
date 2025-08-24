@@ -1,0 +1,685 @@
+=== RUN   TestRunQUIC
+    gin_integration_test.go:43: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:43
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:290
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.01s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.013s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.117s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.118s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.118s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.118s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+SIGQUIT: quit
+PC=0x49a0a1 m=0 sigcode=0
+
+goroutine 0 gp=0x19554a0 m=0 mp=0x1957060 [idle]:
+runtime.futex(0x19571a0, 0x80, 0x0, 0x0, 0x0, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sys_linux_amd64.s:557 +0x21 fp=0x7fffedbf78e0 sp=0x7fffedbf78d8 pc=0x49a0a1
+runtime.futexsleep(0xc0000120a0?, 0xb5ff6ae5?, 0x19554a0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/os_linux.go:75 +0x30 fp=0x7fffedbf7930 sp=0x7fffedbf78e0 pc=0x451250
+runtime.notesleep(0x19571a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/lock_futex.go:47 +0x9d fp=0x7fffedbf7968 sp=0x7fffedbf7930 pc=0x426b5d
+runtime.mPark()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:1924 +0x1e fp=0x7fffedbf7988 sp=0x7fffedbf7968 pc=0x45b51e
+runtime.stopm()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:2944 +0x6d fp=0x7fffedbf79b0 sp=0x7fffedbf7988 pc=0x45cc8d
+runtime.findRunnable()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:3681 +0x30 fp=0x7fffedbf7af8 sp=0x7fffedbf79b0 pc=0x45d750
+runtime.schedule()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4054 +0xbd fp=0x7fffedbf7b30 sp=0x7fffedbf7af8 pc=0x45f17d
+runtime.goexit0(0xc000102a80?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4352 +0x18 fp=0x7fffedbf7b48 sp=0x7fffedbf7b30 pc=0x45fb18
+runtime.mcall()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:459 +0x4e fp=0x7fffedbf7b60 sp=0x7fffedbf7b48 pc=0x49622e
+
+goroutine 1 gp=0xc000002380 m=nil [semacquire]:
+runtime.gopark(0x1338c00, 0x195c960, 0x12, 0x5, 0x4)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000587c8 sp=0xc000058798 pc=0x4903b1
+runtime.goparkunlock(0x195c960?, 0x45?, 0xd6?, 0xc000034060?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0000587f8 sp=0xc0000587c8 pc=0x4585e5
+runtime.semacquire1(0x1955d78, 0x0, 0x0, 0x0, 0x12)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000058848 sp=0xc0000587f8 pc=0x46d689
+runtime.semacquire(0xc0000588a0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:139 +0x1e fp=0xc000058880 sp=0xc000058848 pc=0x46d4de
+runtime.gcStart({0x73077fb54d58?, 0xc000058a22?, 0x428c92?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:668 +0x14e fp=0xc0000589a0 sp=0xc000058880 pc=0x431aae
+runtime.mallocgcSmallScanNoHeader(0xe8, 0x1271e20, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc000058a00 sp=0xc0000589a0 pc=0x429134
+runtime.mallocgc(0xe8, 0x1271e20, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc000058a30 sp=0xc000058a00 pc=0x48de85
+runtime.newobject(0x1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1714 +0x25 fp=0xc000058a58 sp=0xc000058a30 pc=0x429925
+runtime.CallersFrames({0xc000618ca0, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29 fp=0xc000058a78 sp=0xc000058a58 pc=0x476969
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e fp=0xc000058ba0 sp=0xc000058a78 pc=0x42430e
+runtime.FuzzingFlowWait(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_fuzzing.go:121 +0x3e fp=0xc000058c28 sp=0xc000058ba0 pc=0x41359e
+runtime.chanrecv(0xc0006220a0, 0x0, 0x1, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:700 +0x205 fp=0xc000058d40 sp=0xc000058c28 pc=0x41ffc5
+runtime.chanrecv1(0xc000628b80?, 0x1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:627 +0x14 fp=0xc000058d68 sp=0xc000058d40 pc=0x41fd94
+runtime.gcBgMarkStartWorkers()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1349 +0x7b fp=0xc000058da0 sp=0xc000058d68 pc=0x4332fb
+runtime.gcStart({0x73077fb54d58?, 0xc000058f22?, 0x428ba9?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:708 +0x2b2 fp=0xc000058ec0 sp=0xc000058da0 pc=0x431c12
+runtime.mallocgcSmallScanNoHeader(0xe8, 0x1271e20, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc000058f20 sp=0xc000058ec0 pc=0x429134
+runtime.mallocgc(0xe8, 0x1271e20, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc000058f50 sp=0xc000058f20 pc=0x48de85
+runtime.newobject(0x1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1714 +0x25 fp=0xc000058f78 sp=0xc000058f50 pc=0x429925
+runtime.CallersFrames({0xc000618b98, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29 fp=0xc000058f98 sp=0xc000058f78 pc=0x476969
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e fp=0xc0000590c0 sp=0xc000058f98 pc=0x42430e
+runtime.FuzzingFlowWait(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_fuzzing.go:121 +0x3e fp=0xc000059148 sp=0xc0000590c0 pc=0x41359e
+sync.(*RWMutex).RLock(0xc000256000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:90 +0x245 fp=0xc0000592b0 sp=0xc000059148 pc=0x4b4ec5
+testing.(*common).Failed(0xc000256000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:995 +0x3b fp=0xc000059350 sp=0xc0000592b0 pc=0x60507b
+testing.tRunner.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1653 +0x4f fp=0xc0000596b0 sp=0xc000059350 pc=0x6099af
+runtime.deferreturn()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:610 +0x5e fp=0xc000059740 sp=0xc0000596b0 pc=0x453f9e
+testing.tRunner(0xc000256000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1798 +0x21b fp=0xc000059828 sp=0xc000059740 pc=0x6098bb
+testing.runTests(0xc000010990, {0x194c500, 0x16f, 0x16f}, {0xc20d3b11a273fdd6, 0x8bb2f08c50, 0x1954960})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea fp=0xc0000599b0 sp=0xc000059828 pc=0x60f1aa
+testing.(*M).Run(0xc000060370)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79 fp=0xc000059ee8 sp=0xc0000599b0 pc=0x60c9f9
+main.main()
+	_testmain.go:815 +0xa5 fp=0xc000059f78 sp=0xc000059ee8 pc=0x1028965
+runtime.main()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:283 +0x247 fp=0xc000059fe0 sp=0xc000059f78 pc=0x457f27
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000059fe8 sp=0xc000059fe0 pc=0x498261
+
+goroutine 2 gp=0xc000002e00 m=nil [force gc (idle)]:
+runtime.gopark(0x1338c00, 0x1952380, 0x11, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009e780 sp=0xc00009e750 pc=0x4903b1
+runtime.goparkunlock(0x1952380?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009e7b0 sp=0xc00009e780 pc=0x4585e5
+runtime.forcegchelper()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:348 +0xb5 fp=0xc00009e7e0 sp=0xc00009e7b0 pc=0x458275
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009e7e8 sp=0xc00009e7e0 pc=0x498261
+created by runtime.init.7 in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:336 +0x1a
+
+goroutine 3 gp=0xc000003340 m=nil [GC sweep wait]:
+runtime.gopark(0x1338c00, 0x1953760, 0xc, 0x9, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009ef58 sp=0xc00009ef28 pc=0x4903b1
+runtime.goparkunlock(0x1953760?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009ef88 sp=0xc00009ef58 pc=0x4585e5
+runtime.bgsweep(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcsweep.go:276 +0xa5 fp=0xc00009efc8 sp=0xc00009ef88 pc=0x43db25
+runtime.gcenable.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x25 fp=0xc00009efe0 sp=0xc00009efc8 pc=0x431525
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009efe8 sp=0xc00009efe0 pc=0x498261
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x66
+
+goroutine 4 gp=0xc000003500 m=nil [GC scavenge wait]:
+runtime.gopark(0x1338c00, 0x1954ce0, 0xd, 0xa, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009f748 sp=0xc00009f718 pc=0x4903b1
+runtime.goparkunlock(0x1954ce0?, 0xe0?, 0x4c?, 0xc000003500?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009f778 sp=0xc00009f748 pc=0x4585e5
+runtime.(*scavengerState).park(0x1954ce0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:425 +0x45 fp=0xc00009f7a0 sp=0xc00009f778 pc=0x43b045
+runtime.bgscavenge(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:653 +0x45 fp=0xc00009f7c8 sp=0xc00009f7a0 pc=0x43b5a5
+runtime.gcenable.gowrap2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0x25 fp=0xc00009f7e0 sp=0xc00009f7c8 pc=0x4314c5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009f7e8 sp=0xc00009f7e0 pc=0x498261
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0xa5
+
+goroutine 5 gp=0xc000003dc0 m=nil [finalizer wait]:
+runtime.gopark(0x1338930, 0x19770b0, 0x10, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009fe30 sp=0xc00009fe00 pc=0x4903b1
+runtime.runfinq()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:196 +0x107 fp=0xc00009ffe0 sp=0xc00009fe30 pc=0x430467
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009ffe8 sp=0xc00009ffe0 pc=0x498261
+created by runtime.createfing in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:166 +0x45
+
+goroutine 6 gp=0xc0001e6540 m=nil [chan receive]:
+runtime.gopark(0x13388d0, 0xc0000d82e0, 0xe, 0x7, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000a0668 sp=0xc0000a0638 pc=0x4903b1
+runtime.chanrecv(0xc0000d8280, 0x0, 0x1, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:863 +0x5a5 fp=0xc0000a0780 sp=0xc0000a0668 pc=0x420365
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:627 +0x14 fp=0xc0000a07a8 sp=0xc0000a0780 pc=0x41fd94
+runtime.unique_runtime_registerUniqueMapCleanup.func2(0x133a818)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1796 +0x25 fp=0xc0000a07c8 sp=0xc0000a07a8 pc=0x48b4e5
+runtime.unique_runtime_registerUniqueMapCleanup.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1799 +0x24 fp=0xc0000a07e0 sp=0xc0000a07c8 pc=0x434144
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000a07e8 sp=0xc0000a07e0 pc=0x498261
+created by unique.runtime_registerUniqueMapCleanup in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1794 +0x79
+
+goroutine 115 gp=0xc0001e6700 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a040, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000714f30 sp=0xc000714f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000714fc8 sp=0xc000714f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000714fe0 sp=0xc000714fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000714fe8 sp=0xc000714fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 8 gp=0xc0001e68c0 m=nil [select]:
+runtime.gopark(0x1338c60, 0x0, 0x9, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00027f638 sp=0xc00027f608 pc=0x4903b1
+runtime.originalSelect(0x2?, 0xc00027f8e4, 0x0?, 0x0, 0x10000?, 0x1, 0xffffffffffffffff)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:876 +0xc25 fp=0xc00027f7b8 sp=0xc00027f638 pc=0x46c8e5
+runtime.selectgo(0xc00027f970, 0xc00027f8e4, 0x0, 0x0, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:146 +0x209 fp=0xc00027f8b0 sp=0xc00027f7b8 pc=0x46a5a9
+github.com/quic-go/quic-go.(*baseServer).accept(0xc000200dc0, {0x13ade38, 0xc0001f9620})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334 +0x138 fp=0xc00027f9d8 sp=0xc00027f8b0 pc=0xd83d78
+github.com/quic-go/quic-go.(*EarlyListener).Accept(0xc0000a2680, {0x13ade38, 0xc0001f9620})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:166 +0x71 fp=0xc00027fa90 sp=0xc00027f9d8 pc=0xd82031
+github.com/quic-go/quic-go/http3.(*Server).serveListener(0xc0001e2ea0, {0x13ac670, 0xc0000a2680})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/http3/server.go:291 +0x88 fp=0xc00027fb58 sp=0xc00027fa90 pc=0xdf4648
+github.com/quic-go/quic-go/http3.(*Server).ListenAndServeTLS(0xc0001e2ea0, {0x1309c63, 0x1f}, {0x13089ea, 0x1e})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/http3/server.go:223 +0x4cc fp=0xc00027fdf8 sp=0xc00027fb58 pc=0xdf396c
+github.com/quic-go/quic-go/http3.ListenAndServeQUIC({0x12e53e7, 0x5}, {0x1309c63, 0x1f}, {0x13089ea, 0x1e}, {0x13a5420, 0xc0000ff6c0})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/http3/server.go:788 +0x156 fp=0xc00027fe68 sp=0xc00027fdf8 pc=0xdf9db6
+github.com/gin-gonic/gin.(*Engine).RunQUIC(0xc0000ff6c0, {0x12e53e7, 0x5}, {0x1309c63, 0x1f}, {0x13089ea, 0x1e})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin.go:617 +0x213 fp=0xc00027ff50 sp=0xc00027fe68 pc=0xf80153
+github.com/gin-gonic/gin.TestRunQUIC.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:287 +0xd9 fp=0xc00027ffe0 sp=0xc00027ff50 pc=0xfccf79
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00027ffe8 sp=0xc00027ffe0 pc=0x498261
+created by github.com/gin-gonic/gin.TestRunQUIC in goroutine 7
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:284 +0xf8
+
+goroutine 9 gp=0xc0001e6c40 m=nil [IO wait]:
+runtime.gopark(0x1338bd8, 0x7307386c6ed0, 0x2, 0x2, 0x5)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000f7340 sp=0xc0000f7310 pc=0x4903b1
+runtime.netpollblock(0x7307386c6eb0, 0x72, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/netpoll.go:575 +0xbe fp=0xc0000f7378 sp=0xc0000f7340 pc=0x45043e
+internal/poll.runtime_pollWait(0x7307386c6eb0, 0x72)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/netpoll.go:351 +0x3c fp=0xc0000f7398 sp=0xc0000f7378 pc=0x48f79c
+internal/poll.(*pollDesc).wait(0xc0001eaa20, 0x72, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_poll_runtime.go:84 +0x7a fp=0xc0000f73e8 sp=0xc0000f7398 pc=0x51e29a
+internal/poll.(*pollDesc).waitRead(0xc0001eaa20, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_poll_runtime.go:89 +0x31 fp=0xc0000f7430 sp=0xc0000f73e8 pc=0x51e331
+internal/poll.(*FD).RawRead(0xc0001eaa00, 0xc000134000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_unix.go:717 +0x1f9 fp=0xc0000f7500 sp=0xc0000f7430 pc=0x526d79
+net.(*rawConn).Read(0xc0000a2678, 0xc000134000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/net/rawconn.go:44 +0x5a fp=0xc0000f7578 sp=0xc0000f7500 pc=0x80431a
+golang.org/x/net/internal/socket.(*syscaller).recvmmsg(0xc000132048, {0x13ac3b0, 0xc0000a2678}, {0xc000136000, 0x8, 0x8}, 0x0)
+	/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/internal/socket/mmsghdr_unix.go:120 +0x12d fp=0xc0000f75f8 sp=0xc0000f7578 pc=0xd1b04d
+golang.org/x/net/internal/socket.(*Conn).recvMsgs(0xc000282100, {0xc0001f0308, 0x8, 0x8}, 0x0)
+	/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/internal/socket/rawconn_mmsg.go:24 +0x32b fp=0xc0000f77f8 sp=0xc0000f75f8 pc=0xd1ceeb
+golang.org/x/net/internal/socket.(*Conn).RecvMsgs(0xc000282100, {0xc0001f0308, 0x8, 0x8}, 0x0)
+	/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/internal/socket/socket.go:267 +0x7c fp=0xc0000f7878 sp=0xc0000f77f8 pc=0xd1f9dc
+golang.org/x/net/ipv4.(*payloadHandler).ReadBatch(0xc0001f9510, {0xc0001f0308, 0x8, 0x8}, 0x0)
+	/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/ipv4/batch.go:80 +0xb1 fp=0xc0000f7968 sp=0xc0000f7878 pc=0xd2db11
+github.com/quic-go/quic-go.(*oobConn).ReadPacket(0xc00019c7e0)
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/sys_conn_oob.go:174 +0xd14 fp=0xc0000f7cc0 sp=0xc0000f7968 pc=0xd97e14
+github.com/quic-go/quic-go.(*Transport).listen(0xc000200c80, {0x13afdf0, 0xc00019c7e0})
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:534 +0x79 fp=0xc0000f7f50 sp=0xc0000f7cc0 pc=0xd9d5d9
+github.com/quic-go/quic-go.(*Transport).init.func1.1()
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:428 +0xb6 fp=0xc0000f7fe0 sp=0xc0000f7f50 pc=0xd9c356
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000f7fe8 sp=0xc0000f7fe0 pc=0x498261
+created by github.com/quic-go/quic-go.(*Transport).init.func1 in goroutine 8
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:426 +0x76a
+
+goroutine 10 gp=0xc0001e6e00 m=nil [select]:
+runtime.gopark(0x1338c60, 0x0, 0x9, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000313ac0 sp=0xc000313a90 pc=0x4903b1
+runtime.originalSelect(0x2?, 0xc000313db4, 0x0?, 0x0, 0x0?, 0x1, 0xffffffffffffffff)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:876 +0xc25 fp=0xc000313c40 sp=0xc000313ac0 pc=0x46c8e5
+runtime.selectgo(0xc000304e88, 0xc000304db4, 0x0, 0x0, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:146 +0x209 fp=0xc000313d38 sp=0xc000313c40 pc=0x46a5a9
+github.com/quic-go/quic-go.(*Transport).runSendQueue(0xc000200c80)
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449 +0x17f fp=0xc000313fc0 sp=0xc000313d38 pc=0xd9c75f
+github.com/quic-go/quic-go.(*Transport).init.func1.gowrap1()
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:434 +0x25 fp=0xc000313fe0 sp=0xc000313fc0 pc=0xd9c265
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000313fe8 sp=0xc000313fe0 pc=0x498261
+created by github.com/quic-go/quic-go.(*Transport).init.func1 in goroutine 8
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:434 +0x7d9
+
+goroutine 11 gp=0xc0001e7180 m=nil [select]:
+runtime.gopark(0x1338c60, 0x0, 0x9, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00030fb38 sp=0xc00030fb08 pc=0x4903b1
+runtime.originalSelect(0x2?, 0xc00030fe30, 0xc0000d8a00?, 0x0, 0x0?, 0x1, 0xffffffffffffffff)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:876 +0xc25 fp=0xc00030fcb8 sp=0xc00030fb38 pc=0x46c8e5
+runtime.selectgo(0xc000300f88, 0xc000300e30, 0x0, 0x0, 0x2, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:146 +0x209 fp=0xc00030fdb0 sp=0xc00030fcb8 pc=0x46a5a9
+github.com/quic-go/quic-go.(*baseServer).run(0xc000200dc0)
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299 +0x1d9 fp=0xc00030ffc0 sp=0xc00030fdb0 pc=0xd83559
+github.com/quic-go/quic-go.newServer.gowrap1()
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:285 +0x25 fp=0xc00030ffe0 sp=0xc00030ffc0 pc=0xd83345
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00030ffe8 sp=0xc00030ffe0 pc=0x498261
+created by github.com/quic-go/quic-go.newServer in goroutine 8
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:285 +0x833
+
+goroutine 12 gp=0xc0001e7340 m=nil [select]:
+runtime.gopark(0x1338c60, 0x0, 0x9, 0x3, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000fd860 sp=0xc0000fd830 pc=0x4903b1
+runtime.originalSelect(0x2?, 0xc0000fdb5c, 0xc0000b5a60?, 0x0, 0x4931?, 0x1, 0xffffffffffffffff)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:876 +0xc25 fp=0xc0000fd9e0 sp=0xc0000fd860 pc=0x46c8e5
+runtime.selectgo(0xc0000b5e60, 0xc0000b5b5c, 0x0, 0x0, 0x5, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/select.go:146 +0x209 fp=0xc0000fdad8 sp=0xc0000fd9e0 pc=0x46a5a9
+github.com/quic-go/quic-go.(*baseServer).runSendQueue(0xc000200dc0)
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312 +0x230 fp=0xc0000fdfc0 sp=0xc0000fdad8 pc=0xd838b0
+github.com/quic-go/quic-go.newServer.gowrap2()
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:286 +0x25 fp=0xc0000fdfe0 sp=0xc0000fdfc0 pc=0xd832e5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000fdfe8 sp=0xc0000fdfe0 pc=0x498261
+created by github.com/quic-go/quic-go.newServer in goroutine 8
+	/home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:286 +0x897
+
+goroutine 83 gp=0xc000102fc0 m=nil [semacquire]:
+runtime.gopark(0x1338c00, 0x195c960, 0x12, 0x5, 0x4)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000614a50 sp=0xc000614a20 pc=0x4903b1
+runtime.goparkunlock(0xc000614ac0?, 0x45?, 0xd6?, 0x1979360?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc000614a80 sp=0xc000614a50 pc=0x4585e5
+runtime.semacquire1(0x1955d78, 0x0, 0x0, 0x0, 0x12)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000614ad0 sp=0xc000614a80 pc=0x46d689
+runtime.semacquire(0xc000614b28?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:139 +0x1e fp=0xc000614b08 sp=0xc000614ad0 pc=0x46d4de
+runtime.gcStart({0x73077fb55210?, 0x1e?, 0x1?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:668 +0x14e fp=0xc000614c28 sp=0xc000614b08 pc=0x431aae
+runtime.mallocgcSmallScanNoHeader(0xd0, 0x12ab6e0, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc000614c88 sp=0xc000614c28 pc=0x429134
+runtime.mallocgc(0xd0, 0x12ab6e0, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc000614cb8 sp=0xc000614c88 pc=0x48de85
+runtime.newobject(0xc000188398?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1714 +0x25 fp=0xc000614ce0 sp=0xc000614cb8 pc=0x429925
+fmt.init.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/fmt/print.go:147 +0x25 fp=0xc000614d20 sp=0xc000614ce0 pc=0x5a53c5
+sync.(*Pool).Get(0x19359c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/pool.go:155 +0x195 fp=0xc000614dc0 sp=0xc000614d20 pc=0x4b3575
+fmt.newPrinter()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/fmt/print.go:152 +0x27 fp=0xc000614e18 sp=0xc000614dc0 pc=0x5a9787
+fmt.Sprintf({0x13021cf, 0x19}, {0xc000614f58, 0x2, 0x2})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/fmt/print.go:238 +0x45 fp=0xc000614e98 sp=0xc000614e18 pc=0x5aa005
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2484 +0x26f fp=0xc000614fe0 sp=0xc000614e98 pc=0x61174f
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000614fe8 sp=0xc000614fe0 pc=0x498261
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+
+goroutine 116 gp=0xc000103180 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a060, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000615f30 sp=0xc000615f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000615fc8 sp=0xc000615f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000615fe0 sp=0xc000615fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000615fe8 sp=0xc000615fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 117 gp=0xc000602380 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a080, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000616f30 sp=0xc000616f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000616fc8 sp=0xc000616f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000616fe0 sp=0xc000616fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000616fe8 sp=0xc000616fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 118 gp=0xc000602540 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a0a0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000617f30 sp=0xc000617f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000617fc8 sp=0xc000617f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000617fe0 sp=0xc000617fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000617fe8 sp=0xc000617fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 119 gp=0xc000602700 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a0c0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000710f30 sp=0xc000710f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000710fc8 sp=0xc000710f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000710fe0 sp=0xc000710fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000710fe8 sp=0xc000710fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 120 gp=0xc0006028c0 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a0e0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000711f30 sp=0xc000711f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000711fc8 sp=0xc000711f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000711fe0 sp=0xc000711fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000711fe8 sp=0xc000711fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 121 gp=0xc000602a80 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a100, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000712f30 sp=0xc000712f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000712fc8 sp=0xc000712f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000712fe0 sp=0xc000712fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000712fe8 sp=0xc000712fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 122 gp=0xc000602c40 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a120, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000713f30 sp=0xc000713f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000713fc8 sp=0xc000713f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000713fe0 sp=0xc000713fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000713fe8 sp=0xc000713fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 123 gp=0xc000602e00 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a140, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000652f30 sp=0xc000652f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000652fc8 sp=0xc000652f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000652fe0 sp=0xc000652fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000652fe8 sp=0xc000652fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 124 gp=0xc000602fc0 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a160, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000653f30 sp=0xc000653f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000653fc8 sp=0xc000653f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000653fe0 sp=0xc000653fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000653fe8 sp=0xc000653fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 125 gp=0xc000603180 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a180, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000654f30 sp=0xc000654f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000654fc8 sp=0xc000654f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000654fe0 sp=0xc000654fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000654fe8 sp=0xc000654fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 126 gp=0xc000603340 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a1a0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000655f30 sp=0xc000655f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000655fc8 sp=0xc000655f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000655fe0 sp=0xc000655fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000655fe8 sp=0xc000655fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 127 gp=0xc000603500 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a1c0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00064ef30 sp=0xc00064ef00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00064efc8 sp=0xc00064ef30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00064efe0 sp=0xc00064efc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00064efe8 sp=0xc00064efe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 128 gp=0xc0006036c0 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a1e0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00064ff30 sp=0xc00064ff00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00064ffc8 sp=0xc00064ff30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00064ffe0 sp=0xc00064ffc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00064ffe8 sp=0xc00064ffe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 129 gp=0xc000603880 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a200, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000650f30 sp=0xc000650f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000650fc8 sp=0xc000650f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000650fe0 sp=0xc000650fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000650fe8 sp=0xc000650fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 130 gp=0xc000603a40 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a220, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000651f30 sp=0xc000651f00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000651fc8 sp=0xc000651f30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000651fe0 sp=0xc000651fc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000651fe8 sp=0xc000651fe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 131 gp=0xc000603c00 m=nil [GC worker (idle)]:
+runtime.gopark(0x1338950, 0xc00061a240, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00065cf30 sp=0xc00065cf00 pc=0x4903b1
+runtime.gcBgMarkWorker(0xc0006220a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00065cfc8 sp=0xc00065cf30 pc=0x4334da
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00065cfe0 sp=0xc00065cfc8 pc=0x433385
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00065cfe8 sp=0xc00065cfe0 pc=0x498261
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+rax    0xca
+rbx    0x0
+rcx    0x49a0a3
+rdx    0x0
+rdi    0x19571a0
+rsi    0x80
+rbp    0x7fffedbf7920
+rsp    0x7fffedbf78d8
+r8     0x0
+r9     0x0
+r10    0x0
+r11    0x286
+r12    0x15
+r13    0x16
+r14    0x19554a0
+r15    0xe
+rip    0x49a0a1
+rflags 0x286
+cs     0x33
+fs     0x0
+gs     0x0
+*** Test killed with quit: ran too long (11m0s).
+FAIL	github.com/gin-gonic/gin	660.008s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail

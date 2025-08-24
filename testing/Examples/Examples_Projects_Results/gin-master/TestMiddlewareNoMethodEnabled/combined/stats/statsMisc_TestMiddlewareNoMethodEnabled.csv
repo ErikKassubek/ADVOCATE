@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestMiddlewareNoMethodEnabled,0,0,0,0,0,0,0,0,0,0,0

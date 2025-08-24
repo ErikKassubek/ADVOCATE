@@ -1,0 +1,121 @@
+=== RUN   TestH2c
+[GIN] 2025/06/20 - 00:13:33 | 200 |       9.829µs |       127.0.0.1 | GET      "/"
+    gin_test.go:98: accept tcp 127.0.0.1:45339: use of closed network connection
+--- PASS: TestH2c (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+[GIN] 2025/06/20 - 00:13:34 | 200 |      45.397µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:37949: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+[GIN] 2025/06/20 - 00:13:36 | 200 |      69.299µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:41943: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.123s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_2
+[GIN] 2025/06/20 - 00:13:38 | 200 |      40.251µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:44007: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.124s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_3
+[GIN] 2025/06/20 - 00:13:40 | 200 |      56.921µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:41755: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.120s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_4
+[GIN] 2025/06/20 - 00:13:42 | 200 |      45.044µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:41967: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_5
+[GIN] 2025/06/20 - 00:13:43 | 200 |      31.836µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:37383: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_6
+[GIN] 2025/06/20 - 00:13:45 | 200 |      69.908µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:38441: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_7
+[GIN] 2025/06/20 - 00:13:47 | 200 |      39.306µs |       127.0.0.1 | GET      "/"
+FAIL	github.com/gin-gonic/gin	70.077s
+FAIL

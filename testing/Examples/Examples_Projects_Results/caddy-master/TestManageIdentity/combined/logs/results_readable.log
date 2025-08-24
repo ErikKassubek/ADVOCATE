@@ -1,0 +1,111 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2416
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3130
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3132
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3282
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3658
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4350
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4352
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4364
+
+```
+
+### Mode: Flow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@2608
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3140
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3142
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3292
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3790
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4360
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4362
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4374
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3156
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@3144
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@3146
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@3168
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3718
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144@4462
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145@4464
+	close: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81@4476
+
+```
+
+### Mode: GoPie | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

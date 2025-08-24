@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzz,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPie+,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPie,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPieHB,TestHelpCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0

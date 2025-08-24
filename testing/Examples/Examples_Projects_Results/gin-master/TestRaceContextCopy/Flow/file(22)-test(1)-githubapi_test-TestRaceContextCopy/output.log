@@ -1,0 +1,17 @@
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:23 | 200 |       25.25µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:23 | 200 |       74.19µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.35s)
+PASS
+ok  	github.com/gin-gonic/gin	1.357s
+Bugreport info: 0_1,fail

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestFailGenFishCompletionFile,0,0,0,0,0,0,0,0,0,0,0

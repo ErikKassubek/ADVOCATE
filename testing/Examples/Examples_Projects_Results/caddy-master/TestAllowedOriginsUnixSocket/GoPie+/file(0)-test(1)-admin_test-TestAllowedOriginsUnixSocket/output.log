@@ -1,0 +1,26 @@
+=== RUN   TestAllowedOriginsUnixSocket
+=== RUN   TestAllowedOriginsUnixSocket/unix_socket_with_default_origins
+=== RUN   TestAllowedOriginsUnixSocket/unix_socket_with_custom_origins
+=== RUN   TestAllowedOriginsUnixSocket/tcp_socket_on_localhost_gets_all_loopback_addresses
+--- PASS: TestAllowedOriginsUnixSocket (0.00s)
+    --- PASS: TestAllowedOriginsUnixSocket/unix_socket_with_default_origins (0.00s)
+    --- PASS: TestAllowedOriginsUnixSocket/unix_socket_with_custom_origins (0.00s)
+    --- PASS: TestAllowedOriginsUnixSocket/tcp_socket_on_localhost_gets_all_loopback_addresses (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAllowedOriginsUnixSocket
+Import added at line: 17
+Header added at line: 528
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAllowedOriginsUnixSocket
+=== RUN   TestAllowedOriginsUnixSocket/unix_socket_with_default_origins
+=== RUN   TestAllowedOriginsUnixSocket/unix_socket_with_custom_origins
+=== RUN   TestAllowedOriginsUnixSocket/tcp_socket_on_localhost_gets_all_loopback_addresses
+--- PASS: TestAllowedOriginsUnixSocket (0.10s)
+    --- PASS: TestAllowedOriginsUnixSocket/unix_socket_with_default_origins (0.00s)
+    --- PASS: TestAllowedOriginsUnixSocket/unix_socket_with_custom_origins (0.00s)
+    --- PASS: TestAllowedOriginsUnixSocket/tcp_socket_on_localhost_gets_all_loopback_addresses (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s

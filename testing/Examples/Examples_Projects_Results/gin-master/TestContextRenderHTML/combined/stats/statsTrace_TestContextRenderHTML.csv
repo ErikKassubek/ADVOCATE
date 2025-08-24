@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GoPie,TestContextRenderHTML,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextRenderHTML,2,1,1,0,0,0,0,0,0

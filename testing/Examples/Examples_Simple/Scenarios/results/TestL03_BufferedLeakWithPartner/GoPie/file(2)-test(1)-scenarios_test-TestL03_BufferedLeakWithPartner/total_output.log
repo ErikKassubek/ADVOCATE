@@ -1,0 +1,1301 @@
+=== RUN   TestL03_BufferedLeakWithPartner
+--- PASS: TestL03_BufferedLeakWithPartner (0.00s)
+PASS
+ok  	scenarios	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestL03_BufferedLeakWithPartner (3.10s)
+PASS
+ok  	scenarios	3.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_7
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_8
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_9
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_10
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_11
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_12
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_13
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_14
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_15
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_16
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_17
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_18
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_19
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_20
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_21
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_22
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_23
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_24
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_25
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_26
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_27
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_28
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_29
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_30
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_31
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_32
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_33
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_34
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_35
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_36
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_37
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_38
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_39
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_40
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_41
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_42
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_43
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_44
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_45
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_46
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_47
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_48
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_49
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_50
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_51
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_52
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_53
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_54
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_55
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_56
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_57
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_58
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_59
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_60
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_61
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_62
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_63
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_64
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_65
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_66
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_67
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_68
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_69
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_70
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_71
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_72
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_73
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_74
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_75
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_76
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_77
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_78
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_79
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_80
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_81
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_82
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_83
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_84
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_85
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_86
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_87
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_88
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_89
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_90
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_91
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_92
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_93
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_94
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_95
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_96
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_97
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_98
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_99
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GFuzz,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GoPie+,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GoPie,TestGrandChildSameName,1,1,0,0,0,0,0,0,0
+GoPieHB,TestGrandChildSameName,1,1,0,0,0,0,0,0,0

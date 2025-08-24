@@ -1,0 +1,136 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@10
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:27@8
+
+3 Leak on unbuffered channel without possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: Flow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@10
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:27@8
+
+3 Leak on unbuffered channel without possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@10
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:27@8
+
+3 Leak on unbuffered channel without possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: GoPie | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed1 ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:28@10
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:27@8
+
+3 Leak on unbuffered channel without possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:22@16
+
+
+```

@@ -1,0 +1,13 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GFuzz,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GFuzzHB,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GFuzzHBFlow,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GoPie+,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GoPie+,TestDebugPrintRoutes,1,12,0,0,0,0,0,0,0
+GoPie,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GoPie,TestDebugPrintRoutes,14,4,4,2,0,0,3,0,0
+GoPie,TestDebugPrintRoutes,14,4,4,2,0,0,3,0,0
+GoPie,TestDebugPrintRoutes,14,4,4,2,0,0,3,0,0
+GoPieHB,TestDebugPrintRoutes,13,2,4,2,0,0,3,0,0
+GoPieHB,TestDebugPrintRoutes,0,11,0,0,0,0,0,0,0

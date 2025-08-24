@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestA04_CloseOnNil ###
+
+A04,T:0:0:0:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:40

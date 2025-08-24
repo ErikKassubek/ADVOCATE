@@ -1,0 +1,10 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69@3670
+
+
+```

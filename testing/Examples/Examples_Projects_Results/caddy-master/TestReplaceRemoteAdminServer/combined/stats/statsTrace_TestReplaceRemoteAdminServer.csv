@@ -1,0 +1,11 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GFuzz,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GFuzzHB,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GFuzzHBFlow,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GoPie+,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GoPie+,TestReplaceRemoteAdminServer,3,14,0,0,0,2,0,0,0
+GoPie,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GoPie,TestReplaceRemoteAdminServer,0,0,0,0,0,0,0,0,0
+GoPieHB,TestReplaceRemoteAdminServer,61,12,1,0,2,40,0,0,0
+GoPieHB,TestReplaceRemoteAdminServer,3,12,0,0,0,2,0,0,0

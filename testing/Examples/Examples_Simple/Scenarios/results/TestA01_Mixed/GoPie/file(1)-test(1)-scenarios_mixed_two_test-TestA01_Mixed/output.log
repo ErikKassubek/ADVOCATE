@@ -1,0 +1,14 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA01_Mixed
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA01_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+Circular Panic
+panic: send on closed channel
+
+FAIL	scenarios	70.075s
+FAIL

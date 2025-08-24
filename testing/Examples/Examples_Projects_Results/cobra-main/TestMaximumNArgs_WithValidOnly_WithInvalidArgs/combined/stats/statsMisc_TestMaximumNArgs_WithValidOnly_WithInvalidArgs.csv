@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestMaximumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0

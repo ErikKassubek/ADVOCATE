@@ -1,0 +1,86 @@
+=== RUN   TestCompletionCobraFlags
+=== RUN   TestCompletionCobraFlags/completion_of_help_and_version_flags
+=== RUN   TestCompletionCobraFlags/no_completion_after_--help_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_-h_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_--version_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_--help_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-h_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_--version_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_flag_completions
+=== RUN   TestCompletionCobraFlags/completion_after_--help_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-h_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_--version_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-v_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_--version_when_only_-v_flag_was_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-v_flag_when_only_-v_flag_was_created_by_program
+=== RUN   TestCompletionCobraFlags/no_completion_for_--help/-h_and_--version/-v_flags_when_DisableFlagParsing=true
+=== RUN   TestCompletionCobraFlags/completions_for_program-defined_--help/-h_and_--version/-v_flags_even_when_DisableFlagParsing=true
+--- PASS: TestCompletionCobraFlags (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_of_help_and_version_flags (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--help_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-h_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--version_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--help_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-h_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--version_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_flag_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--help_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-h_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--version_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-v_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--version_when_only_-v_flag_was_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-v_flag_when_only_-v_flag_was_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_for_--help/-h_and_--version/-v_flags_when_DisableFlagParsing=true (0.00s)
+    --- PASS: TestCompletionCobraFlags/completions_for_program-defined_--help/-h_and_--version/-v_flags_even_when_DisableFlagParsing=true (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompletionCobraFlags
+Import added at line: 17
+Header added at line: 3349
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompletionCobraFlags
+=== RUN   TestCompletionCobraFlags/completion_of_help_and_version_flags
+=== RUN   TestCompletionCobraFlags/no_completion_after_--help_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_-h_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_--version_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag
+=== RUN   TestCompletionCobraFlags/no_completion_after_--help_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-h_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_--version_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_completions
+=== RUN   TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_flag_completions
+=== RUN   TestCompletionCobraFlags/completion_after_--help_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-h_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_--version_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-v_flag_when_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_--version_when_only_-v_flag_was_created_by_program
+=== RUN   TestCompletionCobraFlags/completion_after_-v_flag_when_only_-v_flag_was_created_by_program
+=== RUN   TestCompletionCobraFlags/no_completion_for_--help/-h_and_--version/-v_flags_when_DisableFlagParsing=true
+=== RUN   TestCompletionCobraFlags/completions_for_program-defined_--help/-h_and_--version/-v_flags_even_when_DisableFlagParsing=true
+--- PASS: TestCompletionCobraFlags (0.11s)
+    --- PASS: TestCompletionCobraFlags/completion_of_help_and_version_flags (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--help_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-h_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--version_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--help_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-h_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_--version_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_after_-v_flag_even_with_other_flag_completions (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--help_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-h_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--version_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-v_flag_when_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_--version_when_only_-v_flag_was_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/completion_after_-v_flag_when_only_-v_flag_was_created_by_program (0.00s)
+    --- PASS: TestCompletionCobraFlags/no_completion_for_--help/-h_and_--version/-v_flags_when_DisableFlagParsing=true (0.00s)
+    --- PASS: TestCompletionCobraFlags/completions_for_program-defined_--help/-h_and_--version/-v_flags_even_when_DisableFlagParsing=true (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.115s

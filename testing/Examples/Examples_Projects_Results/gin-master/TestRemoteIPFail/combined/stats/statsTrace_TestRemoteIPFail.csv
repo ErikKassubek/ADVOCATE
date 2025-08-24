@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GFuzz,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GoPie+,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GoPie,TestRemoteIPFail,2,1,1,0,0,0,0,0,0
+GoPieHB,TestRemoteIPFail,2,1,1,0,0,0,0,0,0

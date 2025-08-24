@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GFuzz,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GoPie+,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GoPie,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0
+GoPieHB,TestShortAndLongVersionFlagInHelp,1,1,0,0,0,0,0,0,0

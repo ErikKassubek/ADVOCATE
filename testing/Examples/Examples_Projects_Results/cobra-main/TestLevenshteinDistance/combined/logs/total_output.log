@@ -1,0 +1,322 @@
+
+
+### Mode: GFuzz | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+
+
+### Mode: GFuzzHB | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: Flow | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+
+
+### Mode: GoPie | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: GoPie+ | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+
+
+### Mode: GoPieHB | Subdir: file(4)-test(1)-cobra_test-TestLevenshteinDistance ###
+
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestLevenshteinDistance
+Import added at line: 17
+Header added at line: 49
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLevenshteinDistance
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Equal_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-sensitive)
+=== RUN   TestLevenshteinDistance/Different_strings_(case-insensitive)
+=== RUN   TestLevenshteinDistance/Empty_strings
+=== RUN   TestLevenshteinDistance/One_empty_string
+=== RUN   TestLevenshteinDistance/Both_empty_strings
+--- PASS: TestLevenshteinDistance (0.10s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Equal_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-sensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Different_strings_(case-insensitive) (0.00s)
+    --- PASS: TestLevenshteinDistance/Empty_strings (0.00s)
+    --- PASS: TestLevenshteinDistance/One_empty_string (0.00s)
+    --- PASS: TestLevenshteinDistance/Both_empty_strings (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GFuzz,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GFuzzHB,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GFuzzHBFlow,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GoPie+,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GoPie,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1
+GoPieHB,TestContextShouldBindBodyWithXML,24,1,4,0,0,18,0,0,1

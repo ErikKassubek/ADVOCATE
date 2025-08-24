@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextNegotiationWithJSON,0,0,0,0,0,0,0,0,0,0,0

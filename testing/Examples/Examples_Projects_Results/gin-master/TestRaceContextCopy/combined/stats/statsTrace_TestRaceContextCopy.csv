@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRaceContextCopy,25441,25,3,0,0,25435,0,0,0
+GFuzz,TestRaceContextCopy,26627,25,3,0,0,26621,0,0,0
+GFuzzHB,TestRaceContextCopy,28760,25,3,0,0,28754,0,0,0
+GFuzzHBFlow,TestRaceContextCopy,30476,25,3,0,0,30470,0,0,0
+GoPie+,TestRaceContextCopy,29356,25,3,0,0,29350,0,0,0
+GoPie,TestRaceContextCopy,30418,25,3,0,0,30412,0,0,0
+GoPieHB,TestRaceContextCopy,23914,25,3,0,0,23908,0,0,0

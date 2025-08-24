@@ -1,0 +1,18 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Close on Closed Channel:
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:37@0
+
+
+2 Actual Close on Closed Channel:
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:39@278
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:39@278
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:37@292
+
+
+```

@@ -1,0 +1,34 @@
+=== RUN   TestGetEnvConfig
+=== RUN   TestGetEnvConfig/Command_envvar_overrides_global
+=== RUN   TestGetEnvConfig/Missing/empty_command_envvar_falls_back_to_global
+=== RUN   TestGetEnvConfig/Missing/empty_command_and_global_envvars_fall_back_to_empty
+=== RUN   TestGetEnvConfig/Periods_in_command_use_transform_to_underscores_in_env_var_name
+=== RUN   TestGetEnvConfig/Dashes_in_command_use_transform_to_underscores_in_env_var_name
+--- PASS: TestGetEnvConfig (0.00s)
+    --- PASS: TestGetEnvConfig/Command_envvar_overrides_global (0.00s)
+    --- PASS: TestGetEnvConfig/Missing/empty_command_envvar_falls_back_to_global (0.00s)
+    --- PASS: TestGetEnvConfig/Missing/empty_command_and_global_envvars_fall_back_to_empty (0.00s)
+    --- PASS: TestGetEnvConfig/Periods_in_command_use_transform_to_underscores_in_env_var_name (0.00s)
+    --- PASS: TestGetEnvConfig/Dashes_in_command_use_transform_to_underscores_in_env_var_name (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestGetEnvConfig
+Import added at line: 17
+Header added at line: 3737
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestGetEnvConfig
+=== RUN   TestGetEnvConfig/Command_envvar_overrides_global
+=== RUN   TestGetEnvConfig/Missing/empty_command_envvar_falls_back_to_global
+=== RUN   TestGetEnvConfig/Missing/empty_command_and_global_envvars_fall_back_to_empty
+=== RUN   TestGetEnvConfig/Periods_in_command_use_transform_to_underscores_in_env_var_name
+=== RUN   TestGetEnvConfig/Dashes_in_command_use_transform_to_underscores_in_env_var_name
+--- PASS: TestGetEnvConfig (0.10s)
+    --- PASS: TestGetEnvConfig/Command_envvar_overrides_global (0.00s)
+    --- PASS: TestGetEnvConfig/Missing/empty_command_envvar_falls_back_to_global (0.00s)
+    --- PASS: TestGetEnvConfig/Missing/empty_command_and_global_envvars_fall_back_to_empty (0.00s)
+    --- PASS: TestGetEnvConfig/Periods_in_command_use_transform_to_underscores_in_env_var_name (0.00s)
+    --- PASS: TestGetEnvConfig/Dashes_in_command_use_transform_to_underscores_in_env_var_name (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

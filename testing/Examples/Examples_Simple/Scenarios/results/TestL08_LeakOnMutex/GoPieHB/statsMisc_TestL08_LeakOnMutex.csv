@@ -1,0 +1,4 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestL08_LeakOnMutex,0,0,0,0,0,0,0,0,0,0,0
+TestL08_LeakOnMutex,0,0,0,0,0,0,0,0,0,0,0
+TestL08_LeakOnMutex,0,0,0,0,0,0,0,0,0,0,0

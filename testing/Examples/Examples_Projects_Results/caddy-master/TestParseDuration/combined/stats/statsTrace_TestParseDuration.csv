@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestParseDuration,1,1,0,0,0,0,0,0,0
+GFuzz,TestParseDuration,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestParseDuration,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestParseDuration,1,1,0,0,0,0,0,0,0
+GoPie+,TestParseDuration,1,1,0,0,0,0,0,0,0
+GoPie,TestParseDuration,1,1,0,0,0,0,0,0,0
+GoPieHB,TestParseDuration,1,1,0,0,0,0,0,0,0

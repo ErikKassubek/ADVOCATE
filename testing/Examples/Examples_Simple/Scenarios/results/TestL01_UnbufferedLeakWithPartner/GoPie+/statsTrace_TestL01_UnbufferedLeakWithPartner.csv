@@ -1,0 +1,8 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestL01_UnbufferedLeakWithPartner,6,2,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,4,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,4,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,4,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,26,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,4,0,2,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,7,4,0,2,0,0,0,0,0

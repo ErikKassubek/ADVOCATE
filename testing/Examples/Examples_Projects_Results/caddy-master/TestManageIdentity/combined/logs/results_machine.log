@@ -1,0 +1,40 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+A02,T:6:5000000004:2416:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:7:5000000004:3130:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:7:5000000005:3132:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:6:5000000005:3282:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+A02,T:8:7000000001:3658:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:9:7000000001:4350:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:9:7000000002:4352:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:8:7000000002:4364:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+A02,T:6:5000000004:2608:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:7:5000000004:3140:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:7:5000000005:3142:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:6:5000000005:3292:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+A02,T:8:7000000001:3790:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:9:7000000001:4360:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:9:7000000002:4362:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:8:7000000002:4374:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+A02,T:6:5000000004:3156:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:7:5000000004:3144:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:7:5000000005:3146:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:6:5000000005:3168:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+A02,T:8:7000000001:3718:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:9:7000000001:4462:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:9:7000000002:4464:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:8:7000000002:4476:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-admin_test-TestManageIdentity ###
+

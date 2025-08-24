@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.54s)
+PASS
+ok  	github.com/spf13/cobra	0.548s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (6.99s)
+PASS
+ok  	github.com/spf13/cobra	6.996s
+
+
+### Mode: GFuzzHB | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.22s)
+PASS
+ok  	github.com/spf13/cobra	0.221s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.34s)
+PASS
+ok  	github.com/spf13/cobra	0.341s
+
+
+### Mode: Flow | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.22s)
+PASS
+ok  	github.com/spf13/cobra	0.225s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.34s)
+PASS
+ok  	github.com/spf13/cobra	0.345s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.21s)
+PASS
+ok  	github.com/spf13/cobra	0.216s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.33s)
+PASS
+ok  	github.com/spf13/cobra	0.334s
+
+
+### Mode: GoPie | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.21s)
+PASS
+ok  	github.com/spf13/cobra	0.209s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.32s)
+PASS
+ok  	github.com/spf13/cobra	0.324s
+
+
+### Mode: GoPie+ | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.21s)
+PASS
+ok  	github.com/spf13/cobra	0.217s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.33s)
+PASS
+ok  	github.com/spf13/cobra	0.340s
+
+
+### Mode: GoPieHB | Subdir: file(4)-test(1)-cobra_test-TestDeadcodeElimination ###
+
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.21s)
+PASS
+ok  	github.com/spf13/cobra	0.216s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.33s)
+PASS
+ok  	github.com/spf13/cobra	0.333s

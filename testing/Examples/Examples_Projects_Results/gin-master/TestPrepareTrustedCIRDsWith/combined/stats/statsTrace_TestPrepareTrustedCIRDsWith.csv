@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GFuzz,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GoPie+,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GoPie,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0
+GoPieHB,TestPrepareTrustedCIRDsWith,2,1,1,0,0,0,0,0,0

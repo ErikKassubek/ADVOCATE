@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GFuzz,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GoPie+,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GoPie,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0
+GoPieHB,TestValidArgsFuncSingleCmd,1,1,0,0,0,0,0,0,0

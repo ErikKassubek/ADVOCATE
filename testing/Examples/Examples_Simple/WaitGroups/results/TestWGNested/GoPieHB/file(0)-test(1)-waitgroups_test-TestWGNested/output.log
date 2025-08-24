@@ -1,0 +1,11 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_8
+FAIL	waitgroups	70.034s
+FAIL

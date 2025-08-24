@@ -1,0 +1,2 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestRaceContextCopy,29356,25,3,0,0,29350,0,0,0

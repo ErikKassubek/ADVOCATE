@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GFuzz,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GoPie+,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GoPie,TestForceConsoleColor,2,1,1,0,0,0,0,0,0
+GoPieHB,TestForceConsoleColor,2,1,1,0,0,0,0,0,0

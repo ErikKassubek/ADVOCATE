@@ -1,0 +1,10 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLGlobReleaseMode,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

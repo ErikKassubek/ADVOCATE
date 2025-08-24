@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextNegotiationWithXML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

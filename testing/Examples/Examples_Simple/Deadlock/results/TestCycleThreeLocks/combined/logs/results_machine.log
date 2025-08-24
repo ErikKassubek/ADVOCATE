@@ -1,0 +1,53 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L00,T:3:-1:28:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47
+L00,T:1:-1:26:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54
+L00,T:2:-1:24:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L08,T:1:2000000001:26:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54,T:2:2000000001:18:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:38
+L08,T:2:3000000001:24:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40,T:3:3000000001:12:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:45
+L08,T:3:1000000001:30:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:1000000001:6:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:52
+P05,T:3:1000000001:30:DH:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:2000000001:26:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54;T:2:3000000001:24:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40;T:3:1000000001:30:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L08,T:1:2000000001:26:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54,T:2:2000000001:18:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:38
+L08,T:2:3000000001:24:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40,T:3:3000000001:12:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:45
+L08,T:3:1000000001:32:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:1000000001:6:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:52
+P05,T:2:3000000001:24:DH:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40,T:3:1000000001:32:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47;T:1:2000000001:26:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54;T:2:3000000001:24:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L08,T:1:2000000001:30:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54,T:2:2000000001:18:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:38
+L08,T:2:3000000001:24:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40,T:3:3000000001:12:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:45
+L08,T:3:1000000001:36:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:1000000001:6:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:52
+P05,T:1:2000000001:30:DH:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54,T:2:3000000001:24:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40;T:3:1000000001:36:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47;T:1:2000000001:30:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L00,T:2:-1:24:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40
+L00,T:3:-1:28:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47
+L00,T:1:-1:26:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L00,T:1:-1:30:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54
+L00,T:2:-1:24:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40
+L00,T:3:-1:36:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-deadlock_test-TestCycleThreeLocks ###
+
+L08,T:1:2000000001:26:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54,T:2:2000000001:18:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:38
+L08,T:2:3000000001:24:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40,T:3:3000000001:12:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:45
+L08,T:3:1000000001:28:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:1000000001:6:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:52
+P05,T:3:1000000001:28:DH:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47,T:1:2000000001:26:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:54;T:2:3000000001:24:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:40;T:3:1000000001:28:DC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:47

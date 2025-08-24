@@ -1,0 +1,9 @@
+TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestWGNested,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

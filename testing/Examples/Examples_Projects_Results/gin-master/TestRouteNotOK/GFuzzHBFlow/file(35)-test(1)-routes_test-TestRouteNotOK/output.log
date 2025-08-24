@@ -1,0 +1,20 @@
+=== RUN   TestRouteNotOK
+--- PASS: TestRouteNotOK (0.00s)
+=== RUN   TestRouteNotOK2
+--- PASS: TestRouteNotOK2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routes_test.go
+TestName:  TestRouteNotOK
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routes_test.go
+Header added at line: 133
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routes_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRouteNotOK
+--- PASS: TestRouteNotOK (0.10s)
+=== RUN   TestRouteNotOK2
+--- PASS: TestRouteNotOK2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s

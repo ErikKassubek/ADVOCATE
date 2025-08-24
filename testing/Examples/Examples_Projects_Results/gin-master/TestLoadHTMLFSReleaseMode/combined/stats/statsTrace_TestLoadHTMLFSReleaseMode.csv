@@ -1,0 +1,9 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzz,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzzHB,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzzHBFlow,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie+,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie,TestLoadHTMLFSReleaseMode,23,11,6,2,0,0,3,0,0
+GoPieHB,TestLoadHTMLFSReleaseMode,22,9,6,2,0,0,3,0,0

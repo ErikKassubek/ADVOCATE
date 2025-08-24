@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzz,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie+,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPieHB,TestValidArgsCompletionInGo,1,1,0,0,0,0,0,0,0

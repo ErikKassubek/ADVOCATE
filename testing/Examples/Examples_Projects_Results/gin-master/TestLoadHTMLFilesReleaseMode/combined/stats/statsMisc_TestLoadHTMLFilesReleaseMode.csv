@@ -1,0 +1,9 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLFilesReleaseMode,0,0,0,0,0,0,0,0,0,0,0

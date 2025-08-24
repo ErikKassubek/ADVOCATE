@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCompletionForOneRequiredGroupFlags,0,0,0,0,0,0,0,0,0,0,0

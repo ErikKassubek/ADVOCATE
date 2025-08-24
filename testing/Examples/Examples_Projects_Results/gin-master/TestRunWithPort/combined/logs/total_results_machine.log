@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: GFuzzHB | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: Flow | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: GFuzzHBFlow | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: GoPie | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: GoPie+ | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21
+
+
+### Mode: GoPieHB | Subdir: file(20)-test(1)-gin_integration_test-TestRunWithPort ###
+
+L00,T:2:-1:10:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21

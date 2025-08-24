@@ -1,0 +1,12 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_7
+[GIN] 2025/06/20 - 00:13:47 | 200 |      39.306µs |       127.0.0.1 | GET      "/"
+FAIL	github.com/gin-gonic/gin	70.077s
+FAIL

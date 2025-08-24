@@ -1,0 +1,2 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestAdminRouterProvisioning,11,3,0,0,0,8,0,0,0

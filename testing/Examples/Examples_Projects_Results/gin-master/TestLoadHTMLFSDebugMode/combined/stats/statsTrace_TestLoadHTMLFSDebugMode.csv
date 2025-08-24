@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GFuzz,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GFuzzHB,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GFuzzHBFlow,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GoPie+,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GoPie,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0
+GoPieHB,TestLoadHTMLFSDebugMode,24,9,8,2,0,0,3,0,0

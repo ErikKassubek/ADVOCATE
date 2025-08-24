@@ -1,0 +1,92 @@
+
+
+### Mode: GFuzz | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: Flow | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: GoPie | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75@0
+
+
+```

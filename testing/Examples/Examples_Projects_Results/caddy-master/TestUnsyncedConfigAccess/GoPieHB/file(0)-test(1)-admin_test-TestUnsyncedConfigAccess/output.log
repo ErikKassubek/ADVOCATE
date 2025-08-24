@@ -1,0 +1,14 @@
+=== RUN   TestUnsyncedConfigAccess
+--- PASS: TestUnsyncedConfigAccess (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestUnsyncedConfigAccess
+Import added at line: 17
+Header added at line: 52
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnsyncedConfigAccess
+--- PASS: TestUnsyncedConfigAccess (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.106s

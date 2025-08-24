@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GFuzz,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GoPie+,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GoPie,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0
+GoPieHB,TestSubcommandExecuteC,1,1,0,0,0,0,0,0,0

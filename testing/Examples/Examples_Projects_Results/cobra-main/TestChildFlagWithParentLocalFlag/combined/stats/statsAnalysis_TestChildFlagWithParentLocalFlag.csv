@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestChildFlagWithParentLocalFlag,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,91 @@
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestDebugPrintRouteFunc (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+TestName:  TestDebugPrintRouteFunc
+Import added at line: 7
+Header added at line: 70
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDebugPrintRouteFunc
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_6
+FAIL	github.com/gin-gonic/gin	70.074s
+FAIL

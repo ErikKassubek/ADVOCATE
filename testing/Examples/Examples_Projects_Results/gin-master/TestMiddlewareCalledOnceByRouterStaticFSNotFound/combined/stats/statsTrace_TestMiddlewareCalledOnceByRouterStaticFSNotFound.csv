@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GFuzz,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GFuzzHB,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GFuzzHBFlow,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GoPie+,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GoPie,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0
+GoPieHB,TestMiddlewareCalledOnceByRouterStaticFSNotFound,4,1,3,0,0,0,0,0,0

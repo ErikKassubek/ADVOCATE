@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GFuzz,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GoPie+,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GoPie,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0
+GoPieHB,TestGenFishCompletionFile,1,1,0,0,0,0,0,0,0

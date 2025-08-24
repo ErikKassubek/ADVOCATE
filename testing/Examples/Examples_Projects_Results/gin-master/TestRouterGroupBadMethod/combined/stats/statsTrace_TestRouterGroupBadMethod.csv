@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GFuzz,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GoPie+,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GoPie,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0
+GoPieHB,TestRouterGroupBadMethod,2,1,1,0,0,0,0,0,0

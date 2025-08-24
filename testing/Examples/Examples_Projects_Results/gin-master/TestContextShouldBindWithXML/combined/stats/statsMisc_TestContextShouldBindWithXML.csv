@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextShouldBindWithXML,0,0,0,0,0,0,0,0,0,0,0

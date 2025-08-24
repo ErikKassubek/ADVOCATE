@@ -1,0 +1,8 @@
+Mode,Unique_Bugs,Bug_Types,Total_Bugs,Panics,Leaks,Confirmed_Replays,Total_Runs,Total_Time_s,Rec_s,Ana_s,Rep_s,Bugs_per_1000_Runs,Bugs_per_Minute,Runs_per_Minute,Replays_Written,Replays_Successful
+Flow,,,,,,,,0.99256,0.49564,0.00000,0.00000,,,,,
+GFuzz,1,L00,0,0,1,0,1,1.29054,0.71651,0.00003,0.00000,0.0,0.0,46.49,0,0
+GFuzzHB,2,A02;L00,1400,0,1,0,1,143.93868,0.72641,12.38502,72.41487,1400000.0,583.58,0.42,2,0
+GFuzzHBFlow,,,,,,,,0.96808,0.49261,0.00000,0.00000,,,,,
+GoPie,,,,,,,,0.91966,0.46319,0.00000,0.00000,,,,,
+GoPie+,,,,,,,,0.94952,0.39389,0.00000,0.00000,,,,,
+GoPieHB,,,,,,,,0.90750,0.45903,0.00000,0.00000,,,,,

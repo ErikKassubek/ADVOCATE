@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-bash_completionsV2_test-TestBashCompletionV2WithActiveHelp ###
+
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+TestName:  TestBashCompletionV2WithActiveHelp
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/bash_completionsV2_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBashCompletionV2WithActiveHelp
+--- PASS: TestBashCompletionV2WithActiveHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.110s

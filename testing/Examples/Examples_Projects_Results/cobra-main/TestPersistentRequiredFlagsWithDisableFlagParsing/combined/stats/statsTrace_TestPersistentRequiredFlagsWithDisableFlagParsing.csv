@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzz,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPie+,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPie,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPieHB,TestPersistentRequiredFlagsWithDisableFlagParsing,1,1,0,0,0,0,0,0,0

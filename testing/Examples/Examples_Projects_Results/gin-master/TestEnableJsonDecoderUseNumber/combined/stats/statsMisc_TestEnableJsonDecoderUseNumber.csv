@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestEnableJsonDecoderUseNumber,0,0,0,0,0,0,0,0,0,0,0

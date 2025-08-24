@@ -1,0 +1,140 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381783.0209243,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381783.7265296,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.106s
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381784.2608309,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381784.5976708,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.106s
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381785.11888,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381785.4463415,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381785.9499636,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381786.2858434,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381786.8006396,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381787.140235,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381787.6719546,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381788.014779,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-admin_test-TestNewAdminHandlerRouterRegistration ###
+
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381788.561265,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestNewAdminHandlerRouterRegistration
+Import added at line: 17
+Header added at line: 377
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNewAdminHandlerRouterRegistration
+{"level":"info","ts":1750381788.9092333,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"/mock","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+--- PASS: TestNewAdminHandlerRouterRegistration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s

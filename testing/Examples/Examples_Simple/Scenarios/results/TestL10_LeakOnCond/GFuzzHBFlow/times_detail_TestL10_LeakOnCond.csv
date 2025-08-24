@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestL10_LeakOnCond,60.20550,60.30707,0.00013,0.00007,0.00000,0.00000,0.00001,0.00000,0.00000,0.00001,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00003,0.00005,0

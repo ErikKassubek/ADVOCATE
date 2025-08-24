@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestBasicAuthAuthorizationHeader,0,0,0,0,0,0,0,0,0,0,0

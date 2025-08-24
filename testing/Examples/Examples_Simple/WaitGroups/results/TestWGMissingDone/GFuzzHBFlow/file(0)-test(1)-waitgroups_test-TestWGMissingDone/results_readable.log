@@ -1,0 +1,10 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:34@10
+
+
+```

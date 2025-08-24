@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestGetRequestHeaderValue,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

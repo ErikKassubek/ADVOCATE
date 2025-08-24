@@ -1,0 +1,40 @@
+=== RUN   TestContextStream
+--- PASS: TestContextStream (0.00s)
+=== RUN   TestContextStreamWithClientGone
+--- PASS: TestContextStreamWithClientGone (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextStream
+Import added at line: 7
+Header added at line: 2794
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 2813
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextStream
+--- PASS: TestContextStream (0.10s)
+=== RUN   TestContextStreamWithClientGone
+--- PASS: TestContextStreamWithClientGone (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextStream
+Import added at line: 7
+Header added at line: 2794
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 2813
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextStream
+--- PASS: TestContextStream (0.10s)
+=== RUN   TestContextStreamWithClientGone
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: test timed out after 10m0s
+	running tests:
+		TestContextStreamWithClientGone (10m0s)
+
+FAIL	github.com/gin-gonic/gin	600.107s
+FAIL

@@ -1,0 +1,14 @@
+=== RUN   TestL04_BufferedLeakNoPartner
+--- PASS: TestL04_BufferedLeakNoPartner (0.00s)
+PASS
+ok  	scenarios	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL04_BufferedLeakNoPartner
+Import added at line: 3
+Header added at line: 120
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL04_BufferedLeakNoPartner
+--- PASS: TestL04_BufferedLeakNoPartner (0.10s)
+PASS
+ok  	scenarios	0.104s

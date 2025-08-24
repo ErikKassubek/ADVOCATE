@@ -1,0 +1,13 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GFuzz,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GFuzz,TestL06_LeakOnSelectWithPartner,5,3,0,1,1,0,0,0,0
+GFuzz,TestL06_LeakOnSelectWithPartner,5,3,0,1,1,0,0,0,0
+GFuzzHB,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GFuzzHB,TestL06_LeakOnSelectWithPartner,5,3,0,1,1,0,0,0,0
+GFuzzHB,TestL06_LeakOnSelectWithPartner,5,3,0,1,1,0,0,0,0
+GFuzzHBFlow,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GFuzzHBFlow,TestL06_LeakOnSelectWithPartner,5,3,0,1,1,0,0,0,0
+GoPie+,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GoPie,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0
+GoPieHB,TestL06_LeakOnSelectWithPartner,6,2,0,1,1,0,0,0,0

@@ -1,0 +1,34 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestH2c
+[GIN] 2025/06/20 - 00:12:31 | 200 |      46.016µs |       127.0.0.1 | GET      "/"
+    gin_test.go:103: accept tcp 127.0.0.1:45037: use of closed network connection
+--- PASS: TestH2c (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.115s
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestH2c
+Import added at line: 7
+Header added at line: 85
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+=== RUN   TestH2c
+Reading trace from rewrittenTrace_1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	github.com/gin-gonic/gin	60.046s
+FAIL

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDisableConsoleColor,0,0,0,0,0,0,0,0,0,0,0

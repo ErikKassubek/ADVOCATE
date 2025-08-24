@@ -1,0 +1,57 @@
+
+
+### Mode: GFuzz | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: Flow | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(3)-test(1)-bash_completions_test-TestBashCompletions ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

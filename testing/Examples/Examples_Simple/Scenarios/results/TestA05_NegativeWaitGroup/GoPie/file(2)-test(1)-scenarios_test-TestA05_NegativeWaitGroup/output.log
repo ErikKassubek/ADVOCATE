@@ -1,0 +1,37 @@
+=== RUN   TestA05_NegativeWaitGroup
+--- FAIL: TestA05_NegativeWaitGroup (0.00s)
+panic: sync: negative WaitGroup counter [recovered]
+	panic: sync: negative WaitGroup counter
+
+goroutine 6 [running]:
+testing.tRunner.func1.2({0x5488c0, 0x5b16c0})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1734 +0x21c
+testing.tRunner.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1737 +0x35e
+panic({0x5488c0?, 0x5b16c0?})
+	/home/ilian/Tools/go-runtime/src/runtime/panic.go:792 +0x132
+sync.(*WaitGroup).Add(0xc00007e760?, 0x4daa93?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestA05_NegativeWaitGroup(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:42 +0x4d
+testing.tRunner(0xc000003880, 0x585d10)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	scenarios	0.005s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestA05_NegativeWaitGroup
+Import added at line: 3
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA05_NegativeWaitGroup
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.108s
+FAIL

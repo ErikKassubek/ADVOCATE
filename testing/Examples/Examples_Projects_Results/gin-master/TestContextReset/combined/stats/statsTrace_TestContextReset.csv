@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextReset,4,1,1,0,0,2,0,0,0
+GFuzz,TestContextReset,4,1,1,0,0,2,0,0,0
+GFuzzHB,TestContextReset,4,1,1,0,0,2,0,0,0
+GFuzzHBFlow,TestContextReset,4,1,1,0,0,2,0,0,0
+GoPie+,TestContextReset,4,1,1,0,0,2,0,0,0
+GoPie,TestContextReset,4,1,1,0,0,2,0,0,0
+GoPieHB,TestContextReset,4,1,1,0,0,2,0,0,0

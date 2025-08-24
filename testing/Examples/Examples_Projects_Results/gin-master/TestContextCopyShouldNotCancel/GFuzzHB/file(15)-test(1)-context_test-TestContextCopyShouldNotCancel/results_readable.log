@@ -1,0 +1,11 @@
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055@1926
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089@2182
+
+```

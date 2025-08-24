@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextShouldBindBodyWithJSON,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

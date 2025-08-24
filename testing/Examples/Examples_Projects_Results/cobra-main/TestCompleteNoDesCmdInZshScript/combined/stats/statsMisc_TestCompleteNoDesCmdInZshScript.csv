@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCompleteNoDesCmdInZshScript,0,0,0,0,0,0,0,0,0,0,0

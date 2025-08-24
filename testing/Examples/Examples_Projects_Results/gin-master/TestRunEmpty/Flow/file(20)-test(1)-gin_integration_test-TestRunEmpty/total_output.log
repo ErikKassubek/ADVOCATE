@@ -1,0 +1,21 @@
+=== RUN   TestRunEmpty
+--- PASS: TestRunEmpty (0.01s)
+=== RUN   TestRunEmptyWithEnv
+--- PASS: TestRunEmptyWithEnv (0.01s)
+PASS
+ok  	github.com/gin-gonic/gin	0.018s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunEmpty
+Import added at line: 7
+Header added at line: 65
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+Header added at line: 208
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunEmpty
+--- PASS: TestRunEmpty (0.11s)
+=== RUN   TestRunEmptyWithEnv
+--- PASS: TestRunEmptyWithEnv (0.01s)
+PASS
+ok  	github.com/gin-gonic/gin	0.129s
+Bugreport info: 0_1,fail

@@ -1,0 +1,18 @@
+=== RUN   TestLastChar
+--- PASS: TestLastChar (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils_test.go
+TestName:  TestLastChar
+Import added at line: 7
+Header added at line: 57
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLastChar
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: The length of the string can't be 0
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL
+Bugreport info: 0_1,fail

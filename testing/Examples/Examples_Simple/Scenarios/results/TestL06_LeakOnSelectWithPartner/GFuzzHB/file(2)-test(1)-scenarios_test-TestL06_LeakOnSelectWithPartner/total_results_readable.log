@@ -1,0 +1,25 @@
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on unbuffered channel with possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+	partner: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:141@96
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on unbuffered channel with possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+	partner: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:141@96
+
+```

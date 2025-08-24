@@ -1,0 +1,30 @@
+=== RUN   TestContextInitQueryCache
+=== RUN   TestContextInitQueryCache/queryCache_should_remain_unchanged_if_already_not_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_empty_when_Request_is_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_empty_when_Request.URL_is_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_populated_when_it_not_yet_populated_and_Request_+_Request.URL_are_non_nil
+--- PASS: TestContextInitQueryCache (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_remain_unchanged_if_already_not_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_empty_when_Request_is_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_empty_when_Request.URL_is_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_populated_when_it_not_yet_populated_and_Request_+_Request.URL_are_non_nil (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextInitQueryCache
+Import added at line: 7
+Header added at line: 658
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextInitQueryCache
+=== RUN   TestContextInitQueryCache/queryCache_should_remain_unchanged_if_already_not_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_empty_when_Request_is_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_empty_when_Request.URL_is_nil
+=== RUN   TestContextInitQueryCache/queryCache_should_be_populated_when_it_not_yet_populated_and_Request_+_Request.URL_are_non_nil
+--- PASS: TestContextInitQueryCache (0.10s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_remain_unchanged_if_already_not_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_empty_when_Request_is_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_empty_when_Request.URL_is_nil (0.00s)
+    --- PASS: TestContextInitQueryCache/queryCache_should_be_populated_when_it_not_yet_populated_and_Request_+_Request.URL_are_non_nil (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s

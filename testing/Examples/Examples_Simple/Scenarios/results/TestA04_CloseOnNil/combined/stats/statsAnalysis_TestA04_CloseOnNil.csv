@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GFuzz,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GFuzzHB,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GFuzzHBFlow,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GoPie+,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GoPie,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0
+GoPieHB,TestA04_CloseOnNil,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GFuzz,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GoPie+,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GoPie,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0
+GoPieHB,TestDisableActiveHelp,1,1,0,0,0,0,0,0,0

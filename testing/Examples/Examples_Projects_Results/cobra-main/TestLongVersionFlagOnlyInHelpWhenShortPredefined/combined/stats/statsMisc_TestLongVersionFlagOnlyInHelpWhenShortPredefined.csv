@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLongVersionFlagOnlyInHelpWhenShortPredefined,0,0,0,0,0,0,0,0,0,0,0

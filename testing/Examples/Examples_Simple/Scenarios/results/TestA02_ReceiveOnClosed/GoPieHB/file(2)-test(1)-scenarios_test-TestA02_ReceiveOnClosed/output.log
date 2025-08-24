@@ -1,0 +1,15 @@
+=== RUN   TestA02_ReceiveOnClosed
+--- PASS: TestA02_ReceiveOnClosed (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestA02_ReceiveOnClosed
+Import added at line: 3
+Header added at line: 21
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_ReceiveOnClosed
+--- PASS: TestA02_ReceiveOnClosed (0.10s)
+PASS
+ok  	scenarios	0.106s
+Bugreport info: 0_1,fail

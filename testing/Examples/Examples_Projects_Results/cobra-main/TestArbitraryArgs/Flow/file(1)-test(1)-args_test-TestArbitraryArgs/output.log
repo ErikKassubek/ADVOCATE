@@ -1,0 +1,32 @@
+=== RUN   TestArbitraryArgs
+--- PASS: TestArbitraryArgs (0.00s)
+=== RUN   TestArbitraryArgs_WithValid
+--- PASS: TestArbitraryArgs_WithValid (0.00s)
+=== RUN   TestArbitraryArgs_WithValid_WithInvalidArgs
+--- PASS: TestArbitraryArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestArbitraryArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestArbitraryArgs_WithValidOnly_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestArbitraryArgs
+Import added at line: 17
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 164
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 170
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 176
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestArbitraryArgs
+--- PASS: TestArbitraryArgs (0.10s)
+=== RUN   TestArbitraryArgs_WithValid
+--- PASS: TestArbitraryArgs_WithValid (0.00s)
+=== RUN   TestArbitraryArgs_WithValid_WithInvalidArgs
+--- PASS: TestArbitraryArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestArbitraryArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestArbitraryArgs_WithValidOnly_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.116s

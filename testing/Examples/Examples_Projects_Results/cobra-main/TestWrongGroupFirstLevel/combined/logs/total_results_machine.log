@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestWrongGroupFirstLevel ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command.go:1209

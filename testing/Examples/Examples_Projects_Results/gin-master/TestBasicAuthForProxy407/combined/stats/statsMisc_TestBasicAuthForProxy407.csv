@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestBasicAuthForProxy407,0,0,0,0,0,0,0,0,0,0,0

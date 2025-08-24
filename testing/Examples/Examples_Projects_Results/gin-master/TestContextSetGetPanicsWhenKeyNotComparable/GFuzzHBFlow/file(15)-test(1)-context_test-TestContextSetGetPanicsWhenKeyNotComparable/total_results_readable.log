@@ -1,0 +1,10 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Unknown Panic:
+	panic: /home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/alg.go:171@0
+
+
+```

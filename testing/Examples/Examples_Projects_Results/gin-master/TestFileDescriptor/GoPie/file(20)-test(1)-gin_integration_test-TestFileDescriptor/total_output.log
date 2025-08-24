@@ -1,0 +1,14 @@
+=== RUN   TestFileDescriptor
+--- PASS: TestFileDescriptor (0.01s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestFileDescriptor
+Import added at line: 7
+Header added at line: 293
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestFileDescriptor
+--- PASS: TestFileDescriptor (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s

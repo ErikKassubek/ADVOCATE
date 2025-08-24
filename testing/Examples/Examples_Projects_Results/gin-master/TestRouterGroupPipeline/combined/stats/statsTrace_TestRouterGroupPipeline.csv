@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GFuzz,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GFuzzHB,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GoPie+,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GoPie,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0
+GoPieHB,TestRouterGroupPipeline,56,1,55,0,0,0,0,0,0

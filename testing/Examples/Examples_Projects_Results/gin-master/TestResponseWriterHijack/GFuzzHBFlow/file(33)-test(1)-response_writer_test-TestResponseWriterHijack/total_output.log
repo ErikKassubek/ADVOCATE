@@ -1,0 +1,65 @@
+=== RUN   TestResponseWriterHijack
+--- PASS: TestResponseWriterHijack (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/response_writer_test.go
+TestName:  TestResponseWriterHijack
+Import added at line: 7
+Header added at line: 108
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/response_writer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestResponseWriterHijack
+SetExitCode: other
+panic: interface conversion: *httptest.ResponseRecorder is not http.Hijacker: missing method Hijack
+
+goroutine 7 [running]:
+runtime.SetExitCodeFromPanicMsg({0x11e4aa0, 0xc000250ab0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_exit.go:82 +0x359
+runtime.ExitReplayPanic({0x11e4aa0, 0xc000250ab0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:937 +0x3c
+panic({0x11e4aa0, 0xc000250ab0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:744 +0x2f
+github.com/gin-gonic/gin.(*responseWriter).Hijack(0xc0000c3e00)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/response_writer.go:112 +0x9d
+github.com/gin-gonic/gin.TestResponseWriterHijack.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/response_writer_test.go:120 +0x77
+github.com/stretchr/testify/assert.didPanic(0xc0000c3e20)
+	/home/ilian/Projects/go/pkg/mod/github.com/stretchr/testify@v1.10.0/assert/assertions.go:1239 +0x119
+github.com/stretchr/testify/assert.Panics({0x139d7a0, 0xc0002561e0}, 0xc0000c3e20, {0x0, 0x0, 0x0})
+	/home/ilian/Projects/go/pkg/mod/github.com/stretchr/testify@v1.10.0/assert/assertions.go:1253 +0x126
+github.com/gin-gonic/gin.TestResponseWriterHijack(0xc0002561e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/response_writer_test.go:119 +0x19f
+testing.tRunner(0xc0002561e0, 0x13304c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0002561e0, {0x12f98a0, 0x18}, 0x13304c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc000256000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc000256000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc000010990, {0x19434e0, 0x16f, 0x16f}, {0xc20d46d9a3250fb3, 0x8bb2fa77df, 0x194b920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc000060370)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:815 +0xa5
+
+goroutine 8 [runnable]:
+time.Sleep(0xdf8475800)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:313 +0x3d
+advocate.InitTracing.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:72 +0x25
+created by advocate.InitTracing in goroutine 7
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:71 +0xd2
+
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: interface conversion: *httptest.ResponseRecorder is not http.Hijacker: missing method Hijack
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL
+Bugreport info: 0_1,fail

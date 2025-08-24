@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GFuzz,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GoPie+,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GoPie,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0
+GoPieHB,TestSaveUploadedOpenFailed,2,1,1,0,0,0,0,0,0

@@ -1,0 +1,66 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_1
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000f61e0, {0x62bb39, 0xc}, 0x6385d0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0000f6000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0000f6000, 0xc0000ed918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc00000e018, {0x756560, 0x3, 0x3}, {0xc20d4adabb7fe448, 0x8bb2cb5417, 0x75c060})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc00003e2c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:49 +0xa5
+
+goroutine 6 [chan receive]:
+sync.(*WaitGroup).Add(0xc0000181b0, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/waitgroup.go:62 +0x15e
+waitgroups.TestWGNested(0xc0000f61e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:40 +0x85
+testing.tRunner(0xc0000f61e0, 0x6385d0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 7 [semacquire]:
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x31
+created by advocate.startReplay in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 15 [semacquire]:
+runtime.CallersFrames({0xc000499480, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e
+runtime.WaitForReplay(0x19, 0x0?, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:597 +0x28
+sync/atomic.LoadPointer(0xc0000c82a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/advocate_atomic.go:285 +0x54
+sync/atomic.(*Pointer[...]).Load(0x648f00)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/type.go:56 +0x32
+internal/sync.(*HashTrieMap[...]).iter(0x64a200, 0xc0000c8280, 0xc000093e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:500 +0xbb
+internal/sync.(*HashTrieMap[...]).Range(0x64a200, 0xc000093e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:495 +0x92
+sync.(*Map).Range(0x75bee0, 0xc000093e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/hashtriemap.go:115 +0x35
+testing.runningList()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2492 +0x8c
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2475 +0x4a
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	waitgroups	600.014s
+FAIL

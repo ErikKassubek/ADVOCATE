@@ -1,0 +1,68 @@
+=== RUN   TestA03_Mixed
+--- PASS: TestA03_Mixed (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+--- PASS: TestA03_Mixed (0.10s)
+PASS
+ok  	scenarios	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestA03_Mixed (0.10s)
+PASS
+ok  	scenarios	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestA03_Mixed (0.10s)
+PASS
+ok  	scenarios	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+
+Exit Replay with code  32 Close on close
+Exit Message: panic: close of closed channel
+
+FAIL	scenarios	0.119s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+FAIL	scenarios	70.057s
+FAIL

@@ -1,0 +1,26 @@
+=== RUN   TestLoadHTMLFSDebugMode
+--- PASS: TestLoadHTMLFSDebugMode (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFSDebugMode
+Import added at line: 7
+Header added at line: 350
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFSDebugMode
+--- PASS: TestLoadHTMLFSDebugMode (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLFSDebugMode
+Import added at line: 7
+Header added at line: 350
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLFSDebugMode
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.016s
+FAIL

@@ -1,0 +1,14 @@
+=== RUN   TestTreeRunDynamicRouting
+--- PASS: TestTreeRunDynamicRouting (0.05s)
+PASS
+ok  	github.com/gin-gonic/gin	0.063s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestTreeRunDynamicRouting
+Import added at line: 7
+Header added at line: 427
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeRunDynamicRouting
+--- PASS: TestTreeRunDynamicRouting (0.29s)
+PASS
+ok  	github.com/gin-gonic/gin	0.296s

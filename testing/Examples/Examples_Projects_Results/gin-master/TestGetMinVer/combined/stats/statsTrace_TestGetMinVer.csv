@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GFuzz,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GoPie+,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GoPie,TestGetMinVer,1,1,0,0,0,0,0,0,0
+GoPieHB,TestGetMinVer,1,1,0,0,0,0,0,0,0

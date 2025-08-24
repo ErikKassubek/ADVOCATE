@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestRaceContextCopy,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzz,TestRaceContextCopy,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0
+GFuzzHB,TestRaceContextCopy,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0
+GFuzzHBFlow,TestRaceContextCopy,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0
+GoPie+,TestRaceContextCopy,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPie,TestRaceContextCopy,0,2,0,0,0,0,0,0,0,3,0,0,0,0,0
+GoPieHB,TestRaceContextCopy,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

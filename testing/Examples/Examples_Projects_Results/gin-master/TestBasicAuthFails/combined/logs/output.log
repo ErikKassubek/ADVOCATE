@@ -1,0 +1,151 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.120s
+FAIL
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.056s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.123s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.114s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.124s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.113s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.116s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthFails ###
+
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthFails
+Import added at line: 7
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.112s
+FAIL
+Bugreport info: 0_1,fail

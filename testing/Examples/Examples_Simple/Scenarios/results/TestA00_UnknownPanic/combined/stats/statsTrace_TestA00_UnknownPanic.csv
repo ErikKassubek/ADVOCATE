@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GFuzz,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GoPie+,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GoPie,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0
+GoPieHB,TestA00_UnknownPanic,1,1,0,0,0,0,0,0,0

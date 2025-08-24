@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GFuzz,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GoPie+,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GoPie,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0
+GoPieHB,TestFlagOnPflagCommandLine,1,1,0,0,0,0,0,0,0

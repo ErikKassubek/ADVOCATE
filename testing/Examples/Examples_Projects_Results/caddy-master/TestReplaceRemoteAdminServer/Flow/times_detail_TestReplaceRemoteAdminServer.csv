@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestReplaceRemoteAdminServer,0.34923,0.45821,0.00032,0.00051,0.00004,0.00000,0.00007,0.00000,0.00000,0.00011,0.00000,0.00010,0.00000,0.00000,0.00000,0.00000,0.00037,0.00008,0

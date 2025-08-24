@@ -1,0 +1,252 @@
+
+
+### Mode: GFuzz | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: Flow | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150@1412
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150@1412
+
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175@2034
+
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175@1902
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150@1412
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175@1596
+
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175@2552
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150@1412
+
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175@5662
+
+
+```

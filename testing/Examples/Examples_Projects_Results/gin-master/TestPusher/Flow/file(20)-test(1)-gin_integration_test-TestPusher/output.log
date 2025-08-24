@@ -1,0 +1,23 @@
+=== RUN   TestPusher
+--- PASS: TestPusher (0.01s)
+=== RUN   TestPusherWithPusher
+--- PASS: TestPusherWithPusher (0.00s)
+=== RUN   TestPusherWithoutPusher
+--- PASS: TestPusherWithoutPusher (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.016s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestPusher
+Import added at line: 7
+Header added at line: 171
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestPusher
+--- PASS: TestPusher (0.12s)
+=== RUN   TestPusherWithPusher
+--- PASS: TestPusherWithPusher (0.00s)
+=== RUN   TestPusherWithoutPusher
+--- PASS: TestPusherWithoutPusher (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.127s
+Bugreport info: 0_1,fail

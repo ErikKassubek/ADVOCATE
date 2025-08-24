@@ -1,0 +1,14 @@
+=== RUN   Test_neuteredReaddirFile_Readdir
+--- PASS: Test_neuteredReaddirFile_Readdir (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fs_test.go
+TestName:  Test_neuteredReaddirFile_Readdir
+Import added at line: 3
+Header added at line: 51
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fs_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   Test_neuteredReaddirFile_Readdir
+--- PASS: Test_neuteredReaddirFile_Readdir (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

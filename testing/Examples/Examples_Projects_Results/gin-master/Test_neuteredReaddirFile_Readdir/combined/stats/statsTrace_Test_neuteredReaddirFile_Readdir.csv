@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GFuzz,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GFuzzHB,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GoPie+,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GoPie,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0
+GoPieHB,Test_neuteredReaddirFile_Readdir,1,1,0,0,0,0,0,0,0

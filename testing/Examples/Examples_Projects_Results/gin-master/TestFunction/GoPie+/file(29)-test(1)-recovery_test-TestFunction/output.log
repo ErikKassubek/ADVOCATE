@@ -1,0 +1,18 @@
+=== RUN   TestFunction
+--- PASS: TestFunction (0.00s)
+=== RUN   TestFunctionName
+--- PASS: TestFunctionName (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go
+TestName:  TestFunction
+Import added at line: 7
+Header added at line: 124
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestFunction
+--- PASS: TestFunction (0.10s)
+=== RUN   TestFunctionName
+--- PASS: TestFunctionName (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.108s

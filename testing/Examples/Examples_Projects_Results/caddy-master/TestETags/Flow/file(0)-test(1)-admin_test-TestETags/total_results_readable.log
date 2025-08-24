@@ -1,0 +1,133 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin.go:454@6406
+
+
+
+-------------------- Warning --------------------
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@2810
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@2804
+
+3 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@2814
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@2804
+
+4 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@2906
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@2876
+
+5 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@2910
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@2876
+
+6 Possible receive on closed channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3106
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3122
+
+7 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3162
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3122
+
+8 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@3166
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3122
+
+9 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3210
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3204
+
+10 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@3214
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3204
+
+11 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3258
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3250
+
+12 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@3262
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3250
+
+13 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3306
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3300
+
+14 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@3310
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3300
+
+15 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@3354
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3348
+
+16 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@3358
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@3348
+
+17 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5204
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5198
+
+18 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5208
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5198
+
+19 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5300
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5270
+
+20 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5304
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5270
+
+21 Possible receive on closed channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5522
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5542
+
+22 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5556
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5542
+
+23 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5560
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5542
+
+24 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5604
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5598
+
+25 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5608
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5598
+
+26 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5652
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5646
+
+27 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5656
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5646
+
+28 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5700
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5694
+
+29 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5704
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5694
+
+30 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:290@5748
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5740
+
+31 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:285@5752
+	close: /home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280@5740
+
+```

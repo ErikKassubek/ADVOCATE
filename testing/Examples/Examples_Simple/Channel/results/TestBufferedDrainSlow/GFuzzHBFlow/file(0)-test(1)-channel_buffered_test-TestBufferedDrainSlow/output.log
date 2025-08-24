@@ -1,0 +1,14 @@
+=== RUN   TestBufferedDrainSlow
+--- PASS: TestBufferedDrainSlow (0.00s)
+PASS
+ok  	channel	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.105s

@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: GFuzzHB | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: Flow | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: GFuzzHBFlow | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: GoPie | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: GoPie+ | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314
+
+
+### Mode: GoPieHB | Subdir: file(36)-test(1)-tree_test-TestEmptyWildcardName ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree.go:314

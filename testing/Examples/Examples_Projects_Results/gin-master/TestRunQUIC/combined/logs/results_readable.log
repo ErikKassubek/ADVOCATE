@@ -1,0 +1,320 @@
+
+
+### Mode: GFuzz | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@866
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@940
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@950
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@900
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@872
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@872
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@832
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@832
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@790
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@898
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@898
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@872
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@832
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@790
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@790
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@872
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@872
+
+
+```
+
+### Mode: Flow | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@630
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@630
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@656
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@656
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@648
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@630
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@648
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@648
+
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@962
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@962
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+```
+
+### Mode: GoPie | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@616
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@624
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@618
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@578
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@648
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@836
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@802
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@948
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(20)-test(1)-gin_integration_test-TestRunQUIC ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@626
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@634
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@634
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@618
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@618
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@846
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@846
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@634
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@618
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@626
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@626
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@626
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@626
+
+
+```

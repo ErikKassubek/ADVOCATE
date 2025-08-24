@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzz,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzzHB,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GFuzzHBFlow,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPie+,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPie,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0
+GoPieHB,TestCondDeadlock,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0

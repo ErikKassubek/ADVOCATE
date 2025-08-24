@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestL10_LeakOnCond,0,0,0,0,0,0,0,0,0,0,0

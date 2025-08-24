@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GFuzz,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GoPie+,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GoPie,TestHasRequestContext,2,1,1,0,0,0,0,0,0
+GoPieHB,TestHasRequestContext,2,1,1,0,0,0,0,0,0

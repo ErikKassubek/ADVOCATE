@@ -1,0 +1,14 @@
+=== RUN   TestPathCleanLong
+--- PASS: TestPathCleanLong (0.02s)
+PASS
+ok  	github.com/gin-gonic/gin	0.028s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+TestName:  TestPathCleanLong
+Import added at line: 8
+Header added at line: 126
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestPathCleanLong
+--- PASS: TestPathCleanLong (0.29s)
+PASS
+ok  	github.com/gin-gonic/gin	0.304s

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GFuzz,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GFuzzHB,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GFuzzHBFlow,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GoPie+,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GoPie,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1
+GoPieHB,TestCustomUnmarshalStruct,7,1,3,0,0,2,0,0,1

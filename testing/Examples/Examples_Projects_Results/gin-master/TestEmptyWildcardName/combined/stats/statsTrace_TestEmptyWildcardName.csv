@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GFuzz,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GoPie+,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GoPie,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0
+GoPieHB,TestEmptyWildcardName,1,1,0,0,0,0,0,0,0

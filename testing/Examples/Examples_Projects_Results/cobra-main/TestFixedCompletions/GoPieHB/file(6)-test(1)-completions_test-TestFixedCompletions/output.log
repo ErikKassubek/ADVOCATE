@@ -1,0 +1,28 @@
+=== RUN   TestFixedCompletions
+--- PASS: TestFixedCompletions (0.00s)
+=== RUN   TestFixedCompletionsWithCompletionHelpers
+=== RUN   TestFixedCompletionsWithCompletionHelpers/completion_with_description
+=== RUN   TestFixedCompletionsWithCompletionHelpers/completion_with_no_description
+--- PASS: TestFixedCompletionsWithCompletionHelpers (0.00s)
+    --- PASS: TestFixedCompletionsWithCompletionHelpers/completion_with_description (0.00s)
+    --- PASS: TestFixedCompletionsWithCompletionHelpers/completion_with_no_description (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestFixedCompletions
+Import added at line: 17
+Header added at line: 2980
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+Header added at line: 3007
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestFixedCompletions
+--- PASS: TestFixedCompletions (0.10s)
+=== RUN   TestFixedCompletionsWithCompletionHelpers
+=== RUN   TestFixedCompletionsWithCompletionHelpers/completion_with_description
+=== RUN   TestFixedCompletionsWithCompletionHelpers/completion_with_no_description
+--- PASS: TestFixedCompletionsWithCompletionHelpers (0.00s)
+    --- PASS: TestFixedCompletionsWithCompletionHelpers/completion_with_description (0.00s)
+    --- PASS: TestFixedCompletionsWithCompletionHelpers/completion_with_no_description (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

@@ -1,0 +1,34 @@
+=== RUN   TestContextSetCookie
+--- PASS: TestContextSetCookie (0.00s)
+=== RUN   TestContextSetCookiePathEmpty
+--- PASS: TestContextSetCookiePathEmpty (0.00s)
+=== RUN   TestContextSetCookieData
+=== RUN   TestContextSetCookieData/SameSite=Strict_is_included
+=== RUN   TestContextSetCookieData/SameSite=None_is_included
+--- PASS: TestContextSetCookieData (0.00s)
+    --- PASS: TestContextSetCookieData/SameSite=Strict_is_included (0.00s)
+    --- PASS: TestContextSetCookieData/SameSite=None_is_included (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextSetCookie
+Import added at line: 7
+Header added at line: 905
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 912
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 3202
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextSetCookie
+--- PASS: TestContextSetCookie (0.10s)
+=== RUN   TestContextSetCookiePathEmpty
+--- PASS: TestContextSetCookiePathEmpty (0.00s)
+=== RUN   TestContextSetCookieData
+=== RUN   TestContextSetCookieData/SameSite=Strict_is_included
+=== RUN   TestContextSetCookieData/SameSite=None_is_included
+--- PASS: TestContextSetCookieData (0.00s)
+    --- PASS: TestContextSetCookieData/SameSite=Strict_is_included (0.00s)
+    --- PASS: TestContextSetCookieData/SameSite=None_is_included (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s

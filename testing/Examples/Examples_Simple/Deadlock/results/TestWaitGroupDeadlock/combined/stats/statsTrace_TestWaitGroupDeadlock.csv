@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GFuzz,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GFuzzHB,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GFuzzHBFlow,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GoPie+,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GoPie,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0
+GoPieHB,TestWaitGroupDeadlock,4,2,0,0,0,0,2,0,0

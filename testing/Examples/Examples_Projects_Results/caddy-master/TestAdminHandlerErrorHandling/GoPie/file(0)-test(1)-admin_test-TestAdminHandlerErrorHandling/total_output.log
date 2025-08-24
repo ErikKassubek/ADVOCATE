@@ -1,0 +1,1188 @@
+=== RUN   TestAdminHandlerErrorHandling
+{"level":"info","ts":1750381376.9783795,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381376.9783967,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+{"level":"info","ts":1750381377.3283653,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381377.328434,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_1
+{"level":"info","ts":1750381378.1459298,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381378.1460595,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_2
+{"level":"info","ts":1750381378.9614637,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381378.9616466,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_3
+{"level":"info","ts":1750381379.751998,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381379.7521348,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_4
+{"level":"info","ts":1750381380.5068538,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381380.507012,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_5
+{"level":"info","ts":1750381381.2900298,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381381.2901967,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_6
+{"level":"info","ts":1750381382.05815,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381382.0583158,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_7
+{"level":"info","ts":1750381382.8547943,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381382.855029,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_8
+{"level":"info","ts":1750381383.624574,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381383.6247637,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_9
+{"level":"info","ts":1750381384.3999798,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381384.400125,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_10
+{"level":"info","ts":1750381385.1671014,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381385.1672523,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_11
+{"level":"info","ts":1750381385.9425364,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381385.94272,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_12
+{"level":"info","ts":1750381386.7298563,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381386.7299955,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_13
+{"level":"info","ts":1750381387.514875,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381387.515137,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_14
+{"level":"info","ts":1750381388.297364,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381388.297642,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_15
+{"level":"info","ts":1750381389.069219,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381389.0693572,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_16
+{"level":"info","ts":1750381389.8849645,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381389.8850965,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_17
+{"level":"info","ts":1750381390.720286,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381390.7204313,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_18
+{"level":"info","ts":1750381391.496185,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381391.4963248,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_19
+{"level":"info","ts":1750381392.278899,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381392.279106,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_20
+{"level":"info","ts":1750381393.0781698,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381393.078308,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_21
+{"level":"info","ts":1750381393.8751493,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381393.8752747,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_22
+{"level":"info","ts":1750381394.6436303,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381394.6437588,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_23
+{"level":"info","ts":1750381395.379719,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381395.3798695,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_24
+{"level":"info","ts":1750381396.1695337,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381396.1696565,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_25
+{"level":"info","ts":1750381396.935719,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381396.9359167,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_26
+{"level":"info","ts":1750381397.682316,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381397.6824403,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_27
+{"level":"info","ts":1750381398.4287803,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381398.4289129,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_28
+{"level":"info","ts":1750381399.1702724,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381399.170473,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_29
+{"level":"info","ts":1750381399.9537878,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381399.9539616,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_30
+{"level":"info","ts":1750381400.7034936,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381400.7036104,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_31
+{"level":"info","ts":1750381401.5258124,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381401.52595,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_32
+{"level":"info","ts":1750381402.2707028,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381402.2708516,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_33
+{"level":"info","ts":1750381403.0154881,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381403.0156856,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_34
+{"level":"info","ts":1750381403.7645304,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381403.7646842,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_35
+{"level":"info","ts":1750381404.520216,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381404.5204427,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_36
+{"level":"info","ts":1750381405.2761972,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381405.2764728,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_37
+{"level":"info","ts":1750381406.0349433,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381406.0351343,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_38
+{"level":"info","ts":1750381406.7932258,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381406.7933505,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_39
+{"level":"info","ts":1750381407.5420573,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381407.542212,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_40
+{"level":"info","ts":1750381408.3023143,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381408.3024461,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_41
+{"level":"info","ts":1750381409.0430374,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381409.043314,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_42
+{"level":"info","ts":1750381409.802182,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381409.8023112,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_43
+{"level":"info","ts":1750381410.5358832,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381410.5360243,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_44
+{"level":"info","ts":1750381411.2807846,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381411.2809086,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_45
+{"level":"info","ts":1750381412.031328,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381412.0315256,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_46
+{"level":"info","ts":1750381412.7819746,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381412.7821558,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_47
+{"level":"info","ts":1750381413.519855,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381413.5200148,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_48
+{"level":"info","ts":1750381414.274713,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381414.2749977,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_49
+{"level":"info","ts":1750381415.018721,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381415.0189128,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_50
+{"level":"info","ts":1750381415.7723317,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381415.7724617,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_51
+{"level":"info","ts":1750381416.5209687,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381416.5211813,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_52
+{"level":"info","ts":1750381417.2747693,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381417.2748952,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_53
+{"level":"info","ts":1750381418.0487154,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381418.0488548,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_54
+{"level":"info","ts":1750381418.8188424,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381418.8189964,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_55
+{"level":"info","ts":1750381419.5799477,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381419.5800993,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_56
+{"level":"info","ts":1750381420.320131,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381420.3202622,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_57
+{"level":"info","ts":1750381421.072531,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381421.0728164,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_58
+{"level":"info","ts":1750381421.8367577,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381421.8369048,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_59
+{"level":"info","ts":1750381422.5920148,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381422.5922892,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_60
+{"level":"info","ts":1750381423.3489454,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381423.3490882,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_61
+{"level":"info","ts":1750381424.0979676,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381424.0981138,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_62
+{"level":"info","ts":1750381424.8535619,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381424.853845,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_63
+{"level":"info","ts":1750381425.6251755,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381425.6253235,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_64
+{"level":"info","ts":1750381426.3733938,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381426.3735864,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_65
+{"level":"info","ts":1750381427.1319902,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381427.1321406,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_66
+{"level":"info","ts":1750381427.885171,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381427.8852985,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_67
+{"level":"info","ts":1750381428.626321,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381428.6266286,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_68
+{"level":"info","ts":1750381429.401837,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381429.4021077,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_69
+{"level":"info","ts":1750381430.158019,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381430.1581535,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_70
+{"level":"info","ts":1750381430.8978758,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381430.8980033,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_71
+{"level":"info","ts":1750381431.670412,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381431.670541,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_72
+{"level":"info","ts":1750381432.429605,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381432.429795,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_73
+{"level":"info","ts":1750381433.166279,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381433.1663961,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_74
+{"level":"info","ts":1750381433.9187882,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381433.918911,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_75
+{"level":"info","ts":1750381434.6589425,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381434.6591258,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_76
+{"level":"info","ts":1750381435.4407775,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381435.4409425,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_77
+{"level":"info","ts":1750381436.2080438,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381436.20833,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_78
+{"level":"info","ts":1750381437.0226655,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381437.0228972,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GFuzz,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GoPie+,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GoPie,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0
+GoPieHB,TestRedirectTrailingSlash,1,1,0,0,0,0,0,0,0

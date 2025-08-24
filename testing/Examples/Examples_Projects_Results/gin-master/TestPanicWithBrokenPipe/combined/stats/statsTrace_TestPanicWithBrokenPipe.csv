@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GFuzz,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GFuzzHB,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GFuzzHBFlow,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GoPie+,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GoPie,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0
+GoPieHB,TestPanicWithBrokenPipe,3,2,2,0,0,0,0,0,0

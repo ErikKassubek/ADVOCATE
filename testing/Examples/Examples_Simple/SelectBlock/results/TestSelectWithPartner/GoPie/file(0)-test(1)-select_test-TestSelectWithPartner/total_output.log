@@ -1,0 +1,14 @@
+=== RUN   TestSelectWithPartner
+--- PASS: TestSelectWithPartner (0.01s)
+PASS
+ok  	selectblock	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+TestName:  TestSelectWithPartner
+Import added at line: 3
+Header added at line: 22
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/SelectBlock/select_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSelectWithPartner
+--- PASS: TestSelectWithPartner (0.11s)
+PASS
+ok  	selectblock	0.114s

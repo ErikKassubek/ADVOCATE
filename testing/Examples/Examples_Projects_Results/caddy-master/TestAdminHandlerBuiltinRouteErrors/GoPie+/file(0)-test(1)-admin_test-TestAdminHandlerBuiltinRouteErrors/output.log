@@ -1,0 +1,13 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerBuiltinRouteErrors
+Import added at line: 17
+Header added at line: 271
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerBuiltinRouteErrors
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_2
+{"level":"info","ts":1750381637.4310699,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/stop_endpoint_wrong_method
+FAIL	github.com/caddyserver/caddy/v2	70.077s
+FAIL

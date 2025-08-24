@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GFuzz,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GoPie+,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GoPie,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0
+GoPieHB,TestShorthandVersionTemplate,1,1,0,0,0,0,0,0,0

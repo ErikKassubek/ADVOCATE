@@ -1,0 +1,4 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestMixedDeadlock,10,2,0,2,0,4,0,0,0
+TestMixedDeadlock,11,4,0,2,0,4,0,0,0
+TestMixedDeadlock,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,17 @@
+=== RUN   TestTreeDoubleWildcard
+--- PASS: TestTreeDoubleWildcard (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+TestName:  TestTreeDoubleWildcard
+Import added at line: 7
+Header added at line: 539
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeDoubleWildcard
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: only one wildcard per path segment is allowed, has: ':foo:bar' in path '/:foo:bar'
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL

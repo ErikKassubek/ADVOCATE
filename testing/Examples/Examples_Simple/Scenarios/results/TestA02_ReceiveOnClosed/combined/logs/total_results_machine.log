@@ -1,0 +1,32 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:29,T:1:1000000001:4:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:28
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:29,T:1:1000000001:4:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:28
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:29,T:1:1000000001:4:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:28
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestA02_ReceiveOnClosed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:29,T:1:1000000001:4:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:28

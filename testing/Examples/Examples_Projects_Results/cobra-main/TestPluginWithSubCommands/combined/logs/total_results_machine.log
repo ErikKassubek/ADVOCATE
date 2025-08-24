@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestPluginWithSubCommands ###
+

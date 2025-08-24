@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzz,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPie+,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPie,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0
+GoPieHB,TestNoRootRunCommandExecutedWithoutVersionSet,1,1,0,0,0,0,0,0,0

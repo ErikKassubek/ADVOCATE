@@ -1,0 +1,42 @@
+=== RUN   TestCompletionFuncCompatibility
+=== RUN   TestCompletionFuncCompatibility/validate_signature
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_[]string
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_[]Completion
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_CompletionFunc
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper/type_helper
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper/type_alias_helper
+--- PASS: TestCompletionFuncCompatibility (0.00s)
+    --- PASS: TestCompletionFuncCompatibility/validate_signature (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_[]string (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_[]Completion (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_CompletionFunc (0.00s)
+    --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper/type_helper (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper/type_alias_helper (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompletionFuncCompatibility
+Import added at line: 17
+Header added at line: 2896
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompletionFuncCompatibility
+=== RUN   TestCompletionFuncCompatibility/validate_signature
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_[]string
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_[]Completion
+=== RUN   TestCompletionFuncCompatibility/validate_signature/format_with_CompletionFunc
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper/type_helper
+=== RUN   TestCompletionFuncCompatibility/user_defined_completion_helper/type_alias_helper
+--- PASS: TestCompletionFuncCompatibility (0.10s)
+    --- PASS: TestCompletionFuncCompatibility/validate_signature (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_[]string (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_[]Completion (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/validate_signature/format_with_CompletionFunc (0.00s)
+    --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper/type_helper (0.00s)
+        --- PASS: TestCompletionFuncCompatibility/user_defined_completion_helper/type_alias_helper (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

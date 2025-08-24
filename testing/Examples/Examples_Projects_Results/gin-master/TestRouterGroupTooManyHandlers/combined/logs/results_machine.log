@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: GFuzzHB | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: Flow | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: GFuzzHBFlow | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: GoPie | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: GoPie+ | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80
+
+
+### Mode: GoPieHB | Subdir: file(34)-test(1)-routergroup_test-TestRouterGroupTooManyHandlers ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:80

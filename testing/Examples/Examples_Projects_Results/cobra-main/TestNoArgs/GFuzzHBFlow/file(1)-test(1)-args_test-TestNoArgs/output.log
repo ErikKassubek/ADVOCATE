@@ -1,0 +1,38 @@
+=== RUN   TestNoArgs
+--- PASS: TestNoArgs (0.00s)
+=== RUN   TestNoArgs_WithArgs
+--- PASS: TestNoArgs_WithArgs (0.00s)
+=== RUN   TestNoArgs_WithValid_WithArgs
+--- PASS: TestNoArgs_WithValid_WithArgs (0.00s)
+=== RUN   TestNoArgs_WithValid_WithInvalidArgs
+--- PASS: TestNoArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestNoArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestNoArgs_WithValidOnly_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestNoArgs
+Import added at line: 17
+Header added at line: 112
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 118
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 124
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 130
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 136
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoArgs
+--- PASS: TestNoArgs (0.11s)
+=== RUN   TestNoArgs_WithArgs
+--- PASS: TestNoArgs_WithArgs (0.00s)
+=== RUN   TestNoArgs_WithValid_WithArgs
+--- PASS: TestNoArgs_WithValid_WithArgs (0.00s)
+=== RUN   TestNoArgs_WithValid_WithInvalidArgs
+--- PASS: TestNoArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestNoArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestNoArgs_WithValidOnly_WithInvalidArgs (0.02s)
+PASS
+ok  	github.com/spf13/cobra	0.211s

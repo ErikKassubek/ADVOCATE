@@ -1,0 +1,6 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestA03_Mixed,5,2,0,2,0,0,0,0,0
+TestA03_Mixed,6,4,0,2,0,0,0,0,0
+TestA03_Mixed,6,4,0,2,0,0,0,0,0
+TestA03_Mixed,6,4,0,2,0,0,0,0,0
+TestA03_Mixed,1,17,0,0,0,0,0,0,0

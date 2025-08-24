@@ -1,0 +1,140 @@
+
+
+### Mode: GFuzz | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GFuzzHB | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+
+
+### Mode: Flow | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GoPie | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: GoPie+ | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GoPieHB | Subdir: file(6)-test(1)-completions_test-TestNoCmdNameCompletionInGo ###
+
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestNoCmdNameCompletionInGo
+Import added at line: 17
+Header added at line: 157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoCmdNameCompletionInGo
+[Debug] [Error] Error while parsing flags from args [--localroot value]: unknown flag: --localroot
+--- PASS: TestNoCmdNameCompletionInGo (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s

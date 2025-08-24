@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GFuzz,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GFuzzHB,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GoPie+,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GoPie,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0
+GoPieHB,TestLevenshteinDistance,8,8,0,0,0,0,0,0,0

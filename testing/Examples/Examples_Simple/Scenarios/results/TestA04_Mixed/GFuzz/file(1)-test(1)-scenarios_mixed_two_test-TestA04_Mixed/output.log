@@ -1,0 +1,33 @@
+=== RUN   TestA04_Mixed
+--- FAIL: TestA04_Mixed (0.00s)
+panic: close of nil channel [recovered]
+	panic: close of nil channel
+
+goroutine 6 [running]:
+testing.tRunner.func1.2({0x5510a0, 0x5b1540})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1734 +0x21c
+testing.tRunner.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1737 +0x35e
+panic({0x5510a0?, 0x5b1540?})
+	/home/ilian/Tools/go-runtime/src/runtime/panic.go:792 +0x132
+scenarios.TestA04_Mixed(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:43 +0x68
+testing.tRunner(0xc000003880, 0x585d08)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	scenarios	0.006s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA04_Mixed
+Import added at line: 3
+Header added at line: 37
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA04_Mixed
+
+Exit Replay with code  33 Close on nil
+Exit Message: panic: close of nil channel
+
+FAIL	scenarios	0.105s
+FAIL

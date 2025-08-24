@@ -1,0 +1,168 @@
+
+
+### Mode: GFuzz | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+
+
+### Mode: GFuzzHB | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+
+
+### Mode: Flow | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+
+
+### Mode: GoPie | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+
+
+### Mode: GoPie+ | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.10s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+
+
+### Mode: GoPieHB | Subdir: file(74)-test(1)-replacer_test-TestReplacerNew ###
+
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.00s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+TestName:  TestReplacerNew
+Import added at line: 17
+Header added at line: 374
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+Header added at line: 460
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/replacer_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplacerNew
+--- PASS: TestReplacerNew (0.11s)
+=== RUN   TestReplacerNewWithoutFile
+--- PASS: TestReplacerNewWithoutFile (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.116s

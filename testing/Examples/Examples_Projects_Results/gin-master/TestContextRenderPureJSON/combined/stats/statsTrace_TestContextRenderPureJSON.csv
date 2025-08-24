@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GoPie,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextRenderPureJSON,2,1,1,0,0,0,0,0,0

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestConsistentNormalizedName,0,0,0,0,0,0,0,0,0,0,0

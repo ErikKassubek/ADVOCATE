@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzz,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPie+,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPie,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0
+GoPieHB,TestDisableFlagParsing,1,1,0,0,0,0,0,0,0

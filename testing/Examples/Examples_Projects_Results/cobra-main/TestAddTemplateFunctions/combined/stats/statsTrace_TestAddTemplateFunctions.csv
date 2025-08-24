@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GFuzz,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GoPie+,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GoPie,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0
+GoPieHB,TestAddTemplateFunctions,1,1,0,0,0,0,0,0,0

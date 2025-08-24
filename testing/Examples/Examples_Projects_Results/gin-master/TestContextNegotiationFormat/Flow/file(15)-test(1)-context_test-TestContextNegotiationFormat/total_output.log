@@ -1,0 +1,34 @@
+=== RUN   TestContextNegotiationFormat
+--- PASS: TestContextNegotiationFormat (0.00s)
+=== RUN   TestContextNegotiationFormatWithAccept
+--- PASS: TestContextNegotiationFormatWithAccept (0.00s)
+=== RUN   TestContextNegotiationFormatWithWildcardAccept
+--- PASS: TestContextNegotiationFormatWithWildcardAccept (0.00s)
+=== RUN   TestContextNegotiationFormatCustom
+--- PASS: TestContextNegotiationFormatCustom (0.00s)
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat
+Import added at line: 7
+Header added at line: 1559
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 1568
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 1578
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 1602
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: you must provide at least one offer
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL
+Bugreport info: 0_1,fail

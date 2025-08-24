@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GFuzz,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GoPie+,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GoPie,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0
+GoPieHB,TestGetRequestHeaderValue,2,1,1,0,0,0,0,0,0

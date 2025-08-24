@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzz,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPie+,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPie,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPieHB,TestShorthandVersionFlagExecutedOnSubcommand,1,1,0,0,0,0,0,0,0

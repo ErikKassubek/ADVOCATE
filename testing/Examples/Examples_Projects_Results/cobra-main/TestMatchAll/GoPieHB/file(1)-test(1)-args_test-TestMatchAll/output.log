@@ -1,0 +1,26 @@
+=== RUN   TestMatchAll
+=== RUN   TestMatchAll/happy_path
+=== RUN   TestMatchAll/incorrect_number_of_args
+=== RUN   TestMatchAll/incorrect_number_of_bytes_in_one_arg
+--- PASS: TestMatchAll (0.00s)
+    --- PASS: TestMatchAll/happy_path (0.00s)
+    --- PASS: TestMatchAll/incorrect_number_of_args (0.00s)
+    --- PASS: TestMatchAll/incorrect_number_of_bytes_in_one_arg (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMatchAll
+Import added at line: 17
+Header added at line: 440
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMatchAll
+=== RUN   TestMatchAll/happy_path
+=== RUN   TestMatchAll/incorrect_number_of_args
+=== RUN   TestMatchAll/incorrect_number_of_bytes_in_one_arg
+--- PASS: TestMatchAll (0.10s)
+    --- PASS: TestMatchAll/happy_path (0.00s)
+    --- PASS: TestMatchAll/incorrect_number_of_args (0.00s)
+    --- PASS: TestMatchAll/incorrect_number_of_bytes_in_one_arg (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

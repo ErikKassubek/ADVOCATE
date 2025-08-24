@@ -1,0 +1,10 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GFuzz,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GFuzzHB,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GFuzzHBFlow,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0
+GoPie,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,117,11,13,18,0,66,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0

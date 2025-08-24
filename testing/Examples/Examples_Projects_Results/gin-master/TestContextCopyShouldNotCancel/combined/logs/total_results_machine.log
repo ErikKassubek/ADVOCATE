@@ -1,0 +1,32 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+A02,T:10:1000000008:1926:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055,T:1:1000000008:2182:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+A02,T:10:1000000008:1878:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055,T:1:1000000008:2182:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+A02,T:10:1000000008:1890:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055,T:1:1000000008:2192:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+A02,T:10:1000000008:1822:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055,T:1:1000000008:2140:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089

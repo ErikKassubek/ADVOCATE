@@ -1,0 +1,17 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on unbuffered channel with possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:91@18
+	partner: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:90@26
+
+
+-------------------- Warning --------------------
+
+2 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:97@38
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:96@36
+
+```

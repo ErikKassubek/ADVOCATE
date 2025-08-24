@@ -1,0 +1,6 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestL03_BufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL03_BufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL03_BufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL03_BufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL03_BufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0

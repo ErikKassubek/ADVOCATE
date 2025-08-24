@@ -1,0 +1,14 @@
+=== RUN   TestSetIn
+--- PASS: TestSetIn (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestSetIn
+Import added at line: 17
+Header added at line: 2153
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSetIn
+--- PASS: TestSetIn (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s

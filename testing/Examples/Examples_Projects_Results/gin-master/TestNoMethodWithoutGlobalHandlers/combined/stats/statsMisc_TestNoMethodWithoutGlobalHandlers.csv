@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestNoMethodWithoutGlobalHandlers,0,0,0,0,0,0,0,0,0,0,0

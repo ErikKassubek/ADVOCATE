@@ -1,0 +1,32 @@
+=== RUN   TestSetContext
+--- PASS: TestSetContext (0.00s)
+=== RUN   TestSetContextPreRun
+--- PASS: TestSetContextPreRun (0.00s)
+=== RUN   TestSetContextPreRunOverwrite
+--- PASS: TestSetContextPreRunOverwrite (0.00s)
+=== RUN   TestSetContextPersistentPreRun
+--- PASS: TestSetContextPersistentPreRun (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestSetContext
+Import added at line: 17
+Header added at line: 2603
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+Header added at line: 2628
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+Header added at line: 2654
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+Header added at line: 2675
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestSetContext
+--- PASS: TestSetContext (0.10s)
+=== RUN   TestSetContextPreRun
+--- PASS: TestSetContextPreRun (0.00s)
+=== RUN   TestSetContextPreRunOverwrite
+--- PASS: TestSetContextPreRunOverwrite (0.00s)
+=== RUN   TestSetContextPersistentPreRun
+--- PASS: TestSetContextPersistentPreRun (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

@@ -1,0 +1,76 @@
+
+
+### Mode: GFuzz | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L00,T:7:-1:1550:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:444
+L00,T:4:-1:1680:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2833
+L00,T:10:-1:2136:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+L00,T:5:-1:574:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+
+
+### Mode: GFuzzHB | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L06,T:5:5000000012:2746:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987,T:9:5000000012:2104:CS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856
+L07,T:6:1000000014:598:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L07,T:6:-1:598:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:9:-1:2116:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+L00,T:4:-1:2874:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+A02,T:1:1000000011:204:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97,T:3:1000000011:464:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150
+A02,T:1:1000000015:514:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400,T:4:1000000015:2688:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368
+A02,T:11:5000000027:2558:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182,T:5:5000000027:2636:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247
+A02,T:6:1000000013:1490:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570,T:4:1000000013:2872:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773
+
+
+### Mode: Flow | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L06,T:4:4000000012:2794:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987,T:9:4000000012:2054:CS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856
+L07,T:6:-1:546:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L07,T:6:1000000014:546:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:5:-1:2920:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:9:-1:2060:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+A02,T:1:1000000011:204:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97,T:3:1000000011:480:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150
+A02,T:1:1000000015:510:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400,T:5:1000000015:2712:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368
+A02,T:11:4000000028:2614:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182,T:4:4000000028:2730:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247
+A02,T:6:1000000013:1388:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570,T:5:1000000013:2918:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773
+
+
+### Mode: GFuzzHBFlow | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L06,T:7:7000000012:2696:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987,T:10:7000000012:2062:CS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856
+L07,T:5:-1:546:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L07,T:5:1000000014:546:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:4:-1:2840:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:10:-1:2076:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+A02,T:1:1000000011:228:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97,T:3:1000000011:444:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150
+A02,T:12:7000000028:2476:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182,T:7:7000000028:2586:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247
+A02,T:1:1000000015:484:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400,T:4:1000000015:2694:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368
+A02,T:5:1000000013:1232:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570,T:4:1000000013:2836:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773
+
+
+### Mode: GoPie | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L00,T:6:-1:3318:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:7:-1:3180:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987
+L00,T:8:-1:1040:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:11:-1:2546:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+
+
+### Mode: GoPie+ | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L00,T:4:-1:2862:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:6:-1:568:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:5:-1:2746:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987
+L00,T:9:-1:2054:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+
+
+### Mode: GoPieHB | Subdir: file(21)-test(1)-gin_test-TestH2c ###
+
+L06,T:4:4000000012:2794:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987,T:9:4000000012:2102:CS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856
+L07,T:6:1000000014:614:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L07,T:6:-1:614:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:5:-1:2942:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:9:-1:2106:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+A02,T:1:1000000011:204:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97,T:3:1000000011:480:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150
+A02,T:11:4000000028:2664:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182,T:4:4000000028:2698:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247
+A02,T:1:1000000015:510:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400,T:5:1000000015:2778:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368
+A02,T:6:1000000013:1452:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570,T:5:1000000013:2940:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773

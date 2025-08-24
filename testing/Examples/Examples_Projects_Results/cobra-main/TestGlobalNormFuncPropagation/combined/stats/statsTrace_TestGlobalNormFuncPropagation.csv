@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GFuzz,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GoPie+,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GoPie,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0
+GoPieHB,TestGlobalNormFuncPropagation,1,1,0,0,0,0,0,0,0

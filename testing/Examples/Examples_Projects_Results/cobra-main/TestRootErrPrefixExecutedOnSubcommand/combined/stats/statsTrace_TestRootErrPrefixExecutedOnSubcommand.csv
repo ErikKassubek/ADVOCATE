@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzz,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPie+,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPie,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0
+GoPieHB,TestRootErrPrefixExecutedOnSubcommand,1,1,0,0,0,0,0,0,0

@@ -1,0 +1,42 @@
+=== RUN   TestContextSetGetAnyKey
+=== RUN   TestContextSetGetAnyKey/int
+=== RUN   TestContextSetGetAnyKey/int32
+=== RUN   TestContextSetGetAnyKey/int64
+=== RUN   TestContextSetGetAnyKey/uint
+=== RUN   TestContextSetGetAnyKey/float32
+=== RUN   TestContextSetGetAnyKey/gin.key
+=== RUN   TestContextSetGetAnyKey/*gin.key
+--- PASS: TestContextSetGetAnyKey (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int64 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/uint (0.00s)
+    --- PASS: TestContextSetGetAnyKey/float32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/gin.key (0.00s)
+    --- PASS: TestContextSetGetAnyKey/*gin.key (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextSetGetAnyKey
+Import added at line: 7
+Header added at line: 265
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextSetGetAnyKey
+=== RUN   TestContextSetGetAnyKey/int
+=== RUN   TestContextSetGetAnyKey/int32
+=== RUN   TestContextSetGetAnyKey/int64
+=== RUN   TestContextSetGetAnyKey/uint
+=== RUN   TestContextSetGetAnyKey/float32
+=== RUN   TestContextSetGetAnyKey/gin.key
+=== RUN   TestContextSetGetAnyKey/*gin.key
+--- PASS: TestContextSetGetAnyKey (0.10s)
+    --- PASS: TestContextSetGetAnyKey/int (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int64 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/uint (0.00s)
+    --- PASS: TestContextSetGetAnyKey/float32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/gin.key (0.00s)
+    --- PASS: TestContextSetGetAnyKey/*gin.key (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.120s

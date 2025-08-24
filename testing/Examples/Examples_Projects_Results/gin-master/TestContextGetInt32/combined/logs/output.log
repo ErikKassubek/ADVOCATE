@@ -1,0 +1,168 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.115s
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.123s
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextGetInt32 ###
+
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.00s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt32
+Import added at line: 7
+Header added at line: 356
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 457
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt32
+--- PASS: TestContextGetInt32 (0.10s)
+=== RUN   TestContextGetInt32Slice
+--- PASS: TestContextGetInt32Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s

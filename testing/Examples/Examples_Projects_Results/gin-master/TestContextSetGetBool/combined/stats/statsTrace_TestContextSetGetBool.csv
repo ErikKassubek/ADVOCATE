@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GFuzz,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GFuzzHB,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GFuzzHBFlow,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GoPie+,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GoPie,TestContextSetGetBool,6,1,1,0,0,4,0,0,0
+GoPieHB,TestContextSetGetBool,6,1,1,0,0,4,0,0,0

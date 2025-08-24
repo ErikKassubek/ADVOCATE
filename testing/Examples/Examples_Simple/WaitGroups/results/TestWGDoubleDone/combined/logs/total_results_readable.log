@@ -1,0 +1,120 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: Flow | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: GoPie | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-waitgroups_test-TestWGDoubleDone ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual negative Wait Group:
+	done: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@0
+
+
+2 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:23@16
+
+
+```

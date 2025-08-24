@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GFuzz,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GFuzzHB,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GFuzzHBFlow,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GoPie+,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GoPie,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0
+GoPieHB,TestL10_LeakOnCond,4,2,0,0,0,1,0,1,0

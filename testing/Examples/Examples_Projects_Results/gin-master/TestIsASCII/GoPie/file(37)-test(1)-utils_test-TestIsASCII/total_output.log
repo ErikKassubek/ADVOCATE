@@ -1,0 +1,14 @@
+=== RUN   TestIsASCII
+--- PASS: TestIsASCII (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils_test.go
+TestName:  TestIsASCII
+Import added at line: 7
+Header added at line: 147
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestIsASCII
+--- PASS: TestIsASCII (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.108s

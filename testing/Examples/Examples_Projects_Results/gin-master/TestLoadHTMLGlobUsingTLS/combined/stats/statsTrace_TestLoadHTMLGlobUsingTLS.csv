@@ -1,0 +1,9 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GFuzz,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GFuzzHB,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GFuzzHBFlow,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GoPie+,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLGlobUsingTLS,28,33,10,2,0,0,3,0,0

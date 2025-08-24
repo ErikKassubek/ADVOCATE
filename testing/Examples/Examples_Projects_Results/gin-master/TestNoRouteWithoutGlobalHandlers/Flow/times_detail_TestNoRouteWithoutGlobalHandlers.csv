@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestNoRouteWithoutGlobalHandlers,0.65956,0.73533,0.00008,0.00021,0.00000,0.00000,0.00000,0.00000,0.00000,0.00012,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00027,0

@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestColorForStatus,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

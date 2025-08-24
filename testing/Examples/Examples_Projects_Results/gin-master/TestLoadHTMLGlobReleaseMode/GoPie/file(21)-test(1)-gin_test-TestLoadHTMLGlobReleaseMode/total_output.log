@@ -1,0 +1,26 @@
+=== RUN   TestLoadHTMLGlobReleaseMode
+--- PASS: TestLoadHTMLGlobReleaseMode (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLGlobReleaseMode
+Import added at line: 7
+Header added at line: 143
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLGlobReleaseMode
+--- PASS: TestLoadHTMLGlobReleaseMode (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+TestName:  TestLoadHTMLGlobReleaseMode
+Import added at line: 7
+Header added at line: 143
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadHTMLGlobReleaseMode
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.030s
+FAIL

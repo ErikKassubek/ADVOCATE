@@ -1,0 +1,10 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0

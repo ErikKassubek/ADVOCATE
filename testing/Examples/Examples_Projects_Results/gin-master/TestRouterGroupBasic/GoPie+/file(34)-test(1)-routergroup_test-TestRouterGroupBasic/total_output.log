@@ -1,0 +1,20 @@
+=== RUN   TestRouterGroupBasic
+--- PASS: TestRouterGroupBasic (0.00s)
+=== RUN   TestRouterGroupBasicHandle
+--- PASS: TestRouterGroupBasicHandle (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup_test.go
+TestName:  TestRouterGroupBasic
+Import added at line: 7
+Header added at line: 18
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup_test.go
+Header added at line: 35
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRouterGroupBasic
+--- PASS: TestRouterGroupBasic (0.10s)
+=== RUN   TestRouterGroupBasicHandle
+--- PASS: TestRouterGroupBasicHandle (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s

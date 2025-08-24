@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GFuzz,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GFuzzHB,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GFuzzHBFlow,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GoPie+,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GoPie,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1
+GoPieHB,TestContextAutoBindJSON,5,1,1,0,0,2,0,0,1

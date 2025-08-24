@@ -1,0 +1,145 @@
+
+
+### Mode: GFuzz | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:15 | 200 |      17.753µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:16 | 200 |      83.761µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.43s)
+PASS
+ok  	github.com/gin-gonic/gin	1.441s
+
+
+### Mode: GFuzzHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:19 | 200 |      32.942µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:19 | 200 |      98.048µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.57s)
+PASS
+ok  	github.com/gin-gonic/gin	1.581s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+
+
+### Mode: Flow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:23 | 200 |       25.25µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:23 | 200 |       74.19µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.35s)
+PASS
+ok  	github.com/gin-gonic/gin	1.357s
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:26 | 200 |      39.444µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:27 | 200 |      79.956µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.73s)
+PASS
+ok  	github.com/gin-gonic/gin	1.745s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+
+
+### Mode: GoPie | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:30 | 200 |      19.276µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:31 | 200 |      99.856µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.68s)
+PASS
+ok  	github.com/gin-gonic/gin	1.692s
+
+
+### Mode: GoPie+ | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:34 | 200 |      21.855µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:34 | 200 |      76.451µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.54s)
+PASS
+ok  	github.com/gin-gonic/gin	1.549s
+
+
+### Mode: GoPieHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:37 | 200 |      37.168µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestRaceContextCopy
+Import added at line: 7
+Header added at line: 351
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRaceContextCopy
+[GIN] 2025/06/20 - 01:36:38 | 200 |      77.661µs |       192.0.2.1 | GET      "/test/copy/race"
+--- PASS: TestRaceContextCopy (1.51s)
+PASS
+ok  	github.com/gin-gonic/gin	1.522s

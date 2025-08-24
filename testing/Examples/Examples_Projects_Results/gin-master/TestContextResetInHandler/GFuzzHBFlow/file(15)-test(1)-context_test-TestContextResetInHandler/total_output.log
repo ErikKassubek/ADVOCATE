@@ -1,0 +1,14 @@
+=== RUN   TestContextResetInHandler
+--- PASS: TestContextResetInHandler (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextResetInHandler
+Import added at line: 7
+Header added at line: 2831
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextResetInHandler
+--- PASS: TestContextResetInHandler (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

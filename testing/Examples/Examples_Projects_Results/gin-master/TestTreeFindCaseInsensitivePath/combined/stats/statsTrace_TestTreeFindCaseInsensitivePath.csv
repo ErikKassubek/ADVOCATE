@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GFuzz,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GoPie+,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GoPie,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0
+GoPieHB,TestTreeFindCaseInsensitivePath,1,1,0,0,0,0,0,0,0

@@ -1,0 +1,1348 @@
+=== RUN   TestAdminRouterProvisioning
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_1
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_2
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_3
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_4
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_5
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_6
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_7
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_8
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_9
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_10
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_11
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_12
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_13
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_14
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_15
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_16
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_17
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_18
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_19
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_20
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_21
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_22
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_23
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_24
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.113s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_25
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_26
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_27
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_28
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_29
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_30
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_31
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_32
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_33
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_34
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_35
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_36
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_37
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_38
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_39
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_40
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_41
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_42
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_43
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_44
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_45
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_46
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_47
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_48
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_49
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_50
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_51
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_52
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_53
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_54
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_55
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_56
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_57
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_58
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_59
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_60
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_61
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_62
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_63
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_64
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.11s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_65
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_66
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_67
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_68
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_69
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_70
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_71
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_72
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_73
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_74
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_75
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_76
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_77
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_78
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s

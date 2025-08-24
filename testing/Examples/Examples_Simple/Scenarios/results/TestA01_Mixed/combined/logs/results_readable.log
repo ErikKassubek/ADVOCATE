@@ -1,0 +1,108 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@6
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:19@8
+
+```
+
+### Mode: Flow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@6
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:19@8
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@6
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:19@8
+
+```
+
+### Mode: GoPie | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA01_Mixed ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@296
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:19@312
+
+```

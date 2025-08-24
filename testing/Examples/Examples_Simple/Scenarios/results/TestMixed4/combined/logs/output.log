@@ -1,0 +1,181 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.00s)
+PASS
+ok  	scenarios	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.10s)
+PASS
+ok  	scenarios	0.105s
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.10s)
+PASS
+ok  	scenarios	0.105s
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+=== RUN   TestMixed4
+Reading trace from rewrittenTrace_1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	scenarios	60.062s
+FAIL
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.10s)
+PASS
+ok  	scenarios	0.105s
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+=== RUN   TestMixed4
+Reading trace from rewrittenTrace_1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	scenarios	60.012s
+FAIL
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.10s)
+PASS
+ok  	scenarios	0.104s
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+=== RUN   TestMixed4
+Reading trace from rewrittenTrace_1
+
+Exit Replay with code  0 The replay terminated normally
+ok  	scenarios	4.005s
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+FAIL	scenarios	70.067s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	scenarios	60.106s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed4 ###
+
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.00s)
+PASS
+ok  	scenarios	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+--- PASS: TestMixed4 (0.10s)
+PASS
+ok  	scenarios	0.105s
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+=== RUN   TestMixed4
+Reading trace from rewrittenTrace_1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	scenarios	60.025s
+FAIL

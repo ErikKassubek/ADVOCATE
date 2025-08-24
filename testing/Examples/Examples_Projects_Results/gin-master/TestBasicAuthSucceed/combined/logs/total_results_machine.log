@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuthSucceed ###
+

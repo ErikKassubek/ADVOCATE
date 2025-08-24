@@ -1,0 +1,7 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestRouteStaticFile,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

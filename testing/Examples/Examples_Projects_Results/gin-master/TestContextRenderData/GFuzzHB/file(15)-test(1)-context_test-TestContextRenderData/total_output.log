@@ -1,0 +1,26 @@
+=== RUN   TestContextRenderData
+--- PASS: TestContextRenderData (0.00s)
+=== RUN   TestContextRenderDataFromReader
+--- PASS: TestContextRenderDataFromReader (0.00s)
+=== RUN   TestContextRenderDataFromReaderNoHeaders
+--- PASS: TestContextRenderDataFromReaderNoHeaders (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextRenderData
+Import added at line: 7
+Header added at line: 1242
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 2738
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 2757
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextRenderData
+--- PASS: TestContextRenderData (0.10s)
+=== RUN   TestContextRenderDataFromReader
+--- PASS: TestContextRenderDataFromReader (0.00s)
+=== RUN   TestContextRenderDataFromReaderNoHeaders
+--- PASS: TestContextRenderDataFromReaderNoHeaders (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s

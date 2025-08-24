@@ -1,0 +1,16 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminRouterProvisioning
+Import added at line: 17
+Header added at line: 455
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminRouterProvisioning
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_78
+=== RUN   TestAdminRouterProvisioning/successful_provisioning
+=== RUN   TestAdminRouterProvisioning/provisioning_error
+--- PASS: TestAdminRouterProvisioning (0.10s)
+    --- PASS: TestAdminRouterProvisioning/successful_provisioning (0.00s)
+    --- PASS: TestAdminRouterProvisioning/provisioning_error (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s

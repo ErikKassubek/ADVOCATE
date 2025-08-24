@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestWrongGroupFirstLevel,0,0,0,0,0,0,0,0,0,0,0

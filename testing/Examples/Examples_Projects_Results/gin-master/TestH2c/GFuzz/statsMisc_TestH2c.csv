@@ -1,0 +1,14 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0
+TestH2c,0,0,0,0,0,0,0,0,0,0,0

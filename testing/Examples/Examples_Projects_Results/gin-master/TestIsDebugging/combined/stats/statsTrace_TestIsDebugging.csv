@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GFuzz,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GFuzzHB,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GFuzzHBFlow,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GoPie+,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GoPie,TestIsDebugging,7,1,6,0,0,0,0,0,0
+GoPieHB,TestIsDebugging,7,1,6,0,0,0,0,0,0

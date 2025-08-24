@@ -1,0 +1,5 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestContextRenderHTML2,14,2,5,2,0,0,3,0,0
+TestContextRenderHTML2,15,4,5,2,0,0,3,0,0
+TestContextRenderHTML2,15,4,5,2,0,0,3,0,0
+TestContextRenderHTML2,15,4,5,2,0,0,3,0,0

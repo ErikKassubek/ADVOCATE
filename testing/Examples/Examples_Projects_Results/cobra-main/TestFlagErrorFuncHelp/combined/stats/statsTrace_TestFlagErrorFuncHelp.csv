@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GFuzz,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GoPie+,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GoPie,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0
+GoPieHB,TestFlagErrorFuncHelp,1,1,0,0,0,0,0,0,0

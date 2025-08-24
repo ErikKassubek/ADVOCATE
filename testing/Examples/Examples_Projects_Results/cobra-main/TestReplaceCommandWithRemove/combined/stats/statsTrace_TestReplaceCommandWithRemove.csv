@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GFuzz,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GoPie+,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GoPie,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0
+GoPieHB,TestReplaceCommandWithRemove,1,1,0,0,0,0,0,0,0

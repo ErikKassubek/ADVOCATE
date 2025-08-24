@@ -1,0 +1,5 @@
+L00,T:4:-1:18:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:91
+==================================
+L00,T:6:-1:400:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:91
+==================================
+L00,T:1:-1:404:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:92

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GFuzz,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GoPie+,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GoPie,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0
+GoPieHB,TestHiddenCommandIsHidden,1,1,0,0,0,0,0,0,0

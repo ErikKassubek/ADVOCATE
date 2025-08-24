@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GFuzz,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GoPie+,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GoPie,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0
+GoPieHB,TestTraverseWithTwoSubcommands,1,1,0,0,0,0,0,0,0

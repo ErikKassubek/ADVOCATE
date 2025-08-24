@@ -1,0 +1,4 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestLoadHTMLFilesDebugMode,0,0,0,0,0,0,0,0,0,0,0
+TestLoadHTMLFilesDebugMode,0,0,0,0,0,0,0,0,0,0,0
+TestLoadHTMLFilesDebugMode,0,0,0,0,0,0,0,0,0,0,0

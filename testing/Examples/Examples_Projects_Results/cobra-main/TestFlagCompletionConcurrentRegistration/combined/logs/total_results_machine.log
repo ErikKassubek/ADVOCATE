@@ -1,0 +1,67 @@
+
+
+### Mode: GFuzz | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+
+
+### Mode: Flow | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+
+
+### Mode: GoPie | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+==================================
+==================================
+==================================
+==================================
+==================================
+L00,T:1:-1:1412:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150
+==================================
+L00,T:1:-1:1412:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150
+==================================
+==================================
+==================================
+L00,T:29:-1:2034:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+L00,T:8:-1:1902:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175
+==================================
+L00,T:1:-1:1412:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150
+==================================
+L00,T:6:-1:1596:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175
+==================================
+==================================
+==================================
+==================================
+L00,T:43:-1:2552:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175
+==================================
+L00,T:1:-1:1412:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go:2150
+==================================
+==================================
+==================================
+
+
+### Mode: GoPie+ | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+
+
+### Mode: GoPieHB | Subdir: file(6)-test(1)-completions_test-TestFlagCompletionConcurrentRegistration ###
+
+==================================
+==================================
+L00,T:34:-1:5662:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175

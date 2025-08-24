@@ -1,0 +1,52 @@
+=== RUN   TestCondDeadlock
+panic: test timed out after 1m0s
+	running tests:
+		TestCondDeadlock (1m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x579ecf?, 0xc0000acb30?}, 0x5849d8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Cond.Wait]:
+sync.runtime_notifyListWait(0xc0000b8990, 0x0)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:597 +0x159
+sync.(*Cond).Wait(0xc00007e750?)
+	/home/ilian/Tools/go-runtime/src/sync/cond.go:71 +0x85
+deadlock.TestCondDeadlock(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:81 +0x97
+testing.tRunner(0xc000003880, 0x5849d8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	deadlock	60.063s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCondDeadlock
+Import added at line: 3
+Header added at line: 73
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCondDeadlock
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.163s
+FAIL
+Bugreport info: 0_1,fail

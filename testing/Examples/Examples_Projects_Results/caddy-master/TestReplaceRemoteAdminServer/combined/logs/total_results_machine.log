@@ -1,0 +1,59 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L00,T:7:-1:3670:RE:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L07,T:7:6000000004:3852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000004:3852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000001:3852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:10000000004:5852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000002:5852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000001:5852:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L07,T:7:6000000004:3502:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000004:3502:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000001:3502:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:10000000004:5550:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000002:5550:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000001:5550:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L07,T:11:10000000004:5978:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000002:5978:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000001:5978:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:6000000004:3994:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000004:3994:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000001:3994:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L00,T:7:-1:3878:RE:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L00,T:7:-1:3802:RE:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+==================================
+L00,T:5:-1:1080:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/logging.go:773
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-admin_test-TestReplaceRemoteAdminServer ###
+
+L07,T:7:7000000001:3874:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:10000000004:5864:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000002:5864:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:11:11000000001:5864:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:6000000004:3874:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+L07,T:7:7000000004:3874:SS:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69
+==================================
+L00,T:5:-1:1082:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/logging.go:773

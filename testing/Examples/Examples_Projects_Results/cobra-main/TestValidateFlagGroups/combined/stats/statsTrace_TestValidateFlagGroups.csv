@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GFuzz,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GFuzzHB,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GFuzzHBFlow,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GoPie+,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GoPie,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0
+GoPieHB,TestValidateFlagGroups,23,23,0,0,0,0,0,0,0

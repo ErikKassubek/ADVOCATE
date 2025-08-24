@@ -1,0 +1,40 @@
+=== RUN   TestEvent_CloudEvent_NilOrigin
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s

@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: Flow | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: GoPie | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: GoPie+ | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+
+
+
+### Mode: GoPieHB | Subdir: file(21)-test(1)-gin_test-TestNoMethodWithoutGlobalHandlers ###
+

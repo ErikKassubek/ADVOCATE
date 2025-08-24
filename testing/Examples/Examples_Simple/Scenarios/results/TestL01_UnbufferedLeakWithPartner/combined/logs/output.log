@@ -1,0 +1,120 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.115s
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.114s
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.01s)
+PASS
+ok  	scenarios	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.114s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.115s
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_99
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.116s
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.115s
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestL01_UnbufferedLeakWithPartner ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL01_UnbufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 97
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL01_UnbufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestL01_UnbufferedLeakWithPartner (0.11s)
+PASS
+ok  	scenarios	0.116s

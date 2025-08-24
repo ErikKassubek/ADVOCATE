@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestWebsocketsRequired,0,0,0,0,0,0,0,0,0,0,0

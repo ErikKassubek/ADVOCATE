@@ -1,0 +1,22 @@
+=== RUN   TestContextShouldBindBodyWithYAML
+    context_test.go:2505: testing:  YAML & JSON-BODY 
+    context_test.go:2505: testing:  YAML & XML-BODY 
+    context_test.go:2505: testing:  YAML & YAML-BODY 
+    context_test.go:2505: testing:  YAML & TOM-BODY 
+--- PASS: TestContextShouldBindBodyWithYAML (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextShouldBindBodyWithYAML
+Import added at line: 7
+Header added at line: 2475
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextShouldBindBodyWithYAML
+    context_test.go:2510: testing:  YAML & JSON-BODY 
+    context_test.go:2510: testing:  YAML & XML-BODY 
+    context_test.go:2510: testing:  YAML & YAML-BODY 
+    context_test.go:2510: testing:  YAML & TOM-BODY 
+--- PASS: TestContextShouldBindBodyWithYAML (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.108s

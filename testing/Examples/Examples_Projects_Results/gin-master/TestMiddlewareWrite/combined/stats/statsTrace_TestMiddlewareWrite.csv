@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GFuzz,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GoPie+,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GoPie,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0
+GoPieHB,TestMiddlewareWrite,3,1,2,0,0,0,0,0,0

@@ -1,0 +1,56 @@
+=== RUN   TestReplaceRemoteAdminServer
+=== RUN   TestReplaceRemoteAdminServer/nil_config
+=== RUN   TestReplaceRemoteAdminServer/nil_admin_config
+=== RUN   TestReplaceRemoteAdminServer/nil_remote_config
+=== RUN   TestReplaceRemoteAdminServer/invalid_listen_address
+=== RUN   TestReplaceRemoteAdminServer/valid_config
+1.750382005029423e+09	info	maintenance	started background certificate maintenance	{"cache": "0xc000122880"}
+{"level":"info","ts":1750382005.0296135,"logger":"admin.remote","msg":"secure admin remote control endpoint started","address":"localhost:2021"}
+{"level":"info","ts":1750382005.0296342,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+=== RUN   TestReplaceRemoteAdminServer/invalid_certificate
+{"level":"info","ts":1750382005.029866,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+1.7503820050298905e+09	info	maintenance	started background certificate maintenance	{"cache": "0xc000122b00"}
+--- PASS: TestReplaceRemoteAdminServer (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_admin_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_remote_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/invalid_listen_address (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/valid_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/invalid_certificate (0.00s)
+PASS
+{"level":"info","ts":1750382005.0299494,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestReplaceRemoteAdminServer
+Import added at line: 17
+Header added at line: 608
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestReplaceRemoteAdminServer
+=== RUN   TestReplaceRemoteAdminServer/nil_config
+=== RUN   TestReplaceRemoteAdminServer/nil_admin_config
+=== RUN   TestReplaceRemoteAdminServer/nil_remote_config
+=== RUN   TestReplaceRemoteAdminServer/invalid_listen_address
+=== RUN   TestReplaceRemoteAdminServer/valid_config
+1.750382005361901e+09	info	maintenance	started background certificate maintenance	{"cache": "0xc000232aa0"}
+{"level":"info","ts":1750382005.3622785,"logger":"admin.remote","msg":"secure admin remote control endpoint started","address":"localhost:2021"}
+{"level":"info","ts":1750382005.3623967,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+=== RUN   TestReplaceRemoteAdminServer/invalid_certificate
+{"level":"info","ts":1750382005.3628547,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+1.7503820053628194e+09	info	maintenance	started background certificate maintenance	{"cache": "0xc000233180"}
+{"level":"info","ts":1750382005.3632042,"logger":"admin","msg":"stopped previous server","address":"localhost:2021"}
+--- PASS: TestReplaceRemoteAdminServer (0.10s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_admin_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/nil_remote_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/invalid_listen_address (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/valid_config (0.00s)
+    --- PASS: TestReplaceRemoteAdminServer/invalid_certificate (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail

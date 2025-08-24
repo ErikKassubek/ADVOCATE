@@ -1,0 +1,15 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA03_Mixed
+Import added at line: 3
+Header added at line: 28
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA03_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestA03_Mixed (0.10s)
+PASS
+ok  	scenarios	0.109s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail

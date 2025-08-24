@@ -1,0 +1,14 @@
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthSearchCredential
+Import added at line: 7
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.115s

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestMarshalXMLforH,0,0,0,0,0,0,0,0,0,0,0

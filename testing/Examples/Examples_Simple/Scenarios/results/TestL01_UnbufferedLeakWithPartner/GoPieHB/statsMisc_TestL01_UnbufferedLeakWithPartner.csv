@@ -1,0 +1,7 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL01_UnbufferedLeakWithPartner,0,0,0,0,0,0,0,0,0,0,0

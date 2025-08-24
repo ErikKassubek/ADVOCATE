@@ -1,0 +1,1280 @@
+=== RUN   TestEvent_CloudEvent_NilOrigin
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_1
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.11s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.010s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_3
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,suc
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_3
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_4
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.010s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_5
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+releasep: m=0xc000100808 m->p=0xc000066a08 p->m=0xc000100808 p->status=3
+fatal error: releasep: invalid p state
+
+runtime stack:
+runtime.throw({0xe47753?, 0x10ff3a8?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:1110 +0x48 fp=0x75d63e059ba8 sp=0x75d63e059b78 pc=0x48dcc8
+runtime.releasepNoTrace()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:6013 +0x14a fp=0x75d63e059bf8 sp=0x75d63e059ba8 pc=0x461b4a
+runtime.releasep()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:6000 +0x5f fp=0x75d63e059c30 sp=0x75d63e059bf8 pc=0x4619df
+runtime.gcstopm()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:3246 +0x65 fp=0x75d63e059c60 sp=0x75d63e059c30 pc=0x45b7e5
+runtime.findRunnable()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:3318 +0x65 fp=0x75d63e059da8 sp=0x75d63e059c60 pc=0x45ba85
+runtime.schedule()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4054 +0xbd fp=0x75d63e059de0 sp=0x75d63e059da8 pc=0x45d47d
+runtime.park_m(0xc000002380)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4178 +0x1d9 fp=0x75d63e059e30 sp=0x75d63e059de0 pc=0x45d899
+runtime.mcall()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:459 +0x4e fp=0x75d63e059e48 sp=0x75d63e059e30 pc=0x49360e
+
+goroutine 1 gp=0xc000002380 m=nil [semacquire]:
+runtime.gopark(0xe70918, 0x12acd40, 0x12, 0x5, 0x4)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000584a0 sp=0xc000058470 pc=0x48de11
+runtime.goparkunlock(0x12acd40?, 0x65?, 0xb7?, 0xc000034060?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0000584d0 sp=0xc0000584a0 pc=0x4568e5
+runtime.semacquire1(0x12a5998, 0x0, 0x0, 0x0, 0x12)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000058520 sp=0xc0000584d0 pc=0x46b8a9
+runtime.semacquire(0xc000058578?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:139 +0x1e fp=0xc000058558 sp=0xc000058520 pc=0x46b6fe
+runtime.gcStart({0x75d6876baa78?, 0xc000058622?, 0x426792?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:668 +0x14e fp=0xc000058678 sp=0xc000058558 pc=0x42fbce
+runtime.mallocgcSmallScanNoHeader(0xe8, 0xddbdc0, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc0000586d8 sp=0xc000058678 pc=0x426c34
+runtime.mallocgc(0xe8, 0xddbdc0, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc000058708 sp=0xc0000586d8 pc=0x48b965
+runtime.newobject(0x1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1714 +0x25 fp=0xc000058730 sp=0xc000058708 pc=0x427425
+runtime.CallersFrames({0xc0002ff2e0, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29 fp=0xc000058750 sp=0xc000058730 pc=0x474929
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e fp=0xc000058878 sp=0xc000058750 pc=0x421e0e
+runtime.AdvocateFuzzingGetPreferredCase(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_fuzzing.go:90 +0x38 fp=0xc0000588f0 sp=0xc000058878 pc=0x411058
+runtime.selectnbsend(0xc0000d9680, 0xc000058a08)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:1013 +0x1e5 fp=0xc0000589f8 sp=0xc0000588f0 pc=0x41e7a5
+runtime.clearpools()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1816 +0x7c fp=0xc000058a30 sp=0xc0000589f8 pc=0x43231c
+runtime.gcStart({0xc000100808?, 0xc00055a000?, 0x8000?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:739 +0x3ba fp=0xc000058b50 sp=0xc000058a30 pc=0x42fe3a
+runtime.mallocgcLarge(0x8000, 0xd4be40, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1591 +0x15e fp=0xc000058bc0 sp=0xc000058b50 pc=0x42709e
+runtime.mallocgc(0x8000, 0xd4be40, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1063 +0x10c fp=0xc000058bf0 sp=0xc000058bc0 pc=0x48b98c
+runtime.makeslice(0xc000058c58?, 0x48b965?, 0xb0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/slice.go:116 +0x86 fp=0xc000058c28 sp=0xc000058bf0 pc=0x4900e6
+regexp.(*bitState).reset(0xc000556000, 0xc00011ea20, 0x23, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/regexp/backtrack.go:91 +0x15b fp=0xc000058ce8 sp=0xc000058c28 pc=0x62829b
+regexp.(*Regexp).backtrack(0xc00013a960, {0x0, 0x0, 0x0}, {0xe501e4, 0x23}, 0x0, 0x0, {0x12c5f60, 0x0, ...})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/regexp/backtrack.go:317 +0x1e5 fp=0xc000058e28 sp=0xc000058ce8 pc=0x629705
+regexp.(*Regexp).doExecute(0xc00013a960, {0x0, 0x0}, {0x0, 0x0, 0x0}, {0xe501e4, 0x23}, 0x0, 0x0, ...)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/regexp/exec.go:535 +0x2ba fp=0xc000058f78 sp=0xc000058e28 pc=0x62d15a
+regexp.(*Regexp).doMatch(0xc00013a960, {0x0, 0x0}, {0x0, 0x0, 0x0}, {0xe501e4, 0x23})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/regexp/exec.go:514 +0xb2 fp=0xc000059010 sp=0xc000058f78 pc=0x62ce12
+regexp.(*Regexp).MatchString(0xc00013a960, {0xe501e4, 0x23})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/regexp/regexp.go:527 +0x45 fp=0xc000059068 sp=0xc000059010 pc=0x633f85
+testing/internal/testdeps.TestDeps.MatchString({}, {0xc00012e380, 0x1e}, {0xe501e4, 0x23})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/internal/testdeps/deps.go:47 +0x189 fp=0xc0000590d8 sp=0xc000059068 pc=0x673269
+testing/internal/testdeps.(*TestDeps).MatchString(0x12c5f60, {0xc00012e380, 0x1e}, {0xe501e4, 0x23})
+	<autogenerated>:1 +0x7f fp=0xc000059140 sp=0xc0000590d8 pc=0x67431f
+testing.testDeps.MatchString-fm({0xc00012e380, 0x1e}, {0xe501e4, 0x23})
+	<autogenerated>:1 +0x94 fp=0xc0000591c0 sp=0xc000059140 pc=0x5ccfd4
+testing.simpleMatch.matches({0xc000128640, 0x1, 0x1}, {0xc000282060, 0x1, 0x1}, 0xc00012c3c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/match.go:130 +0x162 fp=0xc000059288 sp=0xc0000591c0 pc=0x5b9d22
+testing.(*simpleMatch).matches(0xc00012c3d8, {0xc000282060, 0x1, 0x1}, 0xc00012c3c0)
+	<autogenerated>:1 +0x92 fp=0xc0000592f0 sp=0xc000059288 pc=0x5cca52
+testing.(*matcher).fullName(0xc000138bc0, 0xc00016e000, {0xe501e4, 0x23})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/match.go:101 +0x2d2 fp=0xc000059438 sp=0xc0000592f0 pc=0x5b9932
+testing.(*T).Run(0xc00016e000, {0xe501e4, 0x23}, 0xe70290)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1812 +0xe5 fp=0xc0000596a8 sp=0xc000059438 pc=0x5c4f65
+testing.runTests.func1(0xc00016e000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad fp=0xc000059740 sp=0xc0000596a8 pc=0x5c96cd
+testing.tRunner(0xc00016e000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da fp=0xc000059828 sp=0xc000059740 pc=0x5c3bda
+testing.runTests(0xc00012c3c0, {0x1299dc0, 0x1d, 0x1d}, {0xc20d4da0dd4be92f, 0x8bb2e6569c, 0x12a46e0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea fp=0xc0000599b0 sp=0xc000059828 pc=0x5c950a
+testing.(*M).Run(0xc000168000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79 fp=0xc000059ee8 sp=0xc0000599b0 pc=0x5c6d59
+main.main()
+	_testmain.go:105 +0xa5 fp=0xc000059f78 sp=0xc000059ee8 pc=0xbf3045
+runtime.main()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:283 +0x247 fp=0xc000059fe0 sp=0xc000059f78 pc=0x456227
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000059fe8 sp=0xc000059fe0 pc=0x495641
+
+goroutine 2 gp=0xc000002e00 m=nil [force gc (idle)]:
+runtime.gopark(0xe70918, 0x12a2dc0, 0x11, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009e780 sp=0xc00009e750 pc=0x48de11
+runtime.goparkunlock(0x12a2dc0?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009e7b0 sp=0xc00009e780 pc=0x4568e5
+runtime.forcegchelper()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:348 +0xb5 fp=0xc00009e7e0 sp=0xc00009e7b0 pc=0x456575
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009e7e8 sp=0xc00009e7e0 pc=0x495641
+created by runtime.init.7 in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:336 +0x1a
+
+goroutine 3 gp=0xc000003340 m=nil [GC sweep wait]:
+runtime.gopark(0xe70918, 0x12a3740, 0xc, 0x9, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009ef58 sp=0xc00009ef28 pc=0x48de11
+runtime.goparkunlock(0x12a3740?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009ef88 sp=0xc00009ef58 pc=0x4568e5
+runtime.bgsweep(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcsweep.go:276 +0xa5 fp=0xc00009efc8 sp=0xc00009ef88 pc=0x43bc45
+runtime.gcenable.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x25 fp=0xc00009efe0 sp=0xc00009efc8 pc=0x42f645
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009efe8 sp=0xc00009efe0 pc=0x495641
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x66
+
+goroutine 4 gp=0xc000003500 m=nil [runnable]:
+runtime.gopark(0xe70918, 0x12a4ae0, 0xd, 0xa, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009f748 sp=0xc00009f718 pc=0x48de11
+runtime.goparkunlock(0x12a4ae0?, 0xe0?, 0x4a?, 0xc000003500?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009f778 sp=0xc00009f748 pc=0x4568e5
+runtime.(*scavengerState).park(0x12a4ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:425 +0x45 fp=0xc00009f7a0 sp=0xc00009f778 pc=0x439165
+runtime.bgscavenge(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:653 +0x45 fp=0xc00009f7c8 sp=0xc00009f7a0 pc=0x4396c5
+runtime.gcenable.gowrap2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0x25 fp=0xc00009f7e0 sp=0xc00009f7c8 pc=0x42f5e5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009f7e8 sp=0xc00009f7e0 pc=0x495641
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0xa5
+
+goroutine 5 gp=0xc000003dc0 m=nil [finalizer wait]:
+runtime.gopark(0xe70648, 0x12c6150, 0x10, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009fe30 sp=0xc00009fe00 pc=0x48de11
+runtime.runfinq()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:196 +0x107 fp=0xc00009ffe0 sp=0xc00009fe30 pc=0x42e587
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009ffe8 sp=0xc00009ffe0 pc=0x495641
+created by runtime.createfing in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:166 +0x45
+
+goroutine 6 gp=0xc0001c8380 m=nil [chan receive]:
+runtime.gopark(0xe705f0, 0xc0000d96e0, 0xe, 0x7, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000a0668 sp=0xc0000a0638 pc=0x48de11
+runtime.chanrecv(0xc0000d9680, 0x0, 0x1, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:863 +0x5a5 fp=0xc0000a0780 sp=0xc0000a0668 pc=0x41dfa5
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:627 +0x14 fp=0xc0000a07a8 sp=0xc0000a0780 pc=0x41d9d4
+runtime.unique_runtime_registerUniqueMapCleanup.func2(0xe71bf0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1796 +0x25 fp=0xc0000a07c8 sp=0xc0000a07a8 pc=0x489325
+runtime.unique_runtime_registerUniqueMapCleanup.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1799 +0x24 fp=0xc0000a07e0 sp=0xc0000a07c8 pc=0x432264
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000a07e8 sp=0xc0000a07e0 pc=0x495641
+created by unique.runtime_registerUniqueMapCleanup in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1794 +0x79
+
+goroutine 68 gp=0xc0001c8700 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd140, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00032cf30 sp=0xc00032cf00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00032cfc8 sp=0xc00032cf30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00032cfe0 sp=0xc00032cfc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00032cfe8 sp=0xc00032cfe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 20 gp=0xc000102700 m=nil [sleep]:
+runtime.gopark(0xe70958, 0x0, 0x13, 0xe, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000a0f70 sp=0xc0000a0f40 pc=0x48de11
+time.Sleep(0xdf8475800)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:338 +0x13c fp=0xc0000a0fb0 sp=0xc0000a0f70 pc=0x491b3c
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:109 +0x25 fp=0xc0000a0fe0 sp=0xc0000a0fb0 pc=0xb9bf05
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000a0fe8 sp=0xc0000a0fe0 pc=0x495641
+created by advocate.startReplay in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 21 gp=0xc0001028c0 m=nil [sleep]:
+runtime.gopark(0xe70958, 0x0, 0x13, 0xe, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000b5d98 sp=0xc0000b5d68 pc=0x48de11
+time.Sleep(0x1dcd6500)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:338 +0x13c fp=0xc0000b5dd8 sp=0xc0000b5d98 pc=0x491b3c
+runtime.sleep(0xe52ce1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_wait.go:20 +0x18 fp=0xc0000b5df0 sp=0xc0000b5dd8 pc=0x41a098
+runtime.ReplayManager()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:382 +0x58a fp=0xc0000b5fe0 sp=0xc0000b5df0 pc=0x41222a
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000b5fe8 sp=0xc0000b5fe0 pc=0x495641
+created by runtime.EnableReplay in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:270 +0x87
+
+goroutine 70 gp=0xc000102a80 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd180, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038af30 sp=0xc00038af00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038afc8 sp=0xc00038af30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038afe0 sp=0xc00038afc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038afe8 sp=0xc00038afe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 69 gp=0xc000338000 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd160, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038a730 sp=0xc00038a700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038a7c8 sp=0xc00038a730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038a7e0 sp=0xc00038a7c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038a7e8 sp=0xc00038a7e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 71 gp=0xc000296000 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd1a0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00032c730 sp=0xc00032c700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00032c7c8 sp=0xc00032c730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00032c7e0 sp=0xc00032c7c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00032c7e8 sp=0xc00032c7e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 72 gp=0xc0002961c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd1c0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038b730 sp=0xc00038b700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038b7c8 sp=0xc00038b730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038b7e0 sp=0xc00038b7c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038b7e8 sp=0xc00038b7e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 73 gp=0xc000296380 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd1e0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038bf30 sp=0xc00038bf00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038bfc8 sp=0xc00038bf30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038bfe0 sp=0xc00038bfc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038bfe8 sp=0xc00038bfe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 74 gp=0xc000296540 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd200, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038c730 sp=0xc00038c700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038c7c8 sp=0xc00038c730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038c7e0 sp=0xc00038c7c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038c7e8 sp=0xc00038c7e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 75 gp=0xc000296700 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd220, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038cf30 sp=0xc00038cf00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038cfc8 sp=0xc00038cf30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038cfe0 sp=0xc00038cfc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038cfe8 sp=0xc00038cfe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 76 gp=0xc0002968c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd240, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038d730 sp=0xc00038d700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038d7c8 sp=0xc00038d730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038d7e0 sp=0xc00038d7c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038d7e8 sp=0xc00038d7e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 77 gp=0xc000296a80 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd260, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00038df30 sp=0xc00038df00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc00038dfc8 sp=0xc00038df30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc00038dfe0 sp=0xc00038dfc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00038dfe8 sp=0xc00038dfe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 78 gp=0xc000296c40 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd280, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000566730 sp=0xc000566700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005667c8 sp=0xc000566730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005667e0 sp=0xc0005667c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005667e8 sp=0xc0005667e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 79 gp=0xc000296e00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd2a0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000566f30 sp=0xc000566f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000566fc8 sp=0xc000566f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000566fe0 sp=0xc000566fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000566fe8 sp=0xc000566fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 80 gp=0xc000296fc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd2c0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000567730 sp=0xc000567700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005677c8 sp=0xc000567730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005677e0 sp=0xc0005677c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005677e8 sp=0xc0005677e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 81 gp=0xc000297180 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd2e0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000567f30 sp=0xc000567f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000567fc8 sp=0xc000567f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000567fe0 sp=0xc000567fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000567fe8 sp=0xc000567fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 114 gp=0xc000297340 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd300, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000568730 sp=0xc000568700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005687c8 sp=0xc000568730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005687e0 sp=0xc0005687c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005687e8 sp=0xc0005687e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 115 gp=0xc000297500 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd320, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000568f30 sp=0xc000568f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000568fc8 sp=0xc000568f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000568fe0 sp=0xc000568fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000568fe8 sp=0xc000568fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 116 gp=0xc0002976c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd340, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000569730 sp=0xc000569700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005697c8 sp=0xc000569730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005697e0 sp=0xc0005697c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005697e8 sp=0xc0005697e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 117 gp=0xc000297880 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd360, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000569f30 sp=0xc000569f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000569fc8 sp=0xc000569f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000569fe0 sp=0xc000569fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000569fe8 sp=0xc000569fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 118 gp=0xc000297a40 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd380, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000562730 sp=0xc000562700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005627c8 sp=0xc000562730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005627e0 sp=0xc0005627c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005627e8 sp=0xc0005627e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 119 gp=0xc000297c00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd3a0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000562f30 sp=0xc000562f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000562fc8 sp=0xc000562f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000562fe0 sp=0xc000562fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000562fe8 sp=0xc000562fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 120 gp=0xc000297dc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd3c0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000563730 sp=0xc000563700 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0005637c8 sp=0xc000563730 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0005637e0 sp=0xc0005637c8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0005637e8 sp=0xc0005637e0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 121 gp=0xc00056c000 m=nil [GC worker (idle)]:
+runtime.gopark(0xe70668, 0xc0002fd3e0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000563f30 sp=0xc000563f00 pc=0x48de11
+runtime.gcBgMarkWorker(0xc000292140)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc000563fc8 sp=0xc000563f30 pc=0x4315fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc000563fe0 sp=0xc000563fc8 pc=0x4314a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000563fe8 sp=0xc000563fe0 pc=0x495641
+created by runtime.gcBgMarkStartWorkers in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+FAIL	github.com/caddyserver/caddy/v2	0.114s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.010s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_7
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.010s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_8
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_9
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_10
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_11
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_12
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_13
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_14
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_15
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.007s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_16
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.007s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_17
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.007s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_18
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.008s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_19
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.009s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_20
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.108s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,suc
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Reading trace from rewrittenTrace_5
+Found ReplayEnd Marker with exit code 31
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	2.011s

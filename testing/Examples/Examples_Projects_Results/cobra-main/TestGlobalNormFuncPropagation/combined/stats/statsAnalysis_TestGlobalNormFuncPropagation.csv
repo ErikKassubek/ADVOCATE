@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

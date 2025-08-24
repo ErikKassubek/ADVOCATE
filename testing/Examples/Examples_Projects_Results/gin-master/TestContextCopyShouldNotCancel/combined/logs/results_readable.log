@@ -1,0 +1,81 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055@1926
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089@2182
+
+```
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055@1878
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089@2182
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055@1890
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089@2192
+
+```
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+```
+==================== Summary ====================
+
+
+-------------------- Warning --------------------
+
+1 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3055@1822
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go:3089@2140
+
+```

@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestInitHelpFlagMergesFlags ###
+
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestInitHelpFlagMergesFlags
+Import added at line: 17
+Header added at line: 927
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitHelpFlagMergesFlags
+--- PASS: TestInitHelpFlagMergesFlags (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s

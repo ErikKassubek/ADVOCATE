@@ -1,0 +1,34 @@
+=== RUN   TestCustomLog_loggerAllowed
+=== RUN   TestCustomLog_loggerAllowed/include
+=== RUN   TestCustomLog_loggerAllowed/exclude
+=== RUN   TestCustomLog_loggerAllowed/include_and_exclude
+=== RUN   TestCustomLog_loggerAllowed/include_and_exclude_(longer_namespace)
+=== RUN   TestCustomLog_loggerAllowed/excluded_module_is_not_printed
+--- PASS: TestCustomLog_loggerAllowed (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/include (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/exclude (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/include_and_exclude (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/include_and_exclude_(longer_namespace) (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/excluded_module_is_not_printed (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/logging_test.go
+TestName:  TestCustomLog_loggerAllowed
+Import added at line: 17
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/logging_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomLog_loggerAllowed
+=== RUN   TestCustomLog_loggerAllowed/include
+=== RUN   TestCustomLog_loggerAllowed/exclude
+=== RUN   TestCustomLog_loggerAllowed/include_and_exclude
+=== RUN   TestCustomLog_loggerAllowed/include_and_exclude_(longer_namespace)
+=== RUN   TestCustomLog_loggerAllowed/excluded_module_is_not_printed
+--- PASS: TestCustomLog_loggerAllowed (0.10s)
+    --- PASS: TestCustomLog_loggerAllowed/include (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/exclude (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/include_and_exclude (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/include_and_exclude_(longer_namespace) (0.00s)
+    --- PASS: TestCustomLog_loggerAllowed/excluded_module_is_not_printed (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s

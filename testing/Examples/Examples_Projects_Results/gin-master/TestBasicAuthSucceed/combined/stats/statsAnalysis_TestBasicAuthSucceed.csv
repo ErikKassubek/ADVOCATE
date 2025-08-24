@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestBasicAuthSucceed,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

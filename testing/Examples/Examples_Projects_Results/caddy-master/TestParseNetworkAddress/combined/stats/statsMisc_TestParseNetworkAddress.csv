@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestParseNetworkAddress,0,0,0,0,0,0,0,0,0,0,0

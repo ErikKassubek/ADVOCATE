@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GFuzz,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GoPie+,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GoPie,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0
+GoPieHB,TestChildFlagShadowsParentPersistentFlag,1,1,0,0,0,0,0,0,0

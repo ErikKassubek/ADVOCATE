@@ -1,0 +1,4 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestDebugPrintError,12,2,3,2,0,0,3,0,0
+TestDebugPrintError,13,4,3,2,0,0,3,0,0
+TestDebugPrintError,0,0,0,0,0,0,0,0,0

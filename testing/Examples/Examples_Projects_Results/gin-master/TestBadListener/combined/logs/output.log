@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+
+
+### Mode: GFuzzHB | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: Flow | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+
+
+### Mode: GoPie | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: GoPie+ | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+
+
+### Mode: GoPieHB | Subdir: file(20)-test(1)-gin_integration_test-TestBadListener ###
+
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestBadListener
+Import added at line: 7
+Header added at line: 365
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBadListener
+--- PASS: TestBadListener (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s

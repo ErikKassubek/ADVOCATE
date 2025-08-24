@@ -1,0 +1,146 @@
+=== RUN   TestMixedDeadlock
+--- PASS: TestMixedDeadlock (0.00s)
+PASS
+ok  	deadlock	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+--- PASS: TestMixedDeadlock (0.10s)
+PASS
+ok  	deadlock	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestMixedDeadlock (0.10s)
+PASS
+ok  	deadlock	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestMixedDeadlock (0.10s)
+PASS
+ok  	deadlock	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestMixedDeadlock (0.10s)
+PASS
+ok  	deadlock	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestMixedDeadlock
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixedDeadlock
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/fuzzingTraces/fuzzingTrace_4
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000ea1e0, {0x62f8a9, 0x11}, 0x63ad40)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0000ea000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0000ea000, 0xc0000dd918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc00000e018, {0x759740, 0x6, 0x6}, {0xc20d4ece7a35aeb6, 0x8bb2cc37f5, 0x75f0a0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc00003e2c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:55 +0xa5
+
+goroutine 6 [semacquire]:
+runtime.AdvocateMutexPre(0xee6b2803, 0x8)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_trace_mutex.go:68 +0xf7
+sync.(*Mutex).Unlock(0xc0000104f0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:166 +0x253
+deadlock.TestMixedDeadlock(0xc0000ea1e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:104 +0x133
+testing.tRunner(0xc0000ea1e0, 0x63ad40)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 7 [semacquire]:
+internal/bytealg.MakeNoZero(0x1c)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/slice.go:400 +0x48
+strings.(*Builder).grow(0xc0005878a0, 0x1c)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/strings/builder.go:61 +0x3e
+strings.(*Builder).Grow(0xc0004978a0, 0x1c)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/strings/builder.go:75 +0x6a
+strings.Join({0xc000587cf8, 0x2, 0x2}, {0x6483c8, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/strings/strings.go:506 +0x256
+path/filepath.join({0xc000497cf8, 0x2, 0x2})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/path/filepath/path_unix.go:36 +0x145
+path/filepath.Join({0xc000497cf8, 0x2, 0x2})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/path/filepath/path.go:131 +0x37
+advocate.writeToTraceFileInfo({0x62eafe, 0xd}, 0xd)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:188 +0xf8
+advocate.writeToTraceFiles({0x62eafe, 0xd})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:137 +0x45
+advocate.FinishTracing()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:124 +0x191
+advocate.FinishFuzzing()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_fuzzing.go:57 +0x14
+runtime.ExitReplayPanic({0x5f7360, 0x648a30})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:940 +0x55
+panic({0x5f7360, 0x648a30})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:744 +0x2f
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:115 +0x6d
+created by advocate.startReplay in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 18 [semacquire]:
+time.Sleep(0x2540be400)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:313 +0x3d
+advocate.startReplay.func2.1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:112 +0x39
+created by advocate.startReplay.func2 in goroutine 7
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x5a
+
+goroutine 33 [semacquire]:
+testing.runningList.func1({0x5f7360, 0xc000032780}, {0x605260, 0xc00000e060})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2493 +0x138
+internal/sync.(*HashTrieMap[...]).iter(0x64ca60, 0xc0000b8280, 0xc000497e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:512 +0x202
+internal/sync.(*HashTrieMap[...]).Range(0x64ca60, 0xc000497e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:495 +0x92
+sync.(*Map).Range(0x75ef20, 0xc000497e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/hashtriemap.go:115 +0x35
+testing.runningList()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2492 +0x8c
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2475 +0x4a
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	deadlock	600.105s
+FAIL

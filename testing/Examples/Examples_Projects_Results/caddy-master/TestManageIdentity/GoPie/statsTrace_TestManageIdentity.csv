@@ -1,0 +1,3 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestManageIdentity,59,9,0,6,2,36,0,0,0
+TestManageIdentity,1,12,0,0,0,0,0,0,0

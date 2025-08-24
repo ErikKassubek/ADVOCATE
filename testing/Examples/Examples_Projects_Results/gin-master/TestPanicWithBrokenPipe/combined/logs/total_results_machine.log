@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: GFuzzHB | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: Flow | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: GFuzzHBFlow | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: GoPie | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: GoPie+ | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157
+
+
+### Mode: GoPieHB | Subdir: file(29)-test(1)-recovery_test-TestPanicWithBrokenPipe ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157

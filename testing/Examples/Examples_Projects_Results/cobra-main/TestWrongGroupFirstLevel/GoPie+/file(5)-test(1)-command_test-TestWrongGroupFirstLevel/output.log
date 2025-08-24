@@ -1,0 +1,17 @@
+=== RUN   TestWrongGroupFirstLevel
+--- PASS: TestWrongGroupFirstLevel (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestWrongGroupFirstLevel
+Import added at line: 17
+Header added at line: 2051
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWrongGroupFirstLevel
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: group id 'wrong' is not defined for subcommand 'root cmd'
+
+FAIL	github.com/spf13/cobra	0.107s
+FAIL

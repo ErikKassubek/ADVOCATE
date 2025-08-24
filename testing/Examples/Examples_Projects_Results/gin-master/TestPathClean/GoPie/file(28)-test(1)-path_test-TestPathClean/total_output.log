@@ -1,0 +1,28 @@
+=== RUN   TestPathClean
+--- PASS: TestPathClean (0.00s)
+=== RUN   TestPathCleanMallocs
+    path_test.go:85: skipping malloc count; GOMAXPROCS>1
+--- SKIP: TestPathCleanMallocs (0.00s)
+=== RUN   TestPathCleanLong
+--- PASS: TestPathCleanLong (0.02s)
+PASS
+ok  	github.com/gin-gonic/gin	0.027s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+TestName:  TestPathClean
+Import added at line: 8
+Header added at line: 72
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+Header added at line: 79
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+Header added at line: 126
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/path_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestPathClean
+--- PASS: TestPathClean (0.10s)
+=== RUN   TestPathCleanMallocs
+    path_test.go:94: skipping malloc count; GOMAXPROCS>1
+--- SKIP: TestPathCleanMallocs (0.00s)
+=== RUN   TestPathCleanLong
+--- PASS: TestPathCleanLong (0.20s)
+PASS
+ok  	github.com/gin-gonic/gin	0.314s

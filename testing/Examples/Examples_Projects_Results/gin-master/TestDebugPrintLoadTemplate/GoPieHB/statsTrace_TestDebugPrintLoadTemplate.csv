@@ -1,0 +1,6 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestDebugPrintLoadTemplate,13,2,4,2,0,0,3,0,0
+TestDebugPrintLoadTemplate,14,4,4,2,0,0,3,0,0
+TestDebugPrintLoadTemplate,14,4,4,2,0,0,3,0,0
+TestDebugPrintLoadTemplate,14,4,4,2,0,0,3,0,0
+TestDebugPrintLoadTemplate,14,4,4,2,0,0,3,0,0

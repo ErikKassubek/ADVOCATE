@@ -1,0 +1,14 @@
+=== RUN   TestMiddlewareNoRoute
+--- PASS: TestMiddlewareNoRoute (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/middleware_test.go
+TestName:  TestMiddlewareNoRoute
+Import added at line: 7
+Header added at line: 45
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/middleware_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMiddlewareNoRoute
+--- PASS: TestMiddlewareNoRoute (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

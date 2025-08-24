@@ -1,0 +1,34 @@
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/empty
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/service_only
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/service_last
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/two_digit_prefixed_dash_last
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/one_digit_prefixed_dash_last
+--- PASS: TestArgsNotDetectedAsFlagsCompletionInGo (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/empty (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/service_only (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/service_last (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/two_digit_prefixed_dash_last (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/one_digit_prefixed_dash_last (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestArgsNotDetectedAsFlagsCompletionInGo
+Import added at line: 17
+Header added at line: 3583
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/empty
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/service_only
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/service_last
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/two_digit_prefixed_dash_last
+=== RUN   TestArgsNotDetectedAsFlagsCompletionInGo/one_digit_prefixed_dash_last
+--- PASS: TestArgsNotDetectedAsFlagsCompletionInGo (0.10s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/empty (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/service_only (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/service_last (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/two_digit_prefixed_dash_last (0.00s)
+    --- PASS: TestArgsNotDetectedAsFlagsCompletionInGo/one_digit_prefixed_dash_last (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

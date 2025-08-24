@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GFuzz,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GFuzzHB,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GFuzzHBFlow,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GoPie+,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GoPie,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1
+GoPieHB,TestContextShouldBindHeader,5,1,1,0,0,2,0,0,1

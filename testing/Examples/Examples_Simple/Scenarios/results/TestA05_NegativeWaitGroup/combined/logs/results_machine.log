@@ -1,0 +1,42 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L00,T:1:-1:16:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L09,T:1:1000000001:16:WW:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L09,T:1:1000000001:16:WW:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L09,T:1:1000000001:16:WW:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L00,T:1:-1:16:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L00,T:1:-1:16:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestA05_NegativeWaitGroup ###
+
+A05,T:0:0:0:WD:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47
+L09,T:1:1000000001:16:WW:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47

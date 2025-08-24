@@ -1,0 +1,3 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestDebugPrintWARNINGDefault,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintWARNINGDefault,0,0,0,0,0,0,0,0,0,0,0

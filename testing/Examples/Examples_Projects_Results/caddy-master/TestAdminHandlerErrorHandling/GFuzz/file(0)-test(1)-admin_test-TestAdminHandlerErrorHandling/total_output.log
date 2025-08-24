@@ -1,0 +1,18 @@
+=== RUN   TestAdminHandlerErrorHandling
+{"level":"info","ts":1750381373.2244575,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381373.2244692,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+{"level":"info","ts":1750381373.868217,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381373.8683429,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+--- PASS: TestAdminHandlerErrorHandling (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.110s

@@ -1,0 +1,20 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:21@0
+
+
+```

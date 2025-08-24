@@ -1,0 +1,1534 @@
+=== RUN   TestLoadConcurrent
+{"level":"info","ts":1750381091.3471608,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3474507,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3476012,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3476543,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.347757,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3479152,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3480139,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3481543,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3482409,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3483665,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3484623,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3486059,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3487015,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.348851,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3489308,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.349076,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3491504,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3492908,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.349368,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3494968,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3495774,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.34972,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3497753,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3499308,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3499763,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3501384,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3502269,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3503613,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3504424,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3505821,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3506155,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3508232,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.350906,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3510275,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3511107,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3512626,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.35138,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3514519,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3515391,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3516567,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3517268,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3518765,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3518977,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3520706,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3521557,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3522892,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.352372,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3524895,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3525147,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3527062,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3527372,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3529077,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.352985,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3531044,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3531318,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3533056,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.35334,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3543394,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3544478,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3547215,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3548148,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3550103,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3550904,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3552847,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3553643,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3555834,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3556652,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3558671,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.355958,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3561137,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3562,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3563826,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3564596,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3566005,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3566833,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3568926,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3569846,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.357168,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3572512,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3574214,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3575022,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3577106,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3578014,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3579817,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3580685,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.358161,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3582492,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3583484,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3583817,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3584986,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3585584,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3586438,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3587172,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.358894,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3589778,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3592858,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3593676,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3595712,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3596523,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3598542,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3599386,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3601186,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.360199,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3603847,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.360465,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3606322,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3607137,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3609295,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3610096,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3611891,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3612664,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3614566,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3615377,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3617435,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3617954,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3619957,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.362076,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3622139,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3623004,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3623931,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3624735,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3625789,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3626575,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3627908,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.362865,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3630095,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3630953,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.363224,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3632998,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3634074,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3634899,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.363615,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3636918,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3638234,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3639,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3640604,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3641334,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3642683,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3643491,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3644552,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.364535,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3646634,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3647406,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.364894,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3649707,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3651266,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.365229,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3653646,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3654711,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3656015,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3656335,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3658485,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3659422,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3660629,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3661473,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3662722,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.366368,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3666303,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3668451,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.367102,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.367242,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.367314,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.36742,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3674889,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3675792,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3676906,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3677886,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.367902,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3679845,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3680763,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3681598,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3682566,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.3683066,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3684452,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3685398,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3686798,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3687592,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3688824,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3689737,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3690596,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3691468,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.369238,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3693347,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.369424,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3695064,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3695948,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.369676,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3697858,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.3698668,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3699589,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3700457,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3701377,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3702147,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3703074,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.3703847,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.3704746,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.370556,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.37064,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+--- PASS: TestLoadConcurrent (0.02s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.030s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestLoadConcurrent
+Import added at line: 17
+Header added at line: 148
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoadConcurrent
+{"level":"info","ts":1750381091.7574363,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7585945,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7590854,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7595577,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.760457,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7616816,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.7620249,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.763247,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7636046,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7650301,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7653868,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.766714,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.7670271,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.768277,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.768521,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7698686,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7701395,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7713857,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7716568,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7735047,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7739935,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.775049,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7753394,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7761006,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.776348,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7770028,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7772555,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.777812,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.778021,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7787743,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7789931,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7799613,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7806568,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.782186,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.7826428,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7835917,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7838526,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7846584,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.784923,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7857416,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.7860234,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.786855,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7871213,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.787902,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7881372,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.789611,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7899158,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7907252,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.7909997,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.791838,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.7920392,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7927513,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7929704,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7936485,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.793888,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7945294,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7947598,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7953517,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7962062,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.7973816,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.7977257,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.798928,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.7991683,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.800546,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8008285,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8025134,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8028996,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8038003,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8040445,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8048596,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8050792,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.805959,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.8061712,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8069625,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8072057,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8078797,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8081272,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8093133,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8096642,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.810392,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8106174,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8113763,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8115919,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.812355,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8126125,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.81338,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.8136172,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8149085,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8151443,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8158708,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8160963,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8168027,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.817009,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8179252,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8182566,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8201265,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8204734,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8215337,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.821798,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8226442,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.822908,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8235593,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8237941,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8256466,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8259683,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8272712,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.8275282,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8285124,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8288064,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8297381,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//[::1]:2019","//127.0.0.1:2019","//localhost:2019"]}
+{"level":"info","ts":1750381091.8299487,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8316917,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8320587,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.832843,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.8331134,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8338807,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8341374,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8348222,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.835025,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8356397,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8358552,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8371592,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8374937,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8381371,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8383489,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8390276,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8392315,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8405466,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8410692,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.842643,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8429098,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8436542,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8439481,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8447309,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8449864,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.845867,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8461373,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8467057,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//127.0.0.1:2019","//localhost:2019","//[::1]:2019"]}
+{"level":"info","ts":1750381091.846933,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8485665,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8488724,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8498156,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.850044,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8509002,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.851111,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8519738,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8521948,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+{"level":"info","ts":1750381091.8530483,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+{"level":"info","ts":1750381091.8532927,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+releasep: m=0xc000101808 m->p=0xc000064508 p->m=0xc000101808 p->status=3
+fatal error: releasep: invalid p state
+
+runtime stack:
+runtime.throw({0xe3fc26?, 0x10f5678?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:1110 +0x48 fp=0x7a20227fbba8 sp=0x7a20227fbb78 pc=0x48bac8
+runtime.releasepNoTrace()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:6013 +0x14a fp=0x7a20227fbbf8 sp=0x7a20227fbba8 pc=0x45f94a
+runtime.releasep()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:6000 +0x5f fp=0x7a20227fbc30 sp=0x7a20227fbbf8 pc=0x45f7df
+runtime.gcstopm()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:3246 +0x65 fp=0x7a20227fbc60 sp=0x7a20227fbc30 pc=0x4595e5
+runtime.findRunnable()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:3318 +0x65 fp=0x7a20227fbda8 sp=0x7a20227fbc60 pc=0x459885
+runtime.schedule()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4054 +0xbd fp=0x7a20227fbde0 sp=0x7a20227fbda8 pc=0x45b27d
+runtime.park_m(0xc0002c2a80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:4178 +0x1d9 fp=0x7a20227fbe30 sp=0x7a20227fbde0 pc=0x45b699
+runtime.mcall()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:459 +0x4e fp=0x7a20227fbe48 sp=0x7a20227fbe30 pc=0x49140e
+
+goroutine 1 gp=0xc000002380 m=nil [chan receive]:
+runtime.gopark(0xe68908, 0xc0002642e0, 0xe, 0x7, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000592f8 sp=0xc0000592c8 pc=0x48bc11
+runtime.chanrecv(0xc000264280, 0xc00005947e, 0x1, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:863 +0x5a5 fp=0xc000059410 sp=0xc0000592f8 pc=0x41bda5
+runtime.chanrecv1(0xc000224420?, 0xd44900?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:627 +0x14 fp=0xc000059438 sp=0xc000059410 pc=0x41b7d4
+testing.(*T).Run(0xc0002661e0, {0xe3a07d, 0x12}, 0xe68580)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c fp=0xc0000596a8 sp=0xc000059438 pc=0x5c35ac
+testing.runTests.func1(0xc000266000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad fp=0xc000059740 sp=0xc0000596a8 pc=0x5c74cd
+testing.tRunner(0xc000266000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da fp=0xc000059828 sp=0xc000059740 pc=0x5c19da
+testing.runTests(0xc0002243c0, {0x128fdc0, 0x1d, 0x1d}, {0xc20d4afeecd2a5ad, 0x8bb2e49401, 0x129a6c0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea fp=0xc0000599b0 sp=0xc000059828 pc=0x5c730a
+testing.(*M).Run(0xc000260000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79 fp=0xc000059ee8 sp=0xc0000599b0 pc=0x5c4b59
+main.main()
+	_testmain.go:105 +0xa5 fp=0xc000059f78 sp=0xc000059ee8 pc=0xbebc85
+runtime.main()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:283 +0x247 fp=0xc000059fe0 sp=0xc000059f78 pc=0x454027
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000059fe8 sp=0xc000059fe0 pc=0x493441
+
+goroutine 2 gp=0xc000002e00 m=nil [force gc (idle)]:
+runtime.gopark(0xe68c30, 0x1298da0, 0x11, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009e780 sp=0xc00009e750 pc=0x48bc11
+runtime.goparkunlock(0x1298da0?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009e7b0 sp=0xc00009e780 pc=0x4546e5
+runtime.forcegchelper()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:348 +0xb5 fp=0xc00009e7e0 sp=0xc00009e7b0 pc=0x454375
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009e7e8 sp=0xc00009e7e0 pc=0x493441
+created by runtime.init.7 in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:336 +0x1a
+
+goroutine 3 gp=0xc000003340 m=nil [GC sweep wait]:
+runtime.gopark(0xe68c30, 0x1299720, 0xc, 0x9, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009ef58 sp=0xc00009ef28 pc=0x48bc11
+runtime.goparkunlock(0x1299720?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009ef88 sp=0xc00009ef58 pc=0x4546e5
+runtime.bgsweep(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcsweep.go:316 +0xe5 fp=0xc00009efc8 sp=0xc00009ef88 pc=0x439a85
+runtime.gcenable.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x25 fp=0xc00009efe0 sp=0xc00009efc8 pc=0x42d445
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009efe8 sp=0xc00009efe0 pc=0x493441
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:204 +0x66
+
+goroutine 4 gp=0xc000003500 m=nil [runnable]:
+runtime.gopark(0xe68c30, 0x129aac0, 0xd, 0xa, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009f748 sp=0xc00009f718 pc=0x48bc11
+runtime.goparkunlock(0x129aac0?, 0x0?, 0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00009f778 sp=0xc00009f748 pc=0x4546e5
+runtime.(*scavengerState).park(0x129aac0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:425 +0x45 fp=0xc00009f7a0 sp=0xc00009f778 pc=0x436f65
+runtime.bgscavenge(0xc00003e0b0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgcscavenge.go:658 +0x65 fp=0xc00009f7c8 sp=0xc00009f7a0 pc=0x4374e5
+runtime.gcenable.gowrap2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0x25 fp=0xc00009f7e0 sp=0xc00009f7c8 pc=0x42d3e5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009f7e8 sp=0xc00009f7e0 pc=0x493441
+created by runtime.gcenable in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:205 +0xa5
+
+goroutine 5 gp=0xc000003dc0 m=nil [finalizer wait]:
+runtime.gopark(0xe68960, 0x12bc110, 0x10, 0xa, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00009fe30 sp=0xc00009fe00 pc=0x48bc11
+runtime.runfinq()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:196 +0x107 fp=0xc00009ffe0 sp=0xc00009fe30 pc=0x42c387
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00009ffe8 sp=0xc00009ffe0 pc=0x493441
+created by runtime.createfing in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mfinal.go:166 +0x45
+
+goroutine 6 gp=0xc0001c8380 m=nil [chan receive]:
+runtime.gopark(0xe68908, 0xc0000d96e0, 0xe, 0x7, 0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000490e68 sp=0xc000490e38 pc=0x48bc11
+runtime.chanrecv(0xc0000d9680, 0x0, 0x1, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:863 +0x5a5 fp=0xc000490f80 sp=0xc000490e68 pc=0x41bda5
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:627 +0x14 fp=0xc000490fa8 sp=0xc000490f80 pc=0x41b7d4
+runtime.unique_runtime_registerUniqueMapCleanup.func2(0xe69ef8)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1796 +0x25 fp=0xc000490fc8 sp=0xc000490fa8 pc=0x487125
+runtime.unique_runtime_registerUniqueMapCleanup.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1799 +0x24 fp=0xc000490fe0 sp=0xc000490fc8 pc=0x430064
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000490fe8 sp=0xc000490fe0 pc=0x493441
+created by unique.runtime_registerUniqueMapCleanup in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1794 +0x79
+
+goroutine 19 gp=0xc0001c8700 m=nil [sync.WaitGroup.Wait]:
+runtime.gopark(0xe68c30, 0x12a2da0, 0x18, 0x5, 0x4)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000b0c20 sp=0xc0000b0bf0 pc=0x48bc11
+runtime.goparkunlock(0x12a2da0?, 0x0?, 0x0?, 0xc00021ea20?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0000b0c50 sp=0xc0000b0c20 pc=0x4546e5
+runtime.semacquire1(0xc00021a188, 0x0, 0x1, 0x0, 0x18)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0000b0ca0 sp=0xc0000b0c50 pc=0x4696a9
+sync.runtime_SemacquireWaitGroup(0xc00021a180?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:110 +0x25 fp=0xc0000b0cd8 sp=0xc0000b0ca0 pc=0x48d345
+sync.(*WaitGroup).Wait(0xc00021a180)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/waitgroup.go:195 +0x31d fp=0xc0000b0e60 sp=0xc0000b0cd8 pc=0x4ab69d
+github.com/caddyserver/caddy/v2.TestLoadConcurrent(0xc0002661e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:163 +0x105 fp=0xc0000b0ec8 sp=0xc0000b0e60 pc=0xbcf925
+testing.tRunner(0xc0002661e0, 0xe68580)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da fp=0xc0000b0fb0 sp=0xc0000b0ec8 pc=0x5c19da
+testing.(*T).Run.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x33 fp=0xc0000b0fe0 sp=0xc0000b0fb0 pc=0x5c37f3
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000b0fe8 sp=0xc0000b0fe0 pc=0x493441
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 20 gp=0xc000202380 m=nil [sleep]:
+runtime.gopark(0xe68c70, 0x0, 0x13, 0xe, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000a0f78 sp=0xc0000a0f48 pc=0x48bc11
+time.Sleep(0xdf8475800)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:338 +0x13c fp=0xc0000a0fb8 sp=0xc0000a0f78 pc=0x48f93c
+advocate.InitTracing.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:72 +0x25 fp=0xc0000a0fe0 sp=0xc0000a0fb8 pc=0xb96de5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000a0fe8 sp=0xc0000a0fe0 pc=0x493441
+created by advocate.InitTracing in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:71 +0xd2
+
+goroutine 166 gp=0xc000202e00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bae0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000b5f30 sp=0xc0000b5f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0000b5fc8 sp=0xc0000b5f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0000b5fe0 sp=0xc0000b5fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000b5fe8 sp=0xc0000b5fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 49 gp=0xc0002836c0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000509580 sp=0xc000509550 pc=0x48bc11
+runtime.goparkunlock(0xc000509570?, 0x0?, 0x96?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0005095b0 sp=0xc000509580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000509600 sp=0xc0005095b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000509638 sp=0xc000509600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0005096b0 sp=0xc000509638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0005096e0 sp=0xc0005096b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000509840 sp=0xc0005096e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0005099c0 sp=0xc000509840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000509e18 sp=0xc0005099c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000509fa8 sp=0xc000509e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000509fe0 sp=0xc000509fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000509fe8 sp=0xc000509fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 69 gp=0xc000291a40 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003af580 sp=0xc0003af550 pc=0x48bc11
+runtime.goparkunlock(0xc0003af570?, 0x0?, 0xf6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003af5b0 sp=0xc0003af580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003af600 sp=0xc0003af5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x59?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003af638 sp=0xc0003af600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003af6b0 sp=0xc0003af638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003af6e0 sp=0xc0003af6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003af840 sp=0xc0003af6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003af9c0 sp=0xc0003af840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003afe18 sp=0xc0003af9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003affa8 sp=0xc0003afe18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003affe0 sp=0xc0003affa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003affe8 sp=0xc0003affe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 70 gp=0xc000291c00 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003b1580 sp=0xc0003b1550 pc=0x48bc11
+runtime.goparkunlock(0xc0003b1570?, 0x0?, 0x16?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003b15b0 sp=0xc0003b1580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003b1600 sp=0xc0003b15b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xa1?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003b1638 sp=0xc0003b1600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003b16b0 sp=0xc0003b1638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003b16e0 sp=0xc0003b16b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003b1840 sp=0xc0003b16e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003b19c0 sp=0xc0003b1840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003b1e18 sp=0xc0003b19c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003b1fa8 sp=0xc0003b1e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003b1fe0 sp=0xc0003b1fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003b1fe8 sp=0xc0003b1fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 71 gp=0xc000291dc0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003b9580 sp=0xc0003b9550 pc=0x48bc11
+runtime.goparkunlock(0xc0003b9570?, 0x0?, 0x96?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003b95b0 sp=0xc0003b9580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003b9600 sp=0xc0003b95b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xd3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003b9638 sp=0xc0003b9600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003b96b0 sp=0xc0003b9638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003b96e0 sp=0xc0003b96b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003b9840 sp=0xc0003b96e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003b99c0 sp=0xc0003b9840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003b9e18 sp=0xc0003b99c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003b9fa8 sp=0xc0003b9e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003b9fe0 sp=0xc0003b9fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003b9fe8 sp=0xc0003b9fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 894 gp=0xc0002a2380 m=nil [IO wait]:
+runtime.gopark(0xe68c08, 0x7a20a5ea3fe0, 0x2, 0x2, 0x5)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002e7458 sp=0xc0002e7428 pc=0x48bc11
+runtime.netpollblock(0x7a20a5ea3fc0, 0x72, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/netpoll.go:575 +0xbe fp=0xc0002e7490 sp=0xc0002e7458 pc=0x44c55e
+internal/poll.runtime_pollWait(0x7a20a5ea3fc0, 0x72)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/netpoll.go:351 +0x3c fp=0xc0002e74b0 sp=0xc0002e7490 pc=0x48affc
+internal/poll.(*pollDesc).wait(0xc0003589a0, 0x72, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_poll_runtime.go:84 +0x7a fp=0xc0002e7500 sp=0xc0002e74b0 pc=0x4f975a
+internal/poll.(*pollDesc).waitRead(0xc0003589a0, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_poll_runtime.go:89 +0x31 fp=0xc0002e7548 sp=0xc0002e7500 pc=0x4f97f1
+internal/poll.(*FD).Accept(0xc000358980)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/poll/fd_unix.go:620 +0x525 fp=0xc0002e77b8 sp=0xc0002e7548 pc=0x4fc065
+net.(*netFD).accept(0xc000358980)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/net/fd_unix.go:172 +0x69 fp=0xc0002e7950 sp=0xc0002e77b8 pc=0x70c869
+net.(*TCPListener).accept(0xc0003f6ec0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/net/tcpsock_posix.go:159 +0x65 fp=0xc0002e7a38 sp=0xc0002e7950 pc=0x72ee85
+net.(*TCPListener).Accept(0xc0003f6ec0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/net/tcpsock.go:380 +0x65 fp=0xc0002e7ad8 sp=0xc0002e7a38 pc=0x72ccc5
+github.com/caddyserver/caddy/v2.(*deleteListener).Accept(0xc0004a2320)
+	<autogenerated>:1 +0x52 fp=0xc0002e7b50 sp=0xc0002e7ad8 pc=0xbe82f2
+net/http.(*onceCloseListener).Accept(0xc00070ef00)
+	<autogenerated>:1 +0x52 fp=0xc0002e7bc8 sp=0xc0002e7b50 pc=0x910332
+net/http.(*Server).Serve(0xc0001b4120, {0x7a2045f3c008, 0xc0004a2320})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/net/http/server.go:3424 +0x50b fp=0xc0002e7ea8 sp=0xc0002e7bc8 pc=0x8d6c6b
+github.com/caddyserver/caddy/v2.replaceLocalAdminServer.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin.go:455 +0xb8 fp=0xc0002e7fe0 sp=0xc0002e7ea8 pc=0xb9d158
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002e7fe8 sp=0xc0002e7fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.replaceLocalAdminServer in goroutine 115
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin.go:451 +0x96f
+
+goroutine 96 gp=0xc0002aea80 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002ef580 sp=0xc0002ef550 pc=0x48bc11
+runtime.goparkunlock(0xc0002ef570?, 0x0?, 0xf6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0002ef5b0 sp=0xc0002ef580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0002ef600 sp=0xc0002ef5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x61?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0002ef638 sp=0xc0002ef600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0002ef6b0 sp=0xc0002ef638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0002ef6e0 sp=0xc0002ef6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0002ef840 sp=0xc0002ef6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0002ef9c0 sp=0xc0002ef840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0002efe18 sp=0xc0002ef9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0002effa8 sp=0xc0002efe18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0002effe0 sp=0xc0002effa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002effe8 sp=0xc0002effe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 97 gp=0xc0002aec40 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000161580 sp=0xc000161550 pc=0x48bc11
+runtime.goparkunlock(0xc000161570?, 0x0?, 0x16?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0001615b0 sp=0xc000161580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000161600 sp=0xc0001615b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x99?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000161638 sp=0xc000161600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0001616b0 sp=0xc000161638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0001616e0 sp=0xc0001616b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000161840 sp=0xc0001616e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0001619c0 sp=0xc000161840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000161e18 sp=0xc0001619c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000161fa8 sp=0xc000161e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000161fe0 sp=0xc000161fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000161fe8 sp=0xc000161fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 98 gp=0xc0002aee00 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000163580 sp=0xc000163550 pc=0x48bc11
+runtime.goparkunlock(0xc000163570?, 0x0?, 0x36?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0001635b0 sp=0xc000163580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000163600 sp=0xc0001635b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xb9?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000163638 sp=0xc000163600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0001636b0 sp=0xc000163638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0001636e0 sp=0xc0001636b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000163840 sp=0xc0001636e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0001639c0 sp=0xc000163840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000163e18 sp=0xc0001639c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000163fa8 sp=0xc000163e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000163fe0 sp=0xc000163fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000163fe8 sp=0xc000163fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 99 gp=0xc0002aefc0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003bb580 sp=0xc0003bb550 pc=0x48bc11
+runtime.goparkunlock(0xc0003bb570?, 0x0?, 0xb6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003bb5b0 sp=0xc0003bb580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003bb600 sp=0xc0003bb5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xf3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003bb638 sp=0xc0003bb600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003bb6b0 sp=0xc0003bb638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003bb6e0 sp=0xc0003bb6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003bb840 sp=0xc0003bb6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003bb9c0 sp=0xc0003bb840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003bbe18 sp=0xc0003bb9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003bbfa8 sp=0xc0003bbe18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003bbfe0 sp=0xc0003bbfa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003bbfe8 sp=0xc0003bbfe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 100 gp=0xc0002af180 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000503580 sp=0xc000503550 pc=0x48bc11
+runtime.goparkunlock(0xc000503570?, 0x0?, 0x36?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0005035b0 sp=0xc000503580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000503600 sp=0xc0005035b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xeb?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000503638 sp=0xc000503600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0005036b0 sp=0xc000503638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0005036e0 sp=0xc0005036b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000503840 sp=0xc0005036e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0005039c0 sp=0xc000503840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000503e18 sp=0xc0005039c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000503fa8 sp=0xc000503e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000503fe0 sp=0xc000503fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000503fe8 sp=0xc000503fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 101 gp=0xc0002af340 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003b7580 sp=0xc0003b7550 pc=0x48bc11
+runtime.goparkunlock(0xc0003b7570?, 0x0?, 0x76?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003b75b0 sp=0xc0003b7580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003b7600 sp=0xc0003b75b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xe3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003b7638 sp=0xc0003b7600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003b76b0 sp=0xc0003b7638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003b76e0 sp=0xc0003b76b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003b7840 sp=0xc0003b76e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003b79c0 sp=0xc0003b7840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003b7e18 sp=0xc0003b79c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003b7fa8 sp=0xc0003b7e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003b7fe0 sp=0xc0003b7fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003b7fe8 sp=0xc0003b7fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 102 gp=0xc0002af500 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0003b5580 sp=0xc0003b5550 pc=0x48bc11
+runtime.goparkunlock(0xc0003b5570?, 0x0?, 0x56?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003b55b0 sp=0xc0003b5580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0003b5600 sp=0xc0003b55b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xcb?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0003b5638 sp=0xc0003b5600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003b56b0 sp=0xc0003b5638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003b56e0 sp=0xc0003b56b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0003b5840 sp=0xc0003b56e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003b59c0 sp=0xc0003b5840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0003b5e18 sp=0xc0003b59c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0003b5fa8 sp=0xc0003b5e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0003b5fe0 sp=0xc0003b5fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0003b5fe8 sp=0xc0003b5fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 103 gp=0xc0002af6c0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00050f580 sp=0xc00050f550 pc=0x48bc11
+runtime.goparkunlock(0xc00050f570?, 0x0?, 0xf6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00050f5b0 sp=0xc00050f580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc00050f600 sp=0xc00050f5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xfb?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc00050f638 sp=0xc00050f600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc00050f6b0 sp=0xc00050f638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc00050f6e0 sp=0xc00050f6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc00050f840 sp=0xc00050f6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc00050f9c0 sp=0xc00050f840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc00050fe18 sp=0xc00050f9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc00050ffa8 sp=0xc00050fe18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc00050ffe0 sp=0xc00050ffa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00050ffe8 sp=0xc00050ffe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 104 gp=0xc0002af880 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00050d580 sp=0xc00050d550 pc=0x48bc11
+runtime.goparkunlock(0xc00050d570?, 0x0?, 0xd6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00050d5b0 sp=0xc00050d580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc00050d600 sp=0xc00050d5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xd9?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc00050d638 sp=0xc00050d600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc00050d6b0 sp=0xc00050d638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc00050d6e0 sp=0xc00050d6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc00050d840 sp=0xc00050d6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc00050d9c0 sp=0xc00050d840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc00050de18 sp=0xc00050d9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc00050dfa8 sp=0xc00050de18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc00050dfe0 sp=0xc00050dfa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc00050dfe8 sp=0xc00050dfe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 105 gp=0xc0002afa40 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000355580 sp=0xc000355550 pc=0x48bc11
+runtime.goparkunlock(0xc000355570?, 0x0?, 0x56?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003555b0 sp=0xc000355580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000355600 sp=0xc0003555b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x9?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000355638 sp=0xc000355600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003556b0 sp=0xc000355638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003556e0 sp=0xc0003556b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000355840 sp=0xc0003556e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003559c0 sp=0xc000355840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000355e18 sp=0xc0003559c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000355fa8 sp=0xc000355e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000355fe0 sp=0xc000355fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000355fe8 sp=0xc000355fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 106 gp=0xc0002afc00 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000351580 sp=0xc000351550 pc=0x48bc11
+runtime.goparkunlock(0xc000351570?, 0x0?, 0x16?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0003515b0 sp=0xc000351580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000351600 sp=0xc0003515b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x13?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000351638 sp=0xc000351600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0003516b0 sp=0xc000351638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0003516e0 sp=0xc0003516b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000351840 sp=0xc0003516e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0003519c0 sp=0xc000351840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000351e18 sp=0xc0003519c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000351fa8 sp=0xc000351e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000351fe0 sp=0xc000351fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000351fe8 sp=0xc000351fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 109 gp=0xc0002c21c0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002f9580 sp=0xc0002f9550 pc=0x48bc11
+runtime.goparkunlock(0xc0002f9570?, 0x0?, 0x96?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0002f95b0 sp=0xc0002f9580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0002f9600 sp=0xc0002f95b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x89?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0002f9638 sp=0xc0002f9600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0002f96b0 sp=0xc0002f9638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0002f96e0 sp=0xc0002f96b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0002f9840 sp=0xc0002f96e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0002f99c0 sp=0xc0002f9840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0002f9e18 sp=0xc0002f99c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0002f9fa8 sp=0xc0002f9e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0002f9fe0 sp=0xc0002f9fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002f9fe8 sp=0xc0002f9fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 110 gp=0xc0002c2380 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000501580 sp=0xc000501550 pc=0x48bc11
+runtime.goparkunlock(0xc000501570?, 0x0?, 0x16?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0005015b0 sp=0xc000501580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000501600 sp=0xc0005015b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xc3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000501638 sp=0xc000501600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0005016b0 sp=0xc000501638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0005016e0 sp=0xc0005016b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000501840 sp=0xc0005016e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0005019c0 sp=0xc000501840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000501e18 sp=0xc0005019c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000501fa8 sp=0xc000501e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000501fe0 sp=0xc000501fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000501fe8 sp=0xc000501fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 111 gp=0xc0002c2540 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002f7580 sp=0xc0002f7550 pc=0x48bc11
+runtime.goparkunlock(0xc0002f7570?, 0x0?, 0x76?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0002f75b0 sp=0xc0002f7580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0002f7600 sp=0xc0002f75b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x71?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0002f7638 sp=0xc0002f7600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0002f76b0 sp=0xc0002f7638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0002f76e0 sp=0xc0002f76b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0002f7840 sp=0xc0002f76e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0002f79c0 sp=0xc0002f7840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0002f7e18 sp=0xc0002f79c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0002f7fa8 sp=0xc0002f7e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0002f7fe0 sp=0xc0002f7fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002f7fe8 sp=0xc0002f7fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 112 gp=0xc0002c2700 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000165580 sp=0xc000165550 pc=0x48bc11
+runtime.goparkunlock(0xc000165570?, 0x0?, 0x56?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0001655b0 sp=0xc000165580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000165600 sp=0xc0001655b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x81?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000165638 sp=0xc000165600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0001656b0 sp=0xc000165638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0001656e0 sp=0xc0001656b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000165840 sp=0xc0001656e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0001659c0 sp=0xc000165840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000165e18 sp=0xc0001659c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000165fa8 sp=0xc000165e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000165fe0 sp=0xc000165fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000165fe8 sp=0xc000165fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 113 gp=0xc0002c28c0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000167580 sp=0xc000167550 pc=0x48bc11
+runtime.goparkunlock(0xc000167570?, 0x0?, 0x76?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0001675b0 sp=0xc000167580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000167600 sp=0xc0001675b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xab?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000167638 sp=0xc000167600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0001676b0 sp=0xc000167638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0001676e0 sp=0xc0001676b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000167840 sp=0xc0001676e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0001679c0 sp=0xc000167840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000167e18 sp=0xc0001679c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000167fa8 sp=0xc000167e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000167fe0 sp=0xc000167fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000167fe8 sp=0xc000167fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 114 gp=0xc0002c2a80 m=nil [semacquire]:
+runtime.gopark(0xe68c30, 0x12a51e0, 0x12, 0x5, 0x4)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc00061fb88 sp=0xc00061fb58 pc=0x48bc11
+runtime.goparkunlock(0x12a51e0?, 0x65?, 0x95?, 0xc000110900?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc00061fbb8 sp=0xc00061fb88 pc=0x4546e5
+runtime.semacquire1(0x129b978, 0x0, 0x0, 0x0, 0x12)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc00061fc08 sp=0xc00061fbb8 pc=0x4696a9
+runtime.semacquire(0xc00061fc60?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:139 +0x1e fp=0xc00061fc40 sp=0xc00061fc08 pc=0x4694fe
+runtime.gcStart({0x7a20a5f1c5c0?, 0xc00061fd22?, 0x424592?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:668 +0x14e fp=0xc00061fd60 sp=0xc00061fc40 pc=0x42d9ce
+runtime.mallocgcSmallScanNoHeader(0xe8, 0xdd4620, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc00061fdc0 sp=0xc00061fd60 pc=0x424a34
+runtime.mallocgc(0xe8, 0xdd4620, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc00061fdf0 sp=0xc00061fdc0 pc=0x489765
+runtime.newobject(0x1?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1714 +0x25 fp=0xc00061fe18 sp=0xc00061fdf0 pc=0x425225
+runtime.CallersFrames({0xc0009010e0, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29 fp=0xc00061fe38 sp=0xc00061fe18 pc=0x472729
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e fp=0xc00061ff60 sp=0xc00061fe38 pc=0x41fc0e
+runtime.AdvocateSelectPreOneNonDef(0xc0000d9680, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_trace_select.go:222 +0x145 fp=0xc000620078 sp=0xc00061ff60 pc=0x416785
+runtime.selectnbsend(0xc0000d9680, 0xc000620190)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:1010 +0x1c5 fp=0xc000620180 sp=0xc000620078 pc=0x41c585
+runtime.clearpools()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1816 +0x7c fp=0xc0006201b8 sp=0xc000620180 pc=0x43011c
+runtime.gcStart({0x7a20a5f1c5c0?, 0x7a20a5f1c50e?, 0xa0?})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:739 +0x3ba fp=0xc0006202d8 sp=0xc0006201b8 pc=0x42dc3a
+runtime.mallocgcSmallScanNoHeader(0x50, 0xd66680, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1425 +0x1f4 fp=0xc000620338 sp=0xc0006202d8 pc=0x424a34
+runtime.mallocgc(0x50, 0xd66680, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/malloc.go:1058 +0xe5 fp=0xc000620368 sp=0xc000620338 pc=0x489765
+runtime.makechan(0xd7f940?, 0xa)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/chan.go:119 +0xf1 fp=0xc0006203b0 sp=0xc000620368 pc=0x41a611
+github.com/prometheus/client_golang/prometheus.(*Registry).Register(0xc0003e2d20, {0xec2370, 0xc00022e0a8})
+	/home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:272 +0x4f fp=0xc0006209e0 sp=0xc0006203b0 pc=0xb6b64f
+github.com/prometheus/client_golang/prometheus.(*Registry).MustRegister(0xc0003e2d20, {0xc000620af8, 0x7, 0x7})
+	/home/ilian/Projects/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:404 +0x9e fp=0xc000620a78 sp=0xc0006209e0 pc=0xb6cf7e
+github.com/caddyserver/caddy/v2.(*Context).initMetrics(0xc0001d8770)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/context.go:111 +0x34d fp=0xc000620bd8 sp=0xc000620a78 pc=0xbb3ced
+github.com/caddyserver/caddy/v2.NewContext({{0xec58f8, 0x12bbf40}, 0x0, 0xc0001d8690, {0x0, 0x0, 0x0}, {0x0, 0x0, 0x0}, ...})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/context.go:85 +0x325 fp=0xc000620d08 sp=0xc000620bd8 pc=0xbb3365
+github.com/caddyserver/caddy/v2.provisionContext(0xc0001d8690, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:492 +0x166 fp=0xc000621118 sp=0xc000620d08 pc=0xbae4a6
+github.com/caddyserver/caddy/v2.run(0xc0001d8690, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:401 +0x99 fp=0xc000621498 sp=0xc000621118 pc=0xbad619
+github.com/caddyserver/caddy/v2.unsyncedDecodeAndRun({0xc00047a000, 0xad, 0xb0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:344 +0x2ba fp=0xc0006219c0 sp=0xc000621498 pc=0xbacb3a
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:235 +0x112c fp=0xc000621e18 sp=0xc0006219c0 pc=0xbab5cc
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000621fa8 sp=0xc000621e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000621fe0 sp=0xc000621fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000621fe8 sp=0xc000621fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 116 gp=0xc0002c2e00 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002fb580 sp=0xc0002fb550 pc=0x48bc11
+runtime.goparkunlock(0xc0002fb570?, 0x0?, 0xb6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0002fb5b0 sp=0xc0002fb580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0002fb600 sp=0xc0002fb5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x69?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0002fb638 sp=0xc0002fb600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0002fb6b0 sp=0xc0002fb638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0002fb6e0 sp=0xc0002fb6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0002fb840 sp=0xc0002fb6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0002fb9c0 sp=0xc0002fb840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0002fbe18 sp=0xc0002fb9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0002fbfa8 sp=0xc0002fbe18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0002fbfe0 sp=0xc0002fbfa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002fbfe8 sp=0xc0002fbfe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 117 gp=0xc0002c2fc0 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0002fd580 sp=0xc0002fd550 pc=0x48bc11
+runtime.goparkunlock(0xc0002fd570?, 0x0?, 0xd6?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0002fd5b0 sp=0xc0002fd580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc0002fd600 sp=0xc0002fd5b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x79?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc0002fd638 sp=0xc0002fd600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0002fd6b0 sp=0xc0002fd638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0002fd6e0 sp=0xc0002fd6b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc0002fd840 sp=0xc0002fd6e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0002fd9c0 sp=0xc0002fd840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc0002fde18 sp=0xc0002fd9c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc0002fdfa8 sp=0xc0002fde18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc0002fdfe0 sp=0xc0002fdfa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0002fdfe8 sp=0xc0002fdfe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 118 gp=0xc0002c3180 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000505580 sp=0xc000505550 pc=0x48bc11
+runtime.goparkunlock(0xc000505570?, 0x0?, 0x56?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0005055b0 sp=0xc000505580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000505600 sp=0xc0005055b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0x91?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000505638 sp=0xc000505600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0005056b0 sp=0xc000505638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0005056e0 sp=0xc0005056b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000505840 sp=0xc0005056e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0005059c0 sp=0xc000505840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000505e18 sp=0xc0005059c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000505fa8 sp=0xc000505e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000505fe0 sp=0xc000505fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000505fe8 sp=0xc000505fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 119 gp=0xc0002c3340 m=nil [sync.Mutex.Lock]:
+runtime.gopark(0xe68c30, 0x12a3720, 0x15, 0x5, 0x6)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc000507580 sp=0xc000507550 pc=0x48bc11
+runtime.goparkunlock(0xc000507570?, 0x0?, 0x76?, 0x0?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:476 +0x25 fp=0xc0005075b0 sp=0xc000507580 pc=0x4546e5
+runtime.semacquire1(0x12bcb84, 0x0, 0x3, 0x2, 0x15)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:188 +0x189 fp=0xc000507600 sp=0xc0005075b0 pc=0x4696a9
+internal/sync.runtime_SemacquireMutex(0x12bcb80?, 0xb3?, 0x1225600?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/sema.go:95 +0x25 fp=0xc000507638 sp=0xc000507600 pc=0x48d225
+internal/sync.(*Mutex).lockSlow(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:149 +0x245 fp=0xc0005076b0 sp=0xc000507638 pc=0x4a6665
+internal/sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/mutex.go:70 +0x45 fp=0xc0005076e0 sp=0xc0005076b0 pc=0x4a6405
+sync.(*Mutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/mutex.go:86 +0x2a5 fp=0xc000507840 sp=0xc0005076e0 pc=0x4a7ac5
+sync.(*RWMutex).Lock(0x12bcb80)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/rwmutex.go:290 +0x2ad fp=0xc0005079c0 sp=0xc000507840 pc=0x4aabcd
+github.com/caddyserver/caddy/v2.changeConfig({0xe2e93b, 0x4}, {0xe30f1a, 0x7}, {0x1223be0, 0x116, 0x116}, {0x0, 0x0}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:166 +0x43a fp=0xc000507e18 sp=0xc0005079c0 pc=0xbaa8da
+github.com/caddyserver/caddy/v2.Load({0x1223be0, 0x116, 0x116}, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy.go:134 +0x297 fp=0xc000507fa8 sp=0xc000507e18 pc=0xba9f37
+github.com/caddyserver/caddy/v2.TestLoadConcurrent.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:159 +0x36 fp=0xc000507fe0 sp=0xc000507fa8 pc=0xbcf996
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc000507fe8 sp=0xc000507fe0 pc=0x493441
+created by github.com/caddyserver/caddy/v2.TestLoadConcurrent in goroutine 19
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go:158 +0xed
+
+goroutine 167 gp=0xc0001c8e00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bb00, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000b6f30 sp=0xc0000b6f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0000b6fc8 sp=0xc0000b6f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0000b6fe0 sp=0xc0000b6fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000b6fe8 sp=0xc0000b6fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 168 gp=0xc0001c8fc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bb20, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0000b7f30 sp=0xc0000b7f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0000b7fc8 sp=0xc0000b7f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0000b7fe0 sp=0xc0000b7fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0000b7fe8 sp=0xc0000b7fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 169 gp=0xc0001c9180 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bb40, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d2f30 sp=0xc0006d2f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d2fc8 sp=0xc0006d2f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d2fe0 sp=0xc0006d2fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d2fe8 sp=0xc0006d2fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 170 gp=0xc0001c9340 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bb60, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d3f30 sp=0xc0006d3f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d3fc8 sp=0xc0006d3f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d3fe0 sp=0xc0006d3fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d3fe8 sp=0xc0006d3fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 171 gp=0xc0001c9500 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bb80, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d4f30 sp=0xc0006d4f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d4fc8 sp=0xc0006d4f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d4fe0 sp=0xc0006d4fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d4fe8 sp=0xc0006d4fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 172 gp=0xc0001c96c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bba0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d5f30 sp=0xc0006d5f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d5fc8 sp=0xc0006d5f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d5fe0 sp=0xc0006d5fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d5fe8 sp=0xc0006d5fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 173 gp=0xc0001c9880 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bbc0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006cef30 sp=0xc0006cef00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006cefc8 sp=0xc0006cef30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006cefe0 sp=0xc0006cefc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006cefe8 sp=0xc0006cefe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 174 gp=0xc0001c9a40 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bbe0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006cff30 sp=0xc0006cff00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006cffc8 sp=0xc0006cff30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006cffe0 sp=0xc0006cffc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006cffe8 sp=0xc0006cffe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 175 gp=0xc0001c9c00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bc00, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d0f30 sp=0xc0006d0f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d0fc8 sp=0xc0006d0f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d0fe0 sp=0xc0006d0fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d0fe8 sp=0xc0006d0fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 176 gp=0xc0001c9dc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bc20, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d1f30 sp=0xc0006d1f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d1fc8 sp=0xc0006d1f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d1fe0 sp=0xc0006d1fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d1fe8 sp=0xc0006d1fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 177 gp=0xc0006d6000 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bc40, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006dcf30 sp=0xc0006dcf00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006dcfc8 sp=0xc0006dcf30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006dcfe0 sp=0xc0006dcfc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006dcfe8 sp=0xc0006dcfe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 194 gp=0xc0006d61c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bc60, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006ddf30 sp=0xc0006ddf00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006ddfc8 sp=0xc0006ddf30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006ddfe0 sp=0xc0006ddfc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006ddfe8 sp=0xc0006ddfe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 195 gp=0xc0006d6380 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bc80, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006def30 sp=0xc0006def00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006defc8 sp=0xc0006def30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006defe0 sp=0xc0006defc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006defe8 sp=0xc0006defe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 196 gp=0xc0006d6540 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bca0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006dff30 sp=0xc0006dff00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006dffc8 sp=0xc0006dff30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006dffe0 sp=0xc0006dffc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006dffe8 sp=0xc0006dffe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 197 gp=0xc0006d6700 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bcc0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d8f30 sp=0xc0006d8f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d8fc8 sp=0xc0006d8f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d8fe0 sp=0xc0006d8fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d8fe8 sp=0xc0006d8fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 198 gp=0xc0006d68c0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bce0, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006d9f30 sp=0xc0006d9f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006d9fc8 sp=0xc0006d9f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006d9fe0 sp=0xc0006d9fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006d9fe8 sp=0xc0006d9fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 199 gp=0xc0006d6a80 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bd00, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006daf30 sp=0xc0006daf00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006dafc8 sp=0xc0006daf30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006dafe0 sp=0xc0006dafc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006dafe8 sp=0xc0006dafe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 200 gp=0xc0006d6c40 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bd20, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006dbf30 sp=0xc0006dbf00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006dbfc8 sp=0xc0006dbf30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006dbfe0 sp=0xc0006dbfc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006dbfe8 sp=0xc0006dbfe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 201 gp=0xc0006d6e00 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bd40, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006e6f30 sp=0xc0006e6f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006e6fc8 sp=0xc0006e6f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006e6fe0 sp=0xc0006e6fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006e6fe8 sp=0xc0006e6fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 202 gp=0xc0006d6fc0 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bd60, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006e7f30 sp=0xc0006e7f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006e7fc8 sp=0xc0006e7f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006e7fe0 sp=0xc0006e7fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006e7fe8 sp=0xc0006e7fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+
+goroutine 203 gp=0xc0006d7180 m=nil [GC worker (idle)]:
+runtime.gopark(0xe68980, 0xc00066bd80, 0x1b, 0xa, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/proc.go:435 +0xf1 fp=0xc0006e8f30 sp=0xc0006e8f00 pc=0x48bc11
+runtime.gcBgMarkWorker(0xc0000d9ae0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1423 +0xfa fp=0xc0006e8fc8 sp=0xc0006e8f30 pc=0x42f3fa
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x25 fp=0xc0006e8fe0 sp=0xc0006e8fc8 pc=0x42f2a5
+runtime.goexit({})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/asm_amd64.s:1700 +0x1 fp=0xc0006e8fe8 sp=0xc0006e8fe0 pc=0x493441
+created by runtime.gcBgMarkStartWorkers in goroutine 27
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/mgc.go:1339 +0x65
+FAIL	github.com/caddyserver/caddy/v2	0.114s
+FAIL

@@ -1,0 +1,188 @@
+=== RUN   TestBufferedDrainSlow
+--- PASS: TestBufferedDrainSlow (0.00s)
+PASS
+ok  	channel	0.002s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestBufferedDrainSlow (3.10s)
+PASS
+ok  	channel	3.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestBufferedDrainSlow (3.10s)
+PASS
+ok  	channel	3.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestBufferedDrainSlow (3.10s)
+PASS
+ok  	channel	3.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_7
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_8
+--- PASS: TestBufferedDrainSlow (3.10s)
+PASS
+ok  	channel	3.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_9
+--- PASS: TestBufferedDrainSlow (0.10s)
+PASS
+ok  	channel	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedDrainSlow
+Import added at line: 3
+Header added at line: 25
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedDrainSlow
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_10
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000ea1e0, {0x62f706, 0x15}, 0x639558)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0000ea000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0000ea000, 0xc0000dd918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc00000e018, {0x7576c0, 0x5, 0x5}, {0xc20d4b4a680d95c6, 0x8bb2cc486a, 0x75d080})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc00003e2c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:53 +0xa5
+
+goroutine 6 [chan receive]:
+channel.TestBufferedDrainSlow(0xc0000ea1e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go:34 +0xe5
+testing.tRunner(0xc0000ea1e0, 0x639558)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 7 [semacquire]:
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x31
+created by advocate.startReplay in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 33 [semacquire]:
+runtime.CallersFrames({0xc000500010, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e
+runtime.WaitForReplay(0x10, 0x466d57?, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:597 +0x28
+sync.(*Once).Do(0xc00003e338, 0xc000507e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/once.go:76 +0x56
+testing.(*M).after(0xc00003e2c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2366 +0x77
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2471 +0x2b
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	channel	600.105s
+FAIL

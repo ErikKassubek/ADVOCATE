@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextSetGetPanicsWhenKeyNotComparable,0,0,0,0,0,0,0,0,0,0,0

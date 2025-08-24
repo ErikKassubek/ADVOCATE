@@ -1,0 +1,7 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0
+TestDebugPrintRouteFunc,0,0,0,0,0,0,0,0,0,0,0

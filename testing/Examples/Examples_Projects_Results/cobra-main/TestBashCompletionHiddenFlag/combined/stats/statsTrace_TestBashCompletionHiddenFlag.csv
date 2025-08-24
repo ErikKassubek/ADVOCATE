@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GFuzz,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GFuzzHB,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GFuzzHBFlow,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GoPie+,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GoPie,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0
+GoPieHB,TestBashCompletionHiddenFlag,3,1,0,0,0,2,0,0,0

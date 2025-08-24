@@ -1,0 +1,12 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL03_BufferedLeakWithPartner
+Import added at line: 3
+Header added at line: 111
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL03_BufferedLeakWithPartner
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestL03_BufferedLeakWithPartner (0.10s)
+PASS
+ok  	scenarios	0.105s

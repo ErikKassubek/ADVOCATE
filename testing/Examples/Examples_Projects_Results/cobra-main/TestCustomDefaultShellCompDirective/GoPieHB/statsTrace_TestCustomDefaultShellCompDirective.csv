@@ -1,0 +1,3 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestCustomDefaultShellCompDirective,10,4,0,0,0,6,0,0,0
+TestCustomDefaultShellCompDirective,3,13,0,0,0,2,0,0,0

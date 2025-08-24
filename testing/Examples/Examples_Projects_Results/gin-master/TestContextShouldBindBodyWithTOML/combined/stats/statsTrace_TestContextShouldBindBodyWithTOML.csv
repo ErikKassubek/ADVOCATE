@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GFuzz,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GFuzzHB,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GFuzzHBFlow,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GoPie+,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GoPie,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1
+GoPieHB,TestContextShouldBindBodyWithTOML,24,1,4,0,0,18,0,0,1

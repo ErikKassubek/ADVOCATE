@@ -1,0 +1,27 @@
+=== RUN   TestTreeWildcard
+--- PASS: TestTreeWildcard (0.00s)
+=== RUN   TestTreeWildcardConflict
+--- PASS: TestTreeWildcardConflict (0.00s)
+=== RUN   TestTreeWildcardConflictEx
+--- PASS: TestTreeWildcardConflictEx (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+TestName:  TestTreeWildcard
+Import added at line: 7
+Header added at line: 138
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+Header added at line: 394
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+Header added at line: 942
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeWildcard
+--- PASS: TestTreeWildcard (0.10s)
+=== RUN   TestTreeWildcardConflict
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: ':names' in new path '/foo/:names' conflicts with existing wildcard ':name' in existing prefix '/foo/:name'
+
+FAIL	github.com/gin-gonic/gin	0.110s
+FAIL

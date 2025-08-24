@@ -1,0 +1,47 @@
+=== RUN   TestContextSetGet
+--- PASS: TestContextSetGet (0.00s)
+=== RUN   TestContextSetGetAnyKey
+=== RUN   TestContextSetGetAnyKey/int
+=== RUN   TestContextSetGetAnyKey/int32
+=== RUN   TestContextSetGetAnyKey/int64
+=== RUN   TestContextSetGetAnyKey/uint
+=== RUN   TestContextSetGetAnyKey/float32
+=== RUN   TestContextSetGetAnyKey/gin.key
+=== RUN   TestContextSetGetAnyKey/*gin.key
+--- PASS: TestContextSetGetAnyKey (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/int64 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/uint (0.00s)
+    --- PASS: TestContextSetGetAnyKey/float32 (0.00s)
+    --- PASS: TestContextSetGetAnyKey/gin.key (0.00s)
+    --- PASS: TestContextSetGetAnyKey/*gin.key (0.00s)
+=== RUN   TestContextSetGetPanicsWhenKeyNotComparable
+--- PASS: TestContextSetGetPanicsWhenKeyNotComparable (0.00s)
+=== RUN   TestContextSetGetValues
+--- PASS: TestContextSetGetValues (0.00s)
+=== RUN   TestContextSetGetBool
+--- PASS: TestContextSetGetBool (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextSetGet
+Import added at line: 7
+Header added at line: 247
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 265
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 292
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 302
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 328
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextSetGet
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: key no_exist does not exist
+
+FAIL	github.com/gin-gonic/gin	0.114s
+FAIL

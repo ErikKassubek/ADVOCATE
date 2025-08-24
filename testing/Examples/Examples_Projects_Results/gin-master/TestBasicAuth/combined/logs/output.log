@@ -1,0 +1,385 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.118s
+FAIL
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.113s
+FAIL
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.117s
+FAIL
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.117s
+FAIL
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.118s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.112s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuth ###
+
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.00s)
+=== RUN   TestBasicAuthFails
+--- PASS: TestBasicAuthFails (0.00s)
+=== RUN   TestBasicAuthSearchCredential
+--- PASS: TestBasicAuthSearchCredential (0.00s)
+=== RUN   TestBasicAuthAuthorizationHeader
+--- PASS: TestBasicAuthAuthorizationHeader (0.00s)
+=== RUN   TestBasicAuthSucceed
+--- PASS: TestBasicAuthSucceed (0.00s)
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+=== RUN   TestBasicAuthForProxy407
+--- PASS: TestBasicAuthForProxy407 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth
+Import added at line: 7
+Header added at line: 16
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 38
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 48
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 80
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 84
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 158
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth
+--- PASS: TestBasicAuth (0.10s)
+=== RUN   TestBasicAuthFails
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: Empty list of authorized credentials
+
+FAIL	github.com/gin-gonic/gin	0.113s
+FAIL

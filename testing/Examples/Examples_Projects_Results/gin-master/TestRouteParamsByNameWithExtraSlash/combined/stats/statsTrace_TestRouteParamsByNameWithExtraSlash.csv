@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GFuzz,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GoPie+,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GoPie,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0
+GoPieHB,TestRouteParamsByNameWithExtraSlash,3,1,2,0,0,0,0,0,0

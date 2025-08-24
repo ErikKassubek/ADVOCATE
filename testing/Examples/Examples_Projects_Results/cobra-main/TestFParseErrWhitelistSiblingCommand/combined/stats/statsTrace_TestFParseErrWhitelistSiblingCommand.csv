@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GFuzz,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GoPie+,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GoPie,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0
+GoPieHB,TestFParseErrWhitelistSiblingCommand,1,1,0,0,0,0,0,0,0

@@ -1,0 +1,14 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Close on Closed Channel:
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:35@0
+
+
+2 Actual Close on Closed Channel:
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:34@4
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:34@4
+
+```

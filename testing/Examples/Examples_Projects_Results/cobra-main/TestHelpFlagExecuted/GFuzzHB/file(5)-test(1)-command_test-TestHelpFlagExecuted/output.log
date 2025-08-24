@@ -1,0 +1,20 @@
+=== RUN   TestHelpFlagExecuted
+--- PASS: TestHelpFlagExecuted (0.00s)
+=== RUN   TestHelpFlagExecutedOnChild
+--- PASS: TestHelpFlagExecutedOnChild (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestHelpFlagExecuted
+Import added at line: 17
+Header added at line: 1064
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+Header added at line: 1075
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestHelpFlagExecuted
+--- PASS: TestHelpFlagExecuted (0.10s)
+=== RUN   TestHelpFlagExecutedOnChild
+--- PASS: TestHelpFlagExecutedOnChild (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s

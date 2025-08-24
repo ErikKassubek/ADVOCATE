@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCustomRecoveryWithWriter,0,0,0,0,0,0,0,0,0,0,0

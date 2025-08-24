@@ -1,0 +1,117 @@
+=== RUN   TestWGNested
+--- PASS: TestWGNested (0.00s)
+PASS
+ok  	waitgroups	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestWGNested (1.10s)
+PASS
+ok  	waitgroups	1.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestWGNested (3.10s)
+PASS
+ok  	waitgroups	3.107s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.105s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_7
+--- PASS: TestWGNested (0.10s)
+PASS
+ok  	waitgroups	0.106s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGNested
+Import added at line: 3
+Header added at line: 33
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGNested
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/fuzzingTraces/fuzzingTrace_8
+FAIL	waitgroups	70.034s
+FAIL

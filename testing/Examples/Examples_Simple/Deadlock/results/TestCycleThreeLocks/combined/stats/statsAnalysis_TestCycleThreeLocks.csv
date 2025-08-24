@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestCycleThreeLocks,0,3,3,3,1,0,0,0,0,6,6,6,4,0,0
+GFuzz,TestCycleThreeLocks,0,3,0,0,0,0,0,0,0,6,0,0,0,0,0
+GFuzzHB,TestCycleThreeLocks,0,3,3,3,1,0,0,0,0,6,6,6,4,0,0
+GFuzzHBFlow,TestCycleThreeLocks,0,3,3,3,1,0,0,0,0,6,6,6,4,0,0
+GoPie+,TestCycleThreeLocks,0,3,0,0,0,0,0,0,0,6,0,0,0,0,0
+GoPie,TestCycleThreeLocks,0,3,0,0,0,0,0,0,0,6,0,0,0,0,0
+GoPieHB,TestCycleThreeLocks,0,3,3,3,1,0,0,0,0,6,6,6,4,0,0

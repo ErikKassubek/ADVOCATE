@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GFuzz,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GFuzzHB,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GFuzzHBFlow,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GoPie+,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GoPie,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1
+GoPieHB,TestContextBindWithYAML,9,1,1,0,0,6,0,0,1

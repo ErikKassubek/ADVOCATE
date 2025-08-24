@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GFuzz,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GFuzzHB,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GFuzzHBFlow,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GoPie+,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GoPie,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1
+GoPieHB,TestContextBindWithQuery,5,1,1,0,0,2,0,0,1

@@ -1,0 +1,11 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed4
+Import added at line: 3
+Header added at line: 75
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed4
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+FAIL	scenarios	70.067s
+FAIL

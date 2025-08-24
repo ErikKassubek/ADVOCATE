@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GFuzz,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GFuzzHB,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GFuzzHBFlow,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GoPie+,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GoPie,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0
+GoPieHB,TestEngineHandleMethodNotAllowedCornerCase,7,1,6,0,0,0,0,0,0

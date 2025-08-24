@@ -1,0 +1,361 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b01e0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.064s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.164s
+FAIL
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.061s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.164s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.019s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.113s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 33 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000102540, {0x57bd9e?, 0xc000120b30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc000102540)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc000102540, 0xc000120c70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc000160000, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0001241e0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 18 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000102700?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000102700, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.059s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.147s
+FAIL
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b01e0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.062s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.126s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b01e0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.009s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.131s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedRecvNoSend ###
+
+=== RUN   TestUnbufferedRecvNoSend
+panic: test timed out after 1m0s
+	running tests:
+		TestUnbufferedRecvNoSend (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57bd9e?, 0xc0000acb30?}, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a6800, 0x5, 0x5}, {0x6acd80?, 0x7?, 0x6abc00?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:53 +0x9b
+
+goroutine 6 [chan receive]:
+channel.TestUnbufferedRecvNoSend(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:33 +0x2f
+testing.tRunner(0xc000003880, 0x584208)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	channel	60.064s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedRecvNoSend
+Import added at line: 3
+Header added at line: 30
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedRecvNoSend
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	channel	60.163s
+FAIL
+Bugreport info: 0_1,fail

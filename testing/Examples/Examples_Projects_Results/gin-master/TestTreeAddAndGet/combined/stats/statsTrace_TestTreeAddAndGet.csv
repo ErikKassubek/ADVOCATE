@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GFuzz,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GoPie+,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GoPie,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0
+GoPieHB,TestTreeAddAndGet,1,1,0,0,0,0,0,0,0

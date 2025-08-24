@@ -1,0 +1,20 @@
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.00s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401
+Import added at line: 7
+Header added at line: 101
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401
+--- PASS: TestBasicAuth401 (0.10s)
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.132s

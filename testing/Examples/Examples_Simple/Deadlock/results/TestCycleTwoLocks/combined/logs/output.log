@@ -1,0 +1,687 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57a2cf?, 0xc0000acb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003880, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.064s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.164s
+FAIL
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57a2cf?, 0xc0000acb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003880, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.064s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.163s
+FAIL
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,suc
+Deadlocking Element:  1 M 16 16 2000000001
+Deadlocking Element:  2 M 22 22 1000000001
+Bugreport info: 0_3,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_2
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_3
+Found ReplayEnd Marker with exit code 41
+Number of routines waiting on mutexes: 0
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.061s
+FAIL
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 6 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc000003340, {0x57a2cf?, 0xc0000aab30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc000003340)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc000003340, 0xc0000aac70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000ae140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 4 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003500?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003500, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 5 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 4
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.065s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.162s
+FAIL
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,suc
+Deadlocking Element:  1 M 16 16 2000000001
+Deadlocking Element:  2 M 22 22 1000000001
+Bugreport info: 0_3,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.610s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_2
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.606s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_3
+Found ReplayEnd Marker with exit code 41
+Number of routines waiting on mutexes: 0
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.031s
+FAIL
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57a2cf?, 0xc0000acb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003880, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.025s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.123s
+FAIL
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,suc
+Deadlocking Element:  1 M 16 16 2000000001
+Deadlocking Element:  2 M 22 22 1000000001
+Bugreport info: 0_3,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_2
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_3
+Found ReplayEnd Marker with exit code 41
+Number of routines waiting on mutexes: 0
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.061s
+FAIL
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57a2cf?, 0xc0000acb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003880, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0xc000010214?, 0x0?, 0x2?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.046s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.134s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 20 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0001a01c0, {0x57a2cf?, 0xc00018cb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0001a01c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0001a01c0, 0xc00018cc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc0001ce000, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc000190140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 18 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000184148)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc0001a0380?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc0001a0380, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 19 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000184150)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 18
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.055s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.109s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-deadlock_test-TestCycleTwoLocks ###
+
+=== RUN   TestCycleTwoLocks
+panic: test timed out after 1m0s
+	running tests:
+		TestCycleTwoLocks (1m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2484 +0x394
+created by time.goFunc
+	/home/ilian/Tools/go-runtime/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57a2cf?, 0xc0000acb30?}, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6a8880, 0x6, 0x6}, {0x6aeda0?, 0x7?, 0x6adc20?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b0140)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:55 +0x9b
+
+goroutine 6 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x476d32?, 0x30?, 0x44843f?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010208)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:23 +0xd7
+testing.tRunner(0xc000003880, 0x5849e8)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc000010210)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:46
+deadlock.TestCycleTwoLocks.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:16 +0x6f
+created by deadlock.TestCycleTwoLocks in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go:13 +0x87
+FAIL	deadlock	60.064s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCycleTwoLocks
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.163s
+FAIL
+Bugreport info: 0_1,suc
+Bugreport info: 0_2,suc
+Deadlocking Element:  1 M 16 16 2000000001
+Deadlocking Element:  2 M 22 22 1000000001
+Bugreport info: 0_3,suc
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_1
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_2
+Found ReplayEnd Marker with exit code 22
+
+Exit Replay with code  22 Leak: Leaking Mutex was unstuck
+FAIL	deadlock	0.604s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+TestName:  TestCycleTwoLocks
+Import added at line: 3
+Header added at line: 10
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Deadlock/deadlock_test.go
+=== RUN   TestCycleTwoLocks
+Reading trace from rewrittenTrace_3
+Found ReplayEnd Marker with exit code 41
+Number of routines waiting on mutexes: 0
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	deadlock	60.050s
+FAIL

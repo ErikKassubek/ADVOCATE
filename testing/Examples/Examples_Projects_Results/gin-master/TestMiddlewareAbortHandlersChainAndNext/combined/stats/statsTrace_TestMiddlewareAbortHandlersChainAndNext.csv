@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GFuzz,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GoPie+,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GoPie,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0
+GoPieHB,TestMiddlewareAbortHandlersChainAndNext,3,1,2,0,0,0,0,0,0

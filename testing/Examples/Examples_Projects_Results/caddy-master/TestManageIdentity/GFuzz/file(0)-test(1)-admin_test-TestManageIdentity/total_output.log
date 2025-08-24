@@ -1,0 +1,202 @@
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+{"level":"info","ts":1750382813.510512,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0001be800"}
+    admin_test.go:921: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382813.510905,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0001be800"}
+{"level":"info","ts":1750382813.5109987,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0001be980"}
+    admin_test.go:921: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382813.5111077,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0001be980"}
+--- FAIL: TestManageIdentity (0.07s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.069s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+{"level":"info","ts":1750382814.156001,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0000f2b40"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382814.1564584,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0000f2b40"}
+{"level":"info","ts":1750382814.1568315,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0000f32c0"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382814.1574051,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0000f32c0"}
+--- FAIL: TestManageIdentity (0.12s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.131s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382814.9253876,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc00023f220"}
+{"level":"info","ts":1750382814.9255424,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc00023f220"}
+{"level":"info","ts":1750382814.925932,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0000ea140"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382814.9269197,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0000ea140"}
+--- FAIL: TestManageIdentity (0.12s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.125s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+{"level":"info","ts":1750382815.4563117,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc000232c80"}
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382815.4567337,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc000232c80"}
+{"level":"info","ts":1750382815.4571154,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc000233400"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382815.457948,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc000233400"}
+--- FAIL: TestManageIdentity (0.17s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.174s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+{"level":"info","ts":1750382815.958444,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc000232c80"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382815.9591923,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc000232c80"}
+{"level":"info","ts":1750382815.9595783,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc000233400"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382815.9601755,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc000233400"}
+--- FAIL: TestManageIdentity (0.13s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.133s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+{"level":"info","ts":1750382816.4624534,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc00022cb40"}
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382816.4629269,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc00022cb40"}
+{"level":"info","ts":1750382816.4631965,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc00022d220"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382816.4635873,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc00022d220"}
+--- FAIL: TestManageIdentity (0.13s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.137s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestManageIdentity
+Import added at line: 17
+Header added at line: 770
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestManageIdentity
+=== RUN   TestManageIdentity/nil_config
+=== RUN   TestManageIdentity/nil_admin_config
+=== RUN   TestManageIdentity/nil_identity_config
+=== RUN   TestManageIdentity/default_issuer_when_none_specified
+{"level":"info","ts":1750382817.0127127,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0001db180"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/custom_issuer
+{"level":"info","ts":1750382817.013509,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0001db180"}
+{"level":"info","ts":1750382817.0139105,"logger":"admin.identity.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc0001db900"}
+    admin_test.go:926: Expected no error but got: localhost: caching certificate: tls: failed to find any PEM data in certificate input
+=== RUN   TestManageIdentity/invalid_issuer_module
+{"level":"info","ts":1750382817.0144432,"logger":"admin.identity.cache.maintenance","msg":"stopped background certificate maintenance","cache":"0xc0001db900"}
+--- FAIL: TestManageIdentity (0.17s)
+    --- PASS: TestManageIdentity/nil_config (0.00s)
+    --- PASS: TestManageIdentity/nil_admin_config (0.00s)
+    --- PASS: TestManageIdentity/nil_identity_config (0.00s)
+    --- FAIL: TestManageIdentity/default_issuer_when_none_specified (0.00s)
+    --- FAIL: TestManageIdentity/custom_issuer (0.00s)
+    --- PASS: TestManageIdentity/invalid_issuer_module (0.00s)
+FAIL
+FAIL	github.com/caddyserver/caddy/v2	0.178s
+FAIL

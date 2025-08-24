@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GFuzz,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GoPie+,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GoPie,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0
+GoPieHB,TestHelpCommandExecutedOnChildWithFlagThatShadowsParentFlag,1,1,0,0,0,0,0,0,0

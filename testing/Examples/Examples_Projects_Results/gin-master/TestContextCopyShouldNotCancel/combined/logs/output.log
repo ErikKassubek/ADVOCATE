@@ -1,0 +1,120 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.114s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.034s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.078s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextCopyShouldNotCancel ###
+
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/fuzzingTraces/fuzzingTrace_1
+FAIL	github.com/gin-gonic/gin	70.078s
+FAIL

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestShorthandVersionFlagOnlyExistsIfVersionNonEmpty,0,0,0,0,0,0,0,0,0,0,0

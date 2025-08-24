@@ -1,0 +1,85 @@
+=== RUN   TestETags
+{"level":"info","ts":1750381309.926292,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381309.9264276,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381309.9266624,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381309.9269125,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381309.9304235,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestETags
+{"level":"info","ts":1750381310.2706256,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381310.2711525,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381310.272524,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//127.0.0.1:2999","//localhost:2999","//[::1]:2999"]}
+{"level":"info","ts":1750381310.2729907,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381310.2748168,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.12s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.122s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,suc
+Bugreport info: 0_7,fail
+Bugreport info: 0_8,fail
+Bugreport info: 0_9,fail
+Bugreport info: 0_10,fail
+Bugreport info: 0_11,fail
+Bugreport info: 0_12,fail
+Bugreport info: 0_13,fail
+Bugreport info: 0_14,fail
+Bugreport info: 0_15,fail
+Bugreport info: 0_16,fail
+Bugreport info: 0_17,fail
+Bugreport info: 0_18,fail
+Bugreport info: 0_19,fail
+Bugreport info: 0_20,fail
+Bugreport info: 0_21,suc
+Bugreport info: 0_22,fail
+Bugreport info: 0_23,fail
+Bugreport info: 0_24,fail
+Bugreport info: 0_25,fail
+Bugreport info: 0_26,fail
+Bugreport info: 0_27,fail
+Bugreport info: 0_28,fail
+Bugreport info: 0_29,fail
+Bugreport info: 0_30,fail
+Bugreport info: 0_31,fail
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+=== RUN   TestETags
+Reading trace from rewrittenTrace_21
+{"level":"info","ts":1750381310.7271197,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//127.0.0.1:2999","//localhost:2999","//[::1]:2999"]}
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	github.com/caddyserver/caddy/v2	60.069s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+=== RUN   TestETags
+Reading trace from rewrittenTrace_6
+Found ReplayEnd Marker with exit code 31
+{"level":"info","ts":1750381371.6342847,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//127.0.0.1:2999","//localhost:2999","//[::1]:2999"]}
+{"level":"info","ts":1750381371.6345923,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381371.6354232,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381371.6357355,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381371.6383674,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+
+Exit Replay with code  0 The replay terminated normally
+ok  	github.com/caddyserver/caddy/v2	1.514s

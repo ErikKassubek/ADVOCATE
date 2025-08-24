@@ -1,0 +1,78 @@
+=== RUN   TestCalledAs
+=== RUN   TestCalledAs/find/no-args
+    command_test.go:2447: called: "parent"
+=== RUN   TestCalledAs/traverse/no-args
+    command_test.go:2447: called: "parent"
+=== RUN   TestCalledAs/find/full-alias
+    command_test.go:2447: called: "child2"
+=== RUN   TestCalledAs/find/part-no-prefix
+=== RUN   TestCalledAs/find/conflict
+=== RUN   TestCalledAs/traverse/real-name
+    command_test.go:2447: called: "child1"
+=== RUN   TestCalledAs/traverse/full-alias
+    command_test.go:2447: called: "child2"
+=== RUN   TestCalledAs/traverse/part-no-prefix
+=== RUN   TestCalledAs/find/real-name
+    command_test.go:2447: called: "child1"
+=== RUN   TestCalledAs/find/part-alias
+    command_test.go:2447: called: "child1"
+=== RUN   TestCalledAs/traverse/part-alias
+    command_test.go:2447: called: "child1"
+=== RUN   TestCalledAs/traverse/conflict
+--- PASS: TestCalledAs (0.00s)
+    --- PASS: TestCalledAs/find/no-args (0.00s)
+    --- PASS: TestCalledAs/traverse/no-args (0.00s)
+    --- PASS: TestCalledAs/find/full-alias (0.00s)
+    --- PASS: TestCalledAs/find/part-no-prefix (0.00s)
+    --- PASS: TestCalledAs/find/conflict (0.00s)
+    --- PASS: TestCalledAs/traverse/real-name (0.00s)
+    --- PASS: TestCalledAs/traverse/full-alias (0.00s)
+    --- PASS: TestCalledAs/traverse/part-no-prefix (0.00s)
+    --- PASS: TestCalledAs/find/real-name (0.00s)
+    --- PASS: TestCalledAs/find/part-alias (0.00s)
+    --- PASS: TestCalledAs/traverse/part-alias (0.00s)
+    --- PASS: TestCalledAs/traverse/conflict (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestCalledAs
+Import added at line: 17
+Header added at line: 2477
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCalledAs
+=== RUN   TestCalledAs/traverse/conflict
+=== RUN   TestCalledAs/find/real-name
+    command_test.go:2448: called: "child1"
+=== RUN   TestCalledAs/find/part-no-prefix
+=== RUN   TestCalledAs/find/part-alias
+    command_test.go:2448: called: "child1"
+=== RUN   TestCalledAs/traverse/real-name
+    command_test.go:2448: called: "child1"
+=== RUN   TestCalledAs/traverse/full-alias
+    command_test.go:2448: called: "child2"
+=== RUN   TestCalledAs/traverse/part-no-prefix
+=== RUN   TestCalledAs/traverse/part-alias
+    command_test.go:2448: called: "child1"
+=== RUN   TestCalledAs/find/no-args
+    command_test.go:2448: called: "parent"
+=== RUN   TestCalledAs/traverse/no-args
+    command_test.go:2448: called: "parent"
+=== RUN   TestCalledAs/find/full-alias
+    command_test.go:2448: called: "child2"
+=== RUN   TestCalledAs/find/conflict
+--- PASS: TestCalledAs (0.11s)
+    --- PASS: TestCalledAs/traverse/conflict (0.00s)
+    --- PASS: TestCalledAs/find/real-name (0.00s)
+    --- PASS: TestCalledAs/find/part-no-prefix (0.00s)
+    --- PASS: TestCalledAs/find/part-alias (0.00s)
+    --- PASS: TestCalledAs/traverse/real-name (0.00s)
+    --- PASS: TestCalledAs/traverse/full-alias (0.00s)
+    --- PASS: TestCalledAs/traverse/part-no-prefix (0.00s)
+    --- PASS: TestCalledAs/traverse/part-alias (0.00s)
+    --- PASS: TestCalledAs/find/no-args (0.00s)
+    --- PASS: TestCalledAs/traverse/no-args (0.00s)
+    --- PASS: TestCalledAs/find/full-alias (0.00s)
+    --- PASS: TestCalledAs/find/conflict (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.115s

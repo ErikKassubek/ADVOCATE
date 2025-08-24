@@ -1,0 +1,16 @@
+=== RUN   TestContextClientIP
+2025/06/19 18:27:38 The AppEngine flag is going to be deprecated. Please check issues #2723 and #2739 and use 'TrustedPlatform: gin.PlatformGoogleAppEngine' instead.
+--- PASS: TestContextClientIP (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextClientIP
+Import added at line: 7
+Header added at line: 1743
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextClientIP
+2025/06/19 18:27:38 The AppEngine flag is going to be deprecated. Please check issues #2723 and #2739 and use 'TrustedPlatform: gin.PlatformGoogleAppEngine' instead.
+--- PASS: TestContextClientIP (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

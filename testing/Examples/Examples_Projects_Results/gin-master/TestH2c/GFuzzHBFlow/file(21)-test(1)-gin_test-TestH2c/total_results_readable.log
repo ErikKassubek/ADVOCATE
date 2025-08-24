@@ -1,0 +1,120 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select with possible partner:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@2762
+	partner: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856@2130
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@564
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@564
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@2888
+
+
+5 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2146
+
+
+
+-------------------- Warning --------------------
+
+6 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97@206
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150@476
+
+7 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400@524
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368@2690
+
+8 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182@2634
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247@2694
+
+9 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570@1362
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773@2886
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:444@1550
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug.go:21@144
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2833@1696
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2156
+
+
+5 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1160@2416
+
+
+6 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1473@480
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select with possible partner:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@2696
+	partner: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856@2062
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@546
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@546
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@2840
+
+
+5 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2076
+
+
+
+-------------------- Warning --------------------
+
+6 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97@228
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150@444
+
+7 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182@2476
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247@2586
+
+8 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400@484
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368@2694
+
+9 Actual Receive on Closed Channel:
+	recv: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570@1232
+	close: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773@2836
+
+```

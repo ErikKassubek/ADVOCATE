@@ -1,0 +1,72 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on unbuffered channel with possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+	partner: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:141@96
+
+```
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on unbuffered channel with possible partner:
+	channel: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:139@100
+	partner: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:141@96
+
+```
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestL06_LeakOnSelectWithPartner ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

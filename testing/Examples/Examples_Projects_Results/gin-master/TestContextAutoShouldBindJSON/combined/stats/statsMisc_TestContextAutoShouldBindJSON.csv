@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextAutoShouldBindJSON,0,0,0,0,0,0,0,0,0,0,0

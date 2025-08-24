@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestNoCmdNameCompletionInGo,0,0,0,0,0,0,0,0,0,0,0

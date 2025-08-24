@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GFuzz,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GFuzzHB,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GFuzzHBFlow,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GoPie+,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GoPie,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0
+GoPieHB,TestLoggerWithWriterSkippingPaths,4,1,3,0,0,0,0,0,0

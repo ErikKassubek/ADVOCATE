@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GFuzz,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GFuzzHB,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GFuzzHBFlow,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GoPie+,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GoPie,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0
+GoPieHB,TestFlagFileExtFilterCompletionInGo,3,1,0,0,0,2,0,0,0

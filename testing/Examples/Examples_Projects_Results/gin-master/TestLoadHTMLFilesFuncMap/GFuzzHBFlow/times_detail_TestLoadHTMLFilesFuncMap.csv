@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestLoadHTMLFilesFuncMap,0.62221,0.72002,0.00024,0.00021,0.00004,0.00000,0.00000,0.00000,0.00001,0.00000,0.00000,0.00000,0.00006,0.00000,0.00001,0.00000,0.00000,0.00011,0

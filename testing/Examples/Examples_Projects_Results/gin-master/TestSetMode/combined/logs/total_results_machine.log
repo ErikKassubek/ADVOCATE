@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: GFuzzHB | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: Flow | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: GFuzzHBFlow | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: GoPie | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: GoPie+ | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75
+
+
+### Mode: GoPieHB | Subdir: file(27)-test(1)-mode_test-TestSetMode ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/mode.go:75

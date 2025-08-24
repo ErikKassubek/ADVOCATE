@@ -1,0 +1,44 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:2:1000000001:8:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:2:1000000001:8:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:2:1000000001:8:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+==================================
+==================================
+==================================
+==================================
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+A02,T:1:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:2:1000000001:8:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+==================================
+A02,T:1:1000000004:248:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:4:1000000004:264:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+==================================
+A02,T:1:1000000004:276:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:4:1000000004:256:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+==================================
+A02,T:1:1000000004:296:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:4:1000000004:312:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28
+==================================
+A02,T:1:1000000004:324:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:30,T:4:1000000004:302:CC:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go:28

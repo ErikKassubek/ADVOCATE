@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCompletionCobraFlags,0,0,0,0,0,0,0,0,0,0,0

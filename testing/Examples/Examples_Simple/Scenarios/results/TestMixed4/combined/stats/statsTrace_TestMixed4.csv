@@ -1,0 +1,13 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMixed4,16,4,0,7,0,0,0,0,0
+GFuzz,TestMixed4,16,4,0,7,0,0,0,0,0
+GFuzzHB,TestMixed4,16,4,0,7,0,0,0,0,0
+GFuzzHBFlow,TestMixed4,16,4,0,7,0,0,0,0,0
+GoPie+,TestMixed4,16,4,0,7,0,0,0,0,0
+GoPie+,TestMixed4,17,6,0,7,0,0,0,0,0
+GoPie+,TestMixed4,15,29,0,5,0,0,0,0,0
+GoPie,TestMixed4,16,4,0,7,0,0,0,0,0
+GoPie,TestMixed4,17,6,0,7,0,0,0,0,0
+GoPie,TestMixed4,17,6,0,7,0,0,0,0,0
+GoPie,TestMixed4,17,6,0,7,0,0,0,0,0
+GoPieHB,TestMixed4,16,4,0,7,0,0,0,0,0

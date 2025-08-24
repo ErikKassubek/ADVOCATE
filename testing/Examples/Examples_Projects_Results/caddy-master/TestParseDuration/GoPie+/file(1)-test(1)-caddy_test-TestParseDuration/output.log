@@ -1,0 +1,14 @@
+=== RUN   TestParseDuration
+--- PASS: TestParseDuration (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestParseDuration
+Import added at line: 17
+Header added at line: 23
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestParseDuration
+--- PASS: TestParseDuration (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.107s

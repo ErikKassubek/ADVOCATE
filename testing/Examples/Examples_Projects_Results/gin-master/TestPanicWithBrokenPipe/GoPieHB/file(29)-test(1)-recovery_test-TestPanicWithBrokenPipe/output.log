@@ -1,0 +1,86 @@
+=== RUN   TestPanicWithBrokenPipe
+=== RUN   TestPanicWithBrokenPipe/broken_pipe
+=== RUN   TestPanicWithBrokenPipe/connection_reset_by_peer
+--- PASS: TestPanicWithBrokenPipe (0.00s)
+    --- PASS: TestPanicWithBrokenPipe/broken_pipe (0.00s)
+    --- PASS: TestPanicWithBrokenPipe/connection_reset_by_peer (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go
+TestName:  TestPanicWithBrokenPipe
+Import added at line: 7
+Header added at line: 131
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestPanicWithBrokenPipe
+=== RUN   TestPanicWithBrokenPipe/broken_pipe
+SetExitCode: other
+panic: : : broken pipe
+
+goroutine 9 [running]:
+runtime.SetExitCodeFromPanicMsg({0x122b6e0, 0xc000164a50})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_exit.go:82 +0x359
+runtime.ExitReplayPanic({0x122b6e0, 0xc000164a50})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:937 +0x3c
+panic({0x122b6e0, 0xc000164a50})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/panic.go:744 +0x2f
+github.com/gin-gonic/gin.TestPanicWithBrokenPipe.func1.1(0xc000162ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:157 +0x15b
+github.com/gin-gonic/gin.(*Context).Next(0xc000162ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:192 +0xab
+github.com/gin-gonic/gin.CustomRecoveryWithWriter.func1(0xc000162ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery.go:94 +0xfd
+github.com/gin-gonic/gin.(*Context).Next(0xc000162ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:192 +0xab
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0000ff6c0, 0xc000162ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin.go:689 +0x42a
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0000ff6c0, {0x13a4220, 0xc000191340}, 0xc000180dc0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin.go:643 +0xbc
+github.com/gin-gonic/gin.PerformRequest({0x139d7e0, 0xc0000ff6c0}, {0x12dc154, 0x3}, {0x12e911d, 0x9}, {0x0, 0x0, 0x0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routes_test.go:31 +0x1bc
+github.com/gin-gonic/gin.TestPanicWithBrokenPipe.func1(0xc0001d63c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:160 +0x255
+testing.tRunner(0xc0001d63c0, 0xc0000c3e00)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 7
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0001d61e0, {0x12f8275, 0x17}, 0x1330438)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0001d6000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0001d6000, 0xc000059918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc000010990, {0x19434e0, 0x16f, 0x16f}, {0xc20d46bc0d05ccd2, 0x8bb2f58b73, 0x194b920})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc000060370)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:815 +0xa5
+
+goroutine 7 [chan receive]:
+testing.(*T).Run(0xc0001d63c0, {0x12eb1bb, 0xb}, 0xc0000c3e00)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+github.com/gin-gonic/gin.TestPanicWithBrokenPipe(0xc0001d61e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:145 +0x365
+testing.tRunner(0xc0001d61e0, 0x1330438)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 8 [sleep]:
+time.Sleep(0xdf8475800)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/time.go:338 +0x13c
+advocate.InitTracing.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:72 +0x25
+created by advocate.InitTracing in goroutine 7
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_tracing.go:71 +0xd2
+
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: : : broken pipe
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL
+Bugreport info: 0_1,fail

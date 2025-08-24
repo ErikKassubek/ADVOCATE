@@ -1,0 +1,17 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunQUIC
+Import added at line: 7
+Header added at line: 277
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunQUIC
+    gin_integration_test.go:44: 
+        	Error Trace:	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:44
+        	            				/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go:295
+        	Error:      	Received unexpected error:
+        	            	Get "https://localhost:8443/example": dial tcp 127.0.0.1:8443: connect: connection refused
+        	Test:       	TestRunQUIC
+--- FAIL: TestRunQUIC (0.11s)
+FAIL
+FAIL	github.com/gin-gonic/gin	0.117s
+FAIL

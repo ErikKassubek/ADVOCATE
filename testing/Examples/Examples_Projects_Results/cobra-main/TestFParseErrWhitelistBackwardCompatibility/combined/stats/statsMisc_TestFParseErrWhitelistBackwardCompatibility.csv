@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestFParseErrWhitelistBackwardCompatibility,0,0,0,0,0,0,0,0,0,0,0

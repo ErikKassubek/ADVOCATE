@@ -1,0 +1,130 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.116s
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.115s
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.113s
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.114s
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedLeakNoRecv
+Import added at line: 3
+Header added at line: 20
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedLeakNoRecv
+--- PASS: TestUnbufferedLeakNoRecv (0.11s)
+PASS
+ok  	channel	0.115s
+Bugreport info: 0_1,fail

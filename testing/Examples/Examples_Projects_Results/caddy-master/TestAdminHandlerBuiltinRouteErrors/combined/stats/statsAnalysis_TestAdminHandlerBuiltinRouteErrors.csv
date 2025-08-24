@@ -1,0 +1,10 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestAdminHandlerBuiltinRouteErrors,6,0,0,0,0,0,0,0,14,0,0,0,0,0,0
+GFuzz,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestAdminHandlerBuiltinRouteErrors,6,0,0,0,0,0,0,0,13,0,0,0,0,0,0
+GFuzzHBFlow,TestAdminHandlerBuiltinRouteErrors,6,0,0,0,0,0,0,0,15,0,0,0,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestAdminHandlerBuiltinRouteErrors,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,6,0,0,0,0,0,0,0,16,0,0,0,0,0,0
+GoPieHB,TestAdminHandlerBuiltinRouteErrors,6,0,0,0,0,0,0,0,19,0,0,0,0,0,0

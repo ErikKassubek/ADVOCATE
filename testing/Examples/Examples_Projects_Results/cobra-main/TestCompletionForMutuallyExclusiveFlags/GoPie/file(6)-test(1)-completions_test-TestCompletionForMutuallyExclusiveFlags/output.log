@@ -1,0 +1,30 @@
+=== RUN   TestCompletionForMutuallyExclusiveFlags
+=== RUN   TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_not_suggested_without_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_suggested_with_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/when_flag_in_mutually_exclusive_group_present,_other_flags_in_group_not_suggested_even_with_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/group_ignored_if_some_flags_not_applicable
+--- PASS: TestCompletionForMutuallyExclusiveFlags (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_not_suggested_without_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_suggested_with_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/when_flag_in_mutually_exclusive_group_present,_other_flags_in_group_not_suggested_even_with_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/group_ignored_if_some_flags_not_applicable (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompletionForMutuallyExclusiveFlags
+Import added at line: 17
+Header added at line: 3255
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompletionForMutuallyExclusiveFlags
+=== RUN   TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_not_suggested_without_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_suggested_with_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/when_flag_in_mutually_exclusive_group_present,_other_flags_in_group_not_suggested_even_with_the_-_prefix
+=== RUN   TestCompletionForMutuallyExclusiveFlags/group_ignored_if_some_flags_not_applicable
+--- PASS: TestCompletionForMutuallyExclusiveFlags (0.10s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_not_suggested_without_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/flags_in_mutually_exclusive_group_suggested_with_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/when_flag_in_mutually_exclusive_group_present,_other_flags_in_group_not_suggested_even_with_the_-_prefix (0.00s)
+    --- PASS: TestCompletionForMutuallyExclusiveFlags/group_ignored_if_some_flags_not_applicable (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

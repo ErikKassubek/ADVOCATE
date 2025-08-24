@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzz,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHB,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie+,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPieHB,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0

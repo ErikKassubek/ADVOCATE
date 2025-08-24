@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestTreeCatchMaxParams,0,0,0,0,0,0,0,0,0,0,0

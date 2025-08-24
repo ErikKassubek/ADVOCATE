@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestNoValidArgsFuncInBashScript,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

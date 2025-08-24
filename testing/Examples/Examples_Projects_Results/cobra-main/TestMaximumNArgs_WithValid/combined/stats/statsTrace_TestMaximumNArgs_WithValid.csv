@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GFuzz,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GoPie+,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GoPie,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0
+GoPieHB,TestMaximumNArgs_WithValid,1,1,0,0,0,0,0,0,0

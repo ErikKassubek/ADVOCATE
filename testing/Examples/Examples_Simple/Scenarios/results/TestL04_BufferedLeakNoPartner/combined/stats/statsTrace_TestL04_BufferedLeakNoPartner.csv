@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GFuzz,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GFuzzHB,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GFuzzHBFlow,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GoPie+,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GoPie,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0
+GoPieHB,TestL04_BufferedLeakNoPartner,3,1,0,1,0,0,0,0,0

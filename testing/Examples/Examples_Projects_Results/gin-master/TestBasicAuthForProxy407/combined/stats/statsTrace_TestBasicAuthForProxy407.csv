@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GFuzz,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GFuzzHB,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GoPie+,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GoPie,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0
+GoPieHB,TestBasicAuthForProxy407,11,1,10,0,0,0,0,0,0

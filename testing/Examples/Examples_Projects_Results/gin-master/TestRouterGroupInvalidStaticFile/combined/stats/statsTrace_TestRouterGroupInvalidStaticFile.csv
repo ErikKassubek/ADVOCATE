@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GFuzz,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GoPie+,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GoPie,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0
+GoPieHB,TestRouterGroupInvalidStaticFile,2,1,1,0,0,0,0,0,0

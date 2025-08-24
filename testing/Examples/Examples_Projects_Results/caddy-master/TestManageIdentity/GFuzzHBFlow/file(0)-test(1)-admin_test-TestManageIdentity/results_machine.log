@@ -1,0 +1,4 @@
+A02,T:6:5000000004:3156:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:7:5000000004:3144:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:7:5000000005:3146:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:6:5000000005:3168:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81
+A02,T:8:7000000001:3718:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:69,T:9:7000000001:4462:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:144
+A02,T:9:7000000002:4464:CR:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/cache.go:145,T:8:7000000002:4476:CC:/home/ilian/Projects/go/pkg/mod/github.com/caddyserver/certmagic@v0.23.0/maintain.go:81

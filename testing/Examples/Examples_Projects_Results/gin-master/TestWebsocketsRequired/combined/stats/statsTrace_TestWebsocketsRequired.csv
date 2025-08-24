@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GFuzz,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GoPie+,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GoPie,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0
+GoPieHB,TestWebsocketsRequired,3,1,2,0,0,0,0,0,0

@@ -1,0 +1,4 @@
+TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+TestLoadHTMLGlobFromFuncMap,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestLoadHTMLGlobFromFuncMap,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestLoadHTMLGlobFromFuncMap,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0

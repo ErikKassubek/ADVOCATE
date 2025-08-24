@@ -1,0 +1,18 @@
+=== RUN   TestRouterGroupBadMethod
+--- PASS: TestRouterGroupBadMethod (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup_test.go
+TestName:  TestRouterGroupBadMethod
+Import added at line: 7
+Header added at line: 143
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/routergroup_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRouterGroupBadMethod
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: there must be at least one handler
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL
+Bugreport info: 0_1,fail

@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCallCommandWithoutSubcommands,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

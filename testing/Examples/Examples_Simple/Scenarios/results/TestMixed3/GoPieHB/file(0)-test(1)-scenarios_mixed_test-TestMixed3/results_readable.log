@@ -1,0 +1,18 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:66@0
+
+
+2 Actual Send on Closed Channel:
+	send: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:66@288
+	close: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:64@290
+
+3 Leak on wait group:
+	wait: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:58@318
+
+
+```

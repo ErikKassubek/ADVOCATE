@@ -1,0 +1,7 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouteStaticFile,6,23,5,0,0,0,0,0,0
+GFuzz,TestRouteStaticFile,6,23,5,0,0,0,0,0,0
+GFuzzHBFlow,TestRouteStaticFile,6,23,5,0,0,0,0,0,0
+GoPie+,TestRouteStaticFile,6,23,5,0,0,0,0,0,0
+GoPie,TestRouteStaticFile,6,23,5,0,0,0,0,0,0
+GoPieHB,TestRouteStaticFile,6,23,5,0,0,0,0,0,0

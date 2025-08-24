@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GFuzz,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GoPie+,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GoPie,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0
+GoPieHB,TestWrongGroupNestedLevel,1,1,0,0,0,0,0,0,0

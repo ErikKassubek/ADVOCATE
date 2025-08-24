@@ -1,0 +1,33 @@
+=== RUN   TestP03_PossibleNegativeWaitGroup
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0xc000010210?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestP03_PossibleNegativeWaitGroup.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:84 +0x37
+created by scenarios.TestP03_PossibleNegativeWaitGroup in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:82 +0x65
+FAIL	scenarios	0.004s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestP03_PossibleNegativeWaitGroup
+Import added at line: 3
+Header added at line: 79
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestP03_PossibleNegativeWaitGroup
+Circular Panic
+panic: sync: WaitGroup is reused before previous Wait has returned
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.104s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail

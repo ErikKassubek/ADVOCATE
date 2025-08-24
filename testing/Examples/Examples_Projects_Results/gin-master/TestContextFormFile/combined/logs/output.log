@@ -1,0 +1,168 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.011s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.121s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.119s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.124s
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.129s
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextFormFile ###
+
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.00s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextFormFile
+Import added at line: 7
+Header added at line: 78
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 96
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextFormFile
+--- PASS: TestContextFormFile (0.10s)
+=== RUN   TestContextFormFileFailed
+--- PASS: TestContextFormFileFailed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s

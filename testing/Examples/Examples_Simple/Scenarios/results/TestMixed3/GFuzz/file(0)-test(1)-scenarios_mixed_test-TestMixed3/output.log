@@ -1,0 +1,30 @@
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 19 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 18
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.009s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL

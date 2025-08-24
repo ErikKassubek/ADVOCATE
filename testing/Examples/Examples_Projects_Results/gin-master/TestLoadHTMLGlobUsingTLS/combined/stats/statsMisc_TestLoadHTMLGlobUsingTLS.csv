@@ -1,0 +1,9 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLGlobUsingTLS,0,0,0,0,0,0,0,0,0,0,0

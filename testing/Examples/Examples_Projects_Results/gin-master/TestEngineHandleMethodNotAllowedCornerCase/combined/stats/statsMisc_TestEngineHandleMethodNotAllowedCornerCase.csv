@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestEngineHandleMethodNotAllowedCornerCase,0,0,0,0,0,0,0,0,0,0,0

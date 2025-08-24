@@ -1,0 +1,34 @@
+=== RUN   TestDisableDescriptions
+=== RUN   TestDisableDescriptions/No_env_variables_set
+=== RUN   TestDisableDescriptions/Global_value_false
+=== RUN   TestDisableDescriptions/Specific_value_false
+=== RUN   TestDisableDescriptions/Both_values_false
+=== RUN   TestDisableDescriptions/Both_values_true
+--- PASS: TestDisableDescriptions (0.00s)
+    --- PASS: TestDisableDescriptions/No_env_variables_set (0.00s)
+    --- PASS: TestDisableDescriptions/Global_value_false (0.00s)
+    --- PASS: TestDisableDescriptions/Specific_value_false (0.00s)
+    --- PASS: TestDisableDescriptions/Both_values_false (0.00s)
+    --- PASS: TestDisableDescriptions/Both_values_true (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestDisableDescriptions
+Import added at line: 17
+Header added at line: 3822
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDisableDescriptions
+=== RUN   TestDisableDescriptions/No_env_variables_set
+=== RUN   TestDisableDescriptions/Global_value_false
+=== RUN   TestDisableDescriptions/Specific_value_false
+=== RUN   TestDisableDescriptions/Both_values_false
+=== RUN   TestDisableDescriptions/Both_values_true
+--- PASS: TestDisableDescriptions (0.11s)
+    --- PASS: TestDisableDescriptions/No_env_variables_set (0.00s)
+    --- PASS: TestDisableDescriptions/Global_value_false (0.00s)
+    --- PASS: TestDisableDescriptions/Specific_value_false (0.00s)
+    --- PASS: TestDisableDescriptions/Both_values_false (0.00s)
+    --- PASS: TestDisableDescriptions/Both_values_true (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s

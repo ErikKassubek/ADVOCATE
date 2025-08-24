@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextSetGetBool,0,0,0,0,0,0,0,0,0,0,0

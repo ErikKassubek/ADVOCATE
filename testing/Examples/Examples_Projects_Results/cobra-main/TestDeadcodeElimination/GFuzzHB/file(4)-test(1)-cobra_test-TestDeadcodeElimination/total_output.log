@@ -1,0 +1,14 @@
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.22s)
+PASS
+ok  	github.com/spf13/cobra	0.221s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestDeadcodeElimination
+Import added at line: 17
+Header added at line: 245
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestDeadcodeElimination
+--- PASS: TestDeadcodeElimination (0.34s)
+PASS
+ok  	github.com/spf13/cobra	0.341s

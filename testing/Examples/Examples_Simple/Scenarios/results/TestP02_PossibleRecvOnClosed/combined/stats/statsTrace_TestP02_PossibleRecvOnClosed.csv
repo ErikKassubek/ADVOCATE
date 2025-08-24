@@ -1,0 +1,9 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GFuzz,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GFuzzHB,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GFuzzHBFlow,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GoPie+,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GoPie,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0
+GoPie,TestP02_PossibleRecvOnClosed,9,4,0,4,0,0,0,0,0
+GoPieHB,TestP02_PossibleRecvOnClosed,8,2,0,4,0,0,0,0,0

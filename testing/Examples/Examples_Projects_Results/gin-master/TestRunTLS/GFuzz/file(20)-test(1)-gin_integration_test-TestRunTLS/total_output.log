@@ -1,0 +1,14 @@
+=== RUN   TestRunTLS
+--- PASS: TestRunTLS (0.01s)
+PASS
+ok  	github.com/gin-gonic/gin	0.017s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+TestName:  TestRunTLS
+Import added at line: 7
+Header added at line: 155
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/gin_integration_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestRunTLS
+--- PASS: TestRunTLS (0.12s)
+PASS
+ok  	github.com/gin-gonic/gin	0.128s

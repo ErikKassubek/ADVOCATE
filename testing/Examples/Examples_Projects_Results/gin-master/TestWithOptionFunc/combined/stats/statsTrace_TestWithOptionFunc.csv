@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GFuzz,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GFuzzHB,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GFuzzHBFlow,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GoPie+,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GoPie,TestWithOptionFunc,4,1,3,0,0,0,0,0,0
+GoPieHB,TestWithOptionFunc,4,1,3,0,0,0,0,0,0

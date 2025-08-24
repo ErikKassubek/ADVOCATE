@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GFuzz,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GoPie+,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GoPie,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0
+GoPieHB,TestOnlyFilesFS_Open_err,1,1,0,0,0,0,0,0,0

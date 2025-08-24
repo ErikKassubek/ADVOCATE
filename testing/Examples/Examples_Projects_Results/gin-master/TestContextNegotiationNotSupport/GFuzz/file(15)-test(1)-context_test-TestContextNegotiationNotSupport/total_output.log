@@ -1,0 +1,14 @@
+=== RUN   TestContextNegotiationNotSupport
+--- PASS: TestContextNegotiationNotSupport (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationNotSupport
+Import added at line: 7
+Header added at line: 1545
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationNotSupport
+--- PASS: TestContextNegotiationNotSupport (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.108s

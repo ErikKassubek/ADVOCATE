@@ -1,0 +1,15 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWGNested,9,3,0,0,0,0,4,0,0
+GFuzz,TestWGNested,9,3,0,0,0,0,4,0,0
+GFuzzHB,TestWGNested,9,3,0,0,0,0,4,0,0
+GFuzzHBFlow,TestWGNested,9,3,0,0,0,0,4,0,0
+GoPie+,TestWGNested,9,3,0,0,0,0,4,0,0
+GoPie,TestWGNested,9,3,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,9,3,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,27,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0
+GoPieHB,TestWGNested,10,5,0,0,0,0,4,0,0

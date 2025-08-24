@@ -1,0 +1,57 @@
+
+
+### Mode: GFuzz | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: Flow | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(13)-test(1)-fish_completions_test-TestFailGenFishCompletionFile ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

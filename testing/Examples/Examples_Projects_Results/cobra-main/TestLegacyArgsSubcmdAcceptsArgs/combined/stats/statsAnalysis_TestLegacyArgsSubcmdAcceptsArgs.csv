@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLegacyArgsSubcmdAcceptsArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

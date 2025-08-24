@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestCompleteCmdInFishScript,0,0,0,0,0,0,0,0,0,0,0

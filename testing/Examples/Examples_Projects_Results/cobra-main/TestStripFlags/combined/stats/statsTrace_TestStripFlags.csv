@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestStripFlags,1,1,0,0,0,0,0,0,0
+GFuzz,TestStripFlags,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestStripFlags,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestStripFlags,1,1,0,0,0,0,0,0,0
+GoPie+,TestStripFlags,1,1,0,0,0,0,0,0,0
+GoPie,TestStripFlags,1,1,0,0,0,0,0,0,0
+GoPieHB,TestStripFlags,1,1,0,0,0,0,0,0,0

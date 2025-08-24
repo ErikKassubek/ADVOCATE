@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestPersistentFlagsOnSameCommand ###
+

@@ -1,0 +1,66 @@
+=== RUN   TestFind
+=== RUN   TestFind/[child]
+=== RUN   TestFind/[child_child]
+=== RUN   TestFind/[child_foo_child_bar_child_baz_child]
+=== RUN   TestFind/[-f_child_child]
+=== RUN   TestFind/[child_-f_child]
+=== RUN   TestFind/[-b_child_child]
+=== RUN   TestFind/[child_-b_child]
+=== RUN   TestFind/[child_-b]
+=== RUN   TestFind/[-b_-f_child_child]
+=== RUN   TestFind/[-f_child_-b_something_child]
+=== RUN   TestFind/[-f_child_child_-b]
+=== RUN   TestFind/[-f=child_-b=something_child]
+=== RUN   TestFind/[--foo_child_--bar_something_child]
+--- PASS: TestFind (0.00s)
+    --- PASS: TestFind/[child] (0.00s)
+    --- PASS: TestFind/[child_child] (0.00s)
+    --- PASS: TestFind/[child_foo_child_bar_child_baz_child] (0.00s)
+    --- PASS: TestFind/[-f_child_child] (0.00s)
+    --- PASS: TestFind/[child_-f_child] (0.00s)
+    --- PASS: TestFind/[-b_child_child] (0.00s)
+    --- PASS: TestFind/[child_-b_child] (0.00s)
+    --- PASS: TestFind/[child_-b] (0.00s)
+    --- PASS: TestFind/[-b_-f_child_child] (0.00s)
+    --- PASS: TestFind/[-f_child_-b_something_child] (0.00s)
+    --- PASS: TestFind/[-f_child_child_-b] (0.00s)
+    --- PASS: TestFind/[-f=child_-b=something_child] (0.00s)
+    --- PASS: TestFind/[--foo_child_--bar_something_child] (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestFind
+Import added at line: 17
+Header added at line: 2793
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestFind
+=== RUN   TestFind/[child]
+=== RUN   TestFind/[child_child]
+=== RUN   TestFind/[child_foo_child_bar_child_baz_child]
+=== RUN   TestFind/[-f_child_child]
+=== RUN   TestFind/[child_-f_child]
+=== RUN   TestFind/[-b_child_child]
+=== RUN   TestFind/[child_-b_child]
+=== RUN   TestFind/[child_-b]
+=== RUN   TestFind/[-b_-f_child_child]
+=== RUN   TestFind/[-f_child_-b_something_child]
+=== RUN   TestFind/[-f_child_child_-b]
+=== RUN   TestFind/[-f=child_-b=something_child]
+=== RUN   TestFind/[--foo_child_--bar_something_child]
+--- PASS: TestFind (0.11s)
+    --- PASS: TestFind/[child] (0.00s)
+    --- PASS: TestFind/[child_child] (0.00s)
+    --- PASS: TestFind/[child_foo_child_bar_child_baz_child] (0.00s)
+    --- PASS: TestFind/[-f_child_child] (0.00s)
+    --- PASS: TestFind/[child_-f_child] (0.00s)
+    --- PASS: TestFind/[-b_child_child] (0.00s)
+    --- PASS: TestFind/[child_-b_child] (0.00s)
+    --- PASS: TestFind/[child_-b] (0.00s)
+    --- PASS: TestFind/[-b_-f_child_child] (0.00s)
+    --- PASS: TestFind/[-f_child_-b_something_child] (0.00s)
+    --- PASS: TestFind/[-f_child_child_-b] (0.00s)
+    --- PASS: TestFind/[-f=child_-b=something_child] (0.00s)
+    --- PASS: TestFind/[--foo_child_--bar_something_child] (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s

@@ -1,0 +1,32 @@
+=== RUN   TestExactValidArgs
+--- PASS: TestExactValidArgs (0.00s)
+=== RUN   TestExactValidArgs_WithInvalidCount
+--- PASS: TestExactValidArgs_WithInvalidCount (0.00s)
+=== RUN   TestExactValidArgs_WithInvalidCount_WithInvalidArgs
+--- PASS: TestExactValidArgs_WithInvalidCount_WithInvalidArgs (0.00s)
+=== RUN   TestExactValidArgs_WithInvalidArgs
+--- PASS: TestExactValidArgs_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestExactValidArgs
+Import added at line: 17
+Header added at line: 490
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 496
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 502
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 508
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestExactValidArgs
+--- PASS: TestExactValidArgs (0.10s)
+=== RUN   TestExactValidArgs_WithInvalidCount
+--- PASS: TestExactValidArgs_WithInvalidCount (0.00s)
+=== RUN   TestExactValidArgs_WithInvalidCount_WithInvalidArgs
+--- PASS: TestExactValidArgs_WithInvalidCount_WithInvalidArgs (0.00s)
+=== RUN   TestExactValidArgs_WithInvalidArgs
+--- PASS: TestExactValidArgs_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s

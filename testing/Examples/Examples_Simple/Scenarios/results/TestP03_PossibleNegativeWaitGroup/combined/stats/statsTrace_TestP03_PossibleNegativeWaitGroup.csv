@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GFuzz,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GFuzzHB,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GFuzzHBFlow,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GoPie+,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GoPie,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0
+GoPieHB,TestP03_PossibleNegativeWaitGroup,6,2,0,0,0,0,4,0,0

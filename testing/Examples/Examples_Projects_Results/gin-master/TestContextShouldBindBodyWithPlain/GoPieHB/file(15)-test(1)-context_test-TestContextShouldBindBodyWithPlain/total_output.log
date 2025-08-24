@@ -1,0 +1,24 @@
+=== RUN   TestContextShouldBindBodyWithPlain
+    context_test.go:2639: testing:  JSON & JSON-BODY 
+    context_test.go:2639: testing:  JSON & XML-BODY 
+    context_test.go:2639: testing:  JSON & YAML-BODY 
+    context_test.go:2639: testing:  JSON & TOM-BODY 
+    context_test.go:2639: testing:  JSON & Plain-BODY 
+--- PASS: TestContextShouldBindBodyWithPlain (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextShouldBindBodyWithPlain
+Import added at line: 7
+Header added at line: 2604
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextShouldBindBodyWithPlain
+    context_test.go:2644: testing:  JSON & JSON-BODY 
+    context_test.go:2644: testing:  JSON & XML-BODY 
+    context_test.go:2644: testing:  JSON & YAML-BODY 
+    context_test.go:2644: testing:  JSON & TOM-BODY 
+    context_test.go:2644: testing:  JSON & Plain-BODY 
+--- PASS: TestContextShouldBindBodyWithPlain (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

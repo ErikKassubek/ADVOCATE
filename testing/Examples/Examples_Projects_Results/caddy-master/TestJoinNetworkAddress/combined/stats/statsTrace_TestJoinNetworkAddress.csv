@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GFuzz,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GoPie+,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GoPie,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0
+GoPieHB,TestJoinNetworkAddress,1,1,0,0,0,0,0,0,0

@@ -1,0 +1,42 @@
+=== RUN   TestStringInSlice
+=== RUN   TestStringInSlice/String_in_slice_(case-sensitive)
+=== RUN   TestStringInSlice/String_not_in_slice_(case-sensitive)
+=== RUN   TestStringInSlice/String_in_slice_(case-insensitive)
+=== RUN   TestStringInSlice/Empty_slice
+=== RUN   TestStringInSlice/Empty_string
+=== RUN   TestStringInSlice/Empty_strings_match
+=== RUN   TestStringInSlice/Empty_string_in_empty_slice
+--- PASS: TestStringInSlice (0.00s)
+    --- PASS: TestStringInSlice/String_in_slice_(case-sensitive) (0.00s)
+    --- PASS: TestStringInSlice/String_not_in_slice_(case-sensitive) (0.00s)
+    --- PASS: TestStringInSlice/String_in_slice_(case-insensitive) (0.00s)
+    --- PASS: TestStringInSlice/Empty_slice (0.00s)
+    --- PASS: TestStringInSlice/Empty_string (0.00s)
+    --- PASS: TestStringInSlice/Empty_strings_match (0.00s)
+    --- PASS: TestStringInSlice/Empty_string_in_empty_slice (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+TestName:  TestStringInSlice
+Import added at line: 17
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/cobra_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestStringInSlice
+=== RUN   TestStringInSlice/String_in_slice_(case-sensitive)
+=== RUN   TestStringInSlice/String_not_in_slice_(case-sensitive)
+=== RUN   TestStringInSlice/String_in_slice_(case-insensitive)
+=== RUN   TestStringInSlice/Empty_slice
+=== RUN   TestStringInSlice/Empty_string
+=== RUN   TestStringInSlice/Empty_strings_match
+=== RUN   TestStringInSlice/Empty_string_in_empty_slice
+--- PASS: TestStringInSlice (0.10s)
+    --- PASS: TestStringInSlice/String_in_slice_(case-sensitive) (0.00s)
+    --- PASS: TestStringInSlice/String_not_in_slice_(case-sensitive) (0.00s)
+    --- PASS: TestStringInSlice/String_in_slice_(case-insensitive) (0.00s)
+    --- PASS: TestStringInSlice/Empty_slice (0.00s)
+    --- PASS: TestStringInSlice/Empty_string (0.00s)
+    --- PASS: TestStringInSlice/Empty_strings_match (0.00s)
+    --- PASS: TestStringInSlice/Empty_string_in_empty_slice (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

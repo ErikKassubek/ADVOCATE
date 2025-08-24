@@ -1,0 +1,10 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzz,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzzHB,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GFuzzHBFlow,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie+,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie+,TestLoadHTMLGlobReleaseMode,1,11,0,0,0,0,0,0,0
+GoPie,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobReleaseMode,2,20,0,0,0,0,0,0,0
+GoPieHB,TestLoadHTMLGlobReleaseMode,22,9,6,2,0,0,3,0,0

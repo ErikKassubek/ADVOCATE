@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GFuzz,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GoPie+,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GoPie,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0
+GoPieHB,TestLegacyArgsSubcmdAcceptsArgs,1,1,0,0,0,0,0,0,0

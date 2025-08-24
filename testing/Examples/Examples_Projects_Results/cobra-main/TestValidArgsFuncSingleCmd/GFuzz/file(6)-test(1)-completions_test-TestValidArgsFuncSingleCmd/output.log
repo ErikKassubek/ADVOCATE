@@ -1,0 +1,20 @@
+=== RUN   TestValidArgsFuncSingleCmd
+--- PASS: TestValidArgsFuncSingleCmd (0.00s)
+=== RUN   TestValidArgsFuncSingleCmdInvalidArg
+--- PASS: TestValidArgsFuncSingleCmdInvalidArg (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestValidArgsFuncSingleCmd
+Import added at line: 17
+Header added at line: 1318
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+Header added at line: 1357
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestValidArgsFuncSingleCmd
+--- PASS: TestValidArgsFuncSingleCmd (0.10s)
+=== RUN   TestValidArgsFuncSingleCmdInvalidArg
+--- PASS: TestValidArgsFuncSingleCmdInvalidArg (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

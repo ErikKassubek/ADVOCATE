@@ -1,0 +1,32 @@
+=== RUN   TestMaximumNArgs_WithMoreArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs (0.00s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValid
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValid (0.00s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValid_WithInvalidArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValidOnly_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMaximumNArgs_WithMoreArgs
+Import added at line: 17
+Header added at line: 258
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 264
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 270
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+Header added at line: 276
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMaximumNArgs_WithMoreArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs (0.10s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValid
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValid (0.00s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValid_WithInvalidArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValid_WithInvalidArgs (0.00s)
+=== RUN   TestMaximumNArgs_WithMoreArgs_WithValidOnly_WithInvalidArgs
+--- PASS: TestMaximumNArgs_WithMoreArgs_WithValidOnly_WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.114s

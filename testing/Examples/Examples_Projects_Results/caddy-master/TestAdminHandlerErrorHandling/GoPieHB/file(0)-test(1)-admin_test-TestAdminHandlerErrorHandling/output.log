@@ -1,0 +1,24 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerErrorHandling
+Import added at line: 17
+Header added at line: 215
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerErrorHandling
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_1
+{"level":"info","ts":1750381559.9759722,"logger":"admin.api","msg":"received request","method":"GET","host":"example.com","uri":"/error","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381559.9763699,"logger":"admin.api","msg":"request error","error":"test error","status_code":500}
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	github.com/caddyserver/caddy/v2	60.167s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail

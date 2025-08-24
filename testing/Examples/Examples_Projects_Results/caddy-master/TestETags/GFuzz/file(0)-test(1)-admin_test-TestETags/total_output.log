@@ -1,0 +1,24 @@
+=== RUN   TestETags
+{"level":"info","ts":1750381095.2398674,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381095.2400055,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381095.240233,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381095.2404344,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381095.2434216,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestETags
+Import added at line: 17
+Header added at line: 175
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestETags
+{"level":"info","ts":1750381095.9587264,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381095.9590364,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+{"level":"info","ts":1750381095.9602354,"logger":"admin","msg":"admin endpoint started","address":"localhost:2999","enforce_origin":false,"origins":["//localhost:2999","//[::1]:2999","//127.0.0.1:2999"]}
+{"level":"info","ts":1750381095.9605823,"logger":"admin","msg":"stopped previous server","address":"localhost:2999"}
+{"level":"info","ts":1750381095.9625823,"msg":"autosaved config (load with --resume flag)","file":"/home/ilian/.config/caddy/autosave.json"}
+--- PASS: TestETags (0.11s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.123s

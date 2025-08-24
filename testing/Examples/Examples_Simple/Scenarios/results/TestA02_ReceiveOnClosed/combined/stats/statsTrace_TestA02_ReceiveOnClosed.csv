@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GFuzz,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GFuzzHB,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GFuzzHBFlow,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GoPie+,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GoPie,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0
+GoPieHB,TestA02_ReceiveOnClosed,4,1,0,2,0,0,0,0,0

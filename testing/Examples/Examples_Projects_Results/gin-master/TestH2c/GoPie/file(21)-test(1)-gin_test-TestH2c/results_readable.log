@@ -1,0 +1,22 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3318
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3180
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1040
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2546
+
+
+```

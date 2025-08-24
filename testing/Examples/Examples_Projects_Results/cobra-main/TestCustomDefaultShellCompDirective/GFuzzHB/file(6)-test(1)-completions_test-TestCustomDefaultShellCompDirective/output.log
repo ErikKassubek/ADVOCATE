@@ -1,0 +1,26 @@
+=== RUN   TestCustomDefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

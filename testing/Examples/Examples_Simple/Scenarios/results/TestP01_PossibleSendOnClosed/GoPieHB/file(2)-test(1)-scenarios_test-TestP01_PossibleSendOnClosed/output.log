@@ -1,0 +1,17 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestP01_PossibleSendOnClosed
+Import added at line: 3
+Header added at line: 59
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestP01_PossibleSendOnClosed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.115s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestEnableCommandSortingIsDisabled,0,0,0,0,0,0,0,0,0,0,0

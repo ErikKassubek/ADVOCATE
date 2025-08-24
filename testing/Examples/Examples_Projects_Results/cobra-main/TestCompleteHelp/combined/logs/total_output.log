@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GFuzzHB | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: Flow | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.106s
+
+
+### Mode: GoPie | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: GoPie+ | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s
+
+
+### Mode: GoPieHB | Subdir: file(6)-test(1)-completions_test-TestCompleteHelp ###
+
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompleteHelp
+Import added at line: 17
+Header added at line: 2381
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompleteHelp
+--- PASS: TestCompleteHelp (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.105s

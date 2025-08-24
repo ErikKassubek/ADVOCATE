@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestLevenshteinDistance,0,0,0,0,0,0,0,0,0,0,0

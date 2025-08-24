@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GFuzz,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GFuzzHB,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GoPie+,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GoPie,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0
+GoPieHB,TestRouterStaticFSFileNotFound,4,1,3,0,0,0,0,0,0

@@ -1,0 +1,9 @@
+L06,T:4:4000000012:2794:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987,T:9:4000000012:2102:CS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:856
+L07,T:6:1000000014:614:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L07,T:6:-1:614:SS:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596
+L00,T:5:-1:2942:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775
+L00,T:9:-1:2106:RE:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861
+A02,T:1:1000000011:204:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:97,T:3:1000000011:480:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/client_conn_pool.go:150
+A02,T:11:4000000028:2664:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:1182,T:4:4000000028:2698:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/http2.go:247
+A02,T:1:1000000015:510:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1400,T:5:1000000015:2778:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2368
+A02,T:6:1000000013:1452:CR:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1570,T:5:1000000013:2940:CC:/home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2773

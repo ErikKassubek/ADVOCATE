@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestGlobalNormFuncPropagation,0,0,0,0,0,0,0,0,0,0,0

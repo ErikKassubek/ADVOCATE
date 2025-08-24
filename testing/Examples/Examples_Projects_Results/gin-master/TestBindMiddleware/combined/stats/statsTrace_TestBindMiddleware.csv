@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GFuzz,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GFuzzHB,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GFuzzHBFlow,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GoPie+,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GoPie,TestBindMiddleware,11,1,2,0,0,6,0,0,2
+GoPieHB,TestBindMiddleware,11,1,2,0,0,6,0,0,2

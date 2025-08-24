@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition,0,0,0,0,0,0,0,0,0,0,0

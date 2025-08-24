@@ -1,0 +1,40 @@
+
+
+### Mode: GFuzz | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+
+
+### Mode: Flow | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+
+
+### Mode: GoPie | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+==================================
+==================================
+
+
+### Mode: GoPie+ | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+==================================
+L00,T:1:-1:318:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions.go:175
+
+
+### Mode: GoPieHB | Subdir: file(6)-test(1)-completions_test-TestGetFlagCompletion ###
+
+==================================

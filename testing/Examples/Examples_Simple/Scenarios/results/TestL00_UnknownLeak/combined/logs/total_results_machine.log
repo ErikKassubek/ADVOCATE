@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: GFuzzHB | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L02,T:2:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: Flow | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L02,T:2:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: GFuzzHBFlow | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L02,T:2:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: GoPie | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: GoPie+ | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98
+
+
+### Mode: GoPieHB | Subdir: file(2)-test(1)-scenarios_test-TestL00_UnknownLeak ###
+
+L02,T:2:1000000001:6:CR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:98

@@ -1,0 +1,14 @@
+=== RUN   TestNoArgs_WithArgs
+--- PASS: TestNoArgs_WithArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestNoArgs_WithArgs
+Import added at line: 17
+Header added at line: 118
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestNoArgs_WithArgs
+--- PASS: TestNoArgs_WithArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.109s

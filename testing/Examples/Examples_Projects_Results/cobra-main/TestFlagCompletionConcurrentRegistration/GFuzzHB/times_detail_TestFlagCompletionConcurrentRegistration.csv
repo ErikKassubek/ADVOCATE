@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestFlagCompletionConcurrentRegistration,0.32095,0.53634,0.00089,0.01373,0.00082,0.00000,0.00024,0.00000,0.00000,0.00039,0.00000,0.00002,0.01066,0.00000,0.00000,0.00000,0.00000,0.00010,0

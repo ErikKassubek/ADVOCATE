@@ -1,0 +1,20 @@
+=== RUN   TestContextGetInt64
+--- PASS: TestContextGetInt64 (0.00s)
+=== RUN   TestContextGetInt64Slice
+--- PASS: TestContextGetInt64Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextGetInt64
+Import added at line: 7
+Header added at line: 364
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 465
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextGetInt64
+--- PASS: TestContextGetInt64 (0.10s)
+=== RUN   TestContextGetInt64Slice
+--- PASS: TestContextGetInt64Slice (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s

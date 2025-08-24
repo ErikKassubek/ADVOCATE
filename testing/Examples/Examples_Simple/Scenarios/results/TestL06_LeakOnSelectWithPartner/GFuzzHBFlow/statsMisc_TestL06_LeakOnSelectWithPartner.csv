@@ -1,0 +1,3 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestL06_LeakOnSelectWithPartner,0,0,0,0,0,0,0,0,0,0,0
+TestL06_LeakOnSelectWithPartner,0,0,0,0,0,0,0,0,0,0,0

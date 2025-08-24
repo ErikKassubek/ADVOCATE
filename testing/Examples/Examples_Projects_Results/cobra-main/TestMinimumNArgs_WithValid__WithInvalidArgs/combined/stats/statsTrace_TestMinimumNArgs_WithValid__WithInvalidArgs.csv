@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzz,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPie+,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPie,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0
+GoPieHB,TestMinimumNArgs_WithValid__WithInvalidArgs,1,1,0,0,0,0,0,0,0

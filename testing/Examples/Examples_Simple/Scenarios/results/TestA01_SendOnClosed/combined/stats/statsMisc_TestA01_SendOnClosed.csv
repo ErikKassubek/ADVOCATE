@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestA01_SendOnClosed,0,0,0,0,0,0,0,0,0,0,0

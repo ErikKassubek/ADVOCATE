@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: GFuzzHB | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: Flow | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: GFuzzHBFlow | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: GoPie | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: GoPie+ | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248
+
+
+### Mode: GoPieHB | Subdir: file(29)-test(1)-recovery_test-TestRecoveryWithWriterWithCustomRecovery ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/recovery_test.go:248

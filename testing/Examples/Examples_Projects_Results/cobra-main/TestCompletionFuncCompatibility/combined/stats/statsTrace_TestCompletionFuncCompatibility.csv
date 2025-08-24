@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GFuzz,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GFuzzHB,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GoPie+,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GoPie,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0
+GoPieHB,TestCompletionFuncCompatibility,8,8,0,0,0,0,0,0,0

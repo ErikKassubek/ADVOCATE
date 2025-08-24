@@ -1,0 +1,2294 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 19 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 18
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.009s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.007s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.007s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+--- FAIL: TestMixed3 (0.00s)
+panic: send on closed channel [recovered]
+	panic: send on closed channel
+
+goroutine 6 [running]:
+testing.tRunner.func1.2({0x5510a0, 0x5b1530})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1734 +0x21c
+testing.tRunner.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1737 +0x35e
+panic({0x5510a0?, 0x5b1530?})
+	/home/ilian/Tools/go-runtime/src/runtime/panic.go:792 +0x132
+scenarios.TestMixed3(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:61 +0xc9
+testing.tRunner(0xc000003880, 0x585d90)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	scenarios	0.007s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.105s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.008s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_5
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_6
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_7
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_8
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_9
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_10
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_11
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_12
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_13
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_14
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.114s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_15
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_16
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.111s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_17
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.111s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_18
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.105s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_19
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_20
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_21
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_22
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_23
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_24
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_25
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_26
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_27
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.113s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_28
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_29
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_30
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.112s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_31
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_32
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_33
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_34
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_35
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_36
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_37
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_38
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_39
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_40
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_41
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_42
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_43
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.111s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_44
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_45
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_46
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_47
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_48
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_49
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_50
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_51
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_52
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_53
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_54
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_55
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_56
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_57
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_58
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_59
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_60
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_61
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_62
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_63
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_64
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_65
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_66
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.110s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_67
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_68
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_69
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_70
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.111s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_71
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_72
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_73
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_74
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_75
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_76
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_77
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_78
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.106s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_79
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_80
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_81
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_82
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_83
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_84
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_85
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.115s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_86
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_87
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_88
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_89
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.112s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_90
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_91
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_92
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_93
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_94
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_95
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_96
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_97
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.109s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_98
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_99
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.114s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.007s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.108s
+FAIL
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc00016a1e0, {0x62ea7b, 0xa}, 0x63c0e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc00016a000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc00016a000, 0xc00015f918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc000162000, {0x75d580, 0x1e, 0x1e}, {0xc20d29775da87774, 0x8bb2d35f4a, 0x7622e0})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc000142210)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:103 +0xa5
+
+goroutine 21 [chan receive]:
+sync.(*WaitGroup).Add(0xc00018a018, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/waitgroup.go:62 +0x15e
+scenarios.TestMixed3(0xc00016a1e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:54 +0x86
+testing.tRunner(0xc00016a1e0, 0x63c0e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 22 [semacquire]:
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x31
+created by advocate.startReplay in goroutine 21
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 33 [semacquire]:
+runtime.CallersFrames({0xc000204010, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e
+runtime.WaitForReplay(0x10, 0x0?, 0x0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:597 +0x28
+sync.(*Once).Do(0xc000142288, 0xc0004f0e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/once.go:76 +0x56
+testing.(*M).after(0xc000142210)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2366 +0x77
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2471 +0x2b
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	scenarios	600.029s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-scenarios_mixed_test-TestMixed3 ###
+
+=== RUN   TestMixed3
+panic: sync: negative WaitGroup counter
+
+goroutine 7 [running]:
+sync.(*WaitGroup).Add(0x0?, 0x0?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+scenarios.TestMixed3.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:53 +0x37
+created by scenarios.TestMixed3 in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go:51 +0x69
+FAIL	scenarios	0.005s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.104s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+Circular Panic
+panic: send on closed channel
+
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	scenarios	0.104s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.105s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+Circular Panic
+panic: sync: negative WaitGroup counter
+
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	scenarios	0.107s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+TestName:  TestMixed3
+Import added at line: 3
+Header added at line: 47
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMixed3
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+FAIL	scenarios	70.068s
+FAIL

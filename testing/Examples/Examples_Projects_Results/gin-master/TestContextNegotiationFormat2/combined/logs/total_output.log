@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.111s
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextNegotiationFormat2 ###
+
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.009s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextNegotiationFormat2
+Import added at line: 7
+Header added at line: 1615
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextNegotiationFormat2
+--- PASS: TestContextNegotiationFormat2 (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s

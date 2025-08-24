@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: GFuzzHB | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: Flow | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: GFuzzHBFlow | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: GoPie | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: GoPie+ | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119
+
+
+### Mode: GoPieHB | Subdir: file(37)-test(1)-utils_test-TestLastChar ###
+
+R01,T:0:0:0:XX:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/utils.go:119

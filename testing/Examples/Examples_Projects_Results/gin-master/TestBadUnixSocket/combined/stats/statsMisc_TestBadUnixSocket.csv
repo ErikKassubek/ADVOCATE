@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestBadUnixSocket,0,0,0,0,0,0,0,0,0,0,0

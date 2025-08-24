@@ -1,0 +1,31 @@
+Test                              , Flow   , GFuzz  , GFuzzHB, GFuzzHBFlow, GoPie  , GoPie+ , GoPieHB
+TestA00_UnknownPanic              , R01    , R01    , R01    , R01        , R01    , R01    , R01
+TestA01_Mixed                     , A01    , A01    , A01    , A01        , A01    , A01    , A01
+TestA01_SendOnClosed              , A01    , A01    , A01    , A01        , A01    , A01    , A01
+TestA02_Mixed                     , A02    ,        , A02    , A02        ,        ,        , A02
+TestA02_ReceiveOnClosed           , A02    ,        , A02    , A02        ,        ,        , A02
+TestA03_CloseOnClosed             , A03    , A03    , A03    , A03        , A03    , A03    , A03
+TestA03_Mixed                     , A03;L00, A03;L00, A03;L00, A03;L00    , A03;L00, A03;L00, A03;L00
+TestA04_CloseOnNil                , A04    , A04    , A04    , A04        , A04    , A04    , A04
+TestA04_Mixed                     , A04    , A04    , A04    , A04        , A04    , A04    , A04
+TestA05_NegativeWaitGroup         , A05;L09, A05;L00, A05;L09, A05;L09    , A05;L00, A05;L00, A05;L09
+TestA06_UnlockUnlocked            , A06    , A06;L00, A06    , A06        , A06;L00, A06;L00, A06
+TestA07_ConcurrentRecv            , L02    , L00    , L02    , L02        , L00    , L00    , L02
+TestL00_UnknownLeak               , L02    , L00    , L02    , L02        , L00    , L00    , L02
+TestL01_UnbufferedLeakWithPartner ,        ,        ,        ,            ,        ,        , 
+TestL02_UnbufferedLeakNoPartner   , L02    , L00    , L02    , L02        , L00    , L00    , L02
+TestL03_BufferedLeakWithPartner   ,        ,        ,        ,            ,        ,        , 
+TestL04_BufferedLeakNoPartner     ,        ,        ,        ,            ,        ,        , 
+TestL05_LeakOnNilChan             , R01    , R01    , R01    , R01        , R01    , R01    , R01
+TestL06_LeakOnSelectWithPartner   ,        ,        ,        ,            ,        ,        , 
+TestL07_LeakOnSelectWithoutPartner,        ,        ,        ,            ,        ,        , 
+TestL08_LeakOnMutex               ,        ,        ,        ,            ,        ,        , 
+TestL09_LeakOnWaitGroup           , L09    , L00    , L09    , L09        , L00    , L00    , L09
+TestL10_LeakOnCond                , L10    , L00    , L10    , L10        , L00    , L00    , L10
+TestMixed1                        , A01;L02, A01;L00, A01;L02, A01;L02    , A01;L00, A01;L00, A01;L02
+TestMixed2                        , A05;L09, A05;L00, A05;L09, A05;L09    , A05;L00, A05;L00, A05;L09
+TestMixed3                        , A01;L09, A01;L00, A01;L09, A01;L09    , A01;L00, A01;L00, A01;L09
+TestMixed4                        , A02;L01, L00    , A02;L01, A02;L01    , L00    , L00    , A02;L01
+TestP01_PossibleSendOnClosed      , A01    , A01    , A01    , A01        , A01    , A01    , A01
+TestP02_PossibleRecvOnClosed      , A02    ,        , A02    , A02        ,        ,        , A02
+TestP03_PossibleNegativeWaitGroup , A05;L09, A05;L00, A05;L09, A05;L09    , A05;L00, A05;L00, A05;L09

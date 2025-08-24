@@ -1,0 +1,786 @@
+=== RUN   TestCustomDefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_1
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_2
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.113s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_3
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_4
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_5
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_6
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_7
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_8
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_9
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_10
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_11
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_12
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_13
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_14
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_15
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_16
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_17
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_18
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_19
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_20
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_21
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_22
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_23
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_24
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_25
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_26
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_27
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_28
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_29
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_30
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_31
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_32
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_33
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_34
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_35
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.11s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_36
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_37
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_38
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_39
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.111s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCustomDefaultShellCompDirective
+Import added at line: 17
+Header added at line: 4019
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCustomDefaultShellCompDirective
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_40
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective
+=== RUN   TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective
+--- PASS: TestCustomDefaultShellCompDirective (0.10s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_root_command_with_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_inherited_custom_DefaultShellCompDirective (0.00s)
+    --- PASS: TestCustomDefaultShellCompDirective/flag_completion_on_subcommand_with_reset_DefaultShellCompDirective (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s

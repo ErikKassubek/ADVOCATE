@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextShouldBindBodyWithPlain,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

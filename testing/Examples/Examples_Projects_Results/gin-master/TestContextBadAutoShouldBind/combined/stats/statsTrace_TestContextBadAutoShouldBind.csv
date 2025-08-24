@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GoPie,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextBadAutoShouldBind,2,1,1,0,0,0,0,0,0

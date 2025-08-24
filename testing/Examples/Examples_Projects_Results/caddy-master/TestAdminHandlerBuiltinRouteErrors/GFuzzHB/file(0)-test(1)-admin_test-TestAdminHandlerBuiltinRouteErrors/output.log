@@ -1,0 +1,48 @@
+=== RUN   TestAdminHandlerBuiltinRouteErrors
+{"level":"info","ts":1750381561.693881,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/stop_endpoint_wrong_method
+{"level":"info","ts":1750381561.6940188,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"http://localhost:2019/stop","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381561.6940405,"logger":"admin.api","msg":"request error","error":"method not allowed","status_code":405}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/config_endpoint_wrong_content-type
+{"level":"info","ts":1750381561.694121,"logger":"admin.api","msg":"received request","method":"POST","host":"localhost:2019","uri":"http://localhost:2019/config/","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381561.6941407,"logger":"admin.api","msg":"request error","error":"unacceptable content-type: ; 'application/json' required","status_code":400}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/config_ID_missing_ID
+{"level":"info","ts":1750381561.694183,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"http://localhost:2019/id/","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381561.6942039,"logger":"admin.api","msg":"request error","error":"request path is missing object ID","status_code":400}
+{"level":"info","ts":1750381561.6942668,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+--- PASS: TestAdminHandlerBuiltinRouteErrors (0.00s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/stop_endpoint_wrong_method (0.00s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/config_endpoint_wrong_content-type (0.00s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/config_ID_missing_ID (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+TestName:  TestAdminHandlerBuiltinRouteErrors
+Import added at line: 17
+Header added at line: 271
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/admin_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestAdminHandlerBuiltinRouteErrors
+{"level":"info","ts":1750381562.019891,"logger":"admin","msg":"admin endpoint started","address":"localhost:2019","enforce_origin":false,"origins":["//localhost:2019","//[::1]:2019","//127.0.0.1:2019"]}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/stop_endpoint_wrong_method
+{"level":"info","ts":1750381562.0202506,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"http://localhost:2019/stop","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381562.0203514,"logger":"admin.api","msg":"request error","error":"method not allowed","status_code":405}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/config_endpoint_wrong_content-type
+{"level":"info","ts":1750381562.0207055,"logger":"admin.api","msg":"received request","method":"POST","host":"localhost:2019","uri":"http://localhost:2019/config/","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381562.0207958,"logger":"admin.api","msg":"request error","error":"unacceptable content-type: ; 'application/json' required","status_code":400}
+=== RUN   TestAdminHandlerBuiltinRouteErrors/config_ID_missing_ID
+{"level":"info","ts":1750381562.021052,"logger":"admin.api","msg":"received request","method":"GET","host":"localhost:2019","uri":"http://localhost:2019/id/","remote_ip":"192.0.2.1","remote_port":"1234","headers":{}}
+{"level":"error","ts":1750381562.021128,"logger":"admin.api","msg":"request error","error":"request path is missing object ID","status_code":400}
+{"level":"info","ts":1750381562.0214593,"logger":"admin","msg":"stopped previous server","address":"localhost:2019"}
+--- PASS: TestAdminHandlerBuiltinRouteErrors (0.10s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/stop_endpoint_wrong_method (0.00s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/config_endpoint_wrong_content-type (0.00s)
+    --- PASS: TestAdminHandlerBuiltinRouteErrors/config_ID_missing_ID (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.112s
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail

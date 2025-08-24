@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzz,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHB,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie+,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPieHB,TestRecoveryWithWriterWithCustomRecovery,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0

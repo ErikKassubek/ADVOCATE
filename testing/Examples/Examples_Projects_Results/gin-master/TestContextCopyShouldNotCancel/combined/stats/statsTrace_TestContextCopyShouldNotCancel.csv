@@ -1,0 +1,9 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GFuzz,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GFuzzHB,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GFuzzHBFlow,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GoPie+,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GoPie+,TestContextCopyShouldNotCancel,0,11,0,0,0,0,0,0,0
+GoPie,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0
+GoPieHB,TestContextCopyShouldNotCancel,27,16,2,2,0,2,3,0,0

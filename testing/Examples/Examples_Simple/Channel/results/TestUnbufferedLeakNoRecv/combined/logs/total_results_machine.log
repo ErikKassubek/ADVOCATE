@@ -1,0 +1,35 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L02,T:2:1000000001:6:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L02,T:2:1000000001:6:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L02,T:2:1000000001:6:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L00,T:2:-1:6:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-channel_unbuffered_test-TestUnbufferedLeakNoRecv ###
+
+L02,T:2:1000000001:6:CS:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go:29

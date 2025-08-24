@@ -1,0 +1,14 @@
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuthForProxySucceed
+Import added at line: 7
+Header added at line: 141
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuthForProxySucceed
+--- PASS: TestBasicAuthForProxySucceed (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.119s

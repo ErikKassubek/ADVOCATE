@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzz,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie+,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPie,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0
+GoPieHB,TestCmdNameCompletionInGo,1,1,0,0,0,0,0,0,0

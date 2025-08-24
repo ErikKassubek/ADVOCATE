@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestWaitGroupDeadlock,60.20047,60.28832,0.00010,0.00015,0.00000,0.00000,0.00002,0.00000,0.00000,0.00000,0.00000,0.00000,0.00005,0.00000,0.00000,0.00000,0.00003,0.00005,0

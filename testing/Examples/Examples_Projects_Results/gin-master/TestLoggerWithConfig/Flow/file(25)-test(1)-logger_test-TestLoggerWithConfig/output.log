@@ -1,0 +1,32 @@
+=== RUN   TestLoggerWithConfig
+--- PASS: TestLoggerWithConfig (0.00s)
+=== RUN   TestLoggerWithConfigFormatting
+--- PASS: TestLoggerWithConfigFormatting (0.00s)
+=== RUN   TestLoggerWithConfigSkippingPaths
+--- PASS: TestLoggerWithConfigSkippingPaths (0.00s)
+=== RUN   TestLoggerWithConfigSkipper
+--- PASS: TestLoggerWithConfigSkipper (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+TestName:  TestLoggerWithConfig
+Import added at line: 7
+Header added at line: 86
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+Header added at line: 182
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+Header added at line: 400
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+Header added at line: 418
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/logger_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestLoggerWithConfig
+--- PASS: TestLoggerWithConfig (0.10s)
+=== RUN   TestLoggerWithConfigFormatting
+--- PASS: TestLoggerWithConfigFormatting (0.00s)
+=== RUN   TestLoggerWithConfigSkippingPaths
+--- PASS: TestLoggerWithConfigSkippingPaths (0.00s)
+=== RUN   TestLoggerWithConfigSkipper
+--- PASS: TestLoggerWithConfigSkipper (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s

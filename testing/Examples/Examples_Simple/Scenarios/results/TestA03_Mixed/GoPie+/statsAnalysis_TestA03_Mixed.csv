@@ -1,0 +1,6 @@
+TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+TestA03_Mixed,1,1,0,0,0,0,0,0,2,1,0,0,0,0,0
+TestA03_Mixed,1,1,0,0,0,0,0,0,3,1,0,0,0,0,0
+TestA03_Mixed,1,1,0,0,0,0,0,0,4,1,0,0,0,0,0
+TestA03_Mixed,1,0,0,0,0,0,0,0,4,0,0,0,0,0,0
+TestA03_Mixed,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0

@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GFuzz,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GoPie+,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GoPie,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0
+GoPieHB,TestCompleteNoDesCmdInFishScript,1,1,0,0,0,0,0,0,0

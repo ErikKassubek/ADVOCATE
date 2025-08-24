@@ -1,0 +1,20 @@
+=== RUN   TestParseNetworkAddress
+--- PASS: TestParseNetworkAddress (0.00s)
+=== RUN   TestParseNetworkAddressWithDefaults
+--- PASS: TestParseNetworkAddressWithDefaults (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/listeners_test.go
+TestName:  TestParseNetworkAddress
+Import added at line: 17
+Header added at line: 178
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/listeners_test.go
+Header added at line: 304
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/listeners_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestParseNetworkAddress
+--- PASS: TestParseNetworkAddress (0.10s)
+=== RUN   TestParseNetworkAddressWithDefaults
+--- PASS: TestParseNetworkAddressWithDefaults (0.00s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.109s

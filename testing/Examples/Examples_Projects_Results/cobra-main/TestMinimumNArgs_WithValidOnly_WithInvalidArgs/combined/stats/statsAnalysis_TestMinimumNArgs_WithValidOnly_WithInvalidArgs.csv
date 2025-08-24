@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestMinimumNArgs_WithValidOnly_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

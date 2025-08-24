@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestEmptyWildcardName,0,0,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextShouldBindWithTOML,0,0,0,0,0,0,0,0,0,0,0

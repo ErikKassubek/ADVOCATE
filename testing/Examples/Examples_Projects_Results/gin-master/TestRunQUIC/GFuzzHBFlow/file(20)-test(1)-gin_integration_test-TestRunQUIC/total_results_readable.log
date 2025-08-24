@@ -1,0 +1,290 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@580
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@682
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@580
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@580
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@682
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@866
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@866
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@866
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@680
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@650
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@680
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@646
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@646
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@850
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@850
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@640
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@646
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@638
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@762
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@758
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@758
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@758
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@780
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@780
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@644
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@644
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@762
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@780
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@780
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@780
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@644
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+2 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@962
+
+
+3 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+4 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+5 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+6 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+7 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+8 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/transport.go:449@722
+
+
+9 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+10 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:334@778
+
+
+11 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:299@962
+
+
+12 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+13 Leak on select without partner or nil case:
+	select: /home/ilian/Projects/go/pkg/mod/github.com/quic-go/quic-go@v0.52.0/server.go:312@810
+
+
+```

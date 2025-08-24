@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestExactValidArgs_WithInvalidCount_WithInvalidArgs,0,0,0,0,0,0,0,0,0,0,0

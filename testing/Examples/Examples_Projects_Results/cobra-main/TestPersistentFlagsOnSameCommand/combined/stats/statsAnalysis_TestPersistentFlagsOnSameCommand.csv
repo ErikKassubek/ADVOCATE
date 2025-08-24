@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

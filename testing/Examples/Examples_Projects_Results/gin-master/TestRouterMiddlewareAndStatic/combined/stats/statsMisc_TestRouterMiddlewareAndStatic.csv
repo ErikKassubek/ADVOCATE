@@ -1,0 +1,7 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestRouterMiddlewareAndStatic,0,0,0,0,0,0,0,0,0,0,0

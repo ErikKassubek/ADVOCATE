@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GFuzz,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GoPie+,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GoPie,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0
+GoPieHB,TestNoMethodWithoutGlobalHandlers,2,1,1,0,0,0,0,0,0

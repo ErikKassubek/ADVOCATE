@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.115s
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.010s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.118s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.117s
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-auth_test-TestBasicAuth401WithCustomRealm ###
+
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+TestName:  TestBasicAuth401WithCustomRealm
+Import added at line: 7
+Header added at line: 121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/auth_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBasicAuth401WithCustomRealm
+--- PASS: TestBasicAuth401WithCustomRealm (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.116s

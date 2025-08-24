@@ -1,0 +1,31 @@
+
+
+### Mode: GFuzz | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+
+
+### Mode: Flow | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+
+
+### Mode: GoPie | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+==================================
+
+
+### Mode: GoPie+ | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+
+
+### Mode: GoPieHB | Subdir: file(16)-test(1)-debug_test-TestDebugPrint ###
+
+==================================
+L00,T:4:-1:256:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/debug_test.go:177

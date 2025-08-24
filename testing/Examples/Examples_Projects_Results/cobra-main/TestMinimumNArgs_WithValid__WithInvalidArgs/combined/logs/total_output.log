@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.108s
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.118s
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.109s
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-args_test-TestMinimumNArgs_WithValid__WithInvalidArgs ###
+
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+TestName:  TestMinimumNArgs_WithValid__WithInvalidArgs
+Import added at line: 17
+Header added at line: 196
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/args_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestMinimumNArgs_WithValid__WithInvalidArgs
+--- PASS: TestMinimumNArgs_WithValid__WithInvalidArgs (0.10s)
+PASS
+ok  	github.com/spf13/cobra	0.107s

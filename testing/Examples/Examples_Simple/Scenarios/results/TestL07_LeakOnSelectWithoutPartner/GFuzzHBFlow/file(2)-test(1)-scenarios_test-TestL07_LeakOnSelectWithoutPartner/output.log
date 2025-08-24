@@ -1,0 +1,14 @@
+=== RUN   TestL07_LeakOnSelectWithoutPartner
+--- PASS: TestL07_LeakOnSelectWithoutPartner (0.05s)
+PASS
+ok  	scenarios	0.053s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL07_LeakOnSelectWithoutPartner
+Import added at line: 3
+Header added at line: 142
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL07_LeakOnSelectWithoutPartner
+--- PASS: TestL07_LeakOnSelectWithoutPartner (0.15s)
+PASS
+ok  	scenarios	0.154s

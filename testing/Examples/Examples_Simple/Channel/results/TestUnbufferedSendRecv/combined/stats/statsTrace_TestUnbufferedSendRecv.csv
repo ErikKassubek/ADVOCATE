@@ -1,0 +1,14 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GFuzz,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GFuzzHB,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GFuzzHBFlow,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GoPie+,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GoPie+,TestUnbufferedSendRecv,7,4,0,2,0,0,0,0,0
+GoPie,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GoPie,TestUnbufferedSendRecv,7,4,0,2,0,0,0,0,0
+GoPie,TestUnbufferedSendRecv,7,4,0,2,0,0,0,0,0
+GoPie,TestUnbufferedSendRecv,7,4,0,2,0,0,0,0,0
+GoPie,TestUnbufferedSendRecv,0,0,0,0,0,0,0,0,0
+GoPieHB,TestUnbufferedSendRecv,6,2,0,2,0,0,0,0,0
+GoPieHB,TestUnbufferedSendRecv,0,0,0,0,0,0,0,0,0

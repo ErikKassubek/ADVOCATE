@@ -1,0 +1,1508 @@
+
+
+### Mode: GFuzz | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+
+
+### Mode: GFuzzHB | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.012s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_5
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_6
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_7
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_8
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_9
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_10
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_11
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_12
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_13
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_14
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_15
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_16
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_17
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_18
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_19
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_20
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_21
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_22
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_23
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_24
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_25
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_26
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_27
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_28
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_29
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_30
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_31
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_32
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_33
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_34
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_35
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_36
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_37
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_38
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_39
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_40
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_41
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_42
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_43
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_44
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_45
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_46
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_47
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_48
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_49
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_50
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_51
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_52
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.119s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_53
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_54
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.119s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_55
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_56
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_57
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_58
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_59
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_60
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_61
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_62
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_63
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_64
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_65
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_66
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_67
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_68
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_69
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_70
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_71
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_72
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_73
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_74
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_75
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_76
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_77
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_78
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_79
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_80
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_81
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_82
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_83
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_84
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_85
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_86
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_87
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.114s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_88
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_89
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_90
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_91
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.115s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_92
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.119s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_93
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_94
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_95
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_96
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_97
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_98
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_99
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.118s
+
+
+### Mode: GoPie+ | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_1
+Found ReplayEnd Marker with exit code 0
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_2
+FAIL	channel	70.066s
+FAIL
+
+
+### Mode: GoPieHB | Subdir: file(0)-test(1)-channel_buffered_test-TestBufferedFillNoRead ###
+
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.01s)
+PASS
+ok  	channel	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+--- PASS: TestBufferedFillNoRead (0.11s)
+PASS
+ok  	channel	0.113s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+TestName:  TestBufferedFillNoRead
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBufferedFillNoRead
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_1
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000ea1e0, {0x62fbc8, 0x16}, 0x639560)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1859 +0x92c
+testing.runTests.func1(0xc0000ea000)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2279 +0xad
+testing.tRunner(0xc0000ea000, 0xc0000dd918)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+testing.runTests(0xc00000e018, {0x7576c0, 0x5, 0x5}, {0xc20d4a192527e548, 0x8bb2cc3f32, 0x75d080})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2277 +0x5ea
+testing.(*M).Run(0xc00003e2c0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2142 +0xc79
+main.main()
+	_testmain.go:53 +0xa5
+
+goroutine 6 [chan receive]:
+channel.TestBufferedFillNoRead(0xc0000ea1e0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_buffered_test.go:22 +0xe5
+testing.tRunner(0xc0000ea1e0, 0x639560)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1792 +0x1da
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:1851 +0x8fc
+
+goroutine 7 [semacquire]:
+advocate.startReplay.func2()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:110 +0x31
+created by advocate.startReplay in goroutine 6
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/advocate/advocate_replay.go:108 +0xb1c
+
+goroutine 22 [semacquire]:
+runtime.CallersFrames({0xc000488b38, 0x1, 0x1})
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/extern.go:308 +0x8e
+runtime.WaitForReplay(0x19, 0x0?, 0x1)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/runtime/advocate_replay.go:597 +0x28
+sync/atomic.LoadPointer(0xc0000b82a0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/advocate_atomic.go:285 +0x54
+sync/atomic.(*Pointer[...]).Load(0x649ea0)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/atomic/type.go:56 +0x32
+internal/sync.(*HashTrieMap[...]).iter(0x64b1a0, 0xc0000b8280, 0xc000496e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:500 +0xbb
+internal/sync.(*HashTrieMap[...]).Range(0x64b1a0, 0xc000496e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/internal/sync/hashtriemap.go:495 +0x92
+sync.(*Map).Range(0x75cf00, 0xc000496e78)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/sync/hashtriemap.go:115 +0x35
+testing.runningList()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2492 +0x8c
+testing.(*M).startAlarm.func1()
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/testing/testing.go:2475 +0x4a
+created by time.goFunc
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/ADVOCATE/go-patch/src/time/sleep.go:215 +0x38
+FAIL	channel	600.105s
+FAIL

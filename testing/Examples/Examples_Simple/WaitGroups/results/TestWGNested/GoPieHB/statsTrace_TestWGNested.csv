@@ -1,0 +1,9 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestWGNested,9,3,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0
+TestWGNested,10,27,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0
+TestWGNested,10,5,0,0,0,0,4,0,0

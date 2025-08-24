@@ -1,0 +1,26 @@
+=== RUN   TestUnbufferedSendRecv
+--- PASS: TestUnbufferedSendRecv (0.00s)
+PASS
+ok  	channel	0.001s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedSendRecv
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedSendRecv
+--- PASS: TestUnbufferedSendRecv (0.10s)
+PASS
+ok  	channel	0.104s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+TestName:  TestUnbufferedSendRecv
+Import added at line: 3
+Header added at line: 13
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/channel_unbuffered_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnbufferedSendRecv
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Channel/fuzzingTraces/fuzzingTrace_1
+FAIL	channel	70.072s
+FAIL

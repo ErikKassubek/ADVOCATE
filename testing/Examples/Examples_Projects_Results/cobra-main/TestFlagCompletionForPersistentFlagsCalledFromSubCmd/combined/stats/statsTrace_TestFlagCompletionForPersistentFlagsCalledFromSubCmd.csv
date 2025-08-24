@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GFuzz,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GFuzzHB,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GFuzzHBFlow,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GoPie+,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GoPie,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0
+GoPieHB,TestFlagCompletionForPersistentFlagsCalledFromSubCmd,5,1,0,0,0,4,0,0,0

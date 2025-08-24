@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzz,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHB,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie+,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPie,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0
+GoPieHB,TestWildcardInvalidSlash,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0

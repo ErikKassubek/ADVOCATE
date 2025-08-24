@@ -1,0 +1,28 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestHelpFlagExecutedOnChild ###
+

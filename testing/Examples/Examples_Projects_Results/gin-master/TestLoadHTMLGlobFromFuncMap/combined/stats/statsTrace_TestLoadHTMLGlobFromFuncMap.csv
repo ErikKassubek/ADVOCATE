@@ -1,0 +1,10 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GFuzz,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GFuzzHB,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GFuzzHBFlow,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GoPie+,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobFromFuncMap,27,11,10,2,0,0,3,0,0
+GoPie,TestLoadHTMLGlobFromFuncMap,5,20,1,1,0,0,1,0,0
+GoPieHB,TestLoadHTMLGlobFromFuncMap,26,9,10,2,0,0,3,0,0

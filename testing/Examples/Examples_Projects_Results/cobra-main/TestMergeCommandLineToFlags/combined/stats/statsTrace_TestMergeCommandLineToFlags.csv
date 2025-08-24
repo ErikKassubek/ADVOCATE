@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GFuzz,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GoPie+,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GoPie,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0
+GoPieHB,TestMergeCommandLineToFlags,1,1,0,0,0,0,0,0,0

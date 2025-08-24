@@ -1,0 +1,38 @@
+
+
+### Mode: GFuzz | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L00,T:2:-1:276456:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+L00,T:3:-1:276466:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:284
+
+
+### Mode: GFuzzHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L08,T:3:3000000001:299000:MR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281,T:3:3000000001:298976:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+L08,T:2:2000000003:298296:MR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281,T:2:2000000003:298242:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+
+
+### Mode: Flow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L08,T:2:2000000003:264210:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269,T:2:2000000003:264194:MR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281
+
+
+### Mode: GFuzzHBFlow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L08,T:2:2000000003:316314:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269,T:2:2000000003:316288:MR:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281
+L08,T:3:3000000001:316310:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269,T:3:3000000001:316260:ML:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+
+
+### Mode: GoPie | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L00,T:2:-1:315722:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281
+L00,T:3:-1:315708:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+
+
+### Mode: GoPie+ | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+L00,T:3:-1:304734:RE:/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269
+
+
+### Mode: GoPieHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+

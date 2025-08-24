@@ -1,0 +1,39 @@
+=== RUN   TestWGDoubleDone
+--- FAIL: TestWGDoubleDone (0.00s)
+panic: sync: negative WaitGroup counter [recovered]
+	panic: sync: negative WaitGroup counter
+
+goroutine 18 [running]:
+testing.tRunner.func1.2({0x547740, 0x5afab0})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1734 +0x21c
+testing.tRunner.func1()
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1737 +0x35e
+panic({0x547740?, 0x5afab0?})
+	/home/ilian/Tools/go-runtime/src/runtime/panic.go:792 +0x132
+sync.(*WaitGroup).Add(0xc000078760?, 0x4da453?)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:64 +0xcd
+sync.(*WaitGroup).Done(...)
+	/home/ilian/Tools/go-runtime/src/sync/waitgroup.go:89
+waitgroups.TestWGDoubleDone(0xc000102700?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go:18 +0x4d
+testing.tRunner(0xc000102700, 0x584448)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+FAIL	waitgroups	0.005s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+TestName:  TestWGDoubleDone
+Import added at line: 3
+Header added at line: 14
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/WaitGroups/waitgroups_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestWGDoubleDone
+
+Exit Replay with code  34 Negative WaitGroup counter
+Exit Message: panic: sync: negative WaitGroup counter
+
+FAIL	waitgroups	0.105s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail

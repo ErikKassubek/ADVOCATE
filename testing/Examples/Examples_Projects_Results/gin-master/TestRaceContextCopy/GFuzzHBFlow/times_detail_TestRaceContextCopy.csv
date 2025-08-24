@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestRaceContextCopy,0.70801,2.34002,0.02696,0.15959,0.02501,0.00000,0.02057,0.00000,0.00000,0.04461,0.00000,0.00561,0.00000,0.00000,0.00115,0.00000,0.04248,0.00015,0

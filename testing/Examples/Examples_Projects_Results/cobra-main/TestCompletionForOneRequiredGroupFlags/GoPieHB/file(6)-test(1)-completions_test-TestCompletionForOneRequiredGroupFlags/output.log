@@ -1,0 +1,34 @@
+=== RUN   TestCompletionForOneRequiredGroupFlags
+=== RUN   TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_with_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/when_any_flag_in_group_present,_other_flags_in_group_not_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/when_all_flags_in_group_present,_flags_not_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/group_ignored_if_some_flags_not_applicable
+--- PASS: TestCompletionForOneRequiredGroupFlags (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_with_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/when_any_flag_in_group_present,_other_flags_in_group_not_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/when_all_flags_in_group_present,_flags_not_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/group_ignored_if_some_flags_not_applicable (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.003s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestCompletionForOneRequiredGroupFlags
+Import added at line: 17
+Header added at line: 3157
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestCompletionForOneRequiredGroupFlags
+=== RUN   TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_with_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/when_any_flag_in_group_present,_other_flags_in_group_not_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/when_all_flags_in_group_present,_flags_not_suggested_without_-_prefix
+=== RUN   TestCompletionForOneRequiredGroupFlags/group_ignored_if_some_flags_not_applicable
+--- PASS: TestCompletionForOneRequiredGroupFlags (0.10s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/flags_in_group_suggested_with_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/when_any_flag_in_group_present,_other_flags_in_group_not_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/when_all_flags_in_group_present,_flags_not_suggested_without_-_prefix (0.00s)
+    --- PASS: TestCompletionForOneRequiredGroupFlags/group_ignored_if_some_flags_not_applicable (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.108s

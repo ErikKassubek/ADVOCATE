@@ -1,0 +1,21 @@
+=== RUN   TestTreeCatchAllConflict
+--- PASS: TestTreeCatchAllConflict (0.00s)
+=== RUN   TestTreeCatchAllConflictRoot
+--- PASS: TestTreeCatchAllConflictRoot (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+TestName:  TestTreeCatchAllConflict
+Import added at line: 7
+Header added at line: 514
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+Header added at line: 525
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/tree_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestTreeCatchAllConflict
+
+Exit Replay with code  3 The program panicked unexpectedly
+Exit Message: panic: catch-all routes are only allowed at the end of the path in path '/src/*filepath/x'
+
+FAIL	github.com/gin-gonic/gin	0.109s
+FAIL

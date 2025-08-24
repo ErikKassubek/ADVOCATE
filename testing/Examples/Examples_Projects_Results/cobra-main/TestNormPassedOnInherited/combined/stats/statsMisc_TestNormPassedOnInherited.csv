@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestNormPassedOnInherited,0,0,0,0,0,0,0,0,0,0,0

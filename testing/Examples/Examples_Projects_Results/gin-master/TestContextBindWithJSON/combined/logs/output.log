@@ -1,0 +1,126 @@
+
+
+### Mode: GFuzz | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+
+
+### Mode: GFuzzHB | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s
+
+
+### Mode: Flow | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.107s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s
+
+
+### Mode: GoPie | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.108s
+
+
+### Mode: GoPie+ | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.109s
+
+
+### Mode: GoPieHB | Subdir: file(15)-test(1)-context_test-TestContextBindWithJSON ###
+
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextBindWithJSON
+Import added at line: 7
+Header added at line: 1941
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextBindWithJSON
+--- PASS: TestContextBindWithJSON (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s

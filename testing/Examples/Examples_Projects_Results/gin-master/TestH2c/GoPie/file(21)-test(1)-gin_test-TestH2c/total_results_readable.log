@@ -1,0 +1,154 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@2866
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@2736
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2056
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@526
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3230
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3360
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1010
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2564
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1246
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3274
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2634
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3404
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3184
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1030
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3362
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2590
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3422
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2650
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3248
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1044
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3378
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2608
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3224
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1038
+
+
+```==================================
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:2775@3318
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:987@3180
+
+
+3 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/transport.go:1596@1040
+
+
+4 Leak on routine:
+	fork: /home/ilian/Projects/go/pkg/mod/golang.org/x/net@v0.41.0/http2/server.go:861@2546
+
+
+```

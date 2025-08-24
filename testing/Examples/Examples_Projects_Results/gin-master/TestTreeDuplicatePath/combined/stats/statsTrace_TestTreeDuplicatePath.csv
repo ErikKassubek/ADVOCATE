@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GFuzz,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GoPie+,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GoPie,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0
+GoPieHB,TestTreeDuplicatePath,1,1,0,0,0,0,0,0,0

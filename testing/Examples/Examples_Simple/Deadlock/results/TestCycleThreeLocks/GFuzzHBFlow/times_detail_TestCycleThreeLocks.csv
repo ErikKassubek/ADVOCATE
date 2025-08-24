@@ -1,0 +1,2 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestCycleThreeLocks,60.21133,60.31084,0.00107,0.00018,0.00000,0.00000,0.00003,0.00000,0.00000,0.00009,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00109,62.44241,4

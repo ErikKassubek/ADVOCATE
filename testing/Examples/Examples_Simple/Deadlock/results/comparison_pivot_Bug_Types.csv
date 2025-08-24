@@ -1,0 +1,7 @@
+Test,Flow,GFuzz,GFuzzHB,GFuzzHBFlow,GoPie,GoPie+,GoPieHB
+TestChannelDeadlock,L02,L00,L02,L02,L00,L00,L02
+TestCondDeadlock,L10,L00,L10,L10,L00,L00,L10
+TestCycleThreeLocks,P05;L08,L00,P05;L08,P05;L08,L00,L00,P05;L08
+TestCycleTwoLocks,P05;L08,L00,P05;L08,P05;L08,L00,L00,P05;L08
+TestMixedDeadlock,,,,,,,
+TestWaitGroupDeadlock,L09,L00,L09,L09,L00,L00,L09

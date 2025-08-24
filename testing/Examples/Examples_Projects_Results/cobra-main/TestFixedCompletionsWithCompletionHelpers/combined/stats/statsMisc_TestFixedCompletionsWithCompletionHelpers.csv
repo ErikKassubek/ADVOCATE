@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestFixedCompletionsWithCompletionHelpers,0,0,0,0,0,0,0,0,0,0,0

@@ -1,0 +1,48 @@
+=== RUN   TestA06_UnlockUnlocked
+fatal error: sync: unlock of unlocked mutex
+
+goroutine 6 [running]:
+internal/sync.fatal({0x57f4d9?, 0x55d580?})
+	/home/ilian/Tools/go-runtime/src/runtime/panic.go:1068 +0x18
+internal/sync.(*Mutex).unlockSlow(0xc000010208, 0xffffffff)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:204 +0x35
+internal/sync.(*Mutex).Unlock(...)
+	/home/ilian/Tools/go-runtime/src/internal/sync/mutex.go:198
+sync.(*Mutex).Unlock(...)
+	/home/ilian/Tools/go-runtime/src/sync/mutex.go:65
+scenarios.TestA06_UnlockUnlocked(0xc000003880?)
+	/home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go:47 +0x30
+testing.tRunner(0xc000003880, 0x585d18)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+created by testing.(*T).Run in goroutine 1
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1851 +0x413
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000036c0, {0x57cca5?, 0xc0000acb30?}, 0x585d18)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1859 +0x431
+testing.runTests.func1(0xc0000036c0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2279 +0x37
+testing.tRunner(0xc0000036c0, 0xc0000acc70)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:1792 +0xf4
+testing.runTests(0xc00000e018, {0x6ab700, 0x1e, 0x1e}, {0x6b1020?, 0x7?, 0x6afea0?})
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2277 +0x4b4
+testing.(*M).Run(0xc0000b01e0)
+	/home/ilian/Tools/go-runtime/src/testing/testing.go:2142 +0x64a
+main.main()
+	_testmain.go:103 +0x9b
+FAIL	scenarios	0.006s
+FAIL
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestA06_UnlockUnlocked
+Import added at line: 3
+Header added at line: 45
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA06_UnlockUnlocked
+
+Exit Replay with code  35 Unlock of unlocked mutex
+Exit Message: panic: sync: unlock of unlocked mutex
+
+FAIL	scenarios	0.106s
+FAIL
+Bugreport info: 0_1,fail

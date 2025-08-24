@@ -1,0 +1,13 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestDebugPrintLoadTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

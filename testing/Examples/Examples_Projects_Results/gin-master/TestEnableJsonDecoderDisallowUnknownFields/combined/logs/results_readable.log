@@ -1,0 +1,57 @@
+
+
+### Mode: GFuzz | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHB | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: Flow | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPie+ | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```
+
+### Mode: GoPieHB | Subdir: file(27)-test(1)-mode_test-TestEnableJsonDecoderDisallowUnknownFields ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

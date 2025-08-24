@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GFuzz,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GFuzzHB,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GFuzzHBFlow,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GoPie+,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GoPie,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0
+GoPieHB,TestRouteStaticListingDir,4,1,3,0,0,0,0,0,0

@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestShortVersionFlagOnlyAddedToRoot,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

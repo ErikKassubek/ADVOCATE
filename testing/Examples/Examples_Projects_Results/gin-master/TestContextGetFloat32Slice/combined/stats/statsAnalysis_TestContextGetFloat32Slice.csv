@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextGetFloat32Slice,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

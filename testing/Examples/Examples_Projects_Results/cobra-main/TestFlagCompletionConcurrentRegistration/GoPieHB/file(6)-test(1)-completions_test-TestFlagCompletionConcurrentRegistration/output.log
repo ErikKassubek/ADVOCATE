@@ -1,0 +1,12 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestFlagCompletionConcurrentRegistration
+Import added at line: 17
+Header added at line: 2121
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestFlagCompletionConcurrentRegistration
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/fuzzingTraces/fuzzingTrace_3
+FAIL	github.com/spf13/cobra	70.042s
+FAIL
+Bugreport info: 0_1,fail

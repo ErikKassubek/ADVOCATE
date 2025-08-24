@@ -1,0 +1,103 @@
+
+
+### Mode: GFuzz | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@276456
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:284@276466
+
+
+```
+
+### Mode: GFuzzHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on mutex:
+	mutex: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281@299000
+	last: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@298976
+
+2 Leak on mutex:
+	mutex: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281@298296
+	last: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@298242
+
+```
+
+### Mode: Flow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on mutex:
+	mutex: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@264210
+	last: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281@264194
+
+```
+
+### Mode: GFuzzHBFlow | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on mutex:
+	mutex: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@316314
+	last: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281@316288
+
+2 Leak on mutex:
+	mutex: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@316310
+	last: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@316260
+
+```
+
+### Mode: GoPie | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:281@315722
+
+
+2 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@315708
+
+
+```
+
+### Mode: GoPie+ | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Leak on routine:
+	fork: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context.go:269@304734
+
+
+```
+
+### Mode: GoPieHB | Subdir: file(22)-test(1)-githubapi_test-TestRaceContextCopy ###
+
+```
+==================== Summary ====================
+
+No bugs found
+```

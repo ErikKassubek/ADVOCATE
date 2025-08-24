@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GFuzz,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GoPie+,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GoPie,TestColorForStatus,1,1,0,0,0,0,0,0,0
+GoPieHB,TestColorForStatus,1,1,0,0,0,0,0,0,0

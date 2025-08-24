@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestContextShouldBindWithYAML,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

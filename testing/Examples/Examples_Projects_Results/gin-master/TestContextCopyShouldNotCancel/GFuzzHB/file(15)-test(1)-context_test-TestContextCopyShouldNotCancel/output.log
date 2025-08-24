@@ -1,0 +1,15 @@
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.007s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextCopyShouldNotCancel
+Import added at line: 7
+Header added at line: 3030
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextCopyShouldNotCancel
+--- PASS: TestContextCopyShouldNotCancel (0.11s)
+PASS
+ok  	github.com/gin-gonic/gin	0.112s
+Bugreport info: 0_1,fail

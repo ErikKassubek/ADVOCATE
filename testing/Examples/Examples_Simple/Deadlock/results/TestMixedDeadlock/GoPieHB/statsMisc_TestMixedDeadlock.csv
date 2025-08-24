@@ -1,0 +1,4 @@
+TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+TestMixedDeadlock,0,0,0,0,0,0,0,0,0,0,0
+TestMixedDeadlock,0,0,0,0,0,0,0,0,0,0,0
+TestMixedDeadlock,0,0,0,0,0,0,0,0,0,0,0

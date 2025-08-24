@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestRouterMethod,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

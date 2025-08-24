@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestShorthandVersionFlagExecutedOnSubcommand,0,0,0,0,0,0,0,0,0,0,0

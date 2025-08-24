@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GFuzz,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GoPie+,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GoPie,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0
+GoPieHB,TestMarshalXMLforH,1,1,0,0,0,0,0,0,0

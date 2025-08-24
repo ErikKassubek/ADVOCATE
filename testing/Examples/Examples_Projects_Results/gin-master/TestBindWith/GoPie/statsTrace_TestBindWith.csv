@@ -1,0 +1,4 @@
+TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+TestBindWith,13,2,1,2,0,2,3,0,1
+TestBindWith,14,4,1,2,0,2,3,0,1
+TestBindWith,14,4,1,2,0,2,3,0,1

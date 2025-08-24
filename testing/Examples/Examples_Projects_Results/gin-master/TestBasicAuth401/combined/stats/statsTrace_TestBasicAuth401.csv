@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GFuzz,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GoPie+,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GoPie,TestBasicAuth401,3,1,2,0,0,0,0,0,0
+GoPieHB,TestBasicAuth401,3,1,2,0,0,0,0,0,0

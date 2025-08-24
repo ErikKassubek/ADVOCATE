@@ -1,0 +1,20 @@
+=== RUN   TestBindUri
+--- PASS: TestBindUri (0.00s)
+=== RUN   TestBindUriError
+--- PASS: TestBindUriError (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+TestName:  TestBindUri
+Import added at line: 7
+Header added at line: 312
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+Header added at line: 334
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/githubapi_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestBindUri
+--- PASS: TestBindUri (0.10s)
+=== RUN   TestBindUriError
+--- PASS: TestBindUriError (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.113s

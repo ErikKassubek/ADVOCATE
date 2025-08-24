@@ -1,0 +1,250 @@
+
+
+### Mode: GFuzz | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.115s
+
+
+### Mode: GFuzzHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.014s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.115s
+Bugreport info: 0_1,fail
+
+
+### Mode: Flow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.117s
+Bugreport info: 0_1,fail
+
+
+### Mode: GFuzzHBFlow | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.115s
+Bugreport info: 0_1,fail
+
+
+### Mode: GoPie | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.015s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.116s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+FAIL	scenarios	70.066s
+FAIL
+
+
+### Mode: GoPie+ | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.117s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.118s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestA02_Mixed (0.12s)
+PASS
+ok  	scenarios	0.121s
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.118s
+
+
+### Mode: GoPieHB | Subdir: file(1)-test(1)-scenarios_mixed_two_test-TestA02_Mixed ###
+
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.01s)
+PASS
+ok  	scenarios	0.013s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.115s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_1
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.117s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_2
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.117s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_3
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.118s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+TestName:  TestA02_Mixed
+Import added at line: 3
+Header added at line: 19
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_mixed_two_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestA02_Mixed
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/fuzzingTraces/fuzzingTrace_4
+--- PASS: TestA02_Mixed (0.11s)
+PASS
+ok  	scenarios	0.117s
+Bugreport info: 0_1,fail

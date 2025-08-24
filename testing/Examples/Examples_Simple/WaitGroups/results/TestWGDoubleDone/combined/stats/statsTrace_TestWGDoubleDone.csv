@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GFuzz,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GFuzzHB,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GFuzzHBFlow,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GoPie+,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GoPie,TestWGDoubleDone,4,1,0,0,0,0,3,0,0
+GoPieHB,TestWGDoubleDone,4,1,0,0,0,0,3,0,0

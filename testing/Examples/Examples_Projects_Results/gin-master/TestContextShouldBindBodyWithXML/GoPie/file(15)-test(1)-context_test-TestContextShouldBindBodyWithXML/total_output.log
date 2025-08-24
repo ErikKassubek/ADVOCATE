@@ -1,0 +1,22 @@
+=== RUN   TestContextShouldBindBodyWithXML
+    context_test.go:2441: testing:  XML & JSON-BODY 
+    context_test.go:2441: testing:  XML & XML-BODY 
+    context_test.go:2441: testing:  XML & YAML-BODY 
+    context_test.go:2441: testing:  XML & TOM-BODY 
+--- PASS: TestContextShouldBindBodyWithXML (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextShouldBindBodyWithXML
+Import added at line: 7
+Header added at line: 2411
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextShouldBindBodyWithXML
+    context_test.go:2446: testing:  XML & JSON-BODY 
+    context_test.go:2446: testing:  XML & XML-BODY 
+    context_test.go:2446: testing:  XML & YAML-BODY 
+    context_test.go:2446: testing:  XML & TOM-BODY 
+--- PASS: TestContextShouldBindBodyWithXML (0.10s)
+PASS
+ok  	github.com/gin-gonic/gin	0.110s

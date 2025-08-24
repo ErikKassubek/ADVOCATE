@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestValidArgsFuncChildCmds,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

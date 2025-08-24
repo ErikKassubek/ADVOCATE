@@ -1,0 +1,12 @@
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+TestName:  TestEvent_CloudEvent_NilOrigin
+Import added at line: 17
+Header added at line: 77
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/caddy_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestEvent_CloudEvent_NilOrigin
+Init FuzzingReplay
+Reading trace from /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/caddy-master/fuzzingTraces/fuzzingTrace_99
+--- PASS: TestEvent_CloudEvent_NilOrigin (0.10s)
+PASS
+ok  	github.com/caddyserver/caddy/v2	0.111s

@@ -1,0 +1,42 @@
+=== RUN   TestInitDefaultCompletionCmd
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_and_not_calling_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_root_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/with_child_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_not_passing_args
+=== RUN   TestInitDefaultCompletionCmd/with_child_command_not_passing_args
+--- PASS: TestInitDefaultCompletionCmd (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_and_not_calling_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_root_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/with_child_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_not_passing_args (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/with_child_command_not_passing_args (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.006s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+TestName:  TestInitDefaultCompletionCmd
+Import added at line: 17
+Header added at line: 3930
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/completions_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestInitDefaultCompletionCmd
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_and_not_calling_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_root_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_completion_command
+=== RUN   TestInitDefaultCompletionCmd/with_child_command
+=== RUN   TestInitDefaultCompletionCmd/no_child_command_not_passing_args
+=== RUN   TestInitDefaultCompletionCmd/with_child_command_not_passing_args
+--- PASS: TestInitDefaultCompletionCmd (0.10s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_and_not_calling_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_root_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_but_calling___complete_on_the_completion_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/with_child_command (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/no_child_command_not_passing_args (0.00s)
+    --- PASS: TestInitDefaultCompletionCmd/with_child_command_not_passing_args (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.110s

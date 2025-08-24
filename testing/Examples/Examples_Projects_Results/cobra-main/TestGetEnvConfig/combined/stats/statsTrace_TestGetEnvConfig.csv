@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GFuzz,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GFuzzHB,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GFuzzHBFlow,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GoPie+,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GoPie,TestGetEnvConfig,6,6,0,0,0,0,0,0,0
+GoPieHB,TestGetEnvConfig,6,6,0,0,0,0,0,0,0

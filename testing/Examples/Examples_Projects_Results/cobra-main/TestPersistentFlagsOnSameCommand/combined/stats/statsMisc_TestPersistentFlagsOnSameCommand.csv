@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestPersistentFlagsOnSameCommand,0,0,0,0,0,0,0,0,0,0,0

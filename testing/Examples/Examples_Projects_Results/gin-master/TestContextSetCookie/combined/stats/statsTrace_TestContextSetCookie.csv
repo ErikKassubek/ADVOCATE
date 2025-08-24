@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GFuzz,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GFuzzHB,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GFuzzHBFlow,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GoPie+,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GoPie,TestContextSetCookie,2,1,1,0,0,0,0,0,0
+GoPieHB,TestContextSetCookie,2,1,1,0,0,0,0,0,0

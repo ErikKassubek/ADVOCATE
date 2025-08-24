@@ -1,0 +1,3 @@
+TestName,Run,Recording,Io,Analysis,AnaHb,AnaExitCode,AnaLeak,AnaClose,AnaConcurrent,AnaResource,AnaSelWithoutPartner,AnaUnlock,AnaWait,AnaMixed,FuzzingAna,FuzzingMut,Rewrite,Replay,NumberReplay
+TestP03_PossibleNegativeWaitGroup,0.16448,0.26549,0.00012,0.00014,0.00000,0.00001,0.00003,0.00000,0.00000,0.00000,0.00000,0.00000,0.00006,0.00000,0.00000,0.00000,0.00007,0.00004,0
+TestP03_PossibleNegativeWaitGroup,0.16448,600.27452,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0.00000,0

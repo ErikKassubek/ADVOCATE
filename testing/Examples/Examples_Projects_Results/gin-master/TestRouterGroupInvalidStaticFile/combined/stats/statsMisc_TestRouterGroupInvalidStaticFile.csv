@@ -1,0 +1,8 @@
+Mode,TestName,NoDeadlocksInfeasible,NoDeadlocksInfeasibleUnique,NoGuardLock,NoGuardLockUnique,ReplayDeadlockStuck,ReplayDeadlockNoStuckMutexes,NoIgnoreConcurrent,NoIgnoreConcurrentUnique,ReplayDeadlockReachedEnd,NoUnlockInOtherThread,NoUnlockInOtherThreadUnique
+Flow,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestRouterGroupInvalidStaticFile,0,0,0,0,0,0,0,0,0,0,0

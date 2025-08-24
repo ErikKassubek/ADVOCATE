@@ -1,0 +1,8 @@
+Mode,TestName,NumberActualBugTotal,NoLeaksTotal,NoLeaksWithRewriteTotal,NoLeaksResolvedViaReplayTotal,NoPanicsTotal,NoPanicsVerifiedViaReplayTotal,NoUnexpectedPanicsInReplayTotal,NoProbInRecordingTotal,NumberActualBugUnique,NoLeaksUnique,NoLeaksWithRewriteUnique,NoLeaksResolvedViaReplayUnique,NoPanicsUnique,NoPanicsVerifiedViaReplayUnique,NoUnexpectedPanicsInReplayUnique
+Flow,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzz,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHB,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GFuzzHBFlow,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie+,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPie,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+GoPieHB,TestShorthandVersionTemplate,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

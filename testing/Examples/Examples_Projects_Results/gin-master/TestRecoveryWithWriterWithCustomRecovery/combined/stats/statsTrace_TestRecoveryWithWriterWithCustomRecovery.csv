@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GFuzz,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GFuzzHB,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GFuzzHBFlow,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GoPie+,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GoPie,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0
+GoPieHB,TestRecoveryWithWriterWithCustomRecovery,3,1,2,0,0,0,0,0,0

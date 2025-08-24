@@ -1,0 +1,434 @@
+
+
+### Mode: GFuzz | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.114s
+
+
+### Mode: GFuzzHB | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s
+
+
+### Mode: Flow | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s
+
+
+### Mode: GFuzzHBFlow | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.004s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.113s
+
+
+### Mode: GoPie | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.113s
+
+
+### Mode: GoPie+ | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.114s
+
+
+### Mode: GoPieHB | Subdir: file(5)-test(1)-command_test-TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition ###
+
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.005s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+TestName:  TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+Import added at line: 17
+Header added at line: 2882
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/cobra-main/command_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true
+=== RUN   TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown
+--- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition (0.11s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace_foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar_--unknown (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--unknown_--namespace=foo_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_--unknown_child_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--unknown_--bar=true (0.00s)
+    --- PASS: TestUnknownFlagShouldReturnSameErrorRegardlessOfArgPosition/--namespace=foo_child_--bar=true_--unknown (0.00s)
+PASS
+ok  	github.com/spf13/cobra	0.112s

@@ -1,0 +1,20 @@
+=== RUN   TestContextAbortWithStatus
+--- PASS: TestContextAbortWithStatus (0.00s)
+=== RUN   TestContextAbortWithStatusJSON
+--- PASS: TestContextAbortWithStatusJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.008s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+TestName:  TestContextAbortWithStatus
+Import added at line: 7
+Header added at line: 1639
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+Header added at line: 1657
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Projects/gin-master/context_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestContextAbortWithStatus
+--- PASS: TestContextAbortWithStatus (0.10s)
+=== RUN   TestContextAbortWithStatusJSON
+--- PASS: TestContextAbortWithStatusJSON (0.00s)
+PASS
+ok  	github.com/gin-gonic/gin	0.114s

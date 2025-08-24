@@ -1,0 +1,14 @@
+=== RUN   TestL00_UnknownLeak
+--- PASS: TestL00_UnknownLeak (0.02s)
+PASS
+ok  	scenarios	0.022s
+FileName:  /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+TestName:  TestL00_UnknownLeak
+Import added at line: 3
+Header added at line: 91
+Header added at file: /home/ilian/Projects/Go_Fuzzing_Concurrency/Examples/Examples_Own/Scenarios/scenarios_test.go
+go version go1.24.1 linux/amd64 ADVOCATE
+=== RUN   TestL00_UnknownLeak
+--- PASS: TestL00_UnknownLeak (0.12s)
+PASS
+ok  	scenarios	0.125s

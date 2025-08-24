@@ -1,0 +1,8 @@
+Mode,TestName,NoEvents,NoGoroutines,NoAtomicEvents,NoChannelEvents,NoSelectEvents,NoMutexEvents,NoWaitgroupEvents,NoCondVariablesEvents,NoOnceOperations
+Flow,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GFuzz,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GFuzzHB,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GFuzzHBFlow,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GoPie+,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GoPie,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0
+GoPieHB,TestTraverseNoParentFlags,1,1,0,0,0,0,0,0,0

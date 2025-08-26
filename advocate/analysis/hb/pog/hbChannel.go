@@ -13,6 +13,7 @@ package pog
 import (
 	"advocate/analysis/data"
 	"advocate/trace"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -36,12 +37,12 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	if ch.IsBuffered() {
 		switch opC {
 		case trace.SendOp:
-			Send(ch, data.Fifo)
+			Send(ch)
 		case trace.RecvOp:
 			if cl { // recv on closed channel
 				RecvC(ch, true)
 			} else {
-				Recv(ch, data.Fifo)
+				Recv(ch)
 			}
 		case trace.CloseOp:
 		default:
@@ -109,8 +110,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - fifo bool: true if the channel buffer is assumed to be fifo
-func Send(ch *trace.ElementChannel, fifo bool) {
+func Send(ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -120,7 +120,7 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
-	if fifo {
+	if !flags.IgnoreFifo {
 		r := data.MostRecentSend[routine][id]
 		if r.Elem != nil {
 			AddEdge(r.Elem, ch, false)
@@ -154,7 +154,7 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 		AddEdge(s, ch, false)
 	}
 
-	if fifo {
+	if !flags.IgnoreFifo {
 		r := data.MostRecentSend[routine][id]
 		if r.Elem != nil {
 			AddEdge(r.Elem, ch, false)
@@ -171,8 +171,7 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - fifo bool: true if the channel buffer is assumed to be fifo
-func Recv(ch *trace.ElementChannel, fifo bool) {
+func Recv(ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -189,7 +188,7 @@ func Recv(ch *trace.ElementChannel, fifo bool) {
 		AddEdge(s, ch, false)
 	}
 
-	if fifo {
+	if !flags.IgnoreFifo {
 		r := data.MostRecentReceive[routine][id]
 		if r.Elem != nil {
 			AddEdge(r.Elem, ch, false)

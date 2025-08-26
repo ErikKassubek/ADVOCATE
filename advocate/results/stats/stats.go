@@ -11,6 +11,7 @@
 package stats
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"fmt"
 	"os"
@@ -52,14 +53,13 @@ func (td *testData) toString() string {
 //
 // Parameter:
 //   - pathFolder string: path to where the stats file should be created
-//   - progName string: name of the analyzed program
 //   - testName string: name of the analyzed test
 //   - traceID int: id of the trace
 //   - fuzzing int: number of fuzzing run
 //
 // Returns:
 //   - error
-func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing int) error {
+func CreateStats(pathFolder string, testName string, traceID, fuzzing int) error {
 	// statsProg, err := statsProgram(pathToProgram)
 	// if err != nil {
 	// 	return err
@@ -82,7 +82,7 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 		return err
 	}
 
-	err = writeStatsToFile(filepath.Dir(pathFolder), progName, testName, statsTrace, statsFuzz, statsAnalyzerTotal, statsAnalyzerUnique)
+	err = writeStatsToFile(filepath.Dir(pathFolder), testName, statsTrace, statsFuzz, statsAnalyzerTotal, statsAnalyzerUnique)
 	if err != nil {
 		return err
 	}
@@ -95,7 +95,6 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 //
 // Parameter:
 //   - path string: path to where the stats file should be created
-//   - progName string: name of the program
 //   - testName string: name of the test
 //   - statsProg map[string]int: statistics about the program
 //   - statsTraces map[string]int: statistics about the trace
@@ -105,13 +104,13 @@ func CreateStats(pathFolder, progName string, testName string, traceID, fuzzing 
 //
 // Returns:
 //   - error
-func writeStatsToFile(path string, progName string, testName string, statsTraces map[string]int, statsFuzz map[string]int,
+func writeStatsToFile(path, testName string, statsTraces map[string]int, statsFuzz map[string]int,
 	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
 
-	fileFuzzPath := filepath.Join(path, "statsFuzz_"+progName+".csv")
-	fileTracingPath := filepath.Join(path, "statsTrace_"+progName+".csv")
-	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+progName+".csv")
-	fileAllPath := filepath.Join(path, "statsAll_"+progName+".csv")
+	fileFuzzPath := filepath.Join(path, "statsFuzz_"+flags.ProgName+".csv")
+	fileTracingPath := filepath.Join(path, "statsTrace_"+flags.ProgName+".csv")
+	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+flags.ProgName+".csv")
+	fileAllPath := filepath.Join(path, "statsAll_"+flags.ProgName+".csv")
 
 	headerTracing := "TestName,NrEvents,NrGoroutines,NrAtomicEvents," +
 		"NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents," +

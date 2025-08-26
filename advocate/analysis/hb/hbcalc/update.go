@@ -22,21 +22,20 @@ import (
 //
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
-//   - alt bool: update if the ignoreCriticalSections tag has been set
-func UpdateHBAtomic(at *trace.ElementAtomic, alt bool) {
+func UpdateHBAtomic(at *trace.ElementAtomic) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
 	if CalcVC {
-		vc.UpdateHBAtomic(at, alt)
+		vc.UpdateHBAtomic(at)
 	}
 
 	if CalcPog {
-		pog.UpdateHBAtomic(at, alt)
+		pog.UpdateHBAtomic(at)
 	}
 
 	if CalcCssts {
-		cssts.UpdateHBAtomic(at, alt)
+		cssts.UpdateHBAtomic(at)
 	}
 }
 

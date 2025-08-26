@@ -17,7 +17,7 @@ import (
 	"advocate/analysis/hb/hbcalc"
 	"advocate/fuzzing/data"
 	"advocate/trace"
-	"advocate/utils/helper"
+	"advocate/utils/settings.go"
 	"fmt"
 	"math"
 	"math/rand"
@@ -78,7 +78,7 @@ func startChains(num int) []Chain {
 				continue
 			}
 
-			if concurrent.GetNumberConcurrent(elem, sameElem, SameElementTypeInSC, false) == 0 {
+			if concurrent.GetNumberConcurrent(elem, sameElem, settings.SameElementTypeInSC, false) == 0 {
 				continue
 			}
 
@@ -110,16 +110,16 @@ func startChains(num int) []Chain {
 			return res
 		}
 
-		rounds := helper.GoPieMaxSCLength
-		if !helper.GoPieMaxSCLengthSet {
+		rounds := settings.GoPieMaxSCLength
+		if !settings.GoPieMaxSCLengthSet {
 			rounds = 1
 		}
 		for i := 0; i < rounds; i++ {
 			if len(res) == 0 {
 				for _, e := range top {
-					posPartner := concurrent.GetConcurrent(e.elem, true, true, SameElementTypeInSC, true)
+					posPartner := concurrent.GetConcurrent(e.elem, true, true, settings.SameElementTypeInSC, true)
 					if len(posPartner) == 0 {
-						posPartner = concurrent.GetConcurrent(e.elem, true, false, SameElementTypeInSC, true)
+						posPartner = concurrent.GetConcurrent(e.elem, true, false, settings.SameElementTypeInSC, true)
 						if len(posPartner) == 0 {
 							continue
 						}
@@ -137,7 +137,7 @@ func startChains(num int) []Chain {
 						continue
 					}
 
-					posNext := concurrent.GetConcurrent(lastElem, true, true, SameElementTypeInSC, true)
+					posNext := concurrent.GetConcurrent(lastElem, true, true, settings.SameElementTypeInSC, true)
 					if len(posNext) == 0 {
 						continue
 					}

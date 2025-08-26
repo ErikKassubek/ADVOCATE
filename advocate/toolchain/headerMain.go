@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"advocate/utils/flags"
 	"bufio"
 	"errors"
 	"fmt"
@@ -167,9 +168,9 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 	}
 	defer file.Close()
 
-	atomicReplayStr := "false"
-	if replayAtomic {
-		atomicReplayStr = "true"
+	atomicReplayStr := "true"
+	if flags.IgnoreAtomics {
+		atomicReplayStr = "false"
 	}
 
 	fmt.Println("FileName: ", fileName)
@@ -203,8 +204,8 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				replayPath := ""
 				if replayNumber != "" {
 					replayPath = "rewrittenTrace_" + replayNumber
-				} else if tracePathFlag != "" {
-					replayPath = filepath.Base(tracePathFlag)
+				} else if flags.TracePath != "" {
+					replayPath = filepath.Base(flags.TracePath)
 				} else {
 					replayPath = "advocateTrace"
 				}
@@ -223,12 +224,12 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitFuzzing("%s", %d)
   defer advocate.FinishFuzzing()
-  // ======= Preamble End =======`, fuzzingTrace, timeoutRecording))
+  // ======= Preamble End =======`, fuzzingTrace, flags.TimeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitTracing(%d)
   defer advocate.FinishTracing()
-  // ======= Preamble End =======`, timeoutRecording))
+  // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)
 			fmt.Printf("Header added at file: %s\n", fileName)

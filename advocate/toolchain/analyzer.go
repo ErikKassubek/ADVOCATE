@@ -17,6 +17,7 @@ import (
 	"advocate/io"
 	"advocate/results/results"
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -32,22 +33,17 @@ import (
 //
 // Parameter:
 //   - pathTrace string: path to the trace to be analyzed
-//   - noRewrite bool: if set, rewrite is disabled
 //   - outReadable string: path to the readable result file
 //   - outMachine string: path to the machine result file
-//   - ignoreAtomics bool: if true, atomics are ignored for replay
 //   - fifo bool: assume, that the channels work as a fifo queue
-//   - ignoreCriticalSection bool: ignore the ordering of lock/unlock for the hb analysis
 //   - newTrace string: path to where the rewritten trace should be created
 //   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
-//   - onlyAPanicAndLeak bool: only check for actual leaks and panics, do not calculate HB information
 //
 // Returns:
 //   - error
-func runAnalyzer(pathTrace string, noRewrite bool,
+func runAnalyzer(pathTrace string,
 	outReadable string, outMachine string,
-	ignoreAtomics bool, fifo bool, ignoreCriticalSection bool,
-	newTrace string, fuzzingRun int, onlyAPanicAndLeak bool) error {
+	newTrace string, fuzzingRun int) error {
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -58,7 +54,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	results.InitResults(outReadable, outMachine)
 
-	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace, ignoreAtomics)
+	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace)
 
 	if err != nil && fuzzingRun <= 0 {
 		// log.Error("Could not read trace: ", err.Error())
@@ -71,9 +67,9 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 
 	log.Infof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
-	if onlyAPanicAndLeak {
+	if flags.OnlyAPanicAndLeak {
 		log.Info("Start Analysis for actual panics and leaks")
-	} else if data.AnalysisCasesMap[data.All] {
+	} else if data.AnalysisCasesMap[flags.All] {
 		log.Info("Start Analysis for all scenarios")
 	} else {
 		info := "Start Analysis for the following scenarios: "
@@ -85,7 +81,7 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 		log.Info(info)
 	}
 
-	analysis.RunAnalysis(fifo, ignoreCriticalSection, fuzzingRun >= 0, onlyAPanicAndLeak)
+	analysis.RunAnalysis(fuzzingRun >= 0)
 
 	if control.CheckCanceled() {
 		// analysis.LogSizes()
@@ -98,16 +94,16 @@ func runAnalyzer(pathTrace string, noRewrite bool,
 	}
 	log.Info("Analysis finished")
 
-	numberOfResults, err := results.CreateResultFiles(noWarningFlag, true)
+	numberOfResults, err := results.CreateResultFiles(true)
 	if err != nil {
 		log.Error("Error in printing summary: ", err.Error())
 	}
 
-	if onlyAPanicAndLeak {
+	if flags.OnlyAPanicAndLeak {
 		return nil
 	}
 
-	if noRewrite {
+	if flags.NoRewrite {
 		log.Info("Skip rewrite")
 		return nil
 	}
@@ -199,7 +195,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 	// the same bug was found and confirmed by replay in an earlier run,
 	// either in fuzzing or in another test
 	// It is therefore not needed to rewrite it again
-	if !rewriteAllFlag && results.WasAlreadyConfirmed(bug.GetBugString()) {
+	if !flags.NoSkipRewrite && results.WasAlreadyConfirmed(bug.GetBugString()) {
 		return false, nil
 	}
 

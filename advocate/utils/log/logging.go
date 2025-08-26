@@ -11,6 +11,7 @@
 package log
 
 import (
+	"advocate/utils/flags"
 	"fmt"
 	"log"
 )
@@ -32,24 +33,7 @@ var numberResultsConf = 0
 
 var seenTests = make(map[string]struct{})
 
-var noInfoFlag bool
-var noProgressFlag bool
-
 var preventPanicFlag bool
-
-// Init initializes the logging
-//
-// Parameter:
-//   - noInfo bool: if set, no info is shown during execution
-//     errors, results and important are still shown
-//   - noProgress bool: do not show progress
-//   - preventPanic bool: is set to true, panics will only stop the current
-//     analysis or test and not the whole analyzer
-func Init(noInfo, noProgress, preventPanic bool) {
-	noInfoFlag = noInfo
-	noProgressFlag = noProgress
-	preventPanicFlag = preventPanic
-}
 
 // Info logs an information to the terminal
 // Printed in base color
@@ -57,7 +41,7 @@ func Init(noInfo, noProgress, preventPanic bool) {
 // Parameter:
 //   - v ...any: the content of the log
 func Info(v ...any) {
-	if noInfoFlag {
+	if flags.NoInfo {
 		return
 	}
 
@@ -71,7 +55,7 @@ func Info(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func Infof(format string, v ...any) {
-	if noInfoFlag {
+	if flags.NoInfo {
 		return
 	}
 
@@ -148,7 +132,7 @@ func Resultf(count, confirmed bool, name string, format string, v ...any) {
 // Parameter:
 //   - v ...any: the content of the log
 func Progress(v ...any) {
-	if noProgressFlag {
+	if flags.NoProgress {
 		return
 	}
 	log.Print(fmt.Sprint(v...), "\n")
@@ -161,7 +145,7 @@ func Progress(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func Progressf(format string, v ...any) {
-	if noProgressFlag {
+	if flags.NoProgress {
 		return
 	}
 	log.Printf(format, v...)
@@ -230,5 +214,5 @@ func GetLoggingNumbers() (int, int, int, int, int) {
 // Returns:
 //   - bool: true if panics should recover
 func IsPanicPrevent() bool {
-	return preventPanicFlag
+	return !flags.AlwaysPanic
 }

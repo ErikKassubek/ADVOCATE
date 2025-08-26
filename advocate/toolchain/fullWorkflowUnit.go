@@ -17,6 +17,7 @@ import (
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -40,16 +41,11 @@ import (
 //   - runAnalysis bool: run the analysis on a path
 //   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - pathToTest string: path to the test file, should be set if exec is set
-//   - progName string: name of the analyzed program
-//   - measureTime bool: if true, measure the time for all steps. This
 //   - also runs the tests once without any recoding/replay to get a base value
-//   - notExecuted bool: if true, check for never executed operations
 //   - createStats bool: create a stats file
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
-//   - keepTraces bool: do not delete traces after analysis
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
-//   - skipExisting bool: do not overwrite existing results, skip those tests
 //   - cont bool: continue an already started run
 //   - onlyRecord bool: if true, run only the recording without any analysis
 //
@@ -59,9 +55,8 @@ import (
 //   - int: number results
 //   - error
 func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runReplay bool,
-	pathToTest, progName string,
-	notExecuted, createStats bool, fuzzing int, fuzzingTrace string,
-	keepTraces, firstRun, skipExisting, cont bool, fileNumber,
+	pathToTest string, createStats bool, fuzzing int, fuzzingTrace string,
+	firstRun bool, fileNumber,
 	testNumber int) (string, int, int, error) {
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -78,8 +73,8 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 		return "", 0, 0, fmt.Errorf("Failed to change directory: %v", dir)
 	}
 
-	if firstRun && !cont {
-		if !skipExisting {
+	if firstRun && !flags.Continue {
+		if !flags.SkipExisting {
 			os.RemoveAll("advocateResult")
 		}
 
@@ -95,7 +90,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, _, totalFiles, err := FindTestFiles(dir, cont && testName == "")
+	testFiles, _, totalFiles, err := FindTestFiles(dir, flags.Continue && testName == "")
 	if err != nil {
 		return "", 0, 0, fmt.Errorf("Failed to find test files: %v", err)
 	}
@@ -113,7 +108,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 		}
 
 		if testName == "" {
-			log.Progressf("Progress %s: %d/%d", progName, currentFile, totalFiles)
+			log.Progressf("Progress %s: %d/%d", flags.ProgName, currentFile, totalFiles)
 			log.Progressf("Processing file: %s", file)
 		}
 
@@ -153,7 +148,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
 			directoryName := filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", currentFile, attemptedTests, fileNameWithoutEnding, testFunc))
-			if cont && fileNumber != 0 {
+			if flags.Continue && fileNumber != 0 {
 				directoryName = filepath.Join("advocateResult", fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileNameWithoutEnding, testFunc))
 			}
 			currentResFolder = filepath.Join(dir, directoryName)
@@ -174,11 +169,11 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
-			timer.UpdateTimeFileDetail(progName, testFunc, nrReplay)
+			timer.UpdateTimeFileDetail(testFunc, nrReplay)
 
 			if !isFuzzing {
 				timer.ResetTest()
-				timer.UpdateTimeFileOverview(progName, testFunc)
+				timer.UpdateTimeFileOverview(testFunc)
 			}
 
 			// Move logs and results to the appropriate directory
@@ -195,10 +190,10 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 			}
 			if createStats {
 				// create statistics
-				_ = stats.CreateStats(currentResFolder, progName, testFunc, movedTraces, fuzzing)
+				_ = stats.CreateStats(currentResFolder, testFunc, movedTraces, fuzzing)
 			}
 
-			if !keepTraces && !createStats {
+			if !flags.KeepTraces && !createStats {
 				RemoveTraces(dir)
 			}
 
@@ -225,7 +220,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 	}
 
 	// Check for untriggered selects
-	if notExecuted && testName != "" {
+	if flags.NotExecuted && testName != "" {
 		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
 		if err != nil {
 			fmt.Println("Could not run check for untriggered select and not executed progs")
@@ -248,7 +243,7 @@ func runWorkflowUnit(pathToAdvocate, dir string, runRecord, runAnalysis, runRepl
 //
 // Parameter:
 //   - dir string: folder to search in
-//   - cont bool: only return test files not already in the advocateResult
+//   - cont bool: continue testing
 //
 // Returns:
 //   - []string: found files
@@ -261,7 +256,7 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	alreadyProcessed, maxFileNum := make(map[string]struct{}), 0
 	var err error
 
-	if cont {
+	if flags.Continue {
 		alreadyProcessed, maxFileNum, err = getFilesInResult(dir, cont)
 		if err != nil {
 			log.Error(err)
@@ -294,7 +289,7 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 //
 // Parameter:
 //   - dir string: path to the directory containing the test files
-//   - cont bool: if true, exclude the last executed test file and remove its result file
+//   - cont bool: continue testing
 //
 // Returns:
 //   - map[string]struct{}: map containing already processed test files
@@ -345,7 +340,7 @@ func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
 	}
 
 	// remove all folders created by the last file and remove the file name from the processed
-	if cont && maxFileNum != -1 {
+	if flags.CancelTestIfBugFound && maxFileNum != -1 {
 		for _, file := range files {
 			if !file.IsDir() || !strings.Contains(file.Name(), fmt.Sprintf("file(%d)", maxFileNum)) {
 				continue
@@ -465,7 +460,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	pkg = strings.TrimPrefix(pkg, dir)
 
 	if runRecord {
-		if measureTime && fuzzing < 1 {
+		if flags.MeasureTime && fuzzing < 1 {
 			err := unitTestRun(pkg, file, testName, origStdout, origStderr)
 			if err != nil {
 				if checkForTimeout(output) {
@@ -488,7 +483,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 			return 0, false, err
 		}
 
-		if onlyAPanicAndLeakFlag {
+		if flags.OnlyAPanicAndLeak {
 			return 0, true, nil
 		}
 	}
@@ -526,8 +521,8 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	log.Info("Run T0")
 	packagePath := helper.MakePathLocal(pkg)
 	var err error
-	if timeoutRecording != -1 {
-		timeoutRecString := fmt.Sprintf("%ds", timeoutRecording)
+	if flags.TimeoutRecording != -1 {
+		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
 		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
 		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
@@ -565,7 +560,7 @@ func unitTestRecord(pathToGoRoot, pathToPatchedGoRuntime, pkg, file, testName st
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, timeoutReplay, false); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -623,9 +618,7 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 	outM := filepath.Join(pkgPath, "results_machine.log")
 	outR := filepath.Join(pkgPath, "results_readable.log")
 	outT := filepath.Join(pkgPath, "rewrittenTrace")
-	err := runAnalyzer(tracePath, noRewriteFlag, outR,
-		outM, ignoreAtomicsFlag, fifoFlag, ignoreCriticalSectionFlag,
-		outT, fuzzing, onlyAPanicAndLeakFlag)
+	err := runAnalyzer(tracePath, outR, outM, outT, fuzzing)
 
 	if err != nil {
 		return err
@@ -665,7 +658,7 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 	if fromAnalysis {
 		rewrittenTraces, _ = filepath.Glob(filepath.Join(pathPkg, "rewrittenTrace_*"))
 	} else {
-		rewrittenTraces = append(rewrittenTraces, tracePathFlag)
+		rewrittenTraces = append(rewrittenTraces, flags.TracePath)
 	}
 
 	log.Infof("Found %d rewritten traces", len(rewrittenTraces))
@@ -677,12 +670,12 @@ func unitTestReplay(pathToGoRoot, pathToPatchedGoRuntime, dir, pkg, file,
 
 		// we do not need to replay a bug that has already been replayed by
 		// another replay
-		if !replayAllFlag && results.WasAlreadyConfirmed(bugString) {
+		if !flags.NoSkipRewrite && results.WasAlreadyConfirmed(bugString) {
 			// TODO: check if the report are still working with this
 			continue
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, timeoutReplay, record)
+		headerInserterUnit(file, testName, true, -1, traceNum, record)
 
 		os.Setenv("GOROOT", pathToGoRoot)
 

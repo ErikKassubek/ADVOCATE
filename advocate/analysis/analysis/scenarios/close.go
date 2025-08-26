@@ -16,6 +16,7 @@ import (
 	"advocate/analysis/hb/clock"
 	"advocate/results/results"
 	"advocate/trace"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -34,7 +35,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	id := ch.GetID()
 
 	// check if there is an earlier send, that could happen concurrently to close
-	if data.AnalysisCasesMap[data.SendOnClosed] && data.HasSend[id] {
+	if data.AnalysisCasesMap[flags.SendOnClosed] && data.HasSend[id] {
 		for routine, mrs := range data.MostRecentSend {
 			happensBefore := clock.GetHappensBefore(mrs[id].Vc, data.CloseData[id].GetVC())
 
@@ -76,7 +77,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		}
 	}
 	// check if there is an earlier receive, that could happen concurrently to close
-	if data.AnalysisCasesMap[data.ReceiveOnClosed] && data.HasReceived[id] {
+	if data.AnalysisCasesMap[flags.ReceiveOnClosed] && data.HasReceived[id] {
 		for routine, mrr := range data.MostRecentReceive {
 			happensBefore := clock.GetHappensBefore(data.CloseData[id].GetVC(), mrr[id].Vc)
 			if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {

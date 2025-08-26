@@ -12,6 +12,7 @@ package toolchain
 
 import (
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"context"
 	"io"
 	"os"
@@ -29,14 +30,16 @@ import (
 //
 // Returns:
 //   - error
+//
+// TODO: fix timeout
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeoutReplay)*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)
 
 	cmd := exec.CommandContext(ctx, name, args...)
 
-	if outputFlag {
+	if flags.Output {
 		if osOut != nil {
 			multiOut := io.MultiWriter(os.Stdout, osOut)
 			cmd.Stdout = multiOut

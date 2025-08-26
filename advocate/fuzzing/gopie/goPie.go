@@ -16,8 +16,9 @@ import (
 	"advocate/fuzzing/data"
 	"advocate/io"
 	"advocate/trace"
-	"advocate/utils/helper"
+	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/settings.go"
 	"fmt"
 	"math"
 	"os"
@@ -38,7 +39,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	specMutations := make(map[string]Chain) // special mutations that should be run first
 
 	// check for special chains, that could indicate a bug
-	if data.FuzzingMode != data.GoPie && data.UseHBInfoFuzzing {
+	if flags.FuzzingMode != data.GoPie && data.UseHBInfoFuzzing {
 		specialMuts := getSpecialMuts()
 
 		for key, mut := range specialMuts {
@@ -67,14 +68,14 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 	// operations that are in rel2 relation. Otherwise it always mutates the
 	// original SC, not newly recorded once
 	SchedulingChains = []Chain{}
-	if data.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == data.GoPie {
 		if c, ok := chainFiles[mutNumber]; ok {
 			c.old = true
 			SchedulingChains = []Chain{c}
 		}
 	}
 
-	if data.FuzzingMode != data.GoPie || len(SchedulingChains) == 0 {
+	if flags.FuzzingMode != data.GoPie || len(SchedulingChains) == 0 {
 		sc := startChains(maxSCStart)
 		for _, c := range sc {
 			if c.Len() != 0 {
@@ -91,11 +92,11 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 		muts := mutate(sc, energy)
 
 		for key, mut := range muts {
-			if data.FuzzingMode != data.GoPie && mut.Len() <= 1 {
+			if flags.FuzzingMode != data.GoPie && mut.Len() <= 1 {
 				NumberTotalMuts++
 				continue
 			}
-			if _, ok := allGoPieMutations[key]; data.FuzzingMode == data.GoPie || !ok {
+			if _, ok := allGoPieMutations[key]; flags.FuzzingMode == data.GoPie || !ok {
 				// only add if not invalidated by hb
 				isValid := mut.isValid()
 				if !data.UseHBInfoFuzzing || mut.isValid() {
@@ -107,7 +108,7 @@ func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error 
 				}
 				NumberTotalMuts++
 				allGoPieMutations[key] = struct{}{}
-			} else if data.FuzzingMode == data.GoPie && !ok {
+			} else if flags.FuzzingMode == data.GoPie && !ok {
 				NumberDoubleMuts++
 			}
 		}
@@ -203,7 +204,7 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 	}
 
 	// write the active map to a "replay_active.log"
-	if data.FuzzingMode == data.GoPie || WithoutReplay {
+	if flags.FuzzingMode == data.GoPie || settings.WithoutReplay {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
 		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
@@ -239,8 +240,8 @@ func getEnergy() int {
 		return 0
 	}
 
-	w1 := helper.GoPieW1
-	w2 := helper.GoPieW2
+	w1 := settings.GoPieW1
+	w2 := settings.GoPieW2
 
 	score := 0
 

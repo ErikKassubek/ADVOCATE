@@ -12,6 +12,7 @@ package results
 
 import (
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/types"
 	"fmt"
@@ -273,13 +274,12 @@ func InitResults(outReadable string, outMachine string) {
 // readable result files nad print them to the terminal
 //
 // Parameter:
-//   - noWarning bool: if true, only critical errors will be shown
 //   - noPrint bool: if true, do not print the errors to the terminal
 //
 // Returns:
 //   - int: number of bugs found
 //   - error
-func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
+func CreateResultFiles(noPrint bool) (int, error) {
 	counter := 1
 	resMachine := ""
 	resReadable := "```\n==================== Summary ====================\n\n"
@@ -313,7 +313,7 @@ func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
 		}
 	}
 
-	if !noWarning {
+	if !flags.NoWarning {
 		if len(resultsWarningReadable) > 0 {
 			found = true
 			resReadable += "\n-------------------- Warning --------------------\n\n"
@@ -354,46 +354,43 @@ func CreateResultFiles(noWarning bool, noPrint bool) (int, error) {
 	// write output readable
 	if _, err := os.Stat(outputReadableFile); err == nil {
 		if err := os.Remove(outputReadableFile); err != nil {
-			return getNumberRes(noWarning), err
+			return getNumberRes(), err
 		}
 	}
 
 	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return getNumberRes(noWarning), err
+		return getNumberRes(), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resReadable); err != nil {
-		return getNumberRes(noWarning), err
+		return getNumberRes(), err
 	}
 
 	// write output machine
 	if _, err := os.Stat(outputMachineFile); err == nil {
 		if err := os.Remove(outputMachineFile); err != nil {
-			return getNumberRes(noWarning), err
+			return getNumberRes(), err
 		}
 	}
 
 	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		return getNumberRes(noWarning), err
+		return getNumberRes(), err
 	}
 	defer file.Close()
 
 	if _, err := file.WriteString(resMachine); err != nil {
-		return getNumberRes(noWarning), err
+		return getNumberRes(), err
 	}
 
-	return getNumberRes(noWarning), nil
+	return getNumberRes(), nil
 }
 
 // getNumberRes returns the number of found bugs
-//
-// Parameters:
-//   - noWarning bool: only get the number of
-func getNumberRes(noWarning bool) int {
-	if noWarning {
+func getNumberRes() int {
+	if flags.NoWarning {
 		return len(resultCriticalMachine)
 	}
 	return len(resultCriticalMachine) + len(resultsWarningMachine) + len(resultInformationMachine)

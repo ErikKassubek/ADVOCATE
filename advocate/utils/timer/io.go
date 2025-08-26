@@ -11,6 +11,7 @@
 package timer
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"fmt"
 	"os"
@@ -24,15 +25,14 @@ var (
 // UpdateTimeFileDetail writes the time information to a file
 //
 // Parameter:
-//   - progName string: name of the program
 //   - testName string: name of the test
 //   - numberReplay int: number of replay
-func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
-	if !measureTime {
+func UpdateTimeFileDetail(testName string, numberReplay int) {
+	if !flags.MeasureTime {
 		return
 	}
 
-	timeFilePath := filepath.Join(resultFolder, "times_detail_"+progName+".csv")
+	timeFilePath := filepath.Join(resultFolder, "times_detail_"+flags.ProgName+".csv")
 
 	newFile := false
 	_, err := os.Stat(timeFilePath)
@@ -67,14 +67,13 @@ func UpdateTimeFileDetail(progName string, testName string, numberReplay int) {
 // if time measurement is enabled,
 //
 // Parameter:
-//   - progName string: name of the prog
 //   - testName string: name of the test
-func UpdateTimeFileOverview(progName string, testName string) {
-	if !measureTime {
+func UpdateTimeFileOverview(testName string) {
+	if !flags.MeasureTime {
 		return
 	}
 
-	timeFilePath := filepath.Join(resultFolder, "times_total_"+progName+".csv")
+	timeFilePath := filepath.Join(resultFolder, "times_total_"+flags.ProgName+".csv")
 
 	newFile := false
 	_, err := os.Stat(timeFilePath)

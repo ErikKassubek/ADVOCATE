@@ -426,3 +426,5 @@ The following values can be changed:
 | GoPieBound     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation)                            |
 | GoPieMutabound | 3             | $\mathbb{N}_{\neq 0}$       | Mutabound as described [here](./fuzzing/GoPie.md#mutation)                                                             |
 | GoPieSCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation)                        |
+| SameElementTypeInSC | 0 (false) | $\{0,1\}$ | Only allow elements of the same type in a SC |
+| WithoutReplay | 0 (false) | $\{0,1\}$ | Disable replay for goPie+ fuzzing runs |

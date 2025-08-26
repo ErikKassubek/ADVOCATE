@@ -14,6 +14,7 @@ import (
 	"advocate/fuzzing/data"
 	"advocate/trace"
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/types"
 	"sort"
 )
@@ -166,7 +167,7 @@ func CalculateRelRule3() {
 func isGoPieElem(elem trace.Element) bool {
 	elemTypeShort := elem.GetObjType(false)
 
-	if data.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == data.GoPie {
 		validTypes := []string{
 			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
 			trace.ObjectTypeSelect}

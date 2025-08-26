@@ -20,6 +20,7 @@ import (
 	"advocate/results/stats"
 	"advocate/toolchain"
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -32,74 +33,52 @@ import (
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
 //
 // Parameter:
-//   - modeMain bool: if true, run fuzzing on main function, otherwise on test
-//   - fm bool: the mode used for fuzzing
 //   - advocate string: path to advocate
-//   - progPath string: path to the folder containing the prog/test
-//   - progName string: name of the program
-//   - name string: If modeMain, name of the executable, else name of the test
-//   - ignoreAtomic bool: if true, ignore atomics for replay
-//   - meaTime bool: measure runtime
-//   - notExec bool: find never executed operations
-//   - stats bool: create statistics
-//   - keepTraces bool: keep the traces after analysis
-//   - skipExisting bool: skip existing runs
-//   - cont bool: continue partial fuzzing
-//   - mTime int: maximum time in seconds spend for one test/prog\
-//   - mRun int: maximum number of times a test/prog is run
-//   - cancelTestIfFound int: do not run further fuzzing runs on tests if one
-//     bug has been found, mainly used for benchmarks
-func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, cont bool, mTime, mRun int,
-	cancelTestIfFound bool) error {
+func Fuzzing(advocate string) error {
 
-	if fm == "" {
+	if flags.FuzzingMode == "" {
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
 	}
 
 	modes := []string{data.GoPie, data.GoCR, data.GoCRHB, data.GFuzz, data.GFuzzHBFlow, data.GFuzzHB, data.Flow}
-	if !types.Contains(modes, fm) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", fm)
+	if !types.Contains(modes, flags.FuzzingMode) {
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", flags.FuzzingMode)
 	}
 
-	data.MaxNumberRuns = mRun
-	if mTime > 0 {
-		data.MaxTime = time.Duration(mTime) * time.Second
+	data.MaxNumberRuns = flags.MaxFuzzingRun
+	if flags.TimeoutFuzzing > 0 {
+		data.MaxTime = time.Duration(flags.TimeoutFuzzing) * time.Second
 		data.MaxTimeSet = true
 	}
 
-	data.FuzzingMode = fm
-	data.FuzzingModeGoPie = (data.FuzzingMode == data.GoPie || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
-	data.FuzzingModeGoCRHBPlus = (data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
-	data.FuzzingModeGFuzz = (data.FuzzingMode == data.GFuzz || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.GFuzzHB)
-	data.FuzzingModeFlow = (data.FuzzingMode == data.Flow || data.FuzzingMode == data.GFuzzHBFlow)
-	data.UseHBInfoFuzzing = (data.FuzzingMode == data.GFuzzHB || data.FuzzingMode == data.GFuzzHBFlow || data.FuzzingMode == data.Flow || data.FuzzingMode == data.GoCR || data.FuzzingMode == data.GoCRHB)
+	data.FuzzingModeGoPie = (flags.FuzzingMode == data.GoPie || flags.FuzzingMode == data.GoCR || flags.FuzzingMode == data.GoCRHB)
+	data.FuzzingModeGoCRHBPlus = (flags.FuzzingMode == data.GoCR || flags.FuzzingMode == data.GoCRHB)
+	data.FuzzingModeGFuzz = (flags.FuzzingMode == data.GFuzz || flags.FuzzingMode == data.GFuzzHBFlow || flags.FuzzingMode == data.GFuzzHB)
+	data.FuzzingModeFlow = (flags.FuzzingMode == data.Flow || flags.FuzzingMode == data.GFuzzHBFlow)
+	data.UseHBInfoFuzzing = (flags.FuzzingMode == data.GFuzzHB || flags.FuzzingMode == data.GFuzzHBFlow || flags.FuzzingMode == data.Flow || flags.FuzzingMode == data.GoCR || flags.FuzzingMode == data.GoCRHB)
 
-	data.CancelTestIfBugFound = cancelTestIfFound
-
-	if cont {
+	if flags.Continue {
 		log.Info("Continue fuzzing")
 	} else {
-		log.Infof("Start fuzzing in mode %s", data.FuzzingMode)
+		log.Infof("Start fuzzing in mode %s", flags.FuzzingMode)
 	}
 
 	// run either fuzzing on main or fuzzing on one test
-	if modeMain || name != "" {
-		if modeMain {
+	if flags.ModeMain || flags.ExecName != "" {
+		if flags.ModeMain {
 			log.Info("Run fuzzing on main function")
 		} else {
-			log.Info("Run fuzzing on test ", name)
+			log.Info("Run fuzzing on test ", flags.ExecName)
 		}
 
-		err := runFuzzing(modeMain, advocate, progPath, progName, "", name, ignoreAtomic,
-			meaTime, notExec, createStats, keepTraces, true, cont, 0, 0)
+		err := runFuzzing(advocate, "", true, 0, 0)
 
-		if createStats {
-			err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
+		if flags.CreateStatistics {
+			err := stats.CreateStatsFuzzing(data.GetPath(flags.ProgPath))
 			if err != nil {
 				log.Error("Failed to create fuzzing stats: ", err.Error())
 			}
-			err = stats.CreateStatsTotal(data.GetPath(progPath), progName)
+			err = stats.CreateStatsTotal(data.GetPath(flags.ProgPath))
 			if err != nil {
 				log.Error("Failed to create total stats: ", err.Error())
 			}
@@ -115,7 +94,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 	log.Info("Run fuzzing on all tests")
 
 	// run fuzzing on all tests
-	testFiles, maxFileNumber, totalFiles, err := toolchain.FindTestFiles(progPath, cont)
+	testFiles, maxFileNumber, totalFiles, err := toolchain.FindTestFiles(flags.ProgPath, flags.Continue)
 	if err != nil {
 		return fmt.Errorf("Failed to find test files: %v", err)
 	}
@@ -124,13 +103,13 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 	// Process each test file
 	fileCounter := 0
-	if cont {
+	if flags.Continue {
 		fileCounter = maxFileNumber
 	}
 
 	for i, testFile := range testFiles {
 		fileCounter++
-		log.Progressf("Progress %s: %d/%d\n", progName, fileCounter, totalFiles)
+		log.Progressf("Progress %s: %d/%d\n", flags.ProgName, fileCounter, totalFiles)
 		log.Infof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
@@ -140,6 +119,8 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 		}
 
 		for j, testFunc := range testFunctions {
+			flags.ExecName = testFunc
+
 			resetFuzzing()
 			timer.ResetTest()
 			control.Reset()
@@ -150,8 +131,7 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			firstRun := (i == 0 && j == 0)
 
-			err := runFuzzing(false, advocate, progPath, progName, testFile, testFunc, ignoreAtomic,
-				meaTime, notExec, createStats, keepTraces, firstRun, cont, fileCounter, j+1)
+			err := runFuzzing(advocate, testFile, firstRun, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
 				clearDataRun()
@@ -159,23 +139,23 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 
 			timer.Stop(timer.TotalTest)
 
-			timer.UpdateTimeFileOverview(progName, testFunc)
+			timer.UpdateTimeFileOverview(testFunc)
 		}
 	}
 
-	if createStats {
-		err := stats.CreateStatsFuzzing(data.GetPath(progPath), progName)
+	if flags.CreateStatistics {
+		err := stats.CreateStatsFuzzing(data.GetPath(flags.ProgPath))
 		if err != nil {
 			log.Error("Failed to create fuzzing stats: ", err.Error())
 		}
-		err = stats.CreateStatsTotal(data.GetPath(progPath), progName)
+		err = stats.CreateStatsTotal(data.GetPath(flags.ProgPath))
 		if err != nil {
 			log.Error("Failed to create total stats: ", err.Error())
 		}
 	}
 
-	if !keepTraces {
-		toolchain.RemoveTraces(progPath)
+	if !flags.KeepTraces {
+		toolchain.RemoveTraces(flags.ProgPath)
 	}
 
 	return nil
@@ -184,24 +164,13 @@ func Fuzzing(modeMain bool, fm, advocate, progPath, progName, name string, ignor
 // Run Fuzzing on one program/test
 //
 // Parameter:
-//   - modeMain bool: if true, run fuzzing on main function, otherwise on test
 //   - advocate string: path to advocate
-//   - progName string: name of the program
 //   - testPath string: path to the test file
-//   - name string: If modeMain, name of the executable, else name of the test
-//   - ignoreAtomic bool: if true, ignore atomics for replay
 //   - hBInfoFuzzing bool: whether to us HB info in fuzzing
-//   - meaTime bool: measure runtime
-//   - notExec bool: find never executed operations
-//   - createStats bool: create statistics
-//   - keepTraces bool: keep the traces after analysis
-//   - skipExisting bool: skip existing runs
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
-//   - cont bool: continue with an already started run
-func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name string, ignoreAtomic,
-	meaTime, notExec, createStats, keepTraces, firstRun, cont bool, fileNumber, testNumber int) error {
+func runFuzzing(advocate, testPath string, firstRun bool, fileNumber, testNumber int) error {
 
-	progDir := data.GetPath(progPath)
+	progDir := data.GetPath(flags.ProgPath)
 
 	clearDataFull()
 
@@ -215,7 +184,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		timer.ResetFuzzing()
 		control.Reset()
 
-		if data.CancelTestIfBugFound && results.GetBugWasFound() {
+		if flags.CancelTestIfBugFound && results.GetBugWasFound() {
 			log.Infof("Cancel test after %d runs", data.NumberFuzzingRuns)
 			break
 		}
@@ -223,7 +192,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns)
 
 		fuzzingPath := ""
-		progPathDir := helper.GetDirectory(progPath)
+		progPathDir := helper.GetDirectory(flags.ProgPath)
 		var order data.Mutation
 		if data.NumberFuzzingRuns != 0 {
 			order = popMutation()
@@ -244,18 +213,16 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 		// Run the test/mutation
 
 		mode := "test"
-		if modeMain {
+		if flags.ModeMain {
 			mode = "main"
 		}
 
-		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, advocate, progPath, testPath, true, true, true,
-			name, progName, name, data.NumberFuzzingRuns, fuzzingPath, ignoreAtomic,
-			meaTime, notExec, createStats, keepTraces, false, firstRun, cont,
-			fileNumber, testNumber)
+		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, advocate, testPath, true, true, true,
+			data.NumberFuzzingRuns, fuzzingPath, firstRun, fileNumber, testNumber)
 
 		data.NumberFuzzingRuns++
 
-		if numberResults > control.MaxNumberElements {
+		if numberResults > flags.MaxNumberElements {
 			continue
 		}
 
@@ -294,8 +261,8 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 				gopie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
 			}
 
-			if createStats {
-				_ = stats.CreateStats(currentResultPath, progName, name, traceID, data.NumberFuzzingRuns-1)
+			if flags.CreateStatistics {
+				_ = stats.CreateStats(currentResultPath, flags.ExecName, traceID, data.NumberFuzzingRuns-1)
 			}
 
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))
@@ -326,7 +293,7 @@ func runFuzzing(modeMain bool, advocate, progPath, progName, testPath, name stri
 	}
 
 	if data.FuzzingModeGoPie {
-		toolchain.ClearFuzzingTrace(progDir, keepTraces)
+		toolchain.ClearFuzzingTrace(progDir)
 	}
 
 	log.Infof("Finish fuzzing after %d runs\n", data.NumberFuzzingRuns)

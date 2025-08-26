@@ -11,6 +11,7 @@
 package stats
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"bufio"
 	"fmt"
@@ -24,11 +25,10 @@ import (
 //
 // Parameter:
 //   - pathFolder string: path the where the stat files should be created
-//   - progName string: name of the analyzed program
-func CreateStatsTotal(pathFolder, progName string) error {
+func CreateStatsTotal(pathFolder string) error {
 	resultPath := filepath.Join(pathFolder, "advocateResult")
-	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
-	statsTotalPath := filepath.Join(resultPath, "statsProgram_"+progName+".csv")
+	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+flags.ProgName+".csv")
+	statsTotalPath := filepath.Join(resultPath, "statsProgram_"+flags.ProgName+".csv")
 
 	log.Info("Create program statistics")
 

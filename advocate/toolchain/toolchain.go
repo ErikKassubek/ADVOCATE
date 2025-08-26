@@ -13,6 +13,7 @@ package toolchain
 
 import (
 	"advocate/analysis/data"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"fmt"
 )
@@ -33,40 +34,22 @@ var (
 //   - runAnalysis bool: run the analysis on a path
 //   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //     otherwise the trace at tracePath is replayed
-//   - execName string: name of the executable, only needed for mode main
-//   - progName string: name of the program, used for stats
-//   - test string: which test to run, if empty run all tests
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - replayAt bool: replay atomics
-//   - meaTime bool: measure runtime
-//   - notExec bool: find never executed operations
 //   - stats bool: create statistics
-//   - keepTraces bool: keep the traces after analysis
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
-//   - cont bool: continue an already started run
 //
 // Returns:
 //   - string: current result folder path
 //   - int: TraceID
 //   - int: number results
 //   - error
-func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
-	runRecord, runAnalysis, runReplay bool,
-	execName, progName, test string, fuzzing int, fuzzingTrace string,
-	ignoreAtomic, meaTime, notExec, stats, keepTraces, skipExisting bool,
-	firstRun, cont bool, fileNumber, testNumber int) (string, int, int, error) {
+func Run(mode, advocate, pathToTest string,
+	runRecord, runAnalysis, runReplay bool, fuzzing int, fuzzingTrace string,
+	firstRun bool, fileNumber, testNumber int) (string, int, int, error) {
 	pathToAdvocate = helper.CleanPathHome(advocate)
-	pathToFileOrDir = helper.CleanPathHome(pathToMainFileOrTestDir)
-
-	executableName = execName
-	programName = progName
-	testName = test
-
-	replayAtomic = !ignoreAtomic
-	measureTime = meaTime
-	notExecuted = notExec
-	createStats = stats
+	pathToFileOrDir = helper.CleanPathHome(flags.ProgPath)
 
 	data.Clear()
 
@@ -78,14 +61,14 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 		if pathToFileOrDir == "" {
 			return "", 0, 0, fmt.Errorf("Path to file required")
 		}
-		if executableName == "" {
+		if flags.ExecName == "" {
 			return "", 0, 0, fmt.Errorf("Name of the executable required")
 		}
-		if (stats || measureTime) && progName == "" {
-			progName = helper.GetProgName(pathToMainFileOrTestDir)
+		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
+			flags.ProgName = helper.GetProgName(flags.ProgPath)
 		}
 		return runWorkflowMain(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
-			executableName, keepTraces, fuzzing, fuzzingTrace, firstRun)
+			fuzzing, fuzzingTrace, firstRun)
 	case "test", "tests":
 		if pathToAdvocate == "" {
 			return "", 0, 0, fmt.Errorf("Path to advocate required")
@@ -93,12 +76,12 @@ func Run(mode, advocate, pathToMainFileOrTestDir, pathToTest string,
 		if pathToFileOrDir == "" {
 			return "", 0, 0, fmt.Errorf("Path to test folder required for mode main")
 		}
-		if (stats || measureTime) && progName == "" {
-			progName = helper.GetProgName(pathToMainFileOrTestDir)
+		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
+			flags.ProgName = helper.GetProgName(flags.ProgPath)
 		}
 		return runWorkflowUnit(pathToAdvocate, pathToFileOrDir, runRecord, runAnalysis, runReplay,
-			pathToTest, progName, notExecuted, stats && fuzzing == -1, fuzzing, fuzzingTrace, keepTraces,
-			firstRun, skipExisting, cont, fileNumber, testNumber)
+			pathToTest, flags.CreateStatistics && fuzzing == -1, fuzzing, fuzzingTrace,
+			firstRun, fileNumber, testNumber)
 	default:
 		return "", 0, 0, fmt.Errorf("Choose one mode from 'main' or 'test'")
 	}

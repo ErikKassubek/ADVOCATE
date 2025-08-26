@@ -10,7 +10,10 @@
 
 package data
 
-import "advocate/trace"
+import (
+	"advocate/trace"
+	"advocate/utils/flags"
+)
 
 // AddMutToQueue adds a mutation to the queue. If a maximum number of mutation runs in set,
 // only add the mutation if it does not exceed this max number
@@ -34,7 +37,7 @@ func AddMutToQueue(mut Mutation) {
 //   - true if it can be added to a scheduling chain, false otherwise
 func CanBeAddedToChain(elem trace.Element) bool {
 	t := elem.GetObjType(false)
-	if FuzzingMode == GoPie {
+	if flags.FuzzingMode == GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
 		return t == trace.ObjectTypeMutex || t == trace.ObjectTypeChannel || t == trace.ObjectTypeSelect
 	}

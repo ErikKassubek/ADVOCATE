@@ -12,7 +12,7 @@ package gopie
 
 import (
 	"advocate/trace"
-	"advocate/utils/helper"
+	"advocate/utils/settings.go"
 	"advocate/utils/types"
 )
 
@@ -28,7 +28,7 @@ var (
 	chainFiles = make(map[int]Chain)
 
 	// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
-	maxSCStart = helper.GoPieSCStart
+	maxSCStart = settings.GoPieSCStart
 
 	SchedulingChains []Chain
 	CurrentChain     Chain
@@ -47,9 +47,6 @@ var (
 	NumberInvalidMuts = 0
 	NumberDoubleMuts  = 0
 	NumberTotalMuts   = 0
-
-	SameElementTypeInSC = false
-	WithoutReplay       = false
 )
 
 // ClearDataRun the data for one run in GoPie

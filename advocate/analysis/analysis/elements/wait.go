@@ -17,6 +17,7 @@ import (
 	"advocate/analysis/hb/hbcalc"
 	fuzzdata "advocate/fuzzing/data"
 	"advocate/trace"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -30,7 +31,7 @@ func AnalyzeWait(wa *trace.ElementWait) {
 	case trace.ChangeOp:
 		data.LastChangeWG[wa.GetID()] = wa
 
-		if data.AnalysisCasesMap[data.DoneBeforeAdd] || fuzzdata.FuzzingModeGoCRHBPlus {
+		if data.AnalysisCasesMap[flags.DoneBeforeAdd] || fuzzdata.FuzzingModeGoCRHBPlus {
 			scenarios.CheckForDoneBeforeAddChange(wa)
 		}
 	case trace.WaitOp:

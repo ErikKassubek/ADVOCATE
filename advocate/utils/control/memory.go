@@ -11,6 +11,7 @@
 package control
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"context"
 	"math"
@@ -28,23 +29,16 @@ var (
 	wasCanceled    atomic.Bool
 	WasCanceledRAM atomic.Bool
 
-	MaxNumberElements int
-
 	numberCommands  int
 	commandsLock    = sync.Mutex{}
 	runningCommands = make(map[int]context.CancelFunc)
 )
 
 // SetMaxNumberElem sets the max number elements
-//
-// Parameter:
-//   - maxNumberElem int: max number elements
-func SetMaxNumberElem(maxNumberElem int) {
-	if maxNumberElem < 0 {
-		MaxNumberElements = math.MaxInt
-		return
+func SetMaxNumberElem() {
+	if flags.MaxNumberElements < 0 {
+		flags.MaxNumberElements = math.MaxInt
 	}
-	MaxNumberElements = maxNumberElem
 }
 
 // Supervisor periodically checks the used and free memory

@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/data"
 	"advocate/trace"
 	"advocate/utils/control"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/timer"
 	"bufio"
@@ -29,13 +30,12 @@ import (
 //
 // Parameter:
 //   - filePath string: The path to the folder
-//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - int: The number of routines
 //   - int: The number of elements
 //   - error: An error if the trace could not be created
-func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, error) {
+func CreateTraceFromFiles(folderPath string) (int, int, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -69,14 +69,14 @@ func CreateTraceFromFiles(folderPath string, ignoreAtomics bool) (int, int, erro
 			continue
 		}
 
-		numberElems, err := createTraceFromFile(&tr, filePath, routine, ignoreAtomics)
+		numberElems, err := createTraceFromFile(&tr, filePath, routine)
 		if err != nil {
 			return 0, elemCounter, err
 		}
 		elemCounter += numberElems
 		numberRoutines++
 
-		if elemCounter > control.MaxNumberElements {
+		if elemCounter > flags.MaxNumberElements {
 			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
 		}
 
@@ -164,12 +164,11 @@ func getTraceInfoFromFile(filePath string) error {
 //   - tr *trace.Trace: the trace to add the elements to
 //   - filePath string: The path to the log file
 //   - routine int: The routine id
-//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - int: number of elements
 //   - error: An error if the trace could not be created
-func createTraceFromFile(tr *trace.Trace, filePath string, routine int, ignoreAtomics bool) (int, error) {
+func createTraceFromFile(tr *trace.Trace, filePath string, routine int) (int, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		log.Error("Error opening file: " + filePath)
@@ -184,7 +183,7 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int, ignoreAt
 	counter := 0
 	for scanner.Scan() {
 		line := scanner.Text()
-		err := processElement(tr, line, routine, ignoreAtomics)
+		err := processElement(tr, line, routine)
 		if err != nil {
 			log.Error("Error in processing trace element: ", err)
 		}
@@ -200,11 +199,10 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int, ignoreAt
 //   - tr *trace.Trace: the trace to add the elements to
 //   - element string: The element to process
 //   - routine int: The routine id, equal to the line number
-//   - ignoreAtomics bool: If atomic operations should be ignored
 //
 // Returns:
 //   - error: An error if the element could not be processed
-func processElement(tr *trace.Trace, element string, routine int, ignoreAtomics bool) error {
+func processElement(tr *trace.Trace, element string, routine int) error {
 	if element == "" {
 		return errors.New("Element is empty")
 	}
@@ -212,7 +210,7 @@ func processElement(tr *trace.Trace, element string, routine int, ignoreAtomics 
 	var err error
 	switch fields[0] {
 	case "A":
-		if ignoreAtomics {
+		if flags.IgnoreAtomics {
 			return nil
 		}
 		err = tr.AddTraceElementAtomic(routine, fields[1], fields[2], fields[3], fields[4])

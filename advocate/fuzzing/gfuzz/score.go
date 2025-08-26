@@ -12,7 +12,7 @@ package gfuzz
 
 import (
 	"advocate/fuzzing/data"
-	"advocate/utils/helper"
+	"advocate/utils/settings.go"
 	"math"
 )
 
@@ -30,10 +30,10 @@ func numberMutations() int {
 
 // Calculate the score of the given run
 func calculateScore() float64 {
-	fact1 := helper.GFuzzW1
-	fact2 := helper.GFuzzW2
-	fact3 := helper.GFuzzW3
-	fact4 := helper.GFuzzW4
+	fact1 := settings.GFuzzW1
+	fact2 := settings.GFuzzW2
+	fact3 := settings.GFuzzW3
+	fact4 := settings.GFuzzW4
 
 	res := 0.0
 

@@ -11,6 +11,7 @@
 package helper
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"bufio"
 	"fmt"
@@ -29,22 +30,17 @@ import (
 // If -main is set, but -exec is not set it will try to set the
 // execname value. If no module value is found, the program will panic
 //
-// Parameter:
-//   - progPath string: path to the program
-//   - modeMain bool: true if main, false if test
-//   - execName string: set exit name
-//
 // Returns:
 //   - string: exec name, or empty if not found
-func CheckGoMod(progPath string, modeMain bool, execName string) string {
+func CheckGoMod() string {
 	var goModPath string
 
-	if progPath == "" {
-		return execName
+	if flags.ProgPath == "" {
+		return flags.ExecName
 	}
 
 	// Search for go.mod
-	err := filepath.WalkDir(GetDirectory(progPath), func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -57,14 +53,14 @@ func CheckGoMod(progPath string, modeMain bool, execName string) string {
 
 	if goModPath == "" {
 		log.Info("Could not find go.mod")
-		return execName
+		return flags.ExecName
 	}
 
 	// Open and read go.mod
 	file, err := os.Open(goModPath)
 	if err != nil {
 		log.Info("Could not find go.mod")
-		return execName
+		return flags.ExecName
 	}
 	defer file.Close()
 
@@ -73,13 +69,13 @@ func CheckGoMod(progPath string, modeMain bool, execName string) string {
 		line := strings.TrimSpace(scanner.Text())
 
 		// check for module name
-		if modeMain && execName == "" && strings.HasPrefix(line, "module") {
+		if flags.ModeMain && flags.ExecName == "" && strings.HasPrefix(line, "module") {
 			s := strings.Split(line, " ")
 			if len(s) < 2 {
 				continue
 			}
 
-			execName = s[1]
+			flags.ExecName = s[1]
 			continue
 		}
 
@@ -102,10 +98,10 @@ func CheckGoMod(progPath string, modeMain bool, execName string) string {
 				log.Important(errString)
 			}
 
-			return execName
+			return flags.ExecName
 		}
 	}
 
 	log.Error("Could not determine go version")
-	return execName
+	return flags.ExecName
 }

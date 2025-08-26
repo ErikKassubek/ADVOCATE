@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/data"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -37,12 +38,12 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	if ch.IsBuffered() {
 		switch opC {
 		case trace.SendOp:
-			Send(ch, data.Fifo)
+			Send(ch)
 		case trace.RecvOp:
 			if cl { // recv on closed channel
 				RecvC(ch, true)
 			} else {
-				Recv(ch, CurrentVC, CurrentWVC, data.Fifo)
+				Recv(ch, CurrentVC, CurrentWVC)
 			}
 		case trace.CloseOp:
 			Close(ch)
@@ -148,8 +149,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
-//   - fifo bool: true if the channel buffer is assumed to be fifo
-func Send(ch *trace.ElementChannel, fifo bool) {
+func Send(ch *trace.ElementChannel) {
 	routine := ch.GetRoutine()
 
 	if ch.GetTPost() == 0 {
@@ -162,7 +162,7 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
-	if fifo {
+	if !flags.IgnoreFifo {
 		r := data.MostRecentSend[routine][id]
 		if r.Elem != nil {
 			CurrentVC[routine].Sync(r.Vc)
@@ -212,8 +212,7 @@ func Send(ch *trace.ElementChannel, fifo bool) {
 //   - ch *TraceElementChannel: The trace element
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
-//   - fifo bool: true if the channel buffer is assumed to be fifo
-func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo bool) {
+func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
@@ -231,7 +230,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, fifo boo
 		vc[routine] = vc[routine].Sync(s.GetVC())
 	}
 
-	if fifo {
+	if !flags.IgnoreFifo {
 		r := data.MostRecentReceive[routine][id]
 		if r.Elem != nil {
 			vc[routine] = vc[routine].Sync(r.Vc)

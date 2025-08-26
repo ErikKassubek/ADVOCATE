@@ -15,7 +15,8 @@ import (
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/data"
 	"advocate/trace"
-	"advocate/utils/helper"
+	"advocate/utils/flags"
+	"advocate/utils/settings.go"
 	"maps"
 	"math/rand/v2"
 )
@@ -35,15 +36,15 @@ func mutate(c Chain, energy int) map[string]Chain {
 		energy = 100
 	}
 
-	bound := helper.GoPieMaxSCLength
-	if data.FuzzingMode == data.GoPie {
+	bound := settings.GoPieMaxSCLength
+	if flags.FuzzingMode == data.GoPie {
 		bound = 3
 	}
 
-	mutateBound := helper.GoPieMutabound
+	mutateBound := settings.GoPieMutabound
 
 	// in the original goPie, the fuzzing bound is 3
-	if data.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == data.GoPie {
 		bound = 3
 	}
 
@@ -60,7 +61,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 	res[c.toString()] = c
 
 	maxMutPerStep := 6
-	if data.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == data.GoPie {
 		maxMutPerStep = -1
 	}
 
@@ -78,7 +79,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
 			// but in GoCR and GoCRHB)
-			if data.FuzzingMode != data.GoPie {
+			if flags.FuzzingMode != data.GoPie {
 				if ch.Len() >= 2 && rand.Int()%2 == 1 {
 					newChs := flip(ch)
 
@@ -225,7 +226,7 @@ func augment(c Chain) []Chain {
 	res := make([]Chain, 0)
 
 	if data.UseHBInfoFuzzing {
-		concurrent := concurrent.GetConcurrent(c.lastElem(), true, false, SameElementTypeInSC, true)
+		concurrent := concurrent.GetConcurrent(c.lastElem(), true, false, settings.SameElementTypeInSC, true)
 		for _, elem := range concurrent {
 			if c.contains(elem) {
 				continue

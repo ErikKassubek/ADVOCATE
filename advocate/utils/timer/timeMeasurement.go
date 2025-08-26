@@ -43,19 +43,15 @@ const (
 )
 
 var (
-	timer       = make([]Timer, numberTimer)
-	measureTime = false
-	paused      = make([]int, 0)
+	timer  = make([]Timer, numberTimer)
+	paused = make([]int, 0)
 )
 
 // Init time measurement
 //
 // Parameter:
-//   - mt bool: if true, time is print into a time file
 //   - progPath string:  path to the result folder
-func Init(mt bool, progPath string) {
-	measureTime = mt
-
+func Init(progPath string) {
 	resultFolder = filepath.Join(progPath, "advocateResult")
 
 	for i := range numberTimer {

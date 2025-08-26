@@ -19,6 +19,7 @@ import (
 	"advocate/analysis/hb/vc"
 	"advocate/results/results"
 	"advocate/trace"
+	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
@@ -107,7 +108,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 				}
 			}
 
-			if data.AnalysisCasesMap[data.ConcurrentRecv] {
+			if data.AnalysisCasesMap[flags.ConcurrentRecv] {
 				arg1 := results.TraceElementResult{
 					RoutineID: routine,
 					ObjID:     id,

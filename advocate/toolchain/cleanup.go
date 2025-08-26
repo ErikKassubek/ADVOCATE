@@ -11,6 +11,7 @@
 package toolchain
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"io"
 	"os"
@@ -101,7 +102,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 }
 
-// Remove all traces, both recorded and rewritten from the path
+// RemoveTraces removes all traces, both recorded and rewritten from the path
 //
 // Parameter:
 //   - path string: path to the folder containing the traces
@@ -159,11 +160,10 @@ func removeLogs(path string) {
 //
 // Parameter:
 //   - path string: path to the folder containing the fuzzing traces
-//   - keepTrace bool: if true move fuzzingTraces into the result folder, otherwise remove it
-func ClearFuzzingTrace(path string, keepTrace bool) {
+func ClearFuzzingTrace(path string) {
 	fuzzingPath := filepath.Join(path, "fuzzingTraces")
 
-	if keepTrace {
+	if flags.KeepTraces {
 		_ = os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
 		// if err != nil {
 		// 	log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())

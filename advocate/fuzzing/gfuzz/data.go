@@ -42,6 +42,7 @@ func ClearDataFull() {
 	ClearDataRun()
 }
 
+// ClearDataRun deletes all the data of gFuzz required for one run
 func ClearDataRun() {
 	ChannelInfoTrace = make(map[int]FuzzingChannel)
 	PairInfoTrace = make(map[string]FuzzingPair)

@@ -74,8 +74,8 @@ var (
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
-	noFifo                = newFlagVal("noFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
-	ignoreCriticalSection = newFlagVal("ignCritSec", "false", "", "Ignore happens before relations of critical sections")
+	noFifo                = newFlagVal("ignoreFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
+	ignoreCriticalSection = newFlagVal("ignoreCritSec", "false", "", "Ignore happens before relations of critical sections")
 	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
 	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
 	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")

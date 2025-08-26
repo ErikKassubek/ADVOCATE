@@ -88,10 +88,9 @@ type BufferedVC struct {
 // it is used in the case that for a synchronous communication, the recv is
 // recorded before the send
 type HoldObj struct {
-	Ch   *trace.ElementChannel
-	Vc   map[int]*clock.VectorClock
-	WVc  map[int]*clock.VectorClock
-	Fifo bool
+	Ch  *trace.ElementChannel
+	Vc  map[int]*clock.VectorClock
+	WVc map[int]*clock.VectorClock
 }
 
 // State for resource deadlock detection

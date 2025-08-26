@@ -49,7 +49,7 @@ func NewVectorClock(size int) *VectorClock {
 //
 // Parameter:
 //   - size int: The size of the vector clock
-//   - cl (map[uint32]iunt)32: The vector clock
+//   - cl (map[uint32]uint)32: The vector clock
 //
 // Returns:
 //   - *VectorClock: A Pointer to the new vector clock

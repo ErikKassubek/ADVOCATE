@@ -19,7 +19,6 @@ import (
 //
 // Parameter:
 //   - at *trace.ElementAtomic: the element
-//   - alt bool: if ignoreCriticalSections is set
-func AnalyzeAtomic(at *trace.ElementAtomic, alt bool) {
-	hbcalc.UpdateHBAtomic(at, alt)
+func AnalyzeAtomic(at *trace.ElementAtomic) {
+	hbcalc.UpdateHBAtomic(at)
 }

@@ -11,6 +11,7 @@
 package stats
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
 	"bufio"
 	"fmt"
@@ -26,16 +27,15 @@ import (
 //
 // Parameter:
 //   - pathFolder string: path to where the stats files should be created
-//   - progName string: name of the analyzed program
 //
 // Returns:
 //   - error
-func CreateStatsFuzzing(pathFolder, progName string) error {
+func CreateStatsFuzzing(pathFolder string) error {
 	// collect the info from the analyzer
 	resultPath := filepath.Join(pathFolder, "advocateResult")
-	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+progName+".csv")
-	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+progName+".csv")
-	statsFuzzPath := filepath.Join(resultPath, "statsFuzz_"+progName+".csv")
+	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+flags.ProgName+".csv")
+	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+flags.ProgName+".csv")
+	statsFuzzPath := filepath.Join(resultPath, "statsFuzz_"+flags.ProgName+".csv")
 
 	log.Info("Create fuzzing statistics")
 

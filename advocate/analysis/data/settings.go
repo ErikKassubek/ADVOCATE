@@ -10,30 +10,14 @@
 
 package data
 
-// AnalysisCases represent a possible type ob bug/leak/info the HB info should look for
-type AnalysisCases string
-
-// Possible type ob bug/leak/info the HB info should look for
-const (
-	All              AnalysisCases = "all"
-	SendOnClosed     AnalysisCases = "sendOnClosed"
-	ReceiveOnClosed  AnalysisCases = "receiveOnClosed"
-	DoneBeforeAdd    AnalysisCases = "doneBeforeAdd"
-	CloseOnClosed    AnalysisCases = "closeOnClosed"
-	ConcurrentRecv   AnalysisCases = "concurrentRecv"
-	Leak             AnalysisCases = "leak"
-	UnlockBeforeLock AnalysisCases = "unlockBeforeLock"
-	MixedDeadlock    AnalysisCases = "mixedDeadlock"
-	ResourceDeadlock AnalysisCases = "resourceDeadlock"
-)
+import "advocate/utils/flags"
 
 // Settings for the analysis
 var (
-	Fifo          bool
 	ModeIsFuzzing bool
 
 	// analysis cases to run
-	AnalysisCasesMap    = make(map[AnalysisCases]bool)
+	AnalysisCasesMap    = make(map[flags.AnalysisCases]bool)
 	AnalysisFuzzingFlow = false
 
 	// exit code info

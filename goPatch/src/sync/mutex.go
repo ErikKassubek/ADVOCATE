@@ -127,11 +127,10 @@ func (m *Mutex) TryLock() bool {
 
 	res := m.mu.TryLock()
 
-	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex, res)
-	// ADVOCATE-END
 
 	return res
+	// ADVOCATE-END
 }
 
 // Unlock unlocks m.

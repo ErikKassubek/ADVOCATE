@@ -210,8 +210,8 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 			continue
 		}
 
-		if cas.c.synctest {
-			if getg().syncGroup == nil {
+		if cas.c.bubble != nil {
+			if getg().bubble != cas.c.bubble {
 				panic(plainError("select on synctest channel from outside bubble"))
 			}
 		} else {
@@ -219,7 +219,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 
 		if cas.c.timer != nil {
-			cas.c.timer.maybeRunChan()
+			cas.c.timer.maybeRunChan(cas.c)
 		}
 
 		j := cheaprandn(uint32(norder + 1))
@@ -231,7 +231,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	lockorder = lockorder[:norder]
 
 	waitReason := waitReasonSelect
-	if gp.syncGroup != nil && allSynctest {
+	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
 		waitReason = waitReasonSynctestSelect
@@ -282,6 +282,9 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 	}
 
+	// lock all the channels involved in the select
+	sellock(scases, lockorder)
+
 	// ADVOCATE-START
 	// This block is called, if the code runs a select statement.
 	// AdvocateSelectPre records the state of the select case, meaning which
@@ -291,9 +294,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-END
-
-	// lock all the channels involved in the select
-	sellock(scases, lockorder)
 
 	var (
 		sg     *sudog
@@ -311,7 +311,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	var caseSuccess bool
 	var caseReleaseTime int64 = -1
 	var recvOK bool
-
 	for _, casei := range pollorder {
 		casi = int(casei)
 		cas = &scases[casi]
@@ -352,14 +351,11 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		}
 	}
 
-	// ADVOCATE CHANGE-START
-	if !block && preferredIndex == -1 {
+	if !block {
 		selunlock(scases, lockorder)
 		casi = -1
-		AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 		goto retc
 	}
-	// ADVOCATE-END
 
 	// pass 2 - enqueue on all chans
 	if gp.waiting != nil {
@@ -368,7 +364,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	nextp = &gp.waiting
 	for _, casei := range lockorder {
 		casi = int(casei)
-
 		cas = &scases[casi]
 		c = cas.c
 		sg := acquireSudog()
@@ -385,11 +380,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		// Construct waiting list in lock order.
 		*nextp = sg
 		nextp = &sg.waitlink
-
-		// only enqueu the preferred case
-		if casi != preferredIndex {
-			continue
-		}
 
 		if casi < nsends {
 			c.sendq.enqueue(sg)
@@ -409,7 +399,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
+	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -433,6 +423,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 		sg1.c = nil
 	}
 	gp.waiting = nil
+
 	for _, casei := range lockorder {
 		k = &scases[casei]
 		if k.c.timer != nil {
@@ -448,7 +439,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 			}
 		} else {
 			c = k.c
-			// ADVOCATE-START
 			if casi == preferredIndex {
 				if int(casei) < nsends {
 					c.sendq.dequeueSudoG(sglist)
@@ -456,7 +446,6 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 					c.recvq.dequeueSudoG(sglist)
 				}
 			}
-			// ADVOCATE-END
 		}
 		sgnext = sglist.waitlink
 		sglist.waitlink = nil
@@ -465,9 +454,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	}
 
 	if cas == nil {
-		// ADVOCATE: routine wakeup because of time out
-		selunlock(scases, lockorder)
-		return false, casi, recvOK, advocateIndex
+		throw("selectgo: bad wakeup")
 	}
 
 	c = cas.c
@@ -510,6 +497,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	advocateRClose = !caseSuccess
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -538,9 +526,11 @@ bufrecv:
 		c.recvx = 0
 	}
 	c.qcount--
+
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -562,9 +552,11 @@ bufsend:
 		c.sendx = 0
 	}
 	c.qcount++
+
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
+
 	selunlock(scases, lockorder)
 	goto retc
 
@@ -575,17 +567,21 @@ recv:
 		print("syncrecv: cas0=", cas0, " c=", c, "\n")
 	}
 	recvOK = true
+
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
+
 	goto retc
 
 rclose:
+	// read at end of closed channel
+
 	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
-	// read at end of closed channel
+
 	selunlock(scases, lockorder)
 	recvOK = false
 	if cas.elem != nil {
@@ -608,9 +604,11 @@ send:
 		asanread(cas.elem, c.elemtype.Size_)
 	}
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
+
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
+
 	if debugSelect {
 		print("syncsend: cas0=", cas0, " c=", c, "\n")
 	}
@@ -620,21 +618,24 @@ retc:
 	if caseReleaseTime > 0 {
 		blockevent(caseReleaseTime-t0, 1)
 	}
+	// ADVOCATE-START
 	return true, casi, recvOK, advocateIndex
+	// ADVOCATE-END
 
 sclose:
 	// send on closed channel
-
-	selunlock(scases, lockorder)
-
 	// ADVOCATE-START
 	advocateRClose = true
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
 
+	selunlock(scases, lockorder)
 	panic(plainError("send on closed channel"))
 }
 
+// ADVOCATE-END
+
+// ADVOCATE-START
 func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool, advocateIndex int) (int, bool) {
 	// ADVOCATE-END
 	gp := getg()
@@ -693,8 +694,8 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 			continue
 		}
 
-		if cas.c.synctest {
-			if getg().syncGroup == nil {
+		if cas.c.bubble != nil {
+			if getg().bubble != cas.c.bubble {
 				panic(plainError("select on synctest channel from outside bubble"))
 			}
 		} else {
@@ -702,7 +703,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 		}
 
 		if cas.c.timer != nil {
-			cas.c.timer.maybeRunChan()
+			cas.c.timer.maybeRunChan(cas.c)
 		}
 
 		j := cheaprandn(uint32(norder + 1))
@@ -714,7 +715,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	lockorder = lockorder[:norder]
 
 	waitReason := waitReasonSelect
-	if gp.syncGroup != nil && allSynctest {
+	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
 		waitReason = waitReasonSynctestSelect
@@ -768,6 +769,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// lock all the channels involved in the select
 	sellock(scases, lockorder)
 
+	// ADVOCATE-START
 	// This block is called, if the code runs a select statement.
 	// AdvocateSelectPre records the state of the select case, meaning which
 	// cases exists (channel / direction) and weather a default statement is present.
@@ -1078,8 +1080,8 @@ send:
 	if asanenabled {
 		asanread(cas.elem, c.elemtype.Size_)
 	}
-
 	send(c, sg, cas.elem, func() { selunlock(scases, lockorder) }, 2)
+
 	// ADVOCATE-START
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END

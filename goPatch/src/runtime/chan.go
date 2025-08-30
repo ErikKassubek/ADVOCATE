@@ -36,7 +36,6 @@ type hchan struct {
 	dataqsiz uint           // size of the circular queue
 	buf      unsafe.Pointer // points to an array of dataqsiz elements
 	elemsize uint16
-	synctest bool // true if created in a synctest bubble
 	closed   uint32
 	timer    *timer // timer feeding this chan
 	elemtype *_type // element type
@@ -44,6 +43,7 @@ type hchan struct {
 	recvx    uint   // receive index
 	recvq    waitq  // list of recv waiters
 	sendq    waitq  // list of send waiters
+	bubble   *synctestBubble
 
 	// lock protects all fields in hchan, as well as several
 	// fields in sudogs blocked on this channel.
@@ -120,8 +120,8 @@ func makechan(t *chantype, size int) *hchan {
 	c.elemsize = uint16(elem.Size_)
 	c.elemtype = elem
 	c.dataqsiz = uint(size)
-	if getg().syncGroup != nil {
-		c.synctest = true
+	if b := getg().bubble; b != nil {
+		c.bubble = b
 	}
 
 	// ADVOCATE-START
@@ -141,6 +141,8 @@ func makechan(t *chantype, size int) *hchan {
 func (c *hchan) SetAdvocateIgnore() {
 	c.advocateIgnore = true
 }
+
+// ADVOCATE-END
 
 // chanbuf(c, i) is pointer to the i'th slot in the buffer.
 //
@@ -197,11 +199,7 @@ func chansend1(c *hchan, elem unsafe.Pointer) {
 // set ignored to true, if it is used in a one case + default select. In this case, it is recorded and replayed in the select
 func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored bool) bool {
 	// ADVOCATE-END
-
 	if c == nil {
-		if !ignored {
-			_ = AdvocateChanPre(0, OperationChannelSend, c.dataqsiz, true)
-		}
 		if !block {
 			return false
 		}
@@ -217,7 +215,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		racereadpc(c.raceaddr(), callerpc, abi.FuncPCABIInternal(chansend))
 	}
 
-	if c.synctest && getg().syncGroup == nil {
+	if c.bubble != nil && getg().bubble != c.bubble {
 		panic(plainError("send on synctest channel from outside bubble"))
 	}
 
@@ -294,6 +292,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPostCausedByClose(advocateIndex)
 		}
+		// ADVOCATE-END
 		unlock(&c.lock)
 		panic(plainError("send on closed channel"))
 	}
@@ -324,11 +323,13 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			c.sendx = 0
 		}
 		c.qcount++
+
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c, OperationChannelSend)
 		}
 		// ADVOCATE-END
+
 		unlock(&c.lock)
 		return true
 	}
@@ -366,7 +367,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	reason := waitReasonChanSend
-	if c.synctest {
+	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
@@ -380,6 +381,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if mysg != gp.waiting {
 		throw("G waiting list is corrupted")
 	}
+
 	// ADVOCATE-START
 	lock(&c.lock)
 	if !ignored && !c.advocateIgnore {
@@ -387,6 +389,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 	unlock(&c.lock)
 	// ADVOCATE-END
+
 	gp.waiting = nil
 	gp.activeStackChans = false
 	closed := !mysg.success
@@ -395,7 +398,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		blockevent(mysg.releasetime-t0, 2)
 	}
 	mysg.c = nil
-
 	releaseSudog(mysg)
 	if closed {
 		// ADVOCATE-START
@@ -418,7 +420,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 // sg must already be dequeued from c.
 // ep must be non-nil and point to the heap or the caller's stack.
 func send(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
-	if c.synctest && sg.g.syncGroup != getg().syncGroup {
+	if c.bubble != nil && getg().bubble != c.bubble {
 		unlockf()
 		panic(plainError("send on synctest channel from outside bubble"))
 	}
@@ -517,12 +519,15 @@ func closechan(c *hchan) {
 	if c == nil {
 		panic(plainError("close of nil channel"))
 	}
+	if c.bubble != nil && getg().bubble != c.bubble {
+		panic(plainError("close of synctest channel from outside bubble"))
+	}
 
+	// ADVOCATE-START
 	if c != nil && c.id == 0 {
 		c.id = AdvocateChanMake(int(c.dataqsiz))
 	}
 
-	// ADVOCATE-START
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
@@ -613,7 +618,7 @@ func empty(c *hchan) bool {
 	// c.timer is also immutable (it is set after make(chan) but before any channel operations).
 	// All timer channels have dataqsiz > 0.
 	if c.timer != nil {
-		c.timer.maybeRunChan()
+		c.timer.maybeRunChan(c)
 	}
 	return atomic.Loaduint(&c.qcount) == 0
 }
@@ -646,32 +651,25 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// ADVOCATE-END
 	// raceenabled: don't need to check ep, as it is always on the stack
 	// or is new memory allocated by reflect.
+
 	if debugChan {
 		print("chanrecv: chan=", c, "\n")
 	}
 
 	if c == nil {
-		var advocateIndex int
-		if !ignored {
-			advocateIndex = AdvocateChanPre(0, OperationChannelRecv, 0, true)
-		}
-		// ADVOCATE-END
 		if !block {
-			if !ignored {
-				AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
-			}
 			return
 		}
 		gopark(nil, nil, waitReasonChanReceiveNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
 
-	if c.synctest && getg().syncGroup == nil {
+	if c.bubble != nil && getg().bubble != c.bubble {
 		panic(plainError("receive on synctest channel from outside bubble"))
 	}
 
 	if c.timer != nil {
-		c.timer.maybeRunChan()
+		c.timer.maybeRunChan(c)
 	}
 
 	// ADVOCATE-START
@@ -760,11 +758,13 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			if raceenabled {
 				raceacquire(c.raceaddr())
 			}
+
 			// ADVOCATE-START
 			if !ignored && !c.advocateIgnore {
 				AdvocateChanPostCausedByClose(advocateIndex)
 			}
 			// ADVOCATE-END
+
 			unlock(&c.lock)
 			if ep != nil {
 				typedmemclr(c.elemtype, ep)
@@ -806,11 +806,13 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			c.recvx = 0
 		}
 		c.qcount--
+
 		// ADVOCATE-START
 		if !ignored && !c.advocateIgnore {
 			AdvocateChanPost(advocateIndex, c, OperationChannelRecv)
 		}
 		// ADVOCATE-END
+
 		unlock(&c.lock)
 		return true, true
 	}
@@ -853,7 +855,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	reason := waitReasonChanReceive
-	if c.synctest {
+	if c.bubble != nil {
 		reason = waitReasonSynctestChanReceive
 	}
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanRecv, 2)
@@ -905,7 +907,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 // sg must already be dequeued from c.
 // A non-nil ep must point to the heap or the caller's stack.
 func recv(c *hchan, sg *sudog, ep unsafe.Pointer, unlockf func(), skip int) {
-	if c.synctest && sg.g.syncGroup != getg().syncGroup {
+	if c.bubble != nil && getg().bubble != c.bubble {
 		unlockf()
 		panic(plainError("receive on synctest channel from outside bubble"))
 	}
@@ -1136,7 +1138,7 @@ func chanlen(c *hchan) int {
 	}
 	async := debug.asynctimerchan.Load() != 0
 	if c.timer != nil && async {
-		c.timer.maybeRunChan()
+		c.timer.maybeRunChan(c)
 	}
 	if c.timer != nil && !async {
 		// timer channels have a buffered implementation

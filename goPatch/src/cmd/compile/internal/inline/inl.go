@@ -42,6 +42,7 @@ import (
 	"cmd/compile/internal/types"
 	"cmd/internal/obj"
 	"cmd/internal/pgo"
+	"cmd/internal/src"
 )
 
 // Inlining budget parameters, gathered in one place
@@ -169,19 +170,8 @@ func CanInlineFuncs(funcs []*ir.Func, profile *pgoir.Profile) {
 	}
 
 	ir.VisitFuncsBottomUp(funcs, func(funcs []*ir.Func, recursive bool) {
-		numfns := numNonClosures(funcs)
-
 		for _, fn := range funcs {
-			if !recursive || numfns > 1 {
-				// We allow inlining if there is no
-				// recursion, or the recursion cycle is
-				// across more than one function.
-				CanInline(fn, profile)
-			} else {
-				if base.Flag.LowerM > 1 && fn.OClosure == nil {
-					fmt.Printf("%v: cannot inline %v: recursive\n", ir.Line(fn), fn.Nname)
-				}
-			}
+			CanInline(fn, profile)
 			if inlheur.Enabled() {
 				analyzeFuncProps(fn, profile)
 			}
@@ -464,6 +454,11 @@ opSwitch:
 						// generate code.
 						cheap = true
 					}
+					if strings.HasPrefix(fn, "EscapeNonString[") {
+						// internal/abi.EscapeNonString[T] is a compiler intrinsic
+						// implemented in the escape analysis phase.
+						cheap = true
+					}
 				case "internal/runtime/sys":
 					switch fn {
 					case "GetCallerPC", "GetCallerSP":
@@ -480,12 +475,6 @@ opSwitch:
 						v.budget -= inlineExtraThrowCost
 						break opSwitch
 					case "panicrangestate":
-						cheap = true
-					}
-				case "hash/maphash":
-					if strings.HasPrefix(fn, "escapeForHash[") {
-						// hash/maphash.escapeForHash[T] is a compiler intrinsic
-						// implemented in the escape analysis phase.
 						cheap = true
 					}
 				}
@@ -811,10 +800,10 @@ func inlineCallCheck(callerfn *ir.Func, call *ir.CallExpr) (bool, bool) {
 		}
 	}
 
-	// hash/maphash.escapeForHash[T] is a compiler intrinsic implemented
+	// internal/abi.EscapeNonString[T] is a compiler intrinsic implemented
 	// in the escape analysis phase.
-	if fn := ir.StaticCalleeName(call.Fun); fn != nil && fn.Sym().Pkg.Path == "hash/maphash" &&
-		strings.HasPrefix(fn.Sym().Name, "escapeForHash[") {
+	if fn := ir.StaticCalleeName(call.Fun); fn != nil && fn.Sym().Pkg.Path == "internal/abi" &&
+		strings.HasPrefix(fn.Sym().Name, "EscapeNonString[") {
 		return false, true
 	}
 
@@ -974,6 +963,16 @@ func inlineCostOK(n *ir.CallExpr, caller, callee *ir.Func, bigCaller, closureCal
 	return true, 0, metric, hot
 }
 
+// parsePos returns all the inlining positions and the innermost position.
+func parsePos(pos src.XPos, posTmp []src.Pos) ([]src.Pos, src.Pos) {
+	ctxt := base.Ctxt
+	ctxt.AllPos(pos, func(p src.Pos) {
+		posTmp = append(posTmp, p)
+	})
+	l := len(posTmp) - 1
+	return posTmp[:l], posTmp[l]
+}
+
 // canInlineCallExpr returns true if the call n from caller to callee
 // can be inlined, plus the score computed for the call expr in question,
 // and whether the callee is hot according to PGO.
@@ -1001,41 +1000,12 @@ func canInlineCallExpr(callerfn *ir.Func, n *ir.CallExpr, callee *ir.Func, bigCa
 		return false, 0, false
 	}
 
-	if callee == callerfn {
-		// Can't recursively inline a function into itself.
-		if log && logopt.Enabled() {
-			logopt.LogOpt(n.Pos(), "cannotInlineCall", "inline", fmt.Sprintf("recursive call to %s", ir.FuncName(callerfn)))
-		}
-		return false, 0, false
-	}
+	callees, calleeInner := parsePos(n.Pos(), make([]src.Pos, 0, 10))
 
-	isClosureParent := func(closure, parent *ir.Func) bool {
-		for p := closure.ClosureParent; p != nil; p = p.ClosureParent {
-			if p == parent {
-				return true
-			}
-		}
-		return false
-	}
-	if isClosureParent(callerfn, callee) {
-		// Can't recursively inline a parent of the closure into itself.
-		if log && logopt.Enabled() {
-			logopt.LogOpt(n.Pos(), "cannotInlineCall", "inline", fmt.Sprintf("recursive call to closure parent: %s, %s", ir.FuncName(callerfn), ir.FuncName(callee)))
-		}
-		return false, 0, false
-	}
-	if isClosureParent(callee, callerfn) {
-		// Can't recursively inline a closure if there's a call to the parent in closure body.
-		if ir.Any(callee, func(node ir.Node) bool {
-			if call, ok := node.(*ir.CallExpr); ok {
-				if name, ok := call.Fun.(*ir.Name); ok && isClosureParent(callerfn, name.Func) {
-					return true
-				}
-			}
-			return false
-		}) {
+	for _, p := range callees {
+		if p.Line() == calleeInner.Line() && p.Col() == calleeInner.Col() && p.AbsFilename() == calleeInner.AbsFilename() {
 			if log && logopt.Enabled() {
-				logopt.LogOpt(n.Pos(), "cannotInlineCall", "inline", fmt.Sprintf("recursive call to closure parent: %s, %s", ir.FuncName(callerfn), ir.FuncName(callee)))
+				logopt.LogOpt(n.Pos(), "cannotInlineCall", "inline", fmt.Sprintf("recursive call to %s", ir.FuncName(callerfn)))
 			}
 			return false, 0, false
 		}
@@ -1146,12 +1116,18 @@ func mkinlcall(callerfn *ir.Func, n *ir.CallExpr, fn *ir.Func, bigCaller, closur
 			// Not a standard call.
 			return
 		}
-		if n.Fun.Op() != ir.OCLOSURE {
-			// Not a direct closure call.
+
+		var nf = n.Fun
+		// Skips ir.OCONVNOPs, see issue #73716.
+		for nf.Op() == ir.OCONVNOP {
+			nf = nf.(*ir.ConvExpr).X
+		}
+		if nf.Op() != ir.OCLOSURE {
+			// Not a direct closure call or one with type conversion.
 			return
 		}
 
-		clo := n.Fun.(*ir.ClosureExpr)
+		clo := nf.(*ir.ClosureExpr)
 		if !clo.Func.IsClosure() {
 			// enqueueFunc will handle non closures anyways.
 			return

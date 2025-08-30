@@ -1,6 +1,6 @@
 module advocate
 
-go 1.24
+go 1.25
 
 require github.com/shirou/gopsutil v3.21.11+incompatible
 

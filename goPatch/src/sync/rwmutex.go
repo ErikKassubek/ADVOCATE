@@ -186,7 +186,6 @@ func (rw *RWMutex) TryRLock() bool {
 			// to update the trace.
 			runtime.AdvocateMutexPost(advocateIndex, true)
 			// ADVOCATE-END
-
 			return true
 		}
 	}
@@ -412,6 +411,7 @@ func (rw *RWMutex) Unlock() {
 		// ADVOCATE-START
 		panic("sync: Unlock of unlocked RWMutex")
 		// ADVOCATE-END
+
 	}
 	// Unblock blocked readers, if any.
 	for i := 0; i < int(r); i++ {

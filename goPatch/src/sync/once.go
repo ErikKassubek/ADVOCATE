@@ -29,7 +29,7 @@ type Once struct {
 	// The hot path is inlined at every call site.
 	// Placing done first allows more compact instructions on some architectures (amd64/386),
 	// and fewer instructions (to calculate offset) on other architectures.
-	done atomic.Uint32
+	done atomic.Bool
 	m    Mutex
 
 	// ADVOCATE-START
@@ -94,13 +94,12 @@ func (o *Once) Do(f func()) {
 	res := false
 	// ADVOCATE-END
 
-	if o.done.Load() == 0 {
+	if !o.done.Load() {
 		// Outlined slow-path to allow inlining of the fast-path.
 		// ADVOCATE-START
 		res = o.doSlow(f)
 		// ADVOCATE-END
 	}
-
 	// ADVOCATE-START
 	runtime.AdvocateOncePost(index, res)
 	// ADVOCATE-END
@@ -110,8 +109,8 @@ func (o *Once) Do(f func()) {
 func (o *Once) doSlow(f func()) bool {
 	o.m.Lock()
 	defer o.m.Unlock()
-	if o.done.Load() == 0 {
-		defer o.done.Store(1)
+	if !o.done.Load() {
+		defer o.done.Store(true)
 		f()
 		return true
 	}

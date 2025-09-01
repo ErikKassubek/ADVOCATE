@@ -180,7 +180,7 @@ func markroot(gcw *gcWork, i uint32, flushBgCredit bool) int64 {
 	case i == fixedRootFinalizers:
 		for fb := allfin; fb != nil; fb = fb.alllink {
 			cnt := uintptr(atomic.Load(&fb.cnt))
-			scanblock(uintptr(unsafe.Pointer(&fb.fin[0])), cnt*unsafe.Sizeof(fb.fin[0]), &finptrmask[0], gcw, nil)
+			scanblock(uintptr(unsafe.Pointer(&fb.fin[0])), cnt*unsafe.Sizeof(fb.fin[0]), &finptrmask[0], gcw, nil, 0)
 		}
 
 	case i == fixedRootFreeGStacks:
@@ -193,7 +193,7 @@ func markroot(gcw *gcWork, i uint32, flushBgCredit bool) int64 {
 			// N.B. This only needs to synchronize with cleanup execution, which only resets these blocks.
 			// All cleanup queueing happens during sweep.
 			n := uintptr(atomic.Load(&cb.n))
-			scanblock(uintptr(unsafe.Pointer(&cb.cleanups[0])), n*goarch.PtrSize, &cleanupBlockPtrMask[0], gcw, nil)
+			scanblock(uintptr(unsafe.Pointer(&cb.cleanups[0])), n*goarch.PtrSize, &cleanupBlockPtrMask[0], gcw, nil, 0)
 		}
 
 	case work.baseSpans <= i && i < work.baseStacks:
@@ -290,7 +290,7 @@ func markrootBlock(b0, n0 uintptr, ptrmask0 *uint8, gcw *gcWork, shard int) int6
 	}
 
 	// Scan this shard.
-	scanblock(b, n, ptrmask, gcw, nil)
+	scanblock(b, n, ptrmask, gcw, nil, 0)
 	return int64(n)
 }
 
@@ -400,7 +400,7 @@ func markrootSpans(gcw *gcWork, shard int) {
 				case _KindSpecialWeakHandle:
 					// The special itself is a root.
 					spw := (*specialWeakHandle)(unsafe.Pointer(sp))
-					scanblock(uintptr(unsafe.Pointer(&spw.handle)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+					scanblock(uintptr(unsafe.Pointer(&spw.handle)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 				case _KindSpecialCleanup:
 					gcScanCleanup((*specialCleanup)(unsafe.Pointer(sp)), gcw)
 				}
@@ -425,13 +425,13 @@ func gcScanFinalizer(spf *specialfinalizer, s *mspan, gcw *gcWork) {
 	}
 
 	// The special itself is also a root.
-	scanblock(uintptr(unsafe.Pointer(&spf.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+	scanblock(uintptr(unsafe.Pointer(&spf.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 }
 
 // gcScanCleanup scans the relevant parts of a cleanup special as a root.
 func gcScanCleanup(spc *specialCleanup, gcw *gcWork) {
 	// The special itself is a root.
-	scanblock(uintptr(unsafe.Pointer(&spc.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+	scanblock(uintptr(unsafe.Pointer(&spc.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 }
 
 // gcAssistAlloc performs GC work to make gp's assist debt positive.
@@ -916,13 +916,13 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 	// register that gets moved back and forth between the
 	// register and sched.ctxt without a write barrier.
 	if gp.sched.ctxt != nil {
-		scanblock(uintptr(unsafe.Pointer(&gp.sched.ctxt)), goarch.PtrSize, &oneptrmask[0], gcw, &state)
+		scanblock(uintptr(unsafe.Pointer(&gp.sched.ctxt)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
 	}
 
 	// Scan the stack. Accumulate a list of stack objects.
 	var u unwinder
 	for u.init(gp, 0); u.valid(); u.next() {
-		scanframeworker(&u.frame, &state, gcw)
+		scanframeworker(&u.frame, &state, gcw, gp.goid)
 	}
 
 	// Find additional pointers that point into the stack from the heap.
@@ -933,18 +933,18 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 		if d.fn != nil {
 			// Scan the func value, which could be a stack allocated closure.
 			// See issue 30453.
-			scanblock(uintptr(unsafe.Pointer(&d.fn)), goarch.PtrSize, &oneptrmask[0], gcw, &state)
+			scanblock(uintptr(unsafe.Pointer(&d.fn)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
 		}
 		if d.link != nil {
 			// The link field of a stack-allocated defer record might point
 			// to a heap-allocated defer record. Keep that heap record live.
-			scanblock(uintptr(unsafe.Pointer(&d.link)), goarch.PtrSize, &oneptrmask[0], gcw, &state)
+			scanblock(uintptr(unsafe.Pointer(&d.link)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
 		}
 		// Retain defers records themselves.
 		// Defer records might not be reachable from the G through regular heap
 		// tracing because the defer linked list might weave between the stack and the heap.
 		if d.heap {
-			scanblock(uintptr(unsafe.Pointer(&d)), goarch.PtrSize, &oneptrmask[0], gcw, &state)
+			scanblock(uintptr(unsafe.Pointer(&d)), goarch.PtrSize, &oneptrmask[0], gcw, &state, gp.goid)
 		}
 	}
 	if gp._panic != nil {
@@ -967,6 +967,7 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 		if obj == nil {
 			continue
 		}
+
 		r := obj.r
 		if r == nil {
 			// We've already scanned this object.
@@ -987,7 +988,7 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 		if conservative {
 			scanConservative(b, ptrBytes, gcData, gcw, &state)
 		} else {
-			scanblock(b, ptrBytes, gcData, gcw, &state)
+			scanblock(b, ptrBytes, gcData, gcw, &state, gp.goid)
 		}
 	}
 
@@ -1018,7 +1019,7 @@ func scanstack(gp *g, gcw *gcWork) int64 {
 // Scan a stack frame: local variables and function arguments/results.
 //
 //go:nowritebarrier
-func scanframeworker(frame *stkframe, state *stackScanState, gcw *gcWork) {
+func scanframeworker(frame *stkframe, state *stackScanState, gcw *gcWork, id uint64) {
 	if _DebugGC > 1 && frame.continpc != 0 {
 		print("scanframe ", funcname(frame.fn), "\n")
 	}
@@ -1072,12 +1073,12 @@ func scanframeworker(frame *stkframe, state *stackScanState, gcw *gcWork) {
 	// Scan local variables if stack frame has been allocated.
 	if locals.n > 0 {
 		size := uintptr(locals.n) * goarch.PtrSize
-		scanblock(frame.varp-size, size, locals.bytedata, gcw, state)
+		scanblock(frame.varp-size, size, locals.bytedata, gcw, state, id)
 	}
 
 	// Scan arguments.
 	if args.n > 0 {
-		scanblock(frame.argp, uintptr(args.n)*goarch.PtrSize, args.bytedata, gcw, state)
+		scanblock(frame.argp, uintptr(args.n)*goarch.PtrSize, args.bytedata, gcw, state, id)
 	}
 
 	// Add all stack objects to the stack object list.
@@ -1399,7 +1400,7 @@ func gcDrainN(gcw *gcWork, scanWork int64) int64 {
 // If stk != nil, possible stack pointers are also reported to stk.putPtr.
 //
 //go:nowritebarrier
-func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState) {
+func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState, id uint64) {
 	// Use local copies of original parameters, so that a stack trace
 	// due to one of the throws below shows the original block
 	// base and extent.
@@ -1423,6 +1424,11 @@ func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState)
 					} else {
 						if !tryDeferToSpanScan(p, gcw) {
 							if obj, span, objIndex := findObject(p, b, i); obj != 0 {
+								// ADVOCATE-START
+								if currentSleeping == obj {
+									haveRef[id] = true
+								}
+								// ADVOCATE-END
 								greyobject(obj, b, i, span, gcw, objIndex)
 							}
 						}

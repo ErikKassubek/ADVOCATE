@@ -12,6 +12,8 @@
 
 package runtime
 
+import "unsafe"
+
 var AdvocateRoutines map[uint64]*AdvocateRoutine
 var AdvocateRoutinesLock = mutex{}
 
@@ -32,6 +34,7 @@ type AdvocateRoutine struct {
 	G           *g
 	Trace       []traceElem
 	replayID    int
+	parkOn      unsafe.Pointer
 }
 
 // Create a new advocate routine

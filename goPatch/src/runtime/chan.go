@@ -370,7 +370,15 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
+	// ADVOCATE-START
+	StoreLastPark(unsafe.Pointer(c))
+	// ADVOCATE-END
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
+
+	// ADVOCATE-START
+	ClearLastPark()
+	// ADVOCATE-END
+
 	// Ensure the value being sent is kept alive until the
 	// receiver copies it out. The sudog has a pointer to the
 	// stack object, but sudogs aren't considered as roots of the

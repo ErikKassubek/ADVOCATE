@@ -12,6 +12,7 @@ package sync
 
 import (
 	isync "internal/sync"
+	"unsafe"
 
 	// ADVOCATE-START
 	"runtime"
@@ -83,7 +84,9 @@ func (m *Mutex) Lock() {
 	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
+	runtime.StoreLastPark(unsafe.Pointer(m))
 	m.mu.Lock()
+	runtime.ClearLastPark()
 
 	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex, true)

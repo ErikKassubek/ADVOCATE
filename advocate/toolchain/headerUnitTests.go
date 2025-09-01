@@ -12,6 +12,7 @@
 package toolchain
 
 import (
+	"advocate/utils/flags"
 	"bufio"
 	"errors"
 	"fmt"
@@ -28,12 +29,11 @@ import (
 //   - replay bool: true for replay, false for only recording
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - replayInfo string: path of the fuzzing trace or if the replay trace
-//   - timeoutReplay int: timeout for replay
 //   - record bool: true to rerecord the leaks
 //
 // Returns:
 //   - error
-func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
+func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, record bool) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", fileName)
 	}
@@ -47,7 +47,7 @@ func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, rep
 		return errors.New("Test Method not found in file")
 	}
 
-	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, timeoutReplay, record)
+	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, record)
 }
 
 // Remove all headers from a unit test file
@@ -110,12 +110,11 @@ func testExists(fileName string, testName string) (bool, error) {
 //   - testName string: name of the test
 //   - replay bool: true for replay, false for only recording
 //   - replayInfo string: path of the fuzzing trace or if the replay trace
-//   - timeoutReplay int: timeout for replay
 //   - record bool: true to rerecord the trace
 //
 // Returns:
 //   - error
-func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, timeoutReplay int, record bool) error {
+func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, record bool) error {
 	importAdded := false
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
@@ -127,9 +126,9 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 		return fmt.Errorf("Cannot add header for replay and fuzzing at the same time")
 	}
 
-	atomicReplayStr := "false"
-	if replayAtomic {
-		atomicReplayStr = "true"
+	atomicReplayStr := "true"
+	if flags.IgnoreAtomics {
+		atomicReplayStr = "false"
 	}
 
 	var lines []string
@@ -159,8 +158,8 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 				replayPath := ""
 				if replayInfo != "" {
 					replayPath = "rewrittenTrace_" + replayInfo
-				} else if tracePathFlag != "" {
-					replayPath = filepath.Base(tracePathFlag)
+				} else if flags.TracePath != "" {
+					replayPath = filepath.Base(flags.TracePath)
 				} else {
 					replayPath = "advocateTrace"
 				}
@@ -168,23 +167,23 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplayTracing("%s", false, %d, %s)
   defer advocate.FinishReplayTracing()
-  // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayPath, flags.TimeoutReplay, atomicReplayStr))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitReplay("%s", %d, %s)
   defer advocate.FinishReplay()
-  // ======= Preamble End =======`, replayPath, timeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayPath, flags.TimeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitFuzzing("%s", %d)
   defer advocate.FinishFuzzing()
-  // ======= Preamble End =======`, replayInfo, timeoutRecording))
+  // ======= Preamble End =======`, replayInfo, flags.TimeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocate.InitTracing(%d)
   defer advocate.FinishTracing()
-  // ======= Preamble End =======`, timeoutRecording))
+  // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)
 			fmt.Printf("Header added at file: %s\n", fileName)

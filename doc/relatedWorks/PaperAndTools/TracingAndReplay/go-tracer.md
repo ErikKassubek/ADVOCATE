@@ -1,12 +1,14 @@
 # Go Tracer
+
 - Links:
-	- [Documentation](https://pkg.go.dev/runtime/trace)
-	- [More powerful Go execution traces](https://go.dev/blog/execution-traces-2024)
+  - [Documentation](https://pkg.go.dev/runtime/trace)
+  - [More powerful Go execution traces](https://go.dev/blog/execution-traces-2024)
 
 The Go tracer is part of the go runtime. It provides detailed insights into the
 execution flow of Go Programs.
 
 The tracer records the following operations [^1]
+
 ```
 traceEvNone traceEv = iota // unused
 
@@ -81,11 +83,11 @@ traceEvExperimentalBatch // start of extra data [experiment ID, generation, M ID
 This means, it gives the user insight into
 
 - Goroutine Events
-	- Create
-	- Schedule
-	- Blocked
-	- Unblocked
-	- Finished
+  - Create
+  - Schedule
+  - Blocked
+  - Unblocked
+  - Finished
 - Garbage Collection
 - Thread Events
 - Heap and Memory Events
@@ -108,5 +110,5 @@ trace events. By then adding the `eventWrite().event()` functions into the diffe
 operations we want to record, it would have been possible to record the
 different operations with the trace.
 
-[^1] [runtime/traceEvents.go](../../go-patch/src/runtime/traceevent.go)\
-[^2] [runtime/traceEvents.go:121](../../go-patch/src/runtime/traceevent.go#L121)
+[^1] [runtime/traceEvents.go](../../goPatch/src/runtime/traceevent.go)\
+[^2] [runtime/traceEvents.go:121](../../goPatch/src/runtime/traceevent.go#L121)

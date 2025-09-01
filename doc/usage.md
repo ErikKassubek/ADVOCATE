@@ -1,9 +1,40 @@
 # How To Use Advocate
 
-
 This file provides a detailed explanation on how to use the ADVOCATE framework.
 
-## Preparation
+## Docker
+
+We provide a docker file to create the environment.
+
+To build the docker file, run
+
+```shell
+docker build -t advocate-app .
+```
+
+To run the analysis or fuzzing on a program, you can call the following:
+
+```shell
+docker run --rm -it \
+  -v <pathToProg>:/prog \
+  advocate-app [mode] -path /prog [args]
+```
+
+e.g.
+
+```shell
+docker run --rm -it \
+  -v /home/erik/progToTest:/prog \
+  advocate-app fuzzing -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+```
+
+For the modes and args, see [usage](#usage).
+Note that the -path argument has already been set and does not need to be set again.
+
+## Local
+
+If you do not want to use the Docker container, you can also
+build al the required parts yourself.
 
 Before Advocate can be used, it must first be build.
 
@@ -12,10 +43,10 @@ There are two elements that need to be build.
 ### Runtime
 
 To run the recording and replay for Go, a modified version of the Go runtime
-has been provided. It can be found in the [go-path](../go-patch/) folder.
+has been provided. It can be found in the [go-path](../goPatch/) folder.
 
 Before it can be used, it needs to be build. To do this, move into
-[go-path/src](../go-patch/src/) directory and run the
+[go-path/src](../goPatch/src/) directory and run the
 
 ```shell
 ./src/make.bash
@@ -41,7 +72,6 @@ run all recordings, replays, analysis and fuzzing.
 > Make sure, that the correct version is installed on your system.\
 > Make sure, that the executed programs and tests do not choose another version/toolchain and are compatible with go 1.24.\
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
-
 
 ## Usage
 
@@ -306,7 +336,7 @@ The available modes are:
 - `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
-- `GoPie+`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
+- `GoCR`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
 - `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
@@ -322,13 +352,12 @@ An example command would therefore be
 ./advocate fuzzing -path ~/pathToProg/progDir/ -fuzzingMode GoPieHB -prog progName
 ```
 
-
 ## Additional Tags
 
 To set timeouts, you can set
 
 - `-timeoutRec [to in s]`: Timeout for the recording in seconds (Default: 10 min)
-- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 * recording time)
+- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 \* recording time)
 
 To get additional information, the following tags can also be set:
 
@@ -343,10 +372,6 @@ The created statistic and time files can also be found in the `advocateResult` f
 In some situations, especially when only limited storage is available, it may
 be useful to ignore atomic operations during recording and analysis. To do this,
 you can set the `-ignoreAtomics`.
-
-Insufficient memory (RAM) can cause the computer running advocate to crash
-during the analysis. To stop this, a [Memory Supervisor](./memory.md) has been implemented.
-Disable this supervisor, you can set the `- noMemorySupervisor` flag.
 
 If the analysis of multiple tests was interrupted, running the toolchain
 again would start from the beginning. If you want to skip all the already
@@ -388,16 +413,18 @@ Make sure to not use spaces in this argument.
 
 The following values can be changed:
 
-| name  | default value | range | description |
-|---|---|---|---|
-| GFuzzW1 | 10 | $\mathbb{Q}$ | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW2 | 10 | $\mathbb{Q}$ | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW3 | 10 | $\mathbb{Q}$ | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzW4 | 10 | $\mathbb{Q}$ | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score) |
-| GFuzzFlipP | 0.99 | $\mathbb{Q}, 0 <= val <= 1$ |probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GFuzzFlipPMin | 0.1 | $\mathbb{Q}, 0 <= val <= 1$ |minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GoPieW1 | 1 | $\mathbb{Q}$ | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieW2 | 1 | $\mathbb{Q}$ | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieBound | 3 | $\mathbb{N}, val \geq 2$ | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieMutabound | 3 | $\mathbb{N}_{\neq 0}$ | Mutabound as described [here](./fuzzing/GoPie.md#mutation) |
-| GoPieSCStart | 5 | $\mathbb{N}_{\neq 0}$ | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation) |
+| name           | default value | range                       | description                                                                                                            |
+| -------------- | ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| GFuzzW1        | 10            | $\mathbb{Q}$                | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW2        | 10            | $\mathbb{Q}$                | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW3        | 10            | $\mathbb{Q}$                | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzW4        | 10            | $\mathbb{Q}$                | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
+| GFuzzFlipP     | 0.99          | $\mathbb{Q}, 0 <= val <= 1$ | probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability)            |
+| GFuzzFlipPMin  | 0.1           | $\mathbb{Q}, 0 <= val <= 1$ | minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
+| GoPieW1        | 1             | $\mathbb{Q}$                | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
+| GoPieW2        | 1             | $\mathbb{Q}$                | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
+| GoPieBound     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation)                            |
+| GoPieMutabound | 3             | $\mathbb{N}_{\neq 0}$       | Mutabound as described [here](./fuzzing/GoPie.md#mutation)                                                             |
+| GoPieSCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation)                        |
+| SameElementTypeInSC | 0 (false) | $\{0,1\}$ | Only allow elements of the same type in a SC |
+| WithoutReplay | 0 (false) | $\{0,1\}$ | Disable replay for goPie+ fuzzing runs |

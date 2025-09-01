@@ -1,11 +1,11 @@
 # Panics
 
 We detect occurring panics directly in the runtime. For this, we add a function
-into the implementation of the [panic](../../go-patch/src/runtime/panic.go#L744) function.
+into the implementation of the [panic](../../goPatch/src/runtime/panic.go#L744) function.
 
 This panic is then always automatically called if a program panics.
 
-Based on the type and content of the  message in the panic, we can sort the
+Based on the type and content of the message in the panic, we can sort the
 panics based on our interests into
 
 - "send on closed channel"

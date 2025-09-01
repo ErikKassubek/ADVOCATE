@@ -25,4 +25,4 @@ fields are
 
 ## Implementation
 
-The recording of the operations is done in the `go-patch/src/sync/once.go` file in the [Do](../../go-patch/src/sync/once.go#L60) function. The recording is done with the [AdvocateOncePre](../../go-patch/src/runtime/advocate_trace_once.go#40) and [AdvocateOncePost](../../go-patch/src/runtime/advocate_trace_once.go#68) functions.
+The recording of the operations is done in the `goPatch/src/sync/once.go` file in the [Do](../../goPatch/src/sync/once.go#L60) function. The recording is done with the [AdvocateOncePre](../../goPatch/src/runtime/advocate_trace_once.go#40) and [AdvocateOncePost](../../goPatch/src/runtime/advocate_trace_once.go#68) functions.

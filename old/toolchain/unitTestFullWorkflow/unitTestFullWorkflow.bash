@@ -37,8 +37,8 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-pathToPatchedGoRuntime="$pathToAdvocate/go-patch/bin/go"
-pathToGoRoot="$pathToAdvocate/go-patch"
+pathToPatchedGoRuntime="$pathToAdvocate/goPatch/bin/go"
+pathToGoRoot="$pathToAdvocate/goPatch"
 pathToOverheadInserter="$pathToAdvocate/toolchain/unitTestOverheadInserter/unitTestOverheadInserter"
 pathToOverheadRemover="$pathToAdvocate/toolchain/unitTestOverheadRemover/unitTestOverheadRemover"
 pathToAnalyzer="$pathToAdvocate/analyzer/analyzer"
@@ -71,9 +71,9 @@ echo "Goroot exported"
 touch advocateCommand.log
 echo $file >>advocateCommand.log
 echo $testName >>advocateCommand.log
-echo "Remove Overhead just in case" 
+echo "Remove Overhead just in case"
 echo "$pathToOverheadRemover -f $file -t $testName" >>advocateCommand.log
-$pathToOverheadRemover -f $file -t $testName 
+$pathToOverheadRemover -f $file -t $testName
 echo "Add Overhead"
 echo "$pathToOverheadInserter -f $file -t $testName" >>advocateCommand.log
 $pathToOverheadInserter -f $file -t $testName >>advocateCommand.log

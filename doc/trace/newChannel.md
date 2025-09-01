@@ -25,4 +25,4 @@ fields are
 
 ## Implementation
 
-The main implementation of this is done in the [makechan](../../go-patch/src/runtime/chan.go#L200) function by calling the [AdvocateChanMake](../../go-patch/src/runtime/advocate_trace_new_elem.go#L44) function, that is called if a channel is created with a make. Since a channel can also be created, without a make, the AdvocateChanMake is also called in the send and receive functions if the id of the channel has not been set yet.
+The main implementation of this is done in the [makechan](../../goPatch/src/runtime/chan.go#L200) function by calling the [AdvocateChanMake](../../goPatch/src/runtime/advocate_trace_new_elem.go#L44) function, that is called if a channel is created with a make. Since a channel can also be created, without a make, the AdvocateChanMake is also called in the send and receive functions if the id of the channel has not been set yet.

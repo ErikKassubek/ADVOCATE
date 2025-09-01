@@ -11,7 +11,8 @@
 package toolchain
 
 import (
-	"advocate/utils"
+	"advocate/utils/flags"
+	"advocate/utils/log"
 	"io"
 	"os"
 	"path/filepath"
@@ -69,7 +70,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 			_, err = io.Copy(destFile, srcFile)
 			if err != nil {
-				utils.LogError("Could not merge ", src, " int ", dest, ": ", err.Error())
+				log.Error("Could not merge ", src, " int ", dest, ": ", err.Error())
 			}
 		}
 	}
@@ -101,11 +102,11 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 }
 
-// Remove all traces, both recorded and rewritten from the path
+// RemoveTraces removes all traces, both recorded and rewritten from the path
 //
 // Parameter:
 //   - path string: path to the folder containing the traces
-func removeTraces(path string) {
+func RemoveTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",
@@ -159,19 +160,18 @@ func removeLogs(path string) {
 //
 // Parameter:
 //   - path string: path to the folder containing the fuzzing traces
-//   - keepTrace bool: if true move fuzzingTraces into the result folder, otherwise remove it
-func ClearFuzzingTrace(path string, keepTrace bool) {
+func ClearFuzzingTrace(path string) {
 	fuzzingPath := filepath.Join(path, "fuzzingTraces")
 
-	if keepTrace {
-		err := os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
-		if err != nil {
-			utils.LogErrorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
-		}
+	if flags.KeepTraces {
+		_ = os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
+		// if err != nil {
+		// 	log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
+		// }
 	} else {
 		err := os.RemoveAll(fuzzingPath)
 		if err != nil {
-			utils.LogErrorf("Could not delete fuzzingTraces: %s", err.Error())
+			log.Errorf("Could not delete fuzzingTraces: %s", err.Error())
 		}
 	}
 }

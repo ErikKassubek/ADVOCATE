@@ -11,9 +11,13 @@
 package toolchain
 
 import (
+	"advocate/utils/control"
+	"advocate/utils/flags"
+	"context"
 	"io"
 	"os"
 	"os/exec"
+	"time"
 )
 
 // runCommand runs a command line (shell) commands
@@ -26,10 +30,16 @@ import (
 //
 // Returns:
 //   - error
+//
+// TODO: fix timeout
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
-	cmd := exec.Command(name, args...)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
+	id := control.AddRunningCom(cancel)
+	defer control.RemoveRunningCom(id)
 
-	if outputFlag {
+	cmd := exec.CommandContext(ctx, name, args...)
+
+	if flags.Output {
 		if osOut != nil {
 			multiOut := io.MultiWriter(os.Stdout, osOut)
 			cmd.Stdout = multiOut

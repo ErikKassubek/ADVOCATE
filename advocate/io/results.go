@@ -11,9 +11,9 @@
 package io
 
 import (
-	"advocate/bugs"
-	"advocate/timer"
-	"advocate/utils"
+	"advocate/results/bugs"
+	"advocate/utils/log"
+	"advocate/utils/timer"
 	"bufio"
 	"fmt"
 	"os"
@@ -38,7 +38,7 @@ func ReadAnalysisResults(resMachinePath string, index int) (bool, bugs.Bug, erro
 
 	file, err := os.Open(resMachinePath)
 	if err != nil {
-		utils.LogError("Error opening file: " + resMachinePath)
+		log.Error("Error opening file: " + resMachinePath)
 		return false, bugs.Bug{}, err
 	}
 

@@ -12,6 +12,5 @@ The documentation has the following sections:
 - [Rewrite](rewrite.md)
 - [Replay](replay.md)
 - [Fuzzing](fuzzing.md)
-- [Memory](memory.md)
 - [Statistics and Runtime](statistics.md)
 - [Related works](relatedWorks.md)

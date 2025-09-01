@@ -42,15 +42,14 @@ getting stuck due to an impossible trace.
 For the explanation of the simplified replay used for
 flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 
-
 ## Toolchain
 
 The replay is run, if the test of main function starts with the following header:
 
-  ```go
-  advocate.InitReplay(index, timeout, atomic)
-  defer advocate.FinishReplay()
-  ```
+```go
+advocate.InitReplay(index, timeout, atomic)
+defer advocate.FinishReplay()
+```
 
 The parameters are as follows:
 
@@ -59,7 +58,6 @@ The parameters are as follows:
 - `atomic`: If set to `true`, the replay will force the correct order of atomic events. If atomic operations should be ignored for the replay, set this to `false`.
 
 When using the toolchain to run replays, this header is automatically added.
-
 
 ## Complete replay
 
@@ -162,6 +160,7 @@ M5: Advance to the next operation in the trace.
 The implemented acknowledgements are necessary to prevent situations like the following:
 
 Assume we have the following program code
+
 ```go
 var m sync.Mutex
 
@@ -183,6 +182,7 @@ To prevent this, we use an acknowledgement. When an operation is released, the r
 Additionally, we only directly release elements (E3) if the replay manager is currently not waiting for an acknowledgement.
 
 For most operation this works, since they can be executed consecutively. The only operation where this does not work are the channels. Assume we have the following code:
+
 ```go
 c := make(chan int, 0)
 
@@ -192,13 +192,14 @@ go func() {
 
 <- c
 ```
+
 If we would wait for the send to fully execute and send an acknowledgement before we release the receive, the program would get stuck, because the send and the receive need to execute at the same time. We therefore do not wait for acknowledgements on channel communication operations and selects (M4).
 
 ### Detail
 
-The code for the replay is mainly in [advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../go-patch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
+The code for the replay is mainly in [advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go) and [runtime/advocate_replay.go](../goPatch/src/runtime/advocate_replay.go) as well as in the code implementation of all recorded operations.
 
-[advocate/advocate_replay.go](../go-patch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read.
+[advocate/advocate_replay.go](../goPatch/src/advocate/advocate_replay.go) mainly contains the code to read in the trace and initialize the replay. When reading in the trace, all trace files are read.
 
 The internal representation of the replay consists of a slice of `ReplayElements` called `replayData`.
 Each `ReplayElement` represents one operation that is to be executed. It contains data about
@@ -235,7 +236,7 @@ uniquely identify by the code position, which send of the sends should be execut
 Each spawn operation in the trace
 contains the ID of the new routine, it creates. When a spawn is executed,
 it will store this `replayID` in the new routine (in the `*g` object, where we
-also record the traces, [implemented here](../go-patch/src/runtime/proc.go#L5083)). When a operation wants to execute, it will get this
+also record the traces, [implemented here](../goPatch/src/runtime/proc.go#L5083)). When a operation wants to execute, it will get this
 ID from the routine and its code position from `runtime.Caller`. With those
 information, an operation can be (mostly) uniquely connected to an operation in
 the trace. The only case, where operation would have the same key, is for operations
@@ -266,7 +267,7 @@ if wait {
 ```
 
 When a operation wants to execute
-it will call the [WaitForReplay](../go-patch/src/runtime/advocate_replay.go#L587) function.
+it will call the [WaitForReplay](../goPatch/src/runtime/advocate_replay.go#L587) function.
 The arguments of the function
 contain information about the operation (type of operation and
 skip value for `runtime.Caller`) as well as information about whether the
@@ -319,7 +320,7 @@ next operation.
 
 The replay manager releases the operations in the correct order.
 
-To release the operations, a separate routine [ReplayManager](../go-patch/src/runtime/advocate_replay.go#L353) is run in the
+To release the operations, a separate routine [ReplayManager](../goPatch/src/runtime/advocate_replay.go#L353) is run in the
 background.
 
 This routing loops as long as the replay is active.
@@ -385,10 +386,9 @@ far enough, this may still result in interesting behavior, e.g. if the replay
 is used for confirming a bug, the bug may still be triggered, if the program has already been
 pushed far enough in the correct direction.
 
-
 ##### getNextReplayElement
 
-The function to get the next element to be replayed is implemented [here](../go-patch/src/runtime/advocate_replay.go#L789).
+The function to get the next element to be replayed is implemented [here](../goPatch/src/runtime/advocate_replay.go#L789).
 
 The trace is stored in a sorted slice. The replay is therefore done in the
 order, in which the operations occur in this trace. To keep track of this,
@@ -407,7 +407,7 @@ replayed.
 
 ##### release
 
-To [release](../go-patch/src/runtime/advocate_replay.go#L693) a waiting element,
+To [release](../goPatch/src/runtime/advocate_replay.go#L693) a waiting element,
 we send the element info over the corresponding
 channel, on which the operation is waiting.
 
@@ -432,9 +432,9 @@ increase the trace counter by 1.
 While most operations are fully determined by the order in which they are executed,
 this may not be the case for selects. Here we need to determine which case
 the replay should execute. For this an alternative implementation of the
-[select structure with a preferred case](../go-patch/src/runtime/select.go#L151) has been implemented.
+[select structure with a preferred case](../goPatch/src/runtime/select.go#L151) has been implemented.
 
-In the [original implementation](../go-patch/src/runtime/select.go#L629), the select has three phases. In the
+In the [original implementation](../goPatch/src/runtime/select.go#L629), the select has three phases. In the
 first phase the code iterates over all cases and checks, if one of then can
 immediately be executed.\
 If this is the case, it is executed and the select returns. If this is not
@@ -456,7 +456,7 @@ Similar to release of the oldest waiting element, we also want to release the
 wait on the select if the runtime senses, that the replay may be stuck. For
 this reason, we implement a `gopark` function with a timeout, that
 automatically wakes it up after a certain time. The park with timeout is implemented
-in [prog.go](../go-patch/src/runtime/proc.go#L439) as follows:
+in [prog.go](../goPatch/src/runtime/proc.go#L439) as follows:
 
 ```go
 func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int, timeout int64) {
@@ -477,6 +477,7 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
   ...
 }
 ```
+
 The additionally routine will wake the sleeping routine if the timer
 runs out before it is awoken by a communication partner.
 
@@ -486,9 +487,9 @@ In this case the select returns. If it was awoken by the timeout, we dequeue
 the waiting channel operation and return. In this case, the select is run again,
 now with the original implementation, meaning without any guidance.
 
-Selects with only one case and a default are implemented separately in go ([here](../go-patch/src/runtime/chan.go#L990) and [here](../go-patch/src/runtime/chan.go#L1057)).
-This implementation tries to directly [send](../go-patch/src/runtime/chan.go#L201) or
-[receive](../go-patch/src/runtime/chan.go#L645) on the channel in the non default case.
+Selects with only one case and a default are implemented separately in go ([here](../goPatch/src/runtime/chan.go#L990) and [here](../goPatch/src/runtime/chan.go#L1057)).
+This implementation tries to directly [send](../goPatch/src/runtime/chan.go#L201) or
+[receive](../goPatch/src/runtime/chan.go#L645) on the channel in the non default case.
 If this is not possible because no communication partner is available, it directly
 calls the default.\
 For the replay this is changed as follows: If the default case is the preferred case,
@@ -510,11 +511,10 @@ For more information about this, see the [atomic recording documentation](./trac
 Go stops the execution of all routines in a program, as soon as all operations
 in the main routine have been executed. In the replay, we want to avoid that the
 program terminates, before all operations in the trace have been executed.
-To do this, we implement a function [FinishReplay](../go-patch/src/advocate/advocate_replay.go#L447).
+To do this, we implement a function [FinishReplay](../goPatch/src/advocate/advocate_replay.go#L447).
 This function should be executed at the end of the main functions.
 It will run, until all operations in the trace have been executed, stopping the
 main routine from terminating to early.
-
 
 ## Partial replay
 
@@ -609,4 +609,3 @@ To not get completely stuck if such operations occur, the replay mechanism
 is able to release waiting elements without them being the next trace element
 or to completely disable the replay, if it senses, that it is stuck (as
 described in the [details](#timeout) section).
-

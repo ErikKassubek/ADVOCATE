@@ -17,8 +17,8 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-pathToPatchedGoRuntime="$pathToAdvocate/go-patch/bin/go"
-pathToGoRoot="$pathToAdvocate/go-patch"
+pathToPatchedGoRuntime="$pathToAdvocate/goPatch/bin/go"
+pathToGoRoot="$pathToAdvocate/goPatch"
 pathToOverheadInserter="$pathToAdvocate/toolchain/overHeadInserter/inserter"
 pathToOverheadRemover="$pathToAdvocate/toolchain/overHeadRemover/remover"
 pathToAnalyzer="$pathToAdvocate/analyzer/analyzer"

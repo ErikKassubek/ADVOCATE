@@ -1399,8 +1399,11 @@ func gcDrainN(gcw *gcWork, scanWork int64) int64 {
 //
 // If stk != nil, possible stack pointers are also reported to stk.putPtr.
 //
+// ADVOCATE-START
+//
 //go:nowritebarrier
 func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState, id uint64) {
+	// ADVOCATE-END
 	// Use local copies of original parameters, so that a stack trace
 	// due to one of the throws below shows the original block
 	// base and extent.
@@ -1425,8 +1428,10 @@ func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState,
 						if !tryDeferToSpanScan(p, gcw) {
 							if obj, span, objIndex := findObject(p, b, i); obj != 0 {
 								// ADVOCATE-START
-								if currentSleeping == obj {
-									haveRef[id] = true
+								for currentSleepingOp, _ := range haveRef {
+									if currentSleepingOp == obj {
+										haveRef[currentSleepingOp][id] = true
+									}
 								}
 								// ADVOCATE-END
 								greyobject(obj, b, i, span, gcw, objIndex)

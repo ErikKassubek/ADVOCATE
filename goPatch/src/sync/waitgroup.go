@@ -236,6 +236,11 @@ func (wg *WaitGroup) Wait() {
 	if race.Enabled {
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StoreLastPark(unsafe.Pointer(wg))
+	// ADVOCATE-END
+
 	for {
 		state := wg.state.Load()
 		v := int32(state >> 32)

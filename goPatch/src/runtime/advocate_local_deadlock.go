@@ -35,10 +35,6 @@ func StoreLastPark(w unsafe.Pointer) {
 	currentGoRoutineInfo().parkOn = w
 }
 
-func ClearLastPark() {
-	currentGoRoutineInfo().parkOn = nil
-}
-
 func DetectLocalDeadlock() {
 	go func() {
 		for {
@@ -91,6 +87,7 @@ func DetectLocalDeadlock() {
 			for opId, _ := range currentParkedToRoutine {
 				aliveRefs := 0
 				for routId, hasRef := range haveRef[opId] {
+					// TODO: count routines that are currently waiting but not in a deadlock
 					if hasRef && routineRunning[uint64(routId)] {
 						aliveRefs++
 						println("ALIVE REF: ", routId)

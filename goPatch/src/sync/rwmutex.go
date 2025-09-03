@@ -108,6 +108,11 @@ func (rw *RWMutex) RLock() {
 		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StoreLastPark(unsafe.Pointer(rw))
+	// ADVOCATE-END
+
 	if rw.readerCount.Add(1) < 0 {
 		// A writer is pending, wait for it.
 		runtime_SemacquireRWMutexR(&rw.readerSem, false, 0)
@@ -283,6 +288,11 @@ func (rw *RWMutex) Lock() {
 		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StoreLastPark(unsafe.Pointer(rw))
+	// ADVOCATE-END
+
 	// First, resolve competition with other writers.
 	rw.w.Lock()
 	// Announce to readers there is a pending writer.

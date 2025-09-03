@@ -84,9 +84,11 @@ func (m *Mutex) Lock() {
 	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
+	// ADVOCATE-START
 	runtime.StoreLastPark(unsafe.Pointer(m))
+	// ADVOCATE-END
+
 	m.mu.Lock()
-	runtime.ClearLastPark()
 
 	// ADVOCATE-START
 	runtime.AdvocateMutexPost(advocateIndex, true)

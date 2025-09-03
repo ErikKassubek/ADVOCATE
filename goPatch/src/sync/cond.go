@@ -89,6 +89,10 @@ func (c *Cond) Wait() {
 	defer runtime.AdvocateCondPost(advocateIndex)
 	// ADVOCATE-END
 
+	// ADVOCATE-START
+	runtime.StoreLastPark(unsafe.Pointer(c))
+	// ADVOCATE-END
+
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
 	c.L.Unlock()

@@ -238,7 +238,7 @@ func (wg *WaitGroup) Wait() {
 	}
 
 	// ADVOCATE-START
-	runtime.StoreLastPark(unsafe.Pointer(wg))
+	runtime.StorePark(unsafe.Pointer(wg))
 	// ADVOCATE-END
 
 	for {

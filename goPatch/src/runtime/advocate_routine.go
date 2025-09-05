@@ -34,7 +34,7 @@ type AdvocateRoutine struct {
 	G           *g
 	Trace       []traceElem
 	replayID    int
-	parkOn      unsafe.Pointer
+	parkOn      []unsafe.Pointer
 }
 
 // Create a new advocate routine
@@ -54,6 +54,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 			G:           g,
 			Trace:       make([]traceElem, 0),
 			replayID:    replayRoutine,
+			parkOn:      make([]unsafe.Pointer, 0),
 		}
 	}
 
@@ -63,6 +64,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
+		parkOn:      make([]unsafe.Pointer, 0),
 	}
 
 	lock(&AdvocateRoutinesLock)

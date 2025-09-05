@@ -110,7 +110,7 @@ func (rw *RWMutex) RLock() {
 	}
 
 	// ADVOCATE-START
-	runtime.StoreLastPark(unsafe.Pointer(rw))
+	runtime.StorePark(unsafe.Pointer(rw))
 	// ADVOCATE-END
 
 	if rw.readerCount.Add(1) < 0 {
@@ -290,7 +290,7 @@ func (rw *RWMutex) Lock() {
 	}
 
 	// ADVOCATE-START
-	runtime.StoreLastPark(unsafe.Pointer(rw))
+	runtime.StorePark(unsafe.Pointer(rw))
 	// ADVOCATE-END
 
 	// First, resolve competition with other writers.

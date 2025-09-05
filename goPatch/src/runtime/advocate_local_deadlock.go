@@ -28,16 +28,45 @@ var blockedConcurrencyReasons = []waitReason{
 	waitReasonSyncWaitGroupWait,
 }
 
+var blockedRoutines = make(map[uint64][]uintptr)        // blocked routine id -> blocked operations
 var currentParkedToRoutine = make(map[uintptr][]uint64) // pointer to parked operation -> list of routines parked on operation
 var haveRef = make(map[uintptr][]bool)                  // pointer to parked operation -> list of routines with reference to this
+var routinesByID = make(map[uint64]*g)                  // internal id to g
+var alreadyReportedPartialDeadlock = make(map[uintptr]struct{})
 
-func StoreLastPark(w unsafe.Pointer) {
-	currentGoRoutineInfo().parkOn = w
+// StorePark stores in a routine, a pointer to the last concurrency element,
+// on which the routine parked
+//
+// Parameter:
+//   - p unsafe.Pointer: pointer to the chan, (rw)mutex, wait group or conditional variable
+func StorePark(p unsafe.Pointer) {
+	currentGoRoutineInfo().parkOn = []unsafe.Pointer{p}
+}
+
+// StorePark stores in a routine, a pointers to the channels involved in a
+// select on which a routine parked.
+// Do not call if the select has a default.
+//
+// Parameter:
+//   - cas0 *scase: cas0 from the select implementation
+//   - order0 *uint16: order0 from the select implementation
+//   - ncases int: number of cases in the select (nsends+nrecvs from the select implementation)
+func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int) {
+	cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
+
+	scases := cas1[:ncases:ncases]
+
+	currentGoRoutineInfo().parkOn = []unsafe.Pointer{}
+
+	for _, scase := range scases {
+		currentGoRoutineInfo().parkOn = append(currentGoRoutineInfo().parkOn, unsafe.Pointer(scase.c))
+	}
 }
 
 func DetectLocalDeadlock() {
 	go func() {
 		for {
+			routinesByID := make(map[uint64]*g)
 			routineRunning := make(map[uint64]bool) // routine id -> is running
 			currentParkedToRoutine = make(map[uintptr][]uint64)
 
@@ -46,6 +75,8 @@ func DetectLocalDeadlock() {
 			forEachG(func(gp *g) {
 				numberRoutines++
 				id := gp.goid
+
+				routinesByID[id] = gp
 
 				if !isRoutineWaitingOnConcurrency(gp) {
 					routineRunning[id] = true
@@ -58,14 +89,10 @@ func DetectLocalDeadlock() {
 					return
 				}
 
-				parkOn := uintptr(gp.advocateRoutineInfo.parkOn)
-
-				// store currently sleeping operation
-				if _, ok := currentParkedToRoutine[parkOn]; !ok {
-					currentParkedToRoutine[parkOn] = make([]uint64, 0)
+				for _, p := range gp.advocateRoutineInfo.parkOn {
+					parkOn := uintptr(p)
+					currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
 				}
-				currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
-				println("WAITING: ", id, " ", parkOn)
 			})
 
 			// initialize haveRef. For each waiting element, we store a list
@@ -84,24 +111,43 @@ func DetectLocalDeadlock() {
 			// Run the garbage collector, to find for which sleeping operations, other routines have a reference
 			GC()
 
-			for opId, _ := range currentParkedToRoutine {
-				aliveRefs := 0
-				for routId, hasRef := range haveRef[opId] {
-					// TODO: count routines that are currently waiting but not in a deadlock
-					if hasRef && routineRunning[uint64(routId)] {
-						aliveRefs++
-						println("ALIVE REF: ", routId)
-					} else if hasRef {
-						println("WAITING REF: ", routId)
-					}
-				}
+			// split all references in waiting and references on runnable/running routines
+			// and waiting routines
+			aliveRef := make(map[uintptr][]int)
+			waitingRef := make(map[uintptr][]int)
 
-				if aliveRefs == 0 {
-					println("FOUND DEADLOCK")
+			for opID := range currentParkedToRoutine {
+				for routID, hasRef := range haveRef[opID] {
+					if hasRef && routineRunning[uint64(routID)] {
+						aliveRef[opID] = append(aliveRef[opID], routID)
+					} else if hasRef {
+						waitingRef[opID] = append(waitingRef[opID], routID)
+					}
 				}
 			}
 
-			println("\n\n")
+			// check for references without any alive routines
+			for opID := range currentParkedToRoutine {
+				// no alive references -> deadlock
+				if len(aliveRef[opID]) == 0 {
+					if _, ok := alreadyReportedPartialDeadlock[opID]; ok {
+						continue
+					}
+					alreadyReportedPartialDeadlock[opID] = struct{}{}
+
+					print("FOUND DEADLOCK")
+					for _, ref := range waitingRef[opID] {
+						g := routinesByID[uint64(ref)]
+						if g.advocateRoutineInfo.id != 0 {
+							print("\t", g.advocateRoutineInfo.id, ": ", getWaitingReasonString(g.waitreason))
+						} else {
+							print("\t", g.goid, ": ", getWaitingReasonString(g.waitreason))
+						}
+					}
+				}
+				println("\n")
+			}
+
 			sleep(1)
 		}
 	}()
@@ -117,4 +163,40 @@ func isRoutineWaitingOnConcurrency(gp *g) bool {
 	}
 
 	return true
+}
+
+// getWaitingReasonString takes a waitReason of a routine and returns a
+// string representation
+//
+// Parameter:
+//   - wr waitReason: the wait reason enum value
+//
+// Returns:
+//   - string: the string representation of wr
+func getWaitingReasonString(wr waitReason) string {
+	switch wr {
+	case waitReasonChanReceiveNilChan:
+		return " chan (recv on nil)"
+	case waitReasonChanSendNilChan:
+		return "chan (send on nil)"
+	case waitReasonSelect:
+		return "select"
+	case waitReasonSelectNoCases:
+		return "select (without cases)"
+	case waitReasonChanReceive:
+		return "chan (revc)"
+	case waitReasonChanSend:
+		return "chan (send)"
+	case waitReasonSyncCondWait:
+		return "cond (wait)"
+	case waitReasonSyncMutexLock:
+		return "mutex (lock)"
+	case waitReasonSyncRWMutexRLock:
+		return "rwmutex (rlock)"
+	case waitReasonSyncRWMutexLock:
+		return "rwmutex (lock)"
+	case waitReasonSyncWaitGroupWait:
+		return "wait group (wait)"
+	}
+	return "unknown"
 }

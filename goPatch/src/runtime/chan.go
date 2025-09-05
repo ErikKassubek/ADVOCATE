@@ -372,7 +372,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	// ADVOCATE-START
-	StoreLastPark(unsafe.Pointer(c))
+	StorePark(unsafe.Pointer(c))
 	// ADVOCATE-END
 
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
@@ -865,7 +865,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		reason = waitReasonSynctestChanReceive
 	}
 	// ADVOCATE-START
-	StoreLastPark(unsafe.Pointer(c))
+	StorePark(unsafe.Pointer(c))
 	// ADVOCATE-END
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanRecv, 2)
 

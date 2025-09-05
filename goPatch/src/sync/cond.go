@@ -90,7 +90,7 @@ func (c *Cond) Wait() {
 	// ADVOCATE-END
 
 	// ADVOCATE-START
-	runtime.StoreLastPark(unsafe.Pointer(c))
+	runtime.StorePark(unsafe.Pointer(c))
 	// ADVOCATE-END
 
 	c.checker.check()

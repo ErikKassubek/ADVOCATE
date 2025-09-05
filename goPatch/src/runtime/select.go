@@ -121,12 +121,17 @@ func block() {
 // a value was received.
 // ADVOCATE-START
 func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, block bool) (int, bool) {
+
 	var replayElem ReplayElement
 	wait, ch, _, _ := WaitForReplay(OperationSelect, 2, false)
 
 	gFuzzEnabled, fuzzingIndex := AdvocateFuzzingGetPreferredCase(2)
 
 	ai := -1
+
+	if block {
+		StoreParkSelect(cas0, order0, nsends+nrecvs)
+	}
 
 	if wait {
 		replayElem = <-ch

@@ -85,7 +85,7 @@ func (m *Mutex) Lock() {
 	// ADVOCATE-END
 
 	// ADVOCATE-START
-	runtime.StoreLastPark(unsafe.Pointer(m))
+	runtime.StorePark(unsafe.Pointer(m))
 	// ADVOCATE-END
 
 	m.mu.Lock()

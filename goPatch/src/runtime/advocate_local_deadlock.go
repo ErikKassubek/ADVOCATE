@@ -35,6 +35,9 @@ var routinesByID = make(map[uint64]*g)                  // internal id to g
 var alreadyReportedPartialDeadlock = make(map[uintptr]struct{})
 var collectPartialDeadlockInfo = false
 
+var aliveRef = make(map[uintptr][]int)
+var waitingRef = make(map[uintptr][]int)
+
 // StorePark stores in a routine, a pointer to the last concurrency element,
 // on which the routine parked
 //
@@ -64,6 +67,8 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int) {
 	}
 }
 
+// DetectLocalDeadlock checks once per second, if the currently running program
+// contains a deadlock. Is this the case it print a corresponding info.
 func DetectLocalDeadlock() {
 	go func() {
 		for {
@@ -116,8 +121,8 @@ func DetectLocalDeadlock() {
 
 			// split all references in waiting and references on runnable/running routines
 			// and waiting routines
-			aliveRef := make(map[uintptr][]int)
-			waitingRef := make(map[uintptr][]int)
+			aliveRef = make(map[uintptr][]int)
+			waitingRef = make(map[uintptr][]int)
 
 			for opID := range currentParkedToRoutine {
 				for routID, hasRef := range haveRef[opID] {
@@ -129,10 +134,17 @@ func DetectLocalDeadlock() {
 				}
 			}
 
+			// TODO: can it happen, that a dead routine with a reference wakes up again? This does not seem to be detected.
 			// check for references without any alive routines
 			for opID := range currentParkedToRoutine {
 				// no alive references -> deadlock
 				if len(aliveRef[opID]) == 0 {
+					// if the blocked operation is in a select, it is only a deadlock if
+					// all cases in the select have no alive references
+					if noDeadlockSelect(opID) {
+						continue
+					}
+
 					if _, ok := alreadyReportedPartialDeadlock[opID]; ok {
 						continue
 					}
@@ -202,4 +214,30 @@ func getWaitingReasonString(wr waitReason) string {
 		return "wait group (wait)"
 	}
 	return "unknown"
+}
+
+// noDeadlockSelect checks for a blocked element, if it is blocked in a select,
+// and if so if all cases in the select have no running routines
+//
+// Parameter:
+//   - opID uintptr: the element to check
+//
+// Returns:
+//   - bool: true if the op is in a routine, where another case has channel
+//     with a reference in a running routine, false if it is not blocked in
+//     a select or if the select has another live reference
+func noDeadlockSelect(opID uintptr) bool {
+	for _, ref := range waitingRef[opID] {
+		g := routinesByID[uint64(ref)]
+		if g.waitreason != waitReasonSelect {
+			continue
+		}
+
+		for _, r := range g.advocateRoutineInfo.parkOn {
+			if len(aliveRef[uintptr(r)]) > 0 {
+				return true
+			}
+		}
+	}
+	return false
 }

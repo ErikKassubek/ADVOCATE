@@ -732,8 +732,10 @@ var panicnil = &godebugInc{name: "panicnil"}
 //go:linkname gopanic
 func gopanic(e any) {
 	// ADVOCATE-START
-	println("PANIC")
-	ExitReplayPanic(e)
+	if replayEnabled {
+		println("PANIC")
+		ExitReplayPanic(e)
+	}
 	// ADVOCATE-END
 	if e == nil {
 		if debug.panicnil.Load() != 1 {

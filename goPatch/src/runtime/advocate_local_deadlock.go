@@ -150,17 +150,17 @@ func DetectLocalDeadlock() {
 					}
 					alreadyReportedPartialDeadlock[opID] = struct{}{}
 
-					print("FOUND DEADLOCK")
+					print("FOUND DEADLOCK\n")
 					for _, ref := range waitingRef[opID] {
 						g := routinesByID[uint64(ref)]
 						if g.advocateRoutineInfo.id != 0 {
-							print("\t", g.advocateRoutineInfo.id, ": ", getWaitingReasonString(g.waitreason))
+							print("\t", g.advocateRoutineInfo.id, ": ", getWaitingReasonString(g.waitreason), "\n")
 						} else {
-							print("\t", g.goid, ": ", getWaitingReasonString(g.waitreason))
+							print("\t", g.goid, ": ", getWaitingReasonString(g.waitreason), "\n")
 						}
 					}
+					println("\n")
 				}
-				println("\n")
 			}
 
 			sleep(1)
@@ -229,6 +229,11 @@ func getWaitingReasonString(wr waitReason) string {
 func noDeadlockSelect(opID uintptr) bool {
 	for _, ref := range waitingRef[opID] {
 		g := routinesByID[uint64(ref)]
+
+		// TODO: this should not happen, but does
+		if g == nil {
+			continue
+		}
 		if g.waitreason != waitReasonSelect {
 			continue
 		}

@@ -33,6 +33,7 @@ var currentParkedToRoutine = make(map[uintptr][]uint64) // pointer to parked ope
 var haveRef = make(map[uintptr][]bool)                  // pointer to parked operation -> list of routines with reference to this
 var routinesByID = make(map[uint64]*g)                  // internal id to g
 var alreadyReportedPartialDeadlock = make(map[uintptr]struct{})
+var collectPartialDeadlockInfo = false
 
 // StorePark stores in a routine, a pointer to the last concurrency element,
 // on which the routine parked
@@ -109,7 +110,9 @@ func DetectLocalDeadlock() {
 			}
 
 			// Run the garbage collector, to find for which sleeping operations, other routines have a reference
+			collectPartialDeadlockInfo = true
 			GC()
+			collectPartialDeadlockInfo = false
 
 			// split all references in waiting and references on runnable/running routines
 			// and waiting routines

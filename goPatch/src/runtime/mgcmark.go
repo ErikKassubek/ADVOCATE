@@ -1429,7 +1429,7 @@ func scanblock(b0, n0 uintptr, ptrmask *uint8, gcw *gcWork, stk *stackScanState,
 							if obj, span, objIndex := findObject(p, b, i); obj != 0 {
 								// ADVOCATE-START
 								if collectPartialDeadlockInfo {
-									for currentSleepingOp, _ := range haveRef {
+									for currentSleepingOp := range haveRef {
 										if currentSleepingOp == obj {
 											haveRef[currentSleepingOp][id] = true
 										}

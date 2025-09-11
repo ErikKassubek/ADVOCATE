@@ -19,7 +19,7 @@ type routineStatus int
 const (
 	unknown routineStatus = iota
 	alive
-	waiting
+	suspect
 	dead
 )
 
@@ -197,7 +197,7 @@ func checkForLocalDeadlock() {
 			case alive:
 				foundAliveRef = true
 				break outer
-			case waiting:
+			case suspect:
 				routinesWithUnknownReferences[routineID] = struct{}{}
 				foundWaitingRef = true
 				break outer
@@ -225,13 +225,25 @@ func checkForLocalDeadlock() {
 		oldSize = len(routinesWithUnknownReferences)
 
 		for routID := range routinesWithUnknownReferences {
+			allDead := true
 			for _, ref := range routineRefs[routID] {
-				// ref of ref is alive or waiting -> waiting
-				if routineStatusInfo[ref] == alive || routineStatusInfo[ref] == waiting {
-					routineStatusInfo[routID] = waiting
+				// AliveReference and SuspectReference
+				if routineStatusInfo[ref] == alive || routineStatusInfo[ref] == suspect {
+					routineStatusInfo[routID] = suspect
 					delete(routinesWithUnknownReferences, routID)
+					allDead = false
 					break
 				}
+
+				if routineStatusInfo[ref] != dead {
+					allDead = false
+				}
+			}
+
+			// NoReference and DeadReference
+			if allDead {
+				routineStatusInfo[routID] = dead
+				delete(routinesWithUnknownReferences, routID)
 			}
 		}
 	}

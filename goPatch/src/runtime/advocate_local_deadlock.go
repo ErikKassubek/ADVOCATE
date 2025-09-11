@@ -38,10 +38,10 @@ var blockedConcurrencyReasons = []waitReason{
 }
 
 var currentParkedToRoutine = make(map[uintptr][]uint64) // pointer to parked operation -> list of routines parked on operation
-var parkedRoutines = make(map[uint64][]uintptr, 0)      // ids of waiting routines
+var parkedOpsPerRoutine = make(map[uint64][]uintptr, 0) // routine -> waiting elements
 var haveRef = make(map[uintptr][]bool)                  // pointer to parked operation -> list of routines with reference to this
 var routinesByID = make(map[uint64]*g)                  // internal id to g
-var alreadyReportedPartialDeadlock = make(map[uintptr]struct{})
+var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
 var collectPartialDeadlockInfo = false
 var routineStatusInfo = make(map[uint64]routineStatus)
 var routinesWithRef = make(map[uintptr][]uint64)
@@ -51,8 +51,12 @@ var routinesWithRef = make(map[uintptr][]uint64)
 //
 // Parameter:
 //   - p unsafe.Pointer: pointer to the chan, (rw)mutex, wait group or conditional variable
-func StorePark(p unsafe.Pointer) {
+//   - skip int: caller skip
+//   - replay bool: park is forever park due to replay
+func StorePark(p unsafe.Pointer, skip int, replay bool) {
 	currentGoRoutineInfo().parkOn = []unsafe.Pointer{p}
+	currentGoRoutineInfo().parkPos = posFromCaller(skip)
+	currentGoRoutineInfo().parkForeverReplay = replay
 }
 
 // StorePark stores in a routine, a pointers to the channels involved in a
@@ -63,7 +67,8 @@ func StorePark(p unsafe.Pointer) {
 //   - cas0 *scase: cas0 from the select implementation
 //   - order0 *uint16: order0 from the select implementation
 //   - ncases int: number of cases in the select (nsends+nrecvs from the select implementation)
-func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int) {
+//   - skip int: caller skip
+func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 	cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
 
 	scases := cas1[:ncases:ncases]
@@ -73,6 +78,7 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int) {
 	for _, scase := range scases {
 		currentGoRoutineInfo().parkOn = append(currentGoRoutineInfo().parkOn, unsafe.Pointer(scase.c))
 	}
+	currentGoRoutineInfo().parkPos = posFromCaller(skip)
 }
 
 // DetectLocalDeadlock checks once per second, if the currently running program
@@ -81,7 +87,7 @@ func DetectLocalDeadlock() {
 	go func() {
 		for {
 			currentParkedToRoutine = make(map[uintptr][]uint64)
-			parkedRoutines = make(map[uint64][]uintptr)
+			parkedOpsPerRoutine = make(map[uint64][]uintptr)
 			routinesByID = make(map[uint64]*g)
 
 			// search for routines, that are blocked on a concurrency primitive
@@ -147,7 +153,7 @@ func getWaitingRoutines() (int, int) {
 		for _, p := range gp.advocateRoutineInfo.parkOn {
 			parkOn := uintptr(p)
 			currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
-			parkedRoutines[id] = append(parkedRoutines[id], uintptr(p))
+			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], uintptr(p))
 		}
 	})
 
@@ -166,7 +172,7 @@ func checkForLocalDeadlock() {
 	}
 
 	routineRefs := make(map[uint64][]uint64) // for each blocke routine, the routines that have a reference
-	for routineID, opIDs := range parkedRoutines {
+	for routineID, opIDs := range parkedOpsPerRoutine {
 		for _, opID := range opIDs {
 			for _, ref := range routinesWithRef[opID] {
 				if routineID == ref {
@@ -255,22 +261,25 @@ func checkForLocalDeadlock() {
 }
 
 func printDeadlockInfo(routineID uint64) {
-	for _, opID := range parkedRoutines[routineID] {
-		if _, ok := alreadyReportedPartialDeadlock[opID]; ok {
+	for _, opID := range parkedOpsPerRoutine[routineID] {
+		if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
 			continue
 		}
-		alreadyReportedPartialDeadlock[opID] = struct{}{}
+		alreadyReportedPartialDeadlock[routineID] = struct{}{}
 
-		print("FOUND DEADLOCK\n")
+		if g := routinesByID[routineID]; g.advocateRoutineInfo.parkForeverReplay {
+			continue
+		}
+
+		print("DEADLOCK\n")
 		for _, ref := range routinesWithRef[opID] {
 			g := routinesByID[uint64(ref)]
 			if g.advocateRoutineInfo.id != 0 {
-				print("\t", g.advocateRoutineInfo.id, ": ", getWaitingReasonString(g.waitreason), "\n")
+				print("\t", g.advocateRoutineInfo.id, "@", getWaitingReasonString(g.waitreason), "@", g.advocateRoutineInfo.parkPos, "\n")
 			} else {
 				print("\t", g.goid, ": ", getWaitingReasonString(g.waitreason), "\n")
 			}
 		}
-		println("\n")
 	}
 
 }

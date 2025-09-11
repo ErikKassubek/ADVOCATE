@@ -6,6 +6,7 @@ package sync
 
 import (
 	"sync/atomic"
+	"unsafe"
 
 	// ADVOCATE-START
 	"runtime"
@@ -73,7 +74,7 @@ func (o *Once) Do(f func()) {
 	// the o.done.Store must be delayed until after f returns.
 
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, 2, false)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, runtime.CallerSkipOne, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
@@ -81,6 +82,7 @@ func (o *Once) Do(f func()) {
 				o.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateOncePre(o.id)
+			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true)
 			runtime.BlockForever()
 		}
 	}

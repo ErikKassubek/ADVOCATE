@@ -16,6 +16,20 @@ import (
 	"unsafe"
 )
 
+const (
+	CallerSkipAtomic           = 2
+	CallerSkipAtomicType       = 3
+	CallerSkipChanSendRecv     = 3
+	CallerSkipChanClose        = 2
+	CallerSkipCond             = 2
+	CallerSkipMutex            = 2
+	CallerSkipSelect           = 3
+	CallerSkipSelectOneDef     = 2
+	CallerSkipWaitGroupAddWait = 2
+	CallerSkipWaitGroupDone    = 3
+	CallerSkipOne              = 2
+)
+
 // Get a string representation of an uint64
 //
 // Parameter:

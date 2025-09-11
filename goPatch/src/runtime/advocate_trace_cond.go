@@ -44,7 +44,7 @@ func AdvocateCondPre(id uint64, op Operation) int {
 	}
 
 	timer := GetNextTimeStep()
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(CallerSkipCond)
 
 	if AdvocateIgnore(file) {
 		return -1

@@ -234,6 +234,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true)
 				BlockForever()
 			}
 		}
@@ -372,7 +373,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	// ADVOCATE-START
-	StorePark(unsafe.Pointer(c))
+	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false)
 	// ADVOCATE-END
 
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
@@ -693,6 +694,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true)
 				BlockForever()
 			}
 		}
@@ -865,7 +867,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		reason = waitReasonSynctestChanReceive
 	}
 	// ADVOCATE-START
-	StorePark(unsafe.Pointer(c))
+	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false)
 	// ADVOCATE-END
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanRecv, 2)
 
@@ -1010,6 +1012,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()
 			}
 		}
@@ -1083,6 +1086,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 				lock(&c.lock)
 				_ = AdvocateSelectPreOneNonDef(c, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()
 			}
 		}

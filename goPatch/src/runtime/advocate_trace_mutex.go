@@ -50,7 +50,7 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 
 	timer := GetNextTimeStep()
 
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(CallerSkipMutex)
 
 	if AdvocateIgnore(file) {
 		return -1

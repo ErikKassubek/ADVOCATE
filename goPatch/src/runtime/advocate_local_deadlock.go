@@ -91,7 +91,7 @@ func DetectLocalDeadlock() {
 			routinesByID = make(map[uint64]*g)
 
 			// search for routines, that are blocked on a concurrency primitive
-			numberRoutines, _ := getWaitingRoutines()
+			_, _, maxID := getWaitingRoutines()
 
 			// initialize haveRef. For each waiting element, we store a list
 			// containing one bool variable initialized to false per routine.
@@ -103,7 +103,7 @@ func DetectLocalDeadlock() {
 			// running the GC, more routines are created
 			haveRef = make(map[uintptr][]bool)
 			for obj := range currentParkedToRoutine {
-				haveRef[obj] = make([]bool, numberRoutines+10)
+				haveRef[obj] = make([]bool, maxID+10)
 			}
 
 			// Run the garbage collector, to find for which sleeping operations, other routines have a reference
@@ -124,12 +124,18 @@ func DetectLocalDeadlock() {
 // Returns:
 //   - int: total number of running routines
 //   - int: number of waiting routines
-func getWaitingRoutines() (int, int) {
+//   - uint64: maximum ID
+func getWaitingRoutines() (int, int, uint64) {
 	numberRoutines := 0
 	numberWaitingRoutines := 0
+	var maxID uint64 = 0
 	forEachG(func(gp *g) {
 		numberRoutines++
 		id := gp.goid
+
+		if id > maxID {
+			maxID = id
+		}
 
 		routinesByID[id] = gp
 
@@ -157,7 +163,7 @@ func getWaitingRoutines() (int, int) {
 		}
 	})
 
-	return numberRoutines, numberWaitingRoutines
+	return numberRoutines, numberWaitingRoutines, maxID
 }
 
 func checkForLocalDeadlock() {
@@ -271,13 +277,12 @@ func printDeadlockInfo(routineID uint64) {
 			continue
 		}
 
-		print("DEADLOCK\n")
 		for _, ref := range routinesWithRef[opID] {
 			g := routinesByID[uint64(ref)]
 			if g.advocateRoutineInfo.id != 0 {
-				print("\t", g.advocateRoutineInfo.id, "@", getWaitingReasonString(g.waitreason), "@", g.advocateRoutineInfo.parkPos, "\n")
+				print("DEADLOCK@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
 			} else {
-				print("\t", g.goid, ": ", getWaitingReasonString(g.waitreason), "\n")
+				print("DEADLOCK@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
 			}
 		}
 	}

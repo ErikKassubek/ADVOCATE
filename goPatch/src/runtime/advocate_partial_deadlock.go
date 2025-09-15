@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_local_deadlock.go
-// Brief: Detect local deadlocks while running
+// File: advocate_partial_deadlock.go
+// Brief: Detect partial deadlocks while running
 //
 // Author: Erik Kassubek
 // Created: 2025-08-01
@@ -81,9 +81,9 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 	currentGoRoutineInfo().parkPos = posFromCaller(skip)
 }
 
-// DetectLocalDeadlock checks once per second, if the currently running program
+// DetectPartialDeadlock checks once per second, if the currently running program
 // contains a deadlock. Is this the case it print a corresponding info.
-func DetectLocalDeadlock() {
+func DetectPartialDeadlock() {
 	go func() {
 		for {
 			currentParkedToRoutine = make(map[uintptr][]uint64)
@@ -111,7 +111,7 @@ func DetectLocalDeadlock() {
 			GC()
 			collectPartialDeadlockInfo = false
 
-			checkForLocalDeadlock()
+			checkForPartialDeadlock()
 
 			sleep(1)
 		}
@@ -166,7 +166,7 @@ func getWaitingRoutines() (int, int, uint64) {
 	return numberRoutines, numberWaitingRoutines, maxID
 }
 
-func checkForLocalDeadlock() {
+func checkForPartialDeadlock() {
 	routinesWithRef = make(map[uintptr][]uint64)
 
 	for opID := range currentParkedToRoutine {

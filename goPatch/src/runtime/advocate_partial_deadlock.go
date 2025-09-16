@@ -261,9 +261,9 @@ func reportDeadlock(routineID uint64) {
 	}
 
 	if g.advocateRoutineInfo.id != 0 {
-		print("DEADLOCK@", uintptr(g.advocateRoutineInfo.parkOn[0]), "@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
+		print("DEADLOCK@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
 	} else {
-		print("DEADLOCK@", uintptr(g.advocateRoutineInfo.parkOn[0]), "@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
+		print("DEADLOCK@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
 	}
 }
 

@@ -21,6 +21,7 @@ const (
 	alive
 	suspect
 	dead
+	waiting
 )
 
 var blockedConcurrencyReasons = []waitReason{
@@ -153,7 +154,7 @@ func getWaitingRoutines() (int, int, uint64) {
 
 		numberWaitingRoutines++
 		if routineStatusInfo[id] != dead {
-			routineStatusInfo[id] = unknown
+			routineStatusInfo[id] = waiting
 		}
 
 		for _, p := range gp.advocateRoutineInfo.parkOn {
@@ -189,104 +190,81 @@ func checkForPartialDeadlock() {
 		}
 	}
 
-	routinesWithUnknownReferences := make(map[uint64]struct{}, 0)
-	// check for references without any alive routines
-	for routineID, refIDs := range routineRefs {
-		// no other references to any of the blocked elements -> deadlock
-		if len(refIDs) == 0 {
-			routineStatusInfo[routineID] = dead
-			printDeadlockInfo(routineID)
-			continue
-		}
+	for {
+		couldApplyRule := false
+		for rID, status := range routineStatusInfo {
+			// not in waiting'
+			if status != waiting {
+				continue
+			}
 
-		// all other routines with references are dead
-		foundAliveRef := false
-		foundWaitingRef := false
+			// NoReference
+			if len(routineRefs[rID]) == 0 {
+				routineStatusInfo[rID] = dead
+				couldApplyRule = true
+			}
 
-	outer:
-		for _, refID := range refIDs {
-			switch routineStatusInfo[refID] {
-			case alive:
-				foundAliveRef = true
-				break outer
-			case suspect:
-				routinesWithUnknownReferences[routineID] = struct{}{}
-				foundWaitingRef = true
-				break outer
+			// AliveReference, DeadReference, SuspectReference
+			allRefDead := true
+			for _, ref := range routineRefs[rID] {
+				refStatus := routineStatusInfo[ref]
+
+				if refStatus != dead {
+					allRefDead = false
+				}
+
+				if refStatus == alive || refStatus == suspect {
+					routineStatusInfo[rID] = suspect
+					couldApplyRule = true
+					continue
+				}
+			}
+
+			// DeadReference
+			if allRefDead {
+				routineStatusInfo[rID] = dead
+				couldApplyRule = true
 			}
 		}
 
-		// alive ref -> no deadlock
-		if foundAliveRef {
-			continue
-		}
-
-		// only dead references -> deadlock
-		if !foundWaitingRef {
-			printDeadlockInfo(routineID)
-		}
-	}
-
-	// for routines that are waiting but not dead, check if the waitings can
-	// be declared definitely waiting or dead, depending on there references
-	oldSize := 0
-	for {
-		if len(routinesWithUnknownReferences) == oldSize {
+		if !couldApplyRule {
 			break
 		}
-		oldSize = len(routinesWithUnknownReferences)
+	}
 
-		for routID := range routinesWithUnknownReferences {
-			allDead := true
-			for _, ref := range routineRefs[routID] {
-				// AliveReference and SuspectReference
-				if routineStatusInfo[ref] == alive || routineStatusInfo[ref] == suspect {
-					routineStatusInfo[routID] = suspect
-					delete(routinesWithUnknownReferences, routID)
-					allDead = false
-					break
-				}
-
-				if routineStatusInfo[ref] != dead {
-					allDead = false
-				}
-			}
-
-			// NoReference and DeadReference
-			if allDead {
-				routineStatusInfo[routID] = dead
-				delete(routinesWithUnknownReferences, routID)
-			}
+	// NoOtherRule
+	for rID, status := range routineStatusInfo {
+		if status == waiting {
+			routineStatusInfo[rID] = dead
 		}
 	}
 
-	// everything left is deadlock
-	for routID := range routinesWithUnknownReferences {
-		printDeadlockInfo(routID)
+	// Report dead routines
+	for rID, status := range routineStatusInfo {
+		if status == dead {
+			reportDeadlock(rID)
+		}
 	}
+
 }
 
-func printDeadlockInfo(routineID uint64) {
-	for _, opID := range parkedOpsPerRoutine[routineID] {
-		if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
-			continue
-		}
-		alreadyReportedPartialDeadlock[routineID] = struct{}{}
+func reportDeadlock(routineID uint64) {
+	if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
+		return
+	}
+	alreadyReportedPartialDeadlock[routineID] = struct{}{}
 
-		if g := routinesByID[routineID]; g.advocateRoutineInfo.parkForeverReplay {
-			continue
-		}
+	g := routinesByID[routineID]
 
-		for _, ref := range routinesWithRef[opID] {
-			g := routinesByID[uint64(ref)]
-			if g.advocateRoutineInfo.id != 0 {
-				print("DEADLOCK@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
-			} else {
-				print("DEADLOCK@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
-			}
-		}
+	if g.advocateRoutineInfo.parkForeverReplay {
+		return
 	}
 
+	if g.advocateRoutineInfo.id != 0 {
+		print("DEADLOCK@", uintptr(g.advocateRoutineInfo.parkOn[0]), "@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
+	} else {
+		print("DEADLOCK@", uintptr(g.advocateRoutineInfo.parkOn[0]), "@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
+	}
 }
 
 func isRoutineWaitingOnConcurrency(gp *g) bool {

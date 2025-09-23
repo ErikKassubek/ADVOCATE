@@ -286,11 +286,11 @@ func isRoutineWaitingOnConcurrency(gp *g) bool {
 func getWaitingReasonString(wr waitReason) string {
 	switch wr {
 	case waitReasonChanReceiveNilChan:
-		return " chan:recvOnNil)"
+		return "chan:recvOnNil"
 	case waitReasonChanSendNilChan:
-		return "chan:sendOnNil)"
+		return "chan:sendOnNil"
 	case waitReasonSelect:
-		return "select"
+		return "select:select"
 	case waitReasonSelectNoCases:
 		return "select:withoutCases"
 	case waitReasonChanReceive:
@@ -308,7 +308,7 @@ func getWaitingReasonString(wr waitReason) string {
 	case waitReasonSyncWaitGroupWait:
 		return "waitGroup:wait"
 	}
-	return "unknown"
+	return "unknown:unknown"
 }
 
 // noDeadlockSelect checks for a blocked element, if it is blocked in a select,

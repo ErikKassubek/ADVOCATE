@@ -1,3 +1,13 @@
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: advocate_replay.go
+// Brief: Entry point for partial deadlock detection
+//
+// Author: Erik Kassubek
+// Created: 2025-07-23
+//
+// License: BSD-3-Clause
+
 package advocate
 
 import (

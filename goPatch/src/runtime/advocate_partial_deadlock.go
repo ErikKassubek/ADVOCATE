@@ -46,6 +46,7 @@ var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
 var collectPartialDeadlockInfo = false
 var routineStatusInfo = make(map[uint64]routineStatus)
 var routinesWithRef = make(map[uintptr][]uint64)
+var AdvocatePDDetectionStopped = false
 
 // StorePark stores in a routine, a pointer to the last concurrency element,
 // on which the routine parked
@@ -82,41 +83,35 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 	currentGoRoutineInfo().parkPos = posFromCaller(skip)
 }
 
-// DetectPartialDeadlock checks once per second, if the currently running program
+// detectPD checks, if the currently running program
 // contains a deadlock. Is this the case it print a corresponding info.
-func DetectPartialDeadlock() {
-	go func() {
-		for {
-			currentParkedToRoutine = make(map[uintptr][]uint64)
-			parkedOpsPerRoutine = make(map[uint64][]uintptr)
-			routinesByID = make(map[uint64]*g)
+func AdvocateDetectPD() {
+	currentParkedToRoutine = make(map[uintptr][]uint64)
+	parkedOpsPerRoutine = make(map[uint64][]uintptr)
+	routinesByID = make(map[uint64]*g)
 
-			// search for routines, that are blocked on a concurrency primitive
-			_, _, maxID := getWaitingRoutines()
+	// search for routines, that are blocked on a concurrency primitive
+	_, _, maxID := getWaitingRoutines()
 
-			// initialize haveRef. For each waiting element, we store a list
-			// containing one bool variable initialized to false per routine.
-			// This is necessary, since we need to count the number of unique
-			// routines that hold a reference, while at the same time we should
-			// avoid allocating memory while the GC is running (therefore we cannot
-			// use a map)
-			// We add 10 more places for the case, that between the allocation and
-			// running the GC, more routines are created
-			haveRef = make(map[uintptr][]bool)
-			for obj := range currentParkedToRoutine {
-				haveRef[obj] = make([]bool, maxID+10)
-			}
+	// initialize haveRef. For each waiting element, we store a list
+	// containing one bool variable initialized to false per routine.
+	// This is necessary, since we need to count the number of unique
+	// routines that hold a reference, while at the same time we should
+	// avoid allocating memory while the GC is running (therefore we cannot
+	// use a map)
+	// We add 10 more places for the case, that between the allocation and
+	// running the GC, more routines are created
+	haveRef = make(map[uintptr][]bool)
+	for obj := range currentParkedToRoutine {
+		haveRef[obj] = make([]bool, maxID+10)
+	}
 
-			// Run the garbage collector, to find for which sleeping operations, other routines have a reference
-			collectPartialDeadlockInfo = true
-			GC()
-			collectPartialDeadlockInfo = false
+	// Run the garbage collector, to find for which sleeping operations, other routines have a reference
+	collectPartialDeadlockInfo = true
+	GC()
+	collectPartialDeadlockInfo = false
 
-			checkForPartialDeadlock()
-
-			sleep(1)
-		}
-	}()
+	checkForPartialDeadlock()
 }
 
 // getWaitingRoutines searches for waiting routines and stores the corresponding
@@ -204,15 +199,16 @@ func checkForPartialDeadlock() {
 				couldApplyRule = true
 			}
 
-			// AliveReference, DeadReference, SuspectReference
 			allRefDead := true
 			for _, ref := range routineRefs[rID] {
 				refStatus := routineStatusInfo[ref]
 
+				// DeadReference
 				if refStatus != dead {
 					allRefDead = false
 				}
 
+				// NonDeadReference
 				if refStatus == alive || refStatus == suspect {
 					routineStatusInfo[rID] = suspect
 					couldApplyRule = true
@@ -290,27 +286,27 @@ func isRoutineWaitingOnConcurrency(gp *g) bool {
 func getWaitingReasonString(wr waitReason) string {
 	switch wr {
 	case waitReasonChanReceiveNilChan:
-		return " chan (recv on nil)"
+		return " chan:recvOnNil)"
 	case waitReasonChanSendNilChan:
-		return "chan (send on nil)"
+		return "chan:sendOnNil)"
 	case waitReasonSelect:
 		return "select"
 	case waitReasonSelectNoCases:
-		return "select (without cases)"
+		return "select:withoutCases"
 	case waitReasonChanReceive:
-		return "chan (revc)"
+		return "chan:revc"
 	case waitReasonChanSend:
-		return "chan (send)"
+		return "chan:send"
 	case waitReasonSyncCondWait:
-		return "cond (wait)"
+		return "cond:wait"
 	case waitReasonSyncMutexLock:
-		return "mutex (lock)"
+		return "mutex:lock"
 	case waitReasonSyncRWMutexRLock:
-		return "rwmutex (rlock)"
+		return "rwmutex:rlock"
 	case waitReasonSyncRWMutexLock:
-		return "rwmutex (lock)"
+		return "rwmutex:lock"
 	case waitReasonSyncWaitGroupWait:
-		return "wait group (wait)"
+		return "waitGroup:wait"
 	}
 	return "unknown"
 }

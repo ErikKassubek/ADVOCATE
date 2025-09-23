@@ -62,7 +62,7 @@ func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 
 	timer := GetNextTimeStep()
 
-	_, file, line, _ := Caller(3)
+	_, file, line, _ := Caller(CallerSkipChanSendRecv)
 
 	if AdvocateIgnore(file) {
 		return -1
@@ -98,7 +98,7 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 
 	timer := GetNextTimeStep()
 
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(CallerSkipChanClose)
 	if AdvocateIgnore(file) {
 		return -1
 	}

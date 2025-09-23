@@ -54,9 +54,9 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 	var file string
 	var line int
 	if delta > 0 {
-		_, file, line, _ = Caller(2)
+		_, file, line, _ = Caller(CallerSkipWaitGroupAddWait)
 	} else {
-		_, file, line, _ = Caller(3)
+		_, file, line, _ = Caller(CallerSkipWaitGroupDone)
 	}
 
 	if AdvocateIgnore(file) {
@@ -90,7 +90,7 @@ func AdvocateWaitGroupWait(id uint64) int {
 
 	timer := GetNextTimeStep()
 
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(CallerSkipWaitGroupAddWait)
 
 	if AdvocateIgnore(file) {
 		return -1

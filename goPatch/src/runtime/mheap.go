@@ -2175,7 +2175,7 @@ func addfinalizer(p unsafe.Pointer, f *funcval, nret uintptr, fint *_type, ot *p
 			}
 			// Mark the finalizer itself, since the
 			// special isn't part of the GC'd heap.
-			scanblock(uintptr(unsafe.Pointer(&s.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+			scanblock(uintptr(unsafe.Pointer(&s.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 			releasem(mp)
 		}
 		return true
@@ -2232,7 +2232,7 @@ func addCleanup(p unsafe.Pointer, f *funcval) uint64 {
 		gcw := &mp.p.ptr().gcw
 		// Mark the cleanup itself, since the
 		// special isn't part of the GC'd heap.
-		scanblock(uintptr(unsafe.Pointer(&s.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+		scanblock(uintptr(unsafe.Pointer(&s.fn)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 	}
 	releasem(mp)
 	// Keep f alive. There's a window in this function where it's
@@ -2590,7 +2590,7 @@ func getOrAddWeakHandle(p unsafe.Pointer) *atomic.Uintptr {
 			gcw := &mp.p.ptr().gcw
 			// Mark the weak handle itself, since the
 			// special isn't part of the GC'd heap.
-			scanblock(uintptr(unsafe.Pointer(&s.handle)), goarch.PtrSize, &oneptrmask[0], gcw, nil)
+			scanblock(uintptr(unsafe.Pointer(&s.handle)), goarch.PtrSize, &oneptrmask[0], gcw, nil, 0)
 			releasem(mp)
 		}
 

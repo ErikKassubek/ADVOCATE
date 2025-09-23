@@ -234,6 +234,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true)
 				BlockForever()
 			}
 		}
@@ -370,7 +371,13 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
+
+	// ADVOCATE-START
+	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false)
+	// ADVOCATE-END
+
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
+
 	// Ensure the value being sent is kept alive until the
 	// receiver copies it out. The sudog has a pointer to the
 	// stack object, but sudogs aren't considered as roots of the
@@ -687,6 +694,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true)
 				BlockForever()
 			}
 		}
@@ -858,6 +866,9 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanReceive
 	}
+	// ADVOCATE-START
+	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false)
+	// ADVOCATE-END
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanRecv, 2)
 
 	// someone woke us up
@@ -1001,6 +1012,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 				lock(&c.lock)
 				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()
 			}
 		}
@@ -1074,6 +1086,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 				lock(&c.lock)
 				_ = AdvocateSelectPreOneNonDef(c, false)
 				unlock(&c.lock)
+				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()
 			}
 		}

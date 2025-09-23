@@ -62,7 +62,7 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 	id := GetAdvocateObjectID()
 	caseElements := make([]AdvocateTraceChannel, 0)
 
-	_, file, line, _ := Caller(3)
+	_, file, line, _ := Caller(CallerSkipSelect)
 	if AdvocateIgnore(file) {
 		return -1
 	}
@@ -219,7 +219,7 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 		}
 	}
 
-	_, file, line, _ := Caller(2)
+	_, file, line, _ := Caller(CallerSkipSelectOneDef)
 	if AdvocateIgnore(file) {
 		return -1
 	}

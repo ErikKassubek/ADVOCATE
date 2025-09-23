@@ -12,6 +12,7 @@ package sync
 
 import (
 	isync "internal/sync"
+	"unsafe"
 
 	// ADVOCATE-START
 	"runtime"
@@ -61,11 +62,12 @@ func (m *Mutex) Lock() {
 		}
 		if replayElem.Blocked {
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
 
-	runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// Mutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a mutex
@@ -81,6 +83,10 @@ func (m *Mutex) Lock() {
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
 	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
+	// ADVOCATE-END
+
+	// ADVOCATE-START
+	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false)
 	// ADVOCATE-END
 
 	m.mu.Lock()
@@ -106,11 +112,12 @@ func (m *Mutex) TryLock() bool {
 				m.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
 
-	runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// Mutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a mutex
@@ -141,7 +148,7 @@ func (m *Mutex) TryLock() bool {
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexUnlock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexUnlock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
@@ -150,6 +157,7 @@ func (m *Mutex) Unlock() {
 				m.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}

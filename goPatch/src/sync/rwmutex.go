@@ -74,7 +74,7 @@ const rwmutexMaxReaders = 1 << 30
 // documentation on the [RWMutex] type.
 func (rw *RWMutex) RLock() {
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexRLock, 2, false)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexRLock, runtime.CallerSkipMutex, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
@@ -82,11 +82,12 @@ func (rw *RWMutex) RLock() {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRLock)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
 
-	runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
@@ -108,6 +109,11 @@ func (rw *RWMutex) RLock() {
 		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false)
+	// ADVOCATE-END
+
 	if rw.readerCount.Add(1) < 0 {
 		// A writer is pending, wait for it.
 		runtime_SemacquireRWMutexR(&rw.readerSem, false, 0)
@@ -129,7 +135,7 @@ func (rw *RWMutex) RLock() {
 // in a particular use of mutexes.
 func (rw *RWMutex) TryRLock() bool {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexTryRLock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
@@ -138,11 +144,12 @@ func (rw *RWMutex) TryRLock() bool {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryRLock)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
 
-	runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
@@ -203,6 +210,7 @@ func (rw *RWMutex) RUnlock() {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRUnlock)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
@@ -249,7 +257,7 @@ func (rw *RWMutex) rUnlockSlow(r int32) {
 // Lock blocks until the lock is available.
 func (rw *RWMutex) Lock() {
 	// ADVOCATE-START
-	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexLock, 2, false)
+	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationRWMutexLock, runtime.CallerSkipMutex, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
@@ -257,11 +265,12 @@ func (rw *RWMutex) Lock() {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexLock)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
 
-	runtime.FuzzingFlowWait(2)
+	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
 	// RWMutexe don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a RWMutex
@@ -283,6 +292,11 @@ func (rw *RWMutex) Lock() {
 		race.Read(unsafe.Pointer(&rw.w))
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false)
+	// ADVOCATE-END
+
 	// First, resolve competition with other writers.
 	rw.w.Lock()
 	// Announce to readers there is a pending writer.
@@ -320,6 +334,7 @@ func (rw *RWMutex) TryLock() bool {
 			// AdvocateMutexPre records, that a routine tries to lock a mutex.
 			// advocateIndex is used for AdvocateMutexPost to find the pre event.
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryLock)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}

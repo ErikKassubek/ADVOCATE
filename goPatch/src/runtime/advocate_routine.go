@@ -12,6 +12,8 @@
 
 package runtime
 
+import "unsafe"
+
 var AdvocateRoutines map[uint64]*AdvocateRoutine
 var AdvocateRoutinesLock = mutex{}
 
@@ -22,16 +24,22 @@ var projectPath string
 // AdvocateRoutine is a struct to store the trace of a routine
 // Fields:
 //   - id uint64: the id of the routine
-//   - replayID int: when used in reply, id of the new routine in the replayed trace
 //   - maxObjectId uint64: the maximum id of elements in the trace
 //   - G *g: the g struct of the routine
 //   - Trace []traceElem: the trace of the routine
+//   - replayID int: when used in reply, id of the new routine in the replayed trace
+//   - parkOn []unsafe.Pointer: list of elements the routine was last parked on
+//   - parkPos string: position of last park in form file:line
+//   - parkForeverReplay bool: if true, routine parks forever based on replay
 type AdvocateRoutine struct {
-	id          uint64
-	maxObjectId uint64
-	G           *g
-	Trace       []traceElem
-	replayID    int
+	id                uint64
+	maxObjectId       uint64
+	G                 *g
+	Trace             []traceElem
+	replayID          int
+	parkOn            []unsafe.Pointer
+	parkPos           string
+	parkForeverReplay bool
 }
 
 // Create a new advocate routine
@@ -51,6 +59,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 			G:           g,
 			Trace:       make([]traceElem, 0),
 			replayID:    replayRoutine,
+			parkOn:      make([]unsafe.Pointer, 0),
 		}
 	}
 
@@ -60,6 +69,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
+		parkOn:      make([]unsafe.Pointer, 0),
 	}
 
 	lock(&AdvocateRoutinesLock)

@@ -214,6 +214,7 @@ func (wg *WaitGroup) Wait() {
 				wg.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateWaitGroupWait(wg.id)
+			runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, true)
 			runtime.BlockForever()
 		}
 	}
@@ -236,6 +237,11 @@ func (wg *WaitGroup) Wait() {
 	if race.Enabled {
 		race.Disable()
 	}
+
+	// ADVOCATE-START
+	runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, false)
+	// ADVOCATE-END
+
 	for {
 		state := wg.state.Load()
 		v := int32(state >> 32)

@@ -112,6 +112,8 @@ func startReplay(timeout int) {
 		}()
 	}
 
+	DetectPartialDeadlock(0)
+
 	runtime.EnableReplay()
 }
 
@@ -464,6 +466,8 @@ func FinishReplay() {
 
 	println("FinishReplay")
 	runtime.WaitForReplayFinish()
+
+	DetectPartialDeadlock(0)
 
 	time.Sleep(time.Second)
 

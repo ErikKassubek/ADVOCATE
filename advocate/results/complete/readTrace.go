@@ -12,6 +12,7 @@ package complete
 
 import (
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/types"
 	"errors"
 	"os"
@@ -59,7 +60,7 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 			}
 
 			// read command line
-			if fileName == "output.log" {
+			if fileName == paths.NameOutput {
 				headerFile, importLine, headerLine, err = readCommandFile(path)
 				if err != nil {
 					log.Error("Error in reading command: ", filepath.Clean(path))

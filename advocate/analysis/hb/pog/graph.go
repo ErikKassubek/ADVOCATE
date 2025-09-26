@@ -62,9 +62,9 @@ func (g *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
 //   - weak bool: if true, print the weak hb tree, otherwise print the string
 func Print(weak bool) {
 	if weak {
-		log.Important(poWeak.toString())
+		log.Info(poWeak.toString())
 	} else {
-		log.Important(po.toString())
+		log.Info(po.toString())
 	}
 }
 

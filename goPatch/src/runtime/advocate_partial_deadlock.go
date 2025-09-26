@@ -85,7 +85,7 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 
 // detectPD checks, if the currently running program
 // contains a deadlock. Is this the case it print a corresponding info.
-func AdvocateDetectPD() {
+func AdvocateDetectPD() []string {
 	currentParkedToRoutine = make(map[uintptr][]uint64)
 	parkedOpsPerRoutine = make(map[uint64][]uintptr)
 	routinesByID = make(map[uint64]*g)
@@ -111,7 +111,7 @@ func AdvocateDetectPD() {
 	GC()
 	collectPartialDeadlockInfo = false
 
-	checkForPartialDeadlock()
+	return checkForPartialDeadlock()
 }
 
 // getWaitingRoutines searches for waiting routines and stores the corresponding
@@ -162,7 +162,7 @@ func getWaitingRoutines() (int, int, uint64) {
 	return numberRoutines, numberWaitingRoutines, maxID
 }
 
-func checkForPartialDeadlock() {
+func checkForPartialDeadlock() []string {
 	routinesWithRef = make(map[uintptr][]uint64)
 
 	for opID := range currentParkedToRoutine {
@@ -236,31 +236,45 @@ func checkForPartialDeadlock() {
 	}
 
 	// Report dead routines
+	foundDeadlocks := make([]string, 0)
 	for rID, status := range routineStatusInfo {
 		if status == dead {
-			reportDeadlock(rID)
+			res := reportDeadlock(rID)
+			if res != "" {
+				foundDeadlocks = append(foundDeadlocks, res)
+			}
 		}
 	}
 
+	return foundDeadlocks
 }
 
-func reportDeadlock(routineID uint64) {
+func reportDeadlock(routineID uint64) string {
 	if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
-		return
+		return ""
 	}
 	alreadyReportedPartialDeadlock[routineID] = struct{}{}
 
 	g := routinesByID[routineID]
 
 	if g.advocateRoutineInfo.parkForeverReplay {
-		return
+		return ""
 	}
 
-	if g.advocateRoutineInfo.id != 0 {
-		print("DEADLOCK@", g.advocateRoutineInfo.id, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
-	} else {
-		print("DEADLOCK@", g.goid, "@", g.advocateRoutineInfo.parkPos, "@", getWaitingReasonString(g.waitreason), "\n")
+	res := ""
+
+	if g.advocateRoutineInfo.parkPos == "" {
+		g.advocateRoutineInfo.parkPos = "-"
 	}
+	if g.advocateRoutineInfo.id != 0 {
+		res = "DEADLOCK@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		print(res, "\n")
+	} else {
+		res = "DEADLOCK@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		print(res, "\n")
+	}
+
+	return res
 }
 
 func isRoutineWaitingOnConcurrency(gp *g) bool {

@@ -42,6 +42,8 @@ func InitTracing(timeout int) {
 		}()
 	}
 
+	DetectPartialDeadlock(1000)
+
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()
 	runtime.InitTracing(FinishTracing)
@@ -83,6 +85,8 @@ func FinishTracing() {
 	runtime.AdvocatRoutineExit()
 
 	runtime.DisableTracing()
+
+	DetectPartialDeadlock(0)
 
 	if timerStarted {
 		duration = time.Since(startTime)

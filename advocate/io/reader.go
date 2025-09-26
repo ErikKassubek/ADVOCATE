@@ -16,6 +16,7 @@ import (
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/timer"
 	"bufio"
 	"errors"
@@ -54,13 +55,13 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 			continue
 		}
 
-		if file.Name() == "times.log" {
+		if file.Name() == paths.NameTimes {
 			continue
 		}
 
 		filePath := filepath.Join(folderPath, file.Name())
 
-		if file.Name() == "trace_info.log" {
+		if file.Name() == paths.NameTraceInfo {
 			getTraceInfoFromFile(filePath)
 		}
 

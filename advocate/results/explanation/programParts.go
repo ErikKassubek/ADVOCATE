@@ -11,8 +11,8 @@
 package explanation
 
 import (
+	"advocate/utils/log"
 	"errors"
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -21,11 +21,11 @@ import (
 // Get the positions of the bug elements in the program
 //
 // Parameter:
-//   - traceElem1 map[int]string: The trace elements of the bug
+//   - traceElems map[int]string: The trace elements of the bug
 //
 // Returns:
 //   - map[int][]string: Dict for the code snippets
-func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (map[int][]string, error) {
+func getBugPositions(traceElems map[int][]string) (map[int][]string, error) {
 	res := make(map[int][]string)
 
 	for i, elem := range traceElems {
@@ -34,7 +34,7 @@ func getBugPositions(traceElems map[int][]string, progInfo map[string]string) (m
 			file := pos[0]
 			line, err := strconv.Atoi(pos[1])
 			if err != nil {
-				fmt.Println("Invalid line: ", pos[1])
+				log.Error("Invalid line: ", pos[1])
 			}
 
 			code, err := GetProgramCode(file, line, true)

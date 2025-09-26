@@ -13,13 +13,10 @@ package timer
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"fmt"
 	"os"
 	"path/filepath"
-)
-
-var (
-	resultFolder = ""
 )
 
 // UpdateTimeFileDetail writes the time information to a file
@@ -32,10 +29,16 @@ func UpdateTimeFileDetail(testName string, numberReplay int) {
 		return
 	}
 
-	timeFilePath := filepath.Join(resultFolder, "times_detail_"+flags.ProgName+".csv")
+	err := os.MkdirAll(paths.ResultTime, os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
+
+	timeFilePath := filepath.Join(paths.ResultTime, "times_detail_"+flags.ProgName+".csv")
 
 	newFile := false
-	_, err := os.Stat(timeFilePath)
+	_, err = os.Stat(timeFilePath)
 	if os.IsNotExist(err) {
 		newFile = true
 	}
@@ -73,10 +76,16 @@ func UpdateTimeFileOverview(testName string) {
 		return
 	}
 
-	timeFilePath := filepath.Join(resultFolder, "times_total_"+flags.ProgName+".csv")
+	err := os.MkdirAll(paths.ResultTime, os.ModePerm)
+	if err != nil {
+		fmt.Println("Error creating directory:", err)
+		return
+	}
+
+	timeFilePath := filepath.Join(paths.ResultTime, "times_total_"+flags.ProgName+".csv")
 
 	newFile := false
-	_, err := os.Stat(timeFilePath)
+	_, err = os.Stat(timeFilePath)
 	if os.IsNotExist(err) {
 		newFile = true
 	}

@@ -15,6 +15,8 @@ import (
 	"time"
 )
 
+var partialDeadlocks = make([]string, 0)
+
 // DetectPartialDeadlock runs a partial deadlock detection in the current execution
 // Parameter:
 //   - loop bool: if true, run a
@@ -27,7 +29,10 @@ func DetectPartialDeadlock(interval int) {
 				return
 			}
 
-			runtime.AdvocateDetectPD()
+			res := runtime.AdvocateDetectPD()
+			if len(res) != 0 {
+				partialDeadlocks = append(partialDeadlocks, res...)
+			}
 
 			if interval <= 0 {
 				return

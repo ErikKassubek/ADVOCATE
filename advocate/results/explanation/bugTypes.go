@@ -20,8 +20,9 @@ var bugCrit = map[string]string{
 	"A04": "Bug",
 	"A05": "Bug",
 	"A06": "Bug",
-	"A07": "Diagnostics",
+	"A07": "Bug",
 	"A08": "Diagnostics",
+	"A09": "Diagnostics",
 	"P01": "Bug",
 	"P02": "Diagnostic",
 	"P03": "Bug",
@@ -48,8 +49,9 @@ var bugNames = map[string]string{
 	"A04": "Actual close on nil channel",
 	"A05": "Actual negative Wait Group",
 	"A06": "Actual unlock of not locked mutex",
-	"A07": "Concurrent Receive",
-	"A08": "Select Case without Partner",
+	"A07": "Partial Deadlock",
+	"A08": "Concurrent Receive",
+	"A09": "Select Case without Partner",
 
 	"P01": "Possible Send on Closed Channel",
 	"P02": "Possible Receive on Closed Channel",
@@ -89,10 +91,12 @@ var bugExplanations = map[string]string{
 		"The occurrence of a negative wait group counter lead to a panic.",
 	"A06": "During the execution, a not locked mutex was unlocked.\n" +
 		"The occurrence of this lead to a panic.",
-	"A07": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
+	"A07": "During the execution, a (partial) deadlock was detected.\n" +
+		"This means, there is a routine that is blocked, and there is not possibility of it being unblocked in the future",
+	"A08": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	"A08": "During the execution of the program, a select was executed, where, based " +
+	"A09": "During the execution of the program, a select was executed, where, based " +
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
@@ -121,24 +125,29 @@ var bugExplanations = map[string]string{
 	"L00": "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"This can be a desired behavior, but it can also be a signal for a not otherwise detected block.",
 	"L01": "The analyzer detected a Leak on an unbuffered channel with a possible partner.\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the deadlock.",
 	"L02": "The analyzer detected a Leak on an unbuffered channel without a possible partner.\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L03": "The analyzer detected a Leak on a buffered channel with a possible partner.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
 	"L04": "The analyzer detected a Leak on a buffered channel without a possible partner.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L05": "The analyzer detected a leak on a nil channel.\n" +
 		"A leak on a nil channel is a situation, where a nil channel is still blocking at the end of the program.\n" +
@@ -146,21 +155,27 @@ var bugExplanations = map[string]string{
 		"An operation on a nil channel will block indefinitely.",
 	"L06": "The analyzer detected a Leak on a select with a possible partner.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
 	"L07": "The analyzer detected a Leak on a select without a possible partner.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
 	"L08": "The analyzer detected a leak on a sync.Mutex.\n" +
 		"A leak on a sync.Mutex is a situation, where a sync.Mutex lock operations is still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.Mutex lock operation is a operation, which is blocking, because the lock is already acquired.",
 	"L09": "The analyzer detected a leak on a sync.WaitGroup.\n" +
 		"A leak on a sync.WaitGroup is a situation, where a sync.WaitGroup is still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.WaitGroup wait is blocking, because the counter is not zero.",
 	"L10": "The analyzer detected a leak on a sync.Cond.\n" +
 		"A leak on a sync.Cond is a situation, where a sync.Cond wait is still blocking at the end of the program.\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.Cond wait is blocking, because the condition is not met.",
 	"L11": "The analyzer detected a leak on a channel or select on a context\n" +
+		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"This may or may not be a blocking bug.",
 }
 

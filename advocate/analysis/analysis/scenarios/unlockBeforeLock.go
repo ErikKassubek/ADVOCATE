@@ -20,7 +20,6 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/timer"
 	"advocate/utils/types"
-	"fmt"
 )
 
 // CheckForUnlockBeforeLockLock collects all locks for the analysis
@@ -75,7 +74,7 @@ func CheckForUnlockBeforeLock() {
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
-			fmt.Println("Could not check for unlock before lock: ", err)
+			log.Error("Could not check for unlock before lock: ", err)
 		}
 
 		nrUnlock := len(data.AllUnlocks)

@@ -188,6 +188,7 @@ func (s SelectCaseResult) isInvalid() bool {
 //   - argType2 string: description of the type of elements in arg2
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
+
 	if resType != helper.RUnknownPanic && resType != helper.RTimeout && len(arg1) == 0 {
 		return
 	}
@@ -231,7 +232,6 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 			resultMachine += arg.stringMachine()
 			resultMachineShort += arg.stringMachineShort()
 		}
-
 	}
 
 	resultReadable += "\n"

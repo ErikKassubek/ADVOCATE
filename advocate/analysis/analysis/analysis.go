@@ -61,6 +61,11 @@ func RunAnalysis(fuzzing bool) {
 	if !fuzzing || fuzzdata.UseHBInfoFuzzing {
 		RunHBAnalysis(fuzzing)
 	}
+
+	err := scenarios.PartialDeadlocks()
+	if err != nil {
+		log.Error("Failed to read partial deadlock info: ", err.Error())
+	}
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis

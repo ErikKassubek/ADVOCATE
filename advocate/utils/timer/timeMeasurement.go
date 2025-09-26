@@ -12,7 +12,6 @@ package timer
 
 import (
 	"fmt"
-	"path/filepath"
 	"time"
 )
 
@@ -52,8 +51,6 @@ var (
 // Parameter:
 //   - progPath string:  path to the result folder
 func Init(progPath string) {
-	resultFolder = filepath.Join(progPath, "advocateResult")
-
 	for i := range numberTimer {
 		timer[i] = Timer{}
 	}

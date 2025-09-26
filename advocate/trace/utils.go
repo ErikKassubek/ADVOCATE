@@ -11,7 +11,6 @@
 package trace
 
 import (
-	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -31,14 +30,19 @@ import (
 //   - int: the tPre
 //   - error: the error
 func InfoFromTID(tID string) (string, int, int, error) {
-	spilt1 := types.SplitAtLast(tID, "@")
+	spilt1 := strings.Split(tID, "@")
 
-	if len(spilt1) != 2 {
+	if len(spilt1) != 3 {
 		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no @: ", tID))
 	}
 
+	tPre, err := strconv.Atoi(spilt1[2])
+	if err != nil {
+		return "", 0, 0, err
+	}
+
 	// for windows test
-	sp := spilt1[0]
+	sp := spilt1[1]
 	split3 := strings.Split(sp, ":/")
 	if len(split3) == 2 {
 		sp = split3[1]
@@ -49,17 +53,13 @@ func InfoFromTID(tID string) (string, int, int, error) {
 		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no ':': ", tID))
 	}
 
-	tPre, err := strconv.Atoi(spilt1[1])
+	line, err := strconv.Atoi(split2[1])
 	if err != nil {
 		return "", 0, 0, err
 	}
+	file := split2[0]
 
-	line, err := strconv.Atoi(split2[len(split2)-1])
-	if err != nil {
-		return "", 0, 0, err
-	}
-
-	return split2[0], line, tPre, nil
+	return file, line, tPre, nil
 }
 
 // SameRoutine determines if for aal trace elements in the list, if they are

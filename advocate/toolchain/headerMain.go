@@ -199,7 +199,7 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 			importAdded = true
 		}
 
-		if strings.Contains(line, "func main() {") {
+		if strings.HasPrefix(line, "func main() {") {
 			if replay { // replay
 				replayPath := ""
 				if replayNumber != "" {

@@ -26,9 +26,9 @@ const (
 	ACloseOnNilChannel      ResultType = "A04"
 	ANegWG                  ResultType = "A05"
 	AUnlockOfNotLockedMutex ResultType = "A06"
-	AConcurrentRecv         ResultType = "A07"
-	ASelCaseWithoutPartner  ResultType = "A08"
-	ACloseOnNil
+	ADeadlock               ResultType = "A07"
+	AConcurrentRecv         ResultType = "A08"
+	ASelCaseWithoutPartner  ResultType = "A09"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -57,11 +57,6 @@ const (
 
 	// not executed select
 	// SNotExecutedWithPartner = "S00"
-)
-
-// file names
-const (
-	RewrittenInfo = "rewrite_info.log"
 )
 
 // Values for the possible program exit codes

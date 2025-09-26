@@ -13,6 +13,7 @@ package stats
 import (
 	"advocate/results/explanation"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"bufio"
 	"fmt"
 	"os"
@@ -28,7 +29,7 @@ import (
 //   - map[string]int: The new map
 func getNewDataMap() map[string]int {
 	keys := []string{
-		"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08",
+		"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09",
 		"P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02",
 		"L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11",
 		"R01", "R02"}
@@ -59,14 +60,13 @@ func getNewDataMapMap() map[string]map[string]int {
 // Parse the analyzer and replay output to collect the corresponding information
 //
 // Parameter:
-//   - pathToResults string: path to the advocateResult folder
 //   - fuzzing int: number of fuzzing run, -1 for not fuzzing
 //
 // Returns:
 //   - map[string]int: map with total information
 //   - map[string]int: map with unique information
 //   - error
-func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
+func statsAnalyzer(fuzzing int) (map[string]map[string]int, map[string]map[string]int, error) {
 	// reset foundBugs
 	foundBugs := make(map[string]processedBug)
 
@@ -74,7 +74,7 @@ func statsAnalyzer(pathToResults string, fuzzing int) (map[string]map[string]int
 
 	resTotal := getNewDataMapMap()
 
-	bugs := filepath.Join(pathToResults, "bugs")
+	bugs := filepath.Join(paths.CurrentResult, "bugs")
 	_, err := os.Stat(bugs)
 	if os.IsNotExist(err) {
 		return resUnique, nil, nil

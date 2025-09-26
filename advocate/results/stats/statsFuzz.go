@@ -26,12 +26,12 @@ var fuzzStats = []string{
 // Collect stats about each fuzzing run
 //
 // Parameter:
-//   - dataPath string: path to the result folder
+//   - testName string: name of the test
 //
 // Returns:
 //   - map[string]int: map with the stats
 //   - error
-func statsFuzz(dataPath, testName string) (map[string]int, error) {
+func statsFuzz(testName string) (map[string]int, error) {
 	stats := map[string]int{}
 
 	stats["NrMut"] = gopie.NumberTotalMuts

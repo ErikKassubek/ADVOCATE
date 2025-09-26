@@ -14,7 +14,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strings"
 
 	"advocate/analysis/data"
@@ -26,13 +25,13 @@ import (
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/settings.go"
 	"advocate/utils/timer"
 )
 
 var (
-	help           bool
-	pathToAdvocate string
+	help bool
 )
 
 // Main function
@@ -137,14 +136,12 @@ func main() {
 	}
 
 	settings.SetSettings()
+	paths.BuildPaths(flags.ModeMain)
 
 	progPathDir := helper.GetDirectory(flags.ProgPath)
 	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
-
-	execPath, _ := os.Executable()
-	pathToAdvocate = filepath.Dir(filepath.Dir(execPath))
 
 	control.SetMaxNumberElem()
 	if !flags.NoMemorySupervisor {
@@ -208,12 +205,13 @@ func main() {
 		if numberTestWithRes == 0 {
 			log.Info("No bugs have been found/indicated")
 		} else {
-			log.Resultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
+			if !flags.ModeMain {
+				log.Resultf(false, false, "", "Tests with indicated bugs: %d", numberTestWithRes)
+			}
 			log.Resultf(false, false, "", "Number indicated bugs:  %d", numberBugs)
 		}
 	}
 	timer.UpdateTimeFileOverview("*Total*")
-	log.Important("Total time: ", timer.GetTime(timer.Total))
 }
 
 // modeFuzzing starts the fuzzing
@@ -230,7 +228,7 @@ func modeFuzzing() {
 		panic(err)
 	}
 
-	err = fuzzing.Fuzzing(pathToAdvocate)
+	err = fuzzing.Fuzzing()
 	if err != nil {
 		log.Error("Fuzzing Failed: ", err.Error())
 	}
@@ -269,8 +267,8 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	}
 
 	firstRun := true
-	fileNumber, testNumber := 0, 0
-	_, _, _, err = toolchain.Run(mode, pathToAdvocate, "", record, analysis,
+	fileNumber, testNumber := 1, 0
+	_, _, err = toolchain.Run(mode, "", record, analysis,
 		replay, -1, "", firstRun, fileNumber, testNumber)
 	if err != nil {
 		log.Error("Failed to run toolchain: ", err.Error())

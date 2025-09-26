@@ -11,6 +11,7 @@
 package data
 
 import (
+	"advocate/utils/paths"
 	"advocate/utils/timer"
 	"fmt"
 	"os"
@@ -32,7 +33,7 @@ func WriteMutationToFile(pathToFolder string, mut Mutation) error {
 
 	// write for mut and mut type, for goPie it is already written
 	if mut.MutType == MutSelType || mut.MutType == MutFlowType {
-		fileName := filepath.Join(pathToFolder, "fuzzingData.log")
+		fileName := filepath.Join(pathToFolder, paths.NameFuzzingData)
 		sep := "#"
 
 		file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)

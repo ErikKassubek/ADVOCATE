@@ -31,10 +31,7 @@ import (
 )
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
-//
-// Parameter:
-//   - advocate string: path to advocate
-func Fuzzing(advocate string) error {
+func Fuzzing() error {
 
 	if flags.FuzzingMode == "" {
 		return fmt.Errorf("No fuzzing mode selected. Select with -fuzzingMode [mode]. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow")
@@ -71,7 +68,7 @@ func Fuzzing(advocate string) error {
 			log.Info("Run fuzzing on test ", flags.ExecName)
 		}
 
-		err := runFuzzing(advocate, "", true, 0, 0)
+		err := runFuzzing("", true, 0, 0)
 
 		if flags.CreateStatistics {
 			err := stats.CreateStatsFuzzing(data.GetPath(flags.ProgPath))
@@ -131,7 +128,7 @@ func Fuzzing(advocate string) error {
 
 			firstRun := (i == 0 && j == 0)
 
-			err := runFuzzing(advocate, testFile, firstRun, fileCounter, j+1)
+			err := runFuzzing(testFile, firstRun, fileCounter, j+1)
 			if err != nil {
 				log.Error("Error in fuzzing: ", err.Error())
 				clearDataRun()
@@ -164,11 +161,10 @@ func Fuzzing(advocate string) error {
 // Run Fuzzing on one program/test
 //
 // Parameter:
-//   - advocate string: path to advocate
 //   - testPath string: path to the test file
 //   - hBInfoFuzzing bool: whether to us HB info in fuzzing
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
-func runFuzzing(advocate, testPath string, firstRun bool, fileNumber, testNumber int) error {
+func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) error {
 
 	progDir := data.GetPath(flags.ProgPath)
 
@@ -217,7 +213,7 @@ func runFuzzing(advocate, testPath string, firstRun bool, fileNumber, testNumber
 			mode = "main"
 		}
 
-		currentResultPath, traceID, numberResults, err := toolchain.Run(mode, advocate, testPath, true, true, true,
+		traceID, numberResults, err := toolchain.Run(mode, testPath, true, true, true,
 			data.NumberFuzzingRuns, fuzzingPath, firstRun, fileNumber, testNumber)
 
 		data.NumberFuzzingRuns++
@@ -262,7 +258,7 @@ func runFuzzing(advocate, testPath string, firstRun bool, fileNumber, testNumber
 			}
 
 			if flags.CreateStatistics {
-				_ = stats.CreateStats(currentResultPath, flags.ExecName, traceID, data.NumberFuzzingRuns-1)
+				stats.CreateStats(flags.ExecName, traceID, data.NumberFuzzingRuns-1)
 			}
 
 			log.Infof("Current fuzzing queue size: %d", len(data.MutationQueue))

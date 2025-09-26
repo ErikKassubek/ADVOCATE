@@ -12,6 +12,7 @@ package explanation
 
 import (
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"errors"
 	"fmt"
 	"os"
@@ -77,7 +78,6 @@ func writeBug(bugType string, positions map[int][]string) bool {
 // It then writes all this information into a file.
 //
 // Parameter:
-//   - path: the path to the folder, where the results of the analysis and the trace are stored
 //   - index: the index of the bug in the results
 //   - traceID: id of the trace
 //   - ignoreDouble: if true, only write one bug report for each bug
@@ -85,7 +85,7 @@ func writeBug(bugType string, positions map[int][]string) bool {
 // Returns:
 //   - int: number of results
 //   - error: if an error occurred
-func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, error) {
+func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 	// get the code info (main file, test name, commands)
 	log.Info("Create bug reports")
 
@@ -95,9 +95,9 @@ func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, 
 	}
 	buildBugCodes()
 
-	replayCodes := getOutputCodes(path)
+	replayCodes := getOutputCodes()
 
-	progInfo, err := readProgInfo(path)
+	progInfo, err := readProgInfo()
 	if err != nil {
 		log.Error("Error reading prog info: ", err)
 	}
@@ -105,22 +105,22 @@ func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, 
 
 	hl, err := strconv.Atoi(progInfo["headerLine"])
 	if err != nil {
-		log.Error("Cound not read header line: ", err)
+		log.Error("Could not read header line: ", err)
 	}
 
-	resultsMachine, _ := filepath.Glob(filepath.Join(path, "results_machine_*.log"))
-	resultsMachine = append(resultsMachine, filepath.Join(path, "results_machine.log"))
+	resultsMachine, _ := filepath.Glob(filepath.Join(paths.CurrentResult, "results_machine_*.log"))
+	resultsMachine = append(resultsMachine, filepath.Join(paths.CurrentResult, paths.NameResultMachine))
 
 	var numberResults int
 	for _, result := range resultsMachine {
 		file, _ := os.ReadFile(result)
-		numberResults = len(strings.Split(string(file), "\n"))
+		numberResults = len(strings.Split(string(file), "\n")) - 1
 
 		// timeoutFound := false
 
-		for index := 1; index < numberResults; index++ {
+		for index := 1; index <= numberResults; index++ {
 			id := ""
-			if strings.HasSuffix(result, "results_machine.log") {
+			if strings.HasSuffix(result, paths.NameResultMachine) {
 				id += strconv.Itoa(index)
 			} else {
 				elem := strings.Split(strings.Split(result, ".log")[0], "_")
@@ -129,6 +129,7 @@ func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, 
 
 			bugType, bugPos, bugElemType, err := readAnalysisResults(result, index, progInfo["file"], hl)
 			if err != nil {
+				log.Error("Could not read analysis result: ", err.Error())
 				continue
 			}
 
@@ -140,7 +141,7 @@ func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, 
 			bugTypeDescription := getBugTypeDescription(bugType)
 
 			// get the code of the bug elements
-			code, err := getBugPositions(bugPos, progInfo)
+			code, err := getBugPositions(bugPos)
 			if err != nil {
 				log.Error("Error getting bug positions: ", err)
 			}
@@ -156,12 +157,12 @@ func CreateOverview(path string, ignoreDouble bool, traceID, fuzzing int) (int, 
 				continue
 			}
 
-			err = writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
+			err = writeFile(paths.CurrentResult, id, bugTypeDescription, bugPos, bugElemType, code,
 				replay, progInfo, fuzzing)
 		}
 	}
 
-	return numberResults - 1, err
+	return numberResults, err
 
 }
 

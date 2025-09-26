@@ -13,6 +13,7 @@ package toolchain
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"io"
 	"os"
 	"path/filepath"
@@ -29,9 +30,9 @@ import (
 func collect(progPath, packagePath, destination string, total bool) {
 	filesToMove := []string{
 		"advocateTrace",
-		"results_machine.log",
-		"results_readable.log",
-		"output.log",
+		paths.NameResultMachine,
+		paths.NameResultReadable,
+		paths.NameOutput,
 	}
 
 	pattersToMove := []string{
@@ -39,9 +40,9 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 
 	logsToCollect := []string{
-		"results_machine.log",
-		"results_readable.log",
-		"output.log",
+		paths.NameResultMachine,
+		paths.NameResultReadable,
+		paths.NameOutput,
 	}
 
 	if total {
@@ -54,12 +55,14 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 			srcFile, err := os.Open(src)
 			if err != nil {
+				log.Errorf("Could not open: %s %s", src, err.Error())
 				continue
 			}
 			defer srcFile.Close()
 
 			destFile, err := os.OpenFile(dest, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
+				log.Errorf("Could not open: %s %s", dest, err.Error())
 				continue
 			}
 			defer destFile.Close()
@@ -77,7 +80,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	for _, file := range filesToMove {
 		src := filepath.Join(packagePath, file)
-		if file == "output.log" {
+		if file == paths.NameOutput {
 			src = filepath.Join(progPath, file)
 		}
 		dest := filepath.Join(destination, file)
@@ -89,7 +92,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 		err := os.Rename(src, dest)
 		if err != nil {
-			continue
+			log.Errorf("Could not open: %s %s", dest, err.Error())
 		}
 	}
 
@@ -110,7 +113,7 @@ func RemoveTraces(path string) {
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",
-		"fuzzingData.log",
+		paths.NameFuzzingData,
 		// "fuzzingTrace_*",
 	}
 
@@ -146,9 +149,9 @@ func RemoveTraces(path string) {
 //   - path to the folder containing the result and output files
 func removeLogs(path string) {
 	logsToRemove := []string{
-		"results_machine.log",
-		"results_readable.log",
-		"output.log",
+		paths.NameResultMachine,
+		paths.NameResultReadable,
+		paths.NameOutput,
 	}
 
 	for _, logFile := range logsToRemove {
@@ -164,7 +167,7 @@ func ClearFuzzingTrace(path string) {
 	fuzzingPath := filepath.Join(path, "fuzzingTraces")
 
 	if flags.KeepTraces {
-		_ = os.Rename(fuzzingPath, filepath.Join(currentResFolder, "fuzzingTraces"))
+		_ = os.Rename(fuzzingPath, filepath.Join(paths.CurrentResult, "fuzzingTraces"))
 		// if err != nil {
 		// 	log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())
 		// }

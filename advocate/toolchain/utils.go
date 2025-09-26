@@ -13,6 +13,7 @@ package toolchain
 
 import (
 	"advocate/utils/helper"
+	"advocate/utils/paths"
 	"bufio"
 	"io"
 	"os"
@@ -40,7 +41,7 @@ func extractTraceNumber(trace string) (string, string) {
 	}
 
 	// read bug string
-	rewrittenInfoPath := filepath.Join(trace, helper.RewrittenInfo)
+	rewrittenInfoPath := filepath.Join(trace, paths.NameRewrittenInfo)
 	file, err := os.Open(rewrittenInfoPath)
 	if err == nil {
 		defer file.Close()

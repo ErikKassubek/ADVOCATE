@@ -11,6 +11,8 @@
 package stats
 
 import (
+	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/types"
 	"bufio"
 	"errors"
@@ -23,13 +25,12 @@ import (
 // Collect stats about the traces
 //
 // Parameter:
-//   - dataPath string: path to the result folder
 //   - traceID int: name of trace folder is datapath_traceId
 //
 // Returns:
 //   - map[string]int: map with the stats
 //   - error
-func statsTraces(dataPath string, traceID int) (map[string]int, error) {
+func statsTraces(traceID int) (map[string]int, error) {
 	res := map[string]int{
 		"numberElements": 0,
 
@@ -67,7 +68,7 @@ func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 		"numberOnceOperations": 0,
 	}
 
-	tracePath := filepath.Join(dataPath, fmt.Sprintf("advocateTrace_%d", traceID))
+	tracePath := filepath.Join(paths.CurrentResult, fmt.Sprintf("advocateTrace_%d", traceID))
 
 	// do not count the same twice
 	known := map[string][]string{
@@ -84,10 +85,10 @@ func statsTraces(dataPath string, traceID int) (map[string]int, error) {
 			return err
 		}
 
-		if !info.IsDir() && info.Name() != "trace_info.log" {
+		if !info.IsDir() && info.Name() != paths.NameTraceInfo {
 			err = parseTraceFile(path, &res, &known)
 			if err != nil {
-				fmt.Println(err)
+				log.Error(err)
 			}
 		}
 

@@ -11,8 +11,6 @@
 package toolchain
 
 var (
-	pathToAdvocate  string
-	pathToFileOrDir string
-	testName        string
-	numberRerecord  int
+	testName       string
+	numberRerecord int
 )

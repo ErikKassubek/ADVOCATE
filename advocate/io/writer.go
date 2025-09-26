@@ -13,8 +13,8 @@ package io
 import (
 	"advocate/results/bugs"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/timer"
 	"math"
 	"os"
@@ -124,7 +124,7 @@ func WriteRewriteInfoFile(path string, bug bugs.Bug, exitCode int, resultIndex i
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
-	fileName := filepath.Join(path, helper.RewrittenInfo)
+	fileName := filepath.Join(path, paths.NameRewrittenInfo)
 	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err

@@ -11,26 +11,21 @@
 package explanation
 
 import (
+	"advocate/utils/paths"
 	"errors"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
 // Read the program info from the output.log file
 //
-// Parameter:
-//   - path string: path to the folder containing the output.log file
-//
 // Returns:
 //   - map[string]string: information about the analyzed test, e.g. file/test name and header position info
 //   - error
-func readProgInfo(path string) (map[string]string, error) {
+func readProgInfo() (map[string]string, error) {
 	res := make(map[string]string)
 
-	output := filepath.Join(path, "output.log")
-
-	file, err := os.ReadFile(output)
+	file, err := os.ReadFile(paths.ResultOutput)
 	if err != nil {
 		return res, err
 	}

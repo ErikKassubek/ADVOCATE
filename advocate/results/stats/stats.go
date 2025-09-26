@@ -13,6 +13,7 @@ package stats
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -41,7 +42,7 @@ func (td *testData) toString() string {
 	res := fmt.Sprintf("%s,%d,%d,%d,%d", td.name, td.numberRuns, td.fuzzData["nrMut"], td.fuzzData["nrMutInvalid"], td.fuzzData["nrMutDouble"])
 
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
+		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 			res += fmt.Sprintf(",%d", td.results[mode][code])
 		}
 	}
@@ -52,14 +53,13 @@ func (td *testData) toString() string {
 // CreateStats adds the information of an analyzed test to the stats info
 //
 // Parameter:
-//   - pathFolder string: path to where the stats file should be created
 //   - testName string: name of the analyzed test
 //   - traceID int: id of the trace
 //   - fuzzing int: number of fuzzing run
 //
 // Returns:
 //   - error
-func CreateStats(pathFolder string, testName string, traceID, fuzzing int) error {
+func CreateStats(testName string, traceID, fuzzing int) error {
 	// statsProg, err := statsProgram(pathToProgram)
 	// if err != nil {
 	// 	return err
@@ -67,22 +67,27 @@ func CreateStats(pathFolder string, testName string, traceID, fuzzing int) error
 
 	log.Info("Create statistics")
 
-	statsTrace, err := statsTraces(pathFolder, traceID)
+	statsTrace, err := statsTraces(traceID)
 	if err != nil {
-		return err
+		log.Error("Failed to create trace statistics: ", err.Error())
 	}
 
-	statsFuzz, err := statsFuzz(pathFolder, testName)
+	statsFuzz, err := statsFuzz(testName)
 	if err != nil {
-		return err
+		log.Error("Failed to create fuzzing statistics: ", err.Error())
 	}
 
-	statsAnalyzerTotal, statsAnalyzerUnique, err := statsAnalyzer(pathFolder, fuzzing)
+	statsAnalyzerTotal, statsAnalyzerUnique, err := statsAnalyzer(fuzzing)
 	if err != nil {
-		return err
+		log.Error("Failed to create analysis statistics: ", err.Error())
 	}
 
-	err = writeStatsToFile(filepath.Dir(pathFolder), testName, statsTrace, statsFuzz, statsAnalyzerTotal, statsAnalyzerUnique)
+	err = os.MkdirAll(paths.ResultStats, os.ModePerm)
+	if err != nil {
+		log.Error("Could not create stats folder")
+	}
+
+	err = writeStatsToFile(testName, statsTrace, statsFuzz, statsAnalyzerTotal, statsAnalyzerUnique)
 	if err != nil {
 		return err
 	}
@@ -94,7 +99,6 @@ func CreateStats(pathFolder string, testName string, traceID, fuzzing int) error
 // Write the collected statistics to files
 //
 // Parameter:
-//   - path string: path to where the stats file should be created
 //   - testName string: name of the test
 //   - statsProg map[string]int: statistics about the program
 //   - statsTraces map[string]int: statistics about the trace
@@ -104,13 +108,13 @@ func CreateStats(pathFolder string, testName string, traceID, fuzzing int) error
 //
 // Returns:
 //   - error
-func writeStatsToFile(path, testName string, statsTraces map[string]int, statsFuzz map[string]int,
+func writeStatsToFile(testName string, statsTraces map[string]int, statsFuzz map[string]int,
 	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
 
-	fileFuzzPath := filepath.Join(path, "statsFuzz_"+flags.ProgName+".csv")
-	fileTracingPath := filepath.Join(path, "statsTrace_"+flags.ProgName+".csv")
-	fileAnalysisPath := filepath.Join(path, "statsAnalysis_"+flags.ProgName+".csv")
-	fileAllPath := filepath.Join(path, "statsAll_"+flags.ProgName+".csv")
+	fileFuzzPath := filepath.Join(paths.ResultStats, "statsFuzz_"+flags.ProgName+".csv")
+	fileTracingPath := filepath.Join(paths.ResultStats, "statsTrace_"+flags.ProgName+".csv")
+	fileAnalysisPath := filepath.Join(paths.ResultStats, "statsAnalysis_"+flags.ProgName+".csv")
+	fileAllPath := filepath.Join(paths.ResultStats, "statsAll_"+flags.ProgName+".csv")
 
 	headerTracing := "TestName,NrEvents,NrGoroutines,NrAtomicEvents," +
 		"NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents," +
@@ -124,7 +128,7 @@ func writeStatsToFile(path, testName string, statsTraces map[string]int, statsFu
 
 	writeStatsFile(fileTracingPath, headerTracing, dataTracing)
 
-	actualCodes := []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08"}
+	actualCodes := []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09"}
 	numberOfActualBugsTotal := 0
 	numberOfActualBugsUnique := 0
 	for _, code := range actualCodes {
@@ -216,7 +220,7 @@ func writeStatsToFile(path, testName string, statsTraces map[string]int, statsFu
 	data := make([]string, 0)
 	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
 		for _, count := range []string{"Total", "Unique"} {
-			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
+			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
 				headers = append(headers, "No"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))
@@ -264,7 +268,7 @@ func writeStatsFile(path, header, data string) {
 
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
-		fmt.Println("Error opening or creating file:", err)
+		log.Errorf("Error opening or creating file: %s", err.Error())
 		return
 	}
 	defer file.Close()

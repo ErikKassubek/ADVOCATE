@@ -278,7 +278,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.ACloseOnClosed
 		actual = true
 	case "A04":
-		bug.Type = helper.ACloseOnNil
+		bug.Type = helper.ACloseOnNilChannel
 		actual = true
 	case "A05":
 		bug.Type = helper.ANegWG
@@ -287,9 +287,12 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.AUnlockOfNotLockedMutex
 		actual = true
 	case "A07":
-		bug.Type = helper.AConcurrentRecv
+		bug.Type = helper.ADeadlock
 		actual = true
 	case "A08":
+		bug.Type = helper.AConcurrentRecv
+		actual = true
+	case "A09":
 		bug.Type = helper.ASelCaseWithoutPartner
 		actual = true
 	case "P01":

@@ -11,9 +11,10 @@
 package explanation
 
 import (
+	"advocate/utils/log"
+	"advocate/utils/paths"
 	"fmt"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -61,7 +62,7 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 	res["exitCode"], res["exitCodeExplanation"], res["replaySuc"], err = getReplayInfo(codes, index)
 
 	if err != nil {
-		fmt.Println("Error getting replay info: ", err)
+		log.Error("Error getting replay info: ", err)
 	}
 
 	return res
@@ -94,19 +95,15 @@ func getRewriteType(bugCode string) string {
 
 // Get the output codes from the output.log file
 //
-// Parameter:
-//   - path string: path to the folder containing the output.log file
-//
 // Returns: map[string]stringL exit codes
-func getOutputCodes(path string) map[string]string {
-	output := filepath.Join(path, "output.log")
-	if _, err := os.Stat(output); os.IsNotExist(err) {
+func getOutputCodes() map[string]string {
+	if _, err := os.Stat(paths.ResultOutput); os.IsNotExist(err) {
 		res := "No replay info available. Output.log does not exist."
 		return map[string]string{"AdvocateFailExplanationInfo": res, "AdvocateFailResplaySucInfo": "information not available"}
 	}
 
 	// read the output file
-	content, err := os.ReadFile(output)
+	content, err := os.ReadFile(paths.ResultOutput)
 	if err != nil {
 		res := "No replay info available. Could not read output.log file"
 		return map[string]string{"AdvocateFailExplanationInfo": res, "AdvocateFailResplaySucInfo": "information not available"}
@@ -174,7 +171,6 @@ func getOutputCodes(path string) map[string]string {
 //   - error
 func getReplayInfo(codes map[string]string, index string) (string, string, string, error) {
 	if _, ok := codes["AdvocateFailExplanationInfo"]; ok {
-		fmt.Println("Could not read")
 		return "", codes["AdvocateFailExplanationInfo"], codes["AdvocateFailResplaySucInfo"], fmt.Errorf("Could not read output file")
 	}
 

@@ -178,7 +178,7 @@ func printHeader() {
 	fmt.Println("Advocate contains four different mode. These are:")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
-	fmt.Println("\tanalyzer")
+	fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
 	fmt.Println("")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")

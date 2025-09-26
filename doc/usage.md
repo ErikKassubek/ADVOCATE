@@ -273,27 +273,21 @@ to analyze the test `TestOne` in the given path, only checking for cyclic (resou
 
 The analysis will try to find the following situations:
 
-- A01: Send on closed channel
-- A02: Receive on closed channel (only warning)
-- A03: Close on closed channel
-- A04: Close on nil channel
-- A05: Negative wait group
-- A06: Unlock of not locked mutex
-- A07: Concurrent recv
-- P01: Possible send on closed channel
-- P02: Possible receive on closed channel (only warning)
-- P03: Possible negative waitgroup counter
-- L00: Leak on routine with unknown cause
-- L01: Leak on unbuffered channel with possible partner
-- L02: Leak on unbuffered channel without possible partner
-- L03: Leak on buffered channel with possible partner
-- L04: Leak on buffered channel without possible partner
-- L05: Leak on nil channel
-- L06: Leak on select with possible partner
-- L07: Leak on select without possible partner (includes nil channels)
-- L08: Leak on mutex
-- L09: Leak on waitgroup
-- L10: Leak on cond
+- A01: "Actual Send on Closed Channel",
+- A02: "Actual Receive on Closed Channel",
+- A03: "Actual Close on Closed Channel",
+- A04: "Actual close on nil channel",
+- A05: "Actual negative Wait Group",
+- A06: "Actual unlock of not locked mutex",
+- A07: "Partial Deadlock",
+- A08: "Concurrent Receive",
+- A09: "Select Case without Partner",
+- P01: "Possible Send on Closed Channel",
+- P02: "Possible Receive on Closed Channel",
+- P03: "Possible Negative WaitGroup cCounter",
+- P04: "Possible unlock of not locked mutex",
+- P05: "Possible cyclic deadlock",
+- L..: "Leak",
 
 Some of them are only considered warnings. To ignore them, you can set `-noWarning`.
 

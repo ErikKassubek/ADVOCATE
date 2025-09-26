@@ -12,6 +12,7 @@ package gopie
 
 import (
 	"advocate/trace"
+	"advocate/utils/paths"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -28,7 +29,7 @@ import (
 //     otherwise it will switch to partial replay when the element with this
 //     time is the next element to be replayed
 func writeMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Chain, partTime int) {
-	activePath := filepath.Join(fuzzingTracePath, "replay_active.log")
+	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
 
 	f, err := os.Create(activePath)
 	if err != nil {

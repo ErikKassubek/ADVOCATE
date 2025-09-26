@@ -20,7 +20,6 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/timer"
 	"advocate/utils/types"
-	"fmt"
 )
 
 // CheckForDoneBeforeAddChange collect all adds and dones for the analysis
@@ -88,7 +87,7 @@ func CheckForDoneBeforeAdd() {
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
-			fmt.Println("Could not check for done before add: ", err)
+			log.Error("Could not check for done before add: ", err)
 		}
 		nrDone := len(data.WgDoneData[id])
 

@@ -90,6 +90,7 @@ func main() {
 	)
 	// "\tm: Mixed deadlock\n"
 
+	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
 		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
 

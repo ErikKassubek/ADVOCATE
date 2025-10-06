@@ -38,7 +38,7 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 
 		if num, _ := data.AllMutations[id]; num < maxRunPerMut {
 			mut := data.Mutation{MutType: data.MutSelType, MutSel: mut}
-			data.AddMutToQueue(mut)
+			data.AddMutToQueue(mut, false, false)
 			data.AllMutations[id]++
 			numberMutAdded++
 			numberSkip = 0

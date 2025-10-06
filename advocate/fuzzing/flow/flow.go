@@ -21,8 +21,8 @@ import (
 // if false, all flow mutations are collected into one mutations run
 const oneMutPerDelay = true
 
-// CreateMutationsFlow creates new mutations based on the flow mutation
-func CreateMutationsFlow() {
+// CreateMutations creates new mutations based on the flow mutation
+func CreateMutations() {
 	numberMutAdded := 0
 
 	delay := make([](*[]anadata.ConcurrentEntry), 4)
@@ -67,7 +67,7 @@ func CreateMutationsFlow() {
 			// if one mut per change, comment this in
 			if oneMutPerDelay {
 				mut := data.Mutation{MutType: data.MutFlowType, MutFlow: mutFlow}
-				data.AddMutToQueue(mut)
+				data.AddMutToQueue(mut, false, false)
 				numberMutAdded++
 			}
 		}
@@ -75,7 +75,7 @@ func CreateMutationsFlow() {
 
 	if oneMutPerDelay && len(mutFlow) != 0 {
 		mut := data.Mutation{MutFlow: mutFlow}
-		data.AddMutToQueue(mut)
+		data.AddMutToQueue(mut, false, false)
 		numberMutAdded++
 	}
 

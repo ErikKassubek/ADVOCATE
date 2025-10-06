@@ -27,14 +27,14 @@ import (
 
 const sameElem = true
 
-// CreateGoPieMut create new mutations for GoPie
+// CreateMutations create new mutations for GoPie
 //
 // Parameter:
 //   - pkgPath string: path to where the new traces should be created
 //   - numberFuzzingRun int: number of fuzzing run
 //   - mutNumber int: number of the mutation file
 //   - error
-func CreateGoPieMut(pkgPath string, numberFuzzingRuns int, mutNumber int) error {
+func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error {
 	mutations := make(map[string]Chain)
 	specMutations := make(map[string]Chain) // special mutations that should be run first
 
@@ -214,7 +214,7 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 
 	muta := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
 
-	data.AddMutToQueue(muta)
+	data.AddMutToQueue(muta, false, false)
 
 	return false, nil
 }

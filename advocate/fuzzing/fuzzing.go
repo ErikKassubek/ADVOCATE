@@ -16,6 +16,7 @@ import (
 	"advocate/fuzzing/flow"
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
+	"advocate/fuzzing/partialorder"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -213,7 +214,9 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			mode = "main"
 		}
 
-		traceID, numberResults, err := toolchain.Run(mode, testPath, true, true, true,
+		runAnalysis := true
+		runRecord := true
+		traceID, numberResults, err := toolchain.Run(mode, testPath, runRecord, runAnalysis, runAnalysis,
 			data.NumberFuzzingRuns, fuzzingPath, firstRun, fileNumber, testNumber)
 
 		data.NumberFuzzingRuns++
@@ -240,21 +243,29 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			}
 
 			log.Infof("Create mutations")
+
+			// Add mutation based on happens before relations and predictive analysis
+			if data.FuzzingHbAnalysis {
+				log.Infof("Check for mutation based on happens before analysis")
+				partialorder.CreateMutations()
+			}
+
+			// Add mutation based on GFuzz
 			if data.FuzzingModeGFuzz {
 				log.Infof("Create GFuzz mutations")
-				gfuzz.CreateGFuzzMut()
+				gfuzz.CreateMutations()
 			}
 
 			// add new mutations based on flow path expansion
 			if data.FuzzingModeFlow {
 				log.Infof("Create Flow mutations")
-				flow.CreateMutationsFlow()
+				flow.CreateMutations()
 			}
 
 			// add mutations based on GoPie
 			if data.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				gopie.CreateGoPieMut(progDir, data.NumberFuzzingRuns, order.MutPie)
+				gopie.CreateMutations(progDir, data.NumberFuzzingRuns, order.MutPie)
 			}
 
 			if flags.CreateStatistics {

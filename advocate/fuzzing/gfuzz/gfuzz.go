@@ -15,8 +15,8 @@ import (
 	"math"
 )
 
-// CreateGFuzzMut creates a new mutations for GFuzz if the previous run was interesting
-func CreateGFuzzMut() {
+// CreateMutations creates a new mutations for GFuzz if the previous run was interesting
+func CreateMutations() {
 	// add new mutations based on GFuzz select
 	if isInterestingSelect() {
 		numberMut := numberMutations()

@@ -43,19 +43,6 @@ func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 		data.MostRecentAcquire[routine] = make(map[int]data.ElemWithVc)
 	}
 
-	// if _, ok := data.LockSet[routine][lock]; ok {
-	// TODO: TODO: add a result. Deadlock detection is currently disabled
-	// errorMsg := "Lock " + strconv.Itoa(lock) +
-	// 	" already in lockSet for routine " + strconv.Itoa(routine)
-	// results.Debug(errorMsg, results.ERROR)
-
-	// // this is a double locking
-	// found := "Double locking:\n"
-	// found += "\tlock1: " + posOld + "\n"
-	// found += "\tlock2: " + tID
-	// results.Result(found, results.CRITICAL)
-	// }
-
 	data.LockSet[routine][id] = mu.GetTID()
 	data.MostRecentAcquire[routine][id] = data.ElemWithVc{
 		Vc:   vc,
@@ -89,65 +76,5 @@ func LockSetRemoveLock(routine int, lock int) {
 //   - routineSend int: The routine id of the send operation
 //   - routineRevc int: The routine id of the receive operation
 func CheckForMixedDeadlock(routineSend int, routineRevc int) {
-	timer.Start(timer.AnaLeak)
-	defer timer.Stop(timer.AnaLeak)
 
-	for m := range data.LockSet[routineSend] {
-		_, ok1 := data.MostRecentAcquire[routineRevc][m]
-		_, ok2 := data.MostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && data.MostRecentAcquire[routineSend][m].Elem.GetTID() != data.MostRecentAcquire[routineRevc][m].Elem.GetTID() {
-			// found possible mixed deadlock
-			// TODO: add a result. Deadlock detection is currently disabled
-			// found := "Possible mixed deadlock:\n"
-			// found += "\tlocks: \t\t" + data.MostRecentAcquire[routineSend][m].TID + "\t\t" + data.MostRecentAcquire[routineRevc][m].TID + "\n"
-			// found += "\tsend/close-recv: \t\t" + tIDSend + "\t\t" + tIDRecv
-
-			// results.Result(found, results.CRITICAL)
-		}
-	}
-
-	for m := range data.LockSet[routineRevc] {
-		_, ok1 := data.MostRecentAcquire[routineRevc][m]
-		_, ok2 := data.MostRecentAcquire[routineSend][m]
-		if ok1 && ok2 && data.MostRecentAcquire[routineSend][m].Elem.GetTID() != data.MostRecentAcquire[routineRevc][m].Elem.GetTID() {
-			// found possible mixed deadlock
-			// TODO: add a result. Deadlock detection is currently disabled
-			// found := "Possible mixed deadlock:\n"
-			// found += "\tlocks: \t\t" + data.MostRecentAcquire[routineSend][m].TID + "\t\t" + data.MostRecentAcquire[routineRevc][m].TID + "\n"
-			// found += "\tsend/close-recv: \t\t" + tIDSend + "\t\t" + tIDRecv
-
-			// results.Result(found, results.CRITICAL)
-		}
-	}
 }
-
-// func CheckForMixedDeadlock2(routine int) {
-// 	for m := range data.LockSet[routine] {
-// 		// if the lock was not acquired by the routine, continue. Should not happen
-// 		vc1, okS := data.MostRecentAcquire[routine][m]
-// 		if !okS {
-// 			continue
-// 		}
-
-// 		for routine2, acquire := range data.MostRecentAcquire {
-// 			if routine == routine2 {
-// 				continue
-// 			}
-
-// 			if vc2, ok := acquire[m]; ok {
-// 				weakHappensBefore := clock.GetHappensBefore(vc1, vc2)
-// 				if weakHappensBefore != Concurrent {
-// 					continue
-// 				}
-
-// 				// found possible mixed deadlock
-// 				found := "Possible mixed deadlock:\n"
-// 				found += "\tlock1: " + data.LockSet[routine][m] + "\n"
-// 				found += "\tlock2: " + data.LockSet[routine2][m]
-
-// 				results.Result(found, results.CRITICAL)
-// 			}
-
-// 		}
-// 	}
-// }

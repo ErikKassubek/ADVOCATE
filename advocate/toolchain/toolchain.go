@@ -23,7 +23,6 @@ import (
 //
 // Parameter:
 //   - mode string: mode of the toolchain (main or test or explain)
-//   - pathToMainFileOrTestDir string: if mode is main, path to main file, if mode test, path to test folder
 //   - pathToTest string: specify specific test path, only used for fuzzing
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used

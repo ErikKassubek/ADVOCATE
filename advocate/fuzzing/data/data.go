@@ -32,6 +32,7 @@ var (
 	FuzzingModeGoPie      = false
 	FuzzingModeGoCRHBPlus = false
 	FuzzingModeFlow       = false
+	FuzzingHbAnalysis     = true
 
 	NumberOfPreviousRuns = 0
 

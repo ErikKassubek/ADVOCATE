@@ -17,6 +17,8 @@ import (
 	"strings"
 )
 
+// TODO: clean this all up
+
 // ElemWithVc is a helper element for an element with an additional vector clock
 type ElemWithVc struct {
 	Vc   *clock.VectorClock
@@ -30,7 +32,7 @@ type VectorClockTID2 struct {
 	ID       int
 	Vc       *clock.VectorClock
 	TID      string
-	TypeVal  int
+	TypeVal  trace.ObjectType
 	Val      int
 	Buffered bool
 	Sel      bool

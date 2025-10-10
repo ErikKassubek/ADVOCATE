@@ -373,7 +373,7 @@ func (ch *Chain) mutSelect() map[string]Chain {
 	res := make(map[string]Chain)
 
 	for i, elem := range ch.Elems {
-		if t := elem.GetObjType(false); t != trace.ObjectTypeSelect {
+		if elem.GetType(false) != trace.Select {
 			continue
 		}
 

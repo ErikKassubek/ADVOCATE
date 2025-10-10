@@ -20,8 +20,8 @@ import (
 )
 
 var (
-	source = &trace.ElementWait{ID: -1}
-	drain  = &trace.ElementWait{ID: -2}
+	source = trace.EmptyWait(-1)
+	drain  = trace.EmptyWait(-2)
 )
 
 // TODO: change to graph of elems, not tID
@@ -42,18 +42,18 @@ var (
 //   - []Edge: The graph
 func buildResidualGraph(increases []trace.Element, decreases []trace.Element) map[trace.Element][]trace.Element {
 	graph := make(map[trace.Element][]trace.Element, 0)
-	graph[source] = []trace.Element{}
-	graph[drain] = []trace.Element{}
+	graph[&source] = []trace.Element{}
+	graph[&drain] = []trace.Element{}
 
 	// add edges from s to all done operations
 	for _, elem := range decreases {
 		graph[elem] = []trace.Element{}
-		graph[source] = append(graph[source], elem)
+		graph[&source] = append(graph[&source], elem)
 	}
 
 	// add edges from all add operations to t
 	for _, elem := range increases {
-		graph[elem] = []trace.Element{drain}
+		graph[elem] = []trace.Element{&drain}
 
 	}
 
@@ -113,21 +113,21 @@ func calculateMaxFlow(graph map[trace.Element][]trace.Element) (int, map[trace.E
 func findPath(graph map[trace.Element][]trace.Element) ([]trace.Element, int) {
 	visited := make(map[trace.Element]bool, 0)
 
-	queue := []trace.Element{source}
-	visited[source] = true
+	queue := []trace.Element{&source}
+	visited[&source] = true
 	parents := make(map[trace.Element]trace.Element, 0)
 
 	for len(queue) > 0 {
 		node := queue[0]
 		queue = queue[1:]
 
-		if node.IsEqual(drain) {
+		if node.IsEqual(&drain) {
 			path := []trace.Element{}
-			for !node.IsEqual(source) {
+			for !node.IsEqual(&source) {
 				path = append(path, node)
 				node = parents[node]
 			}
-			path = append(path, source)
+			path = append(path, &source)
 
 			return path, 1
 		}

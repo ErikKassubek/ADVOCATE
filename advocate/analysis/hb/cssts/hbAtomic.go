@@ -21,10 +21,10 @@ import (
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
 func UpdateHBAtomic(at *trace.ElementAtomic) {
-	switch at.GetOpA() {
-	case trace.LoadOp, trace.SwapOp, trace.CompSwapOp:
+	switch at.GetType(true) {
+	case trace.AtomicLoad, trace.AtomicSwap, trace.AtomicCompAndSwap:
 		Read(at, true)
-	case trace.StoreOp, trace.AddOp, trace.AndOp, trace.OrOp:
+	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
 		// csst does not add an edge for write
 	default:
 		err := "Unknown operation: " + at.ToString()

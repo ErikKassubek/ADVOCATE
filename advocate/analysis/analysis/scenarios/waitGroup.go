@@ -100,12 +100,12 @@ func CheckForDoneBeforeAdd() {
 			// i-th done in the result message
 
 			for _, add := range data.WGAddData[id] {
-				if !types.Contains(graph[drain], add) {
+				if !types.Contains(graph[&drain], add) {
 					addsNegWg = append(addsNegWg, add)
 				}
 			}
 
-			for _, dones := range graph[source] {
+			for _, dones := range graph[&source] {
 				donesNegWg = append(donesNegWg, dones)
 			}
 

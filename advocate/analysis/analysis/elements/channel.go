@@ -28,7 +28,7 @@ import (
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateChannel(ch *trace.ElementChannel) {
 	id := ch.GetID()
-	opC := ch.GetOpC()
+	opC := ch.GetType(true)
 	oID := ch.GetOID()
 	cl := ch.GetClosed()
 
@@ -45,9 +45,9 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	// hold back receive operations, until the send operation is processed
 	if ch.IsBuffered() {
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			data.MaxOpID[id] = oID
-		case trace.RecvOp:
+		case trace.ChannelRecv:
 			if oID > data.MaxOpID[id] && !cl {
 				data.WaitingReceive = append(data.WaitingReceive, ch)
 				return
@@ -63,15 +63,15 @@ func UpdateChannel(ch *trace.ElementChannel) {
 
 	if ch.IsBuffered() {
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			Send(ch, vc.CurrentVC, vc.CurrentWVC)
-		case trace.RecvOp:
+		case trace.ChannelRecv:
 			if cl { // recv on closed channel
 				RecvC(ch, vc.CurrentVC, vc.CurrentWVC, true)
 			} else {
 				Recv(ch, vc.CurrentVC, vc.CurrentWVC)
 			}
-		case trace.CloseOp:
+		case trace.ChannelClose:
 			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
@@ -79,7 +79,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 		}
 	} else { // unbuffered channel
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
@@ -92,7 +92,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				}
 			}
 
-		case trace.RecvOp: // should not occur, but better save than sorry
+		case trace.ChannelRecv: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
@@ -104,7 +104,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 					RecvC(ch, vc.CurrentVC, vc.CurrentWVC, false)
 				}
 			}
-		case trace.CloseOp:
+		case trace.ChannelClose:
 			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
@@ -129,11 +129,11 @@ func UpdateSelect(se *trace.ElementSelect) {
 	cases := se.GetCases()
 
 	for _, c := range cases {
-		opC := c.GetOpC()
+		opC := c.GetType(true)
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			setChannelAsLastSend(&c)
-		case trace.RecvOp:
+		case trace.ChannelRecv:
 			setChannelAsLastReceive(&c)
 		}
 	}
@@ -145,13 +145,13 @@ func UpdateSelect(se *trace.ElementSelect) {
 				continue
 			}
 
-			opC := c.GetOpC()
+			opC := c.GetType(true)
 
 			if _, ok := data.CloseData[c.GetID()]; ok {
 				switch opC {
-				case trace.SendOp:
+				case trace.ChannelSend:
 					scenarios.FoundSendOnClosedChannel(&c, false)
-				case trace.RecvOp:
+				case trace.ChannelRecv:
 					scenarios.FoundReceiveOnClosedChannel(&c, false)
 				}
 			}
@@ -164,7 +164,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 				data.ElemWithVc{
 					Vc:   se.GetVC().Copy(),
 					Elem: se},
-				int(c.GetOpC()), c.IsBuffered())
+				c.GetType(true), c.IsBuffered())
 		}
 	}
 }
@@ -236,8 +236,8 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 	}
 
 	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, 0, false)
-		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, 1, false)
+		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
+		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
 	}
 }
 
@@ -281,7 +281,7 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
-		}, 0, true)
+		}, trace.ChannelSend, true)
 	}
 
 	for i, hold := range data.HoldRecv {
@@ -335,7 +335,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
-		}, 1, true)
+		}, trace.ChannelRecv, true)
 	}
 
 	for i, hold := range data.HoldSend {
@@ -379,7 +379,7 @@ func Close(ch *trace.ElementChannel) {
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
 			Vc:   vc.CurrentVC[routine].Copy(),
 			Elem: ch,
-		}, 2, true)
+		}, trace.ChannelClose, true)
 	}
 }
 
@@ -421,7 +421,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
-		}, 1, buffered)
+		}, trace.ChannelRecv, buffered)
 	}
 }
 

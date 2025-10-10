@@ -369,17 +369,15 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 		VectorClock: element.GetWVC().Copy(),
 	}
 
-	switch element.GetOpM() {
-	case trace.LockOp:
+	switch element.GetType(true) {
+	case trace.MutexLock, trace.MutexTryLock:
 		acquire(&data.CurrentState, false, event)
-	case trace.TryLockOp:
 		// We do not check event.suc because that could led to false negatives
-		acquire(&data.CurrentState, false, event)
-	case trace.RLockOp:
+	case trace.MutexRLock:
 		acquire(&data.CurrentState, true, event)
-	case trace.UnlockOp:
+	case trace.MutexUnlock:
 		release(&data.CurrentState, false, event)
-	case trace.RUnlockOp:
+	case trace.MutexRUnlock:
 		release(&data.CurrentState, true, event)
 	}
 }

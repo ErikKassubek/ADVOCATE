@@ -150,10 +150,10 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 				return errors.New("c_id is not an integer")
 			}
 		}
-		var cOpC = SendOp
+		var cOpC = ChannelSend
 		switch caseList[2] {
 		case "R":
-			cOpC = RecvOp
+			cOpC = ChannelRecv
 		case "C":
 			return errors.New("Close in select case list")
 		}
@@ -182,7 +182,7 @@ func (t *Trace) AddTraceElementSelect(routine int, tPre string,
 			tPre:     tPreInt,
 			tPost:    cTPost,
 			id:       cID,
-			opC:      cOpC,
+			op:       cOpC,
 			cl:       cCl,
 			oID:      cOID,
 			qSize:    cOSize,
@@ -372,19 +372,19 @@ func (se *ElementSelect) GetPartner() *ElementChannel {
 	return nil
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns he object type
 //
 // Parameter:
 //   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
 //
 // Returns:
 //   - the object type
-func (se *ElementSelect) GetObjType(operation bool) string {
-	if operation {
-		return ObjectTypeSelect + "S"
+func (se *ElementSelect) GetType(operation bool) ObjectType {
+	if !operation {
+		return Select
 	}
 
-	return ObjectTypeSelect
+	return SelectOp
 }
 
 // GetCasiWithPosPartner returns a list of all internal indices, where the
@@ -405,6 +405,18 @@ func (se *ElementSelect) GetCasiWithPosPartner() []int {
 //   - bool: true if they are equal, false otherwise
 func (se *ElementSelect) IsEqual(elem Element) bool {
 	return se.routine == elem.GetRoutine() && se.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (er *ElementSelect) IsSameElement(elem Element) bool {
+	return false
 }
 
 // GetTraceIndex returns the index of the element in the routine
@@ -597,7 +609,7 @@ func (se *ElementSelect) SetCaseByIndex(index int) error {
 //
 // Returns:
 //   - error
-func (se *ElementSelect) SetCase(chanID int, op OpChannel) error {
+func (se *ElementSelect) SetCase(chanID int, op ObjectType) error {
 	if chanID == -1 {
 		if se.containsDefault {
 			se.chosenDefault = true
@@ -613,7 +625,7 @@ func (se *ElementSelect) SetCase(chanID int, op OpChannel) error {
 
 	found := false
 	for i, c := range se.cases {
-		if c.id == chanID && c.opC == op {
+		if c.id == chanID && c.op == op {
 			tPost := se.GetTPost()
 			if !se.chosenDefault {
 				se.cases[se.chosenIndex].SetTPost(0)

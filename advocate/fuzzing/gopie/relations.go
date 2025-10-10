@@ -165,16 +165,16 @@ func CalculateRelRule3() {
 // Returns:
 //   - bool: true if elem should be used in chains, false if not
 func isGoPieElem(elem trace.Element) bool {
-	elemTypeShort := elem.GetObjType(false)
+	elemTypeShort := elem.GetType(false)
 
 	if flags.FuzzingMode == data.GoPie {
-		validTypes := []string{
-			trace.ObjectTypeMutex, trace.ObjectTypeChannel,
-			trace.ObjectTypeSelect}
+		validTypes := []trace.ObjectType{
+			trace.Mutex, trace.Channel,
+			trace.Select}
 		return types.Contains(validTypes, elemTypeShort)
 	}
 
-	invalidTypes := []string{trace.ObjectTypeNew,
-		trace.ObjectTypeReplay, trace.ObjectTypeRoutineEnd}
+	invalidTypes := []trace.ObjectType{trace.New,
+		trace.Replay, trace.End}
 	return !types.Contains(invalidTypes, elemTypeShort)
 }

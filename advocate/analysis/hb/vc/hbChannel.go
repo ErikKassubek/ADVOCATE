@@ -32,20 +32,20 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		return
 	}
 
-	opC := ch.GetOpC()
+	opC := ch.GetType(true)
 	cl := ch.GetClosed()
 
 	if ch.IsBuffered() {
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			Send(ch)
-		case trace.RecvOp:
+		case trace.ChannelRecv:
 			if cl { // recv on closed channel
 				RecvC(ch, true)
 			} else {
 				Recv(ch, CurrentVC, CurrentWVC)
 			}
-		case trace.CloseOp:
+		case trace.ChannelClose:
 			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
@@ -53,7 +53,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		}
 	} else { // unbuffered channel
 		switch opC {
-		case trace.SendOp:
+		case trace.ChannelSend:
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
@@ -70,7 +70,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 				}
 			}
 
-		case trace.RecvOp: // should not occur, but better save than sorry
+		case trace.ChannelRecv: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
 				partnerRout := partner.GetRoutine()
@@ -84,7 +84,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 					StuckChan(routine)
 				}
 			}
-		case trace.CloseOp:
+		case trace.ChannelClose:
 			Close(ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()

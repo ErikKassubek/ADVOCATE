@@ -19,19 +19,6 @@ import (
 	"advocate/analysis/hb/clock"
 )
 
-// OpMutex is an enum for opM
-type OpMutex int
-
-// Values for the opMutex enum
-const (
-	LockOp OpMutex = iota
-	RLockOp
-	TryLockOp
-	TryRLockOp
-	UnlockOp
-	RUnlockOp
-)
-
 // ElementMutex is a trace element for a mutex
 //
 // Fields:
@@ -42,7 +29,7 @@ const (
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the mutex
 //   - rw bool: Whether the mutex is a read-noWarningrite mutex
-//   - opM opMutex: The operation on the mutex
+//   - op ObjectType: The operation on the mutex
 //   - suc bool: Whether the operation was successful (only for trylock else always true)
 //   - file string: The file of the mutex operation in the code
 //   - line int: The line of the mutex operation in the code
@@ -60,7 +47,7 @@ type ElementMutex struct {
 	tPost                    int
 	id                       int
 	rw                       bool
-	opM                      OpMutex
+	op                       ObjectType
 	suc                      bool
 	file                     string
 	line                     int
@@ -106,20 +93,20 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 		rwBool = true
 	}
 
-	var opMInt OpMutex
+	var opMInt ObjectType
 	switch opM {
 	case "L":
-		opMInt = LockOp
+		opMInt = MutexLock
 	case "R":
-		opMInt = RLockOp
+		opMInt = MutexRLock
 	case "T":
-		opMInt = TryLockOp
+		opMInt = MutexTryLock
 	case "Y":
-		opMInt = TryRLockOp
+		opMInt = MutexTryRLock
 	case "U":
-		opMInt = UnlockOp
+		opMInt = MutexUnlock
 	case "N":
-		opMInt = RUnlockOp
+		opMInt = MutexRUnlock
 	default:
 		return errors.New("opM is not a valid operation")
 	}
@@ -141,7 +128,7 @@ func (t *Trace) AddTraceElementMutex(routine int, tPre string,
 		tPost:                    tPostInt,
 		id:                       idInt,
 		rw:                       rwBool,
-		opM:                      opMInt,
+		op:                       opMInt,
 		suc:                      sucBool,
 		file:                     file,
 		line:                     line,
@@ -242,28 +229,12 @@ func (mu *ElementMutex) GetTID() string {
 	return "M@" + mu.GetPos() + "@" + strconv.Itoa(mu.tPre)
 }
 
-// GetOpM returns the operation
-//
-// Returns:
-//   - OpMutex: the operation
-func (mu *ElementMutex) GetOpM() OpMutex {
-	return mu.opM
-}
-
-// GetOperation returns the operation of the element
-//
-// Returns:
-//   - OpMutex: The operation of the element
-func (mu *ElementMutex) GetOperation() OpMutex {
-	return mu.opM
-}
-
 // IsLock returns if the element is a lock operation
 //
 // Returns:
 //   - bool: If the element is a lock operation
 func (mu *ElementMutex) IsLock() bool {
-	return mu.opM == LockOp || mu.opM == RLockOp || mu.opM == TryLockOp || mu.opM == TryRLockOp
+	return mu.op == MutexLock || mu.op == MutexRLock || mu.op == MutexTryLock || mu.op == MutexTryRLock
 }
 
 // SetVc sets the vector clock
@@ -298,33 +269,19 @@ func (mu *ElementMutex) GetWVC() *clock.VectorClock {
 	return mu.wVc
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (mu *ElementMutex) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (mu *ElementMutex) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeMutex
+		return Mutex
 	}
 
-	switch mu.opM {
-	case LockOp:
-		return ObjectTypeMutex + "L"
-	case RLockOp:
-		return ObjectTypeMutex + "R"
-	case TryLockOp:
-		return ObjectTypeMutex + "T"
-	case TryRLockOp:
-		return ObjectTypeMutex + "Y"
-	case UnlockOp:
-		return ObjectTypeMutex + "U"
-	case RUnlockOp:
-		return ObjectTypeMutex + "N"
-	}
-	return ObjectTypeMutex
+	return mu.op
 }
 
 // IsSuc returns whether the locking was successful of the element
@@ -344,6 +301,22 @@ func (mu *ElementMutex) IsSuc() bool {
 //   - bool: true if it is the same operation, false otherwise
 func (mu *ElementMutex) IsEqual(elem Element) bool {
 	return mu.routine == elem.GetRoutine() && mu.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same mutex
+func (mu *ElementMutex) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Mutex {
+		return false
+	}
+
+	return mu.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -411,20 +384,7 @@ func (mu *ElementMutex) ToString() string {
 		res += "-,"
 	}
 
-	switch mu.opM {
-	case LockOp:
-		res += "L"
-	case RLockOp:
-		res += "R"
-	case TryLockOp:
-		res += "T"
-	case TryRLockOp:
-		res += "Y"
-	case UnlockOp:
-		res += "U"
-	case RUnlockOp:
-		res += "N"
-	}
+	res += string(string(mu.op)[1])
 
 	if mu.suc {
 		res += ",t"
@@ -469,7 +429,7 @@ func (mu *ElementMutex) Copy(_ map[string]Element) Element {
 		tPost:                    mu.tPost,
 		id:                       mu.id,
 		rw:                       mu.rw,
-		opM:                      mu.opM,
+		op:                       mu.op,
 		suc:                      mu.suc,
 		file:                     mu.file,
 		line:                     mu.line,

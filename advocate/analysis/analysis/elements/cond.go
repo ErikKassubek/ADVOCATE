@@ -27,17 +27,17 @@ func AnalyzeCond(co *trace.ElementCond) {
 	// update currently waiting elements
 	id := co.GetID()
 	if co.GetTPost() != 0 { // not leak
-		switch co.GetOpC() {
-		case trace.WaitCondOp:
+		switch co.GetType(true) {
+		case trace.CondWait:
 			if _, ok := data.CurrentlyWaiting[id]; !ok {
 				data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 			}
 			data.CurrentlyWaiting[id] = append(data.CurrentlyWaiting[id], co)
-		case trace.SignalOp:
+		case trace.CondSignal:
 			if len(data.CurrentlyWaiting[id]) != 0 {
 				data.CurrentlyWaiting[id] = data.CurrentlyWaiting[id][1:]
 			}
-		case trace.BroadcastOp:
+		case trace.CondBroadcast:
 			data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 		}
 

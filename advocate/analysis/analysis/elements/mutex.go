@@ -32,10 +32,10 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	routine := mu.GetRoutine()
 	id := mu.GetID()
 
-	switch mu.GetOpM() {
-	case trace.LockOp:
+	switch mu.GetType(true) {
+	case trace.MutexLock:
 		if data.AnalysisCasesMap[flags.Leak] {
-			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 0)
+			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
 		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
@@ -48,27 +48,39 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 
-	case trace.RLockOp:
+	case trace.MutexRLock:
 		// for fuzzing
 		data.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
+		if data.AnalysisCasesMap[flags.Leak] {
+			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
+		}
+
 		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
-	case trace.TryLockOp:
+	case trace.MutexTryLock:
 		if mu.IsSuc() {
+			if data.AnalysisCasesMap[flags.Leak] {
+				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
+			}
+
 			if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
-	case trace.TryRLockOp:
+	case trace.MutexTryRLock:
 		if mu.IsSuc() {
+			if data.AnalysisCasesMap[flags.Leak] {
+				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
+			}
+
 			if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
-	case trace.UnlockOp:
+	case trace.MutexUnlock:
 		data.RelW[id] = &data.ElemWithVc{
 			Elem: mu,
 			Vc:   vc.CurrentVC[routine].Copy(),
@@ -89,11 +101,8 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
-	case trace.RUnlockOp:
+	case trace.MutexRUnlock:
 		data.RelR[id].Elem = mu
-		if data.AnalysisCasesMap[flags.Leak] {
-			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine], 1)
-		}
 
 		if data.AnalysisCasesMap[flags.MixedDeadlock] {
 			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])

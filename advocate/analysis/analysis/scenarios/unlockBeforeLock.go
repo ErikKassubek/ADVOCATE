@@ -84,12 +84,12 @@ func CheckForUnlockBeforeLock() {
 
 		if maxFlow < nrUnlock {
 			for _, l := range data.AllLocks[id] {
-				if !types.Contains(graph[drain], l) {
+				if !types.Contains(graph[&drain], l) {
 					locks = append(locks, l)
 				}
 			}
 
-			for _, u := range graph[source] {
+			for _, u := range graph[&source] {
 				unlocks = append(unlocks, u)
 			}
 
@@ -132,7 +132,7 @@ func CheckForUnlockBeforeLock() {
 					RoutineID: u.GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre,
-					ObjType:   u.GetObjType(true),
+					ObjType:   u.GetType(true),
 					File:      file,
 					Line:      line,
 				})
@@ -152,7 +152,7 @@ func CheckForUnlockBeforeLock() {
 					RoutineID: l.GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre,
-					ObjType:   l.GetObjType(true),
+					ObjType:   l.GetType(true),
 					File:      file,
 					Line:      line,
 				})

@@ -269,14 +269,14 @@ func getSpecialMuts() map[string]Chain {
 			switch t := s.(type) {
 			case *trace.ElementSelect:
 				for _, cc := range t.GetCases() {
-					if cc.GetObjType(true) == "CS" {
+					if cc.GetType(true) == trace.ChannelSend {
 						chain := NewChain()
 						chain.add(c, s)
 						res[chain.toString()] = chain
 					}
 				}
 			default:
-				if s.GetObjType(true) == "CS" {
+				if s.GetType(true) == trace.ChannelSend {
 					chain := NewChain()
 					chain.add(c, s)
 					res[chain.toString()] = chain

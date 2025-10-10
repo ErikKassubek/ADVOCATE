@@ -89,7 +89,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, _, totalFiles, err := FindTestFiles(dir, flags.Continue && testName == "")
+	testFiles, _, totalFiles, err := FindTestFiles(dir, flags.Continue && flags.ExecName == "")
 	if err != nil {
 		return 0, 0, fmt.Errorf("Failed to find test files: %v", err)
 	}
@@ -106,7 +106,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			continue
 		}
 
-		if testName == "" {
+		if flags.ExecName == "" {
 			log.Progressf("Progress: %d/%d", currentFile, totalFiles)
 			log.Progressf("Processing file: %s", file)
 		}
@@ -119,7 +119,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 		}
 
 		for _, testFunc := range testFunctions {
-			if (pathToTest == "" || pathToTest != file) && testName != "" && testName != testFunc {
+			if (pathToTest == "" || pathToTest != file) && flags.ExecName != "" && flags.ExecName != testFunc {
 				continue
 			}
 
@@ -213,12 +213,12 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 		currentFile++
 	}
 
-	if testName != "" && !ranTest {
-		return 0, 0, fmt.Errorf("could not find test function %s", testName)
+	if flags.ExecName != "" && !ranTest {
+		return 0, 0, fmt.Errorf("could not find test function %s", flags.ExecName)
 	}
 
 	// Check for untriggered selects
-	if flags.NotExecuted && testName != "" {
+	if flags.NotExecuted && flags.ExecName != "" {
 		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
 		if err != nil {
 			log.Error("Could not run check for untriggered select and not executed progs: ", err.Error())
@@ -226,12 +226,12 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	}
 
 	// Output test summary
-	if testName == "" {
+	if flags.ExecName == "" {
 		log.Info("Finished run for all tests")
 		log.Infof("Attempted tests: %d", attemptedTests)
 		log.Infof("Skipped tests: %d", skippedTests)
 	} else {
-		log.Infof("Finished run for %s", testName)
+		log.Infof("Finished run for %s", flags.ExecName)
 	}
 
 	return movedTraces, numberResults, nil

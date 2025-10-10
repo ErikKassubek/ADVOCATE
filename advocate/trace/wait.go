@@ -52,7 +52,7 @@ type ElementWait struct {
 	routine                  int
 	tPre                     int
 	tPost                    int
-	ID                       int
+	id                       int
 	opW                      OpWait
 	delta                    int
 	val                      int
@@ -121,7 +121,7 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		ID:                       idInt,
+		id:                       idInt,
 		opW:                      opWOp,
 		delta:                    deltaInt,
 		val:                      valInt,
@@ -140,12 +140,26 @@ func (t *Trace) AddTraceElementWait(routine int, tPre,
 	return nil
 }
 
+// Return an empty wait element with an id. Mainly used for source/drain in
+// st-graph to detect potential negative wait group
+//
+// Parameter:
+//   - id int: the id of the element
+//
+// Returns:
+//   - ElementWait: the wait element
+func EmptyWait(id int) ElementWait {
+	return ElementWait{
+		id: id,
+	}
+}
+
 // GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
 func (wa *ElementWait) GetID() int {
-	return wa.ID
+	return wa.id
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -283,24 +297,24 @@ func (wa *ElementWait) GetWVC() *clock.VectorClock {
 	return wa.wVc
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the string representation of the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (wa *ElementWait) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (wa *ElementWait) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeWait
+		return Wait
 	}
 
 	if wa.delta > 0 {
-		return ObjectTypeWait + "A"
+		return WaitAdd
 	} else if wa.delta < 0 {
-		return ObjectTypeWait + "D"
+		return WaitDone
 	}
-	return ObjectTypeWait + "W"
+	return WaitWait
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -312,6 +326,22 @@ func (wa *ElementWait) GetObjType(operation bool) string {
 //   - bool: true if it is the same operation, false otherwise
 func (wa *ElementWait) IsEqual(elem Element) bool {
 	return wa.routine == elem.GetRoutine() && wa.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same w3ait group
+func (wa *ElementWait) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Wait {
+		return false
+	}
+
+	return wa.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -371,7 +401,7 @@ func (wa *ElementWait) SetTWithoutNotExecuted(tSort int) {
 func (wa *ElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(wa.tPre) + "," + strconv.Itoa(wa.tPost) + ","
-	res += strconv.Itoa(wa.ID) + ","
+	res += strconv.Itoa(wa.id) + ","
 	switch wa.opW {
 	case ChangeOp:
 		res += "A,"
@@ -416,7 +446,7 @@ func (wa *ElementWait) Copy(_ map[string]Element) Element {
 		routine:                  wa.routine,
 		tPre:                     wa.tPre,
 		tPost:                    wa.tPost,
-		ID:                       wa.ID,
+		id:                       wa.id,
 		opW:                      wa.opW,
 		delta:                    wa.delta,
 		val:                      wa.val,

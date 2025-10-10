@@ -784,24 +784,20 @@ func (t *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element {
 				continue
 			}
 
-			if elem.GetTID() == element.GetTID() {
+			if !element.IsSameElement(elem) {
 				continue
 			}
 
 			e := elem.(*ElementCond)
 
-			if e.opC == WaitCondOp {
-				continue
-			}
-
 			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == hb.Concurrent {
 				e := elem.(*ElementCond)
-				switch e.opC {
-				case SignalOp:
+				switch e.op {
+				case CondSignal:
 					res["signal"] = append(res["signal"], elem)
-				case BroadcastOp:
+				case CondBroadcast:
 					res["broadcast"] = append(res["broadcast"], elem)
-				case WaitCondOp:
+				case CondWait:
 					res["wait"] = append(res["wait"], elem)
 				}
 			}

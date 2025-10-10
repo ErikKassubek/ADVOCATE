@@ -16,7 +16,6 @@ import (
 	"advocate/fuzzing/flow"
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
-	"advocate/fuzzing/partialorder"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -186,7 +185,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			break
 		}
 
-		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns)
+		log.Info("Fuzzing Run: ", data.NumberFuzzingRuns+1)
 
 		fuzzingPath := ""
 		progPathDir := helper.GetDirectory(flags.ProgPath)
@@ -245,10 +244,10 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			log.Infof("Create mutations")
 
 			// Add mutation based on happens before relations and predictive analysis
-			if data.FuzzingHbAnalysis {
-				log.Infof("Check for mutation based on happens before analysis")
-				partialorder.CreateMutations()
-			}
+			// if data.FuzzingHbAnalysis {
+			// 	log.Infof("Check for mutation based on happens before analysis")
+			// 	guided.CreateMutations()
+			// }
 
 			// Add mutation based on GFuzz
 			if data.FuzzingModeGFuzz {

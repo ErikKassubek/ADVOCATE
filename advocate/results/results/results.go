@@ -11,6 +11,7 @@
 package results
 
 import (
+	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -93,7 +94,7 @@ type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
 	TPre      int
-	ObjType   string
+	ObjType   trace.ObjectType
 	File      string
 	Line      int
 }

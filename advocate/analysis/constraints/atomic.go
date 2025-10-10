@@ -24,7 +24,7 @@ func AddAtomic(elem *trace.ElementAtomic) {
 	// all operation other than store, read from the atomic variable
 	// Set a constraint with the last writer. If there is non, the variable
 	// tries to read a default value, which does not create an constraint
-	if elem.GetOpA() != trace.StoreOp {
+	if elem.GetType(true) != trace.AtomicStore {
 		if lw, ok := data.LastAtomicWriter[elem.GetID()]; ok {
 			AddConstraint(true, lw, elem)
 		}
@@ -32,7 +32,7 @@ func AddAtomic(elem *trace.ElementAtomic) {
 
 	// all operations other than load write to the atomic variable
 	// set as last writer
-	if elem.GetOpA() != trace.LoadOp {
+	if elem.GetType(true) != trace.AtomicLoad {
 		data.LastAtomicWriter[elem.GetID()] = elem
 	}
 }

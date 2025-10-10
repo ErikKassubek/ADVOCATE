@@ -17,21 +17,6 @@ import (
 	"strconv"
 )
 
-// newOpType is an enum for type of primitive that is created
-// For now only mutex is used
-type newOpType string
-
-// Values for the newOpType enum enum
-const (
-	AtomicVar   newOpType = "A"
-	Channel     newOpType = "C"
-	Conditional newOpType = "D"
-	Mutex       newOpType = "M"
-	Once        newOpType = "O"
-	Wait        newOpType = "W"
-	None        newOpType = ""
-)
-
 // ElementNew is a trace element for the creation of an object / new
 // Fields:
 //   - traceID: id of the element, should never be changed
@@ -57,7 +42,7 @@ type ElementNew struct {
 	routine                  int
 	tPost                    int
 	id                       int
-	elemType                 newOpType
+	elemType                 ObjectType
 	num                      int
 	file                     string
 	line                     int
@@ -102,17 +87,17 @@ func (t *Trace) AddTraceElementNew(routine int, tPost string, id string, elemTyp
 	et := None
 	switch elemType {
 	case "NA":
-		et = AtomicVar
+		et = NewAtomic
 	case "NC":
-		et = Channel
+		et = NewChannel
 	case "ND":
-		et = Conditional
+		et = NewCond
 	case "NM":
-		et = Mutex
+		et = NewMutex
 	case "NO":
-		et = Once
+		et = NewOnce
 	case "NW":
-		et = Wait
+		et = NewWait
 	}
 
 	elem := ElementNew{
@@ -217,34 +202,19 @@ func (n *ElementNew) GetTID() string {
 	return "N@" + n.GetPos() + "@" + strconv.Itoa(n.tPost)
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (n *ElementNew) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (n *ElementNew) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeNew
+		return New
 	}
 
-	switch n.elemType {
-	case AtomicVar:
-		return ObjectTypeNew + "A"
-	case Channel:
-		return ObjectTypeNew + "C"
-	case Conditional:
-		return ObjectTypeNew + "D"
-	case Mutex:
-		return ObjectTypeNew + "M"
-	case Once:
-		return ObjectTypeNew + "O"
-	case Wait:
-		return ObjectTypeNew + "W"
-	default:
-		return ObjectTypeNew
-	}
+	return n.elemType
 }
 
 // SetVc sets the vector clock
@@ -313,6 +283,18 @@ func (n *ElementNew) ToString() string {
 //   - bool: true if it is the same operation, false otherwise
 func (n *ElementNew) IsEqual(elem Element) bool {
 	return n.routine == elem.GetRoutine() && n.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (nu *ElementNew) IsSameElement(elem Element) bool {
+	return false
 }
 
 // SetTPre sets the tPre of the element.

@@ -97,7 +97,7 @@ func rewriteUnbufChanLeakChanChan(tr *trace.Trace, bug bugs.Bug) error {
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if stuck.Operation() == trace.RecvOp { // Case 3
+	if stuck.GetType(true) == trace.ChannelRecv { // Case 3
 		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
@@ -161,13 +161,13 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if stuck.Operation() == trace.RecvOp { // Case 3
+	if stuck.GetType(true) == trace.ChannelRecv { // Case 3
 		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.SendOp)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelSend)
 		if err != nil {
 			println(err.Error())
 		}
@@ -192,7 +192,7 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 
-		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelRecv)
 		if err != nil {
 			println(err.Error())
 		}
@@ -235,7 +235,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 
 	// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-	if possiblePartner.Operation() == trace.RecvOp {
+	if possiblePartner.GetType(true) == trace.ChannelRecv {
 		if possiblePartnerPartner != nil {
 			tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartnerPartner.GetTSort()) // bug.TraceElement1[0] = stuck
 		} else {
@@ -248,7 +248,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 
 		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
-		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.SendOp)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelSend)
 		if err != nil {
 			println(err.Error())
 		}
@@ -265,7 +265,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.RecvOp)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelRecv)
 		if err != nil {
 			println(err.Error())
 		}
@@ -314,23 +314,23 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 				continue
 			}
 
-			if c.Operation() == d.Operation() {
+			if c.GetType(true) == d.GetType(true) {
 				continue
 			}
 
 			// T = T1 ++ [f] ++ T2 ++ T3 ++ [e]
 
-			if c.Operation() == trace.RecvOp { // Case 3
+			if c.GetType(true) == trace.ChannelRecv { // Case 3
 				tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 				// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 				// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-				err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.RecvOp)
+				err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.ChannelRecv)
 				if err != nil {
 					println(err.Error())
 				}
-				err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.SendOp)
+				err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.ChannelSend)
 				if err != nil {
 					println(err.Error())
 				}
@@ -353,11 +353,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 			// and T4' = [h in T4 | h >= e and h < f]
 
-			err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.SendOp)
+			err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.ChannelSend)
 			if err != nil {
 				println(err.Error())
 			}
-			err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.RecvOp)
+			err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.ChannelRecv)
 			if err != nil {
 				println(err.Error())
 			}

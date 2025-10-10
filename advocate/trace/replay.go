@@ -153,12 +153,30 @@ func (er *ElementReplay) GetWVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
-// GetObjType returns the string representation of the object type
-func (er *ElementReplay) GetObjType(operation bool) string {
-	if operation {
-		return ObjectTypeReplay + "R"
+// GetType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (er *ElementReplay) GetType(operation bool) ObjectType {
+	if !operation {
+		return Replay
 	}
-	return ObjectTypeReplay
+	return ReplayOP
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (er *ElementReplay) IsSameElement(elem Element) bool {
+	return false
 }
 
 // IsEqual checks if an trace element is equal to this element

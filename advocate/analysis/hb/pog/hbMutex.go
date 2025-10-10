@@ -22,21 +22,21 @@ import (
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
 func UpdateHBMutex(mu *trace.ElementMutex) {
-	switch mu.GetOpM() {
-	case trace.LockOp:
+	switch mu.GetType(true) {
+	case trace.MutexLock:
 		Lock(mu)
-	case trace.RLockOp:
+	case trace.MutexRLock:
 		RLock(mu)
-	case trace.TryLockOp:
+	case trace.MutexTryLock:
 		if mu.IsSuc() {
 			Lock(mu)
 		}
-	case trace.TryRLockOp:
+	case trace.MutexTryRLock:
 		if mu.IsSuc() {
 			RLock(mu)
 		}
-	case trace.UnlockOp:
-	case trace.RUnlockOp:
+	case trace.MutexUnlock:
+	case trace.MutexRUnlock:
 		RUnlock(mu)
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()

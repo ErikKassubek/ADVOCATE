@@ -171,18 +171,18 @@ func (re *ElementRoutineEnd) GetWVC() *clock.VectorClock {
 	return re.wVc
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
-func (re *ElementRoutineEnd) GetObjType(operation bool) string {
-	if operation {
-		return ObjectTypeRoutineEnd + "E"
+func (re *ElementRoutineEnd) GetType(operation bool) ObjectType {
+	if !operation {
+		return End
 	}
-	return ObjectTypeRoutineEnd
+	return EndRoutine
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -194,6 +194,18 @@ func (re *ElementRoutineEnd) GetObjType(operation bool) string {
 //   - bool: true if it is the same operation, false otherwise
 func (re *ElementRoutineEnd) IsEqual(elem Element) bool {
 	return re.routine == elem.GetRoutine() && re.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (er *ElementRoutineEnd) IsSameElement(elem Element) bool {
+	return false
 }
 
 // GetTraceIndex returns trace local index of the element in the trace

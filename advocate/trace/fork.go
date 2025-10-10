@@ -210,12 +210,18 @@ func (fo *ElementFork) GetWVC() *clock.VectorClock {
 	return fo.wVc
 }
 
-// GetObjType returns the string representation of the object type
-func (fo *ElementFork) GetObjType(operation bool) string {
-	if operation {
-		return ObjectTypeFork + "F"
+// GetObjType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (fo *ElementFork) GetType(operation bool) ObjectType {
+	if !operation {
+		return Fork
 	}
-	return ObjectTypeFork
+	return ForkOp
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -227,6 +233,19 @@ func (fo *ElementFork) GetObjType(operation bool) string {
 //   - bool: true if it is the same operation, false otherwise
 func (fo *ElementFork) IsEqual(elem Element) bool {
 	return fo.routine == elem.GetRoutine() && fo.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same. For fork, all forks are  considered
+// to be on the same element
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same channel
+func (fo *ElementFork) IsSameElement(elem Element) bool {
+	return elem.GetType(false) == Fork
 }
 
 // GetTraceIndex returns trace local index of the element in the trace

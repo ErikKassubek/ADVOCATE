@@ -106,8 +106,8 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
 func isReplay(element trace.Element) bool {
-	t := element.GetObjType(false)
-	return !(t == trace.ObjectTypeNew || t == trace.ObjectTypeRoutineEnd)
+	t := element.GetType(false)
+	return !(t == trace.New || t == trace.End)
 }
 
 // WriteRewriteInfoFile create a file with the result message and the exit code for the rewrite

@@ -153,11 +153,11 @@ func RunHBAnalysis(fuzzing bool) {
 			ids := make([]int, 0)
 			opTypes := make([]int, 0)
 			for _, c := range cases {
-				switch c.GetOpC() {
-				case trace.SendOp:
+				switch c.GetType(true) {
+				case trace.ChannelSend:
 					ids = append(ids, c.GetID())
 					opTypes = append(opTypes, 0)
-				case trace.RecvOp:
+				case trace.ChannelRecv:
 					ids = append(ids, c.GetID())
 					opTypes = append(opTypes, 1)
 				}
@@ -264,18 +264,12 @@ func checkLeak(elem trace.Element) {
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
-		opTypes := make([]int, 0)
+		opTypes := make([]trace.ObjectType, 0)
 		for _, c := range cases {
-			switch c.GetOpC() {
-			case trace.SendOp:
-				ids = append(ids, c.GetID())
-				opTypes = append(opTypes, 0)
-				buffered = append(buffered, c.IsBuffered())
-			case trace.RecvOp:
-				ids = append(ids, c.GetID())
-				opTypes = append(opTypes, 1)
-				buffered = append(buffered, c.IsBuffered())
-			}
+			ids = append(ids, c.GetID())
+			opTypes = append(opTypes, c.GetType(true))
+			buffered = append(buffered, c.IsBuffered())
+
 		}
 		timer.Stop(timer.AnaLeak)
 		scenarios.CheckForLeakSelectStuck(e, ids, buffered, vc.CurrentVC[e.GetRoutine()], opTypes)

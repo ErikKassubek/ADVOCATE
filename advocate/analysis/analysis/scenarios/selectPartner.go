@@ -102,7 +102,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 		id := c.GetID()
 
 		buffered := (c.GetQSize() > 0)
-		send := (c.GetOpC() == trace.SendOp)
+		send := (c.GetType(true) == trace.ChannelSend)
 
 		found := false
 		executed := false
@@ -258,7 +258,7 @@ func RerunCheckForSelectCaseWithPartnerChannel() {
 		for _, elem := range tr {
 			if e, ok := elem.(*trace.ElementChannel); ok {
 				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(),
-					e.Operation() == trace.SendOp, e.IsBuffered())
+					e.GetType(true) == trace.ChannelSend, e.IsBuffered())
 			}
 		}
 	}

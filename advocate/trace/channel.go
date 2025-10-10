@@ -17,17 +17,6 @@ import (
 	"strconv"
 
 	"advocate/analysis/hb/clock"
-	"advocate/utils/log"
-)
-
-// OpChannel is an enum for opC
-type OpChannel int
-
-// Values for the opChannel enum
-const (
-	SendOp OpChannel = iota
-	RecvOp
-	CloseOp
 )
 
 // ElementChannel is a trace element for a channel
@@ -39,7 +28,7 @@ const (
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the channel
-//   - opC OpChannel: The operation on the channel
+//   - op ObjectType: The operation on the channel
 //   - cl bool: Whether the channel has closed
 //   - oID int: The id of the other communication
 //   - qSize int: The size of the channel queue
@@ -63,7 +52,7 @@ type ElementChannel struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	opC                      OpChannel
+	op                       ObjectType
 	cl                       bool
 	oID                      int
 	qSize                    int
@@ -119,14 +108,14 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		}
 	}
 
-	var opCInt OpChannel
+	var opCInt ObjectType
 	switch opC {
 	case "S":
-		opCInt = SendOp
+		opCInt = ChannelSend
 	case "R":
-		opCInt = RecvOp
+		opCInt = ChannelRecv
 	case "C":
-		opCInt = CloseOp
+		opCInt = ChannelClose
 	default:
 		return errors.New("opC is not a valid operation")
 	}
@@ -162,7 +151,7 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
 		id:                       idInt,
-		opC:                      opCInt,
+		op:                       opCInt,
 		cl:                       clBool,
 		oID:                      oIDInt,
 		qSize:                    qSizeInt,
@@ -281,28 +270,12 @@ func (ch *ElementChannel) GetOID() int {
 	return ch.oID
 }
 
-// GetOpC returns the operation of the channel  (opC)
-//
-// Returns:
-//   - OpChannel: the operation
-func (ch *ElementChannel) GetOpC() OpChannel {
-	return ch.opC
-}
-
 // IsBuffered returns if the channel is buffered
 //
 // Returns:
 //   - bool: Whether the channel operation is buffered
 func (ch *ElementChannel) IsBuffered() bool {
 	return ch.qSize != 0
-}
-
-// Operation returns the type of the operation
-//
-// Returns:
-//   - OpChannel: The type of the operation
-func (ch *ElementChannel) Operation() OpChannel {
-	return ch.opC
 }
 
 // SetVc sets the vector clock
@@ -345,27 +318,19 @@ func (ch *ElementChannel) GetTPost() int {
 	return ch.tPost
 }
 
-// GetObjType returns the string representation of the object type
+// GetObjType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (ch *ElementChannel) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (ch *ElementChannel) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeChannel
+		return Channel
 	}
 
-	switch ch.opC {
-	case SendOp:
-		return ObjectTypeChannel + "S"
-	case RecvOp:
-		return ObjectTypeChannel + "R"
-	case CloseOp:
-		return ObjectTypeChannel + "C"
-	}
-	return ObjectTypeChannel
+	return ch.op
 }
 
 // GetQCount returns the number of elems in the queue after the operation
@@ -402,6 +367,22 @@ func (ch *ElementChannel) GetSelect() *ElementSelect {
 //   - bool: true if it is the same operation, false otherwise
 func (ch *ElementChannel) IsEqual(elem Element) bool {
 	return ch.routine == elem.GetRoutine() && ch.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same channel
+func (ch *ElementChannel) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Channel {
+		return false
+	}
+
+	return ch.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -568,18 +549,7 @@ func (ch *ElementChannel) ToString() string {
 // Returns:
 //   - string: The simple string representation of the element
 func (ch *ElementChannel) toStringSep(sep string, sel bool) string {
-	op := ""
-	switch ch.opC {
-	case SendOp:
-		op = "S"
-	case RecvOp:
-		op = "R"
-	case CloseOp:
-		op = "C"
-	default:
-		log.Error("Unknown channel operation: " + strconv.Itoa(int(ch.opC)))
-		op = "-"
-	}
+	op := string(ch.op)[1]
 
 	cl := "f"
 	if ch.cl {
@@ -632,7 +602,7 @@ func (ch *ElementChannel) Copy(mapping map[string]Element) Element {
 		tPre:                     ch.tPre,
 		tPost:                    ch.tPost,
 		id:                       ch.id,
-		opC:                      ch.opC,
+		op:                       ch.op,
 		cl:                       ch.cl,
 		oID:                      ch.oID,
 		qSize:                    ch.qSize,

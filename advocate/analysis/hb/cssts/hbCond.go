@@ -20,12 +20,12 @@ import (
 // Parameter
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateHBCond(co *trace.ElementCond) {
-	switch co.GetOpC() {
-	case trace.WaitCondOp:
+	switch co.GetType(true) {
+	case trace.CondWait:
 		// wait does not add any edge
-	case trace.SignalOp:
+	case trace.CondSignal:
 		CondSignal(co)
-	case trace.BroadcastOp:
+	case trace.CondBroadcast:
 		CondBroadcast(co)
 	}
 }

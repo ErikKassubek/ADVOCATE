@@ -28,12 +28,12 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 		at.SetWVc(CurrentWVC[routine])
 	}
 
-	switch at.GetOpA() {
-	case trace.LoadOp:
+	switch at.GetType(true) {
+	case trace.AtomicLoad:
 		Read(at, true, routine)
-	case trace.StoreOp, trace.AddOp, trace.AndOp, trace.OrOp:
+	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
 		Write(at, routine)
-	case trace.SwapOp, trace.CompSwapOp:
+	case trace.AtomicSwap, trace.AtomicCompAndSwap:
 		Swap(at, true, routine)
 	default:
 

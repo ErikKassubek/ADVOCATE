@@ -18,16 +18,6 @@ import (
 	"strconv"
 )
 
-// OpCond provides an enum for the operation of a conditional variable
-type OpCond int
-
-// Values for the OpCount enum
-const (
-	WaitCondOp OpCond = iota
-	SignalOp
-	BroadcastOp
-)
-
 // ElementCond is a trace element for a condition variable
 // Fields:
 //   - traceID: id of the element, should never be changed
@@ -35,7 +25,7 @@ const (
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
 //   - id int: The id of the condition variable
-//   - opC opCond: The operation on the condition variable
+//   - op objectType: The operation on the condition variable
 //   - file string, The file of the condition variable operation in the code
 //   - line int, The line of the condition variable operation in the code
 //   - children []TraceElement: children in partial order graph
@@ -51,7 +41,7 @@ type ElementCond struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	opC                      OpCond
+	op                       ObjectType
 	file                     string
 	line                     int
 	vc                       *clock.VectorClock
@@ -84,14 +74,14 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 	if err != nil {
 		return errors.New("id is not an integer")
 	}
-	var op OpCond
+	var op ObjectType
 	switch opN {
 	case "W":
-		op = WaitCondOp
+		op = CondWait
 	case "S":
-		op = SignalOp
+		op = CondSignal
 	case "B":
-		op = BroadcastOp
+		op = CondBroadcast
 	default:
 		return errors.New("op is not a valid operation")
 	}
@@ -107,7 +97,7 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
 		id:                       idInt,
-		opC:                      op,
+		op:                       op,
 		file:                     file,
 		line:                     line,
 		vc:                       nil,
@@ -160,7 +150,7 @@ func (co *ElementCond) GetTPost() int {
 //   - int: The timer of the element
 func (co *ElementCond) GetTSort() int {
 	t := co.tPre
-	if co.opC == WaitCondOp {
+	if co.op == CondWait {
 		t = co.tPost
 	}
 	if t == 0 {
@@ -211,14 +201,6 @@ func (co *ElementCond) GetTID() string {
 	return "D@" + co.GetPos() + "@" + strconv.Itoa(co.tPre)
 }
 
-// GetOpC returns the operation of the element
-//
-// Returns:
-//   - OpCond: The operation of the element
-func (co *ElementCond) GetOpC() OpCond {
-	return co.opC
-}
-
 // SetVc sets the vector clock
 //
 // Parameter:
@@ -251,21 +233,19 @@ func (co *ElementCond) GetWVC() *clock.VectorClock {
 	return co.wVc
 }
 
-// GetObjType returns the string representation of the object type
-func (co *ElementCond) GetObjType(operation bool) string {
+// GetType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (co *ElementCond) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeCond
+		return Cond
 	}
 
-	switch co.opC {
-	case WaitCondOp:
-		return ObjectTypeCond + "W"
-	case BroadcastOp:
-		return ObjectTypeCond + "B"
-	case SignalOp:
-		return ObjectTypeCond + "S"
-	}
-	return ObjectTypeCond
+	return co.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -277,6 +257,22 @@ func (co *ElementCond) GetObjType(operation bool) string {
 //   - bool: true if it is the same operation, false otherwise
 func (co *ElementCond) IsEqual(elem Element) bool {
 	return co.routine == elem.GetRoutine() && co.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same conditional variable
+func (co *ElementCond) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Cond {
+		return false
+	}
+
+	return co.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -314,7 +310,7 @@ func (co *ElementCond) SetTPre(tPre int) {
 //   - tSort int: The timer of the element
 func (co *ElementCond) SetTSort(tSort int) {
 	co.SetTPre(tSort)
-	if co.opC == WaitCondOp {
+	if co.op == CondWait {
 		co.tPost = tSort
 	}
 }
@@ -326,7 +322,7 @@ func (co *ElementCond) SetTSort(tSort int) {
 //   - tSort int: The timer of the element
 func (co *ElementCond) SetTWithoutNotExecuted(tSort int) {
 	co.SetTPre(tSort)
-	if co.opC == WaitCondOp {
+	if co.op == CondWait {
 		if co.tPost != 0 {
 			co.tPost = tSort
 		}
@@ -345,12 +341,12 @@ func (co *ElementCond) ToString() string {
 	res := "D,"
 	res += strconv.Itoa(co.tPre) + "," + strconv.Itoa(co.tPost) + ","
 	res += strconv.Itoa(co.id) + ","
-	switch co.opC {
-	case WaitCondOp:
+	switch co.op {
+	case CondWait:
 		res += "W"
-	case SignalOp:
+	case CondSignal:
 		res += "S"
-	case BroadcastOp:
+	case CondBroadcast:
 		res += "B"
 	}
 	res += "," + co.GetPos()
@@ -390,7 +386,7 @@ func (co *ElementCond) Copy(_ map[string]Element) Element {
 		tPre:                     co.tPre,
 		tPost:                    co.tPost,
 		id:                       co.id,
-		opC:                      co.opC,
+		op:                       co.op,
 		file:                     co.file,
 		line:                     co.line,
 		vc:                       co.vc.Copy(),

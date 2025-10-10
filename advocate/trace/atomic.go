@@ -18,20 +18,6 @@ import (
 	"strconv"
 )
 
-// OpAtomic is an enum for an atomic operation
-type OpAtomic int
-
-// Values for the opAtomic enum
-const (
-	LoadOp OpAtomic = iota
-	StoreOp
-	AddOp
-	SwapOp
-	CompSwapOp
-	AndOp
-	OrOp
-)
-
 // ElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
@@ -40,7 +26,7 @@ const (
 //   - routine int: The routine id
 //   - tPost int: The timestamp of the event
 //   - id int: The id of the atomic variable
-//   - opA opAtomic: The operation on the atomic variable
+//   - op ObjectType: The operation on the atomic variable
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
 //   - file string: the file of the operation
@@ -55,7 +41,7 @@ type ElementAtomic struct {
 	routine                  int
 	tPost                    int
 	id                       int
-	opA                      OpAtomic
+	op                       ObjectType
 	vc                       *clock.VectorClock
 	wVc                      *clock.VectorClock
 	file                     string
@@ -86,22 +72,22 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		return errors.New("id is not an integer")
 	}
 
-	var opAInt OpAtomic
+	var opAInt ObjectType
 	switch operation {
 	case "L":
-		opAInt = LoadOp
+		opAInt = AtomicLoad
 	case "S":
-		opAInt = StoreOp
+		opAInt = AtomicStore
 	case "A":
-		opAInt = AddOp
+		opAInt = AtomicAdd
 	case "W":
-		opAInt = SwapOp
+		opAInt = AtomicSwap
 	case "C":
-		opAInt = CompSwapOp
+		opAInt = AtomicCompAndSwap
 	case "N":
-		opAInt = AndOp
+		opAInt = AtomicAnd
 	case "O":
-		opAInt = OrOp
+		opAInt = AtomicOr
 	default:
 		return fmt.Errorf("Atomic operation '%s' is not a valid operation", operation)
 	}
@@ -117,7 +103,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		routine:                  routine,
 		tPost:                    tPostInt,
 		id:                       idInt,
-		opA:                      opAInt,
+		op:                       opAInt,
 		file:                     file,
 		line:                     line,
 		vc:                       nil,
@@ -213,14 +199,6 @@ func (at *ElementAtomic) GetTID() string {
 	return "A@" + at.GetPos() + "@" + strconv.Itoa(at.tPost)
 }
 
-// GetOpA returns the atomic operation type
-//
-// Returns:
-//   - opAtomic: the operation type
-func (at *ElementAtomic) GetOpA() OpAtomic {
-	return at.opA
-}
-
 // SetVc sets the vector clock
 //
 // Parameter:
@@ -253,32 +231,19 @@ func (at *ElementAtomic) GetWVC() *clock.VectorClock {
 	return at.wVc
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (at *ElementAtomic) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (at *ElementAtomic) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeAtomic
+		return Atomic
 	}
 
-	switch at.opA {
-	case LoadOp:
-		return ObjectTypeAtomic + "L"
-	case StoreOp:
-		return ObjectTypeAtomic + "S"
-	case AddOp:
-		return ObjectTypeAtomic + "A"
-	case SwapOp:
-		return ObjectTypeAtomic + "W"
-	case CompSwapOp:
-		return ObjectTypeAtomic + "C"
-	}
-
-	return ObjectTypeAtomic
+	return at.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -290,6 +255,22 @@ func (at *ElementAtomic) GetObjType(operation bool) string {
 //   - bool: true if it is the same operation, false otherwise
 func (at *ElementAtomic) IsEqual(elem Element) bool {
 	return at.routine == elem.GetRoutine() && at.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same atomic variable
+func (at *ElementAtomic) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Atomic {
+		return false
+	}
+
+	return at.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -341,22 +322,7 @@ func (at *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (at *ElementAtomic) ToString() string {
-	opString := ""
-
-	switch at.opA {
-	case LoadOp:
-		opString = "L"
-	case StoreOp:
-		opString = "S"
-	case AddOp:
-		opString = "A"
-	case SwapOp:
-		opString = "W"
-	case CompSwapOp:
-		opString = "C"
-	default:
-		opString = "U"
-	}
+	opString := string(at.op)[1]
 
 	return fmt.Sprintf("A,%d,%d,%s,%s", at.tPost, at.id, opString, at.GetPos())
 }
@@ -394,7 +360,7 @@ func (at *ElementAtomic) Copy(_ map[string]Element) Element {
 		routine:                  at.routine,
 		tPost:                    at.tPost,
 		id:                       at.id,
-		opA:                      at.opA,
+		op:                       at.op,
 		vc:                       at.vc.Copy(),
 		wVc:                      at.wVc.Copy(),
 		numberConcurrent:         at.numberConcurrent,

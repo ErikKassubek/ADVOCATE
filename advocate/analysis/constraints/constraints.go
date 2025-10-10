@@ -81,7 +81,7 @@ func (c *constraint) toString() string {
 		res += "-;"
 	}
 
-	res += fmt.Sprintf("%s;", c.first.GetObjType(false))
+	res += fmt.Sprintf("%s;", c.first.GetType(false))
 
 	res += fmt.Sprintf("%d,%s;", c.first.GetRoutine(), c.first.GetPos())
 	if c.twoElem {

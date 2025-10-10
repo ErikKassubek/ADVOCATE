@@ -226,22 +226,22 @@ func (on *ElementOnce) GetWVC() *clock.VectorClock {
 	return on.wVc
 }
 
-// GetObjType returns the string representation of the object type
+// GetType returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
-//   - string: the object type
-func (on *ElementOnce) GetObjType(operation bool) string {
+//   - ObjectType: the object type
+func (on *ElementOnce) GetType(operation bool) ObjectType {
 	if !operation {
-		return ObjectTypeOnce
+		return Once
 	}
 
 	if on.suc {
-		return ObjectTypeOnce + "E"
+		return OnceSuc
 	}
-	return ObjectTypeOnce + "N"
+	return OnceFail
 }
 
 // GetSuc returns whether the once do was executed (successful)
@@ -261,6 +261,22 @@ func (on *ElementOnce) GetSuc() bool {
 //   - bool: true if it is the same operation, false otherwise
 func (on *ElementOnce) IsEqual(elem Element) bool {
 	return on.routine == elem.GetRoutine() && on.ToString() == elem.ToString()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same once
+func (mu *ElementOnce) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Once {
+		return false
+	}
+
+	return mu.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace

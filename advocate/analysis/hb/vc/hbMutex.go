@@ -28,22 +28,22 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 	mu.SetWVc(CurrentWVC[routine])
 
 	if !alt {
-		switch mu.GetOpM() {
-		case trace.LockOp:
+		switch mu.GetType(true) {
+		case trace.MutexLock:
 			Lock(mu)
-		case trace.RLockOp:
+		case trace.MutexRLock:
 			RLock(mu)
-		case trace.TryLockOp:
+		case trace.MutexTryLock:
 			if mu.IsSuc() {
 				Lock(mu)
 			}
-		case trace.TryRLockOp:
+		case trace.MutexTryRLock:
 			if mu.IsSuc() {
 				RLock(mu)
 			}
-		case trace.UnlockOp:
+		case trace.MutexUnlock:
 			// only increases counter, no sync
-		case trace.RUnlockOp:
+		case trace.MutexRUnlock:
 			RUnlock(mu)
 		default:
 			err := "Unknown mutex operation: " + mu.ToString()

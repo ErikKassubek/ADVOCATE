@@ -24,12 +24,12 @@ func UpdateHBCond(co *trace.ElementCond) {
 	co.SetVc(CurrentVC[routine])
 	co.SetWVc(CurrentWVC[routine])
 
-	switch co.GetOpC() {
-	case trace.WaitCondOp:
+	switch co.GetType(true) {
+	case trace.CondWait:
 		CondWait(co)
-	case trace.SignalOp:
+	case trace.CondSignal:
 		CondSignal(co)
-	case trace.BroadcastOp:
+	case trace.CondBroadcast:
 		CondBroadcast(co)
 	}
 }

@@ -111,8 +111,8 @@ func ParseTrace(tr *trace.Trace) {
 // Add the corresponding info into FuzzingChannel
 func parseNew(elem *trace.ElementNew) {
 	// only process channels
-	if elem.GetObjType(true) != "NC" {
-		log.Important(elem.GetObjType(true))
+	if elem.GetType(true) != trace.NewChannel {
+		log.Important("New on: ", elem.GetType(true))
 		return
 	}
 
@@ -137,16 +137,16 @@ func parseNew(elem *trace.ElementNew) {
 func parseChannelOp(elem *trace.ElementChannel, selID int) {
 
 	if data.FuzzingModeGFuzz {
-		op := elem.GetObjType(true)
+		op := elem.GetType(true)
 
 		// close -> update channelInfoTrace
 		switch op {
-		case "CC":
+		case trace.ChannelClose:
 			e := gfuzz.ChannelInfoTrace[elem.GetID()]
 			e.CloseInfo = gfuzz.Always // before is always unknown
 			gfuzz.ChannelInfoTrace[elem.GetID()] = e
 			gfuzz.NumberClose++
-		case "CS":
+		case trace.ChannelSend:
 			if elem.GetTPost() == 0 {
 				return
 			}

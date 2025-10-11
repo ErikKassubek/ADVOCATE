@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // resultLevel is an enum for the severity of a result
@@ -236,9 +237,9 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	// if resType == helper.ADeadlock && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
-	// 	return true
-	// }
+	if resType == helper.ADeadlock && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+		return true
+	}
 
 	return false
 }

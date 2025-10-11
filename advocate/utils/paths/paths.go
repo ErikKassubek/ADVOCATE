@@ -32,6 +32,7 @@ const (
 	NameRewrittenInfo  = "rewrite_info.log"
 	NameStats          = "stats"
 	NameStatsTime      = "times"
+	NameBugs           = "bugs"
 )
 
 // advocate
@@ -52,6 +53,7 @@ var (
 	Result        = ""
 	CurrentResult = ""
 	ResultOutput  = ""
+	ResultBugs    = ""
 	Output        = ""
 	ResultStats   = ""
 	ResultTime    = ""
@@ -87,6 +89,7 @@ func pathsResult(main bool) {
 	}
 	CurrentResult = Result
 	ResultOutput = filepath.Join(Result, NameOutput)
+	ResultBugs = filepath.Join(CurrentResult, NameBugs)
 	Output = filepath.Join(ProgDir, NameOutput)
 	ResultStats = filepath.Join(Result, NameStats)
 	ResultTime = filepath.Join(Result, NameStatsTime)
@@ -95,6 +98,7 @@ func pathsResult(main bool) {
 func SetCurrentResult(fileNumber, testNumber int, fileName, testName string) string {
 	dirName := fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileName, testName)
 	CurrentResult = filepath.Join(Result, dirName)
+	ResultBugs = filepath.Join(CurrentResult, NameBugs)
 	ResultOutput = filepath.Join(CurrentResult, NameOutput)
 	ResultStats = filepath.Join(CurrentResult, NameStats)
 	ResultTime = filepath.Join(CurrentResult, NameStatsTime)

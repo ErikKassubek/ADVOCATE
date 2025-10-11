@@ -85,6 +85,10 @@ func Fuzzing() error {
 		timer.ResetFuzzing()
 		control.Reset()
 
+		if !flags.KeepTraces {
+			toolchain.RemoveTraces(flags.ProgPath)
+		}
+
 		return err
 	}
 

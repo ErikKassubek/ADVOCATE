@@ -13,6 +13,7 @@ package stats
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"bufio"
 	"fmt"
 	"os"
@@ -32,10 +33,9 @@ import (
 //   - error
 func CreateStatsFuzzing(pathFolder string) error {
 	// collect the info from the analyzer
-	resultPath := filepath.Join(pathFolder, "advocateResult")
-	statsAnalyzerPath := filepath.Join(resultPath, "statsAnalysis_"+flags.ProgName+".csv")
-	statsFuzzingPath := filepath.Join(resultPath, "statsFuzzing_"+flags.ProgName+".csv")
-	statsFuzzPath := filepath.Join(resultPath, "statsFuzz_"+flags.ProgName+".csv")
+	statsAnalyzerPath := filepath.Join(paths.ResultStats, "statsAnalysis_"+flags.ProgName+".csv")
+	statsFuzzingPath := filepath.Join(paths.ResultStats, "statsFuzzing_"+flags.ProgName+".csv")
+	statsFuzzPath := filepath.Join(paths.ResultStats, "statsFuzz_"+flags.ProgName+".csv")
 
 	log.Info("Create fuzzing statistics")
 
@@ -91,7 +91,7 @@ func CreateStatsFuzzing(pathFolder string) error {
 	}
 
 	// get the number of unique bugs for this test
-	testDir, err := os.ReadDir(resultPath)
+	testDir, err := os.ReadDir(paths.Result)
 	if err != nil {
 		return err
 	}
@@ -104,8 +104,7 @@ func CreateStatsFuzzing(pathFolder string) error {
 		testNameSplit := strings.Split(test.Name(), "-")
 		testName := testNameSplit[len(testNameSplit)-1]
 
-		bugDirPath := filepath.Join(resultPath, test.Name(), "bugs")
-		bugDir, err := os.ReadDir(bugDirPath)
+		bugDir, err := os.ReadDir(paths.ResultBugs)
 		if err != nil {
 			continue
 		}
@@ -114,7 +113,7 @@ func CreateStatsFuzzing(pathFolder string) error {
 		res := getNewDataMapMap()
 
 		for _, bug := range bugDir {
-			processBugFile(filepath.Join(bugDirPath, bug.Name()), foundBugs, nil, res)
+			processBugFile(filepath.Join(paths.ResultBugs, bug.Name()), foundBugs, nil, res)
 		}
 
 		for _, bug := range foundBugs {

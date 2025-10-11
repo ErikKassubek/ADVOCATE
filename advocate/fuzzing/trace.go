@@ -112,7 +112,7 @@ func ParseTrace(tr *trace.Trace) {
 func parseNew(elem *trace.ElementNew) {
 	// only process channels
 	if elem.GetType(true) != trace.NewChannel {
-		log.Important("New on: ", elem.GetType(true))
+		log.Important("Unexpected new on: ", elem.GetType(true))
 		return
 	}
 

@@ -222,7 +222,6 @@ func runWorkflowMain(
 	}
 
 	if flags.CreateStatistics {
-		// create statistics
 		stats.CreateStats("", movedTraces, fuzzing)
 	}
 

@@ -42,7 +42,6 @@ import (
 //   - runReplay bool: run replay, if runAnalysis is true, those replays are used
 //   - pathToTest string: path to the test file, should be set if exec is set
 //   - also runs the tests once without any recoding/replay to get a base value
-//   - createStats bool: create a stats file
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
@@ -54,7 +53,7 @@ import (
 //   - int: number results
 //   - error
 func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
-	pathToTest string, createStats bool, fuzzing int, fuzzingTrace string,
+	pathToTest string, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber,
 	testNumber int) (int, int, error) {
 	// Validate required inputs
@@ -186,12 +185,12 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			if anaPassed {
 				numberResults += generateBugReports(movedTraces, fuzzing)
 			}
-			if createStats {
-				// create statistics
+
+			if flags.CreateStatistics {
 				stats.CreateStats(testFunc, movedTraces, fuzzing)
 			}
 
-			if !flags.KeepTraces && !createStats {
+			if !flags.KeepTraces && !flags.CreateStatistics {
 				RemoveTraces(dir)
 			}
 

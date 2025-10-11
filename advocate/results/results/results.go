@@ -85,6 +85,7 @@ type ResultElem interface {
 	stringMachine() string
 	stringReadable() string
 	stringMachineShort() string
+	getFile() string
 }
 
 // TraceElementResult is a type to represent an element that is
@@ -97,6 +98,14 @@ type TraceElementResult struct {
 	ObjType   trace.ObjectType
 	File      string
 	Line      int
+}
+
+// getFile returns the file path of the element
+//
+// Returns:
+//   - string: the file path
+func (t TraceElementResult) getFile() string {
+	return t.File
 }
 
 // stringMachineShort returns a short machine readable string representation
@@ -134,51 +143,6 @@ func (t TraceElementResult) isInvalid() bool {
 	return t.ObjType == "" || t.Line == -1
 }
 
-// SelectCaseResult is a type to represent an select case that is
-// part of a found bug
-type SelectCaseResult struct {
-	SelID   int
-	ObjID   int
-	ObjType string
-	Routine int
-	Index   int
-}
-
-// stringMachineShort returns a short machine readable string representation
-// of a result select case
-//
-// Returns:
-//   - string: the string representation
-func (s SelectCaseResult) stringMachineShort() string {
-	return fmt.Sprintf("S:%d:%s:%d", s.ObjID, s.ObjType, s.Index)
-}
-
-// stringMachineShort returns a machine readable string representation
-// of a result select case
-//
-// Returns:
-//   - string: the string representation
-func (s SelectCaseResult) stringMachine() string {
-	return fmt.Sprintf("S:%d:%s:%d", s.ObjID, s.ObjType, s.Index)
-}
-
-// stringReadable returns a human readable string representation
-// of a result select case
-//
-// Returns:
-//   - string: the string representation
-func (s SelectCaseResult) stringReadable() string {
-	return fmt.Sprintf("%d:%s", s.ObjID, s.ObjType)
-}
-
-// isInvalid checks if the result select case is not corrupted/empty
-//
-// Returns:
-//   - bool: true if valid, false otherwise
-func (s SelectCaseResult) isInvalid() bool {
-	return s.ObjType == ""
-}
-
 // Result logs a found bug
 //
 // Parameter:
@@ -189,12 +153,7 @@ func (s SelectCaseResult) isInvalid() bool {
 //   - argType2 string: description of the type of elements in arg2
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
-
-	if resType != helper.RUnknownPanic && resType != helper.RTimeout && len(arg1) == 0 {
-		return
-	}
-
-	if control.CheckCanceled() {
+	if filterInvalidResults(resType, arg1) {
 		return
 	}
 
@@ -238,26 +197,50 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	resultReadable += "\n"
 	resultMachine += "\n"
 
-	if level == WARNING {
+	switch level {
+	case WARNING:
 		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultsWarningReadable = append(resultsWarningReadable, resultReadable)
 			resultsWarningMachine = append(resultsWarningMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
-	} else if level == CRITICAL {
+	case CRITICAL:
 		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultsCriticalReadable = append(resultsCriticalReadable, resultReadable)
 			resultCriticalMachine = append(resultCriticalMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
-	} else if level == INFORMATION {
+	case INFORMATION:
 		if !types.Contains(resultWithoutTime, resultMachineShort) {
 			resultInformationMachine = append(resultInformationMachine, resultMachine)
 			resultWithoutTime = append(resultWithoutTime, resultMachineShort)
 		}
 	}
+}
 
-	// log.Resultf(false, false, "", "Info: %s", resultTypeMap[resType])
+// Some results are invalid or intentionally not shown. This function returns,
+// if the given parameters constitute such a result
+//
+// Parameter:
+//   - resType ResultType: type of bug that was found
+//   - arg1 []ResultElem]: elements directly involved in the bug (e.g. in send on closed the send)
+//
+// Returns:
+//   - bool: true if the result is invalid and should be ignored, false otherwise
+func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
+	if resType != helper.RUnknownPanic && resType != helper.RTimeout && len(arg1) == 0 {
+		return true
+	}
+
+	if control.CheckCanceled() {
+		return true
+	}
+
+	// if resType == helper.ADeadlock && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+	// 	return true
+	// }
+
+	return false
 }
 
 // InitResults sets the output file paths and clears al previous results

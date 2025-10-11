@@ -72,7 +72,7 @@ func Run(mode, pathToTest string,
 			flags.ProgName = helper.GetProgName(flags.ProgPath)
 		}
 		return runWorkflowUnit(paths.Prog, runRecord, runAnalysis, runReplay,
-			pathToTest, flags.CreateStatistics && fuzzing == -1, fuzzing, fuzzingTrace,
+			pathToTest, fuzzing, fuzzingTrace,
 			firstRun, fileNumber, testNumber)
 	default:
 		return 0, 0, fmt.Errorf("Choose one mode from 'main' or 'test'")

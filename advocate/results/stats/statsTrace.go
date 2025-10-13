@@ -68,7 +68,7 @@ func statsTraces(traceID int) (map[string]int, error) {
 		"numberOnceOperations": 0,
 	}
 
-	tracePath := filepath.Join(paths.CurrentResult, fmt.Sprintf("advocateTrace_%d", traceID))
+	tracePath := filepath.Join(paths.ResultTraces, fmt.Sprintf("advocateTrace_%d", traceID))
 
 	// do not count the same twice
 	known := map[string][]string{

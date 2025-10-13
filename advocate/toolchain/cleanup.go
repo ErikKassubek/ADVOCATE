@@ -45,10 +45,23 @@ func collect(progPath, packagePath, destination string, total bool) {
 		paths.NameOutput,
 	}
 
+	pathTraces := filepath.Join(destination, paths.NameTraces)
+	pathOut := filepath.Join(destination, paths.NameOut)
+
+	err := os.MkdirAll(pathTraces, os.ModePerm)
+	if err != nil {
+		log.Error("Error creating folder:", err)
+	}
+
+	err = os.MkdirAll(pathOut, os.ModePerm)
+	if err != nil {
+		log.Error("Error creating folder:", err)
+	}
+
 	if total {
 		for _, file := range logsToCollect {
 			src := filepath.Join(progPath, file)
-			dest := filepath.Join(destination, "total_"+file)
+			dest := filepath.Join(pathOut, "total_"+file)
 
 			_, err := os.Stat(dest)
 			new := os.IsNotExist(err)
@@ -87,7 +100,9 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 		if file == "advocateTrace" {
 			movedTraces++
-			dest += "_" + strconv.Itoa(movedTraces)
+			dest = filepath.Join(pathTraces, file+"_"+strconv.Itoa(movedTraces))
+		} else {
+			dest = filepath.Join(pathOut, file)
 		}
 
 		err := os.Rename(src, dest)
@@ -99,7 +114,7 @@ func collect(progPath, packagePath, destination string, total bool) {
 	for _, pattern := range pattersToMove {
 		files, _ := filepath.Glob(filepath.Join(packagePath, pattern))
 		for _, trace := range files {
-			dest := filepath.Join(destination, filepath.Base(trace))
+			dest := filepath.Join(pathTraces, filepath.Base(trace))
 			_ = os.Rename(trace, dest)
 		}
 	}
@@ -110,7 +125,6 @@ func collect(progPath, packagePath, destination string, total bool) {
 // Parameter:
 //   - path string: path to the folder containing the traces
 func RemoveTraces(path string) {
-	log.Important("Remove Traces")
 	pattersToMove := []string{
 		"advocateTrace_*",
 		"rewrittenTrace*",
@@ -142,6 +156,8 @@ func RemoveTraces(path string) {
 	for _, trace := range files {
 		os.RemoveAll(trace)
 	}
+
+	os.Remove(paths.ResultTraces)
 }
 
 // removeLogs removes the result and output files

@@ -135,6 +135,7 @@ func runWorkflowMain(
 		timer.Start(timer.Recording)
 		execPath := helper.MakePathLocal(flags.ExecName)
 		if err := runCommand(origStdout, origStderr, execPath); err != nil {
+			log.Error("Error in Run Recording: ", err.Error())
 			headerRemoverMain(paths.Prog)
 		}
 		timer.Stop(timer.Recording)

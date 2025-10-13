@@ -33,6 +33,8 @@ const (
 	NameStats          = "stats"
 	NameStatsTime      = "times"
 	NameBugs           = "bugs"
+	NameTraces         = "traces"
+	NameOut            = "output"
 )
 
 // advocate
@@ -57,6 +59,8 @@ var (
 	Output        = ""
 	ResultStats   = ""
 	ResultTime    = ""
+	ResultTraces  = ""
+	ResultOut     = ""
 )
 
 func BuildPaths(main bool) {
@@ -88,19 +92,23 @@ func pathsResult(main bool) {
 		Result = filepath.Join(Prog, NameResult)
 	}
 	CurrentResult = Result
-	ResultOutput = filepath.Join(Result, NameOutput)
+	ResultOut = filepath.Join(CurrentResult, NameOut)
+	ResultOutput = filepath.Join(ResultOut, NameOutput)
 	ResultBugs = filepath.Join(CurrentResult, NameBugs)
 	Output = filepath.Join(ProgDir, NameOutput)
 	ResultStats = filepath.Join(Result, NameStats)
 	ResultTime = filepath.Join(Result, NameStatsTime)
+	ResultTraces = filepath.Join(Result, NameTraces)
 }
 
 func SetCurrentResult(fileNumber, testNumber int, fileName, testName string) string {
 	dirName := fmt.Sprintf("file(%d)-test(%d)-%s-%s", fileNumber, testNumber, fileName, testName)
 	CurrentResult = filepath.Join(Result, dirName)
+	ResultOut = filepath.Join(CurrentResult, NameOut)
 	ResultBugs = filepath.Join(CurrentResult, NameBugs)
-	ResultOutput = filepath.Join(CurrentResult, NameOutput)
+	ResultOutput = filepath.Join(ResultOut, NameOutput)
 	ResultStats = filepath.Join(CurrentResult, NameStats)
 	ResultTime = filepath.Join(CurrentResult, NameStatsTime)
+	ResultTraces = filepath.Join(CurrentResult, NameTraces)
 	return CurrentResult
 }

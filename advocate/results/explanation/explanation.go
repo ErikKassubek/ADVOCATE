@@ -108,8 +108,8 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 		log.Error("Could not read header line: ", err)
 	}
 
-	resultsMachine, _ := filepath.Glob(filepath.Join(paths.CurrentResult, "results_machine_*.log"))
-	resultsMachine = append(resultsMachine, filepath.Join(paths.CurrentResult, paths.NameResultMachine))
+	resultsMachine, _ := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
+	resultsMachine = append(resultsMachine, filepath.Join(paths.ResultOut, paths.NameResultMachine))
 
 	var numberResults int
 	for _, result := range resultsMachine {

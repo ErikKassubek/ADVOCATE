@@ -27,42 +27,42 @@ type Timer struct {
 }
 
 // Start a timer
-func (t *Timer) Start() {
-	if t.running {
+func (this *Timer) Start() {
+	if this.running {
 		return
 	}
 
-	t.startTime = time.Now()
-	t.running = true
+	this.startTime = time.Now()
+	this.running = true
 }
 
 // Stop a timer
-func (t *Timer) Stop() {
-	if !t.running {
+func (this *Timer) Stop() {
+	if !this.running {
 		return
 	}
-	t.elapsed += time.Since(t.startTime)
-	t.running = false
+	this.elapsed += time.Since(this.startTime)
+	this.running = false
 }
 
 // GetTime returns the elapsed time of the timer
 //
 // Returns:
 //   - time.Duration: current elapsed time of timer
-func (t *Timer) GetTime() time.Duration {
-	if t.running {
-		return t.elapsed + time.Since(t.startTime)
+func (this *Timer) GetTime() time.Duration {
+	if this.running {
+		return this.elapsed + time.Since(this.startTime)
 	}
-	return t.elapsed
+	return this.elapsed
 }
 
 // Reset the timer
-func (t *Timer) Reset() {
-	t.running = false
-	t.elapsed = time.Duration(0)
+func (this *Timer) Reset() {
+	this.running = false
+	this.elapsed = time.Duration(0)
 }
 
 // IsRunning returns if the timer is currently running
-func (t *Timer) IsRunning() bool {
-	return t.running
+func (this *Timer) IsRunning() bool {
+	return this.running
 }

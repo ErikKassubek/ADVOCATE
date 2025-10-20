@@ -78,8 +78,8 @@ func NewVectorClockSet(size int, cl map[uint32]uint32) *VectorClock {
 //
 // Returns:
 //   - int: The size of the vector clock
-func (vc VectorClock) GetSize() int {
-	return int(vc.size)
+func (this VectorClock) GetSize() int {
+	return int(this.size)
 }
 
 // GetValue returns the value of the vector clock at a given index
@@ -89,12 +89,12 @@ func (vc VectorClock) GetSize() int {
 //
 // Returns:
 //   - uint32: the value at the given index
-func (vc *VectorClock) GetValue(index int) uint32 {
-	if index > vc.size {
+func (this *VectorClock) GetValue(index int) uint32 {
+	if index > this.size {
 		return 0
 	}
 
-	if val, ok := vc.clock[uint32(index)]; ok {
+	if val, ok := this.clock[uint32(index)]; ok {
 		return val
 	}
 	return 0
@@ -105,27 +105,27 @@ func (vc *VectorClock) GetValue(index int) uint32 {
 // Parameter:
 //   - index int: the index to set the value for
 //   - value uint32: the new value
-func (vc *VectorClock) SetValue(index int, value uint32) {
-	vc.clock[uint32(index)] = value
+func (this *VectorClock) SetValue(index int, value uint32) {
+	this.clock[uint32(index)] = value
 }
 
 // GetClock returns the vector clock
 //
 // Returns:
 //   - map[uint32]uint32: The vector clock
-func (vc *VectorClock) GetClock() map[uint32]uint32 {
-	return vc.clock
+func (this *VectorClock) GetClock() map[uint32]uint32 {
+	return this.clock
 }
 
 // ToString returns a string representation of the vector clock
 //
 // Returns:
 //   - string: The string representation of the vector clock
-func (vc *VectorClock) ToString() string {
+func (this *VectorClock) ToString() string {
 	str := "["
-	for i := 1; i <= vc.size; i++ {
-		str += fmt.Sprint(vc.GetValue(i))
-		if i <= vc.size-1 {
+	for i := 1; i <= this.size; i++ {
+		str += fmt.Sprint(this.GetValue(i))
+		if i <= this.size-1 {
 			str += ", "
 		}
 	}
@@ -137,20 +137,20 @@ func (vc *VectorClock) ToString() string {
 //
 // Parameter:
 //   - routine int: The routine to increment
-func (vc *VectorClock) Inc(routine int) {
-	if vc == nil {
+func (this *VectorClock) Inc(routine int) {
+	if this == nil {
 		return
 	}
 
-	if routine > int(vc.size) {
+	if routine > int(this.size) {
 		return
 	}
 
-	if vc.clock == nil {
-		vc.clock = make(map[uint32]uint32)
+	if this.clock == nil {
+		this.clock = make(map[uint32]uint32)
 	}
 
-	vc.clock[uint32(routine)]++
+	this.clock[uint32(routine)]++
 }
 
 // Sync updates the vector clock with the received vector clock
@@ -160,62 +160,62 @@ func (vc *VectorClock) Inc(routine int) {
 //
 // Returns:
 //   - *VectorClock: The synced vc (not a copy)
-func (vc *VectorClock) Sync(rec *VectorClock) *VectorClock {
-	if vc == nil {
-		vc = rec.Copy()
-		return vc
+func (this *VectorClock) Sync(rec *VectorClock) *VectorClock {
+	if this == nil {
+		this = rec.Copy()
+		return this
 	}
 
 	if rec == nil {
-		return vc
+		return this
 	}
 
-	if vc.size == 0 && rec.size == 0 {
+	if this.size == 0 && rec.size == 0 {
 		_, file, line, _ := runtime.Caller(1)
 		log.Error("Sync of empty vector clocks: " + file + ":" + strconv.Itoa(line))
 	}
 
-	if vc.size == 0 {
-		vc = NewVectorClock(rec.size)
+	if this.size == 0 {
+		this = NewVectorClock(rec.size)
 	}
 
 	if rec.size == 0 {
-		return vc
+		return this
 	}
 
-	for i := 1; i <= vc.size; i++ {
-		if rec.GetValue(i) > vc.GetValue(i) {
-			vc.SetValue(i, rec.GetValue(i))
+	for i := 1; i <= this.size; i++ {
+		if rec.GetValue(i) > this.GetValue(i) {
+			this.SetValue(i, rec.GetValue(i))
 		}
 	}
 
-	return vc
+	return this
 }
 
 // Copy creates a copy of the vector clock
 //
 // Returns:
 //   - *VectorClock: The copy of the vector clock
-func (vc *VectorClock) Copy() *VectorClock {
-	if vc == nil {
+func (this *VectorClock) Copy() *VectorClock {
+	if this == nil {
 		return nil
 	}
 
-	newVc := NewVectorClock(vc.size)
-	for rout, val := range vc.clock {
+	newVc := NewVectorClock(this.size)
+	for rout, val := range this.clock {
 		newVc.clock[rout] = val
 	}
 	return newVc
 }
 
 // IsEqual checks if the the parameter vc2 is equal to the vc
-func (vc *VectorClock) IsEqual(vc2 *VectorClock) bool {
-	if vc.size != vc2.size {
+func (this *VectorClock) IsEqual(vc2 *VectorClock) bool {
+	if this.size != vc2.size {
 		return false
 	}
 
-	for i := 1; i <= vc.size; i++ {
-		if vc.GetValue(i) != vc2.GetValue(i) {
+	for i := 1; i <= this.size; i++ {
+		if this.GetValue(i) != vc2.GetValue(i) {
 			return false
 		}
 	}

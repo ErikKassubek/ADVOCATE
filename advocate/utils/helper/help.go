@@ -110,10 +110,10 @@ func newFlagVal(name, def string, req string, desc ...string) flagValue {
 //
 // Returns:
 //   - string representation of fv
-func (fv *flagValue) toString(req bool) string {
-	res := fmt.Sprintf("-%-20s ", fv.name)
+func (this *flagValue) toString(req bool) string {
+	res := fmt.Sprintf("-%-20s ", this.name)
 
-	res += fmt.Sprintf("%-10s", fv.def)
+	res += fmt.Sprintf("%-10s", this.def)
 
 	if req {
 		res += "req"
@@ -121,15 +121,15 @@ func (fv *flagValue) toString(req bool) string {
 		res += "opt"
 	}
 
-	if fv.req != "" {
-		res += fmt.Sprintf(", req if %-24s", fv.req)
+	if this.req != "" {
+		res += fmt.Sprintf(", req if %-24s", this.req)
 	} else {
-		res += fmt.Sprintf("%-33s", fv.req)
+		res += fmt.Sprintf("%-33s", this.req)
 	}
 
-	if len(fv.desc) != 0 {
-		res += fv.desc[0]
-		for _, line := range fv.desc[1:] {
+	if len(this.desc) != 0 {
+		res += this.desc[0]
+		for _, line := range this.desc[1:] {
 			res += fmt.Sprintf("\n%-68s%s", "", line)
 		}
 	}

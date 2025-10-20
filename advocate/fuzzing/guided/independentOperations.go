@@ -17,6 +17,18 @@ import (
 	"advocate/trace"
 )
 
+type independenceCondition int
+
+// Condition that must be met when the first operation is executed
+const (
+	none                   independenceCondition = iota
+	closeBefore                                  // there must be a close before the operations
+	mutexRWCounterAtLeast2                       // the rw counter must be 2 or greater
+	waitCounterAtLeast2                          // the wg counter must be 2 or greater
+	onceBefore                                   // there must be a once.Do before
+
+)
+
 // areIndependent checks if two operations are independent.
 // To operations are independent if changing the order of those operations in
 // the trace cannot transform the execution of the trace from one not containing
@@ -24,18 +36,17 @@ import (
 // Non-Concurrent operations are always concurrent
 
 // Parameter:
-//   - tr *trace.Trace: the trace
 //   - op1 trace.Element: the first element in the trace
 //   - op2 trace.Element: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must happen before op1 and op2 for them to be independent
-func areIndependent(tr *trace.Trace, op1, op2 trace.Element) (bool, []trace.Element) {
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func areIndependent(op1, op2 trace.Element) (bool, independenceCondition) {
 	if !concurrent.IsConcurrent(op1, op2) {
-		return false, make([]trace.Element, 0)
+		return false, none
 	}
-	return areIndependentType(tr, op1, op2)
+	return areIndependentType(op1, op2)
 }
 
 // areIndependentType checks if two operations are independent based on there type.
@@ -45,17 +56,17 @@ func areIndependent(tr *trace.Trace, op1, op2 trace.Element) (bool, []trace.Elem
 // In this function, we do not care if the elements are concurrent or not.
 
 // Parameter:
-//   - tr *trace.Trace: the trace
 //   - op1 trace.Element: the first element in the trace
 //   - op2 trace.Element: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations are independent, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func areIndependentType(tr *trace.Trace, op1, op2 trace.Element) (bool, []trace.Element) {
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func areIndependentType(op1, op2 trace.Element) (bool, independenceCondition) {
+	t := op1.GetType(false)
 	// TODO: allow channel/select and select/select pairs
-	if !op1.IsSameElement(op2) {
-		return true, make([]trace.Element, 0)
+	if !op1.IsSameElement(op2) && !(t == trace.Channel || t == trace.Select) {
+		return true, none
 	}
 
 	switch op1.GetType(false) {
@@ -70,14 +81,14 @@ func areIndependentType(tr *trace.Trace, op1, op2 trace.Element) (bool, []trace.
 	case trace.Cond:
 		return isIndependentCond(op1, op2)
 	case trace.Once:
-		return isIndependentOnce(op1, op2)
+		return isIndependentOnce()
 	case trace.Fork:
-		return true, make([]trace.Element, 0)
+		return true, none
 	case trace.Replay, trace.New, trace.End:
-		return true, make([]trace.Element, 0)
+		return true, none
 	}
 
-	return false, make([]trace.Element, 0)
+	return false, none
 }
 
 // areIndependentAtomics checks if two atomic operations are independent based
@@ -89,9 +100,9 @@ func areIndependentType(tr *trace.Trace, op1, op2 trace.Element) (bool, []trace.
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentAtomic(op1, op2 trace.Element) (bool, []trace.Element) {
-	return (op1.GetType(true) == trace.AtomicLoad && op2.GetType(true) == trace.AtomicLoad), make([]trace.Element, 0)
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentAtomic(op1, op2 trace.Element) (bool, independenceCondition) {
+	return (op1.GetType(true) == trace.AtomicLoad && op2.GetType(true) == trace.AtomicLoad), none
 }
 
 // areIndependentAtomics checks if two channel or select operations are independent based
@@ -103,24 +114,22 @@ func isIndependentAtomic(op1, op2 trace.Element) (bool, []trace.Element) {
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentChannelSelect(op1, op2 trace.Element) (bool, []trace.Element) {
-	// TODO: implement
-	return false, make([]trace.Element, 0)
-}
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentChannelSelect(op1, op2 trace.Element) (bool, independenceCondition) {
+	op1Type := op1.GetType(false)
+	op2Type := op2.GetType(false)
 
-// areIndependentAtomics checks if two atomic operations are independent based
-// on there operation type
-//
-// Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
-//
-// Returns:
-//   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentChannel(op1, op2 trace.Element) (bool, []trace.Element) {
-	return (op1.GetType(true) == trace.AtomicLoad && op2.GetType(true) == trace.AtomicLoad), make([]trace.Element, 0)
+	if op1Type == trace.Channel && op2Type == trace.Channel {
+		op1Op := op1.GetType(true)
+		op2Op := op2.GetType(true)
+		if op1Op == trace.ChannelRecv && op2Op == trace.ChannelRecv {
+			return true, closeBefore
+		}
+		return false, none
+	}
+
+	return false, none
+
 }
 
 // areIndependentMutex checks if two mutex operations are independent based
@@ -132,22 +141,22 @@ func isIndependentChannel(op1, op2 trace.Element) (bool, []trace.Element) {
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentMutex(op1, op2 trace.Element) (bool, []trace.Element) {
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentMutex(op1, op2 trace.Element) (bool, independenceCondition) {
 	t1 := op1.GetType(true)
 	t2 := op2.GetType(true)
 
-	// TODO: RLock -> RUnlock
-
 	if t1 == trace.MutexRLock && (t2 == trace.MutexRLock || t2 == trace.MutexTryRLock) {
-		return true, make([]trace.Element, 0)
+		return true, none
 	} else if t1 == trace.MutexRUnlock && (t2 == trace.MutexRLock || t2 == trace.MutexTryRLock) {
-		return true, make([]trace.Element, 0)
+		return true, none
 	} else if t1 == trace.MutexTryRLock && (t2 == trace.MutexRLock || t2 == trace.MutexTryRLock) {
-		return true, make([]trace.Element, 0)
+		return true, none
+	} else if t1 == trace.MutexRLock && t2 == trace.MutexRUnlock {
+		return true, mutexRWCounterAtLeast2
 	}
 
-	return false, make([]trace.Element, 0)
+	return false, none
 }
 
 // areIndependentMutex checks if two mutex operations are independent based
@@ -159,17 +168,18 @@ func isIndependentMutex(op1, op2 trace.Element) (bool, []trace.Element) {
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentWait(op1, op2 trace.Element) (bool, []trace.Element) {
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentWait(op1, op2 trace.Element) (bool, independenceCondition) {
 	t1 := op1.GetType(true)
 	t2 := op2.GetType(true)
 
 	if t1 == t2 {
-		return true, make([]trace.Element, 0)
+		return true, none
+	} else if (t1 == trace.WaitAdd && t2 == trace.WaitDone) || (t1 == trace.WaitDone && t2 == trace.WaitAdd) {
+		return true, waitCounterAtLeast2
 	}
 
-	// TODO: done, add
-	return false, make([]trace.Element, 0)
+	return false, none
 }
 
 // areIndependentCond checks if two conditional operations are independent based
@@ -181,22 +191,17 @@ func isIndependentWait(op1, op2 trace.Element) (bool, []trace.Element) {
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentCond(op1, op2 trace.Element) (bool, []trace.Element) {
-	return (op1.GetType(true) == trace.CondBroadcast && op2.GetType(true) == trace.CondBroadcast), make([]trace.Element, 0)
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentCond(op1, op2 trace.Element) (bool, independenceCondition) {
+	return (op1.GetType(true) == trace.CondBroadcast && op2.GetType(true) == trace.CondBroadcast), none
 }
 
 // areIndependentCond checks if two once operations are independent based
 // on there operation type
 //
-// Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
-//
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
-//   - []trace.Element: elements that must be executed before op1 and op2 for them to be independent
-func isIndependentOnce(op1, op2 trace.Element) (bool, []trace.Element) {
-	// TODO
-	return false, make([]trace.Element, 0)
+//   - independenceCondition: condition that must be true for the two operations to be independent
+func isIndependentOnce() (bool, independenceCondition) {
+	return true, onceBefore
 }

@@ -27,8 +27,8 @@ func NewSet[T comparable]() Set[T] {
 //
 // Parameter:
 //   - e T: the element to add
-func (s *Set[T]) Add(e T) {
-	s.data[e] = struct{}{}
+func (this *Set[T]) Add(e T) {
+	this.data[e] = struct{}{}
 }
 
 // Remove removes an element from the set
@@ -36,8 +36,8 @@ func (s *Set[T]) Add(e T) {
 //
 // Parameter:
 //   - e T: the element to remove
-func (s *Set[T]) Remove(e T) {
-	delete(s.data, e)
+func (this *Set[T]) Remove(e T) {
+	delete(this.data, e)
 }
 
 // Contains returns if the set contains a given element
@@ -47,7 +47,7 @@ func (s *Set[T]) Remove(e T) {
 //
 // Returns:
 //   - bool: true if the e is in the set, false otherwise
-func (s *Set[T]) Contains(e T) bool {
-	_, ok := s.data[e]
+func (this *Set[T]) Contains(e T) bool {
+	_, ok := this.data[e]
 	return ok
 }

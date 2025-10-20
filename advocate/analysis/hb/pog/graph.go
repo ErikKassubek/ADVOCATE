@@ -45,15 +45,15 @@ func InitPOG() {
 	poWeakInverted = newPoGraph()
 }
 
-func (g *poGraph) addEdge(from, to trace.Element) {
-	if _, ok := g.data[from]; !ok {
-		g.data[from] = make(map[trace.Element]struct{})
+func (this *poGraph) addEdge(from, to trace.Element) {
+	if _, ok := this.data[from]; !ok {
+		this.data[from] = make(map[trace.Element]struct{})
 	}
-	g.data[from][to] = struct{}{}
+	this.data[from][to] = struct{}{}
 }
 
-func (g *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
-	return g.data[from]
+func (this *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
+	return this.data[from]
 }
 
 // Print prints the current graph
@@ -68,9 +68,9 @@ func Print(weak bool) {
 	}
 }
 
-func (g *poGraph) toString() string {
+func (this *poGraph) toString() string {
 	res := ""
-	for start, end := range g.data {
+	for start, end := range this.data {
 		res += fmt.Sprintf("%d -> ", start.GetLine())
 		for e := range end {
 			res += fmt.Sprintf("%d, ", e.GetLine())

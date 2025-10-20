@@ -19,21 +19,21 @@ type Stack[T any] struct {
 //
 // Parameter:
 //   - item T: the item to add
-func (s *Stack[T]) Push(item T) {
-	s.items = append(s.items, item)
+func (this *Stack[T]) Push(item T) {
+	this.items = append(this.items, item)
 }
 
 // Pop removes and returns the top item
 //
 // Returns:
 //   - T: the removed element
-func (s *Stack[T]) Pop() T {
-	if len(s.items) == 0 {
+func (this *Stack[T]) Pop() T {
+	if len(this.items) == 0 {
 		var zero T
 		return zero // empty stack
 	}
-	top := s.items[len(s.items)-1]
-	s.items = s.items[:len(s.items)-1]
+	top := this.items[len(this.items)-1]
+	this.items = this.items[:len(this.items)-1]
 	return top
 }
 
@@ -41,26 +41,26 @@ func (s *Stack[T]) Pop() T {
 //
 // Returns:
 //   - T: the top element
-func (s *Stack[T]) Peek() T {
-	if len(s.items) == 0 {
+func (this *Stack[T]) Peek() T {
+	if len(this.items) == 0 {
 		var zero T
 		return zero
 	}
-	return s.items[len(s.items)-1]
+	return this.items[len(this.items)-1]
 }
 
 // IsEmpty returns whether the stack is empty
 //
 // Returns:
 //   - bool: true if the stack is empty, false otherwise
-func (s *Stack[T]) IsEmpty() bool {
-	return len(s.items) == 0
+func (this *Stack[T]) IsEmpty() bool {
+	return len(this.items) == 0
 }
 
 // Size returns the number of items
 //
 // Returns:
 //   - int: the number of elements in the stack
-func (s *Stack[T]) Size() int {
-	return len(s.items)
+func (this *Stack[T]) Size() int {
+	return len(this.items)
 }

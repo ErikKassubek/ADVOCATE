@@ -59,40 +59,40 @@ func NewIncrementalCSST(lengths []int) IncrementalCSST {
 	return iCSST
 }
 
-func (iCSST *IncrementalCSST) getSuccessor1(p types.Pair[int, int]) []int {
-	s := make([]int, iCSST.width)
-	for i := 0; i < iCSST.width; i++ {
-		s[i] = iCSST.getSuccessor2(p, i)
+func (this *IncrementalCSST) getSuccessor1(p types.Pair[int, int]) []int {
+	s := make([]int, this.width)
+	for i := 0; i < this.width; i++ {
+		s[i] = this.getSuccessor2(p, i)
 	}
 
 	return s
 }
 
-func (iCSST *IncrementalCSST) getSuccessor2(p types.Pair[int, int], i int) int {
+func (this *IncrementalCSST) getSuccessor2(p types.Pair[int, int], i int) int {
 	if p.X == i {
-		if p.Y < iCSST.lengths[p.X]-1 {
+		if p.Y < this.lengths[p.X]-1 {
 			return p.Y + 1
 		}
 		return -1
 	}
 
-	v := iCSST.ssts[p.X][i].sumRange1(p.Y)
+	v := this.ssts[p.X][i].sumRange1(p.Y)
 	if v < math.MaxInt {
 		return v
 	}
 	return -1
 }
 
-func (iCSST *IncrementalCSST) getPredecessor1(p types.Pair[int, int]) []int {
-	s := make([]int, iCSST.width)
-	for i := 0; i < iCSST.width; i++ {
-		s[i] = iCSST.getPredecessor2(p, i)
+func (this *IncrementalCSST) getPredecessor1(p types.Pair[int, int]) []int {
+	s := make([]int, this.width)
+	for i := 0; i < this.width; i++ {
+		s[i] = this.getPredecessor2(p, i)
 	}
 
 	return s
 }
 
-func (iCSST *IncrementalCSST) getPredecessor2(p types.Pair[int, int], i int) int {
+func (this *IncrementalCSST) getPredecessor2(p types.Pair[int, int], i int) int {
 	if p.X == i {
 		if p.Y > 0 {
 			return p.Y - 1
@@ -100,25 +100,25 @@ func (iCSST *IncrementalCSST) getPredecessor2(p types.Pair[int, int], i int) int
 		return -1
 	}
 
-	v := iCSST.ssts[i][p.X].argMin1(p.Y)
+	v := this.ssts[i][p.X].argMin1(p.Y)
 	if v > math.MinInt {
 		return v
 	}
 	return -1
 }
 
-func (iCSST *IncrementalCSST) reachable(from, to types.Pair[int, int]) bool {
+func (this *IncrementalCSST) reachable(from, to types.Pair[int, int]) bool {
 	if from.X == to.X && from.Y == to.Y {
 		return true
 	}
 
-	v := iCSST.getSuccessor2(from, to.X)
+	v := this.getSuccessor2(from, to.X)
 	return v >= 0 && v <= to.Y
 }
 
-func (iCSST *IncrementalCSST) addSuccessor(from, to types.Pair[int, int]) {
+func (this *IncrementalCSST) addSuccessor(from, to types.Pair[int, int]) {
 	if from.X != to.X {
-		iCSST.ssts[from.X][to.X].update1(from.Y, to.Y)
+		this.ssts[from.X][to.X].update1(from.Y, to.Y)
 	}
 }
 
@@ -130,10 +130,10 @@ func (iCSST *IncrementalCSST) addSuccessor(from, to types.Pair[int, int]) {
 //
 // Returns:
 //   - types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]: the added edge
-func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]]] {
+func (this *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[types.Pair[types.Pair[int, int], types.Pair[int, int]]] {
 	addedEdges := types.NewSet[types.Pair[types.Pair[int, int], types.Pair[int, int]]]()
 
-	if iCSST.reachable(from, to) {
+	if this.reachable(from, to) {
 		return addedEdges
 	}
 
@@ -146,17 +146,17 @@ func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[t
 		f := e.X
 		t := e.Y
 
-		if iCSST.reachable(f, t) {
+		if this.reachable(f, t) {
 			continue
 		}
 
-		iCSST.addSuccessor(f, t)
+		this.addSuccessor(f, t)
 		addedEdges.Add(e)
 
-		suc := iCSST.getSuccessor1(t)
-		pred := iCSST.getPredecessor1(f)
+		suc := this.getSuccessor1(t)
+		pred := this.getPredecessor1(f)
 
-		for i := 0; i < iCSST.width; i++ {
+		for i := 0; i < this.width; i++ {
 			if i != f.X && i != t.X {
 				tt := types.NewPair(i, suc[i])
 				if suc[i] >= 0 {
@@ -173,6 +173,6 @@ func (iCSST *IncrementalCSST) AddEdge(from, to types.Pair[int, int]) types.Set[t
 	return addedEdges
 }
 
-func (iCSST *IncrementalCSST) getChainLength(i int) int {
-	return iCSST.lengths[i]
+func (this *IncrementalCSST) getChainLength(i int) int {
+	return this.lengths[i]
 }

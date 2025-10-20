@@ -25,6 +25,6 @@ type negConstraint2 struct {
 // Return if the constraint is positive.
 // Always return false
 // Required to implement constraint interface
-func (n negConstraint2) isPos() bool {
+func (this negConstraint2) isPos() bool {
 	return false
 }

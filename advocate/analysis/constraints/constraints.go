@@ -73,19 +73,19 @@ func AddConstraint(pos bool, first, second trace.Element) {
 //     [obj] is the type of object the constaint is build on, e.g. C for channel, M for mutex, A for atomic
 //     [elem1] is a representation of the first element in the form [routine],[file]:line\
 //     [elem2] is a representation of the second element in the same form or empty if twoElem is false
-func (c *constraint) toString() string {
+func (this *constraint) toString() string {
 	res := ""
-	if c.pos {
+	if this.pos {
 		res += "+;"
 	} else {
 		res += "-;"
 	}
 
-	res += fmt.Sprintf("%s;", c.first.GetType(false))
+	res += fmt.Sprintf("%s;", this.first.GetType(false))
 
-	res += fmt.Sprintf("%d,%s;", c.first.GetRoutine(), c.first.GetPos())
-	if c.twoElem {
-		res += fmt.Sprintf("%d,%s", c.second.GetRoutine(), c.second.GetPos())
+	res += fmt.Sprintf("%d,%s;", this.first.GetRoutine(), this.first.GetPos())
+	if this.twoElem {
+		res += fmt.Sprintf("%d,%s", this.second.GetRoutine(), this.second.GetPos())
 	}
 
 	return res
@@ -93,6 +93,6 @@ func (c *constraint) toString() string {
 
 // flip turns a positive constraint into a negative one and a negative constraint
 // into a positive
-func (c *constraint) flip() {
-	c.pos = !c.pos
+func (this *constraint) flip() {
+	this.pos = !this.pos
 }

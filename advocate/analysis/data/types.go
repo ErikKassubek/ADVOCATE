@@ -158,15 +158,15 @@ type Lockset map[LockID]struct{}
 //
 // Returns:
 //   - LockDependency: The copy
-func (l LockDependency) Clone() LockDependency {
-	reqs := make([]LockEvent, len(l.Requests))
-	for i, r := range l.Requests {
+func (this LockDependency) Clone() LockDependency {
+	reqs := make([]LockEvent, len(this.Requests))
+	for i, r := range this.Requests {
 		reqs[i] = r.Clone()
 	}
 	return LockDependency{
-		Thread:   l.Thread,
-		Lock:     l.Lock,
-		Lockset:  l.Lockset.Clone(),
+		Thread:   this.Thread,
+		Lock:     this.Lock,
+		Lockset:  this.Lockset.Clone(),
 		Requests: reqs,
 	}
 }
@@ -177,12 +177,12 @@ func (l LockDependency) Clone() LockDependency {
 //
 // Returns:
 //   - LockEvent: The copy
-func (e LockEvent) Clone() LockEvent {
+func (this LockEvent) Clone() LockEvent {
 	return LockEvent{
-		ThreadID:    e.ThreadID,
-		TraceID:     e.TraceID,
-		LockID:      e.LockID,
-		VectorClock: e.VectorClock.Copy(),
+		ThreadID:    this.ThreadID,
+		TraceID:     this.TraceID,
+		LockID:      this.LockID,
+		VectorClock: this.VectorClock.Copy(),
 	}
 }
 
@@ -192,24 +192,24 @@ func (e LockEvent) Clone() LockEvent {
 //
 // Returns:
 //   - bool: true if it is a reader lock, false otherwise
-func (l LockID) IsRead() bool {
-	return l.ReadLock
+func (this LockID) IsRead() bool {
+	return this.ReadLock
 }
 
 // IsWrite checks if the lock is not a reader lock
 //
 // Returns:
 //   - bool: false if it is a reader lock, true otherwise
-func (l LockID) IsWrite() bool {
-	return !l.ReadLock
+func (this LockID) IsWrite() bool {
+	return !this.ReadLock
 }
 
 // AddReader increases the reader counter of a thread for the lock id
 //
 // Parameter:
 //   - s Thread: the thread to increase the ReaderCounter for
-func (l LockID) AddReader(s Thread) {
-	s.ReaderCounter[l]++
+func (this LockID) AddReader(s Thread) {
+	s.ReaderCounter[this]++
 }
 
 // RemoveReader decreases the reader counter of a thread for the lock id
@@ -218,13 +218,13 @@ func (l LockID) AddReader(s Thread) {
 //
 // Parameter:
 //   - s Thread: the thread to increase the ReaderCounter for
-func (l LockID) RemoveReader(s Thread) {
-	if !l.HasReaders(s) {
+func (this LockID) RemoveReader(s Thread) {
+	if !this.HasReaders(s) {
 		return
 	}
-	s.ReaderCounter[l]--
-	if s.ReaderCounter[l] <= 0 {
-		delete(s.ReaderCounter, l)
+	s.ReaderCounter[this]--
+	if s.ReaderCounter[this] <= 0 {
+		delete(s.ReaderCounter, this)
 	}
 }
 
@@ -235,11 +235,11 @@ func (l LockID) RemoveReader(s Thread) {
 //
 // Returns:
 //   - bool: true if it has reader, false otherwise
-func (l LockID) HasReaders(s Thread) bool {
-	if _, exists := s.ReaderCounter[l]; !exists {
+func (this LockID) HasReaders(s Thread) bool {
+	if _, exists := s.ReaderCounter[this]; !exists {
 		return false
 	}
-	return s.ReaderCounter[l] > 0
+	return s.ReaderCounter[this] > 0
 }
 
 // EqualsIgnoreRW checks if two locks are equal ignoring whether they are read or write locks.
@@ -249,8 +249,8 @@ func (l LockID) HasReaders(s Thread) bool {
 //
 // Returns:
 //   - bool: true if two locks are equal ignoring whether they are read or write locks, false otherwise
-func (l LockID) EqualsIgnoreRW(other LockID) bool {
-	return l.ID == other.ID
+func (this LockID) EqualsIgnoreRW(other LockID) bool {
+	return this.ID == other.ID
 }
 
 // EqualsCouldBlock checks if two locks are the same and at least one of them is a write lock.
@@ -260,11 +260,11 @@ func (l LockID) EqualsIgnoreRW(other LockID) bool {
 //
 // Returns:
 //   - true if l and other are the same and at least one of them is a write lock.
-func (l LockID) EqualsCouldBlock(other LockID) bool {
-	if !l.EqualsIgnoreRW(other) {
+func (this LockID) EqualsCouldBlock(other LockID) bool {
+	if !this.EqualsIgnoreRW(other) {
 		return false
 	}
-	return l.IsWrite() || other.IsWrite()
+	return this.IsWrite() || other.IsWrite()
 }
 
 // Lockset methods.
@@ -273,8 +273,8 @@ func (l LockID) EqualsCouldBlock(other LockID) bool {
 //
 // Returns:
 //   - bool: if ls is empty
-func (ls Lockset) Empty() bool {
-	return len(ls) == 0
+func (this Lockset) Empty() bool {
+	return len(this) == 0
 
 }
 
@@ -282,8 +282,8 @@ func (ls Lockset) Empty() bool {
 //
 // Parameter:
 //   - x LockID: the lock id to add
-func (ls Lockset) Add(x LockID) {
-	ls[x] = struct{}{}
+func (this Lockset) Add(x LockID) {
+	this[x] = struct{}{}
 }
 
 // Remove removes a lock id from a lockset
@@ -293,11 +293,11 @@ func (ls Lockset) Add(x LockID) {
 //
 // Returns:
 //   - bool: true if x was in the lockset, false otherwise
-func (ls Lockset) Remove(x LockID) bool {
-	if _, contains := ls[x]; !contains {
+func (this Lockset) Remove(x LockID) bool {
+	if _, contains := this[x]; !contains {
 		return false
 	}
-	delete(ls, x)
+	delete(this, x)
 	return true
 }
 
@@ -305,10 +305,10 @@ func (ls Lockset) Remove(x LockID) bool {
 //
 // Returns:
 //   - Lockset: the copy
-func (ls Lockset) Clone() Lockset {
+func (this Lockset) Clone() Lockset {
 	clone := make(Lockset, 0)
-	for l := range ls {
-		clone[l] = ls[l]
+	for l := range this {
+		clone[l] = this[l]
 	}
 	return clone
 }
@@ -317,10 +317,10 @@ func (ls Lockset) Clone() Lockset {
 //
 // Returns:
 //   - string: the string representation of ls
-func (ls Lockset) String() string {
+func (this Lockset) String() string {
 	b := strings.Builder{}
 	b.WriteString("Lockset{")
-	for l := range ls {
+	for l := range this {
 		b.WriteString(strconv.Itoa(int(l.ID)))
 	}
 	b.WriteString("}")
@@ -334,12 +334,12 @@ func (ls Lockset) String() string {
 //
 // Returns:
 //   - bool: if ls and ls2 contain the same elements
-func (ls Lockset) Equal(ls2 Lockset) bool {
-	if len(ls) != len(ls2) {
+func (this Lockset) Equal(ls2 Lockset) bool {
+	if len(this) != len(ls2) {
 		return false
 	}
 
-	for l := range ls {
+	for l := range this {
 		if _, contains := ls2[l]; !contains {
 			return false
 		}
@@ -354,8 +354,8 @@ func (ls Lockset) Equal(ls2 Lockset) bool {
 //
 // Returns:
 //   - bool: true if ls and ls2 are disjoint, false otherwise
-func (ls Lockset) Disjoint(ls2 Lockset) bool {
-	for l := range ls {
+func (this Lockset) Disjoint(ls2 Lockset) bool {
+	for l := range this {
 		if _, contains := ls2[l]; contains {
 			return false
 		}
@@ -372,8 +372,8 @@ func (ls Lockset) Disjoint(ls2 Lockset) bool {
 // Returns:
 //   - bool: false if there is a pair of elements in ls and ls2 such that they
 //     are the same and at least one of them is a write lock, true otherwise
-func (ls Lockset) DisjointCouldBlock(ls2 Lockset) bool {
-	for l := range ls {
+func (this Lockset) DisjointCouldBlock(ls2 Lockset) bool {
+	for l := range this {
 		for l2 := range ls2 {
 			if l.EqualsCouldBlock(l2) {
 				return false

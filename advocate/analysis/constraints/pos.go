@@ -24,6 +24,6 @@ type posConstraint2 struct {
 // Return if the constraint is positive.
 // Always return true
 // Required to implement constraint interface
-func (p posConstraint2) isPos() bool {
+func (this posConstraint2) isPos() bool {
 	return true
 }

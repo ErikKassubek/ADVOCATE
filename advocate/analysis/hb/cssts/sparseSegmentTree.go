@@ -111,11 +111,11 @@ func newSparseSegmentTree1(length int) sparseSegmentTree {
 // 	return &thisCurrent
 // }
 
-func (sst sparseSegmentTree) update1(i, val int) {
-	sst.update2(sst.root, i, val)
+func (this sparseSegmentTree) update1(i, val int) {
+	this.update2(this.root, i, val)
 }
 
-func (sst sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
+func (this sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
 	if !(root == nil || root.pos == -1 || (root.pos >= root.start && root.pos <= root.end)) {
 		panic("Invalid root in sparseSegmentTree::update2 (1)")
 	}
@@ -168,20 +168,20 @@ func (sst sparseSegmentTree) update2(root *segmentTreeNode, pos, val int) {
 		mid := root.start + (root.end-root.start)/2
 		if pos <= mid {
 			if root.left == nil {
-				root.left = sst.createIntermediateNode(root.start, mid, pos, val, root.level+1)
+				root.left = this.createIntermediateNode(root.start, mid, pos, val, root.level+1)
 			} else {
-				sst.update2(root.left, pos, val)
+				this.update2(root.left, pos, val)
 			}
 		} else {
 			if root.right == nil {
-				root.right = sst.createIntermediateNode(mid+1, root.end, pos, val, root.level+1)
+				root.right = this.createIntermediateNode(mid+1, root.end, pos, val, root.level+1)
 			}
 		}
 	}
 }
 
-func (sst *sparseSegmentTree) createIntermediateNode(start, end, pos, val, level int) *segmentTreeNode {
-	if level >= sst.maxLevel {
+func (this *sparseSegmentTree) createIntermediateNode(start, end, pos, val, level int) *segmentTreeNode {
+	if level >= this.maxLevel {
 		transitionNode := newSegmentTreeNode2(start, end, pos, val, level)
 		transitionNode.block = newBlock1(end-start+1, 0, start)
 		transitionNode.block.update1(pos, val)
@@ -194,14 +194,14 @@ func (sst *sparseSegmentTree) createIntermediateNode(start, end, pos, val, level
 	return &newNode
 }
 
-func (sst sparseSegmentTree) argMin1(x int) int {
-	if sst.root.min <= x {
-		return sst.argMin2(sst.root, x)
+func (this sparseSegmentTree) argMin1(x int) int {
+	if this.root.min <= x {
+		return this.argMin2(this.root, x)
 	}
 	return -1
 }
 
-func (sst sparseSegmentTree) argMin2(root *segmentTreeNode, x int) int {
+func (this sparseSegmentTree) argMin2(root *segmentTreeNode, x int) int {
 	if root.block != nil {
 		return root.block.argMin1(x)
 	}
@@ -215,22 +215,22 @@ func (sst sparseSegmentTree) argMin2(root *segmentTreeNode, x int) int {
 	} else if root.right != nil && root.pos >= root.right.end && root.min <= x {
 		return root.pos
 	} else if root.right != nil && root.right.min <= x {
-		return max(root.pos, sst.argMin2(root.right, x))
+		return max(root.pos, this.argMin2(root.right, x))
 	} else if root.right != nil && root.right.min > x && root.min <= x && root.pos != root.right.pos && root.pos > mid {
 		return root.pos
 	} else {
 		if root.left == nil || root.left.min > x {
 			return root.pos
 		}
-		return max(root.pos, sst.argMin2(root.left, x))
+		return max(root.pos, this.argMin2(root.left, x))
 	}
 }
 
-func (sst sparseSegmentTree) sumRange1(i int) int {
-	return sst.sumRange2(sst.root, i)
+func (this sparseSegmentTree) sumRange1(i int) int {
+	return this.sumRange2(this.root, i)
 }
 
-func (sst sparseSegmentTree) sumRange2(root *segmentTreeNode, index int) int {
+func (this sparseSegmentTree) sumRange2(root *segmentTreeNode, index int) int {
 	if root == nil || root.min == math.MaxInt || root.activeEnd < index {
 		return math.MaxInt
 	}
@@ -243,8 +243,8 @@ func (sst sparseSegmentTree) sumRange2(root *segmentTreeNode, index int) int {
 		return root.min
 	}
 
-	l := sst.sumRange2(root.left, index)
-	r := sst.sumRange2(root.right, index)
+	l := this.sumRange2(root.left, index)
+	r := this.sumRange2(root.right, index)
 	return min(l, r)
 
 }

@@ -61,7 +61,7 @@ type ElementCond struct {
 //   - id string: The id of the condition variable
 //   - opC string: The operation on the condition variable
 //   - pos string: The position of the condition variable operation in the code
-func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id string, opN string, pos string) error {
+func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id string, opN string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
 		return errors.New("tPre is not an integer")
@@ -92,7 +92,7 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 	}
 
 	elem := ElementCond{
-		index:                    t.numberElemsInTrace[routine],
+		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
@@ -108,7 +108,7 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 		numberConcurrentWeakSame: -1,
 	}
 
-	t.AddElement(&elem)
+	this.AddElement(&elem)
 	return nil
 }
 
@@ -116,42 +116,42 @@ func (t *Trace) AddTraceElementCond(routine int, tPre string, tPost string, id s
 //
 // Returns:
 //   - int: The id of the element
-func (co *ElementCond) GetID() int {
-	return co.id
+func (this *ElementCond) GetID() int {
+	return this.id
 }
 
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine id
-func (co *ElementCond) GetRoutine() int {
-	return co.routine
+func (this *ElementCond) GetRoutine() int {
+	return this.routine
 }
 
 // GetTPre returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (co *ElementCond) GetTPre() int {
-	return co.tPre
+func (this *ElementCond) GetTPre() int {
+	return this.tPre
 }
 
 // GetTPost returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (co *ElementCond) GetTPost() int {
-	return co.tPost
+func (this *ElementCond) GetTPost() int {
+	return this.tPost
 }
 
 // GetTSort returns the timer, that is used for sorting the trace
 //
 // Returns:
 //   - int: The timer of the element
-func (co *ElementCond) GetTSort() int {
-	t := co.tPre
-	if co.op == CondWait {
-		t = co.tPost
+func (this *ElementCond) GetTSort() int {
+	t := this.tPre
+	if this.op == CondWait {
+		t = this.tPost
 	}
 	if t == 0 {
 		// add at the end of the trace
@@ -164,32 +164,32 @@ func (co *ElementCond) GetTSort() int {
 //
 // Returns:
 //   - string: The position of the element
-func (co *ElementCond) GetPos() string {
-	return fmt.Sprintf("%s:%d", co.file, co.line)
+func (this *ElementCond) GetPos() string {
+	return fmt.Sprintf("%s:%d", this.file, this.line)
 }
 
 // GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (co *ElementCond) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", co.routine, co.file, co.line)
+func (this *ElementCond) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
 }
 
 // GetFile returns the file of the element
 //
 // Returns:
 //   - The file of the element
-func (co *ElementCond) GetFile() string {
-	return co.file
+func (this *ElementCond) GetFile() string {
+	return this.file
 }
 
 // GetLine returns the line of the element
 //
 // Returns:
 //   - The line of the element
-func (co *ElementCond) GetLine() int {
-	return co.line
+func (this *ElementCond) GetLine() int {
+	return this.line
 }
 
 // GetTID returns the tID of the element.
@@ -197,40 +197,40 @@ func (co *ElementCond) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (co *ElementCond) GetTID() string {
-	return "D@" + co.GetPos() + "@" + strconv.Itoa(co.tPre)
+func (this *ElementCond) GetTID() string {
+	return "D@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
 }
 
 // SetVc sets the vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (co *ElementCond) SetVc(vc *clock.VectorClock) {
-	co.vc = vc.Copy()
+func (this *ElementCond) SetVc(vc *clock.VectorClock) {
+	this.vc = vc.Copy()
 }
 
 // SetWVc sets the weak vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (co *ElementCond) SetWVc(vc *clock.VectorClock) {
-	co.wVc = vc.Copy()
+func (this *ElementCond) SetWVc(vc *clock.VectorClock) {
+	this.wVc = vc.Copy()
 }
 
 // GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (co *ElementCond) GetVC() *clock.VectorClock {
-	return co.vc
+func (this *ElementCond) GetVC() *clock.VectorClock {
+	return this.vc
 }
 
 // GetWVC returns the vector clock of the element for the weak must happens before relation
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (co *ElementCond) GetWVC() *clock.VectorClock {
-	return co.wVc
+func (this *ElementCond) GetWVC() *clock.VectorClock {
+	return this.wVc
 }
 
 // GetType returns the object type
@@ -240,12 +240,12 @@ func (co *ElementCond) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (co *ElementCond) GetType(operation bool) ObjectType {
+func (this *ElementCond) GetType(operation bool) ObjectType {
 	if !operation {
 		return Cond
 	}
 
-	return co.op
+	return this.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -255,8 +255,8 @@ func (co *ElementCond) GetType(operation bool) ObjectType {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (co *ElementCond) IsEqual(elem Element) bool {
-	return co.routine == elem.GetRoutine() && co.ToString() == elem.ToString()
+func (this *ElementCond) IsEqual(elem Element) bool {
+	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -267,12 +267,12 @@ func (co *ElementCond) IsEqual(elem Element) bool {
 //
 // Returns:
 //   - bool: true if at and elem are operations on the same conditional variable
-func (co *ElementCond) IsSameElement(elem Element) bool {
+func (this *ElementCond) IsSameElement(elem Element) bool {
 	if elem.GetType(false) != Cond {
 		return false
 	}
 
-	return co.id == elem.GetID()
+	return this.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -280,27 +280,27 @@ func (co *ElementCond) IsSameElement(elem Element) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (co *ElementCond) GetTraceIndex() (int, int) {
-	return co.routine, co.index
+func (this *ElementCond) GetTraceIndex() (int, int) {
+	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (co *ElementCond) SetT(time int) {
-	co.tPre = time
-	co.tPost = time
+func (this *ElementCond) SetT(time int) {
+	this.tPre = time
+	this.tPost = time
 }
 
 // SetTPre sets the tPre of the element.
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (co *ElementCond) SetTPre(tPre int) {
-	co.tPre = tPre
-	if co.tPost != 0 && co.tPost < tPre {
-		co.tPost = tPre
+func (this *ElementCond) SetTPre(tPre int) {
+	this.tPre = tPre
+	if this.tPost != 0 && this.tPost < tPre {
+		this.tPost = tPre
 	}
 }
 
@@ -308,10 +308,10 @@ func (co *ElementCond) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (co *ElementCond) SetTSort(tSort int) {
-	co.SetTPre(tSort)
-	if co.op == CondWait {
-		co.tPost = tSort
+func (this *ElementCond) SetTSort(tSort int) {
+	this.SetTPre(tSort)
+	if this.op == CondWait {
+		this.tPost = tSort
 	}
 }
 
@@ -320,16 +320,16 @@ func (co *ElementCond) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (co *ElementCond) SetTWithoutNotExecuted(tSort int) {
-	co.SetTPre(tSort)
-	if co.op == CondWait {
-		if co.tPost != 0 {
-			co.tPost = tSort
+func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
+	this.SetTPre(tSort)
+	if this.op == CondWait {
+		if this.tPost != 0 {
+			this.tPost = tSort
 		}
 		return
 	}
-	if co.tPre != 0 {
-		co.tPre = tSort
+	if this.tPre != 0 {
+		this.tPre = tSort
 	}
 }
 
@@ -337,11 +337,11 @@ func (co *ElementCond) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The string representation of the element
-func (co *ElementCond) ToString() string {
+func (this *ElementCond) ToString() string {
 	res := "D,"
-	res += strconv.Itoa(co.tPre) + "," + strconv.Itoa(co.tPost) + ","
-	res += strconv.Itoa(co.id) + ","
-	switch co.op {
+	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
+	res += strconv.Itoa(this.id) + ","
+	switch this.op {
 	case CondWait:
 		res += "W"
 	case CondSignal:
@@ -349,7 +349,7 @@ func (co *ElementCond) ToString() string {
 	case CondBroadcast:
 		res += "B"
 	}
-	res += "," + co.GetPos()
+	res += "," + this.GetPos()
 	return res
 }
 
@@ -357,16 +357,16 @@ func (co *ElementCond) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (co *ElementCond) GetTraceID() int {
-	return co.traceID
+func (this *ElementCond) GetTraceID() int {
+	return this.traceID
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (co *ElementCond) setTraceID(ID int) {
-	co.traceID = ID
+func (this *ElementCond) setTraceID(ID int) {
+	this.traceID = ID
 }
 
 // Copy the element
@@ -378,23 +378,23 @@ func (co *ElementCond) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (co *ElementCond) Copy(_ map[string]Element) Element {
+func (this *ElementCond) Copy(_ map[string]Element) Element {
 	return &ElementCond{
-		traceID:                  co.traceID,
-		index:                    co.index,
-		routine:                  co.routine,
-		tPre:                     co.tPre,
-		tPost:                    co.tPost,
-		id:                       co.id,
-		op:                       co.op,
-		file:                     co.file,
-		line:                     co.line,
-		vc:                       co.vc.Copy(),
-		wVc:                      co.wVc.Copy(),
-		numberConcurrent:         co.numberConcurrent,
-		numberConcurrentWeak:     co.numberConcurrentWeak,
-		numberConcurrentSame:     co.numberConcurrentSame,
-		numberConcurrentWeakSame: co.numberConcurrentWeakSame,
+		traceID:                  this.traceID,
+		index:                    this.index,
+		routine:                  this.routine,
+		tPre:                     this.tPre,
+		tPost:                    this.tPost,
+		id:                       this.id,
+		op:                       this.op,
+		file:                     this.file,
+		line:                     this.line,
+		vc:                       this.vc.Copy(),
+		wVc:                      this.wVc.Copy(),
+		numberConcurrent:         this.numberConcurrent,
+		numberConcurrentWeak:     this.numberConcurrentWeak,
+		numberConcurrentSame:     this.numberConcurrentSame,
+		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
 }
 
@@ -407,17 +407,17 @@ func (co *ElementCond) Copy(_ map[string]Element) Element {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (co *ElementCond) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementCond) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
 		if sameElem {
-			return co.numberConcurrentWeakSame
+			return this.numberConcurrentWeakSame
 		}
-		return co.numberConcurrentWeak
+		return this.numberConcurrentWeak
 	}
 	if sameElem {
-		return co.numberConcurrentSame
+		return this.numberConcurrentSame
 	}
-	return co.numberConcurrent
+	return this.numberConcurrent
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -426,18 +426,18 @@ func (co *ElementCond) GetNumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (co *ElementCond) SetNumberConcurrent(c int, weak, sameElem bool) {
+func (this *ElementCond) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
 		if sameElem {
-			co.numberConcurrentWeakSame = c
+			this.numberConcurrentWeakSame = c
 		} else {
-			co.numberConcurrentWeak = c
+			this.numberConcurrentWeak = c
 		}
 	} else {
 		if sameElem {
-			co.numberConcurrentSame = c
+			this.numberConcurrentSame = c
 		} else {
-			co.numberConcurrent = c
+			this.numberConcurrent = c
 		}
 	}
 }

@@ -20,20 +20,20 @@ import "math/rand"
 //
 // Returns:
 //   - int: the chosen case ID
-func (fs FuzzingSelect) GetCopyRandom(def bool, flipChance float64) FuzzingSelect {
+func (this FuzzingSelect) GetCopyRandom(def bool, flipChance float64) FuzzingSelect {
 	// do only flip with certain chance
 	if rand.Float64() > flipChance {
-		return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+		return FuzzingSelect{ID: this.ID, T: this.T, ChosenCase: this.ChosenCase, NumberCases: this.NumberCases, ContainsDefault: this.ContainsDefault}
 	}
 
 	// if at most one case and no default (should not happen), or only default select the same case again
-	if (!def && fs.NumberCases <= 1) || (def && fs.NumberCases == 0) {
-		return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: fs.ChosenCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+	if (!def && this.NumberCases <= 1) || (def && this.NumberCases == 0) {
+		return FuzzingSelect{ID: this.ID, T: this.T, ChosenCase: this.ChosenCase, NumberCases: this.NumberCases, ContainsDefault: this.ContainsDefault}
 	}
 
-	prefCase := fs.chooseRandomCase(def)
+	prefCase := this.chooseRandomCase(def)
 
-	return FuzzingSelect{ID: fs.ID, T: fs.T, ChosenCase: prefCase, NumberCases: fs.NumberCases, ContainsDefault: fs.ContainsDefault}
+	return FuzzingSelect{ID: this.ID, T: this.T, ChosenCase: prefCase, NumberCases: this.NumberCases, ContainsDefault: this.ContainsDefault}
 }
 
 // Randomly select a case.
@@ -46,7 +46,7 @@ func (fs FuzzingSelect) GetCopyRandom(def bool, flipChance float64) FuzzingSelec
 //
 // Returns:
 //   - the chosen case id
-func (fs FuzzingSelect) chooseRandomCase(def bool) int {
+func (this FuzzingSelect) chooseRandomCase(def bool) int {
 	// Determine the starting number based on includeZero
 	start := 0
 	if def {
@@ -57,13 +57,13 @@ func (fs FuzzingSelect) chooseRandomCase(def bool) int {
 	weights := make(map[int]int)
 
 	// Assign weights to each number
-	for i := start; i < fs.NumberCases; i++ {
+	for i := start; i < this.NumberCases; i++ {
 		weights[i] = 1 // Default weight
 	}
 
 	// Increase weights for numbers in fs.casiWithPos
-	for _, num := range fs.CasiWithPos {
-		if num >= start && num < fs.NumberCases && num != fs.ChosenCase {
+	for _, num := range this.CasiWithPos {
+		if num >= start && num < this.NumberCases && num != this.ChosenCase {
 			weights[num] *= factorCaseWithPartner
 		}
 	}
@@ -73,7 +73,7 @@ func (fs FuzzingSelect) chooseRandomCase(def bool) int {
 	numbers := []int{} // Keep track of the corresponding numbers
 	totalWeight := 0
 
-	for i := start; i < fs.NumberCases; i++ {
+	for i := start; i < this.NumberCases; i++ {
 		if weight, exists := weights[i]; exists && weight > 0 {
 			totalWeight += weight
 			cumulativeWeights = append(cumulativeWeights, totalWeight)

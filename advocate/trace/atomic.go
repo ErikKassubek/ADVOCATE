@@ -60,7 +60,7 @@ type ElementAtomic struct {
 //   - id string: The id of the atomic variable
 //   - operation string: The operation on the atomic variable
 //   - pos string: The position of the atomic
-func (t Trace) AddTraceElementAtomic(routine int, tPost string,
+func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	id string, operation string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
@@ -99,7 +99,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:                    t.numberElemsInTrace[routine],
+		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPost:                    tPostInt,
 		id:                       idInt,
@@ -114,7 +114,7 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 		numberConcurrentWeakSame: -1,
 	}
 
-	t.AddElement(&elem)
+	this.AddElement(&elem)
 	return nil
 }
 
@@ -122,72 +122,72 @@ func (t Trace) AddTraceElementAtomic(routine int, tPost string,
 //
 // Returns:
 //   - int: The id of the element
-func (at *ElementAtomic) GetID() int {
-	return at.id
+func (this *ElementAtomic) GetID() int {
+	return this.id
 }
 
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (at *ElementAtomic) GetRoutine() int {
-	return at.routine
+func (this *ElementAtomic) GetRoutine() int {
+	return this.routine
 }
 
 // GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPost of the element
-func (at *ElementAtomic) GetTPre() int {
-	return at.tPost
+func (this *ElementAtomic) GetTPre() int {
+	return this.tPost
 }
 
 // GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPost of the element
-func (at *ElementAtomic) GetTPost() int {
-	return at.tPost
+func (this *ElementAtomic) GetTPost() int {
+	return this.tPost
 }
 
 // GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
-func (at *ElementAtomic) GetTSort() int {
-	return at.tPost
+func (this *ElementAtomic) GetTSort() int {
+	return this.tPost
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The file of the element
-func (at *ElementAtomic) GetPos() string {
-	return fmt.Sprintf("%s:%d", at.file, at.line)
+func (this *ElementAtomic) GetPos() string {
+	return fmt.Sprintf("%s:%d", this.file, this.line)
 }
 
 // GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (at *ElementAtomic) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", at.routine, at.file, at.line)
+func (this *ElementAtomic) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
 }
 
 // GetFile returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
-func (at *ElementAtomic) GetFile() string {
-	return at.file
+func (this *ElementAtomic) GetFile() string {
+	return this.file
 }
 
 // GetLine returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
-func (at *ElementAtomic) GetLine() int {
-	return at.line
+func (this *ElementAtomic) GetLine() int {
+	return this.line
 }
 
 // GetTID returns the tID of the element.
@@ -195,40 +195,40 @@ func (at *ElementAtomic) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (at *ElementAtomic) GetTID() string {
-	return "A@" + at.GetPos() + "@" + strconv.Itoa(at.tPost)
+func (this *ElementAtomic) GetTID() string {
+	return "A@" + this.GetPos() + "@" + strconv.Itoa(this.tPost)
 }
 
 // SetVc sets the vector clock
 //
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
-func (at *ElementAtomic) SetVc(cl *clock.VectorClock) {
-	at.vc = cl.Copy()
+func (this *ElementAtomic) SetVc(cl *clock.VectorClock) {
+	this.vc = cl.Copy()
 }
 
 // SetWVc sets the weak vector clock
 //
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
-func (at *ElementAtomic) SetWVc(cl *clock.VectorClock) {
-	at.wVc = cl.Copy()
+func (this *ElementAtomic) SetWVc(cl *clock.VectorClock) {
+	this.wVc = cl.Copy()
 }
 
 // GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (at *ElementAtomic) GetVC() *clock.VectorClock {
-	return at.vc
+func (this *ElementAtomic) GetVC() *clock.VectorClock {
+	return this.vc
 }
 
 // GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (at *ElementAtomic) GetWVC() *clock.VectorClock {
-	return at.wVc
+func (this *ElementAtomic) GetWVC() *clock.VectorClock {
+	return this.wVc
 }
 
 // GetType returns the object type
@@ -238,12 +238,12 @@ func (at *ElementAtomic) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (at *ElementAtomic) GetType(operation bool) ObjectType {
+func (this *ElementAtomic) GetType(operation bool) ObjectType {
 	if !operation {
 		return Atomic
 	}
 
-	return at.op
+	return this.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -253,8 +253,8 @@ func (at *ElementAtomic) GetType(operation bool) ObjectType {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (at *ElementAtomic) IsEqual(elem Element) bool {
-	return at.routine == elem.GetRoutine() && at.ToString() == elem.ToString()
+func (this *ElementAtomic) IsEqual(elem Element) bool {
+	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -265,12 +265,12 @@ func (at *ElementAtomic) IsEqual(elem Element) bool {
 //
 // Returns:
 //   - bool: true if at and elem are operations on the same atomic variable
-func (at *ElementAtomic) IsSameElement(elem Element) bool {
+func (this *ElementAtomic) IsSameElement(elem Element) bool {
 	if elem.GetType(false) != Atomic {
 		return false
 	}
 
-	return at.id == elem.GetID()
+	return this.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -278,32 +278,32 @@ func (at *ElementAtomic) IsSameElement(elem Element) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (at *ElementAtomic) GetTraceIndex() (int, int) {
-	return at.routine, at.index
+func (this *ElementAtomic) GetTraceIndex() (int, int) {
+	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (at *ElementAtomic) SetT(time int) {
-	at.tPost = time
+func (this *ElementAtomic) SetT(time int) {
+	this.tPost = time
 }
 
 // SetTPre sets the tPre of the element.
 //
 // Parameter:
 //   - tPre int: The tPost of the element
-func (at *ElementAtomic) SetTPre(tPre int) {
-	at.tPost = tPre
+func (this *ElementAtomic) SetTPre(tPre int) {
+	this.tPost = tPre
 }
 
 // SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (at *ElementAtomic) SetTSort(tSort int) {
-	at.tPost = tSort
+func (this *ElementAtomic) SetTSort(tSort int) {
+	this.tPost = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -311,9 +311,9 @@ func (at *ElementAtomic) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (at *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
-	if at.tPost != 0 {
-		at.tPost = tSort
+func (this *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
+	if this.tPost != 0 {
+		this.tPost = tSort
 	}
 }
 
@@ -321,26 +321,26 @@ func (at *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (at *ElementAtomic) ToString() string {
-	opString := string(at.op)[1]
+func (this *ElementAtomic) ToString() string {
+	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("A,%d,%d,%s,%s", at.tPost, at.id, opString, at.GetPos())
+	return fmt.Sprintf("A,%d,%d,%s,%s", this.tPost, this.id, opString, this.GetPos())
 }
 
 // GetTraceID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (at *ElementAtomic) GetTraceID() int {
-	return at.traceID
+func (this *ElementAtomic) GetTraceID() int {
+	return this.traceID
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (at *ElementAtomic) setTraceID(ID int) {
-	at.traceID = ID
+func (this *ElementAtomic) setTraceID(ID int) {
+	this.traceID = ID
 }
 
 // Copy the atomic element
@@ -352,23 +352,23 @@ func (at *ElementAtomic) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (at *ElementAtomic) Copy(_ map[string]Element) Element {
+func (this *ElementAtomic) Copy(_ map[string]Element) Element {
 
 	return &ElementAtomic{
-		traceID:                  at.traceID,
-		index:                    at.index,
-		routine:                  at.routine,
-		tPost:                    at.tPost,
-		id:                       at.id,
-		op:                       at.op,
-		vc:                       at.vc.Copy(),
-		wVc:                      at.wVc.Copy(),
-		numberConcurrent:         at.numberConcurrent,
-		numberConcurrentWeak:     at.numberConcurrentWeak,
-		numberConcurrentSame:     at.numberConcurrentSame,
-		numberConcurrentWeakSame: at.numberConcurrentWeakSame,
-		file:                     at.file,
-		line:                     at.line,
+		traceID:                  this.traceID,
+		index:                    this.index,
+		routine:                  this.routine,
+		tPost:                    this.tPost,
+		id:                       this.id,
+		op:                       this.op,
+		vc:                       this.vc.Copy(),
+		wVc:                      this.wVc.Copy(),
+		numberConcurrent:         this.numberConcurrent,
+		numberConcurrentWeak:     this.numberConcurrentWeak,
+		numberConcurrentSame:     this.numberConcurrentSame,
+		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
+		file:                     this.file,
+		line:                     this.line,
 	}
 }
 
@@ -381,17 +381,17 @@ func (at *ElementAtomic) Copy(_ map[string]Element) Element {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (at *ElementAtomic) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementAtomic) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
 		if sameElem {
-			return at.numberConcurrentWeakSame
+			return this.numberConcurrentWeakSame
 		}
-		return at.numberConcurrentWeak
+		return this.numberConcurrentWeak
 	}
 	if sameElem {
-		return at.numberConcurrentSame
+		return this.numberConcurrentSame
 	}
-	return at.numberConcurrent
+	return this.numberConcurrent
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -400,18 +400,18 @@ func (at *ElementAtomic) GetNumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (at *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
+func (this *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
 		if sameElem {
-			at.numberConcurrentWeakSame = c
+			this.numberConcurrentWeakSame = c
 		} else {
-			at.numberConcurrentWeak = c
+			this.numberConcurrentWeak = c
 		}
 	} else {
 		if sameElem {
-			at.numberConcurrentSame = c
+			this.numberConcurrentSame = c
 		} else {
-			at.numberConcurrent = c
+			this.numberConcurrent = c
 		}
 	}
 }

@@ -198,7 +198,7 @@ func quality(elem trace.Element) float64 {
 //
 // Parameter:
 //   - elems ...analysis.TraceElement: Elements to add, in the order they are added
-func (ch *Chain) add(elems ...trace.Element) {
+func (this *Chain) add(elems ...trace.Element) {
 	if elems == nil {
 		return
 	}
@@ -207,7 +207,7 @@ func (ch *Chain) add(elems ...trace.Element) {
 		if elem == nil {
 			continue
 		}
-		ch.Elems = append(ch.Elems, elem)
+		this.Elems = append(this.Elems, elem)
 	}
 }
 
@@ -216,15 +216,15 @@ func (ch *Chain) add(elems ...trace.Element) {
 // Parameter:
 //   - index int: index to change at
 //   - elem analysis.TraceElement: element to set at index
-func (ch *Chain) replace(index int, elem trace.Element) {
+func (this *Chain) replace(index int, elem trace.Element) {
 	if elem == nil {
 		return
 	}
 
-	if index < 0 || index >= len(ch.Elems) {
+	if index < 0 || index >= len(this.Elems) {
 		return
 	}
-	ch.Elems[index] = elem
+	this.Elems[index] = elem
 }
 
 // Returns if the chain contains a specific element
@@ -234,12 +234,12 @@ func (ch *Chain) replace(index int, elem trace.Element) {
 //
 // Returns:
 //   - bool: true if the chain contains elem, false otherwise
-func (ch *Chain) contains(elem trace.Element) bool {
+func (this *Chain) contains(elem trace.Element) bool {
 	if elem == nil {
 		return false
 	}
 
-	for _, c := range ch.Elems {
+	for _, c := range this.Elems {
 		if elem.IsEqual(c) {
 			return true
 		}
@@ -249,27 +249,27 @@ func (ch *Chain) contains(elem trace.Element) bool {
 }
 
 // Remove the first element from the chain
-func (ch *Chain) removeHead() {
-	ch.Elems = ch.Elems[1:]
+func (this *Chain) removeHead() {
+	this.Elems = this.Elems[1:]
 }
 
 // Remove the last element from the chain
-func (ch *Chain) removeTail() {
-	ch.Elems = ch.Elems[:len(ch.Elems)-1]
+func (this *Chain) removeTail() {
+	this.Elems = this.Elems[:len(this.Elems)-1]
 }
 
 // Return the first element of a chain
 //
 // Returns:
 //   - analysis.TraceElement: the first element in the chain, or nil if chain is empty
-func (ch *Chain) firstElement() trace.Element {
-	if ch.Len() == 0 {
+func (this *Chain) firstElement() trace.Element {
+	if this.Len() == 0 {
 		return nil
 	}
 
 	var min trace.Element
 
-	for _, c := range ch.Elems {
+	for _, c := range this.Elems {
 		if min == nil || c.GetTPost() < min.GetTPost() {
 			min = c
 		}
@@ -282,11 +282,11 @@ func (ch *Chain) firstElement() trace.Element {
 //
 // Returns:
 //   - analysis.TraceElement: the last element in the chain, or nil if chain is empty
-func (ch *Chain) lastElem() trace.Element {
-	if ch.Len() == 0 {
+func (this *Chain) lastElem() trace.Element {
+	if this.Len() == 0 {
 		return nil
 	}
-	return ch.Elems[len(ch.Elems)-1]
+	return this.Elems[len(this.Elems)-1]
 }
 
 // Swap the two elements in the chain given by the indexes.
@@ -298,12 +298,12 @@ func (ch *Chain) lastElem() trace.Element {
 //
 // Return:
 //   - bool: true if swap was possible, false otherwise
-func (ch *Chain) swap(i, j int) bool {
-	if hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true) != hb.Concurrent {
+func (this *Chain) swap(i, j int) bool {
+	if hbcalc.GetHappensBefore(this.Elems[i], this.Elems[j], true) != hb.Concurrent {
 		return false
 	}
-	if i >= 0 && i < len(ch.Elems) && j >= 0 && j < len(ch.Elems) {
-		ch.Elems[i], ch.Elems[j] = ch.Elems[j], ch.Elems[i]
+	if i >= 0 && i < len(this.Elems) && j >= 0 && j < len(this.Elems) {
+		this.Elems[i], this.Elems[j] = this.Elems[j], this.Elems[i]
 	}
 	return true
 }
@@ -312,10 +312,10 @@ func (ch *Chain) swap(i, j int) bool {
 //
 // Returns:
 //   - chain: a copy of the chain
-func (ch *Chain) copy() Chain {
-	newElems := make([]trace.Element, len(ch.Elems))
+func (this *Chain) copy() Chain {
+	newElems := make([]trace.Element, len(this.Elems))
 
-	copy(newElems, ch.Elems)
+	copy(newElems, this.Elems)
 
 	newChain := Chain{
 		Elems: newElems,
@@ -327,17 +327,17 @@ func (ch *Chain) copy() Chain {
 //
 // Returns:
 //   - the number of elements in the chain
-func (ch *Chain) Len() int {
-	return len(ch.Elems)
+func (this *Chain) Len() int {
+	return len(this.Elems)
 }
 
 // Get a string representation of a scheduling chain
 //
 // Returns:
 //   - A string representation of the chain
-func (ch *Chain) toString() string {
+func (this *Chain) toString() string {
 	res := ""
-	for _, e := range ch.Elems {
+	for _, e := range this.Elems {
 		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
 		switch f := e.(type) {
 		case *trace.ElementSelect:
@@ -356,10 +356,10 @@ func (ch *Chain) toString() string {
 //
 // Returns:
 //   - bool: True if the mutation is valid, false otherwise
-func (ch *Chain) isValid() bool {
-	for i := 0; i < len(ch.Elems)-1; i++ {
-		for j := 1; j < len(ch.Elems); j++ {
-			hbInfo := hbcalc.GetHappensBefore(ch.Elems[i], ch.Elems[j], true)
+func (this *Chain) isValid() bool {
+	for i := 0; i < len(this.Elems)-1; i++ {
+		for j := 1; j < len(this.Elems); j++ {
+			hbInfo := hbcalc.GetHappensBefore(this.Elems[i], this.Elems[j], true)
 			if hbInfo == hb.After {
 				return false
 			}
@@ -369,10 +369,10 @@ func (ch *Chain) isValid() bool {
 	return true
 }
 
-func (ch *Chain) mutSelect() map[string]Chain {
+func (this *Chain) mutSelect() map[string]Chain {
 	res := make(map[string]Chain)
 
-	for i, elem := range ch.Elems {
+	for i, elem := range this.Elems {
 		if elem.GetType(false) != trace.Select {
 			continue
 		}
@@ -381,13 +381,13 @@ func (ch *Chain) mutSelect() map[string]Chain {
 		chosen := sel.GetChosenCase()
 		if chosen != nil {
 			partner := sel.GetChosenCase().GetPartner()
-			if partner != nil && ch.contains(partner) {
+			if partner != nil && this.contains(partner) {
 				continue
 			}
 		}
 
 		if sel.GetContainsDefault() && !sel.GetChosenDefault() {
-			c := ch.copy()
+			c := this.copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(-1)
 			res[c.toString()] = c
 		}
@@ -397,7 +397,7 @@ func (ch *Chain) mutSelect() map[string]Chain {
 				continue
 			}
 
-			c := ch.copy()
+			c := this.copy()
 			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(ca)
 			res[c.toString()] = c
 		}

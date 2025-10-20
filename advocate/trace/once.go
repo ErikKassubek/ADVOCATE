@@ -60,7 +60,7 @@ type ElementOnce struct {
 //   - id string: The id of the mutex
 //   - suc string: Whether the operation was successful (only for trylock else always true)
 //   - pos string: The position of the mutex operation in the code
-func (t *Trace) AddTraceElementOnce(routine int, tPre string,
+func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	tPost string, id string, suc string, pos string) error {
 	tPreInt, err := strconv.Atoi(tPre)
 	if err != nil {
@@ -88,7 +88,7 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := ElementOnce{
-		index:                    t.numberElemsInTrace[routine],
+		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
@@ -104,7 +104,7 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 		numberConcurrentWeakSame: -1,
 	}
 
-	t.AddElement(&elem)
+	this.AddElement(&elem)
 
 	return nil
 }
@@ -113,76 +113,76 @@ func (t *Trace) AddTraceElementOnce(routine int, tPre string,
 //
 // Returns:
 //   - int: The id of the element
-func (on *ElementOnce) GetID() int {
-	return on.id
+func (this *ElementOnce) GetID() int {
+	return this.id
 }
 
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (on *ElementOnce) GetRoutine() int {
-	return on.routine
+func (this *ElementOnce) GetRoutine() int {
+	return this.routine
 }
 
 // GetTPre returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (on *ElementOnce) GetTPre() int {
-	return on.tPre
+func (this *ElementOnce) GetTPre() int {
+	return this.tPre
 }
 
 // GetTPost returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (on *ElementOnce) GetTPost() int {
-	return on.tPost
+func (this *ElementOnce) GetTPost() int {
+	return this.tPost
 }
 
 // GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
-func (on *ElementOnce) GetTSort() int {
-	if on.tPost == 0 {
+func (this *ElementOnce) GetTSort() int {
+	if this.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
 	}
-	return on.tPre
+	return this.tPre
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (on *ElementOnce) GetPos() string {
-	return fmt.Sprintf("%s:%d", on.file, on.line)
+func (this *ElementOnce) GetPos() string {
+	return fmt.Sprintf("%s:%d", this.file, this.line)
 }
 
 // GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (on *ElementOnce) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", on.routine, on.file, on.line)
+func (this *ElementOnce) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
 }
 
 // GetFile returns the file of the element
 //
 // Returns:
 //   - The file of the element
-func (on *ElementOnce) GetFile() string {
-	return on.file
+func (this *ElementOnce) GetFile() string {
+	return this.file
 }
 
 // GetLine returns the line of the element
 //
 // Returns:
 //   - The line of the element
-func (on *ElementOnce) GetLine() int {
-	return on.line
+func (this *ElementOnce) GetLine() int {
+	return this.line
 }
 
 // GetTID returns the tID of the element.
@@ -190,40 +190,40 @@ func (on *ElementOnce) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (on *ElementOnce) GetTID() string {
-	return "O@" + on.GetPos() + "@" + strconv.Itoa(on.tPre)
+func (this *ElementOnce) GetTID() string {
+	return "O@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
 }
 
 // SetVc sets the vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (on *ElementOnce) SetVc(vc *clock.VectorClock) {
-	on.vc = vc.Copy()
+func (this *ElementOnce) SetVc(vc *clock.VectorClock) {
+	this.vc = vc.Copy()
 }
 
 // SetWVc sets the weak vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (on *ElementOnce) SetWVc(vc *clock.VectorClock) {
-	on.wVc = vc.Copy()
+func (this *ElementOnce) SetWVc(vc *clock.VectorClock) {
+	this.wVc = vc.Copy()
 }
 
 // GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (on *ElementOnce) GetVC() *clock.VectorClock {
-	return on.vc
+func (this *ElementOnce) GetVC() *clock.VectorClock {
+	return this.vc
 }
 
 // GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (on *ElementOnce) GetWVC() *clock.VectorClock {
-	return on.wVc
+func (this *ElementOnce) GetWVC() *clock.VectorClock {
+	return this.wVc
 }
 
 // GetType returns the object type
@@ -233,12 +233,12 @@ func (on *ElementOnce) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (on *ElementOnce) GetType(operation bool) ObjectType {
+func (this *ElementOnce) GetType(operation bool) ObjectType {
 	if !operation {
 		return Once
 	}
 
-	if on.suc {
+	if this.suc {
 		return OnceSuc
 	}
 	return OnceFail
@@ -248,8 +248,8 @@ func (on *ElementOnce) GetType(operation bool) ObjectType {
 //
 // Returns:
 //   - bool: true if function in Do was executed, false otherwise
-func (on *ElementOnce) GetSuc() bool {
-	return on.suc
+func (this *ElementOnce) GetSuc() bool {
+	return this.suc
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -259,8 +259,8 @@ func (on *ElementOnce) GetSuc() bool {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (on *ElementOnce) IsEqual(elem Element) bool {
-	return on.routine == elem.GetRoutine() && on.ToString() == elem.ToString()
+func (this *ElementOnce) IsEqual(elem Element) bool {
+	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -271,12 +271,12 @@ func (on *ElementOnce) IsEqual(elem Element) bool {
 //
 // Returns:
 //   - bool: true if at and elem are operations on the same once
-func (mu *ElementOnce) IsSameElement(elem Element) bool {
+func (this *ElementOnce) IsSameElement(elem Element) bool {
 	if elem.GetType(false) != Once {
 		return false
 	}
 
-	return mu.id == elem.GetID()
+	return this.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -284,27 +284,27 @@ func (mu *ElementOnce) IsSameElement(elem Element) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (on *ElementOnce) GetTraceIndex() (int, int) {
-	return on.routine, on.index
+func (this *ElementOnce) GetTraceIndex() (int, int) {
+	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (on *ElementOnce) SetT(time int) {
-	on.tPre = time
-	on.tPost = time
+func (this *ElementOnce) SetT(time int) {
+	this.tPre = time
+	this.tPost = time
 }
 
 // SetTPre sets the tPre of the element.
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (on *ElementOnce) SetTPre(tPre int) {
-	on.tPre = tPre
-	if on.tPost != 0 && on.tPost < tPre {
-		on.tPost = tPre
+func (this *ElementOnce) SetTPre(tPre int) {
+	this.tPre = tPre
+	if this.tPost != 0 && this.tPost < tPre {
+		this.tPost = tPre
 	}
 }
 
@@ -312,9 +312,9 @@ func (on *ElementOnce) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (on *ElementOnce) SetTSort(tSort int) {
-	on.SetTPre(tSort)
-	on.tPost = tSort
+func (this *ElementOnce) SetTSort(tSort int) {
+	this.SetTPre(tSort)
+	this.tPost = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -322,10 +322,10 @@ func (on *ElementOnce) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (on *ElementOnce) SetTWithoutNotExecuted(tSort int) {
-	on.SetTPre(tSort)
-	if on.tPost != 0 {
-		on.tPost = tSort
+func (this *ElementOnce) SetTWithoutNotExecuted(tSort int) {
+	this.SetTPre(tSort)
+	if this.tPost != 0 {
+		this.tPost = tSort
 	}
 }
 
@@ -333,17 +333,17 @@ func (on *ElementOnce) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (on *ElementOnce) ToString() string {
+func (this *ElementOnce) ToString() string {
 	res := "O,"
-	res += strconv.Itoa(on.tPre) + ","
-	res += strconv.Itoa(on.tPost) + ","
-	res += strconv.Itoa(on.id) + ","
-	if on.suc {
+	res += strconv.Itoa(this.tPre) + ","
+	res += strconv.Itoa(this.tPost) + ","
+	res += strconv.Itoa(this.id) + ","
+	if this.suc {
 		res += "t"
 	} else {
 		res += "f"
 	}
-	res += "," + on.GetPos()
+	res += "," + this.GetPos()
 	return res
 }
 
@@ -351,16 +351,16 @@ func (on *ElementOnce) ToString() string {
 //
 // Returns:
 //   - int: the trace id
-func (on *ElementOnce) GetTraceID() int {
-	return on.traceID
+func (this *ElementOnce) GetTraceID() int {
+	return this.traceID
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (on *ElementOnce) setTraceID(ID int) {
-	on.traceID = ID
+func (this *ElementOnce) setTraceID(ID int) {
+	this.traceID = ID
 }
 
 // Copy the element
@@ -372,23 +372,23 @@ func (on *ElementOnce) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (on *ElementOnce) Copy(_ map[string]Element) Element {
+func (this *ElementOnce) Copy(_ map[string]Element) Element {
 	return &ElementOnce{
-		traceID:                  on.traceID,
-		index:                    on.index,
-		routine:                  on.routine,
-		tPre:                     on.tPre,
-		tPost:                    on.tPost,
-		id:                       on.id,
-		suc:                      on.suc,
-		file:                     on.file,
-		line:                     on.line,
-		vc:                       on.vc.Copy(),
-		wVc:                      on.wVc.Copy(),
-		numberConcurrent:         on.numberConcurrent,
-		numberConcurrentWeak:     on.numberConcurrentWeak,
-		numberConcurrentSame:     on.numberConcurrentSame,
-		numberConcurrentWeakSame: on.numberConcurrentWeakSame,
+		traceID:                  this.traceID,
+		index:                    this.index,
+		routine:                  this.routine,
+		tPre:                     this.tPre,
+		tPost:                    this.tPost,
+		id:                       this.id,
+		suc:                      this.suc,
+		file:                     this.file,
+		line:                     this.line,
+		vc:                       this.vc.Copy(),
+		wVc:                      this.wVc.Copy(),
+		numberConcurrent:         this.numberConcurrent,
+		numberConcurrentWeak:     this.numberConcurrentWeak,
+		numberConcurrentSame:     this.numberConcurrentSame,
+		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
 }
 
@@ -401,17 +401,17 @@ func (on *ElementOnce) Copy(_ map[string]Element) Element {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (on *ElementOnce) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementOnce) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
 		if sameElem {
-			return on.numberConcurrentWeakSame
+			return this.numberConcurrentWeakSame
 		}
-		return on.numberConcurrentWeak
+		return this.numberConcurrentWeak
 	}
 	if sameElem {
-		return on.numberConcurrentSame
+		return this.numberConcurrentSame
 	}
-	return on.numberConcurrent
+	return this.numberConcurrent
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -420,18 +420,18 @@ func (on *ElementOnce) GetNumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (on *ElementOnce) SetNumberConcurrent(c int, weak, sameElem bool) {
+func (this *ElementOnce) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
 		if sameElem {
-			on.numberConcurrentWeakSame = c
+			this.numberConcurrentWeakSame = c
 		} else {
-			on.numberConcurrentWeak = c
+			this.numberConcurrentWeak = c
 		}
 	} else {
 		if sameElem {
-			on.numberConcurrentSame = c
+			this.numberConcurrentSame = c
 		} else {
-			on.numberConcurrent = c
+			this.numberConcurrent = c
 		}
 	}
 }

@@ -105,8 +105,8 @@ type TraceElementResult struct {
 //
 // Returns:
 //   - string: the file path
-func (t TraceElementResult) getFile() string {
-	return t.File
+func (this TraceElementResult) getFile() string {
+	return this.File
 }
 
 // stringMachineShort returns a short machine readable string representation
@@ -114,8 +114,8 @@ func (t TraceElementResult) getFile() string {
 //
 // Returns:
 //   - string: the string representation
-func (t TraceElementResult) stringMachineShort() string {
-	return fmt.Sprintf("T:%d:%s:%s:%d", t.ObjID, t.ObjType, t.File, t.Line)
+func (this TraceElementResult) stringMachineShort() string {
+	return fmt.Sprintf("T:%d:%s:%s:%d", this.ObjID, this.ObjType, this.File, this.Line)
 }
 
 // stringMachine returns a machine readable string representation
@@ -123,8 +123,8 @@ func (t TraceElementResult) stringMachineShort() string {
 //
 // Returns:
 //   - string: the string representation
-func (t TraceElementResult) stringMachine() string {
-	return fmt.Sprintf("T:%d:%d:%d:%s:%s:%d", t.RoutineID, t.ObjID, t.TPre, t.ObjType, t.File, t.Line)
+func (this TraceElementResult) stringMachine() string {
+	return fmt.Sprintf("T:%d:%d:%d:%s:%s:%d", this.RoutineID, this.ObjID, this.TPre, this.ObjType, this.File, this.Line)
 }
 
 // stringReadable returns a human readable string representation
@@ -132,16 +132,16 @@ func (t TraceElementResult) stringMachine() string {
 //
 // Returns:
 //   - string: the string representation
-func (t TraceElementResult) stringReadable() string {
-	return fmt.Sprintf("%s:%d@%d", t.File, t.Line, t.TPre)
+func (this TraceElementResult) stringReadable() string {
+	return fmt.Sprintf("%s:%d@%d", this.File, this.Line, this.TPre)
 }
 
 // isInvalid checks if the result element is not corrupted/empty
 //
 // Returns:
 //   - bool: true if valid, false otherwise
-func (t TraceElementResult) isInvalid() bool {
-	return t.ObjType == "" || t.Line == -1
+func (this TraceElementResult) isInvalid() bool {
+	return this.ObjType == "" || this.Line == -1
 }
 
 // Result logs a found bug

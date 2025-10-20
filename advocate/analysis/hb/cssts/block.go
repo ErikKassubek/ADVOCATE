@@ -188,12 +188,12 @@ func getBlockArgMin(node *segmentTreeNodeBlock, x int) int {
 	return -1
 }
 
-func (bl block) update1(i, val int) {
-	i -= bl.offset
-	bl.update2(bl.root, i, val)
+func (this block) update1(i, val int) {
+	i -= this.offset
+	this.update2(this.root, i, val)
 }
 
-func (bl block) update2(root *segmentTreeNodeBlock, pos, val int) {
+func (this block) update2(root *segmentTreeNodeBlock, pos, val int) {
 	if root.isLeaf {
 		if root.block == nil {
 			root.block = make([]int, root.end+1-root.start)
@@ -220,9 +220,9 @@ func (bl block) update2(root *segmentTreeNodeBlock, pos, val int) {
 	} else {
 		mid := root.start + (root.end-root.start)/2
 		if pos <= mid {
-			bl.update2(root.left, pos, val)
+			this.update2(root.left, pos, val)
 		} else {
-			bl.update2(root.right, pos, val)
+			this.update2(root.right, pos, val)
 		}
 		if root.left.min < root.right.min {
 			root.min = root.left.min
@@ -234,32 +234,32 @@ func (bl block) update2(root *segmentTreeNodeBlock, pos, val int) {
 	}
 }
 
-func (bl block) argMin1(x int) int {
-	if bl.root.min <= x {
-		return bl.argMin2(bl.root, x) + bl.offset
+func (this block) argMin1(x int) int {
+	if this.root.min <= x {
+		return this.argMin2(this.root, x) + this.offset
 	}
 	return -1
 }
 
-func (bl block) argMin2(root *segmentTreeNodeBlock, x int) int {
+func (this block) argMin2(root *segmentTreeNodeBlock, x int) int {
 	if root.isLeaf {
 		return getBlockArgMin(root, x)
 	}
 
 	if root.right.min <= x {
-		return bl.argMin2(root.right, x)
+		return this.argMin2(root.right, x)
 	}
 
-	return bl.argMin2(root.left, x)
+	return this.argMin2(root.left, x)
 }
 
-func (bl block) sumRange1(i, j int) int {
-	i -= bl.offset
-	j -= bl.offset
-	return bl.sumRange2(bl.root, i, j)
+func (this block) sumRange1(i, j int) int {
+	i -= this.offset
+	j -= this.offset
+	return this.sumRange2(this.root, i, j)
 }
 
-func (bl block) sumRange2(root *segmentTreeNodeBlock, start, end int) int {
+func (this block) sumRange2(root *segmentTreeNodeBlock, start, end int) int {
 	if root.end == end && root.start == start {
 		return root.min
 	} else if root.isLeaf {
@@ -270,12 +270,12 @@ func (bl block) sumRange2(root *segmentTreeNodeBlock, start, end int) int {
 	} else {
 		mid := root.start + (root.end-root.start)/2
 		if end <= mid {
-			return bl.sumRange2(root.left, start, end)
+			return this.sumRange2(root.left, start, end)
 		} else if start >= mid+1 {
-			return bl.sumRange2(root.right, start, end)
+			return this.sumRange2(root.right, start, end)
 		} else {
-			l := bl.sumRange2(root.left, start, mid)
-			r := bl.sumRange2(root.right, mid+1, end)
+			l := this.sumRange2(root.left, start, mid)
+			r := this.sumRange2(root.right, mid+1, end)
 			return min(l, r)
 		}
 	}

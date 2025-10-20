@@ -146,9 +146,9 @@ type processedBug struct {
 //
 // Returns:
 //   - string: string representation of the bug
-func (pb *processedBug) getKey() string {
-	res := pb.bugType
-	for _, path := range pb.paths {
+func (this *processedBug) getKey() string {
+	res := this.bugType
+	for _, path := range this.paths {
 		res += path
 	}
 	return res

@@ -204,64 +204,64 @@ type visitor struct {
 //
 // Returns:
 //   - ast.Visitor
-func (v *visitor) Visit(n ast.Node) ast.Visitor {
+func (this *visitor) Visit(n ast.Node) ast.Visitor {
 	if n == nil {
 		return nil
 	}
 
 	switch x := n.(type) {
 	case *ast.GoStmt:
-		v.recordElement(v.fset.Position(n.Pos()))
+		this.recordElement(this.fset.Position(n.Pos()))
 	case *ast.SendStmt: // send
-		if _, ok := v.selectCases[v.fset.Position(n.Pos()).String()]; ok {
-			delete(v.selectCases, v.fset.Position(n.Pos()).String())
+		if _, ok := this.selectCases[this.fset.Position(n.Pos()).String()]; ok {
+			delete(this.selectCases, this.fset.Position(n.Pos()).String())
 		} else {
-			v.recordElement(v.fset.Position(n.Pos()))
+			this.recordElement(this.fset.Position(n.Pos()))
 		}
 	case *ast.UnaryExpr: // recv
 		if x.Op == token.ARROW {
-			if _, ok := v.selectCases[v.fset.Position(n.Pos()).String()]; ok {
-				delete(v.selectCases, v.fset.Position(n.Pos()).String())
+			if _, ok := this.selectCases[this.fset.Position(n.Pos()).String()]; ok {
+				delete(this.selectCases, this.fset.Position(n.Pos()).String())
 			} else {
-				v.recordElement(v.fset.Position(n.Pos()))
+				this.recordElement(this.fset.Position(n.Pos()))
 			}
 		}
 	case *ast.CallExpr:
 		// close
 		if fun, ok := x.Fun.(*ast.Ident); ok && fun.Name == "close" {
-			v.recordElement(v.fset.Position(n.Pos()))
+			this.recordElement(this.fset.Position(n.Pos()))
 		}
 		if fun, ok := x.Fun.(*ast.SelectorExpr); ok {
 			if ident, ok := fun.X.(*ast.Ident); ok {
-				obj := v.info.Uses[ident]
+				obj := this.info.Uses[ident]
 
-				if obj != nil && v.syncPkg != nil {
+				if obj != nil && this.syncPkg != nil {
 					typ := obj.Type()
 
 					// Überprüfen Sie, ob der Typ zu einem der spezifischen Typen gehört
-					mutexType := v.syncPkg.Scope().Lookup("Mutex").Type()
-					rwMutexType := v.syncPkg.Scope().Lookup("RWMutex").Type()
-					wgType := v.syncPkg.Scope().Lookup("WaitGroup").Type()
-					condType := v.syncPkg.Scope().Lookup("Cond").Type()
-					onceType := v.syncPkg.Scope().Lookup("Once").Type()
+					mutexType := this.syncPkg.Scope().Lookup("Mutex").Type()
+					rwMutexType := this.syncPkg.Scope().Lookup("RWMutex").Type()
+					wgType := this.syncPkg.Scope().Lookup("WaitGroup").Type()
+					condType := this.syncPkg.Scope().Lookup("Cond").Type()
+					onceType := this.syncPkg.Scope().Lookup("Once").Type()
 
 					switch {
 					case types.AssignableTo(typ, mutexType):
-						v.recordElement(v.fset.Position(n.Pos()))
+						this.recordElement(this.fset.Position(n.Pos()))
 					case types.AssignableTo(typ, rwMutexType):
-						v.recordElement(v.fset.Position(n.Pos()))
+						this.recordElement(this.fset.Position(n.Pos()))
 					case types.AssignableTo(typ, wgType):
-						v.recordElement(v.fset.Position(n.Pos()))
+						this.recordElement(this.fset.Position(n.Pos()))
 					case types.AssignableTo(typ, condType):
-						v.recordElement(v.fset.Position(n.Pos()))
+						this.recordElement(this.fset.Position(n.Pos()))
 					case types.AssignableTo(typ, onceType):
-						v.recordElement(v.fset.Position(n.Pos()))
+						this.recordElement(this.fset.Position(n.Pos()))
 					}
 				}
 			}
 		}
 	case *ast.SelectStmt:
-		v.recordElement(v.fset.Position(n.Pos()))
+		this.recordElement(this.fset.Position(n.Pos()))
 		for _, stmt := range x.Body.List {
 			caseClause, ok := stmt.(*ast.CommClause)
 			if !ok {
@@ -270,24 +270,24 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 			switch comm := caseClause.Comm.(type) {
 			case *ast.SendStmt:
 				// store to not record the send statement
-				v.selectCases[v.fset.Position(comm.Pos()).String()] = struct{}{}
+				this.selectCases[this.fset.Position(comm.Pos()).String()] = struct{}{}
 			case *ast.ExprStmt:
 				// store to not record the recv statement
 				if unaryExpr, ok := comm.X.(*ast.UnaryExpr); ok && unaryExpr.Op == token.ARROW {
-					v.selectCases[v.fset.Position(unaryExpr.Pos()).String()] = struct{}{}
+					this.selectCases[this.fset.Position(unaryExpr.Pos()).String()] = struct{}{}
 				}
 			}
 		}
 	case *ast.RangeStmt:
 		rangeExpr := x.X
-		rangeExprType := v.info.Types[rangeExpr].Type
+		rangeExprType := this.info.Types[rangeExpr].Type
 		// Check if the range expression is a channel
 		if _, ok := rangeExprType.(*types.Chan); ok {
-			fmt.Printf("Range über Kanal gefunden bei %s\n", v.fset.Position(n.Pos()))
+			fmt.Printf("Range über Kanal gefunden bei %s\n", this.fset.Position(n.Pos()))
 		}
 	}
 
-	return v
+	return this
 }
 
 // recordElement stores the line of a node in the visitor
@@ -295,6 +295,6 @@ func (v *visitor) Visit(n ast.Node) ast.Visitor {
 // Parameter:
 //   - pos (token.Position): the code position of the node for which the
 //     function is called
-func (v *visitor) recordElement(pos token.Position) {
-	v.elements = append(v.elements, pos.Line)
+func (this *visitor) recordElement(pos token.Position) {
+	this.elements = append(this.elements, pos.Line)
 }

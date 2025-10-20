@@ -86,7 +86,7 @@ type ElementChannel struct {
 //
 // Returns:
 //   - error
-func (t *Trace) AddTraceElementChannel(routine int, tPre string,
+func (this *Trace) AddTraceElementChannel(routine int, tPre string,
 	tPost string, id string, opC string, cl string, oID string, qSize string,
 	qCount string, pos string) error {
 
@@ -146,7 +146,7 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := ElementChannel{
-		index:                    t.numberElemsInTrace[routine],
+		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
@@ -167,9 +167,9 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 		numberConcurrentWeakSame: -1,
 	}
 
-	elem.findPartner(t)
+	elem.findPartner(this)
 
-	t.AddElement(&elem)
+	this.AddElement(&elem)
 	return nil
 }
 
@@ -177,75 +177,75 @@ func (t *Trace) AddTraceElementChannel(routine int, tPre string,
 //
 // Returns:
 //   - *TraceElementChannel: The partner of the channel operation
-func (ch *ElementChannel) GetPartner() *ElementChannel {
-	return ch.partner
+func (this *ElementChannel) GetPartner() *ElementChannel {
+	return this.partner
 }
 
 // GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (ch *ElementChannel) GetID() int {
-	return ch.id
+func (this *ElementChannel) GetID() int {
+	return this.id
 }
 
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (ch *ElementChannel) GetRoutine() int {
-	return ch.routine
+func (this *ElementChannel) GetRoutine() int {
+	return this.routine
 }
 
 // GetTPre returns the tPre of the element
 //
 // Returns:
 //   - int: The tPre of the element
-func (ch *ElementChannel) GetTPre() int {
-	return ch.tPre
+func (this *ElementChannel) GetTPre() int {
+	return this.tPre
 }
 
 // GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - float32: The time of the element
-func (ch *ElementChannel) GetTSort() int {
-	if ch.tPost == 0 {
+func (this *ElementChannel) GetTSort() int {
+	if this.tPost == 0 {
 		return math.MaxInt
 	}
-	return ch.tPost
+	return this.tPost
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (ch *ElementChannel) GetPos() string {
-	return fmt.Sprintf("%s:%d", ch.file, ch.line)
+func (this *ElementChannel) GetPos() string {
+	return fmt.Sprintf("%s:%d", this.file, this.line)
 }
 
 // GetReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (ch *ElementChannel) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", ch.routine, ch.file, ch.line)
+func (this *ElementChannel) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
 }
 
 // GetFile returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
-func (ch *ElementChannel) GetFile() string {
-	return ch.file
+func (this *ElementChannel) GetFile() string {
+	return this.file
 }
 
 // GetLine returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
-func (ch *ElementChannel) GetLine() int {
-	return ch.line
+func (this *ElementChannel) GetLine() int {
+	return this.line
 }
 
 // GetTID returns the tID of the element.
@@ -254,10 +254,10 @@ func (ch *ElementChannel) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (ch *ElementChannel) GetTID() string {
-	tID := "C@" + ch.GetPos() + "@" + strconv.Itoa(ch.tPre)
-	if ch.selIndex != -1 {
-		tID += "@" + strconv.Itoa(ch.selIndex)
+func (this *ElementChannel) GetTID() string {
+	tID := "C@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
+	if this.selIndex != -1 {
+		tID += "@" + strconv.Itoa(this.selIndex)
 	}
 	return tID
 }
@@ -266,56 +266,56 @@ func (ch *ElementChannel) GetTID() string {
 //
 // Returns:
 //   - int: The oID of the element
-func (ch *ElementChannel) GetOID() int {
-	return ch.oID
+func (this *ElementChannel) GetOID() int {
+	return this.oID
 }
 
 // IsBuffered returns if the channel is buffered
 //
 // Returns:
 //   - bool: Whether the channel operation is buffered
-func (ch *ElementChannel) IsBuffered() bool {
-	return ch.qSize != 0
+func (this *ElementChannel) IsBuffered() bool {
+	return this.qSize != 0
 }
 
 // SetVc sets the vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (ch *ElementChannel) SetVc(vc *clock.VectorClock) {
-	ch.vc = vc.Copy()
+func (this *ElementChannel) SetVc(vc *clock.VectorClock) {
+	this.vc = vc.Copy()
 }
 
 // SetWVc sets the weak vector clock
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (ch *ElementChannel) SetWVc(vc *clock.VectorClock) {
-	ch.wCl = vc.Copy()
+func (this *ElementChannel) SetWVc(vc *clock.VectorClock) {
+	this.wCl = vc.Copy()
 }
 
 // GetVC returns the vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (ch *ElementChannel) GetVC() *clock.VectorClock {
-	return ch.vc
+func (this *ElementChannel) GetVC() *clock.VectorClock {
+	return this.vc
 }
 
 // GetWVC returns the weak vector clock of the element
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (ch *ElementChannel) GetWVC() *clock.VectorClock {
-	return ch.wCl
+func (this *ElementChannel) GetWVC() *clock.VectorClock {
+	return this.wCl
 }
 
 // GetTPost returns the tPost of the element
 //
 // Returns:
 //   - int: The tPost of the element
-func (ch *ElementChannel) GetTPost() int {
-	return ch.tPost
+func (this *ElementChannel) GetTPost() int {
+	return this.tPost
 }
 
 // GetObjType returns the object type
@@ -325,28 +325,28 @@ func (ch *ElementChannel) GetTPost() int {
 //
 // Returns:
 //   - ObjectType: the object type
-func (ch *ElementChannel) GetType(operation bool) ObjectType {
+func (this *ElementChannel) GetType(operation bool) ObjectType {
 	if !operation {
 		return Channel
 	}
 
-	return ch.op
+	return this.op
 }
 
 // GetQCount returns the number of elems in the queue after the operation
 //
 // Returns:
 //   - VectorClock: The number of elems in the queue after the operation
-func (ch *ElementChannel) GetQCount() int {
-	return ch.qCount
+func (this *ElementChannel) GetQCount() int {
+	return this.qCount
 }
 
 // GetQSize returns the size of the buffer
 //
 // Returns:
 //   - int: the size of the buffer
-func (ch *ElementChannel) GetQSize() int {
-	return ch.qSize
+func (this *ElementChannel) GetQSize() int {
+	return this.qSize
 }
 
 // GetSelect returns the select the element is a part of, if it is not part
@@ -354,8 +354,8 @@ func (ch *ElementChannel) GetQSize() int {
 //
 // Returns:
 //   - VectorClock: The select the element is a part of, if not in select it is nil
-func (ch *ElementChannel) GetSelect() *ElementSelect {
-	return ch.sel
+func (this *ElementChannel) GetSelect() *ElementSelect {
+	return this.sel
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -365,8 +365,8 @@ func (ch *ElementChannel) GetSelect() *ElementSelect {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (ch *ElementChannel) IsEqual(elem Element) bool {
-	return ch.routine == elem.GetRoutine() && ch.ToString() == elem.ToString()
+func (this *ElementChannel) IsEqual(elem Element) bool {
+	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -377,12 +377,12 @@ func (ch *ElementChannel) IsEqual(elem Element) bool {
 //
 // Returns:
 //   - bool: true if at and elem are operations on the same channel
-func (ch *ElementChannel) IsSameElement(elem Element) bool {
+func (this *ElementChannel) IsSameElement(elem Element) bool {
 	if elem.GetType(false) != Channel {
 		return false
 	}
 
-	return ch.id == elem.GetID()
+	return this.id == elem.GetID()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -390,55 +390,55 @@ func (ch *ElementChannel) IsSameElement(elem Element) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (ch *ElementChannel) GetTraceIndex() (int, int) {
-	return ch.routine, ch.index
+func (this *ElementChannel) GetTraceIndex() (int, int) {
+	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
 // - time int: The tPre and tPost of the element
-func (ch *ElementChannel) SetT(time int) {
-	ch.tPre = time
-	ch.tPost = time
+func (this *ElementChannel) SetT(time int) {
+	this.tPre = time
+	this.tPost = time
 }
 
 // SetPartner sets the partner of the channel operation
 //
 // Parameter:
 //   - partner *TraceElementChannel: The partner of the channel operation
-func (ch *ElementChannel) SetPartner(partner *ElementChannel) {
-	ch.partner = partner
+func (this *ElementChannel) SetPartner(partner *ElementChannel) {
+	this.partner = partner
 }
 
 // SetClosed sets the cl value to closed
 //
 // Parameter:
 //   - closed bool: the new cl value
-func (ch *ElementChannel) SetClosed(closed bool) {
-	ch.cl = closed
+func (this *ElementChannel) SetClosed(closed bool) {
+	this.cl = closed
 }
 
 // GetClosed returns if the channel was closed
 //
 // Returns:
 //   - bool: cl
-func (ch *ElementChannel) GetClosed() bool {
-	return ch.cl
+func (this *ElementChannel) GetClosed() bool {
+	return this.cl
 }
 
 // SetTPre sets the tPre of the element.
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (ch *ElementChannel) SetTPre(tPre int) {
-	ch.tPre = tPre
-	if ch.tPost != 0 && ch.tPost < tPre {
-		ch.tPost = tPre
+func (this *ElementChannel) SetTPre(tPre int) {
+	this.tPre = tPre
+	if this.tPost != 0 && this.tPost < tPre {
+		this.tPost = tPre
 	}
 
-	if ch.sel != nil {
-		ch.sel.SetTPre2(tPre)
+	if this.sel != nil {
+		this.sel.SetTPre2(tPre)
 	}
 }
 
@@ -446,10 +446,10 @@ func (ch *ElementChannel) SetTPre(tPre int) {
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (ch *ElementChannel) SetTPre2(tPre int) {
-	ch.tPre = tPre
-	if ch.tPost != 0 && ch.tPost < tPre {
-		ch.tPost = tPre
+func (this *ElementChannel) SetTPre2(tPre int) {
+	this.tPre = tPre
+	if this.tPost != 0 && this.tPost < tPre {
+		this.tPost = tPre
 	}
 }
 
@@ -457,10 +457,10 @@ func (ch *ElementChannel) SetTPre2(tPre int) {
 //
 // Parameter:
 //   - tPost int: The tPost of the element
-func (ch *ElementChannel) SetTPost(tPost int) {
-	ch.tPost = tPost
-	if ch.sel != nil {
-		ch.sel.SetTPost2(tPost)
+func (this *ElementChannel) SetTPost(tPost int) {
+	this.tPost = tPost
+	if this.sel != nil {
+		this.sel.SetTPost2(tPost)
 	}
 }
 
@@ -468,20 +468,20 @@ func (ch *ElementChannel) SetTPost(tPost int) {
 //
 // Parameter:
 //   - tPost int: The tPost of the element
-func (ch *ElementChannel) SetTPost2(tPost int) {
-	ch.tPost = tPost
+func (this *ElementChannel) SetTPost2(tPost int) {
+	this.tPost = tPost
 }
 
 // SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *ElementChannel) SetTSort(tPost int) {
-	ch.SetTPre(tPost)
-	ch.tPost = tPost
+func (this *ElementChannel) SetTSort(tPost int) {
+	this.SetTPre(tPost)
+	this.tPost = tPost
 
-	if ch.sel != nil {
-		ch.sel.SetTSort2(tPost)
+	if this.sel != nil {
+		this.sel.SetTSort2(tPost)
 	}
 }
 
@@ -490,9 +490,9 @@ func (ch *ElementChannel) SetTSort(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *ElementChannel) SetTSort2(tPost int) {
-	ch.SetTPre(tPost)
-	ch.tPost = tPost
+func (this *ElementChannel) SetTSort2(tPost int) {
+	this.SetTPre(tPost)
+	this.tPost = tPost
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -500,14 +500,14 @@ func (ch *ElementChannel) SetTSort2(tPost int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *ElementChannel) SetTWithoutNotExecuted(tSort int) {
-	ch.SetTPre(tSort)
-	if ch.tPost != 0 {
-		ch.tPost = tSort
+func (this *ElementChannel) SetTWithoutNotExecuted(tSort int) {
+	this.SetTPre(tSort)
+	if this.tPost != 0 {
+		this.tPost = tSort
 	}
 
-	if ch.sel != nil {
-		ch.sel.SetTWithoutNotExecuted2(tSort)
+	if this.sel != nil {
+		this.sel.SetTWithoutNotExecuted2(tSort)
 	}
 }
 
@@ -516,10 +516,10 @@ func (ch *ElementChannel) SetTWithoutNotExecuted(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (ch *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
-	ch.SetTPre(tSort)
-	if ch.tPost != 0 {
-		ch.tPost = tSort
+func (this *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
+	this.SetTPre(tSort)
+	if this.tPost != 0 {
+		this.tPost = tSort
 	}
 }
 
@@ -527,16 +527,16 @@ func (ch *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
 //
 // Parameter:
 //   - oID int: The oID of the element
-func (ch *ElementChannel) SetOID(oID int) {
-	ch.oID = oID
+func (this *ElementChannel) SetOID(oID int) {
+	this.oID = oID
 }
 
 // ToString returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (ch *ElementChannel) ToString() string {
-	return ch.toStringSep(",", false)
+func (this *ElementChannel) ToString() string {
+	return this.toStringSep(",", false)
 }
 
 // ToStringSep returns the simple string representation of the element with a
@@ -548,38 +548,38 @@ func (ch *ElementChannel) ToString() string {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (ch *ElementChannel) toStringSep(sep string, sel bool) string {
-	op := string(string(ch.op)[1])
+func (this *ElementChannel) toStringSep(sep string, sel bool) string {
+	op := string(string(this.op)[1])
 
 	cl := "f"
-	if ch.cl {
+	if this.cl {
 		cl = "t"
 	}
 
 	timeString := ""
 	posStr := ""
 	if !sel {
-		timeString = fmt.Sprintf("%s%d%s%d", sep, ch.GetTPre(), sep, ch.GetTPost())
-		posStr = sep + ch.GetPos()
+		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTPre(), sep, this.GetTPost())
+		posStr = sep + this.GetPos()
 	}
 
-	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, ch.id, sep, op, sep, cl, sep, ch.oID, sep, ch.qSize, sep, ch.qCount, posStr)
+	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.id, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
 }
 
 // GetTraceID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (ch *ElementChannel) GetTraceID() int {
-	return ch.traceID
+func (this *ElementChannel) GetTraceID() int {
+	return this.traceID
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (ch *ElementChannel) setTraceID(ID int) {
-	ch.traceID = ID
+func (this *ElementChannel) setTraceID(ID int) {
+	this.traceID = ID
 }
 
 // Copy creates a copy of the channel element
@@ -589,44 +589,44 @@ func (ch *ElementChannel) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (ch *ElementChannel) Copy(mapping map[string]Element) Element {
-	tID := ch.GetTID()
+func (this *ElementChannel) Copy(mapping map[string]Element) Element {
+	tID := this.GetTID()
 	if existing, ok := mapping[tID]; ok {
 		return existing
 	}
 
 	newCh := ElementChannel{
-		traceID:                  ch.traceID,
-		index:                    ch.index,
-		routine:                  ch.routine,
-		tPre:                     ch.tPre,
-		tPost:                    ch.tPost,
-		id:                       ch.id,
-		op:                       ch.op,
-		cl:                       ch.cl,
-		oID:                      ch.oID,
-		qSize:                    ch.qSize,
-		file:                     ch.file,
-		line:                     ch.line,
-		selIndex:                 ch.selIndex,
-		vc:                       ch.vc.Copy(),
-		wCl:                      ch.wCl.Copy(),
-		numberConcurrent:         ch.numberConcurrent,
-		numberConcurrentWeak:     ch.numberConcurrentWeak,
-		numberConcurrentSame:     ch.numberConcurrentSame,
-		numberConcurrentWeakSame: ch.numberConcurrentWeakSame,
+		traceID:                  this.traceID,
+		index:                    this.index,
+		routine:                  this.routine,
+		tPre:                     this.tPre,
+		tPost:                    this.tPost,
+		id:                       this.id,
+		op:                       this.op,
+		cl:                       this.cl,
+		oID:                      this.oID,
+		qSize:                    this.qSize,
+		file:                     this.file,
+		line:                     this.line,
+		selIndex:                 this.selIndex,
+		vc:                       this.vc.Copy(),
+		wCl:                      this.wCl.Copy(),
+		numberConcurrent:         this.numberConcurrent,
+		numberConcurrentWeak:     this.numberConcurrentWeak,
+		numberConcurrentSame:     this.numberConcurrentSame,
+		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
 
 	mapping[tID] = &newCh
 
 	var newPartner *ElementChannel
-	if ch.partner != nil {
-		newPartner = ch.partner.Copy(mapping).(*ElementChannel)
+	if this.partner != nil {
+		newPartner = this.partner.Copy(mapping).(*ElementChannel)
 	}
 
 	var newSelect *ElementSelect
-	if ch.sel != nil {
-		newSelect = ch.sel.Copy(mapping).(*ElementSelect)
+	if this.sel != nil {
+		newSelect = this.sel.Copy(mapping).(*ElementSelect)
 	}
 
 	newCh.partner = newPartner
@@ -642,30 +642,30 @@ func (ch *ElementChannel) Copy(mapping map[string]Element) Element {
 //
 // Returns:
 //   - *TraceElementChannel: The partner, -1 if not found
-func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
-	id := ch.GetID()
-	oID := ch.GetOID()
+func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
+	id := this.GetID()
+	oID := this.GetOID()
 
 	// return -1 if closed by channel
-	if ch.GetClosed() || ch.GetTPost() == 0 {
+	if this.GetClosed() || this.GetTPost() == 0 {
 		return nil
 	}
 
 	// find partner has already been applied to the partner and the communication
 	// was fund. An repeated search is not necessary
-	if ch.GetPartner() != nil {
-		return ch.GetPartner()
+	if this.GetPartner() != nil {
+		return this.GetPartner()
 	}
 
 	// check if partner has already been processed
 	if partner, ok := tr.channelWithoutPartner[id][oID]; ok {
-		if ch.IsEqual(partner) {
+		if this.IsEqual(partner) {
 			return nil
 		}
 
 		// partner was already processed
-		ch.SetPartner(partner)
-		partner.SetPartner(ch)
+		this.SetPartner(partner)
+		partner.SetPartner(this)
 
 		delete(tr.channelWithoutPartner[id], oID)
 
@@ -675,7 +675,7 @@ func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	if tr.channelWithoutPartner[id] == nil {
 		tr.channelWithoutPartner[id] = make(map[int]*ElementChannel)
 	}
-	tr.channelWithoutPartner[id][oID] = ch
+	tr.channelWithoutPartner[id][oID] = this
 
 	return nil
 }
@@ -689,17 +689,17 @@ func (ch *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (ch *ElementChannel) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementChannel) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
 		if sameElem {
-			return ch.numberConcurrentWeakSame
+			return this.numberConcurrentWeakSame
 		}
-		return ch.numberConcurrentWeak
+		return this.numberConcurrentWeak
 	}
 	if sameElem {
-		return ch.numberConcurrentSame
+		return this.numberConcurrentSame
 	}
-	return ch.numberConcurrent
+	return this.numberConcurrent
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -708,18 +708,18 @@ func (ch *ElementChannel) GetNumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (ch *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
+func (this *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
 		if sameElem {
-			ch.numberConcurrentWeakSame = c
+			this.numberConcurrentWeakSame = c
 		} else {
-			ch.numberConcurrentWeak = c
+			this.numberConcurrentWeak = c
 		}
 	} else {
 		if sameElem {
-			ch.numberConcurrentSame = c
+			this.numberConcurrentSame = c
 		} else {
-			ch.numberConcurrent = c
+			this.numberConcurrent = c
 		}
 	}
 }

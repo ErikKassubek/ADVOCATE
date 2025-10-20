@@ -34,13 +34,13 @@ type ElementReplay struct {
 //
 // Returns:
 //   - error
-func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
+func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := ElementReplay{
 		tPost:    ts,
 		exitCode: exitCode,
 	}
 
-	t.AddElement(&elem)
+	this.AddElement(&elem)
 
 	return nil
 }
@@ -49,7 +49,7 @@ func (t *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 //
 // Returns:
 //   - int: The id of the element
-func (er *ElementReplay) GetID() int {
+func (this *ElementReplay) GetID() int {
 	return 0
 }
 
@@ -57,38 +57,38 @@ func (er *ElementReplay) GetID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (er *ElementReplay) GetRoutine() int {
+func (this *ElementReplay) GetRoutine() int {
 	return 1
 }
 
 // GetTPre returns the tPre of the element.
 //
 //   - int: The tPost of the element
-func (er *ElementReplay) GetTPre() int {
-	return er.tPost
+func (this *ElementReplay) GetTPre() int {
+	return this.tPost
 }
 
 // GetTPost returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (er *ElementReplay) GetTPost() int {
-	return er.tPost
+func (this *ElementReplay) GetTPost() int {
+	return this.tPost
 }
 
 // GetTSort returns the timer value, that is used for the sorting of the trace
 //
 // Returns:
 //   - int: The timer of the element
-func (er *ElementReplay) GetTSort() int {
-	return er.tPost
+func (this *ElementReplay) GetTSort() int {
+	return this.tPost
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The file of the element
-func (er *ElementReplay) GetPos() string {
+func (this *ElementReplay) GetPos() string {
 	return ""
 }
 
@@ -96,7 +96,7 @@ func (er *ElementReplay) GetPos() string {
 //
 // Returns:
 //   - The replay id
-func (er *ElementReplay) GetReplayID() string {
+func (this *ElementReplay) GetReplayID() string {
 	return ""
 }
 
@@ -104,7 +104,7 @@ func (er *ElementReplay) GetReplayID() string {
 //
 // Returns:
 //   - The file of the element
-func (er *ElementReplay) GetFile() string {
+func (this *ElementReplay) GetFile() string {
 	return ""
 }
 
@@ -112,7 +112,7 @@ func (er *ElementReplay) GetFile() string {
 //
 // Returns:
 //   - The line of the element
-func (er *ElementReplay) GetLine() int {
+func (this *ElementReplay) GetLine() int {
 	return 0
 }
 
@@ -122,7 +122,7 @@ func (er *ElementReplay) GetLine() int {
 //
 // Returns:
 //   - string: The tID of the element
-func (er *ElementReplay) GetTID() string {
+func (this *ElementReplay) GetTID() string {
 	return ""
 }
 
@@ -130,26 +130,26 @@ func (er *ElementReplay) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (er *ElementReplay) SetVc(_ *clock.VectorClock) {
+func (this *ElementReplay) SetVc(_ *clock.VectorClock) {
 }
 
 // SetWVc is a dummy function to implement the TraceElement interface
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (er *ElementReplay) SetWVc(_ *clock.VectorClock) {
+func (this *ElementReplay) SetWVc(_ *clock.VectorClock) {
 }
 
 // GetVC is a dummy function to implement the TraceElement interface
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (er *ElementReplay) GetVC() *clock.VectorClock {
+func (this *ElementReplay) GetVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
 // GetWVC is a dummy function to implement the TraceElement interface
-func (er *ElementReplay) GetWVC() *clock.VectorClock {
+func (this *ElementReplay) GetWVC() *clock.VectorClock {
 	return &clock.VectorClock{}
 }
 
@@ -160,7 +160,7 @@ func (er *ElementReplay) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (er *ElementReplay) GetType(operation bool) ObjectType {
+func (this *ElementReplay) GetType(operation bool) ObjectType {
 	if !operation {
 		return Replay
 	}
@@ -175,7 +175,7 @@ func (er *ElementReplay) GetType(operation bool) ObjectType {
 //
 // Returns:
 //   - bool: always false
-func (er *ElementReplay) IsSameElement(elem Element) bool {
+func (this *ElementReplay) IsSameElement(elem Element) bool {
 	return false
 }
 
@@ -186,8 +186,8 @@ func (er *ElementReplay) IsSameElement(elem Element) bool {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (er *ElementReplay) IsEqual(elem Element) bool {
-	return er.ToString() == elem.ToString()
+func (this *ElementReplay) IsEqual(elem Element) bool {
+	return this.ToString() == elem.ToString()
 }
 
 // GetTraceIndex returns the trace local index of the element in the trace
@@ -195,7 +195,7 @@ func (er *ElementReplay) IsEqual(elem Element) bool {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (er *ElementReplay) GetTraceIndex() (int, int) {
+func (this *ElementReplay) GetTraceIndex() (int, int) {
 	return -1, -1
 }
 
@@ -203,27 +203,27 @@ func (er *ElementReplay) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (er *ElementReplay) SetT(time int) {
-	er.tPost = time
+func (this *ElementReplay) SetT(time int) {
+	this.tPost = time
 }
 
 // SetTPre sets the tPre of the element.
 //
 // Parameter:
 //   - tPre int: The tPre of the element
-func (er *ElementReplay) SetTPre(tPre int) {
+func (this *ElementReplay) SetTPre(tPre int) {
 	tPre = max(1, tPre)
-	er.tPost = tPre
+	this.tPost = tPre
 }
 
 // SetTSort sets the timer, that is used for the sorting of the trace
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (er *ElementReplay) SetTSort(tSort int) {
+func (this *ElementReplay) SetTSort(tSort int) {
 	tSort = max(1, tSort)
-	er.SetTPre(tSort)
-	er.tPost = tSort
+	this.SetTPre(tSort)
+	this.tPost = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -231,23 +231,23 @@ func (er *ElementReplay) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (er *ElementReplay) SetTWithoutNotExecuted(tSort int) {
+func (this *ElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
-	er.SetTPre(tSort)
-	er.tPost = tSort
+	this.SetTPre(tSort)
+	this.tPost = tSort
 }
 
 // ToString returns the simple string representation of the element.
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (er *ElementReplay) ToString() string {
-	res := "X," + strconv.Itoa(er.tPost) + "," + strconv.Itoa(er.exitCode)
+func (this *ElementReplay) ToString() string {
+	res := "X," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.exitCode)
 	return res
 }
 
 // UpdateVectorClock update and stores the vector clock of the element
-func (er *ElementReplay) UpdateVectorClock() {
+func (this *ElementReplay) UpdateVectorClock() {
 	// nothing to do
 }
 
@@ -255,16 +255,16 @@ func (er *ElementReplay) UpdateVectorClock() {
 //
 // Returns:
 //   - int: the trace id
-func (er *ElementReplay) GetTraceID() int {
-	return er.traceID
+func (this *ElementReplay) GetTraceID() int {
+	return this.traceID
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (er *ElementReplay) setTraceID(ID int) {
-	er.traceID = ID
+func (this *ElementReplay) setTraceID(ID int) {
+	this.traceID = ID
 }
 
 // Copy creates a copy of the element
@@ -276,11 +276,11 @@ func (er *ElementReplay) setTraceID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (er *ElementReplay) Copy(_ map[string]Element) Element {
+func (this *ElementReplay) Copy(_ map[string]Element) Element {
 	return &ElementReplay{
-		traceID:  er.traceID,
-		tPost:    er.tPost,
-		exitCode: er.exitCode,
+		traceID:  this.traceID,
+		tPost:    this.tPost,
+		exitCode: this.exitCode,
 	}
 }
 
@@ -289,12 +289,12 @@ func (er *ElementReplay) Copy(_ map[string]Element) Element {
 //
 // Returns:
 //   - int: -1
-func (er *ElementReplay) GetNumberConcurrent(_, _ bool) int {
+func (this *ElementReplay) GetNumberConcurrent(_, _ bool) int {
 	return -1
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
-func (er *ElementReplay) SetNumberConcurrent(_ int, _, _ bool) {}
+func (this *ElementReplay) SetNumberConcurrent(_ int, _, _ bool) {}
 
 // GetConcurrent returns the elements that are concurrent to the element
 //
@@ -303,10 +303,10 @@ func (er *ElementReplay) SetNumberConcurrent(_ int, _, _ bool) {}
 //
 // Returns:
 //   - []Element: empty
-func (er *ElementReplay) GetConcurrent(_, _ bool) []Element {
+func (this *ElementReplay) GetConcurrent(_, _ bool) []Element {
 	return []Element{}
 }
 
 // SetConcurrent sets the concurrent elements
-func (er *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
+func (this *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
 }

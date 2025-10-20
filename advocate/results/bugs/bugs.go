@@ -75,19 +75,19 @@ type Bug struct {
 //
 // Returns:
 //   - string: The bug as a string
-func (b Bug) GetBugString() string {
+func (this Bug) GetBugString() string {
 	paths := make([]string, 0)
 
-	for _, t := range b.TraceElement1 {
+	for _, t := range this.TraceElement1 {
 		paths = append(paths, t.GetPos())
 	}
-	for _, t := range b.TraceElement2 {
+	for _, t := range this.TraceElement2 {
 		paths = append(paths, t.GetPos())
 	}
 
 	sort.Strings(paths)
 
-	res := string(b.Type)
+	res := string(this.Type)
 	for _, path := range paths {
 		res += path
 	}
@@ -98,11 +98,11 @@ func (b Bug) GetBugString() string {
 //
 // Returns:
 //   - string: The bug as a string
-func (b Bug) ToString() string {
+func (this Bug) ToString() string {
 	typeStr := ""
 	arg1Str := ""
 	arg2Str := ""
-	switch b.Type {
+	switch this.Type {
 	case helper.RUnknownPanic:
 		typeStr = "Unknown Panic:"
 		arg1Str = "Panic: "
@@ -203,12 +203,12 @@ func (b Bug) ToString() string {
 	// 	arg2Str = "partner: "
 
 	default:
-		log.Error("Unknown bug type in toString: " + string(b.Type))
+		log.Error("Unknown bug type in toString: " + string(this.Type))
 		return ""
 	}
 
 	res := typeStr + "\n\t" + arg1Str
-	for i, elem := range b.TraceElement1 {
+	for i, elem := range this.TraceElement1 {
 		if i != 0 {
 			res += ";"
 		}
@@ -218,11 +218,11 @@ func (b Bug) ToString() string {
 	if arg2Str != "" {
 		res += "\n\t" + arg2Str
 
-		if len(b.TraceElement2) == 0 {
+		if len(this.TraceElement2) == 0 {
 			res += "-"
 		}
 
-		for i, elem := range b.TraceElement2 {
+		for i, elem := range this.TraceElement2 {
 			if i != 0 {
 				res += ";"
 			}
@@ -234,8 +234,8 @@ func (b Bug) ToString() string {
 }
 
 // Println prints the bug
-func (b Bug) Println() {
-	println(b.ToString())
+func (this Bug) Println() {
+	println(this.ToString())
 }
 
 // ProcessBug processes the bug that was selected from the analysis results

@@ -795,3 +795,58 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 		this.GetChosenCase().SetNumberConcurrent(c, weak, sameElem)
 	}
 }
+
+// HasCommonChannels returns if the set of cases that are in both the receiver
+// select and the argument select is not empty. We do not consider the default case
+//
+// Parameter:
+//   - s *trace.ElementSelect: the other select
+//
+// Returns:
+//   - bool: true if this and s have at least one common channel
+func (this *ElementSelect) HasCommonChannel(s *ElementSelect) bool {
+	for _, c := range s.GetCases() {
+		if this.IsInCases(&c) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// GetCommonChannels returns the set of cases that are in both the receiver
+// select and the argument select. The result does not contain the default case
+//
+// Parameter:
+//   - s *trace.ElementSelect: the other select
+//
+// Returns:
+//   - []trace.ElementChannel: the set of channels in both the receiver and the argument
+func (this *ElementSelect) GetCommonChannel(s *ElementSelect) []ElementChannel {
+	res := make([]ElementChannel, 0)
+	for _, c := range s.GetCases() {
+		if this.IsInCases(&c) {
+			res = append(res, c)
+		}
+	}
+
+	return res
+}
+
+// IsInCases returns true, if the given channel is in the cases. We only care
+// about the channel, not the same operations
+//
+// Parameter:
+//   - ch *trace.ElementChannel: the channel element
+//
+// Returns:
+//   - bool: true if the channel of the operations in ch is in a case in the select
+func (this *ElementSelect) IsInCases(ch *ElementChannel) bool {
+	for _, c := range this.GetCases() {
+		if c.IsSameElement(ch) {
+			return true
+		}
+	}
+
+	return false
+}

@@ -126,10 +126,23 @@ func isIndependentChannelSelect(op1, op2 trace.Element) (bool, independenceCondi
 			return true, closeBefore
 		}
 		return false, none
+	} else if op1Type == trace.Select && op2Type == trace.Select {
+		if !op1.(*trace.ElementSelect).HasCommonChannel(op2.(*trace.ElementSelect)) {
+			return true, none
+		}
+	} else { // one select and one channel
+		if op1Type == trace.Channel { // op1 -> channel, op2 -> select
+			if !op2.(*trace.ElementSelect).IsInCases(op1.(*trace.ElementChannel)) {
+				return true, none
+			}
+		} else { // op1 -> select, op2 -> channel
+			if !op1.(*trace.ElementSelect).IsInCases(op2.(*trace.ElementChannel)) {
+				return true, none
+			}
+		}
 	}
 
 	return false, none
-
 }
 
 // areIndependentMutex checks if two mutex operations are independent based

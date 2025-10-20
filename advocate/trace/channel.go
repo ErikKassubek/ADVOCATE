@@ -549,7 +549,7 @@ func (ch *ElementChannel) ToString() string {
 // Returns:
 //   - string: The simple string representation of the element
 func (ch *ElementChannel) toStringSep(sep string, sel bool) string {
-	op := string(ch.op)[1]
+	op := string(string(ch.op)[1])
 
 	cl := "f"
 	if ch.cl {

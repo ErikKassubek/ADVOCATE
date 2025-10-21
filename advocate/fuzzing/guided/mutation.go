@@ -12,6 +12,7 @@ package guided
 
 import (
 	"advocate/fuzzing/baseF"
+	"advocate/utils/log"
 )
 
 var numberMuts = 0
@@ -38,19 +39,21 @@ func predictive() {
 // guided tries to create interesting runs based on the happens before info
 // even if the predictive analysis did not directly indicate a bug
 func guided() {
-	for numberMuts < maxNumberOfMutsPerRun {
-		// TODO: implement
-	}
+	// for numberMuts < maxNumberOfMutsPerRun {
+	// 	// TODO: implement
+	// }
 }
 
 // random creates random mutation, if the number of predictive and guided mutations
 // has not reached the max number of mutations per run
 func random() {
 	for numberMuts < maxNumberOfMutsPerRun {
+		log.Important("Create mutation")
 		chain := startChain(lengthChain)
 		// TODO: do random mutation
 
 		baseF.WriteMutChain(chain)
+		numberMuts++
 
 	}
 }

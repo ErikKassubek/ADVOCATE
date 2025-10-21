@@ -21,8 +21,6 @@ import (
 	"math/rand/v2"
 )
 
-// TODO: limit the number of mutations that can be created from one mutation step
-
 // Create the mutations for a GoPie chain
 //
 // Parameter:

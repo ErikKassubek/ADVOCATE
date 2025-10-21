@@ -657,7 +657,6 @@ func unitTestReplay(dir, pkg, file,
 		// we do not need to replay a bug that has already been replayed by
 		// another replay
 		if !flags.NoSkipRewrite && results.WasAlreadyConfirmed(bugString) {
-			// TODO: check if the report are still working with this
 			continue
 		}
 

@@ -167,9 +167,6 @@ func Fuzzing() error {
 //   - hBInfoFuzzing bool: whether to us HB info in fuzzing
 //   - firstRun bool: this is the first run, only set to false for fuzzing (except for the first fuzzing)
 func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) error {
-
-	progDir := baseF.GetPath(flags.ProgPath)
-
 	clearDataFull()
 
 	startTime := time.Now()
@@ -266,7 +263,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			// add mutations based on GoPie
 			if baseF.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				gopie.CreateMutations(progDir, baseF.NumberFuzzingRuns, order.MutPie)
+				gopie.CreateMutations(baseF.NumberFuzzingRuns, order.MutPie)
 			}
 
 			if flags.CreateStatistics {
@@ -303,7 +300,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 	}
 
 	if baseF.FuzzingModeGoPie {
-		toolchain.ClearFuzzingTrace(progDir)
+		toolchain.ClearFuzzingTrace()
 	}
 
 	log.Infof("Finish fuzzing after %d runs\n", baseF.NumberFuzzingRuns)

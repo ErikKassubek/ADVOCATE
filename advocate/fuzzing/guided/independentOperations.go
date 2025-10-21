@@ -64,7 +64,6 @@ func areIndependent(op1, op2 trace.Element) (bool, independenceCondition) {
 //   - independenceCondition: condition that must be true for the two operations to be independent
 func areIndependentType(op1, op2 trace.Element) (bool, independenceCondition) {
 	t := op1.GetType(false)
-	// TODO: allow channel/select and select/select pairs
 	if !op1.IsSameElement(op2) && !(t == trace.Channel || t == trace.Select) {
 		return true, none
 	}

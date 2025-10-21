@@ -22,11 +22,7 @@ var (
 	// store all created mutations to avoid doubling
 	allGoPieMutations = make(map[string]struct{})
 
-	numberWrittenGoPieMuts = 0
-	maxGoPieScore          = 0
-
-	// for each mutation file, store the file number and the chain
-	chainFiles = make(map[int]baseF.Chain)
+	maxGoPieScore = 0
 
 	// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
 	maxSCStart = settings.GoPieSCStart

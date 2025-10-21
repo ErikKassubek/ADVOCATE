@@ -92,7 +92,7 @@ func main() {
 
 	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
+		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB\n\tDefault: Guided")
 
 	flag.BoolVar(&flags.ModeMain, "main", false, "set to run on main function")
 
@@ -276,7 +276,6 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	}
 
 	if flags.CreateStatistics {
-		// TODO: check if this
 		err = stats.CreateStatsTotal(flags.ProgPath)
 		if err != nil {
 			log.Error("Failed to create stats total: ", err.Error())

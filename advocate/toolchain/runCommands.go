@@ -30,8 +30,6 @@ import (
 //
 // Returns:
 //   - error
-//
-// TODO: fix timeout
 func runCommand(osOut, osErr *os.File, name string, args ...string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
 	id := control.AddRunningCom(cancel)

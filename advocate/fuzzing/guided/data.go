@@ -12,4 +12,5 @@ package guided
 
 const (
 	maxNumberOfMutsPerRun = 10
+	lengthChain           = 10
 )

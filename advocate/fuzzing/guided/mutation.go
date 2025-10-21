@@ -10,7 +10,10 @@
 
 package guided
 
-import "advocate/analysis/analysis"
+import (
+	"advocate/analysis/analysis"
+	"advocate/fuzzing/baseF"
+)
 
 var numberMuts = 0
 
@@ -20,6 +23,7 @@ var numberMuts = 0
 // to guide the mutation in a better direction.
 func CreateMutations() {
 	numberMuts = 0
+
 	predictive()
 	guided()
 	random()
@@ -45,6 +49,10 @@ func guided() {
 // has not reached the max number of mutations per run
 func random() {
 	for numberMuts < maxNumberOfMutsPerRun {
-		// TODO: implement
+		chain := startChain(lengthChain)
+		// TODO: do random mutation
+
+		baseF.WriteMutChain(chain)
+
 	}
 }

@@ -121,7 +121,7 @@ func runAnalyzer(pathTrace string,
 		log.Info("Start rewriting")
 	}
 
-	rewrittenBugs := make(map[helper.ResultType][]string) // bugtype -> paths string
+	rewrittenBugs := make(map[helper.ResultType][]string) // bug type -> paths string
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"

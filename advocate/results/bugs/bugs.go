@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: bugs.go
-// Brief: Operations for handeling found bugs
+// Brief: Operations for handling found bugs
 //
 // Author: Erik Kassubek
 // Created: 2023-11-30
@@ -244,7 +244,7 @@ func (this Bug) Println() {
 //   - bugStr: The bug that was selected
 //
 // Returns:
-//   - bool: true, if the bug was not a possible, but a actually occuring bug
+//   - bool: true, if the bug was not a possible, but a actually occurring bug
 //     Bug: The bug that was selected
 //     error: An error if the bug could not be processed
 func ProcessBug(bugStr string) (bool, Bug, error) {

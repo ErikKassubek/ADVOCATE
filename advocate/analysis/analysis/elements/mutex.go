@@ -13,7 +13,7 @@ package elements
 
 import (
 	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
@@ -34,85 +34,85 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	switch mu.GetType(true) {
 	case trace.MutexLock:
-		if data.AnalysisCasesMap[flags.Leak] {
+		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
 		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
 
 		// for fuzzing
-		data.CurrentlyHoldLock[id] = mu
+		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
-		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 
 	case trace.MutexRLock:
 		// for fuzzing
-		data.CurrentlyHoldLock[id] = mu
+		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
-		if data.AnalysisCasesMap[flags.Leak] {
+		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
-		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 	case trace.MutexTryLock:
 		if mu.IsSuc() {
-			if data.AnalysisCasesMap[flags.Leak] {
+			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
-			if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
 	case trace.MutexTryRLock:
 		if mu.IsSuc() {
-			if data.AnalysisCasesMap[flags.Leak] {
+			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
-			if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
 	case trace.MutexUnlock:
-		data.RelW[id] = &data.ElemWithVc{
+		baseA.RelW[id] = &baseA.ElemWithVc{
 			Elem: mu,
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		data.RelR[id] = &data.ElemWithVc{
+		baseA.RelR[id] = &baseA.ElemWithVc{
 			Elem: mu,
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		if data.AnalysisCasesMap[flags.MixedDeadlock] {
+		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 			scenarios.LockSetRemoveLock(routine, id)
 		}
 
 		// for fuzzing
-		data.CurrentlyHoldLock[id] = nil
+		baseA.CurrentlyHoldLock[id] = nil
 
-		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
 	case trace.MutexRUnlock:
-		data.RelR[id].Elem = mu
+		baseA.RelR[id].Elem = mu
 
-		if data.AnalysisCasesMap[flags.MixedDeadlock] {
+		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
 			scenarios.LockSetRemoveLock(routine, id)
 		}
 
 		// for fuzzing
-		data.CurrentlyHoldLock[id] = nil
+		baseA.CurrentlyHoldLock[id] = nil
 
-		if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
 	default:

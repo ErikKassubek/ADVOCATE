@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -38,11 +38,11 @@ func UpdateHBWait(wa *trace.ElementWait) {
 func Change(wa *trace.ElementWait) {
 	id := wa.GetID()
 
-	lw := data.LastChangeWG[id]
+	lw := baseA.LastChangeWG[id]
 	if lw != nil {
 		AddEdge(lw, wa, false)
 	}
-	data.LastChangeWG[id] = wa
+	baseA.LastChangeWG[id] = wa
 }
 
 // Wait updates the pog for a wait operation
@@ -53,7 +53,7 @@ func Wait(wa *trace.ElementWait) {
 	id := wa.GetID()
 
 	if wa.GetTPost() != 0 {
-		lc := data.LastChangeWG[id]
+		lc := baseA.LastChangeWG[id]
 		if lc != nil {
 			AddEdge(lc, wa, false)
 		}

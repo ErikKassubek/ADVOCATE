@@ -13,7 +13,7 @@ package elements
 
 import (
 	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/vc"
@@ -33,10 +33,10 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	cl := ch.GetClosed()
 
 	// run hold back recv if the send has been processed
-	for _, elem := range data.WaitingReceive {
-		if elem.GetOID() <= data.MaxOpID[id] {
-			if len(data.WaitingReceive) != 0 {
-				data.WaitingReceive = data.WaitingReceive[1:]
+	for _, elem := range baseA.WaitingReceive {
+		if elem.GetOID() <= baseA.MaxOpID[id] {
+			if len(baseA.WaitingReceive) != 0 {
+				baseA.WaitingReceive = baseA.WaitingReceive[1:]
 			}
 			UpdateChannel(elem)
 		}
@@ -46,10 +46,10 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	if ch.IsBuffered() {
 		switch opC {
 		case trace.ChannelSend:
-			data.MaxOpID[id] = oID
+			baseA.MaxOpID[id] = oID
 		case trace.ChannelRecv:
-			if oID > data.MaxOpID[id] && !cl {
-				data.WaitingReceive = append(data.WaitingReceive, ch)
+			if oID > baseA.MaxOpID[id] && !cl {
+				baseA.WaitingReceive = append(baseA.WaitingReceive, ch)
 				return
 			}
 		}
@@ -85,7 +85,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				partnerRout := partner.GetRoutine()
 				Unbuffered(ch, partner)
 				// advance index of receive routine, send routine is already advanced
-				data.MainTraceIter.IncreaseIndex(partnerRout)
+				baseA.MainTraceIter.IncreaseIndex(partnerRout)
 			} else {
 				if cl { // recv on closed channel
 					SendC(ch)
@@ -98,7 +98,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 				partnerRout := partner.GetRoutine()
 				Unbuffered(partner, ch)
 				// advance index of receive routine, send routine is already advanced
-				data.MainTraceIter.IncreaseIndex(partnerRout)
+				baseA.MainTraceIter.IncreaseIndex(partnerRout)
 			} else {
 				if cl { // recv on closed channel
 					RecvC(ch, vc.CurrentVC, vc.CurrentWVC, false)
@@ -120,7 +120,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 func UpdateSelect(se *trace.ElementSelect) {
 	routine := se.GetRoutine()
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerSelect(se, vc.CurrentVC[routine])
 	}
 
@@ -138,7 +138,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 		}
 	}
 
-	if data.AnalysisCasesMap[flags.SendOnClosed] {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] {
 		chosenIndex := se.GetChosenIndex()
 		for i, c := range cases {
 			if i == chosenIndex {
@@ -147,7 +147,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 
 			opC := c.GetType(true)
 
-			if _, ok := data.CloseData[c.GetID()]; ok {
+			if _, ok := baseA.CloseData[c.GetID()]; ok {
 				switch opC {
 				case trace.ChannelSend:
 					scenarios.FoundSendOnClosedChannel(&c, false)
@@ -158,10 +158,10 @@ func UpdateSelect(se *trace.ElementSelect) {
 		}
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
+	if baseA.AnalysisCasesMap[flags.Leak] {
 		for _, c := range cases {
 			scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
-				data.ElemWithVc{
+				baseA.ElemWithVc{
 					Vc:   se.GetVC().Copy(),
 					Elem: se},
 				c.GetType(true), c.IsBuffered())
@@ -179,7 +179,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if data.AnalysisCasesMap[flags.ConcurrentRecv] || data.AnalysisFuzzingFlow { // or fuzzing
+	if baseA.AnalysisCasesMap[flags.ConcurrentRecv] || baseA.AnalysisFuzzingFlow { // or fuzzing
 		switch r := recv.(type) {
 		case *trace.ElementChannel:
 			scenarios.CheckForConcurrentRecv(r, vc.CurrentVC)
@@ -188,7 +188,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	if data.AnalysisFuzzingFlow {
+	if baseA.AnalysisFuzzingFlow {
 		switch s := sender.(type) {
 		case *trace.ElementChannel:
 			scenarios.GetConcurrentSendForFuzzing(s)
@@ -198,46 +198,46 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 	}
 
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
-		if data.MostRecentReceive[recv.GetRoutine()] == nil {
-			data.MostRecentReceive[recv.GetRoutine()] = make(map[int]data.ElemWithVcVal)
+		if baseA.MostRecentReceive[recv.GetRoutine()] == nil {
+			baseA.MostRecentReceive[recv.GetRoutine()] = make(map[int]baseA.ElemWithVcVal)
 		}
-		if data.MostRecentSend[sender.GetRoutine()] == nil {
-			data.MostRecentSend[sender.GetRoutine()] = make(map[int]data.ElemWithVcVal)
+		if baseA.MostRecentSend[sender.GetRoutine()] == nil {
+			baseA.MostRecentSend[sender.GetRoutine()] = make(map[int]baseA.ElemWithVcVal)
 		}
 
 		// for detection of send on closed
-		data.HasSend[sender.GetID()] = true
-		data.MostRecentSend[sender.GetRoutine()][sender.GetID()] = data.ElemWithVcVal{
+		baseA.HasSend[sender.GetID()] = true
+		baseA.MostRecentSend[sender.GetRoutine()][sender.GetID()] = baseA.ElemWithVcVal{
 			Elem: sender,
-			Vc:   data.MostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[sender.GetRoutine()]).Copy(),
+			Vc:   baseA.MostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[sender.GetRoutine()]).Copy(),
 			Val:  sender.GetID()}
 
 		// for detection of receive on closed
-		data.HasReceived[sender.GetID()] = true
-		data.MostRecentReceive[recv.GetRoutine()][sender.GetID()] = data.ElemWithVcVal{Elem: recv,
-			Vc:  data.MostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[recv.GetRoutine()]).Copy(),
+		baseA.HasReceived[sender.GetID()] = true
+		baseA.MostRecentReceive[recv.GetRoutine()][sender.GetID()] = baseA.ElemWithVcVal{Elem: recv,
+			Vc:  baseA.MostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[recv.GetRoutine()]).Copy(),
 			Val: sender.GetID(),
 		}
 	}
 
-	if data.AnalysisCasesMap[flags.SendOnClosed] {
-		if _, ok := data.CloseData[sender.GetID()]; ok {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] {
+		if _, ok := baseA.CloseData[sender.GetID()]; ok {
 			scenarios.FoundSendOnClosedChannel(sender, true)
 		}
 	}
 
-	if data.AnalysisCasesMap[flags.MixedDeadlock] {
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 		scenarios.CheckForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())
 	}
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(sender, vc.CurrentVC[sender.GetRoutine()], true, false)
 		scenarios.CheckForSelectCaseWithPartnerChannel(recv, vc.CurrentVC[recv.GetRoutine()], false, false)
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
-		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), data.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
+	if baseA.AnalysisCasesMap[flags.Leak] {
+		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), baseA.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
+		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), baseA.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
 	}
 }
 
@@ -255,39 +255,39 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		return
 	}
 
-	if data.MostRecentSend[routine] == nil {
-		data.MostRecentSend[routine] = make(map[int]data.ElemWithVcVal)
+	if baseA.MostRecentSend[routine] == nil {
+		baseA.MostRecentSend[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
 
 	// for detection of send on closed
-	data.HasSend[id] = true
-	data.MostRecentSend[routine][id] = data.ElemWithVcVal{
+	baseA.HasSend[id] = true
+	baseA.MostRecentSend[routine][id] = baseA.ElemWithVcVal{
 		Elem: ch,
-		Vc:   data.MostRecentSend[routine][id].Vc.Sync(vc[routine]).Copy(),
+		Vc:   baseA.MostRecentSend[routine][id].Vc.Sync(vc[routine]).Copy(),
 		Val:  id,
 	}
 
-	if data.AnalysisCasesMap[flags.SendOnClosed] {
-		if _, ok := data.CloseData[id]; ok {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] {
+		if _, ok := baseA.CloseData[id]; ok {
 			scenarios.FoundSendOnClosedChannel(ch, true)
 		}
 	}
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+	if baseA.AnalysisCasesMap[flags.Leak] {
+		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
 		}, trace.ChannelSend, true)
 	}
 
-	for i, hold := range data.HoldRecv {
+	for i, hold := range baseA.HoldRecv {
 		if hold.Ch.GetID() == id {
 			Recv(hold.Ch, hold.Vc, hold.WVc)
-			data.HoldRecv = append(data.HoldRecv[:i], data.HoldRecv[i+1:]...)
+			baseA.HoldRecv = append(baseA.HoldRecv[:i], baseA.HoldRecv[i+1:]...)
 			break
 		}
 	}
@@ -303,7 +303,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if data.AnalysisCasesMap[flags.ConcurrentRecv] || data.AnalysisFuzzingFlow {
+	if baseA.AnalysisCasesMap[flags.ConcurrentRecv] || baseA.AnalysisFuzzingFlow {
 		scenarios.CheckForConcurrentRecv(ch, vc)
 	}
 
@@ -311,37 +311,37 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		return
 	}
 
-	if data.MostRecentReceive[routine] == nil {
-		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
+	if baseA.MostRecentReceive[routine] == nil {
+		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
 
 	// for detection of receive on closed
-	data.HasReceived[id] = true
-	data.MostRecentReceive[routine][id] = data.ElemWithVcVal{
+	baseA.HasReceived[id] = true
+	baseA.MostRecentReceive[routine][id] = baseA.ElemWithVcVal{
 		Elem: ch,
-		Vc:   data.MostRecentReceive[routine][id].Vc.Sync(vc[routine]),
+		Vc:   baseA.MostRecentReceive[routine][id].Vc.Sync(vc[routine]),
 		Val:  id,
 	}
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if data.AnalysisCasesMap[flags.MixedDeadlock] {
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 		routSend := ch.GetPartner().GetRoutine()
 		scenarios.CheckForMixedDeadlock(routSend, routine)
 	}
-	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+	if baseA.AnalysisCasesMap[flags.Leak] {
+		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
 		}, trace.ChannelRecv, true)
 	}
 
-	for i, hold := range data.HoldSend {
+	for i, hold := range baseA.HoldSend {
 		if hold.Ch.GetID() == id {
 			Send(hold.Ch, hold.Vc, hold.WVc)
-			data.HoldSend = append(data.HoldSend[:i], data.HoldSend[i+1:]...)
+			baseA.HoldSend = append(baseA.HoldSend[:i], baseA.HoldSend[i+1:]...)
 			break
 		}
 	}
@@ -361,22 +361,22 @@ func Close(ch *trace.ElementChannel) {
 
 	ch.SetClosed(true)
 
-	if data.AnalysisCasesMap[flags.CloseOnClosed] {
+	if baseA.AnalysisCasesMap[flags.CloseOnClosed] {
 		scenarios.CheckForClosedOnClosed(ch) // must be called before closePos is updated
 	}
 
-	data.CloseData[id] = ch
+	baseA.CloseData[id] = ch
 
-	if data.AnalysisCasesMap[flags.SendOnClosed] || data.AnalysisCasesMap[flags.ReceiveOnClosed] {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] || baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
 		scenarios.CheckForCommunicationOnClosedChannel(ch)
 	}
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerClose(ch, vc.CurrentVC[routine])
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+	if baseA.AnalysisCasesMap[flags.Leak] {
+		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
 			Vc:   vc.CurrentVC[routine].Copy(),
 			Elem: ch,
 		}, trace.ChannelClose, true)
@@ -385,7 +385,7 @@ func Close(ch *trace.ElementChannel) {
 
 // SendC record an actual send on closed
 func SendC(ch *trace.ElementChannel) {
-	if data.AnalysisCasesMap[flags.SendOnClosed] {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] {
 		scenarios.FoundSendOnClosedChannel(ch, true)
 	}
 }
@@ -405,20 +405,20 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if data.AnalysisCasesMap[flags.ReceiveOnClosed] {
+	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
 		scenarios.FoundReceiveOnClosedChannel(ch, true)
 	}
 
-	if data.ModeIsFuzzing {
+	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
 	}
 
-	if data.AnalysisCasesMap[flags.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(data.CloseData[id].GetRoutine(), routine)
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+		scenarios.CheckForMixedDeadlock(baseA.CloseData[id].GetRoutine(), routine)
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, data.ElemWithVc{
+	if baseA.AnalysisCasesMap[flags.Leak] {
+		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
 			Vc:   vc[routine].Copy(),
 			Elem: ch,
 		}, trace.ChannelRecv, buffered)
@@ -437,15 +437,15 @@ func setChannelAsLastSend(c trace.Element) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 
-	if data.MostRecentSend[routine] == nil {
-		data.MostRecentSend[routine] = make(map[int]data.ElemWithVcVal)
+	if baseA.MostRecentSend[routine] == nil {
+		baseA.MostRecentSend[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
-	data.MostRecentSend[routine][id] = data.ElemWithVcVal{
+	baseA.MostRecentSend[routine][id] = baseA.ElemWithVcVal{
 		Elem: c,
 		Vc:   c.GetVC(),
 		Val:  id,
 	}
-	data.HasSend[routine] = true
+	baseA.HasSend[routine] = true
 }
 
 // setChannelAsLastReceive sets the channel as the last recv operation.
@@ -460,13 +460,13 @@ func setChannelAsLastReceive(c trace.Element) {
 	id := c.GetID()
 	routine := c.GetRoutine()
 
-	if data.MostRecentReceive[routine] == nil {
-		data.MostRecentReceive[routine] = make(map[int]data.ElemWithVcVal)
+	if baseA.MostRecentReceive[routine] == nil {
+		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
-	data.MostRecentReceive[routine][id] = data.ElemWithVcVal{
+	baseA.MostRecentReceive[routine][id] = baseA.ElemWithVcVal{
 		Elem: c,
 		Vc:   c.GetVC(),
 		Val:  id,
 	}
-	data.HasReceived[id] = true
+	baseA.HasReceived[id] = true
 }

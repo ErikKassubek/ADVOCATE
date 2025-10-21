@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/results/results"
@@ -165,9 +165,9 @@ func reportNonDeadlockLeaks() {
 
 // CheckForLeakChannelStuck is run for channel operation without a post event.
 // It checks if the operation has a possible communication partner in
-// data.MostRecentSend, data.MostRecentReceive or data.CloseData.
+// baseA.MostRecentSend, baseA.MostRecentReceive or baseA.ClosebaseA.
 // If so, add an the data to leaks
-// If not, add to data.LeakingChannels, for later check.
+// If not, add to baseA.LeakingChannels, for later check.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
@@ -198,7 +198,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 
 	switch opC {
 	case trace.ChannelSend:
-		for partnerRout, mrr := range data.MostRecentReceive {
+		for partnerRout, mrr := range baseA.MostRecentReceive {
 			if _, ok := mrr[id]; ok {
 				if clock.GetHappensBefore(mrr[id].Vc, vc) == hb.Concurrent {
 
@@ -241,7 +241,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 			}
 		}
 	case trace.ChannelRecv: // recv
-		for partnerRout, mrs := range data.MostRecentSend {
+		for partnerRout, mrs := range baseA.MostRecentSend {
 			if _, ok := mrs[id]; ok {
 				if clock.GetHappensBefore(mrs[id].Vc, vc) == hb.Concurrent {
 
@@ -276,7 +276,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	}
 
 	if !foundPartner {
-		data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{
+		baseA.LeakingChannels[id] = append(baseA.LeakingChannels[id], baseA.VectorClockTID2{
 			Routine:  routine,
 			ID:       id,
 			Vc:       vc,
@@ -292,7 +292,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 
 // CheckForLeakChannelRun is run for channel operation with a post event.
 // It checks if the operation would be possible communication partner for a
-// stuck operation in data.LeakingChannels.
+// stuck operation in baseA.LeakingChannels.
 // If so, add the if to leaks and remove the stuck operation.
 //
 // Parameter:
@@ -301,13 +301,13 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 //   - vc VectorClock: The vector clock of the operation
 //   - opType trace.ObjectType: The type of operation
 //   - buffered bool: If the channel is buffered
-func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, opType trace.ObjectType, buffered bool) bool {
+func CheckForLeakChannelRun(routineID int, objID int, elemVc baseA.ElemWithVc, opType trace.ObjectType, buffered bool) bool {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
 	res := false
 	if opType == trace.ChannelSend || opType == trace.ChannelClose {
-		for i, vcTID2 := range data.LeakingChannels[objID] {
+		for i, vcTID2 := range baseA.LeakingChannels[objID] {
 			if vcTID2.Val != 1 {
 				continue
 			}
@@ -350,18 +350,18 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 
 				// remove the stuck operation from the list. If it is a select, remove all operations with the same val
 				if vcTID2.Val == -1 {
-					data.LeakingChannels[objID] = append(data.LeakingChannels[objID][:i], data.LeakingChannels[objID][i+1:]...)
+					baseA.LeakingChannels[objID] = append(baseA.LeakingChannels[objID][:i], baseA.LeakingChannels[objID][i+1:]...)
 				} else {
-					for j, vcTID3 := range data.LeakingChannels[objID] {
+					for j, vcTID3 := range baseA.LeakingChannels[objID] {
 						if vcTID3.Val == vcTID2.Val {
-							data.LeakingChannels[objID] = append(data.LeakingChannels[objID][:j], data.LeakingChannels[objID][j+1:]...)
+							baseA.LeakingChannels[objID] = append(baseA.LeakingChannels[objID][:j], baseA.LeakingChannels[objID][j+1:]...)
 						}
 					}
 				}
 			}
 		}
 	} else if opType == trace.ChannelRecv {
-		for i, vcTID2 := range data.LeakingChannels[objID] {
+		for i, vcTID2 := range baseA.LeakingChannels[objID] {
 			objType := trace.Channel
 			switch vcTID2.Val {
 			case 0:
@@ -410,11 +410,11 @@ func CheckForLeakChannelRun(routineID int, objID int, elemVc data.ElemWithVc, op
 
 				// remove the stuck operation from the list. If it is a select, remove all operations with the same val
 				if vcTID2.Val == -1 {
-					data.LeakingChannels[objID] = append(data.LeakingChannels[objID][:i], data.LeakingChannels[objID][i+1:]...)
+					baseA.LeakingChannels[objID] = append(baseA.LeakingChannels[objID][:i], baseA.LeakingChannels[objID][i+1:]...)
 				} else {
-					for j, vcTID3 := range data.LeakingChannels[objID] {
+					for j, vcTID3 := range baseA.LeakingChannels[objID] {
 						if vcTID3.Val == vcTID2.Val {
-							data.LeakingChannels[objID] = append(data.LeakingChannels[objID][:j], data.LeakingChannels[objID][j+1:]...)
+							baseA.LeakingChannels[objID] = append(baseA.LeakingChannels[objID][:j], baseA.LeakingChannels[objID][j+1:]...)
 						}
 					}
 				}
@@ -431,7 +431,7 @@ func CheckForLeak() {
 	defer timer.Stop(timer.AnaLeak)
 
 	// channel
-	for _, vcTIDs := range data.LeakingChannels {
+	for _, vcTIDs := range baseA.LeakingChannels {
 		buffered := false
 		for _, vcTID := range vcTIDs {
 			if vcTID.TID == "" {
@@ -441,8 +441,8 @@ func CheckForLeak() {
 			routineID := vcTID.Routine
 
 			found := false
-			var partner data.AllSelectCase
-			for _, c := range data.SelectCases {
+			var partner baseA.AllSelectCase
+			for _, c := range baseA.SelectCases {
 				if c.ChanID != vcTID.ID {
 					continue
 				}
@@ -590,11 +590,11 @@ func CheckForLeak() {
 
 // CheckForLeakSelectStuck is run for select operation without a post event.
 // It checks if the operation has a possible communication partner in
-// data.MostRecentSend, data.MostRecentReceive or data.CloseData.
+// baseA.MostRecentSend, baseA.MostRecentReceive or baseA.ClosebaseA.
 //
 //	add the if to leaks
 //
-// If not, add all elements to data.LeakingChannels, for later check.
+// If not, add all elements to baseA.LeakingChannels, for later check.
 //
 // Parameter:
 //   - se *TraceElementSelect: The trace element
@@ -642,7 +642,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 	for i, id := range ids {
 		switch opTypes[i] {
 		case trace.ChannelSend:
-			for routinePartner, mrr := range data.MostRecentReceive {
+			for routinePartner, mrr := range baseA.MostRecentReceive {
 				if recv, ok := mrr[id]; ok {
 					if clock.GetHappensBefore(vc, mrr[id].Vc) == hb.Concurrent {
 						file1, line1, _, err1 := trace.InfoFromTID(se.GetTID()) // select
@@ -679,7 +679,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 				}
 			}
 		case trace.ChannelRecv:
-			for routinePartner, mrs := range data.MostRecentSend {
+			for routinePartner, mrs := range baseA.MostRecentSend {
 				if send, ok := mrs[id]; ok {
 					if clock.GetHappensBefore(vc, mrs[id].Vc) == hb.Concurrent {
 						file1, line1, _, err1 := trace.InfoFromTID(se.GetTID()) // select
@@ -716,7 +716,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 					}
 				}
 			}
-			if cl, ok := data.CloseData[id]; ok {
+			if cl, ok := baseA.CloseData[id]; ok {
 				file1, line1, _, err1 := trace.InfoFromTID(se.GetTID()) // select
 				if err1 != nil {
 					log.Errorf("Error in trace.InfoFromTID(%s)\n", se.GetTID())
@@ -755,7 +755,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 	if !foundPartner {
 		for i, id := range ids {
 			// add all select operations to leaking Channels,
-			data.LeakingChannels[id] = append(data.LeakingChannels[id], data.VectorClockTID2{
+			baseA.LeakingChannels[id] = append(baseA.LeakingChannels[id], baseA.VectorClockTID2{
 				Routine:  routine,
 				ID:       id,
 				Vc:       vc,
@@ -783,11 +783,11 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 	opM := mu.GetType(true)
 	routineID := mu.GetRoutine()
 
-	if _, ok := data.MostRecentAcquireTotal[id]; !ok {
+	if _, ok := baseA.MostRecentAcquireTotal[id]; !ok {
 		return
 	}
 
-	elem := data.MostRecentAcquireTotal[id].Elem
+	elem := baseA.MostRecentAcquireTotal[id].Elem
 
 	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
 
@@ -824,7 +824,7 @@ func AddMostRecentAcquireTotal(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	data.MostRecentAcquireTotal[mu.GetID()] = data.ElemWithVc{Elem: mu, Vc: vc.Copy()}
+	baseA.MostRecentAcquireTotal[mu.GetID()] = baseA.ElemWithVc{Elem: mu, Vc: vc.Copy()}
 }
 
 // CheckForLeakWait is run for wait group operation without a post event.
@@ -890,7 +890,7 @@ func CheckForStuckRoutine(simple bool) bool {
 
 	res := false
 
-	for routine, tr := range data.MainTrace.GetTraces() {
+	for routine, tr := range baseA.MainTrace.GetTraces() {
 		if len(tr) == 0 {
 			continue
 		}
@@ -992,7 +992,7 @@ func isLeakTimerOrCtx(elem trace.Element) (bool, bool) {
 }
 
 func chanIsTimerOrCtx(id int) (bool, bool) {
-	pos, ok := data.NewChan[id]
+	pos, ok := baseA.NewChan[id]
 
 	if !ok {
 		return false, false

@@ -11,6 +11,7 @@
 package gopie
 
 import (
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/settings.go"
 	"advocate/utils/types"
@@ -25,13 +26,13 @@ var (
 	maxGoPieScore          = 0
 
 	// for each mutation file, store the file number and the chain
-	chainFiles = make(map[int]Chain)
+	chainFiles = make(map[int]baseF.Chain)
 
 	// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
 	maxSCStart = settings.GoPieSCStart
 
-	SchedulingChains []Chain
-	CurrentChain     Chain
+	SchedulingChains []baseF.Chain
+	CurrentChain     baseF.Chain
 	LastRoutine      = -1
 
 	// GoPie relations

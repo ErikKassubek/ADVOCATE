@@ -13,13 +13,13 @@ package analysis
 import (
 	"advocate/analysis/analysis/elements"
 	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/cssts"
 	"advocate/analysis/hb/hbcalc"
 	hb "advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/pog"
 	"advocate/analysis/hb/vc"
-	fuzzdata "advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -43,7 +43,7 @@ func RunAnalysis(fuzzing bool) {
 		}()
 	}
 
-	data.AnalysisFuzzingFlow = fuzzing
+	baseA.AnalysisFuzzingFlow = fuzzing
 
 	timer.Start(timer.Analysis)
 	defer timer.Stop(timer.Analysis)
@@ -58,7 +58,7 @@ func RunAnalysis(fuzzing bool) {
 		}
 	}
 
-	if !fuzzing || fuzzdata.UseHBInfoFuzzing {
+	if !fuzzing || baseF.UseHBInfoFuzzing {
 		RunHBAnalysis(fuzzing)
 	}
 
@@ -79,14 +79,14 @@ func RunAnalysis(fuzzing bool) {
 func RunHBAnalysis(fuzzing bool) {
 	log.Info("Start Analysis")
 
-	data.ModeIsFuzzing = fuzzing
+	baseA.ModeIsFuzzing = fuzzing
 
 	// set which hb structures should be calculated
 	// NOTE: Do not use predictive analysis if the first parameter is false
 	hbcalc.SetHbSettings(true, false, false)
 	if flags.OnlyAPanicAndLeak || !hbcalc.CalcVC {
-		for key := range data.AnalysisCasesMap {
-			data.AnalysisCasesMap[key] = false
+		for key := range baseA.AnalysisCasesMap {
+			baseA.AnalysisCasesMap[key] = false
 		}
 	}
 
@@ -99,10 +99,10 @@ func RunHBAnalysis(fuzzing bool) {
 	}
 
 	if hb.CalcCssts {
-		cssts.InitCSSTs(data.GetTraceLengths())
+		cssts.InitCSSTs(baseA.GetTraceLengths())
 	}
 
-	if data.AnalysisCasesMap[flags.ResourceDeadlock] {
+	if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
 		scenarios.ResetState()
 	}
 
@@ -111,7 +111,7 @@ func RunHBAnalysis(fuzzing bool) {
 		vc.CurrentWVC[1].Inc(1)
 	}
 
-	traceIter := data.MainTrace.AsIterator()
+	traceIter := baseA.MainTrace.AsIterator()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 
 		// not enough memory
@@ -129,7 +129,7 @@ func RunHBAnalysis(fuzzing bool) {
 		switch e := elem.(type) {
 		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
-			data.AddOpsPerID(e.GetID())
+			baseA.AddOpsPerID(e.GetID())
 		}
 
 		switch e := elem.(type) {
@@ -143,7 +143,7 @@ func RunHBAnalysis(fuzzing bool) {
 			} else {
 				elements.UpdateMutex(e, false)
 			}
-			if data.AnalysisFuzzingFlow {
+			if baseA.AnalysisFuzzingFlow {
 				scenarios.GetConcurrentMutexForFuzzing(e)
 			}
 		case *trace.ElementFork:
@@ -169,7 +169,7 @@ func RunHBAnalysis(fuzzing bool) {
 			elements.AnalyzeCond(e)
 		case *trace.ElementOnce:
 			elements.AnalyzeOnce(e)
-			if data.AnalysisFuzzingFlow {
+			if baseA.AnalysisFuzzingFlow {
 				scenarios.GetConcurrentOnceForFuzzing(e)
 			}
 		case *trace.ElementRoutineEnd:
@@ -178,7 +178,7 @@ func RunHBAnalysis(fuzzing bool) {
 			elements.AnalyzeNew(e)
 		}
 
-		if data.AnalysisCasesMap[flags.ResourceDeadlock] {
+		if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
 			switch e := elem.(type) {
 			case *trace.ElementMutex:
 				scenarios.HandleMutexEventForRessourceDeadlock(*e)
@@ -186,7 +186,7 @@ func RunHBAnalysis(fuzzing bool) {
 		}
 
 		// check for leak
-		if data.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
+		if baseA.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
 			checkLeak(elem)
 		}
 
@@ -195,11 +195,11 @@ func RunHBAnalysis(fuzzing bool) {
 		}
 	}
 
-	data.MainTrace.SetHBWasCalc(hb.CalcVC)
+	baseA.MainTrace.SetHBWasCalc(hb.CalcVC)
 
 	log.Info("Finished HB analysis")
 
-	if fuzzdata.FuzzingModeGFuzz || data.AnalysisCasesMap[flags.Leak] {
+	if baseF.FuzzingModeGFuzz || baseA.AnalysisCasesMap[flags.Leak] {
 		scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		scenarios.CheckForSelectCaseWithPartner()
 	}
@@ -208,7 +208,7 @@ func RunHBAnalysis(fuzzing bool) {
 		return
 	}
 
-	if data.AnalysisCasesMap[flags.Leak] {
+	if baseA.AnalysisCasesMap[flags.Leak] {
 		log.Info("Check for leak")
 		scenarios.CheckForLeak()
 		scenarios.CheckForStuckRoutine(false)
@@ -219,7 +219,7 @@ func RunHBAnalysis(fuzzing bool) {
 		return
 	}
 
-	if data.AnalysisCasesMap[flags.DoneBeforeAdd] {
+	if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] {
 		log.Info("Check for done before add")
 		scenarios.CheckForDoneBeforeAdd()
 		log.Info("Finish check for done before add")
@@ -229,7 +229,7 @@ func RunHBAnalysis(fuzzing bool) {
 		return
 	}
 
-	if data.AnalysisCasesMap[flags.ResourceDeadlock] {
+	if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
 		log.Info("Check for cyclic deadlock")
 		scenarios.CheckForResourceDeadlock()
 		log.Info("Finish check for cyclic deadlock")
@@ -239,7 +239,7 @@ func RunHBAnalysis(fuzzing bool) {
 		return
 	}
 
-	if data.AnalysisCasesMap[flags.UnlockBeforeLock] {
+	if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
 		log.Info("Finish check for unlock before lock")

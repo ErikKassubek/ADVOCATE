@@ -11,9 +11,9 @@
 package gopie
 
 import (
-	anadata "advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/io"
 	"advocate/trace"
 	"advocate/utils/flags"
@@ -35,17 +35,17 @@ const sameElem = true
 //   - mutNumber int: number of the mutation file
 //   - error
 func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error {
-	mutations := make(map[string]Chain)
-	specMutations := make(map[string]Chain) // special mutations that should be run first
+	mutations := make(map[string]baseF.Chain)
+	specMutations := make(map[string]baseF.Chain) // special mutations that should be run first
 
 	// check for special chains, that could indicate a bug
-	if flags.FuzzingMode != data.GoPie && data.UseHBInfoFuzzing {
+	if flags.FuzzingMode != baseF.GoPie && baseF.UseHBInfoFuzzing {
 		specialMuts := getSpecialMuts()
 
 		for key, mut := range specialMuts {
-			isValid := mut.isValid()
+			isValid := mut.IsValid()
 			if _, ok := allGoPieMutations[key]; !ok {
-				if !data.UseHBInfoFuzzing || isValid {
+				if !baseF.UseHBInfoFuzzing || isValid {
 					specMutations[key] = mut
 				}
 
@@ -67,15 +67,15 @@ func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error
 	// If no SC is given, it creates a new one consisting of two random
 	// operations that are in rel2 relation. Otherwise it always mutates the
 	// original SC, not newly recorded once
-	SchedulingChains = []Chain{}
-	if flags.FuzzingMode == data.GoPie {
+	SchedulingChains = []baseF.Chain{}
+	if flags.FuzzingMode == baseF.GoPie {
 		if c, ok := chainFiles[mutNumber]; ok {
-			c.old = true
-			SchedulingChains = []Chain{c}
+			c.Old = true
+			SchedulingChains = []baseF.Chain{c}
 		}
 	}
 
-	if flags.FuzzingMode != data.GoPie || len(SchedulingChains) == 0 {
+	if flags.FuzzingMode != baseF.GoPie || len(SchedulingChains) == 0 {
 		sc := startChains(maxSCStart)
 		for _, c := range sc {
 			if c.Len() != 0 {
@@ -92,14 +92,14 @@ func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error
 		muts := mutate(sc, energy)
 
 		for key, mut := range muts {
-			if flags.FuzzingMode != data.GoPie && mut.Len() <= 1 {
+			if flags.FuzzingMode != baseF.GoPie && mut.Len() <= 1 {
 				NumberTotalMuts++
 				continue
 			}
-			if _, ok := allGoPieMutations[key]; flags.FuzzingMode == data.GoPie || !ok {
+			if _, ok := allGoPieMutations[key]; flags.FuzzingMode == baseF.GoPie || !ok {
 				// only add if not invalidated by hb
-				isValid := mut.isValid()
-				if !data.UseHBInfoFuzzing || mut.isValid() {
+				isValid := mut.IsValid()
+				if !baseF.UseHBInfoFuzzing || mut.IsValid() {
 					mutations[key] = mut
 				}
 
@@ -108,7 +108,7 @@ func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error
 				}
 				NumberTotalMuts++
 				allGoPieMutations[key] = struct{}{}
-			} else if flags.FuzzingMode == data.GoPie && !ok {
+			} else if flags.FuzzingMode == baseF.GoPie && !ok {
 				NumberDoubleMuts++
 			}
 		}
@@ -123,8 +123,8 @@ func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error
 		log.Infof("Write %d special mutation to file", len(specMutations))
 	}
 
-	if data.MaxNumberRuns > 0 {
-		log.Infof("Write %d mutations to file", max(0, min(len(mutations)+len(specMutations), data.MaxNumberRuns-numberWrittenGoPieMuts)))
+	if baseF.MaxNumberRuns > 0 {
+		log.Infof("Write %d mutations to file", max(0, min(len(mutations)+len(specMutations), baseF.MaxNumberRuns-numberWrittenGoPieMuts)))
 	} else {
 		log.Infof("Write %d mutations to file", max(0, len(mutations)+len(specMutations)))
 	}
@@ -165,13 +165,13 @@ func CreateMutations(pkgPath string, numberFuzzingRuns int, mutNumber int) error
 // Returns:
 //   - bool: true if max number muts in reached
 //   - error
-func writeMut(mut Chain, fuzzingPath string) (bool, error) {
-	if data.MaxNumberRuns != -1 && numberWrittenGoPieMuts > data.MaxNumberRuns {
+func writeMut(mut baseF.Chain, fuzzingPath string) (bool, error) {
+	if baseF.MaxNumberRuns != -1 && numberWrittenGoPieMuts > baseF.MaxNumberRuns {
 		return true, nil
 	}
 	numberWrittenGoPieMuts++
 
-	traceCopy, err := anadata.CopyMainTrace()
+	traceCopy, err := baseA.CopyMainTrace()
 	if err != nil {
 		return false, err
 	}
@@ -204,17 +204,17 @@ func writeMut(mut Chain, fuzzingPath string) (bool, error) {
 	}
 
 	// write the active map to a "replay_active.log"
-	if flags.FuzzingMode == data.GoPie || settings.WithoutReplay {
-		writeMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+	if flags.FuzzingMode == baseF.GoPie || settings.WithoutReplay {
+		baseF.WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		writeMutActive(fuzzingTracePath, &traceCopy, &mut, mut.firstElement().GetTPost())
+		baseF.WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.FirstElement().GetTPost())
 	}
 
 	traceCopy.Clear()
 
-	muta := data.Mutation{MutType: data.MutPiType, MutPie: numberWrittenGoPieMuts}
+	muta := baseF.Mutation{MutType: baseF.MutPiType, MutPie: numberWrittenGoPieMuts}
 
-	data.AddMutToQueue(muta, false, false)
+	baseF.AddMutToQueue(muta, false, false)
 
 	return false, nil
 }
@@ -236,7 +236,7 @@ func addFuzzingTraceFolder(path string) {
 func getEnergy() int {
 
 	// not interesting
-	if anadata.GetTimeoutHappened() {
+	if baseA.GetTimeoutHappened() {
 		return 0
 	}
 
@@ -245,7 +245,7 @@ func getEnergy() int {
 
 	score := 0
 
-	if data.UseHBInfoFuzzing {
+	if baseF.UseHBInfoFuzzing {
 		for _, sc := range SchedulingChains {
 			for _, elem := range sc.Elems {
 				c := concurrent.GetNumberConcurrent(elem, sameElem, false, true)

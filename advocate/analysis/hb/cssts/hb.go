@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
@@ -33,7 +33,7 @@ func GetConcurrentAllPairs(elem trace.Element, all, sameElem, weak bool) []trace
 	id := elem.GetID()
 	routine := elem.GetRoutine()
 
-	for r, trace := range data.MainTrace.GetTraces() {
+	for r, trace := range baseA.MainTrace.GetTraces() {
 		// same routine
 		if routine == r {
 			continue
@@ -98,7 +98,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range data.MainTrace.GetTraces() {
+	for rout, trace := range baseA.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}

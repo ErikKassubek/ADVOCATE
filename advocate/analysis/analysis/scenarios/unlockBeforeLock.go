@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/results/results"
@@ -32,11 +32,11 @@ func CheckForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 
 	id := mu.GetID()
 
-	if _, ok := data.AllLocks[id]; !ok {
-		data.AllLocks[id] = make([]trace.Element, 0)
+	if _, ok := baseA.AllLocks[id]; !ok {
+		baseA.AllLocks[id] = make([]trace.Element, 0)
 	}
 
-	data.AllLocks[id] = append(data.AllLocks[id], mu)
+	baseA.AllLocks[id] = append(baseA.AllLocks[id], mu)
 }
 
 // CheckForUnlockBeforeLockUnlock collects all unlocks for the analysis
@@ -49,11 +49,11 @@ func CheckForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 
 	id := mu.GetID()
 
-	if _, ok := data.AllLocks[id]; !ok {
-		data.AllUnlocks[id] = make([]trace.Element, 0)
+	if _, ok := baseA.AllLocks[id]; !ok {
+		baseA.AllUnlocks[id] = make([]trace.Element, 0)
 	}
 
-	data.AllUnlocks[id] = append(data.AllUnlocks[id], mu)
+	baseA.AllUnlocks[id] = append(baseA.AllUnlocks[id], mu)
 }
 
 // CheckForUnlockBeforeLock check if we can get a unlock of a not locked mutex
@@ -64,26 +64,26 @@ func CheckForUnlockBeforeLock() {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	for id := range data.AllUnlocks { // for all mutex ids
+	for id := range baseA.AllUnlocks { // for all mutex ids
 		// if a lock and the corresponding unlock is always in the same routine, this cannot happen
-		if trace.SameRoutine(data.AllLocks[id], data.AllUnlocks[id]) {
+		if trace.SameRoutine(baseA.AllLocks[id], baseA.AllUnlocks[id]) {
 			continue
 		}
 
-		graph := buildResidualGraph(data.AllLocks[id], data.AllUnlocks[id])
+		graph := buildResidualGraph(baseA.AllLocks[id], baseA.AllUnlocks[id])
 
 		maxFlow, graph, err := calculateMaxFlow(graph)
 		if err != nil {
 			log.Error("Could not check for unlock before lock: ", err)
 		}
 
-		nrUnlock := len(data.AllUnlocks)
+		nrUnlock := len(baseA.AllUnlocks)
 
 		locks := make([]trace.Element, 0)
 		unlocks := make([]trace.Element, 0)
 
 		if maxFlow < nrUnlock {
-			for _, l := range data.AllLocks[id] {
+			for _, l := range baseA.AllLocks[id] {
 				if !types.Contains(graph[&drain], l) {
 					locks = append(locks, l)
 				}

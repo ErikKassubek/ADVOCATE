@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/flags"
 )
@@ -60,8 +60,8 @@ func Write(at *trace.ElementAtomic, routine int) {
 func Read(at *trace.ElementAtomic, sync bool, routine int) {
 	id := at.GetID()
 
-	if sync && data.LastAtomicWriter[id] != nil {
-		CurrentVC[routine].Sync(data.LastAtomicWriter[id].GetVC())
+	if sync && baseA.LastAtomicWriter[id] != nil {
+		CurrentVC[routine].Sync(baseA.LastAtomicWriter[id].GetVC())
 	}
 }
 

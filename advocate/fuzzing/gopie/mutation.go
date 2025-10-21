@@ -11,9 +11,9 @@
 package gopie
 
 import (
-	anadata "advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/settings.go"
@@ -31,24 +31,24 @@ import (
 //
 // Returns:
 //   - map[string]chain: Set of mutations
-func mutate(c Chain, energy int) map[string]Chain {
+func mutate(c baseF.Chain, energy int) map[string]baseF.Chain {
 	if energy > 100 {
 		energy = 100
 	}
 
 	bound := settings.GoPieMaxSCLength
-	if flags.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == baseF.GoPie {
 		bound = 3
 	}
 
 	mutateBound := settings.GoPieMutabound
 
 	// in the original goPie, the fuzzing bound is 3
-	if flags.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == baseF.GoPie {
 		bound = 3
 	}
 
-	res := make(map[string]Chain)
+	res := make(map[string]baseF.Chain)
 
 	if energy == 0 {
 		return res
@@ -58,28 +58,28 @@ func mutate(c Chain, energy int) map[string]Chain {
 		return res
 	}
 
-	res[c.toString()] = c
+	res[c.ToString()] = c
 
 	maxMutPerStep := 6
-	if flags.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == baseF.GoPie {
 		maxMutPerStep = -1
 	}
 
 	for {
 		noNew := false
 		for _, ch := range res {
-			tSet := make(map[string]Chain, 0)
+			tSet := make(map[string]baseF.Chain, 0)
 
 			// Rule 1 -> abridge
 			if ch.Len() >= 2 && rand.Int()%2 == 1 {
 				newCh1, newCh2 := abridge(ch)
-				tSet[newCh1.toString()] = newCh1
-				tSet[newCh2.toString()] = newCh2
+				tSet[newCh1.ToString()] = newCh1
+				tSet[newCh2.ToString()] = newCh2
 			}
 
 			// Rule 2 -> flip (not in original implementation, not in GoPie,
 			// but in GoCR and GoCRHB)
-			if flags.FuzzingMode != data.GoPie {
+			if flags.FuzzingMode != baseF.GoPie {
 				if ch.Len() >= 2 && rand.Int()%2 == 1 {
 					newChs := flip(ch)
 
@@ -88,7 +88,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 					}
 
 					for _, newCh := range newChs {
-						tSet[newCh.toString()] = newCh
+						tSet[newCh.ToString()] = newCh
 					}
 				}
 			}
@@ -103,7 +103,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 				}
 
 				for _, newCh := range newChs {
-					tSet[newCh.toString()] = newCh
+					tSet[newCh.ToString()] = newCh
 				}
 			}
 
@@ -116,7 +116,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 				}
 
 				for _, newCh := range newChs {
-					tSet[newCh.toString()] = newCh
+					tSet[newCh.ToString()] = newCh
 				}
 			}
 
@@ -140,7 +140,7 @@ func mutate(c Chain, energy int) map[string]Chain {
 
 	// mutates selects
 	for _, mut := range res {
-		new := mut.mutSelect()
+		new := mut.MutSelect()
 		maps.Copy(res, new)
 	}
 
@@ -156,11 +156,11 @@ func mutate(c Chain, energy int) map[string]Chain {
 // Returns:
 //   - chain: a copy of the chain with the first element removed
 //   - chain: a copy of the chain with the last element removed
-func abridge(c Chain) (Chain, Chain) {
-	ncHead := c.copy()
-	ncHead.removeHead()
-	ncTail := c.copy()
-	ncTail.removeTail()
+func abridge(c baseF.Chain) (baseF.Chain, baseF.Chain) {
+	ncHead := c.Copy()
+	ncHead.RemoveHead()
+	ncTail := c.Copy()
+	ncTail.RemoveTail()
 
 	return ncHead, ncTail
 }
@@ -173,14 +173,14 @@ func abridge(c Chain) (Chain, Chain) {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func flip(c Chain) []Chain {
-	res := make([]Chain, 0)
+func flip(c baseF.Chain) []baseF.Chain {
+	res := make([]baseF.Chain, 0)
 
 	// switch each element with the next element
 	// for each flip create a new chain
 	for i := 0; i < c.Len()-1; i++ {
-		nc := c.copy()
-		suc := nc.swap(i, i+1)
+		nc := c.Copy()
+		suc := nc.Swap(i, i+1)
 		if suc {
 			res = append(res, nc)
 		}
@@ -197,14 +197,14 @@ func flip(c Chain) []Chain {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func substitute(c Chain) []Chain {
-	res := make([]Chain, 0)
+func substitute(c baseF.Chain) []baseF.Chain {
+	res := make([]baseF.Chain, 0)
 
 	for i, elem := range c.Elems {
 		for rel := range rel1[elem] {
-			if res != nil && !c.contains(rel) {
-				nc := c.copy()
-				nc.replace(i, rel)
+			if res != nil && !c.Contains(rel) {
+				nc := c.Copy()
+				nc.Replace(i, rel)
 				res = append(res, nc)
 			}
 		}
@@ -222,28 +222,28 @@ func substitute(c Chain) []Chain {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func augment(c Chain) []Chain {
-	res := make([]Chain, 0)
+func augment(c baseF.Chain) []baseF.Chain {
+	res := make([]baseF.Chain, 0)
 
-	if data.UseHBInfoFuzzing {
-		concurrent := concurrent.GetConcurrent(c.lastElem(), true, false, settings.SameElementTypeInSC, true)
+	if baseF.UseHBInfoFuzzing {
+		concurrent := concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
 		for _, elem := range concurrent {
-			if c.contains(elem) {
+			if c.Contains(elem) {
 				continue
 			}
 
-			nc := c.copy()
-			nc.add(elem)
+			nc := c.Copy()
+			nc.Add(elem)
 			res = append(res, nc)
 		}
 	} else {
-		for rel := range rel2[c.lastElem()] {
-			if c.contains(rel) {
+		for rel := range rel2[c.LastElem()] {
+			if c.Contains(rel) {
 				continue
 			}
 
-			nc := c.copy()
-			nc.add(rel)
+			nc := c.Copy()
+			nc.Add(rel)
 			res = append(res, nc)
 		}
 	}
@@ -259,44 +259,44 @@ func augment(c Chain) []Chain {
 //
 // Returns:
 //   - map[string]Chain: map with the special chains
-func getSpecialMuts() map[string]Chain {
-	res := make(map[string]Chain)
+func getSpecialMuts() map[string]baseF.Chain {
+	res := make(map[string]baseF.Chain)
 
 	// send on closed
-	for _, c := range anadata.CloseData {
+	for _, c := range baseA.CloseData {
 		conc := concurrent.GetConcurrent(c, true, false, true, false)
 		for _, s := range conc {
 			switch t := s.(type) {
 			case *trace.ElementSelect:
 				for _, cc := range t.GetCases() {
 					if cc.GetType(true) == trace.ChannelSend {
-						chain := NewChain()
-						chain.add(c, s)
-						res[chain.toString()] = chain
+						chain := baseF.NewChain()
+						chain.Add(c, s)
+						res[chain.ToString()] = chain
 					}
 				}
 			default:
 				if s.GetType(true) == trace.ChannelSend {
-					chain := NewChain()
-					chain.add(c, s)
-					res[chain.toString()] = chain
+					chain := baseF.NewChain()
+					chain.Add(c, s)
+					res[chain.ToString()] = chain
 				}
 			}
 		}
 	}
 
 	// negative wg counter
-	for id, dones := range anadata.WgDoneData {
+	for id, dones := range baseA.WgDoneData {
 		for _, done := range dones {
-			for _, add := range anadata.WGAddData[id] {
+			for _, add := range baseA.WGAddData[id] {
 				if add.GetTPost() > done.GetTPost() {
 					continue
 				}
 
 				if concurrent.IsConcurrent(done, add) {
-					chain := NewChain()
-					chain.add(done, add)
-					res[chain.toString()] = chain
+					chain := baseF.NewChain()
+					chain.Add(done, add)
+					res[chain.ToString()] = chain
 				}
 			}
 		}
@@ -305,7 +305,7 @@ func getSpecialMuts() map[string]Chain {
 	return res
 }
 
-func shuffle(c *[]Chain, n int) {
+func shuffle(c *[]baseF.Chain, n int) {
 	if len(*c) <= n {
 		return
 	}

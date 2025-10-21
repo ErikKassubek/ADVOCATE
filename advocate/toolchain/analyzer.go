@@ -12,7 +12,7 @@ package toolchain
 
 import (
 	"advocate/analysis/analysis"
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/rewriter"
 	"advocate/io"
 	"advocate/results/results"
@@ -69,11 +69,11 @@ func runAnalyzer(pathTrace string,
 
 	if flags.OnlyAPanicAndLeak {
 		log.Info("Start Analysis for actual panics and leaks")
-	} else if data.AnalysisCasesMap[flags.All] {
+	} else if baseA.AnalysisCasesMap[flags.All] {
 		log.Info("Start Analysis for all scenarios")
 	} else {
 		info := "Start Analysis for the following scenarios: "
-		for key, value := range data.AnalysisCasesMap {
+		for key, value := range baseA.AnalysisCasesMap {
 			if value {
 				info += (string(key) + ",")
 			}
@@ -86,10 +86,10 @@ func runAnalyzer(pathTrace string,
 	if control.CheckCanceled() {
 		// analysis.LogSizes()
 		if control.CheckCanceledRAM() {
-			data.Clear()
+			baseA.Clear()
 			return fmt.Errorf("Analysis was canceled due to insufficient RAM")
 		}
-		data.Clear()
+		baseA.Clear()
 		return fmt.Errorf("Analysis was canceled due to unexpected panic")
 	}
 	log.Info("Analysis finished")
@@ -199,7 +199,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, nil
 	}
 
-	traceCopy, err := data.CopyMainTrace()
+	traceCopy, err := baseA.CopyMainTrace()
 	if err != nil {
 		return false, err
 	}

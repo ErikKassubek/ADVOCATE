@@ -11,7 +11,7 @@
 package bugs
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/helper"
 	"advocate/utils/log"
@@ -365,7 +365,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		}
 
 		if strings.HasPrefix(bugArg, "T") {
-			elem, err := data.GetTraceElementFromBugArg(bugArg)
+			elem, err := baseA.GetTraceElementFromBugArg(bugArg)
 			if err != nil {
 				return actual, bug, err
 			}
@@ -393,7 +393,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		}
 
 		if bugArg[0] == 'T' {
-			elem, err := data.GetTraceElementFromBugArg(bugArg)
+			elem, err := baseA.GetTraceElementFromBugArg(bugArg)
 			if err != nil {
 				return actual, bug, err
 			}

@@ -16,9 +16,9 @@ import (
 	"os"
 	"strings"
 
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/fuzzing"
-	fuzzingdata "advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/results/stats"
 	"advocate/toolchain"
 	"advocate/utils/control"
@@ -101,7 +101,7 @@ func main() {
 	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
 
 	// for experiments
-	flag.BoolVar(&fuzzingdata.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
+	flag.BoolVar(&baseF.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
 
 	flag.Parse()
 
@@ -150,14 +150,14 @@ func main() {
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
-	if mode == "fuzzing" && (flags.FuzzingMode == fuzzingdata.GFuzz ||
-		flags.FuzzingMode == fuzzingdata.GoPie || flags.FuzzingMode == fuzzingdata.GoCR) {
+	if mode == "fuzzing" && (flags.FuzzingMode == baseF.GFuzz ||
+		flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR) {
 		flags.Scenarios = "-"
 		flags.OnlyAPanicAndLeak = true
 	}
 
 	var err error
-	data.AnalysisCasesMap, err = flags.ParseAnalysisCases()
+	baseA.AnalysisCasesMap, err = flags.ParseAnalysisCases()
 	if err != nil {
 		log.Error("Could not read analysis cases: ", err)
 		return

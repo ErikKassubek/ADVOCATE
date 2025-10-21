@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 )
 
@@ -53,8 +53,8 @@ func CondSignal(co *trace.ElementCond) {
 	id := co.GetID()
 	routine := co.GetRoutine()
 
-	if len(data.CurrentlyWaiting[id]) != 0 {
-		tWait := data.CurrentlyWaiting[id][0]
+	if len(baseA.CurrentlyWaiting[id]) != 0 {
+		tWait := baseA.CurrentlyWaiting[id][0]
 		CurrentVC[tWait.GetRoutine()].Sync(CurrentVC[routine])
 	}
 
@@ -70,7 +70,7 @@ func CondBroadcast(co *trace.ElementCond) {
 	id := co.GetID()
 	routine := co.GetRoutine()
 
-	for _, wait := range data.CurrentlyWaiting[id] {
+	for _, wait := range baseA.CurrentlyWaiting[id] {
 		CurrentVC[wait.GetRoutine()].Sync(CurrentVC[routine])
 	}
 

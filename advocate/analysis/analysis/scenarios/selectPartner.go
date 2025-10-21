@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
@@ -25,9 +25,9 @@ func CheckForSelectCaseWithPartner() {
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	// check if not selected cases could be partners
-	for i, c1 := range data.SelectCases {
-		for j := i + 1; j < len(data.SelectCases); j++ {
-			c2 := data.SelectCases[j]
+	for i, c1 := range baseA.SelectCases {
+		for j := i + 1; j < len(baseA.SelectCases); j++ {
+			c2 := baseA.SelectCases[j]
 
 			// if c1.partnerFound && c2.partnerFound {
 			// 	continue
@@ -50,29 +50,29 @@ func CheckForSelectCaseWithPartner() {
 			}
 
 			if found {
-				data.SelectCases[i].PartnerFound = true
-				data.SelectCases[j].PartnerFound = true
-				data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
-					Elem: data.SelectCases[j].Sel,
-					Vc:   data.SelectCases[j].Sel.GetVC(),
+				baseA.SelectCases[i].PartnerFound = true
+				baseA.SelectCases[j].PartnerFound = true
+				baseA.SelectCases[i].Partner = append(baseA.SelectCases[i].Partner, baseA.ElemWithVcVal{
+					Elem: baseA.SelectCases[j].Sel,
+					Vc:   baseA.SelectCases[j].Sel.GetVC(),
 					Val:  0,
 				})
-				data.SelectCases[j].Partner = append(data.SelectCases[j].Partner, data.ElemWithVcVal{
-					Elem: data.SelectCases[i].Sel,
-					Vc:   data.SelectCases[i].Sel.GetVC(),
+				baseA.SelectCases[j].Partner = append(baseA.SelectCases[j].Partner, baseA.ElemWithVcVal{
+					Elem: baseA.SelectCases[i].Sel,
+					Vc:   baseA.SelectCases[i].Sel.GetVC(),
 					Val:  0,
 				})
 			}
 		}
 	}
 
-	if len(data.SelectCases) == 0 {
+	if len(baseA.SelectCases) == 0 {
 		return
 	}
 
 	// collect all cases with no partner and all not triggered cases with partner
 
-	for _, c := range data.SelectCases {
+	for _, c := range baseA.SelectCases {
 		opjType := "C"
 		if c.Send {
 			opjType += "S"
@@ -82,7 +82,7 @@ func CheckForSelectCaseWithPartner() {
 
 		if c.PartnerFound {
 			c.Sel.AddCasesWithPosPartner(c.Casi)
-			data.NumberSelectCasesWithPartner++
+			baseA.NumberSelectCasesWithPartner++
 		}
 	}
 }
@@ -106,7 +106,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 
 		found := false
 		executed := false
-		var partner = make([]data.ElemWithVcVal, 0)
+		var partner = make([]baseA.ElemWithVcVal, 0)
 
 		if casi == se.GetChosenIndex() && se.GetTPost() != 0 {
 			// no need to check if the channel is the chosen case
@@ -114,7 +114,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 			p := se.GetPartner()
 			if p != nil {
 				found = true
-				vcTID := data.ElemWithVcVal{
+				vcTID := baseA.ElemWithVcVal{
 					Elem: p,
 					Vc:   p.GetVC().Copy(),
 					Val:  0,
@@ -124,7 +124,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 		} else {
 			// not select cases
 			if send {
-				for _, mrr := range data.MostRecentReceive {
+				for _, mrr := range baseA.MostRecentReceive {
 					if possiblePartner, ok := mrr[id]; ok {
 						hbInfo := clock.GetHappensBefore(vc, possiblePartner.Vc)
 						if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.Before) {
@@ -137,7 +137,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 					}
 				}
 			} else { // recv
-				for _, mrs := range data.MostRecentSend {
+				for _, mrs := range baseA.MostRecentSend {
 					if possiblePartner, ok := mrs[id]; ok {
 						hbInfo := clock.GetHappensBefore(vc, possiblePartner.Vc)
 						if buffered && (hbInfo == hb.Concurrent || hbInfo == hb.After) {
@@ -152,10 +152,10 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 			}
 		}
 
-		data.SelectCases = append(data.SelectCases,
-			data.AllSelectCase{Sel: se,
+		baseA.SelectCases = append(baseA.SelectCases,
+			baseA.AllSelectCase{Sel: se,
 				ChanID: id,
-				Elem: data.ElemWithVc{
+				Elem: baseA.ElemWithVc{
 					Vc:   vc,
 					Elem: se,
 				},
@@ -183,7 +183,7 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *clock.VectorCloc
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
-	for i, c := range data.SelectCases {
+	for i, c := range baseA.SelectCases {
 		if c.PartnerFound || c.ChanID != ch.GetID() || c.Send == send || c.Elem.Elem.GetTID() == ch.GetTID() {
 			continue
 		}
@@ -205,8 +205,8 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *clock.VectorCloc
 		}
 
 		if found {
-			data.SelectCases[i].PartnerFound = true
-			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
+			baseA.SelectCases[i].PartnerFound = true
+			baseA.SelectCases[i].Partner = append(baseA.SelectCases[i].Partner, baseA.ElemWithVcVal{
 				Elem: ch,
 				Vc:   vc,
 				Val:  0,
@@ -225,7 +225,7 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 	timer.Start(timer.AnaSelWithoutPartner)
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
-	for i, c := range data.SelectCases {
+	for i, c := range baseA.SelectCases {
 		if c.PartnerFound || c.ChanID != cl.GetID() || c.Send {
 			continue
 		}
@@ -239,8 +239,8 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 		}
 
 		if found {
-			data.SelectCases[i].PartnerFound = true
-			data.SelectCases[i].Partner = append(data.SelectCases[i].Partner, data.ElemWithVcVal{
+			baseA.SelectCases[i].PartnerFound = true
+			baseA.SelectCases[i].Partner = append(baseA.SelectCases[i].Partner, baseA.ElemWithVcVal{
 				Elem: cl,
 				Vc:   vc,
 				Val:  0,
@@ -254,7 +254,7 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 // is needed to find potential communication partners for not executed
 // select cases, if the select was executed after the channel
 func RerunCheckForSelectCaseWithPartnerChannel() {
-	for _, tr := range data.MainTrace.GetTraces() {
+	for _, tr := range baseA.MainTrace.GetTraces() {
 		for _, elem := range tr {
 			if e, ok := elem.(*trace.ElementChannel); ok {
 				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(),

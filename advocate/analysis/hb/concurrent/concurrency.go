@@ -11,7 +11,7 @@
 package concurrent
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/vc"
 	"advocate/trace"
@@ -101,7 +101,7 @@ func GetNumberConcurrent(elem trace.Element, sameElem, sameType, weak bool) int 
 // Returns:
 //   - bool: true if the elements are concurrent, false otherwise
 func IsConcurrent(elem1, elem2 trace.Element) bool {
-	if !data.HBWasCalc() {
+	if !baseA.HBWasCalc() {
 		log.Error("Cannot check for concurrency: VCs have not been calculated")
 		return false
 	}

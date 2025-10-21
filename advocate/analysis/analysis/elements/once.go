@@ -11,7 +11,7 @@
 package elements
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
@@ -24,6 +24,6 @@ func AnalyzeOnce(on *trace.ElementOnce) {
 
 	if on.GetSuc() {
 		id := on.GetID()
-		data.OSuc[id] = on
+		baseA.OSuc[id] = on
 	}
 }

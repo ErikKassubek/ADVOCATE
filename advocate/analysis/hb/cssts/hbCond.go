@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 )
 
@@ -37,8 +37,8 @@ func UpdateHBCond(co *trace.ElementCond) {
 func CondSignal(co *trace.ElementCond) {
 	id := co.GetID()
 
-	if len(data.CurrentlyWaiting[id]) != 0 {
-		tWait := data.CurrentlyWaiting[id][0]
+	if len(baseA.CurrentlyWaiting[id]) != 0 {
+		tWait := baseA.CurrentlyWaiting[id][0]
 		AddEdge(co, tWait, false)
 	}
 }
@@ -49,7 +49,7 @@ func CondSignal(co *trace.ElementCond) {
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(co *trace.ElementCond) {
 	id := co.GetID()
-	for _, wait := range data.CurrentlyWaiting[id] {
+	for _, wait := range baseA.CurrentlyWaiting[id] {
 		AddEdge(co, wait, false)
 	}
 }

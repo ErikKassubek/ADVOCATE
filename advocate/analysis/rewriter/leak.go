@@ -11,7 +11,7 @@
 package rewriter
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/results/bugs"
@@ -30,7 +30,7 @@ import (
 //  - channel operation without a possible  partner (may be in select)
 //  - channel operation with a possible partner, but no communication (may be in select)
 //  - mutex operation without a post event
-//  - waitgroup operation without a post event
+//  - wait group operation without a post event
 //  - cond operation without a post event
 
 // =============== Channel/Select ====================
@@ -341,7 +341,7 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 			}
 
 			// Case 4
-			data.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
+			baseA.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement1[0], possiblePartner.GetTSort()) // bug.TraceElement1[0] = stuck
 
 			// T = T1 ++ T2' ++ T3' ++ [e] ++ T4 ++ [f]
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]

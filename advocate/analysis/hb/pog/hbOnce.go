@@ -11,7 +11,7 @@
 package pog
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 )
 
@@ -21,7 +21,7 @@ import (
 func UpdateHBOnce(on *trace.ElementOnce) {
 	// suc once does not create edge -> only not suc
 	if !on.GetSuc() {
-		suc := data.OSuc[on.GetID()]
+		suc := baseA.OSuc[on.GetID()]
 		AddEdge(suc, on, false)
 	}
 }

@@ -11,7 +11,7 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/utils/types"
 	"math"
 )
@@ -60,7 +60,7 @@ func isInterestingSelect() bool {
 		}
 	}
 
-	if data.UseHBInfoFuzzing {
+	if baseF.UseHBInfoFuzzing {
 		// 5. A select choses a case it has never been selected before
 		for id, sit := range SelectInfoTrace {
 			alreadyExecCase, ok := SelectInfoFile[id]

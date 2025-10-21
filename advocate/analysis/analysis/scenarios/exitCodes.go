@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
@@ -27,9 +27,9 @@ func RunAnalysisOnExitCodes(all bool) {
 	timer.Start(timer.AnaExitCode)
 	defer timer.Stop(timer.AnaExitCode)
 
-	switch data.ExitCode {
+	switch baseA.ExitCode {
 	case helper.ExitCodeCloseClose: // close on closed
-		file, line, err := trace.PosFromPosString(data.ExitPos)
+		file, line, err := trace.PosFromPosString(baseA.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -44,9 +44,9 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
+		baseA.BugWasFound = true
 	case helper.ExitCodeCloseNil: // close on nil
-		file, line, err := trace.PosFromPosString(data.ExitPos)
+		file, line, err := trace.PosFromPosString(baseA.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -60,9 +60,9 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ACloseOnNilChannel,
 			"close", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
+		baseA.BugWasFound = true
 	case helper.ExitCodeNegativeWG: // negative wg counter
-		file, line, err := trace.PosFromPosString(data.ExitPos)
+		file, line, err := trace.PosFromPosString(baseA.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -76,9 +76,9 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.ANegWG,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
+		baseA.BugWasFound = true
 	case helper.ExitCodeUnlockBeforeLock: // unlock of not locked mutex
-		file, line, err := trace.PosFromPosString(data.ExitPos)
+		file, line, err := trace.PosFromPosString(baseA.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -92,9 +92,9 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.AUnlockOfNotLockedMutex,
 			"done", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
+		baseA.BugWasFound = true
 	case helper.ExitCodePanic: // unknown panic
-		file, line, err := trace.PosFromPosString(data.ExitPos)
+		file, line, err := trace.PosFromPosString(baseA.ExitPos)
 		if err != nil {
 			log.Error("Could not read exit pos: ", err)
 		}
@@ -108,15 +108,15 @@ func RunAnalysisOnExitCodes(all bool) {
 		}
 		results.Result(results.CRITICAL, helper.RUnknownPanic,
 			"panic", []results.ResultElem{arg1}, "", []results.ResultElem{})
-		data.BugWasFound = true
+		baseA.BugWasFound = true
 	case helper.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, helper.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
 
 	if all {
-		if data.ExitCode == helper.ExitCodeSendClose { // send on closed
-			file, line, err := trace.PosFromPosString(data.ExitPos)
+		if baseA.ExitCode == helper.ExitCodeSendClose { // send on closed
+			file, line, err := trace.PosFromPosString(baseA.ExitPos)
 			if err != nil {
 				log.Error("Could not read exit pos: ", err)
 			}
@@ -130,7 +130,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			}
 			results.Result(results.CRITICAL, helper.ASendOnClosed,
 				"send", []results.ResultElem{arg1}, "", []results.ResultElem{})
-			data.BugWasFound = true
+			baseA.BugWasFound = true
 		}
 	}
 }

@@ -11,7 +11,7 @@
 package elements
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
@@ -29,16 +29,16 @@ func AnalyzeCond(co *trace.ElementCond) {
 	if co.GetTPost() != 0 { // not leak
 		switch co.GetType(true) {
 		case trace.CondWait:
-			if _, ok := data.CurrentlyWaiting[id]; !ok {
-				data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
+			if _, ok := baseA.CurrentlyWaiting[id]; !ok {
+				baseA.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 			}
-			data.CurrentlyWaiting[id] = append(data.CurrentlyWaiting[id], co)
+			baseA.CurrentlyWaiting[id] = append(baseA.CurrentlyWaiting[id], co)
 		case trace.CondSignal:
-			if len(data.CurrentlyWaiting[id]) != 0 {
-				data.CurrentlyWaiting[id] = data.CurrentlyWaiting[id][1:]
+			if len(baseA.CurrentlyWaiting[id]) != 0 {
+				baseA.CurrentlyWaiting[id] = baseA.CurrentlyWaiting[id][1:]
 			}
 		case trace.CondBroadcast:
-			data.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
+			baseA.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)
 		}
 
 	}

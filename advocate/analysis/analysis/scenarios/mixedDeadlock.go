@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -36,15 +36,15 @@ func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	routine := mu.GetRoutine()
 	id := mu.GetID()
 
-	if _, ok := data.LockSet[routine]; !ok {
-		data.LockSet[routine] = make(map[int]string)
+	if _, ok := baseA.LockSet[routine]; !ok {
+		baseA.LockSet[routine] = make(map[int]string)
 	}
-	if _, ok := data.MostRecentAcquire[routine]; !ok {
-		data.MostRecentAcquire[routine] = make(map[int]data.ElemWithVc)
+	if _, ok := baseA.MostRecentAcquire[routine]; !ok {
+		baseA.MostRecentAcquire[routine] = make(map[int]baseA.ElemWithVc)
 	}
 
-	data.LockSet[routine][id] = mu.GetTID()
-	data.MostRecentAcquire[routine][id] = data.ElemWithVc{
+	baseA.LockSet[routine][id] = mu.GetTID()
+	baseA.MostRecentAcquire[routine][id] = baseA.ElemWithVc{
 		Vc:   vc,
 		Elem: mu,
 	}
@@ -61,13 +61,13 @@ func LockSetRemoveLock(routine int, lock int) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	if _, ok := data.LockSet[routine][lock]; !ok {
+	if _, ok := baseA.LockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
 		log.Error(errorMsg)
 		return
 	}
-	delete(data.LockSet[routine], lock)
+	delete(baseA.LockSet[routine], lock)
 }
 
 // CheckForMixedDeadlock checks for mixed deadlocks

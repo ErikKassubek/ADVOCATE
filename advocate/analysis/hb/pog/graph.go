@@ -11,7 +11,7 @@
 package pog
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 	"fmt"
@@ -35,7 +35,7 @@ func newPoGraph() poGraph {
 
 // InitPOG initializes the directed acyclic partial order graph
 func InitPOG() {
-	chanBuffer = make(map[int]([]data.BufferedVC))
+	chanBuffer = make(map[int]([]baseA.BufferedVC))
 	chanBufferSize = make(map[int]int)
 
 	po = newPoGraph()

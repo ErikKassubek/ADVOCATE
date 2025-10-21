@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
@@ -28,19 +28,19 @@ var (
 
 	// vector clock for each buffer place in vector clock
 	// the map key is the channel id. The slice is used for the buffer positions
-	chanBuffer = make(map[int]([]data.BufferedVC))
+	chanBuffer = make(map[int]([]baseA.BufferedVC))
 	// the current buffer position
 	chanBufferSize = make(map[int]int)
 )
 
 // InitVC initializes the current vector clocks
 func InitVC() {
-	chanBuffer = make(map[int][]data.BufferedVC)
+	chanBuffer = make(map[int][]baseA.BufferedVC)
 	chanBufferSize = make(map[int]int)
 	CurrentVC = make(map[int]*clock.VectorClock)
 	CurrentWVC = make(map[int]*clock.VectorClock)
 
-	noRoutine := data.MainTrace.GetNoRoutines()
+	noRoutine := baseA.MainTrace.GetNoRoutines()
 	for i := 1; i <= noRoutine; i++ {
 		CurrentVC[i] = clock.NewVectorClock(noRoutine)
 		CurrentWVC[i] = clock.NewVectorClock(noRoutine)
@@ -62,13 +62,13 @@ func InitVC() {
 // Returns:
 //   - []trace.Element: set of elements concurrent to elem
 func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []trace.Element {
-	if !data.HBWasCalc() {
+	if !baseA.HBWasCalc() {
 		log.Error("Cannot find concurrent elements: VCs have not been calculated")
 		return make([]trace.Element, 0)
 	}
 
 	res := make([]trace.Element, 0)
-	for rout, tr := range data.MainTrace.GetTraces() {
+	for rout, tr := range baseA.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}

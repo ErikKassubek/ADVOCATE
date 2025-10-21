@@ -13,7 +13,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/vc"
@@ -27,7 +27,7 @@ import (
 
 // GetConcurrentSendForFuzzing checks if for the given send, if there is a
 // concurrent send on the same channel. If there is, the information is stored
-// in data.FuzzingFlowSend. This is used for fuzzing.
+// in baseA.FuzzingFlowSend. This is used for fuzzing.
 //
 // Parameter:
 //   - sender *TraceElementChannel: Send trace element
@@ -44,7 +44,7 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 		return
 	}
 
-	for r, elem := range data.LastSendRoutine {
+	for r, elem := range baseA.LastSendRoutine {
 		if r == routine {
 			continue
 		}
@@ -56,27 +56,27 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 		happensBefore := clock.GetHappensBefore(elem[id].Vc, vc.CurrentVC[routine])
 		if happensBefore == hb.Concurrent {
 			elem2 := elem[id].Elem
-			data.FuzzingFlowSend = append(data.FuzzingFlowSend, data.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: data.CERecv})
+			baseA.FuzzingFlowSend = append(baseA.FuzzingFlowSend, baseA.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: baseA.CERecv})
 		}
 	}
 
 	if sender.GetTPost() != 0 {
-		if _, ok := data.LastSendRoutine[routine]; !ok {
-			data.LastSendRoutine[routine] = make(map[int]data.ElemWithVc)
+		if _, ok := baseA.LastSendRoutine[routine]; !ok {
+			baseA.LastSendRoutine[routine] = make(map[int]baseA.ElemWithVc)
 		}
 
-		data.LastSendRoutine[routine][id] = data.ElemWithVc{Vc: vc.CurrentVC[routine].Copy(), Elem: sender}
+		baseA.LastSendRoutine[routine][id] = baseA.ElemWithVc{Vc: vc.CurrentVC[routine].Copy(), Elem: sender}
 	}
 }
 
 // CheckForConcurrentRecv checks if for the given recv, if there is a
 // concurrent recv on the same channel. If there is, the information is stored
-// in data.FuzzingFlowRecv.
+// in baseA.FuzzingFlowRecv.
 //
 // Parameter:
 //   - ch *TraceElementChannel: recv trace element
 func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorClock) {
-	if data.AnalysisFuzzingFlow {
+	if baseA.AnalysisFuzzingFlow {
 		timer.Start(timer.FuzzingAna)
 		defer timer.Stop(timer.FuzzingAna)
 	}
@@ -88,7 +88,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 
 	IncFuzzingCounter(ch)
 
-	for r, elem := range data.LastRecvRoutine {
+	for r, elem := range baseA.LastRecvRoutine {
 		if r == routine {
 			continue
 		}
@@ -102,13 +102,13 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 
 			elem2 := elem[id].Elem
 
-			if data.AnalysisFuzzingFlow {
+			if baseA.AnalysisFuzzingFlow {
 				if ch.GetTPost() == 0 {
-					data.FuzzingFlowRecv = append(data.FuzzingFlowRecv, data.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: data.CERecv})
+					baseA.FuzzingFlowRecv = append(baseA.FuzzingFlowRecv, baseA.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: baseA.CERecv})
 				}
 			}
 
-			if data.AnalysisCasesMap[flags.ConcurrentRecv] {
+			if baseA.AnalysisCasesMap[flags.ConcurrentRecv] {
 				arg1 := results.TraceElementResult{
 					RoutineID: routine,
 					ObjID:     id,
@@ -134,17 +134,17 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 	}
 
 	if ch.GetTPost() != 0 {
-		if _, ok := data.LastRecvRoutine[routine]; !ok {
-			data.LastRecvRoutine[routine] = make(map[int]data.ElemWithVc)
+		if _, ok := baseA.LastRecvRoutine[routine]; !ok {
+			baseA.LastRecvRoutine[routine] = make(map[int]baseA.ElemWithVc)
 		}
 
-		data.LastRecvRoutine[routine][id] = data.ElemWithVc{Vc: vc[routine].Copy(), Elem: ch}
+		baseA.LastRecvRoutine[routine][id] = baseA.ElemWithVc{Vc: vc[routine].Copy(), Elem: ch}
 	}
 }
 
 // GetConcurrentMutexForFuzzing checks if for the given mutex operations, if there is a
 // concurrent mutex operations on the same mutex. If there is, the information is stored
-// in data.FuzzingFlowMutex.
+// in baseA.FuzzingFlowMutex.
 //
 // Parameter:
 //   - mu *TraceElementMutex: mutex operations
@@ -162,21 +162,21 @@ func GetConcurrentMutexForFuzzing(mu *trace.ElementMutex) {
 	// not executed try lock
 	// get currently hold lock because of witch the try lock failed
 
-	if val, ok := data.CurrentlyHoldLock[id]; !ok || val == nil {
+	if val, ok := baseA.CurrentlyHoldLock[id]; !ok || val == nil {
 		log.Error("Failed trylock even throw mutex is not locked: ", mu.ToString())
 	}
 
-	elem := data.CurrentlyHoldLock[id]
+	elem := baseA.CurrentlyHoldLock[id]
 
 	if clock.GetHappensBefore(mu.GetVC(), elem.GetVC()) == hb.Concurrent {
-		data.FuzzingFlowMutex = append(data.FuzzingFlowMutex, data.ConcurrentEntry{Elem: elem, Counter: getFuzzingCounter(elem), Type: data.CEMutex})
+		baseA.FuzzingFlowMutex = append(baseA.FuzzingFlowMutex, baseA.ConcurrentEntry{Elem: elem, Counter: getFuzzingCounter(elem), Type: baseA.CEMutex})
 	}
 
 }
 
 // GetConcurrentOnceForFuzzing checks if for the given once operations, if there is a
 // concurrent once operations on the same primitive. If there is, the information is stored
-// in data.FuzzingFlowOnce.
+// in baseA.FuzzingFlowOnce.
 //
 // Parameter:
 //   - on *TraceElementOnce: once.Do operations
@@ -190,13 +190,13 @@ func GetConcurrentOnceForFuzzing(on *trace.ElementOnce) {
 	IncFuzzingCounter(on)
 
 	if on.GetSuc() {
-		data.ExecutedOnce[id] = &data.ConcurrentEntry{Elem: on, Counter: getFuzzingCounter(on), Type: data.CEOnce}
+		baseA.ExecutedOnce[id] = &baseA.ConcurrentEntry{Elem: on, Counter: getFuzzingCounter(on), Type: baseA.CEOnce}
 		return
 	}
 
-	if exec, ok := data.ExecutedOnce[id]; ok {
+	if exec, ok := baseA.ExecutedOnce[id]; ok {
 		if clock.GetHappensBefore(exec.Elem.GetVC(), vc) == hb.Concurrent {
-			data.FuzzingFlowOnce = append(data.FuzzingFlowOnce, *exec)
+			baseA.FuzzingFlowOnce = append(baseA.FuzzingFlowOnce, *exec)
 		}
 	}
 }
@@ -209,8 +209,8 @@ func GetConcurrentOnceForFuzzing(on *trace.ElementOnce) {
 //   - *[]ConcurrentEntry: mutex operations that can be delayed in flow fuzzing
 //   - *[]ConcurrentEntry: send that can be delayed in flow fuzzing
 //   - *[]ConcurrentEntry: recv that can be delayed in flow fuzzing
-func GetConcurrentInfoForFuzzing() (*[]data.ConcurrentEntry, *[]data.ConcurrentEntry, *[]data.ConcurrentEntry, *[]data.ConcurrentEntry) {
-	return &data.FuzzingFlowOnce, &data.FuzzingFlowMutex, &data.FuzzingFlowSend, &data.FuzzingFlowRecv
+func GetConcurrentInfoForFuzzing() (*[]baseA.ConcurrentEntry, *[]baseA.ConcurrentEntry, *[]baseA.ConcurrentEntry, *[]baseA.ConcurrentEntry) {
+	return &baseA.FuzzingFlowOnce, &baseA.FuzzingFlowMutex, &baseA.FuzzingFlowSend, &baseA.FuzzingFlowRecv
 }
 
 // getFuzzingCounter returns the fuzzing counter for an element. If the element
@@ -226,11 +226,11 @@ func getFuzzingCounter(te trace.Element) int {
 	id := te.GetID()
 	pos := te.GetPos()
 
-	if _, ok := data.FuzzingCounter[id]; !ok {
+	if _, ok := baseA.FuzzingCounter[id]; !ok {
 		return 0
 	}
 
-	if val, ok := data.FuzzingCounter[id][pos]; ok {
+	if val, ok := baseA.FuzzingCounter[id][pos]; ok {
 		return val
 	}
 	return 0
@@ -244,9 +244,9 @@ func IncFuzzingCounter(te trace.Element) {
 	id := te.GetID()
 	pos := te.GetPos()
 
-	if _, ok := data.FuzzingCounter[id]; !ok {
-		data.FuzzingCounter[id] = make(map[string]int)
+	if _, ok := baseA.FuzzingCounter[id]; !ok {
+		baseA.FuzzingCounter[id] = make(map[string]int)
 	}
 
-	data.FuzzingCounter[id][pos] = data.FuzzingCounter[id][pos] + 1
+	baseA.FuzzingCounter[id][pos] = baseA.FuzzingCounter[id][pos] + 1
 }

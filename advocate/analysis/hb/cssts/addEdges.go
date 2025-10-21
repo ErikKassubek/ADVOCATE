@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/types"
 )
@@ -61,7 +61,7 @@ func addEdgeIndex(from, to types.Pair[int, int], weak bool) {
 func AddEdgeFork(elem *trace.ElementFork) {
 	routine, index := elem.GetTraceIndex()
 	newRout := elem.GetID()
-	if data.GetTraceLength(newRout) > 0 {
+	if baseA.GetTraceLength(newRout) > 0 {
 		addEdgeIndex(
 			types.Pair[int, int]{X: routine, Y: index},
 			types.Pair[int, int]{X: newRout, Y: 0}, true)

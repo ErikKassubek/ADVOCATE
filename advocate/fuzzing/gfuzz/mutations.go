@@ -11,7 +11,7 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"fmt"
 	"sort"
 )
@@ -36,10 +36,10 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 			continue
 		}
 
-		if num, _ := data.AllMutations[id]; num < maxRunPerMut {
-			mut := data.Mutation{MutType: data.MutSelType, MutSel: mut}
-			data.AddMutToQueue(mut, false, false)
-			data.AllMutations[id]++
+		if num, _ := baseF.AllMutations[id]; num < maxRunPerMut {
+			mut := baseF.Mutation{MutType: baseF.MutSelType, MutSel: mut}
+			baseF.AddMutToQueue(mut, false, false)
+			baseF.AllMutations[id]++
 			numberMutAdded++
 			numberSkip = 0
 		} else {
@@ -63,11 +63,11 @@ func createMutationsGFuzz(numberMutations int, flipChance float64) int {
 //
 // Returns:
 //   - map[string][]fuzzingSelect: the new mutation
-func createMutation(flipChance float64) map[string][]data.FuzzingSelect {
-	res := make(map[string][]data.FuzzingSelect)
+func createMutation(flipChance float64) map[string][]baseF.FuzzingSelect {
+	res := make(map[string][]baseF.FuzzingSelect)
 
 	for key, listSel := range SelectInfoTrace {
-		res[key] = make([]data.FuzzingSelect, 0)
+		res[key] = make([]baseF.FuzzingSelect, 0)
 		for _, sel := range listSel {
 			res[key] = append(res[key], sel.GetCopyRandom(sel.ContainsDefault, flipChance))
 		}
@@ -83,7 +83,7 @@ func createMutation(flipChance float64) map[string][]data.FuzzingSelect {
 //
 // Returns:
 //   - string: id
-func getIDFromMut(mut map[string][]data.FuzzingSelect) string {
+func getIDFromMut(mut map[string][]baseF.FuzzingSelect) string {
 	keys := make([]string, 0, len(mut))
 	for key := range mut {
 		keys = append(keys, key)

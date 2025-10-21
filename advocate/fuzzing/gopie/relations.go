@@ -11,7 +11,7 @@
 package gopie
 
 import (
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -167,7 +167,7 @@ func CalculateRelRule3() {
 func isGoPieElem(elem trace.Element) bool {
 	elemTypeShort := elem.GetType(false)
 
-	if flags.FuzzingMode == data.GoPie {
+	if flags.FuzzingMode == baseF.GoPie {
 		validTypes := []trace.ObjectType{
 			trace.Mutex, trace.Channel,
 			trace.Select}

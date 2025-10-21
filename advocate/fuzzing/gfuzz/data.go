@@ -11,7 +11,7 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/utils/types"
 )
 
@@ -24,9 +24,9 @@ var (
 	maxScore = 0.0
 
 	// Info for the current trace
-	ChannelInfoTrace = make(map[int]FuzzingChannel)          // localID -> fuzzingChannel
-	PairInfoTrace    = make(map[string]FuzzingPair)          // posSend-posRecv -> fuzzing pair
-	SelectInfoTrace  = make(map[string][]data.FuzzingSelect) // id -> []fuzzingSelects
+	ChannelInfoTrace = make(map[int]FuzzingChannel)           // localID -> fuzzingChannel
+	PairInfoTrace    = make(map[string]FuzzingPair)           // posSend-posRecv -> fuzzing pair
+	SelectInfoTrace  = make(map[string][]baseF.FuzzingSelect) // id -> []fuzzingSelects
 	NumberSelects    = 0
 	NumberClose      = 0
 
@@ -46,7 +46,7 @@ func ClearDataFull() {
 func ClearDataRun() {
 	ChannelInfoTrace = make(map[int]FuzzingChannel)
 	PairInfoTrace = make(map[string]FuzzingPair)
-	SelectInfoTrace = make(map[string][]data.FuzzingSelect)
+	SelectInfoTrace = make(map[string][]baseF.FuzzingSelect)
 
 	NumberSelects = 0
 	NumberClose = 0
@@ -92,7 +92,7 @@ func MergeTraceInfoIntoFileInfo() {
 		if pif, ok := PairInfoFile[id]; !ok {
 			PairInfoFile[id] = pit
 		} else {
-			npr := float64(data.NumberOfPreviousRuns)
+			npr := float64(baseF.NumberOfPreviousRuns)
 			pif.Com = (npr*pif.Com + pit.Com) / (npr + 1)
 			PairInfoFile[id] = pif
 		}

@@ -11,7 +11,7 @@
 package stats
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/fuzzing/gopie"
 )
 
@@ -25,19 +25,16 @@ var fuzzStats = []string{
 
 // Collect stats about each fuzzing run
 //
-// Parameter:
-//   - testName string: name of the test
-//
 // Returns:
 //   - map[string]int: map with the stats
 //   - error
-func statsFuzz(testName string) (map[string]int, error) {
+func statsFuzz() (map[string]int, error) {
 	stats := map[string]int{}
 
 	stats["NrMut"] = gopie.NumberTotalMuts
 	stats["NrMutInvalid"] = gopie.NumberInvalidMuts
-	stats["ActiveReleased"] = data.ActiveReleased
-	stats["AllActiveReleased"] = data.AllActiveReleased
+	stats["ActiveReleased"] = baseA.ActiveReleased
+	stats["AllActiveReleased"] = baseA.AllActiveReleased
 
 	return stats, nil
 }

@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"advocate/utils/log"
@@ -81,10 +81,10 @@ func Lock(mu *trace.ElementMutex) {
 		return
 	}
 
-	if e, ok := data.RelW[id]; ok {
+	if e, ok := baseA.RelW[id]; ok {
 		CurrentVC[routine].Sync(e.Vc)
 	}
-	if e, ok := data.RelR[id]; ok {
+	if e, ok := baseA.RelR[id]; ok {
 		CurrentVC[routine].Sync(e.Vc)
 	}
 }
@@ -106,7 +106,7 @@ func RLock(mu *trace.ElementMutex) {
 		return
 	}
 
-	if e, ok := data.RelW[id]; ok {
+	if e, ok := baseA.RelW[id]; ok {
 		CurrentVC[routine].Sync(e.Vc)
 	}
 }
@@ -125,12 +125,12 @@ func RUnlock(mu *trace.ElementMutex) {
 		return
 	}
 
-	if _, ok := data.RelR[id]; !ok {
-		data.RelR[id] = &data.ElemWithVc{
-			Vc:   clock.NewVectorClock(data.GetNoRoutines()),
+	if _, ok := baseA.RelR[id]; !ok {
+		baseA.RelR[id] = &baseA.ElemWithVc{
+			Vc:   clock.NewVectorClock(baseA.GetNoRoutines()),
 			Elem: nil,
 		}
 	}
 
-	data.RelR[id].Vc.Sync(CurrentVC[routine])
+	baseA.RelR[id].Vc.Sync(CurrentVC[routine])
 }

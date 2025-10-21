@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -43,11 +43,11 @@ func Change(wa *trace.ElementWait) {
 	id := wa.GetID()
 	routine := wa.GetRoutine()
 
-	lw := data.LastChangeWG[id]
+	lw := baseA.LastChangeWG[id]
 	if lw != nil {
 		wa.GetVC().Sync(lw.GetVC())
 	}
-	data.LastChangeWG[id] = wa
+	baseA.LastChangeWG[id] = wa
 
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
@@ -62,7 +62,7 @@ func Wait(wa *trace.ElementWait) {
 	routine := wa.GetRoutine()
 
 	if wa.GetTPost() != 0 {
-		lc := data.LastChangeWG[id]
+		lc := baseA.LastChangeWG[id]
 		if lc != nil {
 			CurrentVC[routine].Sync(lc.GetVC())
 		}

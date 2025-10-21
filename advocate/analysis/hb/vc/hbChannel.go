@@ -11,14 +11,14 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
-// UpdateHBChannel updates the vecto clocks to a channel element
+// UpdateHBChannel updates the vector clocks to a channel element
 //
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
@@ -163,7 +163,7 @@ func Send(ch *trace.ElementChannel) {
 	qCount := ch.GetQCount()
 
 	if !flags.IgnoreFifo {
-		r := data.MostRecentSend[routine][id]
+		r := baseA.MostRecentSend[routine][id]
 		if r.Elem != nil {
 			CurrentVC[routine].Sync(r.Vc)
 		}
@@ -182,7 +182,7 @@ func Send(ch *trace.ElementChannel) {
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
 	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
-		chanBuffer[id] = append(chanBuffer[id], data.BufferedVC{
+		chanBuffer[id] = append(chanBuffer[id], baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil})
 	}
@@ -200,7 +200,7 @@ func Send(ch *trace.ElementChannel) {
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
 
-	chanBuffer[id][count] = data.BufferedVC{
+	chanBuffer[id][count] = baseA.BufferedVC{
 		Occupied: true,
 		Send:     ch,
 	}
@@ -231,13 +231,13 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 
 	if !flags.IgnoreFifo {
-		r := data.MostRecentReceive[routine][id]
+		r := baseA.MostRecentReceive[routine][id]
 		if r.Elem != nil {
 			vc[routine] = vc[routine].Sync(r.Vc)
 		}
 	}
 
-	chanBuffer[id] = append(chanBuffer[id][1:], data.BufferedVC{
+	chanBuffer[id] = append(chanBuffer[id][1:], baseA.BufferedVC{
 		Occupied: false,
 		Send:     nil,
 	})
@@ -283,8 +283,8 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if _, ok := data.CloseData[id]; ok {
-		c := data.CloseData[id]
+	if _, ok := baseA.CloseData[id]; ok {
+		c := baseA.CloseData[id]
 		CurrentVC[routine].Sync(c.GetVC())
 	}
 
@@ -293,16 +293,16 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 }
 
 // Create a new map of buffered vector clocks for a channel if not already in
-// data.BufferedVCs.
+// baseA.BufferedVCs.
 //
 // Parameter:
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
 func newBuffer(id int, qSize int) {
 	if _, ok := chanBuffer[id]; !ok {
-		chanBuffer[id] = make([]data.BufferedVC, 1)
+		chanBuffer[id] = make([]baseA.BufferedVC, 1)
 		chanBufferSize[id] = qSize
-		chanBuffer[id][0] = data.BufferedVC{
+		chanBuffer[id][0] = baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil,
 		}

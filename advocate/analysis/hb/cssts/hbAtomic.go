@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -41,7 +41,7 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 func Read(at *trace.ElementAtomic, sync bool) {
 	id := at.GetID()
 
-	if sync && data.LastAtomicWriter[id] != nil {
-		AddEdge(at, data.LastAtomicWriter[id], false)
+	if sync && baseA.LastAtomicWriter[id] != nil {
+		AddEdge(at, baseA.LastAtomicWriter[id], false)
 	}
 }

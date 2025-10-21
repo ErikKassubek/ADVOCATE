@@ -13,9 +13,9 @@ package elements
 
 import (
 	"advocate/analysis/analysis/scenarios"
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/hbcalc"
-	fuzzdata "advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
@@ -29,9 +29,9 @@ func AnalyzeWait(wa *trace.ElementWait) {
 
 	switch wa.GetOpW() {
 	case trace.ChangeOp:
-		data.LastChangeWG[wa.GetID()] = wa
+		baseA.LastChangeWG[wa.GetID()] = wa
 
-		if data.AnalysisCasesMap[flags.DoneBeforeAdd] || fuzzdata.FuzzingModeGoCRHBPlus {
+		if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] || baseF.FuzzingModeGoCRHBPlus {
 			scenarios.CheckForDoneBeforeAddChange(wa)
 		}
 	case trace.WaitOp:

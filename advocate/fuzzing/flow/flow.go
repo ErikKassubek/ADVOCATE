@@ -12,8 +12,8 @@ package flow
 
 import (
 	"advocate/analysis/analysis/scenarios"
-	anadata "advocate/analysis/data"
-	"advocate/fuzzing/data"
+	"advocate/analysis/baseA"
+	"advocate/fuzzing/baseF"
 	"advocate/utils/log"
 )
 
@@ -25,7 +25,7 @@ const oneMutPerDelay = true
 func CreateMutations() {
 	numberMutAdded := 0
 
-	delay := make([](*[]anadata.ConcurrentEntry), 4)
+	delay := make([](*[]baseA.ConcurrentEntry), 4)
 
 	// once, mutex, send, recv
 	delay[0], delay[1], delay[2], delay[3] = scenarios.GetConcurrentInfoForFuzzing()
@@ -66,16 +66,16 @@ func CreateMutations() {
 
 			// if one mut per change, comment this in
 			if oneMutPerDelay {
-				mut := data.Mutation{MutType: data.MutFlowType, MutFlow: mutFlow}
-				data.AddMutToQueue(mut, false, false)
+				mut := baseF.Mutation{MutType: baseF.MutFlowType, MutFlow: mutFlow}
+				baseF.AddMutToQueue(mut, false, false)
 				numberMutAdded++
 			}
 		}
 	}
 
 	if oneMutPerDelay && len(mutFlow) != 0 {
-		mut := data.Mutation{MutFlow: mutFlow}
-		data.AddMutToQueue(mut, false, false)
+		mut := baseF.Mutation{MutFlow: mutFlow}
+		baseF.AddMutToQueue(mut, false, false)
 		numberMutAdded++
 	}
 

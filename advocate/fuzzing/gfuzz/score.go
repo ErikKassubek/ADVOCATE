@@ -11,7 +11,7 @@
 package gfuzz
 
 import (
-	"advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/utils/settings.go"
 	"math"
 )
@@ -55,7 +55,7 @@ func calculateScore() float64 {
 	}
 	res += fact3 * bufFullSum
 
-	if data.UseHBInfoFuzzing {
+	if baseF.UseHBInfoFuzzing {
 		// number of select cases with possible partner (both executed and not executed)
 		res += fact4 * float64(NumberSelectCasesWithPartner)
 	}

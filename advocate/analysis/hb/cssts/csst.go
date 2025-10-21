@@ -11,7 +11,7 @@
 package cssts
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/types"
 )
@@ -30,7 +30,7 @@ var (
 // Parameter:
 //   - lengths []int: the number of elements per routine
 func InitCSSTs(lengths []int) {
-	chanBuffer = make(map[int]([]data.BufferedVC))
+	chanBuffer = make(map[int]([]baseA.BufferedVC))
 	chanBufferSize = make(map[int]int)
 
 	Csst = NewIncrementalCSST(lengths)

@@ -11,7 +11,7 @@
 package pog
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
@@ -58,7 +58,7 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range data.MainTrace.GetTraces() {
+	for rout, trace := range baseA.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}

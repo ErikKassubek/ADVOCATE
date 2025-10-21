@@ -12,7 +12,7 @@
 package toolchain
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/paths"
@@ -43,7 +43,7 @@ func Run(mode, pathToTest string,
 	runRecord, runAnalysis, runReplay bool, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber, testNumber int) (int, int, error) {
 
-	data.Clear()
+	baseA.Clear()
 
 	switch mode {
 	case "main":

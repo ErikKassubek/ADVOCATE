@@ -12,7 +12,7 @@
 package elements
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
 )
@@ -23,7 +23,7 @@ import (
 func AnalyzeNew(n *trace.ElementNew) {
 	hbcalc.UpdateHBNew(n)
 
-	data.NewChan[n.GetID()] = n.GetFile()
+	baseA.NewChan[n.GetID()] = n.GetFile()
 }
 
 // AnalyzeRoutineEnd store the vector clock of the element

@@ -11,7 +11,7 @@
 package gfuzz
 
 import (
-	fuzzingdata "advocate/fuzzing/data"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"sort"
 )
@@ -21,7 +21,7 @@ import (
 // Parameter:
 //   - e *trace.TraceElementSelect: the select trace element to add
 func AddFuzzingSelect(e *trace.ElementSelect) {
-	fs := fuzzingdata.FuzzingSelect{
+	fs := baseF.FuzzingSelect{
 		ID:              e.GetReplayID(),
 		T:               e.GetTPost(),
 		ChosenCase:      e.GetChosenIndex(),

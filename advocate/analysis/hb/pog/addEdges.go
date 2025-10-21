@@ -11,7 +11,7 @@
 package pog
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/helper"
 	"advocate/trace"
 )
@@ -21,7 +21,7 @@ import (
 // Then set this element to be the last element analyzed in the routine
 // If it is the first element in a routine, add an edge to the corresponding fork
 //
-// Prarameter:
+// Parameter:
 //   - elem trace.Element: the element to add an edge for
 func AddEdgeSameRoutineAndFork(elem trace.Element) {
 	if !helper.Valid(elem) {
@@ -29,13 +29,13 @@ func AddEdgeSameRoutineAndFork(elem trace.Element) {
 	}
 	routineID := elem.GetRoutine()
 
-	if lastElem, ok := data.LastAnalyzedElementPerRoutine[routineID]; ok {
+	if lastElem, ok := baseA.LastAnalyzedElementPerRoutine[routineID]; ok {
 		AddEdge(lastElem, elem, true)
 	} else {
 		// first element, add edge from fork if exists
-		if fork, okF := data.ForkOperations[routineID]; okF {
+		if fork, okF := baseA.ForkOperations[routineID]; okF {
 			AddEdge(fork, elem, true)
 		}
 	}
-	data.LastAnalyzedElementPerRoutine[routineID] = elem
+	baseA.LastAnalyzedElementPerRoutine[routineID] = elem
 }

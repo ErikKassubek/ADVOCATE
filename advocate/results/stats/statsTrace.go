@@ -72,12 +72,12 @@ func statsTraces(traceID int) (map[string]int, error) {
 
 	// do not count the same twice
 	known := map[string][]string{
-		"atomic":    []string{},
-		"channel":   []string{},
-		"mutex":     []string{},
-		"waitGroup": []string{},
-		"condVar":   []string{},
-		"once":      []string{},
+		"atomic":    {},
+		"channel":   {},
+		"mutex":     {},
+		"waitGroup": {},
+		"condVar":   {},
+		"once":      {},
 	}
 
 	err := filepath.Walk(tracePath, func(path string, info os.FileInfo, err error) error {

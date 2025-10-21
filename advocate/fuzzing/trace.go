@@ -11,8 +11,8 @@
 package fuzzing
 
 import (
-	anadata "advocate/analysis/data"
-	"advocate/fuzzing/data"
+	"advocate/analysis/baseA"
+	"advocate/fuzzing/baseF"
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
 	"advocate/trace"
@@ -30,11 +30,11 @@ func ParseTrace(tr *trace.Trace) {
 	currentTrace = tr
 
 	// clear current order for gFuzz
-	gfuzz.SelectInfoTrace = make(map[string][]data.FuzzingSelect)
+	gfuzz.SelectInfoTrace = make(map[string][]baseF.FuzzingSelect)
 
 	// clear chains for goPie
-	gopie.SchedulingChains = make([]gopie.Chain, 0)
-	gopie.CurrentChain = gopie.NewChain()
+	gopie.SchedulingChains = make([]baseF.Chain, 0)
+	gopie.CurrentChain = baseF.NewChain()
 	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
@@ -43,7 +43,7 @@ func ParseTrace(tr *trace.Trace) {
 			return
 		}
 
-		if data.FuzzingModeGoPie {
+		if baseF.FuzzingModeGoPie {
 			gopie.CalculateRelRule1(routine)
 		}
 
@@ -53,11 +53,11 @@ func ParseTrace(tr *trace.Trace) {
 				return
 			}
 
-			if data.IgnoreFuzzing(elem, false) {
+			if baseF.IgnoreFuzzing(elem, false) {
 				continue
 			}
 
-			if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing && data.CanBeAddedToChain(elem) {
+			if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing && gopie.CanBeAddedToChain(elem) {
 				gopie.CalculateRelRule2AddElem(elem)
 			}
 
@@ -67,27 +67,27 @@ func ParseTrace(tr *trace.Trace) {
 
 			switch e := elem.(type) {
 			case *trace.ElementNew:
-				if data.FuzzingModeGFuzz {
+				if baseF.FuzzingModeGFuzz {
 					parseNew(e)
 				}
 			case *trace.ElementChannel:
-				if data.FuzzingModeGFuzz {
+				if baseF.FuzzingModeGFuzz {
 					parseChannelOp(e, -2) // -2: not part of select
 				}
 			case *trace.ElementSelect:
-				if data.FuzzingModeGFuzz {
+				if baseF.FuzzingModeGFuzz {
 					parseSelectOp(e)
 				}
 			}
 		}
 	}
 
-	if data.FuzzingModeGoPie && gopie.CurrentChain.Len() != 0 {
+	if baseF.FuzzingModeGoPie && gopie.CurrentChain.Len() != 0 {
 		gopie.SchedulingChains = append(gopie.SchedulingChains, gopie.CurrentChain)
-		gopie.CurrentChain = gopie.NewChain()
+		gopie.CurrentChain = baseF.NewChain()
 	}
 
-	if data.FuzzingModeGoPie && !data.UseHBInfoFuzzing {
+	if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing {
 		gopie.CalculateRelRule2And4()
 		if control.CheckCanceled() {
 			return
@@ -99,10 +99,10 @@ func ParseTrace(tr *trace.Trace) {
 		return
 	}
 
-	if data.FuzzingModeGFuzz {
+	if baseF.FuzzingModeGFuzz {
 		gfuzz.SortSelects()
 
-		gfuzz.NumberSelectCasesWithPartner = anadata.NumberSelectCasesWithPartner
+		gfuzz.NumberSelectCasesWithPartner = baseA.NumberSelectCasesWithPartner
 	}
 }
 
@@ -116,7 +116,7 @@ func parseNew(elem *trace.ElementNew) {
 		return
 	}
 
-	if data.FuzzingModeGFuzz {
+	if baseF.FuzzingModeGFuzz {
 		fuzzingElem := gfuzz.FuzzingChannel{
 			GlobalID:  elem.GetPos(),
 			LocalID:   elem.GetID(),
@@ -136,7 +136,7 @@ func parseNew(elem *trace.ElementNew) {
 // selID is the case id if it is a select case, -2 otherwise
 func parseChannelOp(elem *trace.ElementChannel, selID int) {
 
-	if data.FuzzingModeGFuzz {
+	if baseF.FuzzingModeGFuzz {
 		op := elem.GetType(true)
 
 		// close -> update channelInfoTrace
@@ -191,7 +191,7 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 // Parameter:
 //   - elem *analysis.TraceElementSelect: the select element
 func parseSelectOp(elem *trace.ElementSelect) {
-	if data.FuzzingModeGFuzz {
+	if baseF.FuzzingModeGFuzz {
 		gfuzz.AddFuzzingSelect(elem)
 
 		if elem.GetChosenDefault() {

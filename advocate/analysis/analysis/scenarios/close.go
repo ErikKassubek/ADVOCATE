@@ -11,7 +11,7 @@
 package scenarios
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
 	"advocate/results/results"
@@ -35,9 +35,9 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	id := ch.GetID()
 
 	// check if there is an earlier send, that could happen concurrently to close
-	if data.AnalysisCasesMap[flags.SendOnClosed] && data.HasSend[id] {
-		for routine, mrs := range data.MostRecentSend {
-			happensBefore := clock.GetHappensBefore(mrs[id].Vc, data.CloseData[id].GetVC())
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] && baseA.HasSend[id] {
+		for routine, mrs := range baseA.MostRecentSend {
+			happensBefore := clock.GetHappensBefore(mrs[id].Vc, baseA.CloseData[id].GetVC())
 
 			if mrs[id].Elem != nil && mrs[id].Elem.GetTID() != "" && happensBefore != hb.Before {
 
@@ -63,7 +63,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				}
 
 				arg2 := results.TraceElementResult{ // close
-					RoutineID: data.CloseData[ch.GetID()].GetRoutine(),
+					RoutineID: baseA.CloseData[ch.GetID()].GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre2,
 					ObjType:   "CC",
@@ -77,9 +77,9 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		}
 	}
 	// check if there is an earlier receive, that could happen concurrently to close
-	if data.AnalysisCasesMap[flags.ReceiveOnClosed] && data.HasReceived[id] {
-		for routine, mrr := range data.MostRecentReceive {
-			happensBefore := clock.GetHappensBefore(data.CloseData[id].GetVC(), mrr[id].Vc)
+	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] && baseA.HasReceived[id] {
+		for routine, mrr := range baseA.MostRecentReceive {
+			happensBefore := clock.GetHappensBefore(baseA.CloseData[id].GetVC(), mrr[id].Vc)
 			if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {
 
 				file1, line1, tPre1, err := trace.InfoFromTID(mrr[id].Elem.GetTID()) // recv
@@ -104,7 +104,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				}
 
 				arg2 := results.TraceElementResult{ // close
-					RoutineID: data.CloseData[id].GetRoutine(),
+					RoutineID: baseA.CloseData[id].GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre2,
 					ObjType:   "CC",
@@ -133,11 +133,11 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 
 	id := elem.GetID()
 
-	if _, ok := data.CloseData[id]; !ok {
+	if _, ok := baseA.CloseData[id]; !ok {
 		return
 	}
 
-	closeElem := data.CloseData[id]
+	closeElem := baseA.CloseData[id]
 	fileSend := elem.GetFile()
 
 	if fileSend == "" || fileSend == "\n" {
@@ -154,7 +154,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	}
 
 	arg2 := results.TraceElementResult{ // close
-		RoutineID: data.CloseData[id].GetRoutine(),
+		RoutineID: baseA.CloseData[id].GetRoutine(),
 		ObjID:     id,
 		TPre:      closeElem.GetTPre(),
 		ObjType:   "CC",
@@ -182,11 +182,11 @@ func FoundReceiveOnClosedChannel(ch *trace.ElementChannel, actual bool) {
 
 	id := ch.GetID()
 
-	if _, ok := data.CloseData[id]; !ok {
+	if _, ok := baseA.CloseData[id]; !ok {
 		return
 	}
 
-	posClose := data.CloseData[id].GetTID()
+	posClose := baseA.CloseData[id].GetTID()
 	if posClose == "" || ch.GetTID() == "" || posClose == "\n" || ch.GetTID() == "\n" {
 		return
 	}
@@ -213,7 +213,7 @@ func FoundReceiveOnClosedChannel(ch *trace.ElementChannel, actual bool) {
 	}
 
 	arg2 := results.TraceElementResult{ // close
-		RoutineID: data.CloseData[id].GetRoutine(),
+		RoutineID: baseA.CloseData[id].GetRoutine(),
 		ObjID:     id,
 		TPre:      tPre2,
 		ObjType:   "CC",
@@ -241,7 +241,7 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 
 	id := ch.GetID()
 
-	if oldClose, ok := data.CloseData[id]; ok {
+	if oldClose, ok := baseA.CloseData[id]; ok {
 		if oldClose.GetTID() == "" || oldClose.GetTID() == "\n" || ch.GetTID() == "" || ch.GetTID() == "\n" {
 			return
 		}

@@ -24,9 +24,10 @@ import (
 //   - bug Bug: The bug to create a trace for
 //   - expectedErrorCode int: For wg exitNegativeWG, for unlock before lock: exitUnlockBeforeLock
 func rewriteGraph(tr *trace.Trace, bug bugs.Bug, expectedErrorCode int) error {
-	if bug.Type == helper.PNegWG {
-		log.Info("Start rewriting trace for negative waitgroup counter...")
-	} else if bug.Type == helper.PUnlockBeforeLock {
+	switch bug.Type {
+	case helper.PNegWG:
+		log.Info("Start rewriting trace for negative wait group counter...")
+	case helper.PUnlockBeforeLock:
 		log.Info("Start rewriting trace for unlock before lock...")
 	}
 

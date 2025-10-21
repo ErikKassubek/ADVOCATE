@@ -11,7 +11,7 @@
 package vc
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/trace"
 )
 
@@ -50,7 +50,7 @@ func DoFail(on *trace.ElementOnce) {
 	id := on.GetID()
 	routine := on.GetRoutine()
 
-	suc := data.OSuc[id]
+	suc := baseA.OSuc[id]
 
 	if suc != nil {
 		CurrentVC[routine].Sync(suc.GetVC())

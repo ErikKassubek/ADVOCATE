@@ -12,7 +12,7 @@
 package toolchain
 
 import (
-	"advocate/analysis/data"
+	"advocate/analysis/baseA"
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
@@ -122,7 +122,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				continue
 			}
 
-			data.Clear()
+			baseA.Clear()
 			control.Reset()
 
 			if !isFuzzing {
@@ -254,7 +254,7 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 	var err error
 
 	if flags.Continue {
-		alreadyProcessed, maxFileNum, err = getFilesInResult(dir, cont)
+		alreadyProcessed, maxFileNum, err = getFilesInResult(dir)
 		if err != nil {
 			log.Error(err)
 			return testFiles, 0, 0, err
@@ -286,13 +286,12 @@ func FindTestFiles(dir string, cont bool) ([]string, int, int, error) {
 //
 // Parameter:
 //   - dir string: path to the directory containing the test files
-//   - cont bool: continue testing
 //
 // Returns:
 //   - map[string]struct{}: map containing already processed test files
 //   - int: total number of files
 //   - error
-func getFilesInResult(dir string, cont bool) (map[string]struct{}, int, error) {
+func getFilesInResult(dir string) (map[string]struct{}, int, error) {
 	res := make(map[string]struct{})
 
 	path := filepath.Join(dir, "advocateResult")

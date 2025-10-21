@@ -10,8 +10,6 @@
 
 package guided
 
-import "advocate/analysis/analysis"
-
 var numberMuts = 0
 
 // CreateMutations will create mutations based on the predictive analysis.
@@ -29,7 +27,7 @@ func CreateMutations() {
 // the rewritten traces that should contain the detected bugs.
 // We create all possible mutations, even if this would exceed maxNumberOfMutsPerRun
 func predictive() {
-	analysis.RunAnalysis(false)
+	// analysis.RunAnalysis(false)
 	// TODO: continue
 }
 

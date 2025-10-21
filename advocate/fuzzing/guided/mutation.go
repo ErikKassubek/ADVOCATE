@@ -11,7 +11,6 @@
 package guided
 
 import (
-	"advocate/analysis/analysis"
 	"advocate/fuzzing/baseF"
 )
 
@@ -33,7 +32,6 @@ func CreateMutations() {
 // the rewritten traces that should contain the detected bugs.
 // We create all possible mutations, even if this would exceed maxNumberOfMutsPerRun
 func predictive() {
-	analysis.RunAnalysis(false)
 	// TODO: continue
 }
 

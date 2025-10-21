@@ -50,7 +50,7 @@ func Fuzzing() error {
 	baseF.FuzzingModeGFuzz = (flags.FuzzingMode == baseF.GFuzz || flags.FuzzingMode == baseF.GFuzzHBFlow || flags.FuzzingMode == baseF.GFuzzHB)
 	baseF.FuzzingModeFlow = (flags.FuzzingMode == baseF.Flow || flags.FuzzingMode == baseF.GFuzzHBFlow)
 	baseF.FuzzingModeGuided = (flags.FuzzingMode == baseF.Guided || flags.FuzzingMode == baseF.Default)
-	baseF.UseHBInfoFuzzing = (flags.FuzzingMode == baseF.GFuzzHB || flags.FuzzingMode == baseF.GFuzzHBFlow || flags.FuzzingMode == baseF.Flow || flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
+	baseF.UseHBInfoFuzzing = (flags.FuzzingMode == baseF.Guided || flags.FuzzingMode == baseF.GFuzzHB || flags.FuzzingMode == baseF.GFuzzHBFlow || flags.FuzzingMode == baseF.Flow || flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
 
 	if flags.Continue {
 		log.Info("Continue fuzzing")
@@ -226,7 +226,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 		if err != nil {
 			log.Error("Fuzzing run failed: ", err.Error())
 		} else {
-			log.Info("Parse recorded trace to calculate fuzzing relations")
+			log.Info("Parse recorded trace for fuzzing information")
 
 			// collect the required data to decide whether run is interesting
 			// and to create the mutations

@@ -23,6 +23,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -40,7 +41,10 @@ var leaks = make(map[int]TERLeak, 0)
 var deadlocks = make([]results.ResultElem, 0)
 
 func PartialDeadlocks() error {
-	file, err := os.Open(paths.ResultOutput)
+	log.Info("Check for actual partial deadlocks")
+	output := filepath.Join(paths.ProgDir, paths.NameOutput)
+
+	file, err := os.Open(output)
 	if err != nil {
 		return err
 	}
@@ -63,6 +67,8 @@ func PartialDeadlocks() error {
 
 	reportDeadlocks()
 	reportNonDeadlockLeaks()
+
+	log.Info("Finish check for actual partial deadlocks")
 
 	return nil
 }

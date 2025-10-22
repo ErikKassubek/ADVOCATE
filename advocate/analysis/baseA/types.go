@@ -32,7 +32,7 @@ type VectorClockTID2 struct {
 	ID       int
 	Vc       *clock.VectorClock
 	TID      string
-	TypeVal  trace.ObjectType
+	TypeVal  trace.OperationType
 	Val      int
 	Buffered bool
 	Sel      bool

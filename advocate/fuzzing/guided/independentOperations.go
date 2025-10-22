@@ -36,14 +36,14 @@ const (
 // Non-Concurrent operations are always concurrent
 
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func areIndependent(op1, op2 trace.Element) (bool, independenceCondition) {
-	if !concurrent.IsConcurrent(op1, op2) {
+func areIndependent(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
+	if !concurrent.IsConcurrentMin(op1, op2) {
 		return false, none
 	}
 	return areIndependentType(op1, op2)
@@ -56,13 +56,13 @@ func areIndependent(op1, op2 trace.Element) (bool, independenceCondition) {
 // In this function, we do not care if the elements are concurrent or not.
 
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations are independent, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func areIndependentType(op1, op2 trace.Element) (bool, independenceCondition) {
+func areIndependentType(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	t := op1.GetType(false)
 	if !op1.IsSameElement(op2) && !(t == trace.Channel || t == trace.Select) {
 		return true, none
@@ -94,13 +94,13 @@ func areIndependentType(op1, op2 trace.Element) (bool, independenceCondition) {
 // on there operation type
 //
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func isIndependentAtomic(op1, op2 trace.Element) (bool, independenceCondition) {
+func isIndependentAtomic(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	return (op1.GetType(true) == trace.AtomicLoad && op2.GetType(true) == trace.AtomicLoad), none
 }
 
@@ -108,13 +108,13 @@ func isIndependentAtomic(op1, op2 trace.Element) (bool, independenceCondition) {
 // on there operation type
 //
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func isIndependentChannelSelect(op1, op2 trace.Element) (bool, independenceCondition) {
+func isIndependentChannelSelect(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	op1Type := op1.GetType(false)
 	op2Type := op2.GetType(false)
 
@@ -128,17 +128,17 @@ func isIndependentChannelSelect(op1, op2 trace.Element) (bool, independenceCondi
 		return false, none
 	} else if op1Type == trace.Select && op2Type == trace.Select {
 		// selects are independent if they do not share any channels in there cases
-		if !op1.(*trace.ElementSelect).HasCommonChannel(op2.(*trace.ElementSelect)) {
+		if !op1.HasCommonChannel(op2) {
 			return true, none
 		}
 	} else { // one select and one channel
 		// a channel and a select are independent if the channel is not in any of the select cases
 		if op1Type == trace.Channel { // op1 -> channel, op2 -> select
-			if !op2.(*trace.ElementSelect).IsInCases(op1.(*trace.ElementChannel)) {
+			if !op2.IsInCases(op1) {
 				return true, none
 			}
 		} else { // op1 -> select, op2 -> channel
-			if !op1.(*trace.ElementSelect).IsInCases(op2.(*trace.ElementChannel)) {
+			if !op1.IsInCases(op2) {
 				return true, none
 			}
 		}
@@ -151,13 +151,13 @@ func isIndependentChannelSelect(op1, op2 trace.Element) (bool, independenceCondi
 // on there operation type
 //
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func isIndependentMutex(op1, op2 trace.Element) (bool, independenceCondition) {
+func isIndependentMutex(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	t1 := op1.GetType(true)
 	t2 := op2.GetType(true)
 
@@ -178,13 +178,13 @@ func isIndependentMutex(op1, op2 trace.Element) (bool, independenceCondition) {
 // on there operation type
 //
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func isIndependentWait(op1, op2 trace.Element) (bool, independenceCondition) {
+func isIndependentWait(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	t1 := op1.GetType(true)
 	t2 := op2.GetType(true)
 
@@ -201,13 +201,13 @@ func isIndependentWait(op1, op2 trace.Element) (bool, independenceCondition) {
 // on there operation type
 //
 // Parameter:
-//   - op1 trace.Element: the first element in the trace
-//   - op2 trace.Element: the second element in the trace
+//   - op1 trace.ElemMin: the first element in the trace
+//   - op2 trace.ElemMin: the second element in the trace
 //
 // Returns:
 //   - bool: true, if the operations can be switched, false otherwise
 //   - independenceCondition: condition that must be true for the two operations to be independent
-func isIndependentCond(op1, op2 trace.Element) (bool, independenceCondition) {
+func isIndependentCond(op1, op2 *trace.ElemMin) (bool, independenceCondition) {
 	return (op1.GetType(true) == trace.CondBroadcast && op2.GetType(true) == trace.CondBroadcast), none
 }
 

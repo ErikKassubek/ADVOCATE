@@ -52,7 +52,7 @@ type ElementChannel struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	op                       ObjectType
+	op                       OperationType
 	cl                       bool
 	oID                      int
 	qSize                    int
@@ -108,7 +108,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tPre string,
 		}
 	}
 
-	var opCInt ObjectType
+	var opCInt OperationType
 	switch opC {
 	case "S":
 		opCInt = ChannelSend
@@ -182,8 +182,9 @@ func (this *ElementChannel) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.op,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -339,7 +340,7 @@ func (this *ElementChannel) GetTPost() int {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementChannel) GetType(operation bool) ObjectType {
+func (this *ElementChannel) GetType(operation bool) OperationType {
 	if !operation {
 		return Channel
 	}

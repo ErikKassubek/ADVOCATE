@@ -168,13 +168,13 @@ func isGoPieElem(elem trace.Element) bool {
 	elemTypeShort := elem.GetType(false)
 
 	if flags.FuzzingMode == baseF.GoPie {
-		validTypes := []trace.ObjectType{
+		validTypes := []trace.OperationType{
 			trace.Mutex, trace.Channel,
 			trace.Select}
 		return types.Contains(validTypes, elemTypeShort)
 	}
 
-	invalidTypes := []trace.ObjectType{trace.New,
+	invalidTypes := []trace.OperationType{trace.New,
 		trace.Replay, trace.End}
 	return !types.Contains(invalidTypes, elemTypeShort)
 }

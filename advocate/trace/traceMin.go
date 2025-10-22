@@ -14,10 +14,48 @@ import "advocate/analysis/hb/clock"
 
 type ElemMin struct {
 	ID      int
-	Op      ObjectType
+	Op      OperationType
 	Pos     string
 	Routine int
-	vc      *clock.VectorClock
+	Vc      clock.VectorClock
+	Channel []int // id of channel in select cases
+}
+
+func (this *ElemMin) GetType(op bool) OperationType {
+	if op {
+		return this.Op
+	}
+	return GetElemTypeFromObjectType(this.Op)
+}
+
+func (this *ElemMin) IsSameElement(elem *ElemMin) bool {
+	return this.ID == elem.ID
+}
+
+func (this *ElemMin) HasCommonChannel(elem *ElemMin) bool {
+	seen := make(map[int]struct{}, len(this.Channel))
+
+	for _, v := range this.Channel {
+		seen[v] = struct{}{}
+	}
+
+	for _, v := range elem.Channel {
+		if _, ok := seen[v]; ok {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (this *ElemMin) IsInCases(elem *ElemMin) bool {
+	for _, v := range this.Channel {
+		if v == elem.ID {
+			return true
+		}
+	}
+
+	return false
 }
 
 type TraceMin struct {

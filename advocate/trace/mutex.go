@@ -47,7 +47,7 @@ type ElementMutex struct {
 	tPost                    int
 	id                       int
 	rw                       bool
-	op                       ObjectType
+	op                       OperationType
 	suc                      bool
 	file                     string
 	line                     int
@@ -93,7 +93,7 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 		rwBool = true
 	}
 
-	var opMInt ObjectType
+	var opMInt OperationType
 	switch opM {
 	case "L":
 		opMInt = MutexLock
@@ -153,8 +153,9 @@ func (this *ElementMutex) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.op,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -290,7 +291,7 @@ func (this *ElementMutex) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementMutex) GetType(operation bool) ObjectType {
+func (this *ElementMutex) GetType(operation bool) OperationType {
 	if !operation {
 		return Mutex
 	}

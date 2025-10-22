@@ -69,6 +69,7 @@ func (this *ElementRoutineEnd) GetElemMin() (ElemMin, bool) {
 		Op:      EndRoutine,
 		Pos:     "",
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, false
 }
 
@@ -192,7 +193,7 @@ func (this *ElementRoutineEnd) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (this *ElementRoutineEnd) GetType(operation bool) ObjectType {
+func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
 	if !operation {
 		return End
 	}

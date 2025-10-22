@@ -214,11 +214,19 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 //   - ElemMin: the ElemMin representations of the operation
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementSelect) GetElemMin() (ElemMin, bool) {
+	ch := make([]int, 0)
+
+	for _, c := range this.cases {
+		ch = append(ch, c.id)
+	}
+
 	return ElemMin{
 		ID:      this.id,
 		Op:      SelectOp,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
+		Channel: ch,
 	}, true
 }
 
@@ -393,7 +401,7 @@ func (this *ElementSelect) GetPartner() *ElementChannel {
 //
 // Returns:
 //   - the object type
-func (this *ElementSelect) GetType(operation bool) ObjectType {
+func (this *ElementSelect) GetType(operation bool) OperationType {
 	if !operation {
 		return Select
 	}
@@ -623,7 +631,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 //
 // Returns:
 //   - error
-func (this *ElementSelect) SetCase(chanID int, op ObjectType) error {
+func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	if chanID == -1 {
 		if this.containsDefault {
 			this.chosenDefault = true
@@ -819,45 +827,14 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - bool: true if this and s have at least one common channel
 func (this *ElementSelect) HasCommonChannel(s *ElementSelect) bool {
-	for _, c := range s.GetCases() {
-		if this.IsInCases(&c) {
-			return true
-		}
+	seen := make(map[int]struct{}, len(this.GetCases()))
+
+	for _, v := range this.GetCases() {
+		seen[v.id] = struct{}{}
 	}
 
-	return false
-}
-
-// GetCommonChannels returns the set of cases that are in both the receiver
-// select and the argument select. The result does not contain the default case
-//
-// Parameter:
-//   - s *trace.ElementSelect: the other select
-//
-// Returns:
-//   - []trace.ElementChannel: the set of channels in both the receiver and the argument
-func (this *ElementSelect) GetCommonChannel(s *ElementSelect) []ElementChannel {
-	res := make([]ElementChannel, 0)
-	for _, c := range s.GetCases() {
-		if this.IsInCases(&c) {
-			res = append(res, c)
-		}
-	}
-
-	return res
-}
-
-// IsInCases returns true, if the given channel is in the cases. We only care
-// about the channel, not the same operations
-//
-// Parameter:
-//   - ch *trace.ElementChannel: the channel element
-//
-// Returns:
-//   - bool: true if the channel of the operations in ch is in a case in the select
-func (this *ElementSelect) IsInCases(ch *ElementChannel) bool {
-	for _, c := range this.GetCases() {
-		if c.IsSameElement(ch) {
+	for _, v := range s.GetCases() {
+		if _, ok := seen[v.id]; ok {
 			return true
 		}
 	}

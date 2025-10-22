@@ -15,67 +15,101 @@ import (
 )
 
 // Values for possible primitive types and functions
-type ObjectType string
+type OperationType string
 
 const (
-	None ObjectType = ""
+	None OperationType = ""
 
-	Atomic            ObjectType = "A"
-	AtomicLoad        ObjectType = "AL"
-	AtomicStore       ObjectType = "AS"
-	AtomicAdd         ObjectType = "AA"
-	AtomicAnd         ObjectType = "AN"
-	AtomicOr          ObjectType = "AO"
-	AtomicSwap        ObjectType = "AW"
-	AtomicCompAndSwap ObjectType = "AC"
+	Atomic            OperationType = "A"
+	AtomicLoad        OperationType = "AL"
+	AtomicStore       OperationType = "AS"
+	AtomicAdd         OperationType = "AA"
+	AtomicAnd         OperationType = "AN"
+	AtomicOr          OperationType = "AO"
+	AtomicSwap        OperationType = "AW"
+	AtomicCompAndSwap OperationType = "AC"
 
-	Channel      ObjectType = "C"
-	ChannelSend  ObjectType = "CS"
-	ChannelRecv  ObjectType = "CR"
-	ChannelClose ObjectType = "CC"
+	Channel      OperationType = "C"
+	ChannelSend  OperationType = "CS"
+	ChannelRecv  OperationType = "CR"
+	ChannelClose OperationType = "CC"
 
-	Cond          ObjectType = "D"
-	CondWait      ObjectType = "DW"
-	CondSignal    ObjectType = "DS"
-	CondBroadcast ObjectType = "DB"
+	Cond          OperationType = "D"
+	CondWait      OperationType = "DW"
+	CondSignal    OperationType = "DS"
+	CondBroadcast OperationType = "DB"
 
-	Fork   ObjectType = "G"
-	ForkOp ObjectType = "GG"
+	Fork   OperationType = "G"
+	ForkOp OperationType = "GG"
 
-	End        ObjectType = "E"
-	EndRoutine ObjectType = "EG"
+	End        OperationType = "E"
+	EndRoutine OperationType = "EG"
 
-	Mutex         ObjectType = "M"
-	MutexLock     ObjectType = "ML"
-	MutexRLock    ObjectType = "MR"
-	MutexTryLock  ObjectType = "MT"
-	MutexTryRLock ObjectType = "MY"
-	MutexUnlock   ObjectType = "MU"
-	MutexRUnlock  ObjectType = "MN"
+	Mutex         OperationType = "M"
+	MutexLock     OperationType = "ML"
+	MutexRLock    OperationType = "MR"
+	MutexTryLock  OperationType = "MT"
+	MutexTryRLock OperationType = "MY"
+	MutexUnlock   OperationType = "MU"
+	MutexRUnlock  OperationType = "MN"
 
-	New        ObjectType = "N"
-	NewAtomic  ObjectType = "NA"
-	NewChannel ObjectType = "NC"
-	NewCond    ObjectType = "ND"
-	NewMutex   ObjectType = "NM"
-	NewOnce    ObjectType = "NO"
-	NewWait    ObjectType = "NW"
+	New        OperationType = "N"
+	NewAtomic  OperationType = "NA"
+	NewChannel OperationType = "NC"
+	NewCond    OperationType = "ND"
+	NewMutex   OperationType = "NM"
+	NewOnce    OperationType = "NO"
+	NewWait    OperationType = "NW"
 
-	Once     ObjectType = "O"
-	OnceSuc  ObjectType = "OS"
-	OnceFail ObjectType = "OF"
+	Once     OperationType = "O"
+	OnceSuc  OperationType = "OS"
+	OnceFail OperationType = "OF"
 
-	Replay   ObjectType = "X"
-	ReplayOP ObjectType = "XR"
+	Replay   OperationType = "X"
+	ReplayOP OperationType = "XR"
 
-	Select   ObjectType = "S"
-	SelectOp ObjectType = "SS"
+	Select   OperationType = "S"
+	SelectOp OperationType = "SS"
 
-	Wait     ObjectType = "W"
-	WaitAdd  ObjectType = "WA"
-	WaitDone ObjectType = "WD"
-	WaitWait ObjectType = "WW"
+	Wait     OperationType = "W"
+	WaitAdd  OperationType = "WA"
+	WaitDone OperationType = "WD"
+	WaitWait OperationType = "WW"
 )
+
+// GetElemTypeFromObjectType returns the object type from the operation type
+//
+// Parameter:
+//   - ob OperationType: the operation or object type
+//
+// Returns:
+//   - OperationType: the corresponding object type
+func GetElemTypeFromObjectType(ob OperationType) OperationType {
+	switch ob {
+	case Atomic, AtomicLoad, AtomicStore, AtomicAdd, AtomicAnd, AtomicOr, AtomicSwap, AtomicCompAndSwap:
+		return Atomic
+	case Channel, ChannelSend, ChannelRecv, ChannelClose:
+		return Channel
+	case Cond, CondWait, CondSignal, CondBroadcast:
+		return Cond
+	case Fork, ForkOp:
+		return Fork
+	case End, EndRoutine:
+		return End
+	case Mutex, MutexLock, MutexRLock, MutexTryLock, MutexUnlock, MutexRUnlock:
+		return Mutex
+	case Once, OnceSuc, OnceFail:
+		return Once
+	case Replay, ReplayOP:
+		return Replay
+	case Select, SelectOp:
+		return Select
+	case Wait, WaitAdd, WaitDone, WaitWait:
+		return Wait
+	default:
+		return None
+	}
+}
 
 // Element is an interface for the elements in a trace
 type Element interface {
@@ -87,7 +121,7 @@ type Element interface {
 	GetFile() string
 	GetLine() int
 	GetReplayID() string
-	GetType(operation bool) ObjectType
+	GetType(operation bool) OperationType
 	GetTID() string
 	GetRoutine() int
 	IsEqual(elem Element) bool

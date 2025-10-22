@@ -106,5 +106,16 @@ func PosFromPosString(pos string) (string, int, error) {
 	}
 
 	return posSplit[0], line, nil
+}
 
+// PosStringFromPos returns the pos string from a file and line
+//
+// Parameter:
+//   - string: file
+//   - int: line
+//
+// Returns:
+//   - pos string: [file]:[line]
+func PosStringFromPos(file string, line int) string {
+	return fmt.Sprintf("%s:%d", file, line)
 }

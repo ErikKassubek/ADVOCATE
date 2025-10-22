@@ -127,7 +127,7 @@ func readDeadlock(deadlock string) error {
 	return nil
 }
 
-func getObjectType(val string) trace.ObjectType {
+func getObjectType(val string) trace.OperationType {
 	switch val {
 	case "chan:recvOnNil", "chan:revc":
 		return trace.ChannelRecv
@@ -304,7 +304,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 //   - vc VectorClock: The vector clock of the operation
 //   - opType trace.ObjectType: The type of operation
 //   - buffered bool: If the channel is buffered
-func CheckForLeakChannelRun(routineID int, objID int, elemVc baseA.ElemWithVc, opType trace.ObjectType, buffered bool) bool {
+func CheckForLeakChannelRun(routineID int, objID int, elemVc baseA.ElemWithVc, opType trace.OperationType, buffered bool) bool {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
@@ -605,7 +605,7 @@ func CheckForLeak() {
 //   - buffered []bool: If the channels are buffered
 //   - vc *VectorClock: The vector clock of the operation
 //   - opTypes []int: An identifier for the type of the operations (send = 0, recv = 1)
-func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []trace.ObjectType) {
+func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool, vc *clock.VectorClock, opTypes []trace.OperationType) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 

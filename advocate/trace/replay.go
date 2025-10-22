@@ -56,6 +56,7 @@ func (this *ElementReplay) GetElemMin() (ElemMin, bool) {
 		Op:      None,
 		Pos:     "",
 		Routine: -1,
+		Vc:      *clock.NewVectorClock(0),
 	}, false
 }
 
@@ -174,7 +175,7 @@ func (this *ElementReplay) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementReplay) GetType(operation bool) ObjectType {
+func (this *ElementReplay) GetType(operation bool) OperationType {
 	if !operation {
 		return Replay
 	}

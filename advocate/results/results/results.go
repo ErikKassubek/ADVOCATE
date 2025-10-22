@@ -96,7 +96,7 @@ type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
 	TPre      int
-	ObjType   trace.ObjectType
+	ObjType   trace.OperationType
 	File      string
 	Line      int
 }

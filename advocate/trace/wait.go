@@ -47,7 +47,7 @@ type ElementWait struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	op                       ObjectType
+	op                       OperationType
 	delta                    int
 	val                      int
 	file                     string
@@ -145,8 +145,9 @@ func (this *ElementWait) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.op,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -261,7 +262,7 @@ func (this *ElementWait) IsWait() bool {
 //
 // Returns:
 //   - objectType: the wait operations
-func (this *ElementWait) GetOpW() ObjectType {
+func (this *ElementWait) GetOpW() OperationType {
 	return this.op
 }
 
@@ -314,7 +315,7 @@ func (this *ElementWait) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementWait) GetType(operation bool) ObjectType {
+func (this *ElementWait) GetType(operation bool) OperationType {
 	if !operation {
 		return Wait
 	}

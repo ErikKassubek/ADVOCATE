@@ -264,7 +264,7 @@ func checkLeak(elem trace.Element) {
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
-		opTypes := make([]trace.ObjectType, 0)
+		opTypes := make([]trace.OperationType, 0)
 		for _, c := range cases {
 			ids = append(ids, c.GetID())
 			opTypes = append(opTypes, c.GetType(true))

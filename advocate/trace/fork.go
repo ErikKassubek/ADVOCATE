@@ -106,8 +106,9 @@ func (this *ElementFork) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      ForkOp,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -231,7 +232,7 @@ func (this *ElementFork) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementFork) GetType(operation bool) ObjectType {
+func (this *ElementFork) GetType(operation bool) OperationType {
 	if !operation {
 		return Fork
 	}

@@ -42,7 +42,7 @@ type ElementNew struct {
 	routine                  int
 	tPost                    int
 	id                       int
-	elemType                 ObjectType
+	elemType                 OperationType
 	num                      int
 	file                     string
 	line                     int
@@ -130,8 +130,9 @@ func (this *ElementNew) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.elemType,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, false
 }
 
@@ -223,7 +224,7 @@ func (this *ElementNew) GetTID() string {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementNew) GetType(operation bool) ObjectType {
+func (this *ElementNew) GetType(operation bool) OperationType {
 	if !operation {
 		return New
 	}

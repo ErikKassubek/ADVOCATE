@@ -41,7 +41,7 @@ type ElementAtomic struct {
 	routine                  int
 	tPost                    int
 	id                       int
-	op                       ObjectType
+	op                       OperationType
 	vc                       *clock.VectorClock
 	wVc                      *clock.VectorClock
 	file                     string
@@ -72,7 +72,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 		return errors.New("id is not an integer")
 	}
 
-	var opAInt ObjectType
+	var opAInt OperationType
 	switch operation {
 	case "L":
 		opAInt = AtomicLoad
@@ -127,8 +127,9 @@ func (this *ElementAtomic) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.op,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -252,7 +253,7 @@ func (this *ElementAtomic) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementAtomic) GetType(operation bool) ObjectType {
+func (this *ElementAtomic) GetType(operation bool) OperationType {
 	if !operation {
 		return Atomic
 	}

@@ -41,7 +41,7 @@ type ElementCond struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	op                       ObjectType
+	op                       OperationType
 	file                     string
 	line                     int
 	vc                       *clock.VectorClock
@@ -74,7 +74,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	if err != nil {
 		return errors.New("id is not an integer")
 	}
-	var op ObjectType
+	var op OperationType
 	switch opN {
 	case "W":
 		op = CondWait
@@ -121,8 +121,9 @@ func (this *ElementCond) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      this.op,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -254,7 +255,7 @@ func (this *ElementCond) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementCond) GetType(operation bool) ObjectType {
+func (this *ElementCond) GetType(operation bool) OperationType {
 	if !operation {
 		return Cond
 	}

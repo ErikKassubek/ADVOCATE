@@ -58,3 +58,42 @@ func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) hb.HappensBefore {
 	}
 	return hb.Concurrent
 }
+
+// IsConcurrent returns if the vector clocks are concurrent
+// Use this instead of GetHappensBefore(vc1, vc2) == Concurrent
+//
+// Parameter:
+//   - vc1 *Vector clock: first vector clock
+//   - vc2 *Vector clock: second vector clock
+//
+// Returns:
+//   - bool: true if vc1 and vc2 are concurrent, false otherwise
+func IsConcurrent(vc1 *VectorClock, vc2 *VectorClock) bool {
+	if vc1 == nil || vc2 == nil {
+		// log.Error("Tried to check concurrency on nil vc")
+		return false
+	}
+
+	if vc1.size != vc2.size {
+		return false
+	}
+
+	hasSmaller := false
+	hasBigger := false
+
+	for i := 1; i < vc1.size+1; i++ {
+		vc1V := vc1.GetValue(i)
+		vc2V := vc2.GetValue(i)
+
+		if vc1V < vc2V {
+			hasSmaller = true
+		} else if vc1V > vc2V {
+			hasBigger = true
+		}
+
+		if hasBigger && hasSmaller {
+			return true
+		}
+	}
+	return false
+}

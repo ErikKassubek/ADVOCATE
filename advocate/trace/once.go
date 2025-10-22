@@ -118,8 +118,9 @@ func (this *ElementOnce) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
 		ID:      this.id,
 		Op:      Once,
-		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Pos:     PosStringFromPos(this.file, this.line),
 		Routine: this.routine,
+		Vc:      *this.vc.Copy(),
 	}, true
 }
 
@@ -247,7 +248,7 @@ func (this *ElementOnce) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementOnce) GetType(operation bool) ObjectType {
+func (this *ElementOnce) GetType(operation bool) OperationType {
 	if !operation {
 		return Once
 	}

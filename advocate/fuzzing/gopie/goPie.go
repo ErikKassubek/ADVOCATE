@@ -14,9 +14,9 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/baseF"
+	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
-	"advocate/utils/paths"
 	"advocate/utils/settings.go"
 	"math"
 )
@@ -26,10 +26,9 @@ const sameElem = true
 // CreateMutations create new mutations for GoPie
 //
 // Parameter:
-//   - numberFuzzingRun int: number of fuzzing run
 //   - mutNumber int: number of the mutation file
 //   - error
-func CreateMutations(numberFuzzingRuns int, mutNumber int) error {
+func CreateMutations(mutNumber int) error {
 	mutations := make(map[string]baseF.Chain)
 	specMutations := make(map[string]baseF.Chain) // special mutations that should be run first
 
@@ -84,7 +83,7 @@ func CreateMutations(numberFuzzingRuns int, mutNumber int) error {
 	log.Infof("Mutate %d scheduling chains", len(SchedulingChains))
 
 	for _, sc := range SchedulingChains {
-		muts := mutate(sc, energy)
+		muts := baseF.Mutate(sc, energy, rel1, rel2)
 
 		for key, mut := range muts {
 			if flags.FuzzingMode != baseF.GoPie && mut.Len() <= 1 {
@@ -109,10 +108,6 @@ func CreateMutations(numberFuzzingRuns int, mutNumber int) error {
 		}
 	}
 
-	if numberFuzzingRuns <= 1 {
-		baseF.AddFuzzingTraceFolder(paths.FuzzingTraces)
-	}
-
 	if len(specMutations) > 0 {
 		log.Infof("Write %d special mutation to file", len(specMutations))
 	}
@@ -123,8 +118,11 @@ func CreateMutations(numberFuzzingRuns int, mutNumber int) error {
 		log.Infof("Write %d mutations to file", max(0, len(mutations)+len(specMutations)))
 	}
 
+	first := baseF.NumberFuzzingRuns <= 1
+
 	for _, mut := range specMutations {
-		done, err := baseF.WriteMutChain(mut)
+		done, err := baseF.WriteMutChain(mut, first)
+		first = false
 
 		if done { // max number mutations has been reached
 			break
@@ -136,7 +134,8 @@ func CreateMutations(numberFuzzingRuns int, mutNumber int) error {
 	}
 
 	for _, mut := range mutations {
-		done, err := baseF.WriteMutChain(mut)
+		done, err := baseF.WriteMutChain(mut, first)
+		first = false
 
 		if done { // max number mutations has been reached
 			break
@@ -180,4 +179,58 @@ func getEnergy() int {
 	}
 
 	return int(float64(score+1)/float64(maxGoPieScore)) * 100
+}
+
+// Pass the trace and look for
+//
+//	channel close with concurrent send on the same channel
+//
+// # Based on those, create chains where the close if before the send
+//
+// Returns:
+//   - map[string]Chain: map with the special chains
+func getSpecialMuts() map[string]baseF.Chain {
+	res := make(map[string]baseF.Chain)
+
+	// send on closed
+	for _, c := range baseA.CloseData {
+		conc := concurrent.GetConcurrent(c, true, false, true, false)
+		for _, s := range conc {
+			switch t := s.(type) {
+			case *trace.ElementSelect:
+				for _, cc := range t.GetCases() {
+					if cc.GetType(true) == trace.ChannelSend {
+						chain := baseF.NewChain()
+						chain.Add(c, s)
+						res[chain.ToString()] = chain
+					}
+				}
+			default:
+				if s.GetType(true) == trace.ChannelSend {
+					chain := baseF.NewChain()
+					chain.Add(c, s)
+					res[chain.ToString()] = chain
+				}
+			}
+		}
+	}
+
+	// negative wg counter
+	for id, dones := range baseA.WgDoneData {
+		for _, done := range dones {
+			for _, add := range baseA.WGAddData[id] {
+				if add.GetTPost() > done.GetTPost() {
+					continue
+				}
+
+				if concurrent.IsConcurrent(done, add) {
+					chain := baseF.NewChain()
+					chain.Add(done, add)
+					res[chain.ToString()] = chain
+				}
+			}
+		}
+	}
+
+	return res
 }

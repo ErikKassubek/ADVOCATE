@@ -97,6 +97,20 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	return nil
 }
 
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementFork) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      this.id,
+		Op:      ForkOp,
+		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Routine: this.routine,
+	}, true
+}
+
 // GetID returns the ID of the newly created routine
 //
 // Returns:

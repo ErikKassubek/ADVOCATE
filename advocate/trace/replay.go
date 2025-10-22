@@ -45,6 +45,20 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	return nil
 }
 
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementReplay) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      -1,
+		Op:      None,
+		Pos:     "",
+		Routine: -1,
+	}, false
+}
+
 // GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:

@@ -121,6 +121,20 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 	return nil
 }
 
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementNew) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      this.id,
+		Op:      this.elemType,
+		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Routine: this.routine,
+	}, false
+}
+
 // GetID returns the ID of the primitive on which the operation was executed
 //
 // Returns:

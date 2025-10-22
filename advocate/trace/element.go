@@ -107,4 +107,5 @@ type Element interface {
 	GetTraceID() int
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
+	GetElemMin() (ElemMin, bool)
 }

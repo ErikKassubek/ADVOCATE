@@ -21,9 +21,9 @@ import (
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
 	switch wa.GetOpW() {
-	case trace.ChangeOp:
+	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
-	case trace.WaitOp:
+	case trace.WaitWait:
 		Wait(wa)
 	default:
 		err := "Unknown operation on wait group: " + wa.ToString()

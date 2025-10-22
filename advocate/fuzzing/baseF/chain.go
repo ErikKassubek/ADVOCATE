@@ -106,7 +106,7 @@ func (this *Chain) RemoveTail() {
 //
 // Returns:
 //   - analysis.TraceElement: the first element in the chain, or nil if chain is empty
-func (this *Chain) FirstElement() trace.Element {
+func (this *Chain) ElemWithSmallestTPost() trace.Element {
 	if this.Len() == 0 {
 		return nil
 	}
@@ -114,7 +114,7 @@ func (this *Chain) FirstElement() trace.Element {
 	var min trace.Element
 
 	for _, c := range this.Elems {
-		if min == nil || c.GetTPost() < min.GetTPost() {
+		if min == nil || c.GetTSort() < min.GetTSort() {
 			min = c
 		}
 	}

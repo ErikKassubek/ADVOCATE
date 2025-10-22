@@ -21,12 +21,6 @@ import (
 // OpWait enum
 type OpWait int
 
-// Values for the opW enum
-const (
-	ChangeOp OpWait = iota
-	WaitOp
-)
-
 // ElementWait is a trace element for a wait group statement
 //
 // Fields:
@@ -53,7 +47,7 @@ type ElementWait struct {
 	tPre                     int
 	tPost                    int
 	id                       int
-	opW                      OpWait
+	op                       ObjectType
 	delta                    int
 	val                      int
 	file                     string
@@ -94,16 +88,18 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 		return errors.New("id is not an integer")
 	}
 
-	opWOp := ChangeOp
-	if opW == "W" {
-		opWOp = WaitOp
-	} else if opW != "A" {
-		return errors.New("op is not a valid operation")
-	}
-
 	deltaInt, err := strconv.Atoi(delta)
 	if err != nil {
 		return errors.New("delta is not an integer")
+	}
+
+	opWOp := None
+	if opW == "W" {
+		opWOp = WaitWait
+	} else if deltaInt > 0 {
+		opWOp = WaitAdd
+	} else {
+		opWOp = WaitDone
 	}
 
 	valInt, err := strconv.Atoi(val)
@@ -122,7 +118,7 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
 		id:                       idInt,
-		opW:                      opWOp,
+		op:                       opWOp,
 		delta:                    deltaInt,
 		val:                      valInt,
 		file:                     file,
@@ -138,6 +134,20 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	this.AddElement(&elem)
 
 	return nil
+}
+
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementWait) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      this.id,
+		Op:      this.op,
+		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Routine: this.routine,
+	}, true
 }
 
 // Return an empty wait element with an id. Mainly used for source/drain in
@@ -244,15 +254,15 @@ func (this *ElementWait) GetTID() string {
 // Returns:
 //   - bool: True if the operation is a wait op
 func (this *ElementWait) IsWait() bool {
-	return this.opW == WaitOp
+	return this.op == WaitWait
 }
 
 // GetOpW returns the operation type
 //
 // Returns:
-//   - opWait: the wait operations
-func (this *ElementWait) GetOpW() OpWait {
-	return this.opW
+//   - objectType: the wait operations
+func (this *ElementWait) GetOpW() ObjectType {
+	return this.op
 }
 
 // GetDelta returns the delta of the element. The delta is the value by which the counter
@@ -402,10 +412,10 @@ func (this *ElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
 	res += strconv.Itoa(this.id) + ","
-	switch this.opW {
-	case ChangeOp:
+	switch this.op {
+	case WaitAdd, WaitDone:
 		res += "A,"
-	case WaitOp:
+	case WaitWait:
 		res += "W,"
 	}
 
@@ -447,7 +457,7 @@ func (this *ElementWait) Copy(_ map[string]Element) Element {
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
 		id:                       this.id,
-		opW:                      this.opW,
+		op:                       this.op,
 		delta:                    this.delta,
 		val:                      this.val,
 		file:                     this.file,

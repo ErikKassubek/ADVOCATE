@@ -58,6 +58,20 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	return nil
 }
 
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementRoutineEnd) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      -1,
+		Op:      EndRoutine,
+		Pos:     "",
+		Routine: this.routine,
+	}, false
+}
+
 // GetID is a dummy function to implement the traceElement interface
 //
 // Returns:

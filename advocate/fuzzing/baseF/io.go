@@ -28,11 +28,12 @@ import (
 //
 // Parameter:
 //   - mut Chain: the mutation to write
+//   - first bool: set to true, if it is the first mutation for a given test/prog
 //
 // Returns:
 //   - bool: true if max number muts in reached
 //   - error
-func WriteMutChain(mut Chain) (bool, error) {
+func WriteMutChain(mut Chain, first bool) (bool, error) {
 	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
 		return true, nil
 	}
@@ -62,19 +63,23 @@ func WriteMutChain(mut Chain) (bool, error) {
 		traceCopy.AddElement(c)
 	}
 
+	if first {
+		AddFuzzingTraceFolder(paths.FuzzingTraces)
+	}
+
 	fuzzingTracePath := filepath.Join(paths.FuzzingTraces, fmt.Sprintf("fuzzingTrace_%d", NumberWrittenMutations))
 	ChainFiles[NumberWrittenMutations] = mut
 
 	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
 	if err != nil {
-		return false, fmt.Errorf("Could not create pie mutation: %s", err.Error())
+		return false, fmt.Errorf("Could not create mutation: %s", err.Error())
 	}
 
 	// write the active map to a "replay_active.log"
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
 		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.FirstElement().GetTPost())
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTPost())
 	}
 
 	traceCopy.Clear()

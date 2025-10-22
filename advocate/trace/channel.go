@@ -173,6 +173,20 @@ func (this *Trace) AddTraceElementChannel(routine int, tPre string,
 	return nil
 }
 
+// Get the ElemMin representation of the operation
+//
+// Returns:
+//   - ElemMin: the ElemMin representations of the operation
+//   - bool: true if it should be part of a min trace, false otherwise
+func (this *ElementChannel) GetElemMin() (ElemMin, bool) {
+	return ElemMin{
+		ID:      this.id,
+		Op:      this.op,
+		Pos:     fmt.Sprintf("%s:%d", this.file, this.line),
+		Routine: this.routine,
+	}, true
+}
+
 // GetPartner returns the partner of the channel operation
 //
 // Returns:

@@ -263,7 +263,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			// add mutations based on GoPie
 			if baseF.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
-				gopie.CreateMutations(baseF.NumberFuzzingRuns, order.MutPie)
+				gopie.CreateMutations(order.MutPie)
 			}
 
 			if flags.CreateStatistics {

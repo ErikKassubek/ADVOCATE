@@ -11,7 +11,9 @@
 package guided
 
 import (
+	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
+	"advocate/trace"
 	"advocate/utils/log"
 )
 
@@ -24,9 +26,17 @@ var numberMuts = 0
 func CreateMutations() {
 	numberMuts = 0
 
+	addTraceToProcessed()
+
 	predictive()
 	guided()
 	random()
+}
+
+// addTraceToProcessed adds the current trace to the processedTraces to avoid run of independent operations
+func addTraceToProcessed() {
+	minTrace := trace.TraceMinFromTrace(&baseA.MainTrace)
+	processedTraces = append(processedTraces, minTrace)
 }
 
 // predictive runs the predictive analysis and creates new runs based on
@@ -48,12 +58,50 @@ func guided() {
 // has not reached the max number of mutations per run
 func random() {
 	for numberMuts < maxNumberOfMutsPerRun {
-		log.Important("Create mutation")
 		chain := startChain(lengthChain)
-		// TODO: do random mutation
 
-		baseF.WriteMutChain(chain)
-		numberMuts++
+		mutatedChains := baseF.Mutate(chain, -1, nil, nil)
 
+		for _, ch := range mutatedChains {
+			minTrace := traceMinFromChain(ch)
+
+			if independentTraceMin(minTrace) {
+				continue
+			}
+
+			processedTraces = append(processedTraces, minTrace)
+
+			firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
+			_, err := baseF.WriteMutChain(ch, firstMut)
+			if err != nil {
+				log.Error("Error in writing mutation: ", err.Error())
+			}
+			numberMuts++
+
+		}
 	}
+}
+
+// traceMinFromChain creates a trace min from a chain
+//
+// Parameter:
+//   - chain Chain: the chain
+func traceMinFromChain(chain baseF.Chain) trace.TraceMin {
+	res := trace.NewTraceMin()
+
+	minTPost := chain.ElemWithSmallestTPost().GetTSort()
+
+	traceIter := baseA.MainTrace.AsIterator()
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		if elem.GetTSort() >= minTPost {
+			break
+		}
+
+		minElem, val := elem.GetElemMin()
+		if val {
+			res.AddElem(minElem)
+		}
+	}
+
+	return res
 }

@@ -32,7 +32,7 @@ var (
 	GoPieW2             = 1.0
 	GoPieMaxSCLength    = 9
 	GoPieMaxSCLengthSet = false
-	GoPieMutabound      = 128
+	ChainMutabound      = 128
 
 	GoPieSCStart = 24
 
@@ -44,7 +44,7 @@ var (
 // from the settings flag
 func SetSettings() {
 	if flags.FuzzingMode != "GoPie" {
-		GoPieMutabound = 2 * min(int(flags.MaxFuzzingRun/GoPieSCStart), GoPieMutabound)
+		ChainMutabound = 2 * min(int(flags.MaxFuzzingRun/GoPieSCStart), ChainMutabound)
 	}
 
 	if flags.Settings == "" {
@@ -86,7 +86,7 @@ func SetSettings() {
 		case "GoPieBound":
 			GoPieMaxSCLength = int(clamp(value, 2.0, math.MaxFloat64))
 		case "GoPieMutabound":
-			GoPieMutabound = int(clamp(value, 1, math.MaxFloat64))
+			ChainMutabound = int(clamp(value, 1, math.MaxFloat64))
 		case "GoPieSCStart":
 			GoPieSCStart = int(clamp(value, 1, math.MaxFloat64))
 		case "SameElementTypeInSC":

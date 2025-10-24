@@ -119,6 +119,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementCond) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
+		Index:   this.index,
 		ID:      this.id,
 		Op:      this.op,
 		Pos:     PosStringFromPos(this.file, this.line),

@@ -65,6 +65,7 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementRoutineEnd) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
+		Index:   -1,
 		ID:      -1,
 		Op:      EndRoutine,
 		Pos:     "",

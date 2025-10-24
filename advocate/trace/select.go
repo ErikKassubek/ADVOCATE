@@ -221,6 +221,7 @@ func (this *ElementSelect) GetElemMin() (ElemMin, bool) {
 	}
 
 	return ElemMin{
+		Index:   this.index,
 		ID:      this.id,
 		Op:      SelectOp,
 		Pos:     PosStringFromPos(this.file, this.line),

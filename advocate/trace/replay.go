@@ -52,6 +52,7 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementReplay) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
+		Index:   -1,
 		ID:      -1,
 		Op:      None,
 		Pos:     "",

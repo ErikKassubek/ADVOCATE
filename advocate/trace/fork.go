@@ -104,6 +104,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementFork) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
+		Index:   this.index,
 		ID:      this.id,
 		Op:      ForkOp,
 		Pos:     PosStringFromPos(this.file, this.line),

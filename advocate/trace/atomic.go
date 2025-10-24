@@ -125,6 +125,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementAtomic) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
+		Index:   this.index,
 		ID:      this.id,
 		Op:      this.op,
 		Pos:     PosStringFromPos(this.file, this.line),

@@ -13,7 +13,9 @@
 
 package guided
 
-import "advocate/trace"
+import (
+	"advocate/trace"
+)
 
 // IndependentTracesMin checks if the two given min traces are independent
 //
@@ -24,7 +26,50 @@ import "advocate/trace"
 // Returns:
 //   - bool: true if they are independent (we only need to run one of them), false otherwise
 func independentTracesMin(t1, t2 trace.TraceMin) bool {
-	// TODO: implement
+	var shorter, longer trace.TraceMin
+
+	if t1.Len() < t2.Len() {
+		shorter = t1
+		longer = t2
+	} else {
+		shorter = t2
+		longer = t1
+	}
+
+	for i := 0; i < longer.Len()-shorter.Len(); i++ {
+		sub := longer.CloneSub(i, i+shorter.Len())
+		if reachable(sub, shorter, make(map[string]bool)) {
+			return true
+		}
+	}
+
+	return true
+}
+
+func reachable(curr, target trace.TraceMin, memo map[string]bool) bool {
+	if curr.IsEqual(&target) {
+		return true
+	}
+
+	key := curr.Key()
+
+	if v, ok := memo[key]; ok {
+		return v
+	}
+
+	for i := 0; i < curr.Len()-1; i++ {
+		if ok, _ := areIndependent(curr.Get(i), curr.Get(i+1)); ok {
+			next := curr.Clone()
+			next.Flip(i, i+1)
+
+			if reachable(next, target, memo) {
+				memo[key] = true
+				return true
+			}
+		}
+	}
+
+	memo[key] = false
 	return false
 }
 

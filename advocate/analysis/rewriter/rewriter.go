@@ -33,6 +33,8 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	rewriteNeeded = false
 	code = helper.ExitCodeNone
 	switch bug.Type {
+
+	// ACTUAL BUGS
 	case helper.ASendOnClosed:
 		err = errors.New("Actual send on closed. Therefore no rewrite is needed")
 	case helper.ARecvOnClosed:
@@ -49,6 +51,11 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = errors.New("Rewriting trace for concurrent receive is not possible")
 	case helper.ASelCaseWithoutPartner:
 		err = errors.New("Rewriting trace for select without partner is not possible")
+	// MIXED DEADLOCK [REMOVE]
+	case helper.AMixedDeadlock:
+		err = errors.New("Actual mixed deadlock found in trace. No rewrite needed")
+
+	// POSSIBLE BUGS
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
 		rewriteNeeded = true
@@ -65,11 +72,13 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		code = helper.ExitCodeUnlockBeforeLock
 		rewriteNeeded = true
 		err = rewriteGraph(tr, bug, code)
-	// case bugs.MixedDeadlock:
-	// 	err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
 	case helper.PCyclicDeadlock:
 		rewriteNeeded = true
 		err = rewriteCyclicDeadlock(tr, bug)
+	// MIXED DEADLOCK [REMOVE]
+	case helper.PMixedDeadlock:
+		rewriteNeeded = true
+		err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
 	case helper.LUnknown:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case helper.LUnbufferedWith:

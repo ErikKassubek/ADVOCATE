@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/analysis.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: vc.go

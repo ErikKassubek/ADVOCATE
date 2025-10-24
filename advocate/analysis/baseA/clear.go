@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/clear.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: clear.go

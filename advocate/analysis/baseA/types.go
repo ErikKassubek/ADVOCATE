@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/types.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: types.go

@@ -138,6 +138,11 @@ func (this Bug) ToString() string {
 	case helper.AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
+	// MIXED DEADLOCK [REMOVE]
+	case helper.AMixedDeadlock:
+		typeStr = "Actual mixed deadlock:"
+		arg1Str = "send/close: "
+		arg2Str = "recv: "
 	case helper.PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
 		arg1Str = "send: "
@@ -158,6 +163,11 @@ func (this Bug) ToString() string {
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
+	// MIXED DEADLOCK [REMOVE]
+	case helper.PMixedDeadlock:
+		typeStr = "Possible mixed deadlock:"
+		arg1Str = "send/close: "
+		arg2Str = "recv: "
 	case helper.LUnknown:
 		typeStr = "Leak on routine"
 		arg1Str = "elem: "
@@ -295,6 +305,10 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	case "A09":
 		bug.Type = helper.ASelCaseWithoutPartner
 		actual = true
+	// MIXED DEADLOCK [REMOVE]
+	case "A10":
+		bug.Type = helper.AMixedDeadlock
+		actual = true
 	case "P01":
 		bug.Type = helper.PSendOnClosed
 	case "P02":
@@ -305,8 +319,9 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.PUnlockBeforeLock
 	case "P05":
 		bug.Type = helper.PCyclicDeadlock
-	// case "P06":
-	// 	bug.Type = MixedDeadlock
+	// MIXED DEADLOCK [REMOVE]
+	case "P06":
+		bug.Type = helper.PMixedDeadlock
 	case "L00":
 		containsArg1 = false
 		bug.Type = helper.LUnknown

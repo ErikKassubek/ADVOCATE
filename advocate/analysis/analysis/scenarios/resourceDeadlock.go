@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/scenarios/resourceDeadlock.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisResourceDeadlock.go

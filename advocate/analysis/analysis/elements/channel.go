@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/elements/channel.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: hbChannel.go
@@ -20,6 +22,7 @@ import (
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"fmt"
 )
 
 // UpdateChannel updates the vector clocks to a channel element
@@ -225,6 +228,8 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 			scenarios.FoundSendOnClosedChannel(sender, true)
 		}
 	}
+
+	log.Info(fmt.Sprintf("[Channel] MixedDeadlock flag = %v", baseA.AnalysisCasesMap[flags.MixedDeadlock]))
 
 	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 		scenarios.CheckForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())

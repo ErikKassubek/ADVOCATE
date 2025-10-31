@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementWait.go
+// File: /advocate/trace/routineEnd.go
 // Brief: Struct and functions for wait group operations in the trace
 //
 // Author: Erik Kassubek

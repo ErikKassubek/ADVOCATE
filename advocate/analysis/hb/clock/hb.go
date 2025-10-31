@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: hb.go
+// File: /advocate/analysis/hb/clock/hb.go
 // Brief: Type for happens before
 //
 // Author: Erik Kassubek
@@ -10,7 +10,9 @@
 
 package clock
 
-import "advocate/analysis/hb"
+import (
+	"advocate/analysis/hb"
+)
 
 // Check if vc1 happens before vc2
 //

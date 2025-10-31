@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: TraceElementRoutineEnd.go
+// File: /advocate/trace/routineEnd.go
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek

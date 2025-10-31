@@ -78,7 +78,7 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	// MIXED DEADLOCK [REMOVE]
 	case helper.PMixedDeadlock:
 		rewriteNeeded = true
-		err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
+		err = rewriteMixedDeadlock(tr, bug)
 	case helper.LUnknown:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case helper.LUnbufferedWith:

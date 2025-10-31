@@ -80,6 +80,7 @@ const (
 	ExitCodeNegativeWG       = 34
 	ExitCodeUnlockBeforeLock = 35
 	ExitCodeCyclic           = 41
+	ExitCodeMixedDeadlock    = 42
 )
 
 // MinExitCodeSuc is the minimum exit code for successful replay

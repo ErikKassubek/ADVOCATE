@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElements.go
+// File: /advocate/trace/element.go
 // Brief: Interface for all trace element types
 //
 // Author: Erik Kassubek

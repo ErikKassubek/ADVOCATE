@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementFork.go
+// File: /advocate/trace/fork.go
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek

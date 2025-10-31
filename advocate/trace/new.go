@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementNew.go
+// File: /advocate/trace/new.go
 // Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
 // Author: Erik Kassubek

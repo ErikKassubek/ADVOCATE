@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: analysisMixedDeadlock.go
+// File: /advocate/analysis/analysis/scenarios/mixedDeadlock.go
 // Brief: Trace analysis for mixed deadlocks. Currently not used.
 //
 // Author: Erik Kassubek
@@ -198,7 +198,36 @@ func addMixedCandidate(sendTid, recvTid, lockID int, isClose bool) {
 		return
 	}
 
-	// Construct candidate
+	// WMHB: Filter pairs that cannot be reordered (fork→start)
+	if GetWeakMustHappenBefore(acqS.Elem, acqR.Elem) ||
+		GetWeakMustHappenBefore(acqR.Elem, acqS.Elem) {
+		return
+	}
+
+	switch rel {
+	case hb.Before:
+		// Sender acquired before receiver (normal direction)
+		buildMixedCandidate(sendTid, recvTid, lockID, isClose, acqS, acqR)
+	case hb.After:
+		// Receiver acquired before sender → reverse direction
+		buildMixedCandidate(recvTid, sendTid, lockID, isClose, acqR, acqS)
+	default:
+		// concurrent, still valid (MD2-1)
+		buildMixedCandidate(sendTid, recvTid, lockID, isClose, acqS, acqR)
+	}
+}
+
+// buildMixedCandidate actually constructs and reports the candidate.
+// separated from the outer control logic for clarity.
+//
+// Parameter:
+//   - sendTid int: The sending routine ID
+//   - recvTid int: The receiving routine ID
+//   - lockID int:  The lock ID to consider
+//   - isClose bool: Whether the send is a close operation
+func buildMixedCandidate(sendTid, recvTid, lockID int, isClose bool,
+	acqS, acqR baseA.ElemWithVc) {
+
 	cand := mixedCandidate{
 		LockID:      lockID,
 		SendRoutine: sendTid,
@@ -208,13 +237,36 @@ func addMixedCandidate(sendTid, recvTid, lockID int, isClose bool) {
 		IsCloseRecv: isClose,
 	}
 
-	// For close–recv pattern, attach channel reference
 	if isClose {
+		// Close–Receive variant
 		for chID, chElem := range baseA.CloseData {
 			if chElem.GetRoutine() == sendTid {
 				cand.ChanID = chID
 				cand.SendEvent = chElem
 				break
+			}
+		}
+	} else {
+		// Send–Receive variant
+		if routineMap, ok := baseA.MostRecentSend[sendTid]; ok {
+			for chID, vcVal := range routineMap {
+				if vcVal.Elem != nil {
+					cand.ChanID = chID
+					if chElem, ok2 := vcVal.Elem.(*trace.ElementChannel); ok2 {
+						cand.SendEvent = chElem
+					}
+					break
+				}
+			}
+		}
+		if routineMap, ok := baseA.MostRecentReceive[recvTid]; ok {
+			for _, vcVal := range routineMap {
+				if vcVal.Elem != nil {
+					if chElem, ok2 := vcVal.Elem.(*trace.ElementChannel); ok2 {
+						cand.RecvEvent = chElem
+					}
+					break
+				}
 			}
 		}
 	}
@@ -274,14 +326,70 @@ func reportMixedDeadlock(md mixedCandidate) {
 	log.Info(msg)
 }
 
-// ===============================
-// TODO / Future Work:
-// ===============================
+// GetWeakMustHappenBefore determines if two events have a "must-happen-before"
+// constraint that forbids reordering, even if they appear concurrent.
+// (underapproximation of HB to filter impossible reorderings)
+//
+// Parameter:
+//   - e1 trace.Element: The first event
+//   - e2 trace.Element: The second event
+//
+// Returns:
+//   - bool: True if e1 must happen before e2, false otherwise
+func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
+	if e1 == nil || e2 == nil {
+		return false
+	}
+
+	// Same goroutine: program order must hold
+	if e1.GetRoutine() == e2.GetRoutine() {
+		return e1.GetTSort() < e2.GetTSort()
+	}
+
+	// Fork → start dependency
+	if fork, ok := e1.(*trace.ElementFork); ok {
+		// Any event in the newly created goroutine must occur after the fork
+		if fork.GetID() == e2.GetRoutine() {
+			return true
+		}
+	}
+
+	// Channel creation → close
+	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
+		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
+			if ch1.GetID() == ch2.GetID() && ch2.GetType(true) == trace.ChannelClose {
+				return true
+			}
+		}
+	}
+
+	// Channel make → any operation on that channel (optional, looser form)
+	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
+		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
+			if ch1.GetID() == ch2.GetID() {
+				return true
+			}
+		}
+	}
+
+	// Atomic store → atomic load on same variable
+	if a1, ok1 := e1.(*trace.ElementAtomic); ok1 && a1.GetType(true) == trace.AtomicStore {
+		if a2, ok2 := e2.(*trace.ElementAtomic); ok2 && a2.GetType(true) == trace.AtomicLoad {
+			if a1.GetID() == a2.GetID() {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// TODOs
 //
 // 1) RWMutex Support (RLock / RUnlock vs Lock / Unlock)
 //   - Extend LockSetAddLock() to classify and store lock mode (READ or WRITE)
 //     ElementMutex type or name ("RLock", "RUnlock").
-//   - Maintain `lastLockMode[routine][lockID]` map as implemented in draft.
+//   - Maintain `lastLockMode[routine][lockID]` map
 //   - In addMixedCandidate(), skip (READ, READ) pairs (no exclusion)
 //   - (WRITE, WRITE) and (WRITE, READ) / (READ, WRITE) as potential MDs.
 //
@@ -306,8 +414,6 @@ func reportMixedDeadlock(md mixedCandidate) {
 //   - enforce reversed HB order of acq(x)_e and acq(x)_f
 //     so that both threads reach cyclic lock–channel wait (confirm A10).
 //
-// 6) Other
+// Other
 //   - Implement grouping of redundant candidates (MD clustering by lock/channel).
 //   - Track vector clock distances for prioritizing replays.
-//
-// ===============================

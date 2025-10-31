@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: trace.go
+// File: /advocate/trace/trace.go
 // Brief: Functions and structs for the trace
 //
 // Author: Erik Kassubek

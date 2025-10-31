@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementMutex.go
+// File: /advocate/trace/mutex.go
 // Brief: Struct and functions for mutex operations in the trace
 //
 // Author: Erik Kassubek

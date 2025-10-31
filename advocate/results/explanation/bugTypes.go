@@ -28,6 +28,7 @@ var bugCrit = map[string]string{
 	"P03": "Bug",
 	"P04": "Bug",
 	"P05": "Bug",
+	"P06": "Bug",
 	"L00": "Leak",
 	"L01": "Leak",
 	"L02": "Leak",
@@ -58,6 +59,7 @@ var bugNames = map[string]string{
 	"P03": "Possible Negative WaitGroup cCounter",
 	"P04": "Possible unlock of not locked mutex",
 	"P05": "Possible cyclic deadlock",
+	"P06": "Possible mixed deadlock",
 
 	"L00": "Leak",
 	"L01": "Leak on unbuffered channel with possible partner",
@@ -122,6 +124,12 @@ var bugExplanations = map[string]string{
 		"If this deadlock contains or influences the run of the main routine, this can " +
 		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
 		"resources.",
+	"P06": "The analysis detected a possible mixed deadlock.\n" +
+		"A mixed deadlock is a situation, where two routines are blocked on each other, " +
+		"because they are waiting to send or receive on a channel, while holding locks " +
+		"that the other routine needs to proceed.\n" +
+		"This can lead to the program getting stuck, if one of the routines is the main routine. " +
+		"Otherwise it can lead to an unnecessary use of resources.",
 	"L00": "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +

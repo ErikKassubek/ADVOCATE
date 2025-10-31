@@ -1,12 +1,10 @@
-// advocate/analysis/analysis/scenarios/mixedDeadlock.go
-
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisMixedDeadlock.go
-// Brief: Trace analysis for mixed (lock + channel) deadlocks.
+// Brief: Trace analysis for mixed deadlocks. Currently not used.
 //
-// Author: ChatGPT Integration Draft based on Advocate Architecture
-// Created: 2025-10-23
+// Author: Erik Kassubek
+// Created: 2024-01-27
 //
 // License: BSD-3-Clause
 
@@ -25,10 +23,17 @@ import (
 	"strconv"
 )
 
-// Data Structure: mixedCandidate
-// represents potential mixed deadlock detected between
-// two routines that share a lock and communicate via a channel
-// Tuple: (e, f, acq(x)_e, acq(x)_f)
+// In Two-Cycle Mixed Deadlock (MDS-2) model, each mixed-deadlock candidate
+// is defined as a 4-tuple:
+//
+//  • MD = ( e, f, acq(x)_e, acq(x)_f )
+//
+// where:
+//  • e, f         are channel operations (send/recv or close/recv)
+//  • x            is a lock ID held or recently acquired by both threads
+//  • acq(x)_e     is the most recent acquire of x by the sender’s thread
+//  • acq(x)_f     is the most recent acquire of x by the receiver’s thread
+
 type mixedCandidate struct {
 	LockID      int
 	ChanID      int
@@ -44,28 +49,12 @@ type mixedCandidate struct {
 // Internal state (reset per analysis)
 var mixedCandidates []mixedCandidate
 
-// Resets all temp data for mixed deadlock detection
 func ResetMixedDeadlockState() {
 	mixedCandidates = make([]mixedCandidate, 0)
 }
 
-/*
-Lock Acquire Notation:
-----------------------------------------------------------------------
-Let LS(t) denote the current lockset of thread t (all locks held by t).
-Let Acq(t, x) denote the *most recent acquire event* of lock x by thread t,
-annotated with its vector clock V_acq(t,x).
-
-Then, for each Lock() event e = acq(x)_t with vector clock V_e,
-we update:
-	LS(t) 		← LS(t) ∪ {x}
-	Acq(t, x) 	← (t, e, V_e)
-
-These structures are later used to form mixed-deadlock candidates
-(e, f, acq(x)_e, acq(x)_f), where acq(x)_e ∈ Acq(t_e, x).
-*/
-
 // LockSetAddLock adds a lock to the lockSet of a routine
+// and saves the vector clock of the acquire event
 //
 // Parameter:
 //   - mu *trace.ElementMutex: The mutex element representing the lock event
@@ -77,47 +66,27 @@ func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	defer timer.Stop(timer.AnaResource)
 
 	// Identify current routine t and lock identifier x
-	routine := mu.GetRoutine() // t
-	id := mu.GetID()           // x
+	routine := mu.GetRoutine()
+	id := mu.GetID()
 
 	// Ensure per thread lockset LS(t) exists
-	// LS(t): Set of all locks currently heled by thread t
 	if _, ok := baseA.LockSet[routine]; !ok {
 		baseA.LockSet[routine] = make(map[int]string)
 	}
 
 	// Ensure per thread most recent acquire Acq(t, x) exists
-	// Acq(t, x): Most recent acquire of lock x by thread t
 	if _, ok := baseA.MostRecentAcquire[routine]; !ok {
 		baseA.MostRecentAcquire[routine] = make(map[int]baseA.ElemWithVc)
 	}
-
-	// Record that thread t currently holds lock x:
-	// LS(t) ← LS(t) ∪ {x}
+	// Add lock x to lock set: LS(t) ← LS(t) ∪ {x}
 	baseA.LockSet[routine][id] = mu.GetTID()
 
-	// Store the latest acquire event acq(x)_t with its vector clock:
-	// Acq(t, x) ← (t, mu, V_mu)
-	// V_mu: Represents partial-order timestamp at acquisition
+	// Store latest acquire event acq(x)_t with vector clock: Acq(t, x) ← (t, mu, V_mu)
 	baseA.MostRecentAcquire[routine][id] = baseA.ElemWithVc{
-		Vc:   vc, // vector clock 		V_e = V_acq(t,x)
-		Elem: mu, // event reference 	  e = acq(x)_t
+		Vc:   vc,
+		Elem: mu,
 	}
 }
-
-/*
-Lock Release Notation:
-----------------------------------------------------------------------
-When a lock x is released by thread t, we update:
-    LS(t) ← LS(t) \ {x}
-
-Removing x ensures that subsequent channel sends/receives are no longer considered as
-being executed under that lock.
-
-The mapping Acq(t, x) (the last acquisition event) is *not* deleted here
-It is needed for predictive reasoning in later mixed-deadlock checks (MD2-2, MD2-3)
-where the thread has already released x before the partner executes
-*/
 
 // LockSetRemoveLock removes a lock from the lockSet of a routine
 //
@@ -130,8 +99,7 @@ func LockSetRemoveLock(routine int, lock int) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	// Verify that lock x is indeed recorded in LS(t)
-	// i.e., that t currently holds x
+	// Verify lock is in lockSet
 	if _, ok := baseA.LockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
 			" not in lockSet for routine " + strconv.Itoa(routine)
@@ -139,51 +107,34 @@ func LockSetRemoveLock(routine int, lock int) {
 		return
 	}
 
-	// Remove lock x from LS(t)
-	// LS(t) ← LS(t) \ {x}
+	// Remove lock x: LS(t) ← LS(t) \ {x}
 	delete(baseA.LockSet[routine], lock)
 }
 
-/*
-Mixed Deadlock Detection
-----------------------------------------------------------------------
-In Two-Cycle Mixed Deadlock (MDS-2) model, each mixed-deadlock candidate
-is defined as a 4-tuple:
-
-    MD = ( e, f, acq(x)_e, acq(x)_f )
-
-where
-  • e, f         are channel operations (send/recv or close/recv)
-  • x            is a lock ID held or recently acquired by both threads
-  • acq(x)_e     is the most recent acquire of x by the sender’s thread
-  • acq(x)_f     is the most recent acquire of x by the receiver’s thread
-
-The algorithm searches for pairs (routineSend, routineRecv)
-that communicate over a channel and have dependent lock acquisitions
-that are concurrent in vector-clock happens-before relation.
-
-Each concurrent pair forms a potential mixed-deadlock candidate (predictive warning)
-
-Handled MDS-2 cases:
-  • MD2-1: 		Both sender and receiver inside the same critical section
-           		(x ∈ LS(send) ∩ LS(recv))
-  • MD2-2: 		Sender inside, receiver after (x ∈ LS(send))
-  • MD2-3: 	 	Sender after, receiver inside (x ∈ LS(recv))
-  • MD-Close: 	close/recv interaction
-*/
-
-// CheckForMixedDeadlock analyzes two routines for potential mixed deadlock
+// CheckForMixedDeadlock analyzes a potential mixed deadlock scenario for the given routines
+//
+// Both routines can hold multiple locks or have acquired them recently.
+// The analysis considers all locks held by either routine.
+//
+// MDS-2 cases:
+//   - MD2-1: both sender and receiver are inside critical sections
+//            → x ∈ LS(send) ∩ LS(recv)
+//   - MD2-2: sender inside, receiver after its last critical section
+//            → x ∈ LS(send), x ∉ LS(recv)
+//   - MD2-3: sender after, receiver inside
+//            → x ∈ LS(recv), x ∉ LS(send)
 //
 // Parameter:
 //   - routineSend int: The sending routine ID
 //   - routineRecv int: The receiving routine ID
+
 func CheckForMixedDeadlock(routineSend int, routineRecv int) {
 	log.Info(fmt.Sprintf("[MixedDeadlock] Checking routines %d ↔ %d", routineSend, routineRecv))
 
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	// (1) Collect Lock Sets LS(t) for both routine LS(send) and LS(recv)
+	// Collect LS(t) for both routines: LS(send) and LS(recv)
 	lsSend := baseA.LockSet[routineSend]
 	lsRecv := baseA.LockSet[routineRecv]
 	if lsSend == nil || lsRecv == nil {
@@ -192,27 +143,25 @@ func CheckForMixedDeadlock(routineSend int, routineRecv int) {
 
 	log.Info(fmt.Sprintf("[MixedDeadlock] lsSend=%v lsRecv=%v", lsSend, lsRecv))
 
-	// (2) Consider union of LS(send) ∪ LS(recv)
-	//     Ensures asymmetric MD2-2 (sender-in-CS, receiver-after)
-	//     				  and MD2-3 (sender-after, receiver-in-CS) cases are included
+	// Consider union of LS(send) ∪ LS(recv)
 	seen := make(map[int]struct{})
 
+	// Iterate over locks in LS(send) (save seen locks to avoid duplicates)
 	for lockID := range lsSend {
 		seen[lockID] = struct{}{}
-		// Try to build candidate for each lock x ∈ LS(send)
+		// MD2-1 and MD2-2
 		addMixedCandidate(routineSend, routineRecv, lockID, false)
 	}
 
+	// Iterate over locks in LS(recv) (skip seen locks))
 	for lockID := range lsRecv {
 		if _, done := seen[lockID]; !done {
-			// Add remaining locks x ∈ LS(recv) \ LS(send)
+			// MD2-3
 			addMixedCandidate(routineSend, routineRecv, lockID, false)
 		}
 	}
 
-	// (3) Handle close–recv variant:
-	//     For each recorded close(c) by routineSend,
-	//     create candidates with receiver’s LS(recv) locks
+	// Iterate over close events by routineSend and consider all locks in LS(recv)
 	for _, closeElem := range baseA.CloseData {
 		if closeElem.GetRoutine() == routineSend {
 			for lockID := range lsRecv {
@@ -222,44 +171,30 @@ func CheckForMixedDeadlock(routineSend int, routineRecv int) {
 	}
 }
 
-/*
-Mixed Deadlock Candidate Creation
-------------------------------------------------------
-Given two threads t_s and t_r and a lock x:
-
-    if  Acq(t_s, x) = (t_s, e_s, V_s)
-        Acq(t_r, x) = (t_r, e_r, V_r)
-
-    and V_s  ||  V_r   (concurrent vector clocks)
-
-    record mixed-deadlock candidate
-	    MD = ( e, f, acq(x)_e, acq(x)_f )
-
- Otherwise, discard (ordered acquisitions cannot yield re-orderable cycles)
-
-*/
-
 // addMixedCandidate attempts to create a mixed-deadlock candidate
-// from the given send and receive routines and lock ID.
-// // Parameter:
+// from communication partners sendTid and recvTid (MD1) for the given lockID
+//
+// Parameter:
 //   - sendTid int: The sending routine ID
 //   - recvTid int: The receiving routine ID
 //   - lockID int:  The lock ID to consider
 //   - isClose bool: Whether the send is a close operation
 func addMixedCandidate(sendTid, recvTid, lockID int, isClose bool) {
-	// Lookup last acquire events:
-	//     acq_s = Acq(t_s, x)
-	//     acq_r = Acq(t_r, x)
+	// Lookup last acquire events
 	acqS, okS := baseA.MostRecentAcquire[sendTid][lockID]
 	acqR, okR := baseA.MostRecentAcquire[recvTid][lockID]
 	if !okS || !okR {
-		// At least one thread never acquired x → no dependency
+		// At least one routine never acquired the lock in question so no dependency
 		return
 	}
 
-	// HB-Check: Vector clocks must be concurrent for acquisitions to be potentially re-orderable
-	// 		hb(V_s, V_r) = concurrent
-	if clock.GetHappensBefore(acqS.Vc, acqR.Vc) != hb.Concurrent {
+	// HB Check:
+	// - Symmetric Deadlocks (MD2-1): hb.Concurrent
+	// - Asymmetric Deadlocks (MD2-2/MD2-3): hb.Before or hb.After
+	rel := clock.GetHappensBefore(acqS.Vc, acqR.Vc)
+
+	// Accepty any HB-relation betwween the two lock acquisitions (skip only invalid cases)
+	if rel == hb.None {
 		return
 	}
 
@@ -275,7 +210,7 @@ func addMixedCandidate(sendTid, recvTid, lockID int, isClose bool) {
 
 	// For close–recv pattern, attach channel reference
 	if isClose {
-		for chID, chElem := range baseA.CloseData { // retrieve Channel ID
+		for chID, chElem := range baseA.CloseData {
 			if chElem.GetRoutine() == sendTid {
 				cand.ChanID = chID
 				cand.SendEvent = chElem
@@ -284,18 +219,9 @@ func addMixedCandidate(sendTid, recvTid, lockID int, isClose bool) {
 		}
 	}
 
-	// Store in global candidate set:
-	// MD_Candidates ← MD_Candidates ∪ {cand}
 	mixedCandidates = append(mixedCandidates, cand)
-
-	// Report
 	reportMixedDeadlock(cand)
 }
-
-/*
-Reporting
-------------------------------------------------------
-*/
 
 // reportMixedDeadlock generates a warning report for the given mixed deadlock candidate
 //
@@ -343,6 +269,45 @@ func reportMixedDeadlock(md mixedCandidate) {
 		},
 	}
 
+	// Report Potential Mixed Deadlock P06
 	results.Result(results.WARNING, helper.PMixedDeadlock, msg, []results.ResultElem{stuck}, "context", context)
 	log.Info(msg)
 }
+
+// ===============================
+// TODO / Future Work:
+// ===============================
+//
+// 1) RWMutex Support (RLock / RUnlock vs Lock / Unlock)
+//   - Extend LockSetAddLock() to classify and store lock mode (READ or WRITE)
+//     ElementMutex type or name ("RLock", "RUnlock").
+//   - Maintain `lastLockMode[routine][lockID]` map as implemented in draft.
+//   - In addMixedCandidate(), skip (READ, READ) pairs (no exclusion)
+//   - (WRITE, WRITE) and (WRITE, READ) / (READ, WRITE) as potential MDs.
+//
+// 2) Non-standard Critical Sections (Cross-Goroutine Unlock)
+//   - Count / flag "non-standard" CS where LockSetRemoveLock() for statistics
+//     logs "Lock X not in lockSet for routine Y".
+//
+// 3) WMHB (Weak Must-Happen-Before) Integration
+//   - Implement WMHB relation for impossible reorder pruning.
+//   - `mustHappenBefore(e1,e2)` function using fork/start and atomic relations.
+//   - In addMixedCandidate(): skip reporting if WMHB(e1,e2) == true.
+//   - Purpose: prevent false positives from thread-creation or atomic constraints.//
+//
+// 4) Channel Partnering Logic (Buffered / Unbuffered / Close)
+//   - Ensure channel analysis layer provides correct routine pairs:
+//       • Unbuffered → (sender, receiver)
+//       • Buffered   → (true sender, dequeuing receiver)
+//       • Close/Recv → (closer, receiver)
+//
+// 5) Confirm Replay Integration (A10 Detection)
+//   - rewriteMixedDeadlock(tr, bug) in rewriter/ to generate trace reorder.
+//   - enforce reversed HB order of acq(x)_e and acq(x)_f
+//     so that both threads reach cyclic lock–channel wait (confirm A10).
+//
+// 6) Other
+//   - Implement grouping of redundant candidates (MD clustering by lock/channel).
+//   - Track vector clock distances for prioritizing replays.
+//
+// ===============================

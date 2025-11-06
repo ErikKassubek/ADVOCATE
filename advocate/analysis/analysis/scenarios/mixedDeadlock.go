@@ -102,7 +102,7 @@ func LockSetRemoveLock(routine int, lock int) {
 	// Verify lock is in lockSet
 	if _, ok := baseA.LockSet[routine][lock]; !ok {
 		errorMsg := "Lock " + strconv.Itoa(lock) +
-			" not in lockSet for routine " + strconv.Itoa(routine)
+			" not in lockSet for routine. Non standard critical section. " + strconv.Itoa(routine)
 		log.Error(errorMsg)
 		return
 	}
@@ -346,7 +346,7 @@ func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
 		return e1.GetTSort() < e2.GetTSort()
 	}
 
-	// Fork → start dependency
+	// Fork: start dependency
 	if fork, ok := e1.(*trace.ElementFork); ok {
 		// Any event in the newly created goroutine must occur after the fork
 		if fork.GetID() == e2.GetRoutine() {
@@ -354,7 +354,7 @@ func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
 		}
 	}
 
-	// Channel creation → close
+	// Channel creation: close
 	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
 		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
 			if ch1.GetID() == ch2.GetID() && ch2.GetType(true) == trace.ChannelClose {
@@ -363,7 +363,7 @@ func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
 		}
 	}
 
-	// Channel make → any operation on that channel (optional, looser form)
+	// Channel make: any operation on that channel (optional, looser form)
 	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
 		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
 			if ch1.GetID() == ch2.GetID() {
@@ -372,7 +372,7 @@ func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
 		}
 	}
 
-	// Atomic store → atomic load on same variable
+	// Atomic store: atomic load on same variable
 	if a1, ok1 := e1.(*trace.ElementAtomic); ok1 && a1.GetType(true) == trace.AtomicStore {
 		if a2, ok2 := e2.(*trace.ElementAtomic); ok2 && a2.GetType(true) == trace.AtomicLoad {
 			if a1.GetID() == a2.GetID() {
@@ -393,26 +393,11 @@ func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
 //   - In addMixedCandidate(), skip (READ, READ) pairs (no exclusion)
 //   - (WRITE, WRITE) and (WRITE, READ) / (READ, WRITE) as potential MDs.
 //
-// 2) Non-standard Critical Sections (Cross-Goroutine Unlock)
-//   - Count / flag "non-standard" CS where LockSetRemoveLock() for statistics
-//     logs "Lock X not in lockSet for routine Y".
-//
-// 3) WMHB (Weak Must-Happen-Before) Integration
-//   - Implement WMHB relation for impossible reorder pruning.
-//   - `mustHappenBefore(e1,e2)` function using fork/start and atomic relations.
-//   - In addMixedCandidate(): skip reporting if WMHB(e1,e2) == true.
-//   - Purpose: prevent false positives from thread-creation or atomic constraints.//
-//
-// 4) Channel Partnering Logic (Buffered / Unbuffered / Close)
+// 4) Channel Partnering Logic (Buffered / Unbuffered / Close) X
 //   - Ensure channel analysis layer provides correct routine pairs:
 //       • Unbuffered → (sender, receiver)
 //       • Buffered   → (true sender, dequeuing receiver)
 //       • Close/Recv → (closer, receiver)
-//
-// 5) Confirm Replay Integration (A10 Detection)
-//   - rewriteMixedDeadlock(tr, bug) in rewriter/ to generate trace reorder.
-//   - enforce reversed HB order of acq(x)_e and acq(x)_f
-//     so that both threads reach cyclic lock–channel wait (confirm A10).
 //
 // Other
 //   - Implement grouping of redundant candidates (MD clustering by lock/channel).

@@ -59,9 +59,6 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 			analysisCases[c] = true
 		}
 
-		// MIXED DEADLOCK [REMOVE]
-		// analysisCases[MixedDeadlock] = false
-
 		return analysisCases, nil
 	}
 

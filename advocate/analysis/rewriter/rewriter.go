@@ -51,7 +51,6 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = errors.New("Rewriting trace for concurrent receive is not possible")
 	case helper.ASelCaseWithoutPartner:
 		err = errors.New("Rewriting trace for select without partner is not possible")
-	// MIXED DEADLOCK [REMOVE]
 	case helper.AMixedDeadlock:
 		err = errors.New("Actual mixed deadlock found in trace. No rewrite needed")
 
@@ -75,7 +74,6 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	case helper.PCyclicDeadlock:
 		rewriteNeeded = true
 		err = rewriteCyclicDeadlock(tr, bug)
-	// MIXED DEADLOCK [REMOVE]
 	case helper.PMixedDeadlock:
 		rewriteNeeded = true
 		err = rewriteMixedDeadlock(tr, bug)

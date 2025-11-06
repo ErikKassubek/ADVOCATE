@@ -30,7 +30,6 @@ const (
 	AConcurrentRecv         ResultType = "A08"
 	ASelCaseWithoutPartner  ResultType = "A09"
 	AMixedDeadlock          ResultType = "A10"
-	// MIXED DEADLOCK [REMOVE]
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -39,7 +38,6 @@ const (
 	PUnlockBeforeLock ResultType = "P04"
 	PCyclicDeadlock   ResultType = "P05"
 	PMixedDeadlock    ResultType = "P06"
-	// MIXED DEADLOCK [REMOVE]
 
 	// leaks
 	LUnknown           ResultType = "L00"

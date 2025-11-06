@@ -43,7 +43,6 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 	helper.AMixedDeadlock:          "Actual mixed deadlock",
-	// MIXED DEADLOCK [REMOVE]
 
 	helper.PSendOnClosed:     "Possible send on closed channel",
 	helper.PRecvOnClosed:     "Possible receive on closed channel",
@@ -51,7 +50,6 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 	helper.PMixedDeadlock:    "Possible mixed deadlock",
-	// MIXED DEADLOCK [REMOVE]
 
 	helper.LUnknown:           "Leak on routine or unknown element",
 	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",

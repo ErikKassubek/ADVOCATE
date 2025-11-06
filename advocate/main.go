@@ -89,7 +89,6 @@ func main() {
 		"\tc: Cyclic deadlock\n"+
 		"\tm: Mixed deadlock\n",
 	)
-	// MIXED DEADLOCK [REMOVE]
 
 	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",

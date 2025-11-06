@@ -305,7 +305,6 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	case "A09":
 		bug.Type = helper.ASelCaseWithoutPartner
 		actual = true
-	// MIXED DEADLOCK [REMOVE]
 	case "A10":
 		bug.Type = helper.AMixedDeadlock
 		actual = true
@@ -319,7 +318,6 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.PUnlockBeforeLock
 	case "P05":
 		bug.Type = helper.PCyclicDeadlock
-	// MIXED DEADLOCK [REMOVE]
 	case "P06":
 		bug.Type = helper.PMixedDeadlock
 	case "L00":

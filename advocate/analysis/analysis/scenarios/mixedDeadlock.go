@@ -43,7 +43,7 @@ type mixedCandidate struct {
 	RecvEvent   *trace.ElementChannel
 	AcqSend     baseA.ElemWithVc
 	AcqRecv     baseA.ElemWithVc
-	Case        string // MD2-1 | MD2-2 | MD2-3 | MD2-Close
+	Case        string // MD2-1 | MD2-2 | MD2-3 | MD2-XClose
 	Buffered    bool
 }
 
@@ -77,11 +77,14 @@ func ensureLockTracking(routine int) {
 	}
 }
 
-// Getter for lock type READ/WRITE
-func getLockType(routine, lockID int) string {
-	if m, ok := lastLockType[routine]; ok {
-		if mode, ok2 := m[lockID]; ok2 {
-			return mode
+// Lock type READ/WRITE
+func getLockTypeFromAcquireElem(e trace.Element) string {
+	if mu, ok := e.(*trace.ElementMutex); ok {
+		switch mu.GetType(true) {
+		case trace.MutexRLock, trace.MutexTryRLock:
+			return "READ"
+		default:
+			return "WRITE"
 		}
 	}
 	return "UNKNOWN"
@@ -200,8 +203,8 @@ func addMixedCandidate(sendTid, recvTid, lockID int) {
 	}
 
 	// Get LockType to skip READ/READ
-	modeS := getLockType(sendTid, lockID)
-	modeR := getLockType(recvTid, lockID)
+	modeS := getLockTypeFromAcquireElem(acqS.Elem)
+	modeR := getLockTypeFromAcquireElem(acqR.Elem)
 
 	if (modeS == "READ" || modeS == "UNKNOWN") && (modeR == "READ" || modeR == "UNKNOWN") {
 		log.Info(fmt.Sprintf("[MD] skip lock %d: READ/READ (%s/%s)", lockID, modeS, modeR))
@@ -226,7 +229,6 @@ func addMixedCandidate(sendTid, recvTid, lockID int) {
 }
 
 // Determines sendElem/closeElem/recvElem using MostRecenet channel events
-// Derives matching send/recv or close/recv pair for candidate creation
 func getChannelPair(sendTid, recvTid int) (*trace.ElementChannel, *trace.ElementChannel, int, bool, bool) {
 	recvMap := baseA.MostRecentReceive[recvTid]
 	sendMap := baseA.MostRecentSend[sendTid]
@@ -284,7 +286,7 @@ func inCSAtEvent(routine, lockID int, eventVc *clock.VectorClock) bool {
 		return false
 	}
 
-	// kein Release → noch in CS
+	// No Release yet -> still in CS
 	relMap := baseA.MostRecentRelease[routine]
 	if relMap == nil {
 		return true
@@ -294,7 +296,7 @@ func inCSAtEvent(routine, lockID int, eventVc *clock.VectorClock) bool {
 		return true
 	}
 
-	// Event <HB Rel ? (Concurrent zählt NICHT als "nach Event")
+	// Event <HB Rel ? (Concurrent not counted as after event)
 	rE := clock.GetHappensBefore(eventVc, rel.Vc)
 	return rE == hb.Before
 }
@@ -330,30 +332,31 @@ func classifyMDCase(cand *mixedCandidate) bool {
 	}
 	sendTid, recvTid, lockID := cand.SendRoutine, cand.RecvRoutine, cand.LockID
 	sendVc, recvVc := cand.SendEvent.GetVC(), cand.RecvEvent.GetVC()
+
+	// Without VC no classification
 	if sendVc == nil || recvVc == nil {
 		return false
 	}
 
+	// Determine CS/PCS at time of channel operation (not current lockset)
 	sendInCS := inCSAtEvent(sendTid, lockID, sendVc)
 	recvInCS := inCSAtEvent(recvTid, lockID, recvVc)
 	sendPCS := hasPCSBeforeEvent(sendTid, lockID, sendVc)
 	recvPCS := hasPCSBeforeEvent(recvTid, lockID, recvVc)
 
-	// Debug wie gehabt …
-
-	// 1) MD2-2: Sender in CS, Empfänger PCS
+	// 1) MD2-2: Sender in CS, Receiver PCS
 	if sendInCS && recvPCS {
 		cand.Case = "MD2-2"
 		return true
 	}
 
-	// 2) MD2-3: Sender PCS, Empfänger in CS
+	// 2) MD2-3: Sender PCS, Receiver in CS
 	if sendPCS && recvInCS {
 		cand.Case = "MD2-3"
 		return true
 	}
 
-	// 3) MD2-1: beide in CS (nur Buffered) und KEIN PCS auf irgendeiner Seite
+	// 3) MD2-1: Sender & Receiver in CS (Buffered)
 	if sendInCS && recvInCS && cand.Buffered && !sendPCS && !recvPCS {
 		cand.Case = "MD2-1"
 		return true
@@ -413,6 +416,20 @@ func getBufferType(md mixedCandidate) string {
 	return "Unbuffered"
 }
 
+// Helper for opCodes
+func chanOpCode(e *trace.ElementChannel) string {
+	switch e.GetType(true) {
+	case trace.ChannelSend:
+		return "CS" // Channel: Send
+	case trace.ChannelRecv:
+		return "CR" // Channel: Receive
+	case trace.ChannelClose:
+		return "CC" // Channel: Close
+	default:
+		return "XX"
+	}
+}
+
 // Generates warning report for given MD-candidate
 func reportMixedDeadlock(md mixedCandidate) {
 	// Lock acquire locations
@@ -422,8 +439,9 @@ func reportMixedDeadlock(md mixedCandidate) {
 	// Communication info
 	opType := getOpType(md)
 	bufStr := getBufferType(md)
-	modeS := getLockType(md.SendRoutine, md.LockID)
-	modeR := getLockType(md.RecvRoutine, md.LockID)
+
+	modeS := getLockTypeFromAcquireElem(md.AcqSend.Elem)
+	modeR := getLockTypeFromAcquireElem(md.AcqRecv.Elem)
 
 	// Message
 	msg := fmt.Sprintf(
@@ -445,7 +463,7 @@ func reportMixedDeadlock(md mixedCandidate) {
 		results.TraceElementResult{
 			RoutineID: md.SendRoutine,
 			ObjID:     md.LockID,
-			ObjType:   "Send/Close",
+			ObjType:   "CS",
 			File:      fileS,
 			Line:      lineS,
 			TPre:      tPreS,
@@ -453,7 +471,7 @@ func reportMixedDeadlock(md mixedCandidate) {
 		results.TraceElementResult{
 			RoutineID: md.RecvRoutine,
 			ObjID:     md.LockID,
-			ObjType:   "Recv",
+			ObjType:   "CR",
 			File:      fileR,
 			Line:      lineR,
 			TPre:      tPreR,

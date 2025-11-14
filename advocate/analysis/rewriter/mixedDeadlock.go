@@ -15,7 +15,6 @@ import (
 	"advocate/analysis/hb/clock"
 	"advocate/results/bugs"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"errors"
 	"fmt"
 )
@@ -29,7 +28,7 @@ import (
 //
 // Returns:
 //   - error: An error if the rewrite fails
-func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug) error {
+func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
 	if len(bug.TraceElement1) == 0 && len(bug.TraceElement2) == 0 {
 		return errors.New("mixed deadlock rewrite: no bug elements")
 	}
@@ -99,7 +98,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	}
 
 	// Replay marker (42 = confirmed MD / A10)
-	tr.AddTraceElementReplay(lastTime+1, helper.ExitCodeMixedDeadlock)
+	tr.AddTraceElementReplay(lastTime+1, exitCode)
 
 	fmt.Printf("[rewriteMixedDeadlock] reversed acquire order for mutex %d: %d<->%d\n",
 		acqE.GetID(), acqE.GetRoutine(), acqF.GetRoutine())

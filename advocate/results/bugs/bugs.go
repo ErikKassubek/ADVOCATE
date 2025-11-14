@@ -138,7 +138,6 @@ func (this Bug) ToString() string {
 	case helper.AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
-	// MIXED DEADLOCK [REMOVE]
 	case helper.AMixedDeadlock:
 		typeStr = "Actual mixed deadlock:"
 		arg1Str = "send/close: "
@@ -163,7 +162,6 @@ func (this Bug) ToString() string {
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
-	// MIXED DEADLOCK [REMOVE]
 	case helper.PMixedDeadlock:
 		typeStr = "Possible mixed deadlock:"
 		arg1Str = "send/close: "

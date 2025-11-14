@@ -23,6 +23,7 @@ var bugCrit = map[string]string{
 	"A07": "Bug",
 	"A08": "Diagnostics",
 	"A09": "Diagnostics",
+	"A10": "Bug",
 	"P01": "Bug",
 	"P02": "Diagnostic",
 	"P03": "Bug",
@@ -53,6 +54,7 @@ var bugNames = map[string]string{
 	"A07": "Partial Deadlock",
 	"A08": "Concurrent Receive",
 	"A09": "Select Case without Partner",
+	"A10": "Mixed Deadlock",
 
 	"P01": "Possible Send on Closed Channel",
 	"P02": "Possible Receive on Closed Channel",
@@ -102,6 +104,7 @@ var bugExplanations = map[string]string{
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
+	"A10": "The analysis detected an actual mixed deadlock.",
 	"R01": "During the execution of the program, a unknown panic occurred",
 	"R02": "The execution of the program timed out",
 	"P01": "The analyzer detected a possible send on a closed channel.\n" +

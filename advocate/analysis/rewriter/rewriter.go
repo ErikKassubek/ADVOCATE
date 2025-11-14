@@ -58,11 +58,11 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, helper.ExitCodeSendClose)
+		err = rewriteClosedChannel(tr, bug, code)
 	case helper.PRecvOnClosed:
 		code = helper.ExitCodeRecvClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, helper.ExitCodeRecvClose)
+		err = rewriteClosedChannel(tr, bug, code)
 	case helper.PNegWG:
 		code = helper.ExitCodeNegativeWG
 		rewriteNeeded = true
@@ -75,8 +75,11 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		rewriteNeeded = true
 		err = rewriteCyclicDeadlock(tr, bug)
 	case helper.PMixedDeadlock:
+		code = helper.ExitCodeMixedDeadlock
 		rewriteNeeded = true
-		err = rewriteMixedDeadlock(tr, bug)
+		err = rewriteMixedDeadlock(tr, bug, code)
+
+	// LEAKS
 	case helper.LUnknown:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case helper.LUnbufferedWith:

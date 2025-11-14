@@ -75,6 +75,9 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 			scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
 
+			baseA.CurrentlyHoldLock[id] = mu
+			scenarios.IncFuzzingCounter(mu)
+
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
@@ -88,6 +91,9 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			}
 
 			scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
+
+			baseA.CurrentlyHoldLock[id] = mu
+			scenarios.IncFuzzingCounter(mu)
 
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)

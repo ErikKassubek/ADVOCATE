@@ -35,14 +35,15 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	id := mu.GetID()
 
 	switch mu.GetType(true) {
+
+	// --------- WRITE LOCK ---------
 	case trace.MutexLock:
 		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
-		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
+		scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
 
-		// for fuzzing
 		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
@@ -50,38 +51,50 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 
+	// --------- READ LOCK (RWMutex RLock) ---------
 	case trace.MutexRLock:
-		// for fuzzing
-		baseA.CurrentlyHoldLock[id] = mu
-		scenarios.IncFuzzingCounter(mu)
-
 		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
+		scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
+
+		baseA.CurrentlyHoldLock[id] = mu
+		scenarios.IncFuzzingCounter(mu)
+
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
+
+	// --------- TRY LOCK (write) ---------
 	case trace.MutexTryLock:
 		if mu.IsSuc() {
 			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
+			scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
+
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
+
+	// --------- TRY RLOCK (read) ---------
 	case trace.MutexTryRLock:
 		if mu.IsSuc() {
 			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
+			scenarios.LockSetAddLock(mu, vc.CurrentVC[routine])
+
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
+
+	// --------- UNLOCK (write) ---------
 	case trace.MutexUnlock:
 		baseA.RelW[id] = &baseA.ElemWithVc{
 			Elem: mu,
@@ -93,32 +106,29 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-			scenarios.LockSetRemoveLock(routine, id)
-		}
+		scenarios.LockSetRemoveLock(mu, vc.CurrentVC[routine])
 
-		// for fuzzing
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
+
+	// --------- RUNLOCK (read) ---------
 	case trace.MutexRUnlock:
-		baseA.RelR[id].Elem = mu
-
-		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
-			scenarios.LockSetRemoveLock(routine, id)
+		if baseA.RelR[id] != nil {
+			baseA.RelR[id].Elem = mu
 		}
 
-		// for fuzzing
+		scenarios.LockSetRemoveLock(mu, vc.CurrentVC[routine])
+
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
+
 	default:
-		err := "Unknown mutex operation: " + mu.ToString()
-		log.Error(err)
+		log.Error("Unknown mutex operation: " + mu.ToString())
 	}
 }

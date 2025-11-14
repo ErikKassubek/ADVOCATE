@@ -13,7 +13,6 @@ package vc
 import (
 	"advocate/analysis/baseA"
 	"advocate/trace"
-	"advocate/utils/flags"
 )
 
 // UpdateHBAtomic update the vector clocks for an atomic operation
@@ -24,9 +23,7 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 	routine := at.GetRoutine()
 
 	at.SetVc(CurrentVC[routine])
-	if !flags.IgnoreCriticalSection {
-		at.SetWVc(CurrentWVC[routine])
-	}
+	at.SetWVc(CurrentWVC[routine])
 
 	switch at.GetType(true) {
 	case trace.AtomicLoad:
@@ -62,6 +59,7 @@ func Read(at *trace.ElementAtomic, sync bool, routine int) {
 
 	if sync && baseA.LastAtomicWriter[id] != nil {
 		CurrentVC[routine].Sync(baseA.LastAtomicWriter[id].GetVC())
+		CurrentWVC[routine].Sync(baseA.LastAtomicWriter[id].GetWVC())
 	}
 }
 

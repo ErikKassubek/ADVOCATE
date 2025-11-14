@@ -10,6 +10,7 @@
 
 package guided
 
+<<<<<<< HEAD
 import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
@@ -17,6 +18,8 @@ import (
 	"advocate/utils/log"
 )
 
+=======
+>>>>>>> main
 var numberMuts = 0
 
 // CreateMutations will create mutations based on the predictive analysis.

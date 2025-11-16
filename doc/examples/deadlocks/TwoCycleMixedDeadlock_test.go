@@ -1,15 +1,14 @@
-// advocate/Examples/Examples_Simple/MixedDeadlock/mixed_deadlock_test.go
-
 /*
 ------------------------------------------------------------
-Mixed Deadlock Test Matrix (MDS-2)
+Mixed Deadlock Test (MDS-2)
 ------------------------------------------------------------
 
 Each test corresponds to one theoretical case:
 - MD2-1 : both inside CS  (symmetric)
 - MD2-2 : sender inside, receiver after CS (lock→channel)
 - MD2-3 : sender after CS, receiver inside (channel→lock)
-- MD-Close : close–receive dependency
+
+Close-Recv variants: MD2-X-Close
 
 Variants:
 - U: unbuffered channel
@@ -18,6 +17,7 @@ Variants:
 LockType:
 - READ/READ
 - READ/WRITE
+- WRITE/WRITE
 
 */
 

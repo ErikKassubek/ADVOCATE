@@ -24,7 +24,7 @@ import (
 
 /*
 ******************************************************
-	Two-Cycle Mixed Deadlock (MDS-2) model
+// Two-Cycle Mixed Deadlock (MDS-2) model
 ******************************************************
 
 MD-candidate defined as a 4-tuple: MD = ( e, f, acq(x)_e, acq(x)_f )
@@ -57,7 +57,7 @@ func ResetMixedDeadlockState() {
 
 /*
 ************************************************
-				LOCKSET TRACKING
+// LOCKSET TRACKING
 ************************************************
 */
 
@@ -90,14 +90,14 @@ func getLockTypeFromAcquireElem(e trace.Element) string {
 	return "UNKNOWN"
 }
 
-// Adds lock to routine's LS() and saves VS of Acq
+// Adds lock to routine's LS() and saves VC of Acq
 func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	// Get routine t that executed lock mu
+	// Get routine that executed lock mu
 	routine := mu.GetRoutine()
 	id := mu.GetID()
 
@@ -144,7 +144,7 @@ func LockSetRemoveLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 		Elem: mu,
 	}
 
-	// LS(t) ← LS(t) \ {x}
+	// LS(t) <- LS(t) \ {x}
 	delete(baseA.LockSet[routine], id)
 
 	//delete(lastLockType[routine], id)
@@ -152,7 +152,7 @@ func LockSetRemoveLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 
 /*
 ************************************************
-				CHECK MD-SCENARIO
+// CHECK MD-SCENARIO
 ************************************************
 MDS-2 cases:
 - MD2-1: both sender and receiver inside CS:  x ∈ LS(send) ∩ LS(recv)
@@ -219,8 +219,8 @@ func addMixedCandidate(sendTid, recvTid, lockID int) {
 	}
 
 	// Filter unreorderable pairs with WMHB
-	if GetWeakMustHappenBefore(acqS.Elem, acqR.Elem) || GetWeakMustHappenBefore(acqR.Elem, acqS.Elem) {
-		log.Info(fmt.Sprintf("[MD] skip lock %d: WMHB blocks reorder", lockID))
+	if mustOrderByWVC(acqS.Elem, acqR.Elem) || mustOrderByWVC(acqR.Elem, acqS.Elem) {
+		log.Info(fmt.Sprintf("[MD] skip lock %d: WVC must-order blocks reorder", lockID))
 		return
 	}
 
@@ -262,43 +262,71 @@ func getChannelPair(sendTid, recvTid int) (*trace.ElementChannel, *trace.Element
 
 /*
 ************************************************
-			(PRECEEDING) CRITICAL SECTION
+// (PRECEEDING) CRITICAL SECTION
 ************************************************
 */
+
+// hbLeq(a,b): a <= b as (a HB-before b) OR (a concurrent with b)
+func hbLeq(a, b *clock.VectorClock) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	rel := clock.GetHappensBefore(a, b)
+	return rel == hb.Before || rel == hb.Concurrent
+}
+
+// hbLt(a,b): strict a < b (a HB-before b only)
+func hbLt(a, b *clock.VectorClock) bool {
+	if a == nil || b == nil {
+		return false
+	}
+	return clock.GetHappensBefore(a, b) == hb.Before
+}
+
+// Helper lastAcquire
+func lastAcquire(routine, lockID int) (baseA.ElemWithVc, bool) {
+	m := baseA.MostRecentAcquire[routine]
+	if m == nil {
+		return baseA.ElemWithVc{}, false
+	}
+	acq, ok := m[lockID]
+	return acq, ok && acq.Vc != nil
+}
+
+// Helper lastRelaease
+func lastRelease(routine, lockID int) (baseA.ElemWithVc, bool) {
+	m := baseA.MostRecentRelease[routine]
+	if m == nil {
+		return baseA.ElemWithVc{}, false
+	}
+	rel, ok := m[lockID]
+	return rel, ok && rel.Vc != nil
+}
 
 // Determine if channel event inside CS
 func inCSAtEvent(routine, lockID int, eventVc *clock.VectorClock) bool {
 	if eventVc == nil {
 		return false
 	}
-	acqMap := baseA.MostRecentAcquire[routine]
-	if acqMap == nil {
-		return false
-	}
-	acq, okA := acqMap[lockID]
-	if !okA || acq.Vc == nil {
+
+	acq, okA := lastAcquire(routine, lockID)
+	if !okA {
 		return false
 	}
 
-	// Acq ≤HB Event ?
-	rA := clock.GetHappensBefore(acq.Vc, eventVc)
-	if !(rA == hb.Before || rA == hb.Concurrent) {
+	// Acq <= e ?
+	if !hbLeq(acq.Vc, eventVc) {
 		return false
 	}
 
 	// No Release yet -> still in CS
-	relMap := baseA.MostRecentRelease[routine]
-	if relMap == nil {
-		return true
-	}
-	rel, okR := relMap[lockID]
-	if !okR || rel.Vc == nil {
+	rel, okR := lastRelease(routine, lockID)
+	if !okR {
 		return true
 	}
 
-	// Event <HB Rel ? (Concurrent not counted as after event)
-	rE := clock.GetHappensBefore(eventVc, rel.Vc)
-	return rE == hb.Before
+	// e < Rel ? (strict; concurrent does NOT count as after)
+	return hbLt(eventVc, rel.Vc)
 }
 
 // Determine if channel event has PCS
@@ -306,23 +334,15 @@ func hasPCSBeforeEvent(routine, lockID int, eventVc *clock.VectorClock) bool {
 	if eventVc == nil {
 		return false
 	}
-	acqMap := baseA.MostRecentAcquire[routine]
-	relMap := baseA.MostRecentRelease[routine]
-	if acqMap == nil || relMap == nil {
-		return false
-	}
-	acq, okA := acqMap[lockID]
-	rel, okR := relMap[lockID]
-	if !okA || !okR || acq.Vc == nil || rel.Vc == nil {
+
+	acq, okA := lastAcquire(routine, lockID)
+	rel, okR := lastRelease(routine, lockID)
+	if !okA || !okR {
 		return false
 	}
 
-	r1 := clock.GetHappensBefore(acq.Vc, rel.Vc)
-	if !(r1 == hb.Before || r1 == hb.Concurrent) {
-		return false
-	}
-	r2 := clock.GetHappensBefore(rel.Vc, eventVc)
-	return (r2 == hb.Before || r2 == hb.Concurrent)
+	// Acq <= Rel <= e  (<= as before or concurrent)
+	return hbLeq(acq.Vc, rel.Vc) && hbLeq(rel.Vc, eventVc)
 }
 
 // Helper to classify MD2 type for reporting
@@ -344,19 +364,19 @@ func classifyMDCase(cand *mixedCandidate) bool {
 	sendPCS := hasPCSBeforeEvent(sendTid, lockID, sendVc)
 	recvPCS := hasPCSBeforeEvent(recvTid, lockID, recvVc)
 
-	// 1) MD2-2: Sender in CS, Receiver PCS
+	// MD2-2: Sender in CS, Receiver PCS
 	if sendInCS && recvPCS {
 		cand.Case = "MD2-2"
 		return true
 	}
 
-	// 2) MD2-3: Sender PCS, Receiver in CS
+	// MD2-3: Sender PCS, Receiver in CS
 	if sendPCS && recvInCS {
 		cand.Case = "MD2-3"
 		return true
 	}
 
-	// 3) MD2-1: Sender & Receiver in CS (Buffered)
+	// MD2-1: Sender & Receiver in CS (Buffered)
 	if sendInCS && recvInCS && cand.Buffered && !sendPCS && !recvPCS {
 		cand.Case = "MD2-1"
 		return true
@@ -365,7 +385,7 @@ func classifyMDCase(cand *mixedCandidate) bool {
 	return false
 }
 
-// Constructs candidate and triggers reporting
+// Constructs candidate & triggers reporting
 func buildMixedCandidate(sendTid, recvTid, lockID int,
 	acqS, acqR baseA.ElemWithVc) {
 
@@ -396,11 +416,11 @@ func buildMixedCandidate(sendTid, recvTid, lockID int,
 
 /*
 ************************************************
-					REPORTING
+// REPORTING
 ************************************************
 */
 
-// Getter for communication type
+// Headline: Kommunikationstyp
 func getOpType(md mixedCandidate) string {
 	if md.SendEvent != nil && md.SendEvent.GetType(true) == trace.ChannelClose {
 		return "Close–Recv"
@@ -408,7 +428,7 @@ func getOpType(md mixedCandidate) string {
 	return "Send–Recv"
 }
 
-// Getter for channel type
+// Headline: Buffering
 func getBufferType(md mixedCandidate) string {
 	if md.Buffered {
 		return "Buffered"
@@ -416,67 +436,95 @@ func getBufferType(md mixedCandidate) string {
 	return "Unbuffered"
 }
 
-// Helper for opCodes
-func chanOpCode(e *trace.ElementChannel) string {
+// Channel-Op trace.ObjectType (explanation.objectTypes)
+func chanOpCode(e *trace.ElementChannel) trace.ObjectType {
 	switch e.GetType(true) {
 	case trace.ChannelSend:
-		return "CS" // Channel: Send
+		return trace.ObjectType("CS") // Channel: Send
 	case trace.ChannelRecv:
-		return "CR" // Channel: Receive
+		return trace.ObjectType("CR") // Channel: Receive
 	case trace.ChannelClose:
-		return "CC" // Channel: Close
+		return trace.ObjectType("CC") // Channel: Close
 	default:
-		return "XX"
+		return trace.ObjectType("XX")
 	}
 }
 
-// Generates warning report for given MD-candidate
-func reportMixedDeadlock(md mixedCandidate) {
-	// Lock acquire locations
-	fileS, lineS, tPreS, _ := trace.InfoFromTID(md.AcqSend.Elem.GetTID())
-	fileR, lineR, tPreR, _ := trace.InfoFromTID(md.AcqRecv.Elem.GetTID())
-
-	// Communication info
+// Message-String
+func makeMDMessage(md mixedCandidate) string {
 	opType := getOpType(md)
 	bufStr := getBufferType(md)
-
 	modeS := getLockTypeFromAcquireElem(md.AcqSend.Elem)
 	modeR := getLockTypeFromAcquireElem(md.AcqRecv.Elem)
 
-	// Message
-	msg := fmt.Sprintf(
-		"Possible mixed deadlock (%s, %s, %s) on lock %d [%s/%s] with channel %d between routines %d → %d",
+	return fmt.Sprintf(
+		"Potential Mixed Deadlock (%s, %s, %s) on lock %d [%s/%s] with channel %d between routines %d -> %d",
 		md.Case, bufStr, opType, md.LockID, modeS, modeR, md.ChanID, md.SendRoutine, md.RecvRoutine,
 	)
+}
 
-	// Result element
-	stuck := results.TraceElementResult{
+// Stuck-Element (pointing to locking side: recv)
+func makeStuckElem(md mixedCandidate) results.TraceElementResult {
+	fileR, lineR, tPreR, _ := trace.InfoFromTID(md.AcqRecv.Elem.GetTID())
+	return results.TraceElementResult{
 		RoutineID: md.RecvRoutine,
 		ObjID:     md.LockID,
-		ObjType:   "DH",
+		ObjType:   trace.ObjectType("DH"),
 		File:      fileR,
 		Line:      lineR,
-		TPre:      tPreR,
+		TPre:      tPreR, // int
+	}
+}
+
+// Context elements (actual channel events)
+func makeContextElems(md mixedCandidate) []results.ResultElem {
+	// Sender/Closer
+	var sendFile string
+	var sendLine int
+	var sendTpre int
+	sendCode := trace.ObjectType("XX")
+	if md.SendEvent != nil {
+		sendCode = chanOpCode(md.SendEvent)
+		f, l, tp, _ := trace.InfoFromTID(md.SendEvent.GetTID()) // CS / CC
+		sendFile, sendLine, sendTpre = f, l, tp
 	}
 
-	context := []results.ResultElem{
+	// Receiver
+	var recvFile string
+	var recvLine int
+	var recvTpre int
+	recvCode := trace.ObjectType("CR")
+	if md.RecvEvent != nil {
+		recvCode = chanOpCode(md.RecvEvent) // CR
+		f, l, tp, _ := trace.InfoFromTID(md.RecvEvent.GetTID())
+		recvFile, recvLine, recvTpre = f, l, tp
+	}
+
+	return []results.ResultElem{
 		results.TraceElementResult{
 			RoutineID: md.SendRoutine,
-			ObjID:     md.LockID,
-			ObjType:   "CS",
-			File:      fileS,
-			Line:      lineS,
-			TPre:      tPreS,
+			ObjID:     md.ChanID,
+			ObjType:   sendCode, // CS / CC
+			File:      sendFile,
+			Line:      sendLine,
+			TPre:      sendTpre,
 		},
 		results.TraceElementResult{
 			RoutineID: md.RecvRoutine,
-			ObjID:     md.LockID,
-			ObjType:   "CR",
-			File:      fileR,
-			Line:      lineR,
-			TPre:      tPreR,
+			ObjID:     md.ChanID,
+			ObjType:   recvCode, // CR
+			File:      recvFile,
+			Line:      recvLine,
+			TPre:      recvTpre,
 		},
 	}
+}
+
+// Final Report
+func reportMixedDeadlock(md mixedCandidate) {
+	msg := makeMDMessage(md)
+	stuck := makeStuckElem(md)
+	context := makeContextElems(md)
 
 	results.Result(
 		results.CRITICAL,
@@ -492,49 +540,15 @@ func reportMixedDeadlock(md mixedCandidate) {
 
 // Determining "impossible" reorderings if two events have "Must-Happens-Before" relation.
 // (WMHB = HB-underapproximation)
-func GetWeakMustHappenBefore(e1, e2 trace.Element) bool {
+func mustOrderByWVC(e1, e2 trace.Element) bool {
 	if e1 == nil || e2 == nil {
 		return false
 	}
-
-	// Same goroutine: program order must hold
-	if e1.GetRoutine() == e2.GetRoutine() {
-		return e1.GetTSort() < e2.GetTSort()
+	v1 := e1.GetWVC()
+	v2 := e2.GetWVC()
+	if v1 == nil || v2 == nil {
+		return false
 	}
-
-	// Fork: Any event in the newly created goroutine must occur after the fork
-	if fork, ok := e1.(*trace.ElementFork); ok {
-		if fork.GetID() == e2.GetRoutine() {
-			return true
-		}
-	}
-
-	// Channel creation: close
-	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
-		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
-			if ch1.GetID() == ch2.GetID() && ch2.GetType(true) == trace.ChannelClose {
-				return true
-			}
-		}
-	}
-
-	// Channel make: any operation on that channel
-	if ch1, ok1 := e1.(*trace.ElementChannel); ok1 && ch1.GetType(true) == trace.NewChannel {
-		if ch2, ok2 := e2.(*trace.ElementChannel); ok2 {
-			if ch1.GetID() == ch2.GetID() {
-				return true
-			}
-		}
-	}
-
-	// Atomic store: atomic load on same variable
-	if a1, ok1 := e1.(*trace.ElementAtomic); ok1 && a1.GetType(true) == trace.AtomicStore {
-		if a2, ok2 := e2.(*trace.ElementAtomic); ok2 && a2.GetType(true) == trace.AtomicLoad {
-			if a1.GetID() == a2.GetID() {
-				return true
-			}
-		}
-	}
-
-	return false
+	rel := clock.GetHappensBefore(v1, v2)
+	return rel == hb.Before || rel == hb.After
 }

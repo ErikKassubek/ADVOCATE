@@ -410,13 +410,6 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	id := ch.GetID()
 	routine := ch.GetRoutine()
 
-	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
-		scenarios.FoundReceiveOnClosedChannel(ch, true)
-	}
-
-	if baseA.ModeIsFuzzing {
-		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
-	}
 	if baseA.MostRecentReceive[routine] == nil {
 		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
@@ -427,6 +420,14 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 		Elem: ch,
 		Vc:   baseA.MostRecentReceive[routine][id].Vc.Sync(vc[routine]),
 		Val:  id,
+	}
+
+	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
+		scenarios.FoundReceiveOnClosedChannel(ch, true)
+	}
+
+	if baseA.ModeIsFuzzing {
+		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
 	}
 
 	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {

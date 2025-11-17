@@ -49,7 +49,7 @@ var bugNames = map[string]string{
 	"A04": "Actual close on nil channel",
 	"A05": "Actual negative Wait Group",
 	"A06": "Actual unlock of not locked mutex",
-	"A07": "Partial Deadlock",
+	"A07": "Blocking Bug (GC)",
 	"A08": "Concurrent Receive",
 	"A09": "Select Case without Partner",
 

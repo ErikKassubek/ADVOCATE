@@ -16,10 +16,11 @@ import (
 	"fmt"
 )
 
-// IsFalsePositive checks if the given code is likely a false positive based on
-// the program code
-func IsFalsePositive(resultType helper.ResultType, fileName string, line int) (bool, error) {
-	if !resultType.IsLeak() {
+// IsFalsePositive checks if the given bug is likely a false positive based on
+// the program code and gc based leak detection
+func IsFalsePositive(resultType helper.ResultType, fileName string, line int, blocked map[string]map[int]struct{}) (bool, error) {
+	// is confirmed dead by GC
+	if _, ok := blocked[fileName][line]; ok {
 		return false, nil
 	}
 

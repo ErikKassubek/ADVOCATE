@@ -289,7 +289,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.AUnlockOfNotLockedMutex
 		actual = true
 	case "A07":
-		bug.Type = helper.ADeadlock
+		bug.Type = helper.ABlocking
 		actual = true
 	case "A08":
 		bug.Type = helper.AConcurrentRecv
@@ -352,7 +352,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		return actual, bug, nil
 	}
 
-	bug.FalsePos = (bugSplit[1] == "f")
+	bug.FalsePos = (bugSplit[1] == "fp")
 
 	bugArg1 := bugSplit[2]
 	bugArg2 := ""

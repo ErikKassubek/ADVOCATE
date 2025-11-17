@@ -26,7 +26,7 @@ const (
 	ACloseOnNilChannel      ResultType = "A04"
 	ANegWG                  ResultType = "A05"
 	AUnlockOfNotLockedMutex ResultType = "A06"
-	ADeadlock               ResultType = "A07"
+	ABlocking               ResultType = "A07"
 	AConcurrentRecv         ResultType = "A08"
 	ASelCaseWithoutPartner  ResultType = "A09"
 

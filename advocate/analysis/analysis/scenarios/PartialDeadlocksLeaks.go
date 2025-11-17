@@ -38,9 +38,9 @@ type TERLeak struct {
 }
 
 var leaks = make(map[int]TERLeak, 0)
-var deadlocks = make([]results.ResultElem, 0)
+var GCBlocked = make([]results.ResultElem, 0)
 
-func PartialDeadlocks() error {
+func Blocked() error {
 	output := filepath.Join(paths.ProgDir, paths.NameOutput)
 
 	file, err := os.Open(output)
@@ -52,8 +52,8 @@ func PartialDeadlocks() error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(line, "DEADLOCK@") {
-			err := readDeadlock(line)
+		if strings.HasPrefix(line, "DEADLOCK_GC@") {
+			err := readGCBlocked(line)
 			if err != nil {
 				log.Errorf(err.Error())
 			}
@@ -64,13 +64,13 @@ func PartialDeadlocks() error {
 		return err
 	}
 
-	reportDeadlocks()
+	reportGCBlocked()
 	reportNonDeadlockLeaks()
 
 	return nil
 }
 
-func readDeadlock(deadlock string) error {
+func readGCBlocked(deadlock string) error {
 	fields := strings.Split(deadlock, "@")
 
 	if len(fields) != 4 {
@@ -119,7 +119,7 @@ func readDeadlock(deadlock string) error {
 		}
 	}
 
-	deadlocks = append(deadlocks, objRes)
+	GCBlocked = append(GCBlocked, objRes)
 
 	return nil
 }
@@ -144,14 +144,14 @@ func getObjectType(val string) trace.ObjectType {
 	return trace.None
 }
 
-// reportDeadlocks creates a result for all elements that are in a deadlock
-func reportDeadlocks() {
-	if len(deadlocks) == 0 {
+// reportGCBlocked creates a result for all elements that are in a deadlock
+func reportGCBlocked() {
+	if len(GCBlocked) == 0 {
 		return
 	}
 
-	results.Result(results.CRITICAL, helper.ADeadlock,
-		"Blocked", deadlocks, "", []results.ResultElem{})
+	results.Result(results.CRITICAL, helper.ABlocking,
+		"Blocked", GCBlocked, "", []results.ResultElem{})
 }
 
 // reportNonDeadlockLeaks creates results for all elements that have a leek

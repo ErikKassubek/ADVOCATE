@@ -11,7 +11,7 @@
 package results
 
 import (
-	falsepos "advocate/analysis/falsePos"
+	falsepos "advocate/results/falsePos"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -82,6 +82,8 @@ var (
 	resultWithoutTime        []string
 )
 
+var lockedGC = make(map[string]map[int]struct{})
+
 // ResultElem declares an interface for a result elem
 type ResultElem interface {
 	isInvalid() bool
@@ -103,6 +105,8 @@ type TraceElementResult struct {
 	File      string
 	Line      int
 }
+
+var blockedGC = make(map[string]map[int]struct{}) // file -> line
 
 // getFile returns the file path of the element
 //
@@ -171,17 +175,30 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 
 	foundBug = true
 
-	falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine())
-	if err != nil {
-		log.Errorf("Could not determine if bug is false positive: ", err.Error())
-	}
-	fp := "t"
-	if falsePositive {
-		fp = "f"
+	if resType == helper.ABlocking {
+		for _, a := range arg1 {
+			file := a.getFile()
+			if _, ok := blockedGC[file]; !ok {
+				blockedGC[file] = make(map[int]struct{})
+			}
+			blockedGC[file][a.getLine()] = struct{}{}
+		}
 	}
 
-	resultReadable := resultTypeMap[resType] + ":" + fp + ":\n\t" + argType1 + ": "
-	resultMachine := string(resType) + "," + fp + ","
+	falsePos := "tp"
+
+	if resType.IsLeak() {
+		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC)
+		if err != nil {
+			log.Errorf("Could not determine if bug is false positive: ", err.Error())
+		}
+		if falsePositive {
+			falsePos = "fp"
+		}
+	}
+
+	resultReadable := resultTypeMap[resType] + ":" + falsePos + ":\n\t" + argType1 + ": "
+	resultMachine := string(resType) + "," + falsePos + ","
 	resultMachineShort := string(resType)
 
 	for i, arg := range arg1 {
@@ -257,7 +274,7 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if resType == helper.ADeadlock && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+	if resType == helper.ABlocking && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
 		return true
 	}
 

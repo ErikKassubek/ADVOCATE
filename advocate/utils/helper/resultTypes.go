@@ -80,3 +80,7 @@ const (
 
 // MinExitCodeSuc is the minimum exit code for successful replay
 const MinExitCodeSuc = ExitCodeLeakUnbuf
+
+func (rt ResultType) IsLeak() bool {
+	return string(rt)[0] == 'L'
+}

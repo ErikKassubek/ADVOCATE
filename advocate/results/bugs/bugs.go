@@ -59,6 +59,7 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 //
 // Parameter:
 //   - Type ResultType: The type of the bug
+//   - FalsePos bool: True if the bug is most likely a false positive
 //   - TraceElement1 []trace.TraceElement: first list of trace element involved in the bug
 //     normally the elements that actually cause the bug, e.g. for send on close the send
 //   - TraceElement2 []trace.TraceElement: second list of trace element involved in the bug
@@ -66,6 +67,7 @@ func GetBugElementSelectCase(arg string) (BugElementSelectCase, error) {
 //     e.g. for send on close the close
 type Bug struct {
 	Type          helper.ResultType
+	FalsePos      bool
 	TraceElement1 []trace.Element
 	// TraceElement1Sel []BugElementSelectCase
 	TraceElement2 []trace.Element
@@ -251,7 +253,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 	bug := Bug{}
 
 	bugSplit := strings.Split(bugStr, ",")
-	if len(bugSplit) != 3 && len(bugSplit) != 2 {
+	if len(bugSplit) != 4 && len(bugSplit) != 3 {
 		return false, bug, errors.New("Could not split bug: " + bugStr)
 	}
 
@@ -350,10 +352,12 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		return actual, bug, nil
 	}
 
-	bugArg1 := bugSplit[1]
+	bug.FalsePos = (bugSplit[1] == "f")
+
+	bugArg1 := bugSplit[2]
 	bugArg2 := ""
-	if containsArg2 && len(bugSplit) == 3 {
-		bugArg2 = bugSplit[2]
+	if containsArg2 && len(bugSplit) == 4 {
+		bugArg2 = bugSplit[3]
 	}
 
 	bug.TraceElement1 = make([]trace.Element, 0)

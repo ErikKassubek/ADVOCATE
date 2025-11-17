@@ -17,10 +17,10 @@ import (
 
 var partialDeadlocks = make([]string, 0)
 
-// DetectPartialDeadlock runs a partial deadlock detection in the current execution
+// DetectBlockingGC runs a partial deadlock detection in the current execution
 // Parameter:
-//   - loop bool: if true, run a
-func DetectPartialDeadlock(interval int) {
+//   - interval bool: interval to run the detector. Set to 0 to run only once
+func DetectBlockingGC(interval int) {
 	runtime.AdvocatePDDetectionStopped = false
 
 	go func() {
@@ -29,7 +29,7 @@ func DetectPartialDeadlock(interval int) {
 				return
 			}
 
-			res := runtime.AdvocateDetectPD()
+			res := runtime.AdvocateDetectBlocking()
 			if len(res) != 0 {
 				partialDeadlocks = append(partialDeadlocks, res...)
 			}
@@ -38,7 +38,7 @@ func DetectPartialDeadlock(interval int) {
 				return
 			}
 
-			time.Sleep(1 * time.Millisecond)
+			time.Sleep(time.Duration(interval) * time.Millisecond)
 		}
 	}()
 }

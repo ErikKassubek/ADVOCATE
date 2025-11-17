@@ -50,9 +50,11 @@ func RunAnalysis(fuzzing bool) {
 
 	scenarios.RunAnalysisOnExitCodes(true)
 
-	err := scenarios.Blocked()
-	if err != nil {
-		log.Error("Failed to read partial deadlock info: ", err.Error())
+	if baseA.AnalysisCasesMap[flags.Leak] || flags.OnlyAPanicAndLeak {
+		err := scenarios.Blocked()
+		if err != nil {
+			log.Error("Failed to read partial deadlock info: ", err.Error())
+		}
 	}
 
 	if flags.OnlyAPanicAndLeak {

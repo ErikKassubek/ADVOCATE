@@ -85,7 +85,7 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 
 // detectPD checks, if the currently running program
 // contains a deadlock. Is this the case it print a corresponding info.
-func AdvocateDetectPD() []string {
+func AdvocateDetectBlocking() []string {
 	currentParkedToRoutine = make(map[uintptr][]uint64)
 	parkedOpsPerRoutine = make(map[uint64][]uintptr)
 	routinesByID = make(map[uint64]*g)
@@ -111,7 +111,7 @@ func AdvocateDetectPD() []string {
 	GC()
 	collectPartialDeadlockInfo = false
 
-	return checkForPartialDeadlock()
+	return checkForBlocked()
 }
 
 // getWaitingRoutines searches for waiting routines and stores the corresponding
@@ -162,7 +162,7 @@ func getWaitingRoutines() (int, int, uint64) {
 	return numberRoutines, numberWaitingRoutines, maxID
 }
 
-func checkForPartialDeadlock() []string {
+func checkForBlocked() []string {
 	routinesWithRef = make(map[uintptr][]uint64)
 
 	for opID := range currentParkedToRoutine {
@@ -197,6 +197,7 @@ func checkForPartialDeadlock() []string {
 			if len(routineRefs[rID]) == 0 {
 				routineStatusInfo[rID] = dead
 				couldApplyRule = true
+				continue
 			}
 
 			allRefDead := true
@@ -261,16 +262,20 @@ func reportDeadlock(routineID uint64) string {
 		return ""
 	}
 
+	if AdvocateIgnore(g.advocateRoutineInfo.parkPos) {
+		return ""
+	}
+
 	res := ""
 
 	if g.advocateRoutineInfo.parkPos == "" {
 		g.advocateRoutineInfo.parkPos = "-"
 	}
 	if g.advocateRoutineInfo.id != 0 {
-		res = "DEADLOCK@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		res = "DEADLOCK_GC@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	} else {
-		res = "DEADLOCK@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		res = "DEADLOCK_GC@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	}
 

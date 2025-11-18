@@ -82,44 +82,24 @@ func readGCBlocked(deadlock string) error {
 		return err
 	}
 
-	file := "-"
-	line := -1
-
-	path := fields[2]
-	if path != "-" {
-		posFields := strings.Split(path, ":")
-		if len(posFields) != 2 {
-			return fmt.Errorf("Could not process deadlock position %s", path)
-		}
-
-		file = posFields[0]
-		line, err = strconv.Atoi(posFields[1])
-		if err != nil {
-			return err
-		}
-	}
-
-	var objRes results.ResultElem
-	objResSet := false
-
+	// only count deadlocks that are also in the trace
 	if obj, ok := leaks[routineID]; ok {
+		var objRes results.ResultElem
 		objRes = obj.arg1[0]
-		objResSet = true
 		delete(leaks, routineID)
+		GCBlocked = append(GCBlocked, objRes)
 	}
 
-	if !objResSet {
-		objRes = results.TraceElementResult{
-			RoutineID: routineID,
-			ObjID:     -1,
-			TPre:      -1,
-			ObjType:   getObjectType(fields[3]),
-			File:      file,
-			Line:      line,
-		}
-	}
-
-	GCBlocked = append(GCBlocked, objRes)
+	// if !objResSet {
+	// 	objRes = results.TraceElementResult{
+	// 		RoutineID: routineID,
+	// 		ObjID:     -1,
+	// 		TPre:      -1,
+	// 		ObjType:   getObjectType(fields[3]),
+	// 		File:      file,
+	// 		Line:      line,
+	// 	}
+	// }
 
 	return nil
 }

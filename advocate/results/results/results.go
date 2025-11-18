@@ -84,6 +84,11 @@ var (
 
 var lockedGC = make(map[string]map[int]struct{})
 
+// store all context channel that have been canceled
+// store all dones with its file, line and id
+var contextCancel = make(map[int]struct{})
+var contextDone = make(map[string]map[int]int)
+
 // ResultElem declares an interface for a result elem
 type ResultElem interface {
 	isInvalid() bool
@@ -188,7 +193,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	falsePos := "tp"
 
 	if resType.IsLeak() {
-		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC)
+		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
 			log.Errorf("Could not determine if bug is false positive: ", err.Error())
 		}
@@ -256,6 +261,29 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	}
 }
 
+// AddContext stores all context channel, that have been canceled and stores the
+// corresponding data for the done
+//
+// Parameter:
+//   - file string: file of the channel
+//   - line int: line of the channel
+//   - id int: channel id
+func AddContext(file string, line, id int) {
+	// cancel
+	if strings.HasSuffix(file, "goPatch/src/context/context.go") && line == 565 {
+		contextCancel[id] = struct{}{}
+		return
+	}
+
+	// done
+	if _, ok := contextCancel[id]; ok {
+		if _, ok := contextDone[file]; !ok {
+			contextDone[file] = make(map[int]int)
+		}
+		contextDone[file][line] = id
+	}
+}
+
 // Some results are invalid or intentionally not shown. This function returns,
 // if the given parameters constitute such a result
 //
@@ -275,6 +303,11 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 	}
 
 	if resType == helper.ABlocking && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+		return true
+	}
+
+	// TODO: remove test completely
+	if resType == helper.ARecvOnClosed {
 		return true
 	}
 

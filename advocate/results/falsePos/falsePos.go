@@ -18,7 +18,7 @@ import (
 
 // IsFalsePositive checks if the given bug is likely a false positive based on
 // the program code and gc based leak detection
-func IsFalsePositive(resultType helper.ResultType, fileName string, line int, blocked map[string]map[int]struct{}) (bool, error) {
+func IsFalsePositive(resultType helper.ResultType, fileName string, line int, blocked map[string]map[int]struct{}, contextCancel map[int]struct{}, contextDone map[string]map[int]int) (bool, error) {
 	// is confirmed dead by GC
 	if _, ok := blocked[fileName][line]; ok {
 		return false, nil
@@ -47,6 +47,11 @@ func IsFalsePositive(resultType helper.ResultType, fileName string, line int, bl
 		log.Errorf("Could not check for endless loop")
 	}
 	if rangeOverChan {
+		return true, nil
+	}
+
+	contextWithCancel := isContextDoneWithCancel(node, info, fileName, line, contextCancel, contextDone)
+	if contextWithCancel {
 		return true, nil
 	}
 

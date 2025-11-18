@@ -17,7 +17,6 @@ import (
 
 func isInsideEndlessLoop(node ast.Node, parents map[ast.Node]ast.Node) bool {
 	for n := node; n != nil; n = parents[n] {
-
 		fs, ok := n.(*ast.ForStmt)
 		if !ok {
 			continue

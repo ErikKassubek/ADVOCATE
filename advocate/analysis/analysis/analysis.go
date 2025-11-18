@@ -50,13 +50,6 @@ func RunAnalysis(fuzzing bool) {
 
 	scenarios.RunAnalysisOnExitCodes(true)
 
-	if baseA.AnalysisCasesMap[flags.Leak] || flags.OnlyAPanicAndLeak {
-		err := scenarios.Blocked()
-		if err != nil {
-			log.Error("Failed to read partial deadlock info: ", err.Error())
-		}
-	}
-
 	if flags.OnlyAPanicAndLeak {
 		scenarios.CheckForStuckRoutine(true)
 
@@ -68,6 +61,14 @@ func RunAnalysis(fuzzing bool) {
 	if !fuzzing || baseF.UseHBInfoFuzzing {
 		RunHBAnalysis(fuzzing)
 	}
+
+	if baseA.AnalysisCasesMap[flags.Leak] || flags.OnlyAPanicAndLeak {
+		err := scenarios.Blocked()
+		if err != nil {
+			log.Error("Failed to read partial deadlock info: ", err.Error())
+		}
+	}
+
 }
 
 // RunHBAnalysis runs the full analysis happens before based analysis

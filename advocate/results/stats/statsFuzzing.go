@@ -117,14 +117,14 @@ func CreateStatsFuzzing(pathFolder string) error {
 		}
 
 		for _, bug := range foundBugs {
-			res["detected"][bug.bugType]++
+			res[detected][bug.bugType]++
 
 			if bug.replayWritten {
-				res["replayWritten"][bug.bugType]++
+				res[replayWritten][bug.bugType]++
 			}
 
 			if bug.replaySuc {
-				res["replaySuccessful"][bug.bugType]++
+				res[replaySuccessful][bug.bugType]++
 			}
 		}
 

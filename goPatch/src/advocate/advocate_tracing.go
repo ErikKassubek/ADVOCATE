@@ -42,7 +42,7 @@ func InitTracing(timeout int) {
 		}()
 	}
 
-	DetectBlockingGC(1000)
+	// DetectBlockingGC(1000)
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()

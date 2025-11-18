@@ -59,6 +59,138 @@ const (
 	// SNotExecutedWithPartner = "S00"
 )
 
+var ResultTypes = []ResultType{
+	ASendOnClosed,
+	// ARecvOnClosed,
+	ACloseOnClosed,
+	ACloseOnNilChannel,
+	ANegWG,
+	AUnlockOfNotLockedMutex,
+	ABlocking,
+	AConcurrentRecv,
+	ASelCaseWithoutPartner,
+	PSendOnClosed,
+	PRecvOnClosed,
+	PNegWG,
+	PUnlockBeforeLock,
+	PCyclicDeadlock,
+	LUnknown,
+	LUnbufferedWith,
+	LUnbufferedWithout,
+	LBufferedWith,
+	LBufferedWithout,
+	LNilChan,
+	LSelectWith,
+	LSelectWithout,
+	LMutex,
+	LWaitGroup,
+	LCond,
+	LContext,
+}
+
+var ResultTypesActual = []ResultType{
+	ASendOnClosed,
+	ARecvOnClosed,
+	ACloseOnClosed,
+	ACloseOnNilChannel,
+	ANegWG,
+	AUnlockOfNotLockedMutex,
+	ABlocking,
+	AConcurrentRecv,
+	ASelCaseWithoutPartner,
+}
+
+var ResultTypesPotential = []ResultType{
+	PSendOnClosed,
+	// PRecvOnClosed,
+	PNegWG,
+	PUnlockBeforeLock,
+	PCyclicDeadlock,
+}
+
+var ResultTypesLeak = []ResultType{
+	LUnknown,
+	LUnbufferedWith,
+	LUnbufferedWithout,
+	LBufferedWith,
+	LBufferedWithout,
+	LNilChan,
+	LSelectWith,
+	LSelectWithout,
+	LMutex,
+	LWaitGroup,
+	LCond,
+	LContext,
+}
+
+var ResultTypesRecording = []ResultType{
+	RUnknownPanic,
+	RTimeout,
+}
+
+func ResultTypeFromString(code string) ResultType {
+	switch code {
+	case "A01":
+		return ASendOnClosed
+	case "A02":
+		return ARecvOnClosed
+	case "A03":
+		return ACloseOnClosed
+	case "A04":
+		return ACloseOnNilChannel
+	case "A05":
+		return ANegWG
+	case "A06":
+		return AUnlockOfNotLockedMutex
+	case "A07":
+		return ABlocking
+	case "A08":
+		return AConcurrentRecv
+	case "A09":
+		return ASelCaseWithoutPartner
+	case "P01":
+		return PSendOnClosed
+	case "P02":
+		return PRecvOnClosed
+	case "P03":
+		return PNegWG
+	case "P04":
+		return PUnlockBeforeLock
+	case "P05":
+		return PCyclicDeadlock
+	case "L00":
+		return LUnknown
+	case "L01":
+		return LUnbufferedWith
+	case "L02":
+		return LUnbufferedWithout
+	case "L03":
+		return LBufferedWith
+	case "L04":
+		return LBufferedWithout
+	case "L05":
+		return LNilChan
+	case "L06":
+		return LSelectWith
+	case "L07":
+		return LSelectWithout
+	case "L08":
+		return LMutex
+	case "L09":
+		return LWaitGroup
+	case "L10":
+		return LCond
+	case "L11":
+		return LContext
+	case "R01":
+		return RUnknownPanic
+	case "R02":
+		return RTimeout
+	default:
+		return Empty // Return Empty for codes not found
+	}
+}
+
 // Values for the possible program exit codes
 const (
 	ExitCodeNone             = -1

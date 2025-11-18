@@ -10,171 +10,173 @@
 
 package explanation
 
+import "advocate/utils/helper"
+
 // type (bug / diagnostics)
-var bugCrit = map[string]string{
-	"R01": "Bug",
-	"R02": "Bug",
-	"A01": "Bug",
-	"A02": "Diagnostics",
-	"A03": "Bug",
-	"A04": "Bug",
-	"A05": "Bug",
-	"A06": "Bug",
-	"A07": "Bug",
-	"A08": "Diagnostics",
-	"A09": "Diagnostics",
-	"P01": "Bug",
-	"P02": "Diagnostic",
-	"P03": "Bug",
-	"P04": "Bug",
-	"P05": "Bug",
-	"L00": "Leak",
-	"L01": "Leak",
-	"L02": "Leak",
-	"L03": "Leak",
-	"L04": "Leak",
-	"L05": "Leak",
-	"L06": "Leak",
-	"L07": "Leak",
-	"L08": "Leak",
-	"L09": "Leak",
-	"L10": "Leak",
-	"L11": "Leak",
+var bugCrit = map[helper.ResultType]string{
+	"R01":                          "Bug",
+	"R02":                          "Bug",
+	helper.ASendOnClosed:           "Bug",
+	helper.ARecvOnClosed:           "Diagnostics",
+	helper.ACloseOnClosed:          "Bug",
+	helper.ACloseOnNilChannel:      "Bug",
+	helper.ANegWG:                  "Bug",
+	helper.AUnlockOfNotLockedMutex: "Bug",
+	helper.ABlocking:               "Bug",
+	helper.AConcurrentRecv:         "Diagnostics",
+	helper.ASelCaseWithoutPartner:  "Diagnostics",
+	helper.PSendOnClosed:           "Bug",
+	helper.PRecvOnClosed:           "Diagnostic",
+	helper.PNegWG:                  "Bug",
+	helper.PUnlockBeforeLock:       "Bug",
+	helper.PCyclicDeadlock:         "Bug",
+	helper.LUnknown:                "Leak",
+	helper.LUnbufferedWith:         "Leak",
+	helper.LUnbufferedWithout:      "Leak",
+	helper.LBufferedWith:           "Leak",
+	helper.LBufferedWithout:        "Leak",
+	helper.LNilChan:                "Leak",
+	helper.LSelectWith:             "Leak",
+	helper.LSelectWithout:          "Leak",
+	helper.LMutex:                  "Leak",
+	helper.LWaitGroup:              "Leak",
+	helper.LCond:                   "Leak",
+	helper.LContext:                "Leak",
 }
 
-var bugNames = map[string]string{
-	"A01": "Actual Send on Closed Channel",
-	"A02": "Actual Receive on Closed Channel",
-	"A03": "Actual Close on Closed Channel",
-	"A04": "Actual close on nil channel",
-	"A05": "Actual negative Wait Group",
-	"A06": "Actual unlock of not locked mutex",
-	"A07": "Blocking Bug (GC)",
-	"A08": "Concurrent Receive",
-	"A09": "Select Case without Partner",
+var bugNames = map[helper.ResultType]string{
+	helper.ASendOnClosed:           "Actual Send on Closed Channel",
+	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
+	helper.ACloseOnClosed:          "Actual Close on Closed Channel",
+	helper.ACloseOnNilChannel:      "Actual close on nil channel",
+	helper.ANegWG:                  "Actual negative Wait Group",
+	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
+	helper.ABlocking:               "Blocking Bug (GC)",
+	helper.AConcurrentRecv:         "Concurrent Receive",
+	helper.ASelCaseWithoutPartner:  "Select Case without Partner",
 
-	"P01": "Possible Send on Closed Channel",
-	"P02": "Possible Receive on Closed Channel",
-	"P03": "Possible Negative WaitGroup cCounter",
-	"P04": "Possible unlock of not locked mutex",
-	"P05": "Possible cyclic deadlock",
+	helper.PSendOnClosed:     "Possible Send on Closed Channel",
+	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
+	helper.PNegWG:            "Possible Negative WaitGroup cCounter",
+	helper.PUnlockBeforeLock: "Possible unlock of not locked mutex",
+	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 
-	"L00": "Leak",
-	"L01": "Leak on unbuffered channel with possible partner",
-	"L02": "Leak on unbuffered channel without possible partner",
-	"L03": "Leak on buffered Channel with possible partner",
-	"L04": "Leak on buffered Channel without possible partner",
-	"L05": "Leak on nil channel",
-	"L06": "Leak on select with possible partner",
-	"L07": "Leak on select without possible partner",
-	"L08": "Leak on sync.Mutex",
-	"L09": "Leak on sync.WaitGroup",
-	"L10": "Leak on sync.Cond",
-	"L11": "Leak on channel or select on context",
+	helper.LUnknown:           "Leak",
+	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
+	helper.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
+	helper.LBufferedWith:      "Leak on buffered Channel with possible partner",
+	helper.LBufferedWithout:   "Leak on buffered Channel without possible partner",
+	helper.LNilChan:           "Leak on nil channel",
+	helper.LSelectWith:        "Leak on select with possible partner",
+	helper.LSelectWithout:     "Leak on select without possible partner",
+	helper.LMutex:             "Leak on sync.Mutex",
+	helper.LWaitGroup:         "Leak on sync.WaitGroup",
+	helper.LCond:              "Leak on sync.Cond",
+	helper.LContext:           "Leak on channel or select on context",
 
 	"R01": "Unknown Panic",
 	"R02": "Timeout",
 }
 
-var bugCodes = make(map[string]string) // inverse of bugNames, initialized in init
+var bugCodes = make(map[string]helper.ResultType) // inverse of bugNames, initialized in init
 
 // explanations
-var bugExplanations = map[string]string{
-	"A01": "During the execution of the program, a send on a closed channel occurred.\n" +
+var bugExplanations = map[helper.ResultType]string{
+	helper.ASendOnClosed: "During the execution of the program, a send on a closed channel occurred.\n" +
 		"The occurrence of a send on closed leads to a panic.",
-	"A02": "During the execution of the program, a receive on a closed channel occurred.\n",
-	"A03": "During the execution of the program, a close on a close channel occurred.\n" +
+	helper.ARecvOnClosed: "During the execution of the program, a receive on a closed channel occurred.\n",
+	helper.ACloseOnClosed: "During the execution of the program, a close on a close channel occurred.\n" +
 		"The occurrence of a close on a closed channel lead to a panic.",
-	"A04": "During the execution of the program, a close on a nil channel occurred.\n" +
+	helper.ACloseOnNilChannel: "During the execution of the program, a close on a nil channel occurred.\n" +
 		"The occurrence of a close on a nil channel lead to a panic.",
-	"A05": "During the execution, a negative waitgroup counter occurred.\n" +
+	helper.ANegWG: "During the execution, a negative waitgroup counter occurred.\n" +
 		"The occurrence of a negative wait group counter lead to a panic.",
-	"A06": "During the execution, a not locked mutex was unlocked.\n" +
+	helper.AUnlockOfNotLockedMutex: "During the execution, a not locked mutex was unlocked.\n" +
 		"The occurrence of this lead to a panic.",
-	"A07": "During the execution, a (partial) deadlock was detected.\n" +
+	helper.ABlocking: "During the execution, a blocking bug was detected.\n" +
 		"This means, there is a routine that is blocked, and there is not possibility of it being unblocked in the future",
-	"A08": "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
+	helper.AConcurrentRecv: "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	"A09": "During the execution of the program, a select was executed, where, based " +
+	helper.ASelCaseWithoutPartner: "During the execution of the program, a select was executed, where, based " +
 		"on the happens-before relation, at least one case could never be triggered.\n" +
 		"This can be a desired behavior, especially considering, that only executed " +
 		"operations are considered, but it can also be an hint of an unnecessary select case.",
 	"R01": "During the execution of the program, a unknown panic occurred",
 	"R02": "The execution of the program timed out",
-	"P01": "The analyzer detected a possible send on a closed channel.\n" +
+	helper.PSendOnClosed: "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
 		"Such a send on a closed channel leads to a panic.",
-	"P02": "The analyzer detected a possible receive on a closed channel.\n" +
+	helper.PRecvOnClosed: "The analyzer detected a possible receive on a closed channel.\n" +
 		"Although the receive on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation." +
 		"This is not necessarily a bug, but it can be an indication of a bug.",
-	"P03": "The analyzer detected a possible negative WaitGroup counter.\n" +
+	helper.PNegWG: "The analyzer detected a possible negative WaitGroup counter.\n" +
 		"Although the negative counter did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
 		"A negative counter will lead to a panic.",
-	"P04": "The analyzer detected a possible unlock on a not locked mutex.\n" +
+	helper.PUnlockBeforeLock: "The analyzer detected a possible unlock on a not locked mutex.\n" +
 		"Although the unlock of a not locked mutex did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
 		"A unlock of a not locked mutex will result in a panic.",
-	"P05": "The analysis detected a possible cyclic deadlock.\n" +
+	helper.PCyclicDeadlock: "The analysis detected a possible cyclic deadlock.\n" +
 		"If this deadlock contains or influences the run of the main routine, this can " +
 		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
 		"resources.",
-	"L00": "The analyzer detected a leak.\n" +
+	helper.LUnknown: "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"This can be a desired behavior, but it can also be a signal for a not otherwise detected block.",
-	"L01": "The analyzer detected a Leak on an unbuffered channel with a possible partner.\n" +
+	helper.LUnbufferedWith: "The analyzer detected a Leak on an unbuffered channel with a possible partner.\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the deadlock.",
-	"L02": "The analyzer detected a Leak on an unbuffered channel without a possible partner.\n" +
+	helper.LUnbufferedWithout: "The analyzer detected a Leak on an unbuffered channel without a possible partner.\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
-	"L03": "The analyzer detected a Leak on a buffered channel with a possible partner.\n" +
+	helper.LBufferedWith: "The analyzer detected a Leak on a buffered channel with a possible partner.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L04": "The analyzer detected a Leak on a buffered channel without a possible partner.\n" +
+	helper.LBufferedWithout: "The analyzer detected a Leak on a buffered channel without a possible partner.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
-	"L05": "The analyzer detected a leak on a nil channel.\n" +
+	helper.LNilChan: "The analyzer detected a leak on a nil channel.\n" +
 		"A leak on a nil channel is a situation, where a nil channel is still blocking at the end of the program.\n" +
 		"A nil channel is a channel, which was never initialized or set to nil." +
 		"An operation on a nil channel will block indefinitely.",
-	"L06": "The analyzer detected a Leak on a select with a possible partner.\n" +
+	helper.LSelectWith: "The analyzer detected a Leak on a select with a possible partner.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The partner is a corresponding send or receive operation, which communicated with another operation, " +
 		"but could communicated with the stuck operation instead, resolving the leak.",
-	"L07": "The analyzer detected a Leak on a select without a possible partner.\n" +
+	helper.LSelectWithout: "The analyzer detected a Leak on a select without a possible partner.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"The analyzer could not find a partner for the stuck operation, which would resolve the leak.",
-	"L08": "The analyzer detected a leak on a sync.Mutex.\n" +
+	helper.LMutex: "The analyzer detected a leak on a sync.Mutex.\n" +
 		"A leak on a sync.Mutex is a situation, where a sync.Mutex lock operations is still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.Mutex lock operation is a operation, which is blocking, because the lock is already acquired.",
-	"L09": "The analyzer detected a leak on a sync.WaitGroup.\n" +
+	helper.LWaitGroup: "The analyzer detected a leak on a sync.WaitGroup.\n" +
 		"A leak on a sync.WaitGroup is a situation, where a sync.WaitGroup is still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.WaitGroup wait is blocking, because the counter is not zero.",
-	"L10": "The analyzer detected a leak on a sync.Cond.\n" +
+	helper.LCond: "The analyzer detected a leak on a sync.Cond.\n" +
 		"A leak on a sync.Cond is a situation, where a sync.Cond wait is still blocking at the end of the program.\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"A sync.Cond wait is blocking, because the condition is not met.",
-	"L11": "The analyzer detected a leak on a channel or select on a context\n" +
+	helper.LContext: "The analyzer detected a leak on a channel or select on a context\n" +
 		"A Leak could potentially resolve itself, if the program would run longer.\n" +
 		"This may or may not be a blocking bug.",
 }
@@ -275,29 +277,29 @@ var objectTypes = map[string]string{
 // adaptExplanationMaps changes the bugNames and bugExplanation maps, if
 // the analysis did not search for possible partners
 func adaptExplanationMaps() {
-	bugNames["L01"] = "Leak on unbuffered channel"
-	bugNames["L02"] = "Leak on unbuffered channel"
-	bugNames["L03"] = "Leak on buffered channel"
-	bugNames["L04"] = "Leak on buffered channel"
-	bugNames["L05"] = "Leak on nil channel"
-	bugNames["L06"] = "Leak on select"
-	bugNames["L07"] = "Leak on select"
+	bugNames[helper.LUnbufferedWith] = "Leak on unbuffered channel"
+	bugNames[helper.LUnbufferedWithout] = "Leak on unbuffered channel"
+	bugNames[helper.LBufferedWith] = "Leak on buffered channel"
+	bugNames[helper.LBufferedWithout] = "Leak on buffered channel"
+	bugNames[helper.LNilChan] = "Leak on nil channel"
+	bugNames[helper.LSelectWith] = "Leak on select"
+	bugNames[helper.LSelectWithout] = "Leak on select"
 
-	bugExplanations["L01"] = "The analyzer detected a Leak on an unbuffered channel .\n" +
+	bugExplanations[helper.LUnbufferedWith] = "The analyzer detected a Leak on an unbuffered channel .\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations["L02"] = "The analyzer detected a Leak on an unbuffered channel.\n" +
+	bugExplanations[helper.LUnbufferedWithout] = "The analyzer detected a Leak on an unbuffered channel.\n" +
 		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations["L03"] = "The analyzer detected a Leak on a buffered channel.\n" +
+	bugExplanations[helper.LBufferedWith] = "The analyzer detected a Leak on a buffered channel.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations["L04"] = "The analyzer detected a Leak on a buffered channel.\n" +
+	bugExplanations[helper.LBufferedWithout] = "The analyzer detected a Leak on a buffered channel.\n" +
 		"A Leak on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations["L06"] = "The analyzer detected a Leak on a select.\n" +
+	bugExplanations[helper.LSelectWith] = "The analyzer detected a Leak on a select.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
-	bugExplanations["L07"] = "The analyzer detected a Leak on a select.\n" +
+	bugExplanations[helper.LSelectWithout] = "The analyzer detected a Leak on a select.\n" +
 		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
 }
 
@@ -307,8 +309,8 @@ func adaptExplanationMaps() {
 //   - description string: bug description
 //
 // Returns:
-//   - string: code if exists, otherwise empty string
-func GetCodeFromDescription(description string) string {
+//   - helper.ResultType: code if exists, otherwise empty string
+func GetCodeFromDescription(description string) helper.ResultType {
 	if value, ok := bugCodes[description]; ok {
 		return value
 	}
@@ -322,7 +324,7 @@ func GetCodeFromDescription(description string) string {
 //
 // Returns:
 //   - map[string]string: bug type descriptions
-func getBugTypeDescription(bugType string) map[string]string {
+func getBugTypeDescription(bugType helper.ResultType) map[string]string {
 	return map[string]string{
 		"crit":        bugCrit[bugType],
 		"name":        bugNames[bugType],

@@ -12,6 +12,7 @@ package stats
 
 import (
 	"advocate/utils/flags"
+	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"fmt"
@@ -31,7 +32,7 @@ type testData struct {
 	name       string
 	numberRuns int
 	fuzzData   map[string]int
-	results    map[string]map[string]int
+	results    map[statsType]map[helper.ResultType]int
 }
 
 // toString returns the string representation of the statistics of a test
@@ -41,8 +42,8 @@ type testData struct {
 func (this *testData) toString() string {
 	res := fmt.Sprintf("%s,%d,%d,%d,%d", this.name, this.numberRuns, this.fuzzData["nrMut"], this.fuzzData["nrMutInvalid"], this.fuzzData["nrMutDouble"])
 
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
+	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
+		for _, code := range helper.ResultTypes {
 			res += fmt.Sprintf(",%d", this.results[mode][code])
 		}
 	}
@@ -100,16 +101,16 @@ func CreateStats(testName string, traceID, fuzzing int) error {
 //
 // Parameter:
 //   - testName string: name of the test
-//   - statsProg map[string]int: statistics about the program
-//   - statsTraces map[string]int: statistics about the trace
-//   - statsFuzz map[string]int: miscellaneous statistics
-//   - statsAnalyzerTotal map[string]map[string]int: statistics about the total analysis and replay
-//   - statsAnalyzerUnique map[string]map[string]int: statistics about the unique analysis and replay
+//   - statsProg map[statsType]int: statistics about the program
+//   - statsTraces map[statsType]int: statistics about the trace
+//   - statsFuzz map[statsType]int: miscellaneous statistics
+//   - statsAnalyzerTotal map[statsType]map[string]int: statistics about the total analysis and replay
+//   - statsAnalyzerUnique map[statsType]map[string]int: statistics about the unique analysis and replay
 //
 // Returns:
 //   - error
-func writeStatsToFile(testName string, statsTraces map[string]int, statsFuzz map[string]int,
-	statsAnalyzerTotal, statsAnalyzerUnique map[string]map[string]int) error {
+func writeStatsToFile(testName string, statsTraces map[statsType]int, statsFuzz map[statsType]int,
+	statsAnalyzerTotal, statsAnalyzerUnique map[statsType]map[helper.ResultType]int) error {
 
 	fileFuzzPath := filepath.Join(paths.ResultStats, "statsFuzz_"+flags.ProgName+".csv")
 	fileTracingPath := filepath.Join(paths.ResultStats, "statsTrace_"+flags.ProgName+".csv")
@@ -120,77 +121,81 @@ func writeStatsToFile(testName string, statsTraces map[string]int, statsFuzz map
 		"NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents," +
 		"NrCondVariablesEvents,NrOnceOperations"
 	dataTracing := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName,
-		statsTraces["numberElements"], statsTraces["numberRoutines"],
-		statsTraces["numberAtomicOperations"], statsTraces["numberChannelOperations"],
-		statsTraces["numberSelects"], statsTraces["numberMutexOperations"],
-		statsTraces["numberWaitGroupOperations"], statsTraces["numberCondVarOperations"],
-		statsTraces["numberOnceOperations"])
+		statsTraces[numberElements], statsTraces[numberRoutines],
+		statsTraces[numberAtomicOperations], statsTraces[numberChannelOperations],
+		statsTraces[numberSelects], statsTraces[numberMutexOperations],
+		statsTraces[numberWaitGroupOperations], statsTraces[numberCondVarOperations],
+		statsTraces[numberOnceOperations])
 
 	writeStatsFile(fileTracingPath, headerTracing, dataTracing)
 
-	actualCodes := []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09"}
 	numberOfActualBugsTotal := 0
 	numberOfActualBugsUnique := 0
-	for _, code := range actualCodes {
-		numberOfActualBugsTotal += statsAnalyzerTotal["detected"][code]
-		numberOfActualBugsUnique += statsAnalyzerUnique["detected"][code]
+	for _, code := range helper.ResultTypesActual {
+		numberOfActualBugsTotal += statsAnalyzerTotal[detected][code]
+		numberOfActualBugsUnique += statsAnalyzerUnique[detected][code]
 	}
-
-	leakCodes := []string{"L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11"}
 
 	numberOfLeaksTotal := 0
 	numberOfLeaksUnique := 0
-	for _, code := range leakCodes {
-		numberOfLeaksTotal += statsAnalyzerTotal["detected"][code]
-		numberOfLeaksUnique += statsAnalyzerUnique["detected"][code]
+	numberOfLeaksTotalFalsePos := 0
+	numberOfLeaksUniqueFalsePos := 0
+
+	for _, code := range helper.ResultTypesLeak {
+		numberOfLeaksTotal += statsAnalyzerTotal[detected][code]
+		numberOfLeaksUnique += statsAnalyzerUnique[detected][code]
+	}
+	numberOfLeaksTotalTruePos := numberOfLeaksTotal - numberOfLeaksTotalFalsePos
+	numberOfLeaksUniqueTruePos := numberOfLeaksUnique - numberOfLeaksUniqueFalsePos
+
+	for _, code := range helper.ResultTypesLeak {
+		numberOfLeaksTotalFalsePos += statsAnalyzerTotal[falsePositive][code]
+		numberOfLeaksUniqueFalsePos += statsAnalyzerUnique[falsePositive][code]
 	}
 
 	numberOfLeaksWithRewriteTotal := 0
 	numberOfLeaksWithRewriteUnique := 0
-	for _, code := range leakCodes {
-		numberOfLeaksWithRewriteTotal += statsAnalyzerTotal["replayWritten"][code]
-		numberOfLeaksWithRewriteUnique += statsAnalyzerUnique["replayWritten"][code]
+	for _, code := range helper.ResultTypesLeak {
+		numberOfLeaksWithRewriteTotal += statsAnalyzerTotal[replayWritten][code]
+		numberOfLeaksWithRewriteUnique += statsAnalyzerUnique[replayWritten][code]
 	}
 
 	numberOfLeaksResolvedViaReplayTotal := 0
 	numberOfLeaksResolvedViaReplayUnique := 0
-	for _, code := range leakCodes {
-		numberOfLeaksResolvedViaReplayTotal += statsAnalyzerTotal["replaySuccessful"][code]
-		numberOfLeaksResolvedViaReplayUnique += statsAnalyzerUnique["replaySuccessful"][code]
+	for _, code := range helper.ResultTypesLeak {
+		numberOfLeaksResolvedViaReplayTotal += statsAnalyzerTotal[replaySuccessful][code]
+		numberOfLeaksResolvedViaReplayUnique += statsAnalyzerUnique[replaySuccessful][code]
 	}
-
-	posPanicCodes := []string{"P01", "P03", "P04", "P05"}
 
 	numberOfPanicsTotal := 0
 	numberOfPanicsUnique := 0
-	for _, code := range posPanicCodes {
-		numberOfPanicsTotal += statsAnalyzerTotal["detected"][code]
-		numberOfPanicsUnique += statsAnalyzerUnique["detected"][code]
+	for _, code := range helper.ResultTypesPotential {
+		numberOfPanicsTotal += statsAnalyzerTotal[detected][code]
+		numberOfPanicsUnique += statsAnalyzerUnique[detected][code]
 	}
 
 	numberOfPanicsVerifiedViaReplayTotal := 0
 	numberOfPanicsVerifiedViaReplayUnique := 0
-	for _, code := range posPanicCodes {
-		numberOfPanicsVerifiedViaReplayTotal += statsAnalyzerTotal["replaySuccessful"][code]
-		numberOfPanicsVerifiedViaReplayUnique += statsAnalyzerUnique["replaySuccessful"][code]
+	for _, code := range helper.ResultTypesPotential {
+		numberOfPanicsVerifiedViaReplayTotal += statsAnalyzerTotal[replaySuccessful][code]
+		numberOfPanicsVerifiedViaReplayUnique += statsAnalyzerUnique[replaySuccessful][code]
 	}
 
 	numberUnexpectedPanicsInReplayTotal := 0
 	numberUnexpectedPanicsInReplayUnique := 0
-	for _, code := range posPanicCodes {
-		numberUnexpectedPanicsInReplayTotal += statsAnalyzerTotal["unexpectedPanic"][code]
-		numberUnexpectedPanicsInReplayUnique += statsAnalyzerUnique["unexpectedPanic"][code]
+	for _, code := range helper.ResultTypesPotential {
+		numberUnexpectedPanicsInReplayTotal += statsAnalyzerTotal[unexpectedPanic][code]
+		numberUnexpectedPanicsInReplayUnique += statsAnalyzerUnique[unexpectedPanic][code]
 	}
 
-	probInRecCodes := []string{"R01", "R02"}
 	numberProbInRecord := 0
-	for _, code := range probInRecCodes {
-		numberProbInRecord += statsAnalyzerTotal["detected"][code]
+	for _, code := range helper.ResultTypesRecording {
+		numberProbInRecord += statsAnalyzerTotal[detected][code]
 	}
 
-	headerAnalysis := "TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique"
-	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal,
-		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, numberUnexpectedPanicsInReplayTotal, numberProbInRecord, numberOfActualBugsUnique, numberOfLeaksUnique,
+	headerAnalysis := "TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksTotalTP,NrLeaksTotalFP,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksUniqueTP,NrLeaksUniqueFP,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique"
+	dataAnalysis := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d", testName, numberOfActualBugsTotal, numberOfLeaksTotal, numberOfLeaksTotalTruePos, numberOfLeaksTotalFalsePos,
+		numberOfLeaksWithRewriteTotal, numberOfLeaksResolvedViaReplayTotal, numberOfPanicsTotal, numberOfPanicsVerifiedViaReplayTotal, numberUnexpectedPanicsInReplayTotal, numberProbInRecord, numberOfActualBugsUnique, numberOfLeaksUnique, numberOfLeaksUniqueTruePos, numberOfLeaksUniqueFalsePos,
 		numberOfLeaksWithRewriteUnique, numberOfLeaksResolvedViaReplayUnique, numberOfPanicsUnique, numberOfPanicsVerifiedViaReplayUnique, numberUnexpectedPanicsInReplayUnique)
 
 	writeStatsFile(fileAnalysisPath, headerAnalysis, dataAnalysis)
@@ -202,26 +207,26 @@ func writeStatsToFile(testName string, statsTraces map[string]int, statsFuzz map
 		"NrSelectCases,NrSelectNonDefaultEvents,NrSelectDefaultEvents,NrMutex,NrMutexEvents," +
 		"NrWaitgroup,NrWaitgroupEvent,NrCondVariables,NrCondVariablesEvents,NrOnce,NrOnceOperations,"
 	dataDetails := fmt.Sprintf("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,",
-		testName, statsTraces["numberElements"],
-		statsTraces["numberRoutines"], statsTraces["numberNonEmptyRoutines"],
-		statsTraces["numberOfSpawns"], statsTraces["numberRoutineEnds"],
-		statsTraces["numberAtomics"], statsTraces["numberAtomicOperations"],
-		statsTraces["numberChannels"], statsTraces["numberBufferedChannels"],
-		statsTraces["numberUnbufferedChannels"], statsTraces["numberChannelOperations"],
-		statsTraces["numberBufferedOps"], statsTraces["numberUnbufferedOps"],
-		statsTraces["numberSelects"], statsTraces["numberSelectCases"],
-		statsTraces["numberSelectChanOps"], statsTraces["numberSelectDefaultOps"],
-		statsTraces["numberMutexes"], statsTraces["numberMutexOperations"],
-		statsTraces["numberWaitGroups"], statsTraces["numberWaitGroupOperations"],
-		statsTraces["numberCondVars"], statsTraces["numberCondVarOperations"],
-		statsTraces["numberOnce"], statsTraces["numberOnceOperations"])
+		testName, statsTraces[numberElements],
+		statsTraces[numberRoutines], statsTraces[numberNonEmptyRoutines],
+		statsTraces[numberOfSpawns], statsTraces[numberRoutineEnds],
+		statsTraces[numberAtomics], statsTraces[numberAtomicOperations],
+		statsTraces[numberChannels], statsTraces[numberBufferedChannels],
+		statsTraces[numberUnbufferedChannels], statsTraces[numberChannelOperations],
+		statsTraces[numberBufferedOps], statsTraces[numberUnbufferedOps],
+		statsTraces[numberSelects], statsTraces[numberSelectCases],
+		statsTraces[numberSelectChanOps], statsTraces[numberSelectDefaultOps],
+		statsTraces[numberMutexes], statsTraces[numberMutexOperations],
+		statsTraces[numberWaitGroups], statsTraces[numberWaitGroupOperations],
+		statsTraces[numberCondVars], statsTraces[numberCondVarOperations],
+		statsTraces[numberOnce], statsTraces[numberOnceOperations])
 
 	headers := make([]string, 0)
 	data := make([]string, 0)
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
+	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
 		for _, count := range []string{"Total", "Unique"} {
-			for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
-				headers = append(headers, "No"+count+strings.ToUpper(string(mode[0]))+mode[1:]+code)
+			for _, code := range helper.ResultTypes {
+				headers = append(headers, "No"+count+string(mode)[1:]+string(code))
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))
 				} else {
@@ -248,7 +253,7 @@ func writeStatsToFile(testName string, statsTraces map[string]int, statsFuzz map
 		}
 	}
 
-	writeStatsFile(fileFuzzPath, strings.Join(fuzzStats, ","), strings.Join(miscData, ","))
+	writeStatsFile(fileFuzzPath, strings.Join(fuzzStatsStr, ","), strings.Join(miscData, ","))
 
 	return nil
 }

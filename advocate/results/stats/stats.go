@@ -69,9 +69,9 @@ func CreateStats(testName string, traceID, fuzzing int) error {
 	log.Info("Create statistics")
 
 	statsTrace, err := statsTraces(traceID)
-	if err != nil {
-		log.Error("Failed to create trace statistics: ", err.Error())
-	}
+	// if err != _ {
+		// log.Error("Failed to create trace statistics: ", err.Error())
+	// }
 
 	statsFuzz, err := statsFuzz()
 	if err != nil {

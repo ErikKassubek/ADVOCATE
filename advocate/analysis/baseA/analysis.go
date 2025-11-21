@@ -85,6 +85,8 @@ var (
 	MostRecentAcquire      = make(map[int]map[int]ElemWithVc) // routine -> id -> vcTID
 	MostRecentAcquireTotal = make(map[int]ElemWithVc)         // id -> vc and elem
 	MostRecentRelease      = make(map[int]map[int]ElemWithVc) // routine -> id -> vcTID
+	RLockCount             = make(map[int]map[int]int)        // routine -> lockID -> count
+	CSSnaps                = make(map[EventKey]CSSnapshot)
 
 	// lock/unlocks on mutexes
 	AllLocks   = make(map[int][]trace.Element)

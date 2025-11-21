@@ -112,28 +112,6 @@ func RunAnalysisOnExitCodes(all bool) {
 	case helper.ExitCodeTimeout: // timeout
 		results.Result(results.CRITICAL, helper.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
-	case helper.ExitCodeMixedDeadlock:
-		file, line, err := trace.PosFromPosString(baseA.ExitPos)
-		if err != nil {
-			log.Error("Could not read exit pos: ", err)
-		}
-		arg1 := results.TraceElementResult{
-			RoutineID: 0,
-			ObjID:     0,
-			TPre:      0,
-			ObjType:   "MD",
-			File:      file,
-			Line:      line,
-		}
-		results.Result(
-			results.CRITICAL,
-			helper.AMixedDeadlock,
-			"MD",
-			[]results.ResultElem{arg1},
-			"",
-			[]results.ResultElem{},
-		)
-		baseA.BugWasFound = true
 	}
 	if all {
 		if baseA.ExitCode == helper.ExitCodeSendClose { // send on closed

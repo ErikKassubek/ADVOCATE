@@ -163,7 +163,7 @@ func (this Bug) ToString() string {
 		arg1Str = "head: "
 		arg2Str = "tail: "
 	case helper.PMixedDeadlock:
-		typeStr = "Possible mixed deadlock:"
+		typeStr = "Possible Mixed Deadlock:"
 		arg1Str = "send/close: "
 		arg2Str = "recv: "
 	case helper.LUnknown:

@@ -551,10 +551,15 @@ The columns are
 
 ## Error Codes
 
-- A01: Send on closed channel
-- A02: Receive on closed channel
-- A03: Close on closed channel
-- A04: Concurrent recv
+- A01: Actual Send on Closed Channel
+- A02: Actual Receive on Closed Channel
+- A03: Actual Close on Closed Channel
+- A04: Actual Close on nil channel
+- A05: Actual negative Wait Group
+- A06: Actual unlock of not locked mutex
+- A07: Actual Leak (Non-Cyclic blocking bug)
+- A08: Actual Deadlock (Cyclic blocking bug)
+- A09: Concurrent Receives on the same channel
 - P01: Possible send on closed channel
 - P02: Possible receive on closed channel
 - P03: Possible negative waitgroup counter

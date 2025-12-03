@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"fmt"
@@ -28,7 +29,7 @@ import (
 //
 // Returns:
 //   - map[string]string: Information for the rewrite/replay part of the explanation file
-func getRewriteInfo(bugType string, codes map[string]string, index string) map[string]string {
+func getRewriteInfo(bugType helper.ResultType, codes map[string]string, index string) map[string]string {
 	res := make(map[string]string)
 
 	rewType := getRewriteType(bugType)
@@ -76,8 +77,8 @@ func getRewriteInfo(bugType string, codes map[string]string, index string) map[s
 //
 // Returns:
 //   - string: Actual, Possible, Leak or Pos Leak
-func getRewriteType(bugCode string) string {
-	switch bugCode[:1] {
+func getRewriteType(bugCode helper.ResultType) string {
+	switch string(bugCode)[:1] {
 	case "A":
 		return "Actual"
 	case "P":

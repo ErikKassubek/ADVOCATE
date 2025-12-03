@@ -229,10 +229,13 @@ func checkForBlocked() []string {
 		}
 	}
 
+	deadlock := make(map[uint64]struct{})
+
 	// NoOtherRule
 	for rID, status := range routineStatusInfo {
 		if status == waiting {
 			routineStatusInfo[rID] = dead
+			deadlock[rID] = struct{}{}
 		}
 	}
 
@@ -240,7 +243,8 @@ func checkForBlocked() []string {
 	foundDeadlocks := make([]string, 0)
 	for rID, status := range routineStatusInfo {
 		if status == dead {
-			res := reportDeadlock(rID)
+			_, dl := deadlock[rID]
+			res := reportDeadlock(rID, dl)
 			if res != "" {
 				foundDeadlocks = append(foundDeadlocks, res)
 			}
@@ -250,7 +254,7 @@ func checkForBlocked() []string {
 	return foundDeadlocks
 }
 
-func reportDeadlock(routineID uint64) string {
+func reportDeadlock(routineID uint64, deadlock bool) string {
 	if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
 		return ""
 	}
@@ -268,14 +272,19 @@ func reportDeadlock(routineID uint64) string {
 
 	res := ""
 
+	header := "LEAK_GC"
+	if deadlock {
+		header = "DEADLOCK_GC"
+	}
+
 	if g.advocateRoutineInfo.parkPos == "" {
 		g.advocateRoutineInfo.parkPos = "-"
 	}
 	if g.advocateRoutineInfo.id != 0 {
-		res = "DEADLOCK_GC@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		res = header + "@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	} else {
-		res = "DEADLOCK_GC@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		res = header + "@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	}
 

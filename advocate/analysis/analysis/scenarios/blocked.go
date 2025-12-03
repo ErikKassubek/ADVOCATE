@@ -38,7 +38,8 @@ type TERLeak struct {
 }
 
 var leaks = make(map[int]TERLeak, 0)
-var GCBlocked = make([]results.ResultElem, 0)
+var GCLeak = make([]results.ResultElem, 0)
+var GCDeadlock = make([]results.ResultElem, 0)
 
 func Blocked() error {
 	output := filepath.Join(paths.ProgDir, paths.NameOutput)
@@ -52,11 +53,13 @@ func Blocked() error {
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if strings.HasPrefix(line, "DEADLOCK_GC@") {
-			err := readGCBlocked(line)
-			if err != nil {
-				log.Errorf(err.Error())
-			}
+		if strings.HasPrefix(line, "LEAK_GC@") {
+			err = readGCBlocked(line, false)
+		} else if strings.HasPrefix(line, "DEADLOCK_GC@") {
+			err = readGCBlocked(line, true)
+		}
+		if err != nil {
+			log.Errorf(err.Error())
 		}
 	}
 
@@ -70,11 +73,11 @@ func Blocked() error {
 	return nil
 }
 
-func readGCBlocked(deadlock string) error {
-	fields := strings.Split(deadlock, "@")
+func readGCBlocked(line string, deadlock bool) error {
+	fields := strings.Split(line, "@")
 
 	if len(fields) != 4 {
-		return fmt.Errorf("Could not process deadlock %s", deadlock)
+		return fmt.Errorf("Could not process deadlock %s", line)
 	}
 
 	routineID, err := strconv.Atoi(fields[1])
@@ -87,7 +90,11 @@ func readGCBlocked(deadlock string) error {
 		var objRes results.ResultElem
 		objRes = obj.arg1[0]
 		delete(leaks, routineID)
-		GCBlocked = append(GCBlocked, objRes)
+		if deadlock {
+			GCDeadlock = append(GCDeadlock, objRes)
+		} else {
+			GCLeak = append(GCLeak, objRes)
+		}
 	}
 
 	// if !objResSet {
@@ -126,12 +133,15 @@ func getObjectType(val string) trace.ObjectType {
 
 // reportGCBlocked creates a result for all elements that are in a deadlock
 func reportGCBlocked() {
-	if len(GCBlocked) == 0 {
-		return
+	if len(GCLeak) > 0 {
+		results.Result(results.CRITICAL, helper.ALeak,
+			"Blocked", GCLeak, "", []results.ResultElem{})
 	}
 
-	results.Result(results.CRITICAL, helper.ABlocking,
-		"Blocked", GCBlocked, "", []results.ResultElem{})
+	if len(GCDeadlock) > 0 {
+		results.Result(results.CRITICAL, helper.ADeadlock,
+			"Blocked", GCDeadlock, "", []results.ResultElem{})
+	}
 }
 
 // reportNonDeadlockLeaks creates results for all elements that have a leek

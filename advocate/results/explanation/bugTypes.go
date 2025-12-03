@@ -14,17 +14,17 @@ import "advocate/utils/helper"
 
 // type (bug / diagnostics)
 var bugCrit = map[helper.ResultType]string{
-	"R01":                          "Bug",
-	"R02":                          "Bug",
+	helper.RUnknownPanic:           "Bug",
+	helper.RTimeout:                "Bug",
 	helper.ASendOnClosed:           "Bug",
 	helper.ARecvOnClosed:           "Diagnostics",
 	helper.ACloseOnClosed:          "Bug",
 	helper.ACloseOnNilChannel:      "Bug",
 	helper.ANegWG:                  "Bug",
 	helper.AUnlockOfNotLockedMutex: "Bug",
-	helper.ABlocking:               "Bug",
+	helper.ALeak:                   "Bug",
+	helper.ADeadlock:               "Bug",
 	helper.AConcurrentRecv:         "Diagnostics",
-	helper.ASelCaseWithoutPartner:  "Diagnostics",
 	helper.PSendOnClosed:           "Bug",
 	helper.PRecvOnClosed:           "Diagnostic",
 	helper.PNegWG:                  "Bug",
@@ -51,9 +51,9 @@ var bugNames = map[helper.ResultType]string{
 	helper.ACloseOnNilChannel:      "Actual close on nil channel",
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
-	helper.ABlocking:               "Blocking Bug (GC)",
+	helper.ALeak:                   "Actual Leak",
+	helper.ADeadlock:               "Actual Deadlock",
 	helper.AConcurrentRecv:         "Concurrent Receive",
-	helper.ASelCaseWithoutPartner:  "Select Case without Partner",
 
 	helper.PSendOnClosed:     "Possible Send on Closed Channel",
 	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
@@ -74,8 +74,8 @@ var bugNames = map[helper.ResultType]string{
 	helper.LCond:              "Leak on sync.Cond",
 	helper.LContext:           "Leak on channel or select on context",
 
-	"R01": "Unknown Panic",
-	"R02": "Timeout",
+	helper.RUnknownPanic: "Unknown Panic",
+	helper.RTimeout:      "Timeout",
 }
 
 var bugCodes = make(map[string]helper.ResultType) // inverse of bugNames, initialized in init
@@ -93,17 +93,15 @@ var bugExplanations = map[helper.ResultType]string{
 		"The occurrence of a negative wait group counter lead to a panic.",
 	helper.AUnlockOfNotLockedMutex: "During the execution, a not locked mutex was unlocked.\n" +
 		"The occurrence of this lead to a panic.",
-	helper.ABlocking: "During the execution, a blocking bug was detected.\n" +
+	helper.ALeak: "During the execution, a blocking bug was detected.\n" +
 		"This means, there is a routine that is blocked, and there is not possibility of it being unblocked in the future",
+	helper.ADeadlock: "During the execution, a deadlock was detected.\n" +
+		"This means, there is are routine that are cyclicaly blocked, and there is not possibility of it being unblocked in the future",
 	helper.AConcurrentRecv: "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	helper.ASelCaseWithoutPartner: "During the execution of the program, a select was executed, where, based " +
-		"on the happens-before relation, at least one case could never be triggered.\n" +
-		"This can be a desired behavior, especially considering, that only executed " +
-		"operations are considered, but it can also be an hint of an unnecessary select case.",
-	"R01": "During the execution of the program, a unknown panic occurred",
-	"R02": "The execution of the program timed out",
+	helper.RUnknownPanic: "During the execution of the program, a unknown panic occurred",
+	helper.RTimeout:      "The execution of the program timed out",
 	helper.PSendOnClosed: "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +

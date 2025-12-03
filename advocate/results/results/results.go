@@ -40,8 +40,9 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
 	helper.ACloseOnClosed:          "Actual Close on Closed Channel",
 	helper.AConcurrentRecv:         "Concurrent Receive",
-	helper.ASelCaseWithoutPartner:  "Select Case without Partner",
 	helper.ACloseOnNilChannel:      "Actual close on nil channel",
+	helper.ALeak:                   "Actual Leak",
+	helper.ADeadlock:               "Actual Leak",
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 
@@ -180,7 +181,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 
 	foundBug = true
 
-	if resType == helper.ABlocking {
+	if resType == helper.ALeak {
 		for _, a := range arg1 {
 			file := a.getFile()
 			if _, ok := blockedGC[file]; !ok {
@@ -302,7 +303,7 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if resType == helper.ABlocking && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
 		return true
 	}
 

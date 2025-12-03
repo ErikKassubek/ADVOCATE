@@ -130,10 +130,12 @@ func (this Bug) ToString() string {
 		typeStr = "Concurrent Receive:"
 		arg1Str = "recv: "
 		arg2Str = "recv: "
-	case helper.ASelCaseWithoutPartner:
-		typeStr = "Select Case without Partner:"
-		arg1Str = "select: "
-		arg2Str = "case: "
+	case helper.ALeak:
+		typeStr = "Blocking routine:"
+		arg1Str = "blocking: "
+	case helper.ADeadlock:
+		typeStr = "Deadlock:"
+		arg1Str = "blocking: "
 	case helper.ANegWG:
 		typeStr = "Actual negative Wait Group:"
 		arg1Str = "done: "
@@ -289,13 +291,13 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.AUnlockOfNotLockedMutex
 		actual = true
 	case "A07":
-		bug.Type = helper.ABlocking
+		bug.Type = helper.ALeak
 		actual = true
 	case "A08":
-		bug.Type = helper.AConcurrentRecv
+		bug.Type = helper.ADeadlock
 		actual = true
 	case "A09":
-		bug.Type = helper.ASelCaseWithoutPartner
+		bug.Type = helper.AConcurrentRecv
 		actual = true
 	case "P01":
 		bug.Type = helper.PSendOnClosed

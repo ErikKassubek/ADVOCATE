@@ -26,9 +26,9 @@ const (
 	ACloseOnNilChannel      ResultType = "A04"
 	ANegWG                  ResultType = "A05"
 	AUnlockOfNotLockedMutex ResultType = "A06"
-	ABlocking               ResultType = "A07"
-	AConcurrentRecv         ResultType = "A08"
-	ASelCaseWithoutPartner  ResultType = "A09"
+	ALeak                   ResultType = "A07"
+	ADeadlock               ResultType = "A08"
+	AConcurrentRecv         ResultType = "A09"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -66,9 +66,8 @@ var ResultTypes = []ResultType{
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
-	ABlocking,
+	ALeak,
 	AConcurrentRecv,
-	ASelCaseWithoutPartner,
 	PSendOnClosed,
 	PRecvOnClosed,
 	PNegWG,
@@ -95,9 +94,8 @@ var ResultTypesActual = []ResultType{
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
-	ABlocking,
+	ALeak,
 	AConcurrentRecv,
-	ASelCaseWithoutPartner,
 }
 
 var ResultTypesPotential = []ResultType{
@@ -143,11 +141,11 @@ func ResultTypeFromString(code string) ResultType {
 	case "A06":
 		return AUnlockOfNotLockedMutex
 	case "A07":
-		return ABlocking
+		return ALeak
 	case "A08":
-		return AConcurrentRecv
+		return ADeadlock
 	case "A09":
-		return ASelCaseWithoutPartner
+		return AConcurrentRecv
 	case "P01":
 		return PSendOnClosed
 	case "P02":

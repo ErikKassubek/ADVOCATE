@@ -12,6 +12,7 @@ package stats
 
 import (
 	"advocate/utils/flags"
+	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"bufio"
@@ -88,14 +89,14 @@ func CreateStatsTotal(pathFolder string) error {
 	})
 
 	for _, bug := range foundBugs {
-		data["detected"][bug.bugType]++
+		data[detected][bug.bugType]++
 
 		if bug.replayWritten {
-			data["replayWritten"][bug.bugType]++
+			data[replayWritten][bug.bugType]++
 		}
 
 		if bug.replaySuc {
-			data["replaySuccessful"][bug.bugType]++
+			data[replaySuccessful][bug.bugType]++
 		}
 	}
 
@@ -105,9 +106,9 @@ func CreateStatsTotal(pathFolder string) error {
 
 	headers := "NrFiles,NrLines,NrNonEmptyLines,NrTests,NrRuns"
 
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
-			headers += fmt.Sprintf(",Nr%s%s", strings.ToUpper(string(mode[0]))+mode[1:], code)
+	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
+		for _, code := range helper.ResultTypes {
+			headers += fmt.Sprintf(",Nr%s%s", string(mode), string(code))
 		}
 	}
 	headers += "\n"
@@ -115,15 +116,15 @@ func CreateStatsTotal(pathFolder string) error {
 	res := ""
 
 	if progData != nil {
-		res += fmt.Sprintf("%d,%d,%d,", progData["numberFiles"], progData["numberLines"], progData["numberNonEmptyLines"])
+		res += fmt.Sprintf("%d,%d,%d,", progData[numberFiles], progData["numberLines"], progData["numberNonEmptyLines"])
 	} else {
 		res += "0,0,0,"
 	}
 
 	res += fmt.Sprintf("%d,%d", noTests, noRuns)
 
-	for _, mode := range []string{"detected", "replayWritten", "replaySuccessful", "unexpectedPanic"} {
-		for _, code := range []string{"A01", "A02", "A03", "A04", "A05", "A06", "A07", "A08", "A09", "P01", "P02", "P03", "P04", "P05", "L00", "L01", "L02", "L03", "L04", "L05", "L06", "L07", "L08", "L09", "L10", "L11", "R01", "R02"} {
+	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
+		for _, code := range helper.ResultTypes {
 			res += fmt.Sprintf(",%d", data[mode][code])
 		}
 	}
@@ -147,13 +148,13 @@ func CreateStatsTotal(pathFolder string) error {
 //   - programPath string: path to the folder containing the program
 //
 // Returns:
-//   - map[string]int: map with numberFiles, numberLines, numberNonEmptyLines
+//   - map[statsType]int: map with numberFiles, numberLines, numberNonEmptyLines
 //   - error
-func statsProgram(programPath string) (map[string]int, error) {
-	res := make(map[string]int)
-	res["numberFiles"] = 0
-	res["numberLines"] = 0
-	res["numberNonEmptyLines"] = 0
+func statsProgram(programPath string) (map[statsType]int, error) {
+	res := make(map[statsType]int)
+	res[numberFiles] = 0
+	res[numberLines] = 0
+	res[numberNonEmptyLines] = 0
 
 	err := filepath.Walk(programPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -170,9 +171,9 @@ func statsProgram(programPath string) (map[string]int, error) {
 				return err
 			}
 
-			res["numberFiles"]++
-			res["numberLines"] += resFile["numberLines"]
-			res["numberNonEmptyLines"] += resFile["numberNonEmptyLines"]
+			res[numberFiles]++
+			res[numberLines] += resFile[numberLines]
+			res[numberNonEmptyLines] += resFile[numberNonEmptyLines]
 		}
 
 		return nil
@@ -186,12 +187,12 @@ func statsProgram(programPath string) (map[string]int, error) {
 //   - programPath string: path to the file
 //
 // Returns:
-//   - map[string]int: map with numberLines, numberNonEmptyLines
+//   - map[statsType]int: map with numberLines, numberNonEmptyLines
 //   - error
-func parseProgramFile(filePath string) (map[string]int, error) {
-	res := make(map[string]int)
-	res["numberLines"] = 0
-	res["numberNonEmptyLines"] = 0
+func parseProgramFile(filePath string) (map[statsType]int, error) {
+	res := make(map[statsType]int)
+	res[numberLines] = 0
+	res[numberNonEmptyLines] = 0
 
 	// open the file
 	file, err := os.Open(filePath)
@@ -205,9 +206,9 @@ func parseProgramFile(filePath string) (map[string]int, error) {
 	for scanner.Scan() {
 		text := strings.TrimSpace(scanner.Text())
 
-		res["numberLines"]++
+		res[numberLines]++
 		if text != "" && text != "\n" && !strings.HasPrefix(text, "//") {
-			res["numberNonEmptyLines"]++
+			res[numberNonEmptyLines]++
 		}
 	}
 

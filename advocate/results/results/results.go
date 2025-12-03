@@ -11,10 +11,12 @@
 package results
 
 import (
+	falsepos "advocate/results/falsePos"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
+	"advocate/utils/log"
 	"advocate/utils/types"
 	"fmt"
 	"os"
@@ -38,8 +40,9 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
 	helper.ACloseOnClosed:          "Actual Close on Closed Channel",
 	helper.AConcurrentRecv:         "Concurrent Receive",
-	helper.ASelCaseWithoutPartner:  "Select Case without Partner",
 	helper.ACloseOnNilChannel:      "Actual close on nil channel",
+	helper.ALeak:                   "Actual Leak",
+	helper.ADeadlock:               "Actual Leak",
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
 
@@ -80,6 +83,13 @@ var (
 	resultWithoutTime        []string
 )
 
+var lockedGC = make(map[string]map[int]struct{})
+
+// store all context channel that have been canceled
+// store all dones with its file, line and id
+var contextCancel = make(map[int]struct{})
+var contextDone = make(map[string]map[int]int)
+
 // ResultElem declares an interface for a result elem
 type ResultElem interface {
 	isInvalid() bool
@@ -87,6 +97,7 @@ type ResultElem interface {
 	stringReadable() string
 	stringMachineShort() string
 	getFile() string
+	getLine() int
 }
 
 // TraceElementResult is a type to represent an element that is
@@ -101,12 +112,22 @@ type TraceElementResult struct {
 	Line      int
 }
 
+var blockedGC = make(map[string]map[int]struct{}) // file -> line
+
 // getFile returns the file path of the element
 //
 // Returns:
 //   - string: the file path
 func (this TraceElementResult) getFile() string {
 	return this.File
+}
+
+// getLine returns the  line of the element
+//
+// Returns:
+//   - int: line
+func (this TraceElementResult) getLine() int {
+	return this.Line
 }
 
 // stringMachineShort returns a short machine readable string representation
@@ -160,8 +181,30 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 
 	foundBug = true
 
-	resultReadable := resultTypeMap[resType] + ":\n\t" + argType1 + ": "
-	resultMachine := string(resType) + ","
+	if resType == helper.ALeak {
+		for _, a := range arg1 {
+			file := a.getFile()
+			if _, ok := blockedGC[file]; !ok {
+				blockedGC[file] = make(map[int]struct{})
+			}
+			blockedGC[file][a.getLine()] = struct{}{}
+		}
+	}
+
+	falsePos := "tp"
+
+	if resType.IsLeak() {
+		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
+		if err != nil {
+			log.Errorf("Could not determine if bug is false positive: ", err.Error())
+		}
+		if falsePositive {
+			falsePos = "fp"
+		}
+	}
+
+	resultReadable := resultTypeMap[resType] + ":" + falsePos + ":\n\t" + argType1 + ": "
+	resultMachine := string(resType) + "," + falsePos + ","
 	resultMachineShort := string(resType)
 
 	for i, arg := range arg1 {
@@ -219,6 +262,29 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	}
 }
 
+// AddContext stores all context channel, that have been canceled and stores the
+// corresponding data for the done
+//
+// Parameter:
+//   - file string: file of the channel
+//   - line int: line of the channel
+//   - id int: channel id
+func AddContext(file string, line, id int) {
+	// cancel
+	if strings.HasSuffix(file, "goPatch/src/context/context.go") && line == 565 {
+		contextCancel[id] = struct{}{}
+		return
+	}
+
+	// done
+	if _, ok := contextCancel[id]; ok {
+		if _, ok := contextDone[file]; !ok {
+			contextDone[file] = make(map[int]int)
+		}
+		contextDone[file][line] = id
+	}
+}
+
 // Some results are invalid or intentionally not shown. This function returns,
 // if the given parameters constitute such a result
 //
@@ -237,7 +303,12 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if resType == helper.ADeadlock && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+		return true
+	}
+
+	// TODO: remove test completely
+	if resType == helper.ARecvOnClosed {
 		return true
 	}
 

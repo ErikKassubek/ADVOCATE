@@ -45,10 +45,12 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = errors.New("Actual negative Wait Group. Therefore no rewrite is needed")
 	case helper.AUnlockOfNotLockedMutex:
 		err = errors.New("Actual unlock of not locked mutex. Therefore no rewrite is needed")
+	case helper.ALeak:
+		err = errors.New("Actual blocking routine. Therefore no rewrite is needed")
+	case helper.ADeadlock:
+		err = errors.New("Actual deadlock. Therefore no rewrite is needed")
 	case helper.AConcurrentRecv:
 		err = errors.New("Rewriting trace for concurrent receive is not possible")
-	case helper.ASelCaseWithoutPartner:
-		err = errors.New("Rewriting trace for select without partner is not possible")
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
 		rewriteNeeded = true

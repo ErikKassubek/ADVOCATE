@@ -15,12 +15,20 @@ import (
 	"advocate/fuzzing/gopie"
 )
 
-var fuzzStats = []string{
-	"TestName",
-	"NrMut",
-	"NrMutInvalid",
-	"ActiveReleased",
-	"AllActiveReleased",
+var fuzzStats = []statsType{
+	testName,
+	nrMut,
+	nrMutInvalid,
+	activeReleased,
+	allActiveReleased,
+}
+
+var fuzzStatsStr = []string{
+	string(testName),
+	string(nrMut),
+	string(nrMutInvalid),
+	string(activeReleased),
+	string(allActiveReleased),
 }
 
 // Collect stats about each fuzzing run
@@ -28,13 +36,13 @@ var fuzzStats = []string{
 // Returns:
 //   - map[string]int: map with the stats
 //   - error
-func statsFuzz() (map[string]int, error) {
-	stats := map[string]int{}
+func statsFuzz() (map[statsType]int, error) {
+	stats := map[statsType]int{}
 
-	stats["NrMut"] = gopie.NumberTotalMuts
-	stats["NrMutInvalid"] = gopie.NumberInvalidMuts
-	stats["ActiveReleased"] = baseA.ActiveReleased
-	stats["AllActiveReleased"] = baseA.AllActiveReleased
+	stats[nrMut] = gopie.NumberTotalMuts
+	stats[nrMutInvalid] = gopie.NumberInvalidMuts
+	stats[activeReleased] = baseA.ActiveReleased
+	stats[allActiveReleased] = baseA.AllActiveReleased
 
 	return stats, nil
 }

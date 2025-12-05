@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
@@ -24,11 +25,11 @@ type OpWait int
 // ElementWait is a trace element for a wait group statement
 //
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the wait group
+//   - objId int: The id of the wait group
 //   - opW opW: The operation on the wait group
 //   - delta int: The delta of the wait group
 //   - val int: The value of the wait group
@@ -41,12 +42,12 @@ type OpWait int
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementWait struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	op                       OperationType
 	delta                    int
 	val                      int
@@ -117,7 +118,7 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		op:                       opWOp,
 		delta:                    deltaInt,
 		val:                      valInt,
@@ -143,12 +144,14 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementWait) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      this.op,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPre, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
+		Value:   this.delta,
 	}, true
 }
 
@@ -162,16 +165,16 @@ func (this *ElementWait) GetElemMin() (ElemMin, bool) {
 //   - ElementWait: the wait element
 func EmptyWait(id int) ElementWait {
 	return ElementWait{
-		id: id,
+		objId: id,
 	}
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementWait) GetID() int {
-	return this.id
+func (this *ElementWait) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -353,7 +356,7 @@ func (this *ElementWait) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -413,7 +416,7 @@ func (this *ElementWait) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 	switch this.op {
 	case WaitAdd, WaitDone:
 		res += "A,"
@@ -426,20 +429,20 @@ func (this *ElementWait) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementWait) GetTraceID() int {
-	return this.traceID
+func (this *ElementWait) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementWait) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementWait) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -453,12 +456,12 @@ func (this *ElementWait) setTraceID(ID int) {
 //   - TraceElement: The copy of the element
 func (this *ElementWait) Copy(_ map[string]Element) Element {
 	return &ElementWait{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		op:                       this.op,
 		delta:                    this.delta,
 		val:                      this.val,

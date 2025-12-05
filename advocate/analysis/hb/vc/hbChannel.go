@@ -158,7 +158,7 @@ func Send(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -213,7 +213,7 @@ func Send(ch *trace.ElementChannel) {
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
@@ -280,7 +280,7 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	if _, ok := baseA.CloseData[id]; ok {

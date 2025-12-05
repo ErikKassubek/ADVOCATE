@@ -132,7 +132,7 @@ func RunHBAnalysis(fuzzing bool) {
 		switch e := elem.(type) {
 		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
-			baseA.AddOpsPerID(e.GetID())
+			baseA.AddOpsPerID(e.GetObjId())
 		}
 
 		switch e := elem.(type) {
@@ -158,10 +158,10 @@ func RunHBAnalysis(fuzzing bool) {
 			for _, c := range cases {
 				switch c.GetType(true) {
 				case trace.ChannelSend:
-					ids = append(ids, c.GetID())
+					ids = append(ids, c.GetObjId())
 					opTypes = append(opTypes, 0)
 				case trace.ChannelRecv:
-					ids = append(ids, c.GetID())
+					ids = append(ids, c.GetObjId())
 					opTypes = append(opTypes, 1)
 				}
 			}
@@ -269,7 +269,7 @@ func checkLeak(elem trace.Element) {
 		buffered := make([]bool, 0)
 		opTypes := make([]trace.OperationType, 0)
 		for _, c := range cases {
-			ids = append(ids, c.GetID())
+			ids = append(ids, c.GetObjId())
 			opTypes = append(opTypes, c.GetType(true))
 			buffered = append(buffered, c.IsBuffered())
 

@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
@@ -20,11 +21,11 @@ import (
 
 // ElementCond is a trace element for a condition variable
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the condition variable
+//   - objId int: The id of the condition variable
 //   - op objectType: The operation on the condition variable
 //   - file string, The file of the condition variable operation in the code
 //   - line int, The line of the condition variable operation in the code
@@ -35,12 +36,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementCond struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	op                       OperationType
 	file                     string
 	line                     int
@@ -96,7 +97,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		op:                       op,
 		file:                     file,
 		line:                     line,
@@ -119,21 +120,22 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementCond) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      this.op,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPre, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
 	}, true
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementCond) GetID() int {
-	return this.id
+func (this *ElementCond) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -288,7 +290,7 @@ func (this *ElementCond) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -356,7 +358,7 @@ func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementCond) ToString() string {
 	res := "D,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 	switch this.op {
 	case CondWait:
 		res += "W"
@@ -369,20 +371,20 @@ func (this *ElementCond) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementCond) GetTraceID() int {
-	return this.traceID
+func (this *ElementCond) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementCond) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementCond) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -396,12 +398,12 @@ func (this *ElementCond) setTraceID(ID int) {
 //   - TraceElement: The copy of the element
 func (this *ElementCond) Copy(_ map[string]Element) Element {
 	return &ElementCond{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		op:                       this.op,
 		file:                     this.file,
 		line:                     this.line,

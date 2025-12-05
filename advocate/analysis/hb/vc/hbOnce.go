@@ -47,7 +47,7 @@ func DoSuc(on *trace.ElementOnce) {
 // Parameter:
 //   - on *TraceElementOnce: The trace element
 func DoFail(on *trace.ElementOnce) {
-	id := on.GetID()
+	id := on.GetObjId()
 	routine := on.GetRoutine()
 
 	suc := baseA.OSuc[id]

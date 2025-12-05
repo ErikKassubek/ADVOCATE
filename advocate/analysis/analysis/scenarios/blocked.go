@@ -167,7 +167,7 @@ func reportNonDeadlockLeaks() {
 //   - func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
 func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	buffered := (ch.GetQSize() != 0)
-	id := ch.GetID()
+	id := ch.GetObjId()
 	opC := ch.GetType(true)
 	routine := ch.GetRoutine()
 
@@ -480,7 +480,7 @@ func CheckForLeak() {
 						RoutineID: routineID, ObjID: vcTID.ID, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
 					if !timer {
@@ -505,7 +505,7 @@ func CheckForLeak() {
 						RoutineID: routineID, ObjID: vcTID.ID, TPre: tPre1, ObjType: vcTID.TypeVal, File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetID(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
 					if !timer {
@@ -601,7 +601,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 	foundPartner := false
 
 	routine := se.GetRoutine()
-	id := se.GetID()
+	id := se.GetObjId()
 	tPre := se.GetTPre()
 
 	if len(ids) == 0 {
@@ -771,7 +771,7 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	id := mu.GetID()
+	id := mu.GetObjId()
 	opM := mu.GetType(true)
 	routineID := mu.GetRoutine()
 
@@ -816,7 +816,7 @@ func AddMostRecentAcquireTotal(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	timer.Start(timer.AnaLeak)
 	defer timer.Stop(timer.AnaLeak)
 
-	baseA.MostRecentAcquireTotal[mu.GetID()] = baseA.ElemWithVc{Elem: mu, Vc: vc.Copy()}
+	baseA.MostRecentAcquireTotal[mu.GetObjId()] = baseA.ElemWithVc{Elem: mu, Vc: vc.Copy()}
 }
 
 // CheckForLeakWait is run for wait group operation without a post event.
@@ -837,7 +837,7 @@ func CheckForLeakWait(wa *trace.ElementWait) {
 	routineID := wa.GetRoutine()
 
 	arg := results.TraceElementResult{
-		RoutineID: routineID, ObjID: wa.GetID(), TPre: tPre, ObjType: "WW", File: file, Line: line}
+		RoutineID: routineID, ObjID: wa.GetObjId(), TPre: tPre, ObjType: "WW", File: file, Line: line}
 
 	leaks[routineID] = TERLeak{helper.LWaitGroup,
 		"wait", []results.ResultElem{arg}, "", []results.ResultElem{}}
@@ -861,7 +861,7 @@ func CheckForLeakCond(co *trace.ElementCond) {
 	routineID := co.GetRoutine()
 
 	arg := results.TraceElementResult{
-		RoutineID: routineID, ObjID: co.GetID(), TPre: tPre, ObjType: "DW", File: file, Line: line}
+		RoutineID: routineID, ObjID: co.GetObjId(), TPre: tPre, ObjType: "DW", File: file, Line: line}
 
 	leaks[routineID] = TERLeak{helper.LCond,
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{}}
@@ -906,7 +906,7 @@ func CheckForStuckRoutine(simple bool) bool {
 				switch ot {
 				case trace.ChannelSend, trace.ChannelRecv:
 					c := lastElem.(*trace.ElementChannel)
-					if c.GetID() == -1 {
+					if c.GetObjId() == -1 {
 						leakType = helper.LNilChan
 					} else if lastElem.(*trace.ElementChannel).IsBuffered() {
 						leakType = helper.LBufferedWithout
@@ -935,7 +935,7 @@ func CheckForStuckRoutine(simple bool) bool {
 		}
 
 		arg := results.TraceElementResult{
-			RoutineID: routine, ObjID: lastElem.GetID(), TPre: lastElem.GetTPre(),
+			RoutineID: routine, ObjID: lastElem.GetObjId(), TPre: lastElem.GetTPre(),
 			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
@@ -965,10 +965,10 @@ func isLeakTimerOrCtx(elem trace.Element) (bool, bool) {
 	isTimer, isContext := false, false
 	switch e := elem.(type) {
 	case *trace.ElementChannel:
-		return chanIsTimerOrCtx(elem.GetID())
+		return chanIsTimerOrCtx(elem.GetObjId())
 	case *trace.ElementSelect:
 		for _, c := range e.GetCases() {
-			ti, co := chanIsTimerOrCtx(c.GetID())
+			ti, co := chanIsTimerOrCtx(c.GetObjId())
 			if ti {
 				isTimer = true
 			}

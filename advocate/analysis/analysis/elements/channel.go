@@ -28,7 +28,7 @@ import (
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateChannel(ch *trace.ElementChannel) {
-	id := ch.GetID()
+	id := ch.GetObjId()
 	opC := ch.GetType(true)
 	oID := ch.GetOID()
 	cl := ch.GetClosed()
@@ -62,7 +62,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 		return
 	}
 
-	results.AddContext(ch.GetFile(), ch.GetLine(), ch.GetID())
+	results.AddContext(ch.GetFile(), ch.GetLine(), ch.GetObjId())
 
 	if ch.IsBuffered() {
 		switch opC {
@@ -150,7 +150,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 
 			opC := c.GetType(true)
 
-			if _, ok := baseA.CloseData[c.GetID()]; ok {
+			if _, ok := baseA.CloseData[c.GetObjId()]; ok {
 				switch opC {
 				case trace.ChannelSend:
 					scenarios.FoundSendOnClosedChannel(&c, false)
@@ -209,22 +209,22 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 
 		// for detection of send on closed
-		baseA.HasSend[sender.GetID()] = true
-		baseA.MostRecentSend[sender.GetRoutine()][sender.GetID()] = baseA.ElemWithVcVal{
+		baseA.HasSend[sender.GetObjId()] = true
+		baseA.MostRecentSend[sender.GetRoutine()][sender.GetObjId()] = baseA.ElemWithVcVal{
 			Elem: sender,
-			Vc:   baseA.MostRecentSend[sender.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[sender.GetRoutine()]).Copy(),
-			Val:  sender.GetID()}
+			Vc:   baseA.MostRecentSend[sender.GetRoutine()][sender.GetObjId()].Vc.Sync(vc.CurrentVC[sender.GetRoutine()]).Copy(),
+			Val:  sender.GetObjId()}
 
 		// for detection of receive on closed
-		baseA.HasReceived[sender.GetID()] = true
-		baseA.MostRecentReceive[recv.GetRoutine()][sender.GetID()] = baseA.ElemWithVcVal{Elem: recv,
-			Vc:  baseA.MostRecentReceive[recv.GetRoutine()][sender.GetID()].Vc.Sync(vc.CurrentVC[recv.GetRoutine()]).Copy(),
-			Val: sender.GetID(),
+		baseA.HasReceived[sender.GetObjId()] = true
+		baseA.MostRecentReceive[recv.GetRoutine()][sender.GetObjId()] = baseA.ElemWithVcVal{Elem: recv,
+			Vc:  baseA.MostRecentReceive[recv.GetRoutine()][sender.GetObjId()].Vc.Sync(vc.CurrentVC[recv.GetRoutine()]).Copy(),
+			Val: sender.GetObjId(),
 		}
 	}
 
 	if baseA.AnalysisCasesMap[flags.SendOnClosed] {
-		if _, ok := baseA.CloseData[sender.GetID()]; ok {
+		if _, ok := baseA.CloseData[sender.GetObjId()]; ok {
 			scenarios.FoundSendOnClosedChannel(sender, true)
 		}
 	}
@@ -239,8 +239,8 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetID(), baseA.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
-		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetID(), baseA.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
+		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
+		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
 	}
 }
 
@@ -251,7 +251,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	if ch.GetTPost() == 0 {
@@ -288,7 +288,7 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 
 	for i, hold := range baseA.HoldRecv {
-		if hold.Ch.GetID() == id {
+		if hold.Ch.GetObjId() == id {
 			Recv(hold.Ch, hold.Vc, hold.WVc)
 			baseA.HoldRecv = append(baseA.HoldRecv[:i], baseA.HoldRecv[i+1:]...)
 			break
@@ -303,7 +303,7 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	if baseA.AnalysisCasesMap[flags.ConcurrentRecv] || baseA.AnalysisFuzzingFlow {
@@ -342,7 +342,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 
 	for i, hold := range baseA.HoldSend {
-		if hold.Ch.GetID() == id {
+		if hold.Ch.GetObjId() == id {
 			Send(hold.Ch, hold.Vc, hold.WVc)
 			baseA.HoldSend = append(baseA.HoldSend[:i], baseA.HoldSend[i+1:]...)
 			break
@@ -360,7 +360,7 @@ func Close(ch *trace.ElementChannel) {
 	}
 
 	routine := ch.GetRoutine()
-	id := ch.GetID()
+	id := ch.GetObjId()
 
 	ch.SetClosed(true)
 
@@ -405,7 +405,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
@@ -437,7 +437,7 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 //   - vc VectorClock: the vector clock of the operation
 //   - tID string: the position of the send in the program
 func setChannelAsLastSend(c trace.Element) {
-	id := c.GetID()
+	id := c.GetObjId()
 	routine := c.GetRoutine()
 
 	if baseA.MostRecentSend[routine] == nil {
@@ -460,7 +460,7 @@ func setChannelAsLastSend(c trace.Element) {
 //   - vc VectorClock: the vector clock of the operation
 //   - tID string: the position of the recv in the program
 func setChannelAsLastReceive(c trace.Element) {
-	id := c.GetID()
+	id := c.GetObjId()
 	routine := c.GetRoutine()
 
 	if baseA.MostRecentReceive[routine] == nil {

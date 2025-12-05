@@ -39,7 +39,7 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 //   - numberOfRoutines int: The number of routines in the trace
 //   - sync bool: sync reader with last writer
 func Read(at *trace.ElementAtomic, sync bool) {
-	id := at.GetID()
+	id := at.GetObjId()
 
 	if sync && baseA.LastAtomicWriter[id] != nil {
 		AddEdge(at, baseA.LastAtomicWriter[id], false)

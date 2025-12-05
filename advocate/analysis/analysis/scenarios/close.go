@@ -32,7 +32,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 
 	// check if there is an earlier send, that could happen concurrently to close
 	if baseA.AnalysisCasesMap[flags.SendOnClosed] && baseA.HasSend[id] {
@@ -63,7 +63,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				}
 
 				arg2 := results.TraceElementResult{ // close
-					RoutineID: baseA.CloseData[ch.GetID()].GetRoutine(),
+					RoutineID: baseA.CloseData[ch.GetObjId()].GetRoutine(),
 					ObjID:     id,
 					TPre:      tPre2,
 					ObjType:   "CC",
@@ -131,7 +131,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := elem.GetID()
+	id := elem.GetObjId()
 
 	if _, ok := baseA.CloseData[id]; !ok {
 		return
@@ -180,7 +180,7 @@ func FoundReceiveOnClosedChannel(ch *trace.ElementChannel, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 
 	if _, ok := baseA.CloseData[id]; !ok {
 		return
@@ -239,7 +239,7 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 
 	if oldClose, ok := baseA.CloseData[id]; ok {
 		if oldClose.GetTID() == "" || oldClose.GetTID() == "\n" || ch.GetTID() == "" || ch.GetTID() == "\n" {

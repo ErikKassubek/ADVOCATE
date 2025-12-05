@@ -29,7 +29,7 @@ func AnalyzeWait(wa *trace.ElementWait) {
 
 	switch wa.GetOpW() {
 	case trace.WaitAdd, trace.WaitDone:
-		baseA.LastChangeWG[wa.GetID()] = wa
+		baseA.LastChangeWG[wa.GetObjId()] = wa
 
 		if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] || baseF.FuzzingModeGoCRHBPlus {
 			scenarios.CheckForDoneBeforeAddChange(wa)

@@ -75,7 +75,7 @@ func (this *Trace) AddElement(elem Element) {
 	routine := elem.GetRoutine()
 
 	this.minTraceID++
-	elem.setTraceID(this.minTraceID)
+	elem.setID(this.minTraceID)
 
 	this.traces[routine] = append(this.traces[routine], elem)
 	this.numberElemsInTrace[routine]++
@@ -403,7 +403,7 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 		for _, elem := range trace {
 			switch e := elem.(type) {
 			case *ElementWait:
-				if e.GetID() == wgID {
+				if e.GetObjId() == wgID {
 					if e.GetTPre() < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {

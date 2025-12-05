@@ -167,7 +167,7 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelSend)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetObjId(), trace.ChannelSend)
 		if err != nil {
 			println(err.Error())
 		}
@@ -192,7 +192,7 @@ func rewriteUnbufChanLeakChanSel(tr *trace.Trace, bug bugs.Bug) error {
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 		// and T4' = [h in T4 | h >= e and h < f]
 
-		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelRecv)
+		err := bug.TraceElement2[0].(*trace.ElementSelect).SetCase(stuck.GetObjId(), trace.ChannelRecv)
 		if err != nil {
 			println(err.Error())
 		}
@@ -248,7 +248,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 
 		tr.ShiftConcurrentOrAfterToAfterStartingFromElement(bug.TraceElement2[0], stuck.GetTSort()) // bug.TraceElement2[0] = possiblePartner
 
-		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelSend)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetObjId(), trace.ChannelSend)
 		if err != nil {
 			println(err.Error())
 		}
@@ -265,7 +265,7 @@ func rewriteUnbufChanLeakSelChan(tr *trace.Trace, bug bugs.Bug) error {
 		// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 		// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetID(), trace.ChannelRecv)
+		err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(stuck.GetObjId(), trace.ChannelRecv)
 		if err != nil {
 			println(err.Error())
 		}
@@ -310,7 +310,7 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 	// find communication
 	for _, c := range stuck.GetCases() {
 		for _, d := range possiblePartner.GetCases() {
-			if c.GetID() != d.GetID() {
+			if c.GetObjId() != d.GetObjId() {
 				continue
 			}
 
@@ -326,11 +326,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 				// T = T1 ++ [f] ++ T2' ++ T3' ++ [e]
 				// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 
-				err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.ChannelRecv)
+				err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetObjId(), trace.ChannelRecv)
 				if err != nil {
 					println(err.Error())
 				}
-				err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.ChannelSend)
+				err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetObjId(), trace.ChannelSend)
 				if err != nil {
 					println(err.Error())
 				}
@@ -353,11 +353,11 @@ func rewriteUnbufChanLeakSelSel(tr *trace.Trace, bug bugs.Bug) error {
 			// where T2' = [h in T2 | h < e] and T3' = [h in T3 | h < e]
 			// and T4' = [h in T4 | h >= e and h < f]
 
-			err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetID(), trace.ChannelSend)
+			err := bug.TraceElement1[0].(*trace.ElementSelect).SetCase(c.GetObjId(), trace.ChannelSend)
 			if err != nil {
 				println(err.Error())
 			}
-			err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetID(), trace.ChannelRecv)
+			err = bug.TraceElement2[0].(*trace.ElementSelect).SetCase(d.GetObjId(), trace.ChannelRecv)
 			if err != nil {
 				println(err.Error())
 			}
@@ -496,7 +496,7 @@ func rewriteWaitGroupLeak(tr *trace.Trace, bug bugs.Bug) error {
 
 	tr.AddTraceElementReplay(wait.GetTPre()+1, helper.ExitCodeLeakWG)
 
-	nrAdd, nrDone := tr.GetNrAddDoneBeforeTime(wait.GetID(), wait.GetTSort())
+	nrAdd, nrDone := tr.GetNrAddDoneBeforeTime(wait.GetObjId(), wait.GetTSort())
 
 	if nrAdd != nrDone {
 		return errors.New("the wait group is not balanced. Cannot rewrite trace")

@@ -12,16 +12,17 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"strconv"
 )
 
 // ElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - tPost int: The timestamp of the event
 //   - exitCode int: expected exit code
 type ElementReplay struct {
-	traceID  int
+	id       int
 	tPost    int
 	exitCode int
 }
@@ -52,20 +53,21 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementReplay) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   -1,
 		ID:      -1,
+		ObjID:   -1,
 		Op:      None,
 		Pos:     "",
+		Time:    types.NewPair(this.tPost, this.tPost),
 		Routine: -1,
 		Vc:      *clock.NewVectorClock(0),
 	}, false
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementReplay) GetID() int {
+func (this *ElementReplay) GetObjId() int {
 	return 0
 }
 
@@ -267,20 +269,20 @@ func (this *ElementReplay) UpdateVectorClock() {
 	// nothing to do
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementReplay) GetTraceID() int {
-	return this.traceID
+func (this *ElementReplay) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementReplay) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementReplay) setID(ID int) {
+	this.id = ID
 }
 
 // Copy creates a copy of the element
@@ -294,7 +296,7 @@ func (this *ElementReplay) setTraceID(ID int) {
 //   - TraceElement: The copy of the element
 func (this *ElementReplay) Copy(_ map[string]Element) Element {
 	return &ElementReplay{
-		traceID:  this.traceID,
+		id:       this.id,
 		tPost:    this.tPost,
 		exitCode: this.exitCode,
 	}

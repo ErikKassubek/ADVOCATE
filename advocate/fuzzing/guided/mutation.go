@@ -13,11 +13,10 @@ package guided
 import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
+	"advocate/fuzzing/equivalence"
 	"advocate/trace"
 	"advocate/utils/log"
 )
-
-var numberMuts = 0
 
 // CreateMutations will create mutations based on the predictive analysis.
 // This includes both situations, where the predictive analysis directly
@@ -25,18 +24,14 @@ var numberMuts = 0
 // to guide the mutation in a better direction.
 func CreateMutations() {
 	numberMuts = 0
+	traceID++
 
-	addTraceToProcessed()
+	// add new original trace to equivalence
+	minTrace := trace.TraceMinFromTrace(&baseA.MainTrace)
+	equivalence.AddOrig(minTrace, traceID)
 
 	predictive()
-	guided()
 	random()
-}
-
-// addTraceToProcessed adds the current trace to the processedTraces to avoid run of independent operations
-func addTraceToProcessed() {
-	minTrace := trace.TraceMinFromTrace(&baseA.MainTrace)
-	processedTraces = append(processedTraces, minTrace)
 }
 
 // predictive runs the predictive analysis and creates new runs based on
@@ -46,18 +41,13 @@ func predictive() {
 	// TODO: continue
 }
 
-// guided tries to create interesting runs based on the happens before info
-// even if the predictive analysis did not directly indicate a bug
-func guided() {
-	// for numberMuts < maxNumberOfMutsPerRun {
-	// 	// TODO: implement
-	// }
-}
-
 // random creates random mutation, if the number of predictive and guided mutations
 // has not reached the max number of mutations per run
 func random() {
-	for numberMuts < maxNumberOfMutsPerRun {
+	numTry := 0
+	for numberMuts < maxNumberOfMutsPerRun || numTry > maxTries {
+		numTry++
+
 		chain := startChain(lengthChain)
 
 		mutatedChains := baseF.Mutate(chain, -1, nil, nil)
@@ -65,11 +55,9 @@ func random() {
 		for _, ch := range mutatedChains {
 			minTrace := traceMinFromChain(ch)
 
-			if independentTraceMin(minTrace) {
+			if equivalence.HasEquivalent(minTrace, traceID) {
 				continue
 			}
-
-			processedTraces = append(processedTraces, minTrace)
 
 			firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
 			_, err := baseF.WriteMutChain(ch, firstMut)
@@ -77,7 +65,6 @@ func random() {
 				log.Error("Error in writing mutation: ", err.Error())
 			}
 			numberMuts++
-
 		}
 	}
 }

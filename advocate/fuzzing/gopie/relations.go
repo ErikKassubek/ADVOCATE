@@ -70,7 +70,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.GetID()
+	id := elem.GetObjId()
 	if _, ok := ElemsByID[id]; !ok {
 		ElemsByID[id] = make([]trace.Element, 0)
 	}

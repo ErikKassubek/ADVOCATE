@@ -10,13 +10,13 @@
 
 package guided
 
-import "advocate/trace"
-
 const (
 	maxNumberOfMutsPerRun = 10
+	maxTries              = 1000
 	lengthChain           = 10
 )
 
 var (
-	processedTraces = make([]trace.TraceMin, 0)
+	numberMuts = 0
+	traceID    = 0
 )

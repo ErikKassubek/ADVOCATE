@@ -113,7 +113,9 @@ func GetElemTypeFromObjectType(ob OperationType) OperationType {
 
 // Element is an interface for the elements in a trace
 type Element interface {
+	setID(ID int)
 	GetID() int
+	GetObjId() int
 	GetTPre() int
 	GetTSort() int
 	GetTPost() int
@@ -137,8 +139,6 @@ type Element interface {
 	GetVC() *clock.VectorClock
 	GetWVC() *clock.VectorClock
 	Copy(mapping map[string]Element) Element
-	setTraceID(ID int)
-	GetTraceID() int
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
 	GetElemMin() (ElemMin, bool)

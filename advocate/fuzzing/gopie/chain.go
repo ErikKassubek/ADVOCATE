@@ -156,7 +156,7 @@ func quality(elem trace.Element) float64 {
 	w2 := 0.3
 	w3 := 0.5
 
-	numberOps, _ := baseA.GetOpsPerID(elem.GetID())
+	numberOps, _ := baseA.GetOpsPerID(elem.GetObjId())
 	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, false, true)
 	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, false, true)
 

@@ -40,7 +40,7 @@ func UpdateHBWait(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Change(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 	routine := wa.GetRoutine()
 
 	lw := baseA.LastChangeWG[id]
@@ -58,7 +58,7 @@ func Change(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Wait(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 	routine := wa.GetRoutine()
 
 	if wa.GetTPost() != 0 {

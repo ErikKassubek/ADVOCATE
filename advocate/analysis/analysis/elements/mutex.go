@@ -30,7 +30,7 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	hbcalc.UpdateHBMutex(mu, alt)
 
 	routine := mu.GetRoutine()
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	switch mu.GetType(true) {
 	case trace.MutexLock:

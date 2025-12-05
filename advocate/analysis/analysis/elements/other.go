@@ -23,7 +23,7 @@ import (
 func AnalyzeNew(n *trace.ElementNew) {
 	hbcalc.UpdateHBNew(n)
 
-	baseA.NewChan[n.GetID()] = n.GetFile()
+	baseA.NewChan[n.GetObjId()] = n.GetFile()
 }
 
 // AnalyzeRoutineEnd store the vector clock of the element

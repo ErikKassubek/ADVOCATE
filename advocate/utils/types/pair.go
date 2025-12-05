@@ -25,3 +25,14 @@ type Pair[K comparable, V comparable] struct {
 func NewPair[K comparable, V comparable](x K, y V) Pair[K, V] {
 	return Pair[K, V]{X: x, Y: y}
 }
+
+// IsEqual check if two pairs are equal.
+//
+// Parameter:
+//   - other *Pair[K, V]: the pair to check agains
+//
+// Returns:
+//   - bool: true if equal, false if not
+func (this *Pair[K, V]) IsEqual(other Pair[K, V]) bool {
+	return this.X == other.X && this.Y == other.Y
+}

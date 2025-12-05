@@ -30,7 +30,7 @@ func CheckForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	if _, ok := baseA.AllLocks[id]; !ok {
 		baseA.AllLocks[id] = make([]trace.Element, 0)
@@ -47,7 +47,7 @@ func CheckForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	if _, ok := baseA.AllLocks[id]; !ok {
 		baseA.AllUnlocks[id] = make([]trace.Element, 0)

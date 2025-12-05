@@ -12,19 +12,20 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"strconv"
 )
 
 // ElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp at the end of the event
 //   - vc clock.VectorClock: The vector clock
 type ElementRoutineEnd struct {
-	traceID int
+	id      int
 	index   int
 	routine int
 	tPost   int
@@ -65,20 +66,21 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementRoutineEnd) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   -1,
 		ID:      -1,
+		ObjID:   -1,
 		Op:      EndRoutine,
 		Pos:     "",
 		Routine: this.routine,
+		Time:    types.NewPair(this.tPost, this.tPost),
 		Vc:      *this.vc.Copy(),
 	}, false
 }
 
-// GetID is a dummy function to implement the traceElement interface
+// GetObjId is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) GetID() int {
+func (this *ElementRoutineEnd) GetObjId() int {
 	return 0
 }
 
@@ -278,20 +280,20 @@ func (this *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(this.tPost)
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementRoutineEnd) GetTraceID() int {
-	return this.traceID
+func (this *ElementRoutineEnd) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementRoutineEnd) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementRoutineEnd) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -305,7 +307,7 @@ func (this *ElementRoutineEnd) setTraceID(ID int) {
 //   - TraceElement: The copy of the element
 func (this *ElementRoutineEnd) Copy(_ map[string]Element) Element {
 	return &ElementRoutineEnd{
-		traceID: this.traceID,
+		id:      this.id,
 		index:   this.index,
 		routine: this.routine,
 		tPost:   this.tPost,

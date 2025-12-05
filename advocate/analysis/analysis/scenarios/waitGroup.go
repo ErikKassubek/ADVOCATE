@@ -46,7 +46,7 @@ func CheckForDoneBeforeAddChange(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
 func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 
 	// if necessary, create maps and lists
 	if _, ok := baseA.WGAddData[id]; !ok {
@@ -62,7 +62,7 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
 func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 
 	// if necessary, create maps and lists
 	if _, ok := baseA.WgDoneData[id]; !ok {

@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
@@ -21,12 +22,12 @@ import (
 
 // ElementSelect is a trace element for a select statement
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the select statement
+//   - objId int: The id of the select statement
 //   - cases []traceElementSelectCase: The cases of the select statement, ordered by casi starting from 0
 //   - chosenIndex int: The internal index of chosen case
 //   - containsDefault bool: Whether the select statement contains a default case
@@ -43,12 +44,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementSelect struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	cases                    []ElementChannel
 	chosenCase               ElementChannel
 	chosenIndex              int
@@ -108,7 +109,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		chosenIndex:              chosenIndexInt,
 		file:                     file,
 		line:                     line,
@@ -181,7 +182,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 			routine:  routine,
 			tPre:     tPreInt,
 			tPost:    cTPost,
-			id:       cID,
+			objId:    cID,
 			op:       cOpC,
 			cl:       cCl,
 			oID:      cOID,
@@ -214,29 +215,35 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 //   - ElemMin: the ElemMin representations of the operation
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementSelect) GetElemMin() (ElemMin, bool) {
-	ch := make([]int, 0)
+	ch := make([]types.Pair[int, bool], 0)
 
 	for _, c := range this.cases {
-		ch = append(ch, c.id)
+		if c.op == ChannelSend {
+			ch = append(ch, types.NewPair(c.objId, true))
+		} else {
+			ch = append(ch, types.NewPair(c.objId, false))
+		}
 	}
 
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      SelectOp,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPre, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
 		Channel: ch,
+		Value:   this.chosenIndex,
 	}, true
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementSelect) GetID() int {
-	return this.id
+func (this *ElementSelect) GetObjId() int {
+	return this.objId
 }
 
 // GetCases returns the cases of the select statement
@@ -648,7 +655,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 
 	found := false
 	for i, c := range this.cases {
-		if c.id == chanID && c.op == op {
+		if c.objId == chanID && c.op == op {
 			tPost := this.GetTPost()
 			if !this.chosenDefault {
 				this.cases[this.chosenIndex].SetTPost(0)
@@ -676,7 +683,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 //   - string: The simple string representation of the element
 func (this *ElementSelect) ToString() string {
 	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
-		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.id) + ","
+		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
 
 	notNil := 0
 	for _, ca := range this.cases { // cases
@@ -704,20 +711,20 @@ func (this *ElementSelect) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementSelect) GetTraceID() int {
-	return this.traceID
+func (this *ElementSelect) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementSelect) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementSelect) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -736,12 +743,12 @@ func (this *ElementSelect) Copy(mapping map[string]Element) Element {
 	}
 
 	elem := &ElementSelect{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		chosenIndex:              this.chosenIndex,
 		containsDefault:          this.containsDefault,
 		chosenDefault:            this.chosenDefault,
@@ -831,11 +838,11 @@ func (this *ElementSelect) HasCommonChannel(s *ElementSelect) bool {
 	seen := make(map[int]struct{}, len(this.GetCases()))
 
 	for _, v := range this.GetCases() {
-		seen[v.id] = struct{}{}
+		seen[v.objId] = struct{}{}
 	}
 
 	for _, v := range s.GetCases() {
-		if _, ok := seen[v.id]; ok {
+		if _, ok := seen[v.objId]; ok {
 			return true
 		}
 	}

@@ -55,7 +55,7 @@ func Write(at *trace.ElementAtomic, routine int) {
 //   - sync bool: sync reader with last writer
 //   - routine int: the routine of at
 func Read(at *trace.ElementAtomic, sync bool, routine int) {
-	id := at.GetID()
+	id := at.GetObjId()
 
 	if sync && baseA.LastAtomicWriter[id] != nil {
 		CurrentVC[routine].Sync(baseA.LastAtomicWriter[id].GetVC())

@@ -115,7 +115,7 @@ func Send(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
@@ -176,7 +176,7 @@ func Recv(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
@@ -211,7 +211,7 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 
 	if _, ok := baseA.CloseData[id]; ok {
 		c := baseA.CloseData[id]

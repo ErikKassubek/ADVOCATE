@@ -34,7 +34,7 @@ func LockSetAddLock(mu *trace.ElementMutex, vc *clock.VectorClock) {
 	defer timer.Stop(timer.AnaResource)
 
 	routine := mu.GetRoutine()
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	if _, ok := baseA.LockSet[routine]; !ok {
 		baseA.LockSet[routine] = make(map[int]string)

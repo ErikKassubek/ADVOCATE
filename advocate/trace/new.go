@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -19,11 +20,11 @@ import (
 
 // ElementNew is a trace element for the creation of an object / new
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp of the new
-//   - id int: The id of the underlying operation
+//   - objId int: The id of the underlying operation
 //   - elemType newOpType: The type of the created object
 //   - num int: Variable field for additional information
 //   - file string: The file of the new
@@ -37,11 +38,11 @@ import (
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type ElementNew struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPost                    int
-	id                       int
+	objId                    int
 	elemType                 OperationType
 	num                      int
 	file                     string
@@ -104,7 +105,7 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		elemType:                 et,
 		num:                      numInt,
 		file:                     file,
@@ -128,21 +129,22 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementNew) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      this.elemType,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPost, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
 	}, false
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementNew) GetID() int {
-	return this.id
+func (this *ElementNew) GetObjId() int {
+	return this.objId
 }
 
 // GetTPre returns the tPre of the element
@@ -287,7 +289,7 @@ func (this *ElementNew) GetTraceIndex() (int, int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementNew) ToString() string {
-	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.tPost, this.id, string(this.elemType), this.num, this.GetPos())
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.tPost, this.objId, string(this.elemType), this.num, this.GetPos())
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -349,20 +351,20 @@ func (this *ElementNew) SetTWithoutNotExecuted(tSort int) {
 	this.tPost = tSort
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementNew) GetTraceID() int {
-	return this.traceID
+func (this *ElementNew) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementNew) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementNew) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -377,11 +379,11 @@ func (this *ElementNew) setTraceID(ID int) {
 func (this *ElementNew) Copy(_ map[string]Element) Element {
 
 	return &ElementNew{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		elemType:                 this.elemType,
 		file:                     this.file,
 		line:                     this.line,

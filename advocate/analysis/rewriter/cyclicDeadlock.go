@@ -56,7 +56,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 		prevElement := bug.TraceElement2[(i+len(bug.TraceElement2)-1)%len(bug.TraceElement2)]
 		for j := len(tr.GetRoutineTrace(elem.GetRoutine())) - 1; j >= 0; j-- {
 			locksetElement := tr.GetRoutineTrace(elem.GetRoutine())[j]
-			if locksetElement.GetID() != prevElement.GetID() {
+			if locksetElement.GetObjId() != prevElement.GetObjId() {
 				continue
 			}
 			if !locksetElement.(*trace.ElementMutex).IsLock() {
@@ -77,7 +77,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 					// Check if the unlocked mutex is in the locksets of the deadlock cycle
 					for _, lockElem := range locksetElements {
 						// If yes, make sure the unlock happens before the final lock attempts!
-						if (*unlock).GetID() == lockElem.GetID() {
+						if (*unlock).GetObjId() == lockElem.GetObjId() {
 							// Do nothing if the unlock already happens before the lockset element
 							if (*unlock).GetTPre() < lockElem.GetTPre() {
 								break
@@ -94,7 +94,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							}
 
 							if concurrentStartElem == nil {
-								fmt.Println("Could not find concurrent element for Routine", lockElem.GetRoutine(), "so we cannot move it behind unlock", unlock.GetID(), "in Routine", unlock.GetRoutine())
+								fmt.Println("Could not find concurrent element for Routine", lockElem.GetRoutine(), "so we cannot move it behind unlock", unlock.GetObjId(), "in Routine", unlock.GetRoutine())
 								break
 							}
 
@@ -117,7 +117,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	// analysis.PrintTrace()
 
 	for _, elem := range bug.TraceElement2 {
-		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetID())
+		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetObjId())
 	}
 
 	return nil

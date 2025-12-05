@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -19,11 +20,11 @@ import (
 
 // ElementFork is a trace element for a go statement
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: the index of the fork in the routine
 //   - routine int: The routine id of
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the new go routine
+//   - objId int: The id of the new go routine
 //   - file (string), line int: The position of the trace element in the file
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
@@ -32,11 +33,11 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementFork struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPost                    int
-	id                       int
+	objId                    int
 	file                     string
 	line                     int
 	vc                       *clock.VectorClock
@@ -78,7 +79,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 		index:                    this.numberElemsInTrace[routine],
 		routine:                  routine,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		file:                     file,
 		line:                     line,
 		vc:                       nil,
@@ -104,21 +105,22 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementFork) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      ForkOp,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPost, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
 	}, true
 }
 
-// GetID returns the ID of the newly created routine
+// GetObjId returns the ID of the newly created routine
 //
 // Returns:
 //   - int: The id of the new routine
-func (this *ElementFork) GetID() int {
-	return this.id
+func (this *ElementFork) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -315,24 +317,24 @@ func (this *ElementFork) SetTWithoutNotExecuted(tSort int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementFork) ToString() string {
-	return "G" + "," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.id) +
+	return "G" + "," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) +
 		"," + this.GetPos()
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementFork) GetTraceID() int {
-	return this.traceID
+func (this *ElementFork) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementFork) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementFork) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -347,11 +349,11 @@ func (this *ElementFork) setTraceID(ID int) {
 func (this *ElementFork) Copy(_ map[string]Element) Element {
 
 	return &ElementFork{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		file:                     this.file,
 		line:                     this.line,
 		vc:                       this.vc.Copy(),

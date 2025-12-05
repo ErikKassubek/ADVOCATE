@@ -12,19 +12,20 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 	"fmt"
 )
 
-var minIndex = 0
-
 type ElemMin struct {
-	Index   int
 	ID      int
+	ObjID   int
 	Op      OperationType
-	Pos     string
 	Routine int
+	Pos     string
+	Time    types.Pair[int, int]
 	Vc      clock.VectorClock
-	Channel []int // id of channel in select cases
+	Channel []types.Pair[int, bool] // id/dir of channel in select cases, true for send, false for receive
+	Value   int                     // a free value to store stuff in
 }
 
 func (this *ElemMin) GetType(op bool) OperationType {
@@ -35,11 +36,11 @@ func (this *ElemMin) GetType(op bool) OperationType {
 }
 
 func (this *ElemMin) IsSameElement(elem *ElemMin) bool {
-	return this.ID == elem.ID
+	return this.ObjID == elem.ObjID
 }
 
 func (this *ElemMin) Key() string {
-	return fmt.Sprintf("%d-%d", this.Routine, this.Index)
+	return fmt.Sprintf("%d-%d", this.Routine, this.ID)
 }
 
 // TODO: make better check (include element/channel). First must make sure, that id is always the same
@@ -51,11 +52,11 @@ func (this *ElemMin) HasCommonChannel(elem *ElemMin) bool {
 	seen := make(map[int]struct{}, len(this.Channel))
 
 	for _, v := range this.Channel {
-		seen[v] = struct{}{}
+		seen[v.X] = struct{}{}
 	}
 
 	for _, v := range elem.Channel {
-		if _, ok := seen[v]; ok {
+		if _, ok := seen[v.X]; ok {
 			return true
 		}
 	}
@@ -65,7 +66,7 @@ func (this *ElemMin) HasCommonChannel(elem *ElemMin) bool {
 
 func (this *ElemMin) IsInCases(elem *ElemMin) bool {
 	for _, v := range this.Channel {
-		if v == elem.ID {
+		if v.X == elem.ObjID {
 			return true
 		}
 	}
@@ -75,6 +76,7 @@ func (this *ElemMin) IsInCases(elem *ElemMin) bool {
 
 type TraceMin struct {
 	trace []ElemMin
+	props map[int]types.Pair[int, int]
 }
 
 // NewTraceMin creates a new, empty trace
@@ -85,6 +87,30 @@ func NewTraceMin() TraceMin {
 	return TraceMin{
 		trace: make([]ElemMin, 0),
 	}
+}
+
+// Trace returns the elements in the TraceMin
+//
+// Returns:
+//   - int: the elements in the trace
+func (this *TraceMin) Trace() []ElemMin {
+	return this.trace
+}
+
+// Props returns the properties of the TraceMin
+//
+// Returns:
+//   - int: the elements in the trace
+func (this *TraceMin) Props() map[int]types.Pair[int, int] {
+	return this.props
+}
+
+// SetProps sets the properties of the TraceMin
+//
+// Returns:
+//   - int: the elements in the trace
+func (this *TraceMin) SetProps(props map[int]types.Pair[int, int]) {
+	this.props = props
 }
 
 // Len returns the number of elements in the TraceMin

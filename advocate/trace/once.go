@@ -17,15 +17,16 @@ import (
 	"strconv"
 
 	"advocate/analysis/hb/clock"
+	"advocate/utils/types"
 )
 
 // ElementOnce is a trace element for a once
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the mutex
+//   - objId int: The id of the mutex
 //   - suc bool: Whether the operation was successful
 //   - file (string), line int: The position of the mutex operation in the code
 //   - vc *clock.VectorClock: the vector clock of the element
@@ -34,12 +35,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementOnce struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	suc                      bool
 	file                     string
 	line                     int
@@ -92,7 +93,7 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		suc:                      sucBool,
 		file:                     file,
 		line:                     line,
@@ -116,21 +117,22 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 //   - bool: true if it should be part of a min trace, false otherwise
 func (this *ElementOnce) GetElemMin() (ElemMin, bool) {
 	return ElemMin{
-		Index:   this.index,
 		ID:      this.id,
+		ObjID:   this.objId,
 		Op:      Once,
 		Pos:     PosStringFromPos(this.file, this.line),
+		Time:    types.NewPair(this.tPre, this.tPost),
 		Routine: this.routine,
 		Vc:      *this.vc.Copy(),
 	}, true
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementOnce) GetID() int {
-	return this.id
+func (this *ElementOnce) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -292,7 +294,7 @@ func (this *ElementOnce) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -353,7 +355,7 @@ func (this *ElementOnce) ToString() string {
 	res := "O,"
 	res += strconv.Itoa(this.tPre) + ","
 	res += strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 	if this.suc {
 		res += "t"
 	} else {
@@ -363,20 +365,20 @@ func (this *ElementOnce) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementOnce) GetTraceID() int {
-	return this.traceID
+func (this *ElementOnce) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementOnce) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementOnce) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -390,12 +392,12 @@ func (this *ElementOnce) setTraceID(ID int) {
 //   - TraceElement: The copy of the element
 func (this *ElementOnce) Copy(_ map[string]Element) Element {
 	return &ElementOnce{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		suc:                      this.suc,
 		file:                     this.file,
 		line:                     this.line,

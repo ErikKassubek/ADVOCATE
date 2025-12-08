@@ -19,11 +19,12 @@ import (
 // UpdateHBAtomic update the pog for an atomic operation
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - at *trace.TraceElementAtomic: the atomic operation
-func UpdateHBAtomic(at *trace.ElementAtomic) {
+func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
 	switch at.GetType(true) {
 	case trace.AtomicLoad, trace.AtomicSwap, trace.AtomicCompAndSwap:
-		Read(at, true)
+		Read(graph, at, true)
 	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
 		// pog does not add an edge for write
 	default:
@@ -35,13 +36,18 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 // Read calculates the new vector clock for a read operation and update cv
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
 //   - sync bool: sync reader with last writer
-func Read(at *trace.ElementAtomic, sync bool) {
+func Read(graph *PoGraph, at *trace.ElementAtomic, sync bool) {
 	id := at.GetObjId()
 
 	if sync && baseA.LastAtomicWriter[id] != nil {
-		AddEdge(at, baseA.LastAtomicWriter[id], false)
+		if graph != nil {
+			graph.AddEdge(at, baseA.LastAtomicWriter[id])
+		} else {
+			AddEdge(at, baseA.LastAtomicWriter[id], false)
+		}
 	}
 }

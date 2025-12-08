@@ -108,16 +108,3 @@ func IsConcurrent(elem1, elem2 trace.Element) bool {
 
 	return clock.IsConcurrent(elem1.GetVC(), elem2.GetVC())
 }
-
-// IsConcurrent returns if two elements are concurrent.
-// The function assumes, that the vcs have been calculated
-//
-// Parameter:
-//   - elem1: trace.Element: the first element
-//   - elem2: trace.Element: the second element
-//
-// Returns:
-//   - bool: true if the elements are concurrent, false otherwise
-func IsConcurrentMin(elem1, elem2 *trace.ElemMin) bool {
-	return clock.IsConcurrent(&elem1.Vc, &elem2.Vc)
-}

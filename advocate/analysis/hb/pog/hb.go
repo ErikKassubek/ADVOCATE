@@ -29,12 +29,12 @@ func AddEdge(start, end trace.Element, weak bool) {
 		return
 	}
 
-	po.addEdge(start, end)
-	poInverted.addEdge(end, start)
+	po.AddEdge(start, end)
+	poInverted.AddEdge(end, start)
 
 	if weak {
-		poWeak.addEdge(start, end)
-		poWeakInverted.addEdge(end, start)
+		poWeak.AddEdge(start, end)
+		poWeakInverted.AddEdge(end, start)
 	}
 }
 
@@ -129,7 +129,7 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 
 	stack := []trace.Element{start}
 
-	var g *poGraph
+	var g *PoGraph
 	if weak {
 		if inverted {
 			g = &poWeakInverted
@@ -157,7 +157,7 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 			return true
 		}
 
-		for child := range g.getChildren(curr) {
+		for child := range g.GetChildren(curr) {
 			if child == nil || reflect.ValueOf(child).IsNil() {
 				continue
 			}

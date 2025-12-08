@@ -17,11 +17,16 @@ import (
 
 // UpdateHBOnce update the vector clock of the trace and element
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - on *trace.TraceElementOnce: the once trace element
-func UpdateHBOnce(on *trace.ElementOnce) {
+func UpdateHBOnce(graph *PoGraph, on *trace.ElementOnce) {
 	// suc once does not create edge -> only not suc
 	if !on.GetSuc() {
 		suc := baseA.OSuc[on.GetObjId()]
-		AddEdge(suc, on, false)
+		if graph != nil {
+			graph.AddEdge(suc, on)
+		} else {
+			AddEdge(suc, on, false)
+		}
 	}
 }

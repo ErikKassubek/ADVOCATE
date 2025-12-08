@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: pair.go
-// Brief: Implement a pair data type
+// Brief: Implement a comparable pair data type
 //
 // Author: Erik Kassubek
 // Created: 2025-07-02

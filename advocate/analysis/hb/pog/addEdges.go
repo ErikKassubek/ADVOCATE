@@ -22,19 +22,28 @@ import (
 // If it is the first element in a routine, add an edge to the corresponding fork
 //
 // Parameter:
+//   - graph PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - elem trace.Element: the element to add an edge for
-func AddEdgeSameRoutineAndFork(elem trace.Element) {
+func AddEdgeSameRoutineAndFork(graph *PoGraph, elem trace.Element) {
 	if !helper.Valid(elem) {
 		return
 	}
 	routineID := elem.GetRoutine()
 
 	if lastElem, ok := baseA.LastAnalyzedElementPerRoutine[routineID]; ok {
-		AddEdge(lastElem, elem, true)
+		if graph != nil {
+			graph.AddEdge(lastElem, elem)
+		} else {
+			AddEdge(lastElem, elem, true)
+		}
 	} else {
 		// first element, add edge from fork if exists
 		if fork, okF := baseA.ForkOperations[routineID]; okF {
-			AddEdge(fork, elem, true)
+			if graph != nil {
+				graph.AddEdge(fork, elem)
+			} else {
+				AddEdge(fork, elem, true)
+			}
 		}
 	}
 	baseA.LastAnalyzedElementPerRoutine[routineID] = elem

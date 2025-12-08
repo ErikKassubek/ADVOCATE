@@ -18,19 +18,19 @@ import (
 )
 
 var (
-	po         poGraph
-	poInverted poGraph
+	po         PoGraph
+	poInverted PoGraph
 
-	poWeak         poGraph
-	poWeakInverted poGraph
+	poWeak         PoGraph
+	poWeakInverted PoGraph
 )
 
-type poGraph struct {
+type PoGraph struct {
 	data map[trace.Element]map[trace.Element]struct{}
 }
 
-func newPoGraph() poGraph {
-	return poGraph{make(map[trace.Element]map[trace.Element]struct{})}
+func NewPoGraph() PoGraph {
+	return PoGraph{make(map[trace.Element]map[trace.Element]struct{})}
 }
 
 // InitPOG initializes the directed acyclic partial order graph
@@ -38,22 +38,26 @@ func InitPOG() {
 	chanBuffer = make(map[int]([]baseA.BufferedVC))
 	chanBufferSize = make(map[int]int)
 
-	po = newPoGraph()
-	poInverted = newPoGraph()
+	po = NewPoGraph()
+	poInverted = NewPoGraph()
 
-	poWeak = newPoGraph()
-	poWeakInverted = newPoGraph()
+	poWeak = NewPoGraph()
+	poWeakInverted = NewPoGraph()
 }
 
-func (this *poGraph) addEdge(from, to trace.Element) {
+func (this *PoGraph) AddEdge(from, to trace.Element) {
 	if _, ok := this.data[from]; !ok {
 		this.data[from] = make(map[trace.Element]struct{})
 	}
 	this.data[from][to] = struct{}{}
 }
 
-func (this *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
+func (this *PoGraph) GetChildren(from trace.Element) map[trace.Element]struct{} {
 	return this.data[from]
+}
+
+func (this *PoGraph) IsEmpty() bool {
+	return len(this.data) == 0
 }
 
 // Print prints the current graph
@@ -68,7 +72,7 @@ func Print(weak bool) {
 	}
 }
 
-func (this *poGraph) toString() string {
+func (this *PoGraph) toString() string {
 	res := ""
 	for start, end := range this.data {
 		res += fmt.Sprintf("%d -> ", start.GetLine())

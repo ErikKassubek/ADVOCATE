@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
-	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
@@ -135,24 +134,6 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	this.AddElement(&elem)
 
 	return nil
-}
-
-// Get the ElemMin representation of the operation
-//
-// Returns:
-//   - ElemMin: the ElemMin representations of the operation
-//   - bool: true if it should be part of a min trace, false otherwise
-func (this *ElementWait) GetElemMin() (ElemMin, bool) {
-	return ElemMin{
-		ID:      this.id,
-		ObjID:   this.objId,
-		Op:      this.op,
-		Pos:     PosStringFromPos(this.file, this.line),
-		Time:    types.NewPair(this.tPre, this.tPost),
-		Routine: this.routine,
-		Vc:      *this.vc.Copy(),
-		Value:   this.delta,
-	}, true
 }
 
 // Return an empty wait element with an id. Mainly used for source/drain in

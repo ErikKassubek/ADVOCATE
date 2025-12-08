@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
-	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -120,23 +119,6 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 
 	this.AddElement(&elem)
 	return nil
-}
-
-// Get the ElemMin representation of the operation
-//
-// Returns:
-//   - ElemMin: the ElemMin representations of the operation
-//   - bool: true if it should be part of a min trace, false otherwise
-func (this *ElementNew) GetElemMin() (ElemMin, bool) {
-	return ElemMin{
-		ID:      this.id,
-		ObjID:   this.objId,
-		Op:      this.elemType,
-		Pos:     PosStringFromPos(this.file, this.line),
-		Time:    types.NewPair(this.tPost, this.tPost),
-		Routine: this.routine,
-		Vc:      *this.vc.Copy(),
-	}, false
 }
 
 // GetObjId returns the ID of the primitive on which the operation was executed

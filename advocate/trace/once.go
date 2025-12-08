@@ -17,7 +17,6 @@ import (
 	"strconv"
 
 	"advocate/analysis/hb/clock"
-	"advocate/utils/types"
 )
 
 // ElementOnce is a trace element for a once
@@ -108,23 +107,6 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	this.AddElement(&elem)
 
 	return nil
-}
-
-// Get the ElemMin representation of the operation
-//
-// Returns:
-//   - ElemMin: the ElemMin representations of the operation
-//   - bool: true if it should be part of a min trace, false otherwise
-func (this *ElementOnce) GetElemMin() (ElemMin, bool) {
-	return ElemMin{
-		ID:      this.id,
-		ObjID:   this.objId,
-		Op:      Once,
-		Pos:     PosStringFromPos(this.file, this.line),
-		Time:    types.NewPair(this.tPre, this.tPost),
-		Routine: this.routine,
-		Vc:      *this.vc.Copy(),
-	}, true
 }
 
 // GetObjId returns the ID of the primitive on which the operation was executed

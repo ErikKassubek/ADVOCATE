@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
-	"advocate/utils/types"
 	"strconv"
 )
 
@@ -44,23 +43,6 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	this.AddElement(&elem)
 
 	return nil
-}
-
-// Get the ElemMin representation of the operation
-//
-// Returns:
-//   - ElemMin: the ElemMin representations of the operation
-//   - bool: true if it should be part of a min trace, false otherwise
-func (this *ElementReplay) GetElemMin() (ElemMin, bool) {
-	return ElemMin{
-		ID:      -1,
-		ObjID:   -1,
-		Op:      None,
-		Pos:     "",
-		Time:    types.NewPair(this.tPost, this.tPost),
-		Routine: -1,
-		Vc:      *clock.NewVectorClock(0),
-	}, false
 }
 
 // GetObjId returns the ID of the primitive on which the operation was executed

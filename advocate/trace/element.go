@@ -141,5 +141,13 @@ type Element interface {
 	Copy(mapping map[string]Element) Element
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
-	GetElemMin() (ElemMin, bool)
+}
+
+func IsOp(elem Element) bool {
+	switch elem.(type) {
+	case *ElementNew, *ElementReplay, *ElementRoutineEnd:
+		return false
+	}
+
+	return true
 }

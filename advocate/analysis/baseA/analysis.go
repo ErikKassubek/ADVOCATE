@@ -10,9 +10,7 @@
 
 package baseA
 
-import (
-	"advocate/trace"
-)
+import "advocate/trace"
 
 // MaxNumberElements is the maximum number of elements fow which a HB analysis is run
 const MaxNumberElements = 10000000

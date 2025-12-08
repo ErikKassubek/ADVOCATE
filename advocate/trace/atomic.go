@@ -13,7 +13,6 @@ package trace
 import (
 	"advocate/analysis/hb/clock"
 	"advocate/utils/log"
-	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -117,23 +116,6 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 
 	this.AddElement(&elem)
 	return nil
-}
-
-// Get the ElemMin representation of the operation
-//
-// Returns:
-//   - ElemMin: the ElemMin representations of the operation
-//   - bool: true if it should be part of a min trace, false otherwise
-func (this *ElementAtomic) GetElemMin() (ElemMin, bool) {
-	return ElemMin{
-		ID:      this.id,
-		ObjID:   this.objId,
-		Op:      this.op,
-		Time:    types.NewPair(this.tPost, this.tPost),
-		Pos:     PosStringFromPos(this.file, this.line),
-		Routine: this.routine,
-		Vc:      *this.vc.Copy(),
-	}, true
 }
 
 // GetObjId returns the ID of the primitive on which the operation was executed

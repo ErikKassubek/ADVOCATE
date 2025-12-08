@@ -25,9 +25,11 @@ var (
 // UpdateHBChannel updates the vector clocks to a channel element
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *trace.TraceElementChannel: the channel element
-func UpdateHBChannel(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+//   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
+func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
+	if recorded && ch.GetTPost() == 0 {
 		return
 	}
 
@@ -37,12 +39,12 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	if ch.IsBuffered() {
 		switch opC {
 		case trace.ChannelSend:
-			Send(ch)
+			Send(graph, ch)
 		case trace.ChannelRecv:
 			if cl { // recv on closed channel
-				RecvC(ch, true)
+				RecvC(graph, ch, true)
 			} else {
-				Recv(ch)
+				Recv(graph, ch)
 			}
 		case trace.ChannelClose:
 		default:
@@ -54,18 +56,18 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		case trace.ChannelSend:
 			partner := ch.GetPartner()
 			if partner != nil {
-				Unbuffered(ch, partner)
+				Unbuffered(graph, ch, partner)
 				// increase index for recv is done in analysis/elements/channel.go
 			}
 
 		case trace.ChannelRecv: // should not occur, but better save than sorry
 			partner := ch.GetPartner()
 			if partner != nil {
-				Unbuffered(partner, ch)
+				Unbuffered(graph, partner, ch)
 				// increase index for recv is done in analysis/elements/channel.go
 			} else {
 				if cl { // recv on closed channel
-					RecvC(ch, false)
+					RecvC(graph, ch, false)
 				}
 			}
 		case trace.ChannelClose:
@@ -79,15 +81,17 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 // UpdateHBSelect stores and updates the vector clock of the select element.
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - se *trace.TraceElementSelect: the select element
-func UpdateHBSelect(se *trace.ElementSelect) {
+//   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
+func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
 	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
 		chosenCase.SetVc(se.GetVC())
 
-		UpdateHBChannel(chosenCase)
+		UpdateHBChannel(graph, chosenCase, recorded)
 	}
 }
 
@@ -95,22 +99,25 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 // channel.
 //
 // Parameter:
-//   - ch *TraceElementChannel: The trace element
-//   - routSend int: the route of the sender
-//   - routRecv int: the route of the receiver
-//   - tID_send string: the position of the send in the program
-//   - tID_recv string: the position of the receive in the program
-func Unbuffered(sender trace.Element, recv trace.Element) {
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
+//   - sender trace.Element: sender node
+//   - recv trace.Element: receiver node
+func Unbuffered(graph *PoGraph, sender trace.Element, recv trace.Element) {
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
-		AddEdge(sender, recv, false)
+		if graph != nil {
+			graph.AddEdge(sender, recv)
+		} else {
+			AddEdge(sender, recv, false)
+		}
 	}
 }
 
 // Send updates and calculates the pog given a send on a buffered channel.
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
-func Send(ch *trace.ElementChannel) {
+func Send(graph *PoGraph, ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -123,7 +130,11 @@ func Send(ch *trace.ElementChannel) {
 	if !flags.IgnoreFifo {
 		r := baseA.MostRecentSend[routine][id]
 		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
+			if graph != nil {
+				graph.AddEdge(r.Elem, ch)
+			} else {
+				AddEdge(r.Elem, ch, false)
+			}
 		}
 	}
 
@@ -151,13 +162,21 @@ func Send(ch *trace.ElementChannel) {
 
 	s := chanBuffer[id][count].Send
 	if s != nil {
-		AddEdge(s, ch, false)
+		if graph != nil {
+			graph.AddEdge(s, ch)
+		} else {
+			AddEdge(s, ch, false)
+		}
 	}
 
 	if !flags.IgnoreFifo {
 		r := baseA.MostRecentSend[routine][id]
 		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
+			if graph != nil {
+				graph.AddEdge(r.Elem, ch)
+			} else {
+				AddEdge(r.Elem, ch, false)
+			}
 		}
 	}
 
@@ -170,8 +189,9 @@ func Send(ch *trace.ElementChannel) {
 // Recv updates and calculates the vector clocks given a receive on a buffered channel.
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
-func Recv(ch *trace.ElementChannel) {
+func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -185,13 +205,21 @@ func Recv(ch *trace.ElementChannel) {
 	s := chanBuffer[id][0].Send
 
 	if s != nil {
-		AddEdge(s, ch, false)
+		if graph != nil {
+			graph.AddEdge(s, ch)
+		} else {
+			AddEdge(s, ch, false)
+		}
 	}
 
 	if !flags.IgnoreFifo {
 		r := baseA.MostRecentReceive[routine][id]
 		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
+			if graph != nil {
+				graph.AddEdge(r.Elem, ch)
+			} else {
+				AddEdge(r.Elem, ch, false)
+			}
 		}
 	}
 
@@ -204,9 +232,10 @@ func Recv(ch *trace.ElementChannel) {
 // RecvC updates and calculates the vector clocks given a receive on a closed channel.
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
-func RecvC(ch *trace.ElementChannel, buffered bool) {
+func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 	if ch.GetTPost() == 0 {
 		return
 	}
@@ -216,7 +245,11 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 	if _, ok := baseA.CloseData[id]; ok {
 		c := baseA.CloseData[id]
 
-		AddEdge(c, ch, false)
+		if graph != nil {
+			graph.AddEdge(c, ch)
+		} else {
+			AddEdge(c, ch, false)
+		}
 	}
 
 }

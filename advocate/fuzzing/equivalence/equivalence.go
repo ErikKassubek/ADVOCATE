@@ -11,9 +11,7 @@
 
 package equivalence
 
-import "advocate/trace"
-
-var processedTraces = make(map[int][]trace.TraceMin, 0)
+var processedTraces = make(map[int][]TraceEq)
 
 // HasEquivalent checks if there is an independent trace in processedTraces
 //
@@ -23,9 +21,9 @@ var processedTraces = make(map[int][]trace.TraceMin, 0)
 //
 // Returns:
 //   - true if there is an independent trace (we do not need to rerun t1), false otherwise
-func HasEquivalent(t1 trace.TraceMin, origID int) bool {
-	if len(t1.Props()) == 0 {
-		t1.SetProps(precompute(&t1))
+func HasEquivalent(t1 TraceEq, origID int) bool {
+	if t1.partialOrder.IsEmpty() {
+		t1.BuildPOG()
 	}
 
 	for _, t := range processedTraces[origID] {
@@ -42,12 +40,12 @@ func HasEquivalent(t1 trace.TraceMin, origID int) bool {
 // areEquivalent checks if two traces are equivalent
 //
 // Parameter:
-//   - t1 *trace.TraceMin: trace 1
-//   - t2 *trace.TraceMin: trace 2
+//   - t1 *TraceMin: trace 1
+//   - t2 *TraceMin: trace 2
 //
 // Returns:
 //   - bool: true if the traces are equivalent, false otherwise
-func areEquivalent(t1, t2 *trace.TraceMin) bool {
+func areEquivalent(t1, t2 *TraceEq) bool {
 	p1 := t1.Props()
 	p2 := t2.Props()
 
@@ -71,10 +69,10 @@ func areEquivalent(t1, t2 *trace.TraceMin) bool {
 
 // AddOrig adds an actually executed trace to processed traces. Must be run
 // before running HasEquivalence with the given id
-func AddOrig(t trace.TraceMin, id int) {
-	t.SetProps(precompute(&t))
+func AddOrig(t TraceEq, id int) {
+	t.BuildPOG()
 
-	processedTraces[id] = make([]trace.TraceMin, 0)
+	processedTraces[id] = make([]TraceEq, 0)
 	processedTraces[id] = append(processedTraces[id], t)
 }
 

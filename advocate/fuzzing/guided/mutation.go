@@ -27,7 +27,7 @@ func CreateMutations() {
 	traceID++
 
 	// add new original trace to equivalence
-	minTrace := trace.TraceMinFromTrace(&baseA.MainTrace)
+	minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)
 	equivalence.AddOrig(minTrace, traceID)
 
 	predictive()
@@ -73,8 +73,9 @@ func random() {
 //
 // Parameter:
 //   - chain Chain: the chain
-func traceMinFromChain(chain baseF.Chain) trace.TraceMin {
-	res := trace.NewTraceMin()
+func traceMinFromChain(chain baseF.Chain) equivalence.TraceEq {
+	minTraceId++
+	res := equivalence.NewTraceEq()
 
 	minTPost := chain.ElemWithSmallestTPost().GetTSort()
 
@@ -84,9 +85,8 @@ func traceMinFromChain(chain baseF.Chain) trace.TraceMin {
 			break
 		}
 
-		minElem, val := elem.GetElemMin()
-		if val {
-			res.AddElem(minElem)
+		if trace.IsOp(elem) {
+			res.AddElem(elem)
 		}
 	}
 

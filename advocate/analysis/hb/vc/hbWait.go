@@ -24,7 +24,7 @@ func UpdateHBWait(wa *trace.ElementWait) {
 	wa.SetVc(CurrentVC[routine])
 	wa.SetWVc(CurrentWVC[routine])
 
-	switch wa.GetOpW() {
+	switch wa.GetType(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
 	case trace.WaitWait:

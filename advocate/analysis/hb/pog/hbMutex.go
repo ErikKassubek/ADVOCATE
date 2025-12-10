@@ -12,7 +12,6 @@ package pog
 
 import (
 	"advocate/analysis/baseA"
-	"advocate/analysis/hb/clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -24,6 +23,13 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
+	objId := mu.GetObjId()
+
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
 	switch mu.GetType(true) {
 	case trace.MutexLock:
 		Lock(graph, mu)
@@ -38,8 +44,17 @@ func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 			RLock(graph, mu, recorded)
 		}
 	case trace.MutexUnlock:
+		gr.relR[objId] = &baseA.ElemWithVc{
+			Elem: mu,
+		}
+		gr.relW[objId] = &baseA.ElemWithVc{
+			Elem: mu,
+		}
 	case trace.MutexRUnlock:
 		RUnlock(graph, mu, recorded)
+		gr.relR[objId] = &baseA.ElemWithVc{
+			Elem: mu,
+		}
 	default:
 		err := "Unknown mutex operation: " + mu.ToString()
 		log.Error(err)
@@ -58,14 +73,19 @@ func Lock(graph *PoGraph, mu *trace.ElementMutex) {
 		return
 	}
 
-	if e, ok := baseA.RelW[id]; ok {
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	if e, ok := gr.relW[id]; ok {
 		if graph != nil {
 			graph.AddEdge(e.Elem, mu)
 		} else {
 			AddEdge(e.Elem, mu, false)
 		}
 	}
-	if e, ok := baseA.RelR[id]; ok {
+	if e, ok := gr.relR[id]; ok {
 		if graph != nil {
 			graph.AddEdge(e.Elem, mu)
 		} else {
@@ -87,7 +107,12 @@ func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 		return
 	}
 
-	if e, ok := baseA.RelW[id]; ok {
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	if e, ok := gr.relW[id]; ok {
 		if graph != nil {
 			graph.AddEdge(e.Elem, mu)
 		} else {
@@ -109,16 +134,16 @@ func RUnlock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 		return
 	}
 
-	if _, ok := baseA.RelR[id]; !ok {
-		baseA.RelR[id] = &baseA.ElemWithVc{
-			Vc:   clock.NewVectorClock(baseA.GetNoRoutines()),
-			Elem: nil,
-		}
-	} else {
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	if _, ok := gr.relR[id]; ok {
 		if graph != nil {
-			graph.AddEdge(mu, baseA.RelR[id].Elem)
+			graph.AddEdge(mu, gr.relR[id].Elem)
 		} else {
-			AddEdge(mu, baseA.RelR[id].Elem, false)
+			AddEdge(mu, gr.relR[id].Elem, false)
 		}
 	}
 }

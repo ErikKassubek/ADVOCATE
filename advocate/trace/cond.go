@@ -372,13 +372,34 @@ func (this *ElementCond) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
+//   - mapping map[string]Element: map containing all already copied elements.
 //     since conds do not contain reference to other elements and no other
 //     elements contain referents to conds, this is not used
-//
+//   - keep bool: if true, keep vc and order information
+
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementCond) Copy(_ map[string]Element) Element {
+func (this *ElementCond) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementCond{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementCond{
 		id:                       this.id,
 		index:                    this.index,

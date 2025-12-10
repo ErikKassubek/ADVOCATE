@@ -58,7 +58,7 @@ func WriteMutChain(mut Chain, first bool) (bool, error) {
 	// add in all the elements in the chain
 	mapping := make(map[string]trace.Element)
 	for i, elem := range mut.Elems {
-		c := elem.Copy(mapping)
+		c := elem.Copy(mapping, true)
 		c.SetTSort(t1 + i*2)
 		traceCopy.AddElement(c)
 	}

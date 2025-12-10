@@ -14,7 +14,6 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
 	"advocate/fuzzing/equivalence"
-	"advocate/trace"
 	"advocate/utils/log"
 )
 
@@ -53,7 +52,7 @@ func random() {
 		mutatedChains := baseF.Mutate(chain, -1, nil, nil)
 
 		for _, ch := range mutatedChains {
-			minTrace := traceMinFromChain(ch)
+			minTrace := equivalence.TraceEqFromChain(ch)
 
 			if equivalence.HasEquivalent(minTrace, traceID) {
 				continue
@@ -67,28 +66,4 @@ func random() {
 			numberMuts++
 		}
 	}
-}
-
-// traceMinFromChain creates a trace min from a chain
-//
-// Parameter:
-//   - chain Chain: the chain
-func traceMinFromChain(chain baseF.Chain) equivalence.TraceEq {
-	minTraceId++
-	res := equivalence.NewTraceEq()
-
-	minTPost := chain.ElemWithSmallestTPost().GetTSort()
-
-	traceIter := baseA.MainTrace.AsIterator()
-	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
-		if elem.GetTSort() >= minTPost {
-			break
-		}
-
-		if trace.IsOp(elem) {
-			res.AddElem(elem)
-		}
-	}
-
-	return res
 }

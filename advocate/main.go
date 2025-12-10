@@ -56,7 +56,6 @@ func main() {
 	flag.BoolVar(&flags.CreateStatistics, "stats", false, "Create statistics.")
 	flag.BoolVar(&flags.NotExecuted, "notExec", false, "Find never executed operations")
 
-	flag.BoolVar(&flags.IgnoreFifo, "ignoreFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&flags.IgnoreCriticalSection, "ignoreCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&flags.IgnoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 	flag.BoolVar(&flags.OnlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")

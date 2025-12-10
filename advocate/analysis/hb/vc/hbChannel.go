@@ -14,7 +14,6 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -162,11 +161,9 @@ func Send(ch *trace.ElementChannel) {
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			CurrentVC[routine].Sync(r.Vc)
-		}
+	r := baseA.MostRecentSend[routine][id]
+	if r.Elem != nil {
+		CurrentVC[routine].Sync(r.Vc)
 	}
 
 	// direct communication without using the buffer
@@ -230,11 +227,9 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		vc[routine] = vc[routine].Sync(s.GetVC())
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentReceive[routine][id]
-		if r.Elem != nil {
-			vc[routine] = vc[routine].Sync(r.Vc)
-		}
+	r := baseA.MostRecentReceive[routine][id]
+	if r.Elem != nil {
+		vc[routine] = vc[routine].Sync(r.Vc)
 	}
 
 	chanBuffer[id] = append(chanBuffer[id][1:], baseA.BufferedVC{

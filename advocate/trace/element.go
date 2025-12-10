@@ -138,7 +138,7 @@ type Element interface {
 	SetWVc(vc *clock.VectorClock)
 	GetVC() *clock.VectorClock
 	GetWVC() *clock.VectorClock
-	Copy(mapping map[string]Element) Element
+	Copy(mapping map[string]Element, keep bool) Element
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
 }

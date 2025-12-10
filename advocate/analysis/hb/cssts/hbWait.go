@@ -20,7 +20,7 @@ import (
 // Parameter:
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
-	switch wa.GetOpW() {
+	switch wa.GetType(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
 	case trace.WaitWait:

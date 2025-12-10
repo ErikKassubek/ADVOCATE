@@ -18,26 +18,6 @@ import (
 	"reflect"
 )
 
-// AddEdge adds an edge between start and end
-//
-// Parameter:
-//   - start trace.Element: the start element
-//   - end trace.Element: the end element
-//   - notWeak bool: if true, add to weak happens before
-func AddEdge(start, end trace.Element, weak bool) {
-	if start == nil || end == nil {
-		return
-	}
-
-	po.AddEdge(start, end)
-	poInverted.AddEdge(end, start)
-
-	if weak {
-		poWeak.AddEdge(start, end)
-		poWeakInverted.AddEdge(end, start)
-	}
-}
-
 // GetConcurrent find one or all elements that are concurrent to a given element
 //
 // Parameter

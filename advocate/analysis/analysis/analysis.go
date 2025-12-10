@@ -124,7 +124,7 @@ func RunHBAnalysis(fuzzing bool) {
 
 		// add edge between element of same routine to partial order trace
 		if hb.CalcPog {
-			pog.AddEdgeSameRoutineAndFork(elem)
+			pog.AddEdgeSameRoutineAndFork(nil, elem)
 		}
 
 		// count how many operations where executed on the underlying structure

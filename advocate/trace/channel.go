@@ -336,9 +336,17 @@ func (this *ElementChannel) GetType(operation bool) OperationType {
 // GetQCount returns the number of elems in the queue after the operation
 //
 // Returns:
-//   - VectorClock: The number of elems in the queue after the operation
+//   - int: The number of elems in the queue after the operation
 func (this *ElementChannel) GetQCount() int {
 	return this.qCount
+}
+
+// GetQCount sets the number of elems in the queue after the operation
+//
+// Parameter:
+//   - qCount int: The number of elems in the queue after the operation
+func (this *ElementChannel) SetQCount(qc int) {
+	this.qCount = qc
 }
 
 // GetQSize returns the size of the buffer
@@ -584,15 +592,58 @@ func (this *ElementChannel) setID(ID int) {
 
 // Copy creates a copy of the channel element
 //
-//   - mapping map[string]Element: map containing all already copied elements.
+//   - mapping map[string]Element: map containing all already copied elements,
 //     Used to avoid double copy of references
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementChannel) Copy(mapping map[string]Element) Element {
+func (this *ElementChannel) Copy(mapping map[string]Element, keep bool) Element {
 	tID := this.GetTID()
 	if existing, ok := mapping[tID]; ok {
 		return existing
+	}
+
+	if !keep {
+		newCh := ElementChannel{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			cl:                       false,
+			oID:                      0,
+			qSize:                    this.qSize,
+			qCount:                   0,
+			file:                     this.file,
+			line:                     this.line,
+			selIndex:                 this.selIndex,
+			vc:                       nil,
+			wCl:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+
+		mapping[tID] = &newCh
+
+		var newPartner *ElementChannel
+		if this.partner != nil {
+			newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
+		}
+
+		var newSelect *ElementSelect
+		if this.sel != nil {
+			newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
+		}
+
+		newCh.partner = newPartner
+		newCh.sel = newSelect
+
+		return &newCh
 	}
 
 	newCh := ElementChannel{
@@ -606,6 +657,7 @@ func (this *ElementChannel) Copy(mapping map[string]Element) Element {
 		cl:                       this.cl,
 		oID:                      this.oID,
 		qSize:                    this.qSize,
+		qCount:                   this.qCount,
 		file:                     this.file,
 		line:                     this.line,
 		selIndex:                 this.selIndex,
@@ -621,12 +673,12 @@ func (this *ElementChannel) Copy(mapping map[string]Element) Element {
 
 	var newPartner *ElementChannel
 	if this.partner != nil {
-		newPartner = this.partner.Copy(mapping).(*ElementChannel)
+		newPartner = this.partner.Copy(mapping, keep).(*ElementChannel)
 	}
 
 	var newSelect *ElementSelect
 	if this.sel != nil {
-		newSelect = this.sel.Copy(mapping).(*ElementSelect)
+		newSelect = this.sel.Copy(mapping, keep).(*ElementSelect)
 	}
 
 	newCh.partner = newPartner

@@ -27,7 +27,7 @@ import (
 func AnalyzeWait(wa *trace.ElementWait) {
 	hbcalc.UpdateHBWait(wa)
 
-	switch wa.GetOpW() {
+	switch wa.GetType(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		baseA.LastChangeWG[wa.GetObjId()] = wa
 

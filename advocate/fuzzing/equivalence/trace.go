@@ -11,13 +11,23 @@
 package equivalence
 
 import (
+	"advocate/analysis/baseA"
 	"advocate/analysis/hb/pog"
+	"advocate/fuzzing/baseF"
 	"advocate/trace"
+	"advocate/utils/types"
 )
 
 type TraceEq struct {
 	trace        []trace.Element
 	partialOrder pog.PoGraph
+
+	minT     int
+	closed   map[int]struct{} // channel id
+	qCount   map[int]int      // channel id -> send-recv
+	qMessage map[int]*types.Queue[*trace.ElementChannel]
+	critSec  map[int]types.Pair[bool, int] // mutex id -> is rw lock, number of currently hold
+	onceDo   map[int]struct{}              // once id
 }
 
 // NewTraceEq creates a new, empty trace
@@ -26,7 +36,16 @@ type TraceEq struct {
 //   - TraceMin: a new, empty trace
 func NewTraceEq() TraceEq {
 	return TraceEq{
-		trace: make([]trace.Element, 0),
+		trace:        make([]trace.Element, 0),
+		partialOrder: pog.NewPoGraph(),
+
+		minT: 0,
+
+		closed:   make(map[int]struct{}),
+		qCount:   make(map[int]int),
+		qMessage: make(map[int]*types.Queue[*trace.ElementChannel]),
+
+		critSec: make(map[int]types.Pair[bool, int]),
 	}
 }
 
@@ -89,7 +108,85 @@ func (this *TraceEq) Flip(i, j int) {
 // Parameter:
 //   - elem ElemMin: the element to add
 func (this *TraceEq) AddElem(elem trace.Element) {
+	// objID := elem.GetID()
+
+	this.minT++
+	elem.SetT(this.minT)
+
+	objId := elem.GetObjId()
+
+	switch e := elem.(type) {
+	case *trace.ElementChannel:
+		switch e.GetType(true) {
+		case trace.ChannelClose:
+			this.closed[objId] = struct{}{}
+		case trace.ChannelSend:
+			this.qCount[objId]++
+			if _, ok := this.qMessage[objId]; !ok {
+				this.qMessage[objId] = types.NewQueue[*trace.ElementChannel]()
+			}
+			this.qMessage[objId].Push(e)
+		case trace.ChannelRecv:
+			this.qCount[objId]--
+			if _, ok := this.qMessage[objId]; !ok {
+				this.qMessage[objId] = types.NewQueue[*trace.ElementChannel]()
+			}
+			m := this.qMessage[objId].Pop()
+			if m != nil {
+				e.SetPartner(m)
+				m.SetPartner(e)
+			}
+		}
+		_, ok := this.closed[objId]
+		e.SetClosed(ok)
+		e.SetQCount(this.qCount[objId])
+	case *trace.ElementFork:
+		this.partialOrder.ForkOps[objId] = e
+	case *trace.ElementMutex:
+		switch e.GetType(true) {
+		case trace.MutexLock:
+			this.critSec[objId] = types.NewPair(false, 1)
+		case trace.MutexRLock:
+			if v, ok := this.critSec[objId]; ok {
+				this.critSec[objId] = types.NewPair(true, v.Y+1)
+			}
+		case trace.MutexTryLock:
+			if _, ok := this.critSec[objId]; ok {
+				e.SetSuc(false)
+			} else {
+				this.critSec[objId] = types.NewPair(false, 1)
+			}
+		case trace.MutexTryRLock:
+			if v, ok := this.critSec[objId]; !ok || v.X {
+				this.critSec[objId] = types.NewPair(true, v.Y+1)
+			} else {
+				e.SetSuc(false)
+			}
+		case trace.MutexUnlock:
+			delete(this.critSec, objId)
+		case trace.MutexRUnlock:
+			if v, ok := this.critSec[objId]; ok {
+				newVal := v.Y - 1
+				if newVal <= 0 {
+					delete(this.critSec, objId)
+				} else {
+					this.critSec[objId] = types.NewPair(true, newVal)
+				}
+			}
+		}
+	case *trace.ElementOnce:
+		if _, ok := this.onceDo[objId]; !ok {
+			e.SetSuc(true)
+			this.onceDo[objId] = struct{}{}
+		}
+	case *trace.ElementSelect:
+		cc := e.GetChosenCase()
+		this.AddElem(cc)
+	}
+
 	this.trace = append(this.trace, elem)
+
+	// TODO: continue
 }
 
 // IsEqual returns if two traceMin are equal
@@ -125,7 +222,38 @@ func (this *TraceEq) Get(index int) trace.Element {
 // 	return res
 // }
 
-// TraceEqFromTrace creates a trace min from a trace
+// traceEqFromChain creates a trace min from a chain
+//
+// Parameter:
+//   - chain Chain: the chain
+func TraceEqFromChain(chain baseF.Chain) TraceEq {
+	res := NewTraceEq()
+
+	mapping := make(map[string]trace.Element)
+
+	minTPost := chain.ElemWithSmallestTPost().GetTSort()
+
+	// add elements before chain
+	traceIter := baseA.MainTrace.AsIterator()
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		if elem.GetTSort() >= minTPost {
+			break
+		}
+
+		if trace.IsOp(elem) {
+			res.AddElem(elem.Copy(mapping, false))
+		}
+	}
+
+	// add chain
+	for _, e := range chain.Elems {
+		res.AddElem(e.Copy(mapping, false))
+	}
+
+	return res
+}
+
+// TraceEqFromTrace creates a traceEq from a trace
 //
 // Parameter:
 //   - t *Trace: the full trace

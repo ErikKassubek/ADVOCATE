@@ -271,12 +271,18 @@ func (this *ElementReplay) setID(ID int) {
 //
 // Parameter:
 //   - _ map[string]Element: map containing all already copied elements.
-//     since conds do not contain reference to other elements and no other
-//     elements contain referents to conds, this is not used
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementReplay) Copy(_ map[string]Element) Element {
+func (this *ElementReplay) Copy(_ map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementReplay{
+			id:       this.id,
+			tPost:    0,
+			exitCode: this.exitCode,
+		}
+	}
 	return &ElementReplay{
 		id:       this.id,
 		tPost:    this.tPost,

@@ -102,7 +102,10 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
 	case trace.MutexRUnlock:
-		baseA.RelR[id].Elem = mu
+		baseA.RelR[id] = &baseA.ElemWithVc{
+			Elem: mu,
+			Vc:   vc.CurrentVC[routine].Copy(),
+		}
 
 		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
 			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])

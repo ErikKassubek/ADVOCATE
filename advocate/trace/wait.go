@@ -243,14 +243,6 @@ func (this *ElementWait) IsWait() bool {
 	return this.op == WaitWait
 }
 
-// GetOpW returns the operation type
-//
-// Returns:
-//   - objectType: the wait operations
-func (this *ElementWait) GetOpW() OperationType {
-	return this.op
-}
-
 // GetDelta returns the delta of the element. The delta is the value by which the counter
 // of the wait has been changed. For Add the delta is > 0, for Done it is -1,
 // for Wait it is 0
@@ -305,12 +297,7 @@ func (this *ElementWait) GetType(operation bool) OperationType {
 		return Wait
 	}
 
-	if this.delta > 0 {
-		return WaitAdd
-	} else if this.delta < 0 {
-		return WaitDone
-	}
-	return WaitWait
+	return this.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -429,13 +416,34 @@ func (this *ElementWait) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since atomics do not contain reference to other elements and no other
-//     elements contain referents to atomics, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementWait) Copy(_ map[string]Element) Element {
+func (this *ElementWait) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementWait{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			delta:                    this.delta,
+			val:                      0,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementWait{
 		id:                       this.id,
 		index:                    this.index,

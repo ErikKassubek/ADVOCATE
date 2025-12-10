@@ -13,7 +13,6 @@ package cssts
 import (
 	"advocate/analysis/baseA"
 	"advocate/trace"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -120,11 +119,9 @@ func Send(ch *trace.ElementChannel) {
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
-		}
+	r := baseA.MostRecentSend[routine][id]
+	if r.Elem != nil {
+		AddEdge(r.Elem, ch, false)
 	}
 
 	// direct communication without using the buffer
@@ -154,11 +151,9 @@ func Send(ch *trace.ElementChannel) {
 		AddEdge(s, ch, false)
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
-		}
+	r = baseA.MostRecentSend[routine][id]
+	if r.Elem != nil {
+		AddEdge(r.Elem, ch, false)
 	}
 
 	chanBuffer[id][count] = baseA.BufferedVC{
@@ -188,11 +183,9 @@ func Recv(ch *trace.ElementChannel) {
 		AddEdge(s, ch, false)
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentReceive[routine][id]
-		if r.Elem != nil {
-			AddEdge(r.Elem, ch, false)
-		}
+	r := baseA.MostRecentReceive[routine][id]
+	if r.Elem != nil {
+		AddEdge(r.Elem, ch, false)
 	}
 
 	chanBuffer[id] = append(chanBuffer[id][1:], baseA.BufferedVC{

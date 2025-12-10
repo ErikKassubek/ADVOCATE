@@ -13,13 +13,7 @@ package pog
 import (
 	"advocate/analysis/baseA"
 	"advocate/trace"
-	"advocate/utils/flags"
 	"advocate/utils/log"
-)
-
-var (
-	chanBuffer     = make(map[int]([]baseA.BufferedVC))
-	chanBufferSize = make(map[int]int)
 )
 
 // UpdateHBChannel updates the vector clocks to a channel element
@@ -47,6 +41,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 				Recv(graph, ch)
 			}
 		case trace.ChannelClose:
+			Close(graph, ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -71,6 +66,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 				}
 			}
 		case trace.ChannelClose:
+			Close(graph, ch)
 		default:
 			err := "Unknown operation: " + ch.ToString()
 			log.Error(err)
@@ -122,36 +118,29 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 		return
 	}
 
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
 	id := ch.GetObjId()
-	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
-
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			if graph != nil {
-				graph.AddEdge(r.Elem, ch)
-			} else {
-				AddEdge(r.Elem, ch, false)
-			}
-		}
-	}
 
 	// direct communication without using the buffer
 	if qCount == 0 {
 		return
 	}
 
-	newBuffer(id, qSize)
+	newBuffer(gr, id, qSize)
 
 	count := qCount - 1
 
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
-		chanBuffer[id] = append(chanBuffer[id], baseA.BufferedVC{
+	if len(gr.chanBuffer[id]) >= count && len(gr.chanBuffer[id]) < gr.chanBufferSize[id] {
+		gr.chanBuffer[id] = append(gr.chanBuffer[id], baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil})
 	}
@@ -160,7 +149,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 	// 	log.Error("Write to occupied buffer position or to big count")
 	// }
 
-	s := chanBuffer[id][count].Send
+	s := gr.chanBuffer[id][count].Send
 	if s != nil {
 		if graph != nil {
 			graph.AddEdge(s, ch)
@@ -169,18 +158,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 		}
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			if graph != nil {
-				graph.AddEdge(r.Elem, ch)
-			} else {
-				AddEdge(r.Elem, ch, false)
-			}
-		}
-	}
-
-	chanBuffer[id][count] = baseA.BufferedVC{
+	gr.chanBuffer[id][count] = baseA.BufferedVC{
 		Occupied: true,
 		Send:     ch,
 	}
@@ -196,13 +174,17 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 		return
 	}
 
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
 	id := ch.GetObjId()
-	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
-	newBuffer(id, qSize)
+	newBuffer(gr, id, qSize)
 
-	s := chanBuffer[id][0].Send
+	s := gr.chanBuffer[id][0].Send
 
 	if s != nil {
 		if graph != nil {
@@ -212,18 +194,7 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 		}
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentReceive[routine][id]
-		if r.Elem != nil {
-			if graph != nil {
-				graph.AddEdge(r.Elem, ch)
-			} else {
-				AddEdge(r.Elem, ch, false)
-			}
-		}
-	}
-
-	chanBuffer[id] = append(chanBuffer[id][1:], baseA.BufferedVC{
+	gr.chanBuffer[id] = append(gr.chanBuffer[id][1:], baseA.BufferedVC{
 		Occupied: false,
 		Send:     nil,
 	})
@@ -242,29 +213,45 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 
 	id := ch.GetObjId()
 
-	if _, ok := baseA.CloseData[id]; ok {
-		c := baseA.CloseData[id]
-
-		if graph != nil {
+	if graph != nil {
+		if _, ok := graph.closeData[id]; ok {
+			c := graph.closeData[id]
 			graph.AddEdge(c, ch)
 		} else {
-			AddEdge(c, ch, false)
+			if _, ok := po.closeData[id]; ok {
+				c := po.closeData[id]
+				AddEdge(c, ch, false)
+			}
 		}
 	}
+}
 
+// Close records the close for the pog
+//
+// Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
+//   - ch *TraceElementChannel: The trace element
+func Close(graph *PoGraph, ch *trace.ElementChannel) {
+	// TODO: should there be an edge to all send/recv that where executed before the close?
+	if graph != nil {
+		graph.closeData[ch.GetObjId()] = ch
+	} else {
+		po.closeData[ch.GetObjId()] = ch
+	}
 }
 
 // Create a new map of buffered vector clocks for a channel if not already in
-// baseA.bufferedVCs.
+// bufferedVCs.
 //
 // Parameter:
+//   - graph *PoGraph: the graph to add it in
 //   - id int: the id of the channel
 //   - qSize int: the buffer qSize of the channel
-func newBuffer(id int, qSize int) {
-	if _, ok := chanBuffer[id]; !ok {
-		chanBuffer[id] = make([]baseA.BufferedVC, 1)
-		chanBufferSize[id] = qSize
-		chanBuffer[id][0] = baseA.BufferedVC{
+func newBuffer(graph *PoGraph, id int, qSize int) {
+	if _, ok := graph.chanBuffer[id]; !ok {
+		graph.chanBuffer[id] = make([]baseA.BufferedVC, 1)
+		graph.chanBufferSize[id] = qSize
+		graph.chanBuffer[id][0] = baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil,
 		}

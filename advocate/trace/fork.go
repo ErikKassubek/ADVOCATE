@@ -322,13 +322,29 @@ func (this *ElementFork) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since forks do not contain reference to other elements and no other
-//     elements contain referents to forks, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementFork) Copy(_ map[string]Element) Element {
+func (this *ElementFork) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementFork{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPost:                    0,
+			objId:                    this.objId,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
 
 	return &ElementFork{
 		id:                       this.id,

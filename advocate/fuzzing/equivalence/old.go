@@ -8,7 +8,7 @@
 // //
 // // License: BSD-3-Clause
 
-// package equivalence
+package equivalence
 
 // import (
 // 	"advocate/trace"

@@ -19,5 +19,4 @@ const (
 var (
 	numberMuts = 0
 	traceID    = 0
-	minTraceId = 0
 )

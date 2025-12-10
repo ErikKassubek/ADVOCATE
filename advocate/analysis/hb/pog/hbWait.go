@@ -11,7 +11,6 @@
 package pog
 
 import (
-	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -22,7 +21,7 @@ import (
 //   - wa *trace.TraceElementWait: the wait group operation
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBWait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
-	switch wa.GetOpW() {
+	switch wa.GetType(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(graph, wa)
 	case trace.WaitWait:
@@ -41,7 +40,12 @@ func UpdateHBWait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 func Change(graph *PoGraph, wa *trace.ElementWait) {
 	id := wa.GetObjId()
 
-	lw := baseA.LastChangeWG[id]
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	lw := gr.lastChangeWg[id]
 	if lw != nil {
 		if graph != nil {
 			graph.AddEdge(lw, wa)
@@ -49,7 +53,7 @@ func Change(graph *PoGraph, wa *trace.ElementWait) {
 			AddEdge(lw, wa, false)
 		}
 	}
-	baseA.LastChangeWG[id] = wa
+	gr.lastChangeWg[id] = wa
 }
 
 // Wait updates the pog for a wait operation
@@ -64,8 +68,12 @@ func Wait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 	}
 
 	id := wa.GetObjId()
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
 
-	lc := baseA.LastChangeWG[id]
+	lc := gr.lastChangeWg[id]
 	if lc != nil {
 		if graph != nil {
 			graph.AddEdge(lc, wa)

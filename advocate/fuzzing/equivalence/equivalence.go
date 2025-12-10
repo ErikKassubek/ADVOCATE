@@ -46,25 +46,7 @@ func HasEquivalent(t1 TraceEq, origID int) bool {
 // Returns:
 //   - bool: true if the traces are equivalent, false otherwise
 func areEquivalent(t1, t2 *TraceEq) bool {
-	p1 := t1.Props()
-	p2 := t2.Props()
-
-	if len(p1) != len(p2) { // TODO: is this correct?
-		return false
-	}
-
-	for id, val1 := range p1 {
-		val2, ok := p2[id]
-		if !ok { // TODO: same as above, is this correct?
-			return false
-		}
-
-		if !val1.IsEqual(val2) {
-			return false
-		}
-	}
-
-	return true
+	return areEquivalentPog(t1.partialOrder, t2.partialOrder)
 }
 
 // AddOrig adds an actually executed trace to processed traces. Must be run

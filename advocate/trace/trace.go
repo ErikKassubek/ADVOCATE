@@ -620,7 +620,7 @@ func (this *Trace) RemoveLater(tPost int) {
 		newElems := make([]Element, 0)
 		for _, elem := range trace {
 			if elem.GetTPost() > tPost {
-				newElems = append(newElems, elem.Copy(mapping))
+				newElems = append(newElems, elem.Copy(mapping, true))
 			}
 		}
 		this.traces[routine] = newElems
@@ -679,16 +679,19 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 
 // Copy returns a deep copy a trace
 //
+// Parameter:
+//   - keep bool: if true, keep vc and order information
+//
 // Returns:
 //   - Trace: The copy of the trace
 //   - error
-func (this *Trace) Copy() (Trace, error) {
+func (this *Trace) Copy(keep bool) (Trace, error) {
 	mapping := make(map[string]Element)
 	tracesCopy := make(map[int][]Element)
 	for routine, trace := range this.traces {
 		tracesCopy[routine] = make([]Element, len(trace))
 		for i, elem := range trace {
-			tracesCopy[routine][i] = elem.Copy(mapping)
+			tracesCopy[routine][i] = elem.Copy(mapping, keep)
 
 			if control.CheckCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")

@@ -702,14 +702,52 @@ func (this *ElementSelect) setID(ID int) {
 // Parameter:
 //   - mapping map[string]Element: map containing all already copied elements.
 //     This avoids double copy of referenced elements
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementSelect) Copy(mapping map[string]Element) Element {
+func (this *ElementSelect) Copy(mapping map[string]Element, keep bool) Element {
 	tID := this.GetTID()
 
 	if existing, ok := mapping[tID]; ok {
 		return existing
+	}
+
+	if !keep {
+		elem := &ElementSelect{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			chosenIndex:              this.chosenIndex,
+			containsDefault:          this.containsDefault,
+			chosenDefault:            this.chosenDefault,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+
+		mapping[tID] = elem
+
+		elem.cases = make([]ElementChannel, 0)
+		for _, c := range this.cases {
+			elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
+		}
+
+		elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
+
+		for _, c := range elem.cases {
+			c.sel = elem
+		}
+
+		return elem
 	}
 
 	elem := &ElementSelect{
@@ -736,10 +774,10 @@ func (this *ElementSelect) Copy(mapping map[string]Element) Element {
 
 	elem.cases = make([]ElementChannel, 0)
 	for _, c := range this.cases {
-		elem.cases = append(elem.cases, *c.Copy(mapping).(*ElementChannel))
+		elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
 	}
 
-	elem.chosenCase = *this.chosenCase.Copy(mapping).(*ElementChannel)
+	elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
 
 	for _, c := range elem.cases {
 		c.sel = elem

@@ -281,13 +281,23 @@ func (this *ElementRoutineEnd) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since conds do not contain reference to other elements and no other
-//     elements contain referents to conds, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementRoutineEnd) Copy(_ map[string]Element) Element {
+func (this *ElementRoutineEnd) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementRoutineEnd{
+			id:      this.id,
+			index:   0,
+			routine: this.routine,
+			tPost:   0,
+			vc:      nil,
+			wVc:     nil,
+		}
+	}
+
 	return &ElementRoutineEnd{
 		id:      this.id,
 		index:   this.index,

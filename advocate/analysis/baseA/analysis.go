@@ -89,9 +89,6 @@ var (
 	WGAddData  = make(map[int][]trace.Element) // id  -> []TraceElement
 	WgDoneData = make(map[int][]trace.Element) // id -> []TraceElement
 
-	// last analyzed element per routine
-	LastAnalyzedElementPerRoutine = make(map[int]trace.Element) // routine -> elem
-
 	// state for resource deadlock
 	CurrentState State
 
@@ -370,7 +367,7 @@ func SortTrace() {
 //   - Trace: The copy of the trace
 //   - error
 func CopyMainTrace() (trace.Trace, error) {
-	return MainTrace.Copy()
+	return MainTrace.Copy(true)
 }
 
 // SetTrace sets the main trace

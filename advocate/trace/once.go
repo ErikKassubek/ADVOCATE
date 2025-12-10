@@ -252,6 +252,14 @@ func (this *ElementOnce) GetSuc() bool {
 	return this.suc
 }
 
+// SetSuc sets whether the once do was executed successful
+//
+// Parameter:
+//   - bool: true if function in Do was executed, false otherwise
+func (this *ElementOnce) SetSuc(s bool) {
+	this.suc = s
+}
+
 // IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
@@ -366,13 +374,32 @@ func (this *ElementOnce) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since once do not contain reference to other elements and no other
-//     elements contain referents to once, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementOnce) Copy(_ map[string]Element) Element {
+func (this *ElementOnce) Copy(_ map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementOnce{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			suc:                      false,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementOnce{
 		id:                       this.id,
 		index:                    this.index,

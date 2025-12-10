@@ -10,9 +10,13 @@
 
 package types
 
-// Stack implements a stack
+// Queue implements a fifo queue
 type Queue[T any] struct {
 	items []T
+}
+
+func NewQueue[T any]() *Queue[T] {
+	return &Queue[T]{items: make([]T, 0)}
 }
 
 // Push adds an item to the top

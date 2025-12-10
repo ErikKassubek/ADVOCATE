@@ -11,8 +11,8 @@
 package pog
 
 import (
-	"advocate/analysis/baseA"
 	"advocate/trace"
+	"advocate/utils/types"
 )
 
 // UpdateHBCond updates the vector clock of the trace for a conditional variables
@@ -21,9 +21,19 @@ import (
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	objId := co.GetObjId()
+
 	switch co.GetType(true) {
 	case trace.CondWait:
-		// wait does not add any edge
+		if _, ok := gr.curWaitingCond[objId]; !ok {
+			gr.curWaitingCond[objId] = types.NewQueue[*trace.ElementCond]()
+		}
+		gr.curWaitingCond[objId].Push(co)
 	case trace.CondSignal:
 		CondSignal(graph, co)
 	case trace.CondBroadcast:
@@ -39,8 +49,13 @@ func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
 func CondSignal(graph *PoGraph, co *trace.ElementCond) {
 	id := co.GetObjId()
 
-	if len(baseA.CurrentlyWaiting[id]) != 0 {
-		tWait := baseA.CurrentlyWaiting[id][0]
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	if !gr.curWaitingCond[id].IsEmpty() {
+		tWait := gr.curWaitingCond[id].Pop()
 		if graph != nil {
 			graph.AddEdge(co, tWait)
 		} else {
@@ -56,7 +71,15 @@ func CondSignal(graph *PoGraph, co *trace.ElementCond) {
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(graph *PoGraph, co *trace.ElementCond) {
 	id := co.GetObjId()
-	for _, wait := range baseA.CurrentlyWaiting[id] {
+
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	for !gr.curWaitingCond[id].IsEmpty() {
+		wait := gr.curWaitingCond[id].Pop()
+
 		if graph != nil {
 			graph.AddEdge(co, wait)
 		} else {

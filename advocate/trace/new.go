@@ -352,29 +352,28 @@ func (this *ElementNew) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since New do not contain reference to other elements and no other
-//     elements contain referents to New, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementNew) Copy(_ map[string]Element) Element {
+func (this *ElementNew) Copy(_ map[string]Element, _ bool) Element {
 
 	return &ElementNew{
 		id:                       this.id,
-		index:                    this.index,
+		index:                    0,
 		routine:                  this.routine,
-		tPost:                    this.tPost,
+		tPost:                    0,
 		objId:                    this.objId,
 		elemType:                 this.elemType,
 		file:                     this.file,
 		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
+		vc:                       nil,
+		wVc:                      nil,
+		numberConcurrent:         0,
+		numberConcurrentWeak:     0,
+		numberConcurrentSame:     0,
+		numberConcurrentWeakSame: 0,
 	}
 }
 
@@ -421,3 +420,5 @@ func (this *ElementNew) SetNumberConcurrent(c int, weak, sameElem bool) {
 		}
 	}
 }
+
+//     if nil, ignore all vc or trace location based values

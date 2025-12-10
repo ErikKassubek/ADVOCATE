@@ -346,13 +346,33 @@ func (this *ElementAtomic) setID(ID int) {
 // Copy the atomic element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
+//   - c map[string]Element: map containing all already copied elements, if nil ignore all vc based values.
 //     since atomics do not contain reference to other elements and no other
 //     elements contain referents to atomics, this is not used
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAtomic) Copy(_ map[string]Element) Element {
+func (this *ElementAtomic) Copy(_ map[string]Element, keep bool) Element {
+
+	if !keep {
+		return &ElementAtomic{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+			file:                     this.file,
+			line:                     this.line,
+		}
+	}
 
 	return &ElementAtomic{
 		id:                       this.id,

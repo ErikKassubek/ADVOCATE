@@ -292,6 +292,14 @@ func (this *ElementMutex) IsSuc() bool {
 	return this.suc
 }
 
+// IsSuc sets whether the locking was successful of the element
+//
+// Parameter:
+//   - s bool: For trylock wether it was successful, otherwise always true
+func (this *ElementMutex) SetSuc(s bool) {
+	this.suc = s
+}
+
 // IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
@@ -414,13 +422,34 @@ func (this *ElementMutex) setID(ID int) {
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since mutex do not contain reference to other elements and no other
-//     elements contain referents to mutex, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementMutex) Copy(_ map[string]Element) Element {
+func (this *ElementMutex) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementMutex{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			rw:                       this.rw,
+			op:                       this.op,
+			suc:                      true,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementMutex{
 		id:                       this.id,
 		index:                    this.index,

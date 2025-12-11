@@ -49,30 +49,21 @@ type AdvocateTraceSelect struct {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, lockorder []uint16) int {
-	if advocateTracingDisabled {
+	if advocateTracingDisabled || cases == nil {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
-
-	if cases == nil {
-		return -1
-	}
-
-	id := GetAdvocateObjectID()
-	caseElements := make([]AdvocateTraceChannel, 0)
 
 	_, file, line, _ := Caller(CallerSkipSelect)
 	if AdvocateIgnore(file) {
 		return -1
 	}
 
-	i := 0
+	id := GetAdvocateObjectID()
+	caseElements := make([]AdvocateTraceChannel, ncases)
 
-	maxCasi := 0
-	caseElementMap := make(map[int]AdvocateTraceChannel)
-	for _, casei := range lockorder {
-		casi := int(casei)
+	for casi := 0; casi < ncases; casi++ {
 		cas := (*cases)[casi]
 		c := cas.c
 
@@ -82,37 +73,18 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, locko
 		}
 
 		if c == nil { // ignore nil cases
-			caseElementMap[casi] = AdvocateTraceChannel{
+			caseElements[casi] = AdvocateTraceChannel{
 				tPre:  timer,
 				op:    chanOp,
 				isNil: true,
 			}
 		} else {
-			i++
-
-			caseElementMap[casi] = AdvocateTraceChannel{
+			caseElements[casi] = AdvocateTraceChannel{
 				tPre:  timer,
 				op:    chanOp,
 				id:    c.id,
 				qSize: c.dataqsiz,
 			}
-		}
-		maxCasi = max(maxCasi, casi)
-	}
-
-	for i := 0; i < ncases; i++ {
-		if _, ok := caseElementMap[i]; ok {
-			caseElements = append(caseElements, caseElementMap[i])
-		} else {
-			chanOp := OperationChannelRecv
-			if i < nsends {
-				chanOp = OperationChannelSend
-			}
-			caseElements = append(caseElements, AdvocateTraceChannel{
-				tPre:  timer,
-				op:    chanOp,
-				isNil: true,
-			})
 		}
 	}
 

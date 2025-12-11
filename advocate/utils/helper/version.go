@@ -64,29 +64,35 @@ func CheckGoMod() string {
 	}
 	defer file.Close()
 
+	var lines []string
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+		line := scanner.Text()
+
+		timeLine := strings.TrimSpace(line)
 
 		// check for module name
-		if flags.ModeMain && flags.ExecName == "" && strings.HasPrefix(line, "module") {
-			s := strings.Split(line, " ")
-			if len(s) < 2 {
-				continue
+		if flags.ModeMain && flags.ExecName == "" && strings.HasPrefix(timeLine, "module") {
+			s := strings.Split(timeLine, " ")
+			if len(s) >= 2 {
+				flags.ExecName = s[1]
 			}
-
-			flags.ExecName = s[1]
-			continue
 		}
 
 		// check for version
-		if strings.HasPrefix(line, "go ") {
-			version := strings.TrimSpace(strings.TrimPrefix(line, "go "))
+		if strings.HasPrefix(timeLine, "go ") {
+			version := strings.TrimSpace(strings.TrimPrefix(timeLine, "go "))
 
 			versionSplit := strings.Split(version, ".")
 
 			if len(versionSplit) < 2 {
 				log.Error("Invalid go version")
+			}
+
+			if len(versionSplit) > 2 {
+				version = versionSplit[0] + "." + versionSplit[1]
+				line = "go " + version
+				log.Importantf("Updated Go version in go.mod to %s", version)
 			}
 
 			if versionSplit[0] != "1" || versionSplit[1] != "25" {
@@ -97,11 +103,25 @@ func CheckGoMod() string {
 				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
 				log.Important(errString)
 			}
-
-			return flags.ExecName
 		}
+
+		lines = append(lines, line)
 	}
 
-	log.Error("Could not determine go version")
+	if err := scanner.Err(); err != nil {
+		log.Error("Error reading go.mod:", err)
+		return flags.ExecName
+	}
+
+	// rewrite the file with updated lines
+	err = os.WriteFile(goModPath, []byte(strings.Join(lines, "\n")+"\n"), 0644)
+	if err != nil {
+		log.Error("Failed to update go.mod:", err)
+	}
+
+	if flags.ExecName == "" {
+		log.Error("Could not determine module name")
+	}
+
 	return flags.ExecName
 }

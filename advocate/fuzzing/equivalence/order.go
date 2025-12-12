@@ -11,32 +11,122 @@
 package equivalence
 
 import (
-	"advocate/analysis/hb/pog"
+	"advocate/analysis/hb"
+	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/vc"
 	"advocate/trace"
+	"fmt"
+	"sort"
+	"strings"
 )
 
-func (this *TraceEq) BuildPOG() {
-	graph := pog.NewPoGraph()
+func (this *TraceEq) BuildCanonicalSignature() {
+	this.calcVc()
+	this.signature = this.calcSignature()
+}
 
-	// TODO: fork
-	// TODO: precompute all required values, e.g. last writer, comm partner, ...
-
+func (this *TraceEq) calcVc() {
+	// TODO: use local variables when calculating HB
 	for _, elem := range this.trace {
 		switch e := elem.(type) {
+		case *trace.ElementFork:
+			vc.UpdateHBFork(e)
 		case *trace.ElementAtomic:
-			pog.UpdateHBAtomic(&graph, e)
+			vc.UpdateHBAtomic(e)
 		case *trace.ElementChannel:
-			pog.UpdateHBChannel(&graph, e, false)
+			vc.UpdateHBChannel(e)
 		case *trace.ElementSelect:
-			pog.UpdateHBSelect(&graph, e, false)
+			vc.UpdateHBSelect(e)
 		case *trace.ElementCond:
-			pog.UpdateHBCond(&graph, e)
+			vc.UpdateHBCond(e)
 		case *trace.ElementMutex:
-			pog.UpdateHBMutex(&graph, e, false)
+			vc.UpdateHBMutex(e, false)
 		case *trace.ElementOnce:
-			pog.UpdateHBOnce(&graph, e)
+			vc.UpdateHBOnce(e)
 		case *trace.ElementWait:
-			pog.UpdateHBWait(&graph, e, false)
+			vc.UpdateHBWait(e)
 		}
 	}
+}
+
+func (this *TraceEq) calcSignature() string {
+	n := len(this.trace)
+	if n == 0 {
+		return ""
+	}
+
+	k := this.trace[0].GetVC().GetSize() // number of routines
+
+	// use stable sort to sort events according to vector clocks
+
+	type eventWithVC struct {
+		id int
+		vc []int
+	}
+
+	events := make([]eventWithVC, n)
+	for i := 0; i < n; i++ {
+		events[i] = eventWithVC{
+			id: this.trace[i].GetID(),
+			vc: this.trace[i].GetVC().AsSlice(),
+		}
+	}
+
+	sort.SliceStable(events, func(i, j int) bool {
+		hbRel := clock.GetHappensBeforeSlice(&events[i].vc, &events[j].vc)
+		switch hbRel {
+		case hb.Before:
+			return true
+		case hb.After:
+			return false
+		default:
+			return events[i].id < events[j].id
+		}
+	})
+
+	normalizedVCs := make([][]int, n)
+	for i := 0; i < n; i++ {
+		normalizedVCs[i] = make([]int, k)
+	}
+
+	for r := 0; r < k; r++ {
+		// Collect all values of routine r in sorted order
+		values := make([]int, n)
+		for i := 0; i < n; i++ {
+			values[i] = events[i].vc[r]
+		}
+
+		// Map unique values to ranks
+		valueSet := make(map[int]bool)
+		for _, v := range values {
+			valueSet[v] = true
+		}
+		uniqueVals := make([]int, 0, len(valueSet))
+		for v := range valueSet {
+			uniqueVals = append(uniqueVals, v)
+		}
+		sort.Ints(uniqueVals)
+
+		valToRank := make(map[int]int)
+		for idx, v := range uniqueVals {
+			valToRank[v] = idx + 1
+		}
+
+		// Assign normalized rank
+		for i := 0; i < n; i++ {
+			normalizedVCs[i][r] = valToRank[events[i].vc[r]]
+		}
+	}
+
+	// generate canonical signature
+	sigParts := make([]string, n)
+	for i := 0; i < n; i++ {
+		compStrings := make([]string, k)
+		for r := 0; r < k; r++ {
+			compStrings[r] = fmt.Sprintf("%d", normalizedVCs[i][r])
+		}
+		sigParts[i] = strings.Join(compStrings, "-")
+	}
+
+	return strings.Join(sigParts, "|")
 }

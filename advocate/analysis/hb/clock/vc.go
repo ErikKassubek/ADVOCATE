@@ -133,6 +133,19 @@ func (this *VectorClock) ToString() string {
 	return str
 }
 
+// AsSlice returns the vector clock in a slice form
+//
+// Returns:
+//   - []int: The vc as a slice
+func (this *VectorClock) AsSlice() []int {
+	vc := make([]int, this.size)
+	for k, v := range this.clock {
+		vc[k] = int(v)
+	}
+
+	return vc
+}
+
 // Inc increments the vector clock at the given position
 //
 // Parameter:

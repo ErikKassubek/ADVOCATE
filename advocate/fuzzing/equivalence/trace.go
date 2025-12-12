@@ -12,15 +12,15 @@ package equivalence
 
 import (
 	"advocate/analysis/baseA"
-	"advocate/analysis/hb/pog"
 	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/types"
 )
 
 type TraceEq struct {
-	trace        []trace.Element
-	partialOrder pog.PoGraph
+	trace []trace.Element
+
+	signature string
 
 	minT     int
 	closed   map[int]struct{} // channel id
@@ -36,8 +36,7 @@ type TraceEq struct {
 //   - TraceMin: a new, empty trace
 func NewTraceEq() TraceEq {
 	return TraceEq{
-		trace:        make([]trace.Element, 0),
-		partialOrder: pog.NewPoGraph(),
+		trace: make([]trace.Element, 0),
 
 		minT: 0,
 
@@ -140,8 +139,6 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 		_, ok := this.closed[objId]
 		e.SetClosed(ok)
 		e.SetQCount(this.qCount[objId])
-	case *trace.ElementFork:
-		this.partialOrder.ForkOps[objId] = e
 	case *trace.ElementMutex:
 		switch e.GetType(true) {
 		case trace.MutexLock:

@@ -32,6 +32,26 @@ func happensBefore(vc1 *VectorClock, vc2 *VectorClock) bool {
 	return atLeastOneSmaller
 }
 
+// Check if vc1 happens before vc2
+//
+// Parameter:
+//   - vc1 *[]int: The first vector clock
+//   - vc2 *[]int: The second vector clock
+//
+// Returns:
+//   - bool: True if vc1 is a cause of vc2, false otherwise
+func happensBeforeSlice(vc1 *[]int, vc2 *[]int) bool {
+	atLeastOneSmaller := false
+	for i := 1; i <= len(*vc1); i++ {
+		if (*vc1)[i] > (*vc2)[i] {
+			return false
+		} else if (*vc1)[i] < (*vc2)[i] {
+			atLeastOneSmaller = true
+		}
+	}
+	return atLeastOneSmaller
+}
+
 // GetHappensBefore returns the happens before relation between two operations given there
 // vector clocks
 //
@@ -54,6 +74,33 @@ func GetHappensBefore(vc1 *VectorClock, vc2 *VectorClock) hb.HappensBefore {
 		return hb.Before
 	}
 	if happensBefore(vc2, vc1) {
+		return hb.After
+	}
+	return hb.Concurrent
+}
+
+// GetHappensBeforeSlice returns the happens before relation between two operations given there
+// vector clocks
+//
+// Parameter:
+//   - vc1 *[]int: The first vector clock
+//   - vc2 *[]int: The second vector clock
+//
+// Returns:
+//   - happensBefore: The happens before relation between the two vector clocks
+func GetHappensBeforeSlice(vc1 *[]int, vc2 *[]int) hb.HappensBefore {
+	if vc1 == nil || vc2 == nil {
+		return hb.None
+	}
+
+	if len(*vc1) != len(*vc2) {
+		return hb.None
+	}
+
+	if happensBeforeSlice(vc1, vc2) {
+		return hb.Before
+	}
+	if happensBeforeSlice(vc2, vc1) {
 		return hb.After
 	}
 	return hb.Concurrent

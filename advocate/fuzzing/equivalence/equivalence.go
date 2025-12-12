@@ -22,10 +22,6 @@ var processedTraces = make(map[int][]TraceEq)
 // Returns:
 //   - true if there is an independent trace (we do not need to rerun t1), false otherwise
 func HasEquivalent(t1 TraceEq, origID int) bool {
-	if t1.partialOrder.IsEmpty() {
-		t1.BuildPOG()
-	}
-
 	for _, t := range processedTraces[origID] {
 		if areEquivalent(&t1, &t) {
 			return true
@@ -37,79 +33,32 @@ func HasEquivalent(t1 TraceEq, origID int) bool {
 	return false
 }
 
-// areEquivalent checks if two traces are equivalent
-//
-// Parameter:
-//   - t1 *TraceMin: trace 1
-//   - t2 *TraceMin: trace 2
-//
-// Returns:
-//   - bool: true if the traces are equivalent, false otherwise
-func areEquivalent(t1, t2 *TraceEq) bool {
-	return areEquivalentPog(t1.partialOrder, t2.partialOrder)
-}
-
 // AddOrig adds an actually executed trace to processed traces. Must be run
 // before running HasEquivalence with the given id
 func AddOrig(t TraceEq, id int) {
-	t.BuildPOG()
+	t.BuildCanonicalSignature()
 
 	processedTraces[id] = make([]TraceEq, 0)
 	processedTraces[id] = append(processedTraces[id], t)
 }
 
-// IndependentTracesMin checks if the two given min traces are independent
+// areEquivalent takes two traces and determines, if they
+// are equivalent.
 //
 // Parameter:
-//   - t1: trace.TraceMin: first trace
-//   - t2: trace.TraceMin: second trace
+//   - t1: TraceEq: trace1 1
+//   - t2: TraceEq: trace2 2
 //
 // Returns:
-//   - bool: true if they are independent (we only need to run one of them), false otherwise
-// func areEquivalent(t1, t2 trace.TraceMin) bool {
-// 	var shorter, longer trace.TraceMin
+//   - bool: true if the traces are equivalent
+func areEquivalent(t1, t2 *TraceEq) bool {
+	if t1.signature == "" {
+		t1.BuildCanonicalSignature()
+	}
 
-// 	if t1.Len() < t2.Len() {
-// 		shorter = t1
-// 		longer = t2
-// 	} else {
-// 		shorter = t2
-// 		longer = t1
-// 	}
+	if t2.signature == "" {
+		t1.BuildCanonicalSignature()
+	}
 
-// 	for i := 0; i < longer.Len()-shorter.Len(); i++ {
-// 		sub := longer.CloneSub(i, i+shorter.Len())
-// 		if reachable(sub, shorter, make(map[string]bool)) {
-// 			return true
-// 		}
-// 	}
-
-// 	return true
-// }
-
-// func reachable(curr, target trace.TraceMin, memo map[string]bool) bool {
-// 	if curr.IsEqual(&target) {
-// 		return true
-// 	}
-
-// 	key := curr.Key()
-
-// 	if v, ok := memo[key]; ok {
-// 		return v
-// 	}
-
-// 	for i := 0; i < curr.Len()-1; i++ {
-// 		if ok, _ := areEquivalent(curr.Get(i), curr.Get(i+1)); ok {
-// 			next := curr.Clone()
-// 			next.Flip(i, i+1)
-
-// 			if reachable(next, target, memo) {
-// 				memo[key] = true
-// 				return true
-// 			}
-// 		}
-// 	}
-
-// 	memo[key] = false
-// 	return false
-// }
+	return t1.signature == t2.signature
+}

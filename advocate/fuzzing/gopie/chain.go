@@ -40,6 +40,7 @@ func startChains(num int) []baseF.Constraint {
 
 		for i := 0; i < 1000; i++ {
 			key := rand.Intn(len(traces)) + 1
+
 			trace := traces[key]
 			if len(trace) == 0 {
 				continue
@@ -85,9 +86,6 @@ func startChains(num int) []baseF.Constraint {
 		}
 
 		rounds := settings.GoPieMaxSCLength
-		if !settings.GoPieMaxSCLengthSet {
-			rounds = 1
-		}
 		for i := 0; i < rounds; i++ {
 			if len(res) == 0 {
 				for _, e := range top {

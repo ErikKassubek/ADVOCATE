@@ -17,10 +17,12 @@ import (
 	"advocate/utils/log"
 )
 
-// CreateMutations will create mutations based on the predictive analysis.
+// CreateMutations will create randomized mutations.
 // This includes both situations, where the predictive analysis directly
 // finds a potential bug and where we use the happens before analysis
 // to guide the mutation in a better direction.
+// Mutations based on predictive analysis are automatically created when a potential
+// bug is detected
 func CreateMutations() {
 	numberMuts = 0
 	traceID++
@@ -29,20 +31,6 @@ func CreateMutations() {
 	minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)
 	equivalence.AddOrig(minTrace, traceID)
 
-	predictive()
-	random()
-}
-
-// predictive runs the predictive analysis and creates new runs based on
-// the rewritten traces that should contain the detected bugs.
-// We create all possible mutations, even if this would exceed maxNumberOfMutsPerRun
-func predictive() {
-	// TODO: continue
-}
-
-// random creates random mutation, if the number of predictive and guided mutations
-// has not reached the max number of mutations per run
-func random() {
 	numTry := 0
 
 	constraint := startConstraint(maxNumberConstraints, lengthConstraint)

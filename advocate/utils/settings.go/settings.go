@@ -28,11 +28,10 @@ var (
 	GFuzzFlipP    = 0.99
 	GFuzzFlipPMin = 0.1
 
-	GoPieW1             = 1.0
-	GoPieW2             = 1.0
-	GoPieMaxSCLength    = 9
-	GoPieMaxSCLengthSet = false
-	ChainMutabound      = 128
+	GoPieW1          = 1.0
+	GoPieW2          = 1.0
+	GoPieMaxSCLength = 9
+	ChainMutabound   = 128
 
 	GoPieSCStart = 24
 

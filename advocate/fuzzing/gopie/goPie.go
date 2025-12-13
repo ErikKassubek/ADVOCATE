@@ -29,8 +29,8 @@ const sameElem = true
 //   - mutNumber int: number of the mutation file
 //   - error
 func CreateMutations(mutNumber int) error {
-	mutations := make(map[string]baseF.Chain)
-	specMutations := make(map[string]baseF.Chain) // special mutations that should be run first
+	mutations := make(map[string]baseF.Constraint)
+	specMutations := make(map[string]baseF.Constraint) // special mutations that should be run first
 
 	// check for special chains, that could indicate a bug
 	if flags.FuzzingMode != baseF.GoPie && baseF.UseHBInfoFuzzing {
@@ -61,11 +61,11 @@ func CreateMutations(mutNumber int) error {
 	// If no SC is given, it creates a new one consisting of two random
 	// operations that are in rel2 relation. Otherwise it always mutates the
 	// original SC, not newly recorded once
-	SchedulingChains = []baseF.Chain{}
+	SchedulingChains = []baseF.Constraint{}
 	if flags.FuzzingMode == baseF.GoPie {
 		if c, ok := baseF.ChainFiles[mutNumber]; ok {
 			c.Old = true
-			SchedulingChains = []baseF.Chain{c}
+			SchedulingChains = []baseF.Constraint{c}
 		}
 	}
 
@@ -121,7 +121,7 @@ func CreateMutations(mutNumber int) error {
 	first := baseF.NumberFuzzingRuns <= 1
 
 	for _, mut := range specMutations {
-		done, err := baseF.WriteMutChain(mut, first)
+		done, err := baseF.WriteMutConstraint(mut, first)
 		first = false
 
 		if done { // max number mutations has been reached
@@ -134,7 +134,7 @@ func CreateMutations(mutNumber int) error {
 	}
 
 	for _, mut := range mutations {
-		done, err := baseF.WriteMutChain(mut, first)
+		done, err := baseF.WriteMutConstraint(mut, first)
 		first = false
 
 		if done { // max number mutations has been reached
@@ -189,8 +189,8 @@ func getEnergy() int {
 //
 // Returns:
 //   - map[string]Chain: map with the special chains
-func getSpecialMuts() map[string]baseF.Chain {
-	res := make(map[string]baseF.Chain)
+func getSpecialMuts() map[string]baseF.Constraint {
+	res := make(map[string]baseF.Constraint)
 
 	// send on closed
 	for _, c := range baseA.CloseData {
@@ -200,14 +200,14 @@ func getSpecialMuts() map[string]baseF.Chain {
 			case *trace.ElementSelect:
 				for _, cc := range t.GetCases() {
 					if cc.GetType(true) == trace.ChannelSend {
-						chain := baseF.NewChain()
+						chain := baseF.NewConstraint()
 						chain.Add(c, s)
 						res[chain.ToString()] = chain
 					}
 				}
 			default:
 				if s.GetType(true) == trace.ChannelSend {
-					chain := baseF.NewChain()
+					chain := baseF.NewConstraint()
 					chain.Add(c, s)
 					res[chain.ToString()] = chain
 				}
@@ -224,7 +224,7 @@ func getSpecialMuts() map[string]baseF.Chain {
 				}
 
 				if concurrent.IsConcurrent(done, add) {
-					chain := baseF.NewChain()
+					chain := baseF.NewConstraint()
 					chain.Add(done, add)
 					res[chain.ToString()] = chain
 				}

@@ -223,7 +223,7 @@ func (this *TraceEq) Get(index int) trace.Element {
 //
 // Parameter:
 //   - chain Chain: the chain
-func TraceEqFromChain(chain baseF.Chain) TraceEq {
+func TraceEqFromConstraint(chain baseF.Constraint) TraceEq {
 	res := NewTraceEq()
 
 	mapping := make(map[string]trace.Element)

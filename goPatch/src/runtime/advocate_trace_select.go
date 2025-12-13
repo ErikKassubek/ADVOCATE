@@ -48,7 +48,7 @@ type AdvocateTraceSelect struct {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool, lockorder []uint16) int {
+func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 	if advocateTracingDisabled || cases == nil {
 		return -1
 	}

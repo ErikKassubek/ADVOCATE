@@ -11,9 +11,10 @@
 package guided
 
 const (
-	maxNumberOfMutsPerRun = 10
-	maxTries              = 1000
-	lengthChain           = 10
+	maxNumberConstraints    = 10
+	maxNumberOfMutsPerConst = 10
+	maxTries                = 1000
+	lengthConstraint        = 10
 )
 
 var (

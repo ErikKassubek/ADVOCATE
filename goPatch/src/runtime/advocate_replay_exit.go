@@ -77,7 +77,7 @@ var hasPanicked = false
 //
 // Parameter:
 //   - msg: the panic message
-func ExitReplayPanic(msg any) {
+func AdvocatePanic(msg any) {
 	if hasPanicked {
 		exit(1)
 	}
@@ -112,5 +112,5 @@ func ExitReplayTimeout() {
 
 	// println("ExitPosition:" + top)
 
-	ExitReplayPanic("Timeout")
+	AdvocatePanic("Timeout")
 }

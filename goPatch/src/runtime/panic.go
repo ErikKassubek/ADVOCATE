@@ -733,8 +733,7 @@ var panicnil = &godebugInc{name: "panicnil"}
 func gopanic(e any) {
 	// ADVOCATE-START
 	if IsTracingEnabled() || replayEnabled {
-		println("PANIC")
-		ExitReplayPanic(e)
+		AdvocatePanic(e)
 	}
 	// ADVOCATE-END
 	if e == nil {

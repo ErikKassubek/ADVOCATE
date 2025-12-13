@@ -24,7 +24,7 @@ import (
 	"path/filepath"
 )
 
-// WriteMutChain writes a chain based mutation the mutation to file and add it to the queue
+// WriteMutConstraint writes a chain based mutation the mutation to file and add it to the queue
 //
 // Parameter:
 //   - mut Chain: the mutation to write
@@ -33,7 +33,7 @@ import (
 // Returns:
 //   - bool: true if max number muts in reached
 //   - error
-func WriteMutChain(mut Chain, first bool) (bool, error) {
+func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
 		return true, nil
 	}
@@ -192,7 +192,7 @@ func GetPath(path string) string {
 //   - partTime int: if 0, the replay will partial replay from the beginning
 //     otherwise it will switch to partial replay when the element with this
 //     time is the next element to be replayed
-func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Chain, partTime int) {
+func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, partTime int) {
 	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
 
 	f, err := os.Create(activePath)

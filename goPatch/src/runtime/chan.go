@@ -1010,7 +1010,7 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+				_ = AdvocateSelectPreOneNonDef(c, true)
 				unlock(&c.lock)
 				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()

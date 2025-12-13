@@ -29,7 +29,7 @@ import (
 //
 // Returns:
 //   - map[string]chain: Set of mutations
-func Mutate(c Chain, energy int, rel1, rel2 map[trace.Element]map[trace.Element]struct{}) map[string]Chain {
+func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Element]struct{}) map[string]Constraint {
 	if energy > 100 {
 		energy = 100
 	}
@@ -46,7 +46,7 @@ func Mutate(c Chain, energy int, rel1, rel2 map[trace.Element]map[trace.Element]
 		bound = 3
 	}
 
-	res := make(map[string]Chain)
+	res := make(map[string]Constraint)
 
 	if energy == 0 {
 		return res
@@ -66,7 +66,7 @@ func Mutate(c Chain, energy int, rel1, rel2 map[trace.Element]map[trace.Element]
 	for {
 		noNew := false
 		for _, ch := range res {
-			tSet := make(map[string]Chain, 0)
+			tSet := make(map[string]Constraint, 0)
 
 			// Rule 1 -> abridge
 			if ch.Len() >= 2 && rand.Int()%2 == 1 {
@@ -154,7 +154,7 @@ func Mutate(c Chain, energy int, rel1, rel2 map[trace.Element]map[trace.Element]
 // Returns:
 //   - chain: a copy of the chain with the first element removed
 //   - chain: a copy of the chain with the last element removed
-func abridge(c Chain) (Chain, Chain) {
+func abridge(c Constraint) (Constraint, Constraint) {
 	ncHead := c.Copy()
 	ncHead.RemoveHead()
 	ncTail := c.Copy()
@@ -171,8 +171,8 @@ func abridge(c Chain) (Chain, Chain) {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func flip(c Chain) []Chain {
-	res := make([]Chain, 0)
+func flip(c Constraint) []Constraint {
+	res := make([]Constraint, 0)
 
 	// switch each element with the next element
 	// for each flip create a new chain
@@ -196,8 +196,8 @@ func flip(c Chain) []Chain {
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func substitute(c Chain, rel1 map[trace.Element]map[trace.Element]struct{}) []Chain {
-	res := make([]Chain, 0)
+func substitute(c Constraint, rel1 map[trace.Element]map[trace.Element]struct{}) []Constraint {
+	res := make([]Constraint, 0)
 
 	for i, elem := range c.Elems {
 		for rel := range rel1[elem] {
@@ -222,8 +222,8 @@ func substitute(c Chain, rel1 map[trace.Element]map[trace.Element]struct{}) []Ch
 //
 // Returns:
 //   - []chain: the list of mutated chains
-func augment(c Chain, rel2 map[trace.Element]map[trace.Element]struct{}) []Chain {
-	res := make([]Chain, 0)
+func augment(c Constraint, rel2 map[trace.Element]map[trace.Element]struct{}) []Constraint {
+	res := make([]Constraint, 0)
 
 	if UseHBInfoFuzzing {
 		concurrent := concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
@@ -251,7 +251,7 @@ func augment(c Chain, rel2 map[trace.Element]map[trace.Element]struct{}) []Chain
 	return res
 }
 
-func shuffle(c *[]Chain, n int) {
+func shuffle(c *[]Constraint, n int) {
 	if len(*c) <= n {
 		return
 	}

@@ -44,26 +44,29 @@ func predictive() {
 // has not reached the max number of mutations per run
 func random() {
 	numTry := 0
-	for numberMuts < maxNumberOfMutsPerRun || numTry > maxTries {
-		numTry++
 
-		chain := startChain(lengthChain)
+	constraint := startConstraint(maxNumberConstraints, lengthConstraint)
 
-		mutatedChains := baseF.Mutate(chain, -1, nil, nil)
+	for _, c := range constraint {
+		for numberMuts < maxNumberOfMutsPerConst || numTry > maxTries {
+			numTry++
 
-		for _, ch := range mutatedChains {
-			minTrace := equivalence.TraceEqFromChain(ch)
+			mutatedConstr := baseF.Mutate(c, -1, nil, nil)
 
-			if equivalence.HasEquivalent(minTrace, traceID) {
-				continue
+			for _, ch := range mutatedConstr {
+				minTrace := equivalence.TraceEqFromConstraint(ch)
+
+				if equivalence.HasEquivalent(minTrace, traceID) {
+					continue
+				}
+
+				firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
+				_, err := baseF.WriteMutConstraint(ch, firstMut)
+				if err != nil {
+					log.Error("Error in writing mutation: ", err.Error())
+				}
+				numberMuts++
 			}
-
-			firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
-			_, err := baseF.WriteMutChain(ch, firstMut)
-			if err != nil {
-				log.Error("Error in writing mutation: ", err.Error())
-			}
-			numberMuts++
 		}
 	}
 }

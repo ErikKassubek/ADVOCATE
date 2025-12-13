@@ -14,10 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/baseF"
-	"advocate/trace"
-	"advocate/utils/flags"
 	"advocate/utils/settings.go"
-	"math"
 	"math/rand"
 )
 
@@ -29,8 +26,8 @@ import (
 //
 // Returns:
 //   - the chain, or an empty chain if no pair exists
-func startChains(num int) []baseF.Chain {
-	res := make([]baseF.Chain, 0)
+func startChains(num int) []baseF.Constraint {
+	res := make([]baseF.Constraint, 0)
 
 	if baseF.UseHBInfoFuzzing {
 		traces := baseA.MainTrace.GetTraces()
@@ -51,7 +48,7 @@ func startChains(num int) []baseF.Chain {
 			ind := rand.Intn(len(trace))
 			elem := trace[ind]
 
-			if !CanBeAddedToChain(elem) {
+			if !baseF.CanBeAddedToConstraint(elem) {
 				continue
 			}
 
@@ -59,9 +56,9 @@ func startChains(num int) []baseF.Chain {
 				continue
 			}
 
-			q := quality(elem)
+			q := baseF.Quality(elem)
 
-			e := baseF.ElemWithQual{elem, q}
+			e := baseF.ElemWithQual{Elem: elem, Quality: q}
 
 			// find the num with the best quality
 			inserted := false
@@ -103,7 +100,7 @@ func startChains(num int) []baseF.Chain {
 					}
 
 					partner := posPartner[rand.Intn(len(posPartner))]
-					c := baseF.NewChain()
+					c := baseF.NewConstraint()
 					c.Add(e.Elem, partner)
 					res = append(res, c)
 				}
@@ -128,7 +125,7 @@ func startChains(num int) []baseF.Chain {
 		i := 0
 		for elem1, rel := range rel2 {
 			for elem2 := range rel {
-				c := baseF.NewChain()
+				c := baseF.NewConstraint()
 				c.Add(elem1, elem2)
 				res = append(res, c)
 				i++
@@ -140,52 +137,4 @@ func startChains(num int) []baseF.Chain {
 	}
 
 	return res
-}
-
-// quality calculates how fit for mutation an element is
-// This is based on how many times was an operation called on the same element
-// and how many concurrent operation has the operations
-//
-// Parameters:
-//   - elem trace.Element: the element to check for
-//
-// Returns:
-//   - float64: the quality
-func quality(elem trace.Element) float64 {
-	w1 := 0.2
-	w2 := 0.3
-	w3 := 0.5
-
-	numberOps, _ := baseA.GetOpsPerID(elem.GetObjId())
-	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, false, true)
-	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, false, true)
-
-	if numberConcurrentSame == 0 && numberConcurrentTotal == 0 {
-		return 0
-	}
-
-	q := w1*math.Log1p(float64(numberOps)) +
-		w2*float64(numberConcurrentSame)/float64(numberConcurrentTotal+1) +
-		w3*math.Log1p(float64(numberConcurrentTotal))
-
-	return q * ((rand.Float64() * 0.2) - 0.1)
-}
-
-// CanBeAddedToChain decides if an element can be added to a scheduling chain
-// For GoPie without improvements (!useHBInfoFuzzing) those are only mutex and channel (incl. select)
-// With improvements those are all not ignored fuzzing elements
-//
-// Parameter:
-//   - elem analysis.TraceElement: Element to check
-//
-// Returns:
-//   - true if it can be added to a scheduling chain, false otherwise
-func CanBeAddedToChain(elem trace.Element) bool {
-	t := elem.GetType(false)
-	if flags.FuzzingMode == baseF.GoPie {
-		// for standard GoPie, only mutex, channel and select operations are considered
-		return t == trace.Mutex || t == trace.Channel || t == trace.Select
-	}
-
-	return t != trace.Atomic && !baseF.IgnoreFuzzing(elem, true)
 }

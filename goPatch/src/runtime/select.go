@@ -296,7 +296,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// cases exists (channel / direction) and weather a default statement is present.
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
-	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
+	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block)
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-END
 
@@ -781,7 +781,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// Here the first lock order is set. This is only needed if the select
 	// is never executed.
 	if advocateIndex == -1 {
-		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block, lockorder)
+		advocateIndex = AdvocateSelectPre(&scases, nsends, ncases, block)
 	}
 	advocateRClose := false // case was chosen, because channel was closed
 	// ADVOCATE-END

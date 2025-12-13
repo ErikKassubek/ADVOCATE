@@ -27,8 +27,8 @@ var (
 	// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
 	maxSCStart = settings.GoPieSCStart
 
-	SchedulingChains []baseF.Chain
-	CurrentChain     baseF.Chain
+	SchedulingChains []baseF.Constraint
+	CurrentChain     baseF.Constraint
 	LastRoutine      = -1
 
 	// GoPie relations

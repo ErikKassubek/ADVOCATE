@@ -33,8 +33,8 @@ func ParseTrace(tr *trace.Trace) {
 	gfuzz.SelectInfoTrace = make(map[string][]baseF.FuzzingSelect)
 
 	// clear chains for goPie
-	gopie.SchedulingChains = make([]baseF.Chain, 0)
-	gopie.CurrentChain = baseF.NewChain()
+	gopie.SchedulingChains = make([]baseF.Constraint, 0)
+	gopie.CurrentChain = baseF.NewConstraint()
 	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
@@ -57,7 +57,7 @@ func ParseTrace(tr *trace.Trace) {
 				continue
 			}
 
-			if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing && gopie.CanBeAddedToChain(elem) {
+			if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing && baseF.CanBeAddedToConstraint(elem) {
 				gopie.CalculateRelRule2AddElem(elem)
 			}
 
@@ -84,7 +84,7 @@ func ParseTrace(tr *trace.Trace) {
 
 	if baseF.FuzzingModeGoPie && gopie.CurrentChain.Len() != 0 {
 		gopie.SchedulingChains = append(gopie.SchedulingChains, gopie.CurrentChain)
-		gopie.CurrentChain = baseF.NewChain()
+		gopie.CurrentChain = baseF.NewConstraint()
 	}
 
 	if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing {

@@ -15,19 +15,23 @@ import (
 	"advocate/fuzzing/baseF"
 	"advocate/trace"
 	"advocate/utils/types"
+	"math"
 )
 
 type TraceEq struct {
 	trace []trace.Element
 
-	signature string
+	signature  string
+	wellFormed bool
 
-	minT     int
-	closed   map[int]struct{} // channel id
-	qCount   map[int]int      // channel id -> send-recv
-	qMessage map[int]*types.Queue[*trace.ElementChannel]
-	critSec  map[int]types.Pair[bool, int] // mutex id -> is rw lock, number of currently hold
-	onceDo   map[int]struct{}              // once id
+	minT      int
+	closed    map[int]struct{} // channel id
+	qCount    map[int]int      // channel id -> send-recv
+	qMessage  map[int]*types.Queue[*trace.ElementChannel]
+	critSec   map[int]types.Pair[bool, int] // mutex id -> is rw lock, number of currently hold
+	onceDo    map[int]struct{}              // once id
+	wgCounter map[int]int                   // wg counter
+	condVal   map[int]int                   // wg counter, number signal - release, 0.5*maxInt if broadcast
 }
 
 // NewTraceEq creates a new, empty trace
@@ -38,8 +42,9 @@ func NewTraceEq() TraceEq {
 	return TraceEq{
 		trace: make([]trace.Element, 0),
 
-		minT: 0,
+		wellFormed: true,
 
+		minT:     0,
 		closed:   make(map[int]struct{}),
 		qCount:   make(map[int]int),
 		qMessage: make(map[int]*types.Queue[*trace.ElementChannel]),
@@ -118,8 +123,18 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 	case *trace.ElementChannel:
 		switch e.GetType(true) {
 		case trace.ChannelClose:
+			// close on closed
+			if _, ok := this.closed[objId]; ok {
+				this.wellFormed = false
+			}
+
 			this.closed[objId] = struct{}{}
 		case trace.ChannelSend:
+			// send on closed
+			if _, ok := this.closed[objId]; ok {
+				this.wellFormed = false
+			}
+
 			this.qCount[objId]++
 			if _, ok := this.qMessage[objId]; !ok {
 				this.qMessage[objId] = types.NewQueue[*trace.ElementChannel]()
@@ -127,6 +142,12 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 			this.qMessage[objId].Push(e)
 		case trace.ChannelRecv:
 			this.qCount[objId]--
+
+			// recv before send
+			if this.qCount[objId] < 0 {
+				this.wellFormed = false
+			}
+
 			if _, ok := this.qMessage[objId]; !ok {
 				this.qMessage[objId] = types.NewQueue[*trace.ElementChannel]()
 			}
@@ -142,10 +163,25 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 	case *trace.ElementMutex:
 		switch e.GetType(true) {
 		case trace.MutexLock:
+			// double lock
+			if _, ok := this.critSec[objId]; ok {
+				this.wellFormed = false
+			}
+
 			this.critSec[objId] = types.NewPair(false, 1)
 		case trace.MutexRLock:
-			if v, ok := this.critSec[objId]; ok {
-				this.critSec[objId] = types.NewPair(true, v.Y+1)
+			val, ok := this.critSec[objId]
+
+			// lock followed by rlock
+			if ok && !val.X {
+				this.wellFormed = false
+				break
+			}
+
+			if ok {
+				this.critSec[objId] = types.NewPair(true, val.Y+1)
+			} else {
+				this.critSec[objId] = types.NewPair(true, 1)
 			}
 		case trace.MutexTryLock:
 			if _, ok := this.critSec[objId]; ok {
@@ -160,16 +196,43 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 				e.SetSuc(false)
 			}
 		case trace.MutexUnlock:
+			val, ok := this.critSec[objId]
+
+			// unlock without lock
+			if !ok {
+				this.wellFormed = false
+				break
+			}
+
+			// unlock of rlocked
+			if val.X {
+				this.wellFormed = false
+				break
+			}
+
 			delete(this.critSec, objId)
 		case trace.MutexRUnlock:
-			if v, ok := this.critSec[objId]; ok {
-				newVal := v.Y - 1
-				if newVal <= 0 {
-					delete(this.critSec, objId)
-				} else {
-					this.critSec[objId] = types.NewPair(true, newVal)
-				}
+			val, ok := this.critSec[objId]
+
+			// unlock without lock
+			if !ok {
+				this.wellFormed = false
+				break
 			}
+
+			// runlock of locked
+			if !val.X {
+				this.wellFormed = false
+				break
+			}
+
+			newVal := val.Y - 1
+			if newVal <= 0 {
+				delete(this.critSec, objId)
+			} else {
+				this.critSec[objId] = types.NewPair(true, newVal)
+			}
+
 		}
 	case *trace.ElementOnce:
 		if _, ok := this.onceDo[objId]; !ok {
@@ -179,11 +242,41 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 	case *trace.ElementSelect:
 		cc := e.GetChosenCase()
 		this.AddElem(cc)
+	case *trace.ElementWait:
+		if e.GetType(true) == trace.WaitWait {
+			// wait release with non 0 value
+			if val, ok := this.wgCounter[objId]; !ok || val != 0 {
+				this.wellFormed = false
+			}
+			break
+		}
+
+		this.wgCounter[objId] += e.GetDelta()
+
+		// negative wg
+		if this.wgCounter[objId] < 0 {
+			this.wellFormed = false
+		}
+
+		e.SetVal(this.wgCounter[objId])
+	case *trace.ElementCond:
+		switch e.GetType(true) {
+		case trace.CondWait:
+			this.condVal[objId]--
+			// release without signal/broadcast
+			if this.condVal[objId] < 0 {
+				this.wellFormed = false
+			}
+		case trace.CondSignal:
+			this.condVal[objId]++
+		case trace.CondBroadcast:
+			this.condVal[objId] = math.MaxInt / 2
+		}
+	case *trace.ElementAtomic:
+		// do nothing
 	}
 
 	this.trace = append(this.trace, elem)
-
-	// TODO: continue
 }
 
 // IsEqual returns if two traceMin are equal

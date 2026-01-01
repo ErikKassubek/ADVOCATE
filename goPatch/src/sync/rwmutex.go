@@ -204,7 +204,7 @@ func (rw *RWMutex) TryRLock() bool {
 // on entry to RUnlock.
 func (rw *RWMutex) RUnlock() {
 	// ADVOCATE-START
-	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, 2, true)
+	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationRWMutexRUnlock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch

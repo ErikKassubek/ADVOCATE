@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/baseF"
+	"advocate/trace"
 	"advocate/utils/settings.go"
 	"math/rand"
 )
@@ -80,9 +81,12 @@ func startConstraint(num, length int) []baseF.Constraint {
 		return res
 	}
 
+	// for each constraint store the constraints
+	routs := make(map[int]map[int]struct{})
+
 	for i := 0; i < length; i++ {
 		if len(res) == 0 {
-			for _, e := range top {
+			for j, e := range top {
 				posPartner := concurrent.GetConcurrent(e.Elem, true, true, settings.SameElementTypeInSC, true)
 				if len(posPartner) == 0 {
 					posPartner = concurrent.GetConcurrent(e.Elem, true, false, settings.SameElementTypeInSC, true)
@@ -95,20 +99,32 @@ func startConstraint(num, length int) []baseF.Constraint {
 				c := baseF.NewConstraint()
 				c.Add(e.Elem, partner)
 				res = append(res, c)
+				routs[j] = make(map[int]struct{})
+				routs[j][e.Elem.GetRoutine()] = struct{}{}
+				routs[j][partner.GetRoutine()] = struct{}{}
 			}
 		} else {
-			for i, c := range res {
+			for j, c := range res { // for every constraint
 				lastElem := c.LastElem()
 				if lastElem == nil {
 					continue
 				}
 
 				posNext := concurrent.GetConcurrent(lastElem, true, true, settings.SameElementTypeInSC, true)
-				if len(posNext) == 0 {
+
+				posNextOtherRoutine := make([]trace.Element, 0)
+				for _, pos := range posNext {
+					if _, ok := routs[j][pos.GetRoutine()]; !ok {
+						posNextOtherRoutine = append(posNextOtherRoutine, pos)
+					}
+				}
+
+				if len(posNextOtherRoutine) == 0 {
 					continue
 				}
-				next := posNext[rand.Intn(len(posNext))]
-				res[i].Add(next)
+				next := posNextOtherRoutine[rand.Intn(len(posNextOtherRoutine))]
+				res[j].Add(next)
+				routs[j][next.GetRoutine()] = struct{}{}
 			}
 		}
 	}

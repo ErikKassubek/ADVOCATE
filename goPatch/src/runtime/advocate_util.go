@@ -24,6 +24,7 @@ const (
 	CallerSkipCond             = 2
 	CallerSkipMutex            = 2
 	CallerSkipSelect           = 3
+	CallerSkipSelectRepl       = 2
 	CallerSkipSelectOneDef     = 2
 	CallerSkipWaitGroupAddWait = 2
 	CallerSkipWaitGroupDone    = 3

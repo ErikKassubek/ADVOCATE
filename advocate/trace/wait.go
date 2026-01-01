@@ -253,6 +253,14 @@ func (this *ElementWait) GetDelta() int {
 	return this.delta
 }
 
+// SetVal sets the value of the internal counter
+//
+// Parameter:
+//   - v int: the new value
+func (this *ElementWait) SetVal(v int) {
+	this.val = v
+}
+
 // SetVc sets the vector clock
 //
 // Parameter:

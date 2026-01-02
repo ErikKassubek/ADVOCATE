@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/analysis.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: analysis.go

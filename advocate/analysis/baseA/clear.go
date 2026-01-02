@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/clear.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: clear.go
@@ -40,7 +42,10 @@ func ClearData() {
 	AllUnlocks = make(map[int][]trace.Element)
 	LockSet = make(map[int]map[int]string)
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
+	MostRecentRelease = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVc)
+	CSSnaps = make(map[EventKey]CSSnapshot)
+	RLockCount = make(map[int]map[int]int)
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
 	NewChan = make(map[int]string)
 	CurrentlyWaiting = make(map[int][]*trace.ElementCond)

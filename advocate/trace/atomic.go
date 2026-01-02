@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementAtomic.go
+// File: /advocate/trace/atomic.go
 // Brief: Struct and functions for atomic operations in the trace
 //
 // Author: Erik Kassubek

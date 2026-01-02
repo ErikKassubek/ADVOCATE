@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementSelect.go
+// File: /advocate/trace/select.go
 // Brief: Struct and functions for select operations in the trace
 //
 // Author: Erik Kassubek

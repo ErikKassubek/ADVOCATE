@@ -33,6 +33,8 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	rewriteNeeded = false
 	code = helper.ExitCodeNone
 	switch bug.Type {
+
+	// ACTUAL BUGS
 	case helper.ASendOnClosed:
 		err = errors.New("Actual send on closed. Therefore no rewrite is needed")
 	case helper.ARecvOnClosed:
@@ -54,11 +56,11 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	case helper.PSendOnClosed:
 		code = helper.ExitCodeSendClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, helper.ExitCodeSendClose)
+		err = rewriteClosedChannel(tr, bug, code)
 	case helper.PRecvOnClosed:
 		code = helper.ExitCodeRecvClose
 		rewriteNeeded = true
-		err = rewriteClosedChannel(tr, bug, helper.ExitCodeRecvClose)
+		err = rewriteClosedChannel(tr, bug, code)
 	case helper.PNegWG:
 		code = helper.ExitCodeNegativeWG
 		rewriteNeeded = true
@@ -67,11 +69,15 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		code = helper.ExitCodeUnlockBeforeLock
 		rewriteNeeded = true
 		err = rewriteGraph(tr, bug, code)
-	// case bugs.MixedDeadlock:
-	// 	err = errors.New("Rewriting trace for mixed deadlock is not implemented yet")
 	case helper.PCyclicDeadlock:
 		rewriteNeeded = true
 		err = rewriteCyclicDeadlock(tr, bug)
+	case helper.PMixedDeadlock:
+		code = helper.ExitCodeMixedDeadlock
+		rewriteNeeded = true
+		err = rewriteMixedDeadlock(tr, bug, code)
+
+	// LEAKS
 	case helper.LUnknown:
 		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
 	case helper.LUnbufferedWith:

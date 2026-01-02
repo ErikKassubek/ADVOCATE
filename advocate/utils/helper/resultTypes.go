@@ -29,6 +29,7 @@ const (
 	ALeak                   ResultType = "A07"
 	ADeadlock               ResultType = "A08"
 	AConcurrentRecv         ResultType = "A09"
+	AMixedDeadlock          ResultType = "A10"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -36,6 +37,7 @@ const (
 	PNegWG            ResultType = "P03"
 	PUnlockBeforeLock ResultType = "P04"
 	PCyclicDeadlock   ResultType = "P05"
+	PMixedDeadlock    ResultType = "P06"
 
 	// leaks
 	LUnknown           ResultType = "L00"
@@ -206,6 +208,7 @@ const (
 	ExitCodeNegativeWG       = 34
 	ExitCodeUnlockBeforeLock = 35
 	ExitCodeCyclic           = 41
+	ExitCodeMixedDeadlock    = 42
 )
 
 // MinExitCodeSuc is the minimum exit code for successful replay

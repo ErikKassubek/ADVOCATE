@@ -85,9 +85,9 @@ func main() {
 		"\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tu: Unlock of unlocked mutex\n"+
-		"\tc: Cyclic deadlock\n",
+		"\tc: Cyclic deadlock\n"+
+		"\tm: Mixed deadlock\n",
 	)
-	// "\tm: Mixed deadlock\n"
 
 	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",

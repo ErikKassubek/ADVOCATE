@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: analysisUtil.go
+// File: /advocate/trace/utils.go
 // Brief: Collection of utility functiond for trace analysis
 //
 // Author: Erik Kassubek

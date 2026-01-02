@@ -25,11 +25,13 @@ var bugCrit = map[helper.ResultType]string{
 	helper.ALeak:                   "Bug",
 	helper.ADeadlock:               "Bug",
 	helper.AConcurrentRecv:         "Diagnostics",
+	helper.AMixedDeadlock:          "Bug",
 	helper.PSendOnClosed:           "Bug",
 	helper.PRecvOnClosed:           "Diagnostic",
 	helper.PNegWG:                  "Bug",
 	helper.PUnlockBeforeLock:       "Bug",
 	helper.PCyclicDeadlock:         "Bug",
+	helper.PMixedDeadlock:          "Bug",
 	helper.LUnknown:                "Leak",
 	helper.LUnbufferedWith:         "Leak",
 	helper.LUnbufferedWithout:      "Leak",
@@ -54,12 +56,14 @@ var bugNames = map[helper.ResultType]string{
 	helper.ALeak:                   "Actual Leak",
 	helper.ADeadlock:               "Actual Deadlock",
 	helper.AConcurrentRecv:         "Concurrent Receive",
+	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
 
 	helper.PSendOnClosed:     "Possible Send on Closed Channel",
 	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
 	helper.PNegWG:            "Possible Negative WaitGroup cCounter",
 	helper.PUnlockBeforeLock: "Possible unlock of not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
+	helper.PMixedDeadlock:    "Possible Mixed deadlock",
 
 	helper.LUnknown:           "Leak",
 	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
@@ -100,8 +104,9 @@ var bugExplanations = map[helper.ResultType]string{
 	helper.AConcurrentRecv: "During the execution of the program, a channel waited to receive at multiple positions at the same time.\n" +
 		"In this case, the actual receiver of a send message is chosen randomly.\n" +
 		"This can lead to nondeterministic behavior.",
-	helper.RUnknownPanic: "During the execution of the program, a unknown panic occurred",
-	helper.RTimeout:      "The execution of the program timed out",
+	helper.AMixedDeadlock: "The analysis detected an actual mixed deadlock.",
+	helper.RUnknownPanic:  "During the execution of the program, a unknown panic occurred",
+	helper.RTimeout:       "The execution of the program timed out",
 	helper.PSendOnClosed: "The analyzer detected a possible send on a closed channel.\n" +
 		"Although the send on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation.\n" +
@@ -122,6 +127,12 @@ var bugExplanations = map[helper.ResultType]string{
 		"If this deadlock contains or influences the run of the main routine, this can " +
 		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
 		"resources.",
+	helper.PMixedDeadlock: "The analysis detected a Possible Mixed Deadlock.\n" +
+		"A mixed deadlock is a situation, where two routines are blocked on each other, " +
+		"because they are waiting to send or receive on a channel, while holding locks " +
+		"that the other routine needs to proceed.\n" +
+		"This can lead to the program getting stuck, if one of the routines is the main routine. " +
+		"Otherwise it can lead to an unnecessary use of resources.",
 	helper.LUnknown: "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +

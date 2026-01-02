@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementOnce.go
+// File: /advocate/trace/once.go
 // Brief: Struct and functions for once operations in the trace
 //
 // Author: Erik Kassubek

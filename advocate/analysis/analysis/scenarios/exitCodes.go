@@ -113,7 +113,6 @@ func RunAnalysisOnExitCodes(all bool) {
 		results.Result(results.CRITICAL, helper.RTimeout,
 			"", []results.ResultElem{}, "", []results.ResultElem{})
 	}
-
 	if all {
 		if baseA.ExitCode == helper.ExitCodeSendClose { // send on closed
 			file, line, err := trace.PosFromPosString(baseA.ExitPos)

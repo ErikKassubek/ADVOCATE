@@ -27,7 +27,7 @@ func HasEquivalent(t1 TraceEq, origID int) bool {
 	}
 
 	for _, t := range processedTraces[origID] {
-		if areEquivalent(&t1, &t) {
+		if areEquivalent(&t, &t1) {
 			return true
 		}
 	}
@@ -58,21 +58,26 @@ func areEquivalent(t1, t2 *TraceEq) bool {
 		return false
 	}
 
-	shared := make(map[int]bool)
-	for _, e := range t1.trace {
-		shared[e.GetID()] = true
+	// t1 should be longer
+	if len(t1.trace) < len(t2.trace) {
+		t1, t2 = t2, t1
 	}
-	for id := range shared {
-		found := false
-		for _, e := range t2.trace {
-			if e.GetID() == id {
-				found = true
-				break
-			}
+
+	// Build a set of IDs for t1
+	ids1 := make(map[int]bool)
+	for _, e := range t1.trace {
+		ids1[e.GetID()] = true
+	}
+
+	// Check that every element of t2 exists in t1
+	shared := make(map[int]bool)
+	for _, e := range t2.trace {
+		id := e.GetID()
+		if !ids1[id] {
+			// Found an element in t2 not in t1 -> t2 is not subset
+			return false
 		}
-		if !found {
-			delete(shared, id)
-		}
+		shared[id] = true
 	}
 
 	signature1 := t1.BuildCanonicalSignature(shared)

@@ -21,7 +21,6 @@ import (
 type TraceEq struct {
 	trace []trace.Element
 
-	signature  string
 	wellFormed bool
 
 	minT      int

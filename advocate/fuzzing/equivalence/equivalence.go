@@ -11,8 +11,6 @@
 
 package equivalence
 
-import "strings"
-
 var processedTraces = make(map[int][]TraceEq)
 
 // HasEquivalent checks if there is an independent trace in processedTraces
@@ -42,8 +40,6 @@ func HasEquivalent(t1 TraceEq, origID int) bool {
 // AddOrig adds an actually executed trace to processed traces. Must be run
 // before running HasEquivalence with the given id
 func AddOrig(t TraceEq, id int) {
-	t.BuildCanonicalSignature()
-
 	processedTraces[id] = make([]TraceEq, 0)
 	processedTraces[id] = append(processedTraces[id], t)
 }
@@ -62,16 +58,25 @@ func areEquivalent(t1, t2 *TraceEq) bool {
 		return false
 	}
 
-	if t1.signature == "" {
-		t1.BuildCanonicalSignature()
+	shared := make(map[int]bool)
+	for _, e := range t1.trace {
+		shared[e.GetID()] = true
+	}
+	for id := range shared {
+		found := false
+		for _, e := range t2.trace {
+			if e.GetID() == id {
+				found = true
+				break
+			}
+		}
+		if !found {
+			delete(shared, id)
+		}
 	}
 
-	if t2.signature == "" {
-		t1.BuildCanonicalSignature()
-	}
+	signature1 := t1.BuildCanonicalSignature(shared)
+	signature2 := t2.BuildCanonicalSignature(shared)
 
-	if len(t1.signature) <= len(t2.signature) {
-		return strings.HasPrefix(t2.signature, t1.signature)
-	}
-	return strings.HasPrefix(t1.signature, t2.signature)
+	return signature1 == signature2
 }

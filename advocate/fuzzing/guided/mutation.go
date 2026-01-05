@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
 	"advocate/fuzzing/equivalence"
+	"advocate/fuzzing/gfuzz"
 	"advocate/utils/log"
 )
 
@@ -25,7 +26,16 @@ import (
 // bug is detected
 func CreateMutations() {
 	numberMuts = 0
+
+	// drop runs where the mutation could not be fully satisfied
+	if baseA.GetTimeoutHappened(false) {
+		return
+	}
+
 	traceID++
+
+	// select based mutations
+	gfuzz.CreateMutations(true)
 
 	// add new original trace to equivalence
 	minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)

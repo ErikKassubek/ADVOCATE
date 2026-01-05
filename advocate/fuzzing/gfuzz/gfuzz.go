@@ -15,11 +15,16 @@ import (
 	"math"
 )
 
+const maxNumberMutsIfGuided = 4
+
 // CreateMutations creates a new mutations for GFuzz if the previous run was interesting
-func CreateMutations() {
+func CreateMutations(guided bool) {
 	// add new mutations based on GFuzz select
 	if isInterestingSelect() {
 		numberMut := numberMutations()
+		if guided {
+			numberMut = min(numberMut, maxNumberMutsIfGuided)
+		}
 		flipProb := getFlipProbability()
 		numMutAdd := createMutationsGFuzz(numberMut, flipProb)
 		log.Infof("Add %d select mutations to queue", numMutAdd)

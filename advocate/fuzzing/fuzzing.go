@@ -250,7 +250,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			// Add mutation based on GFuzz
 			if baseF.FuzzingModeGFuzz {
 				log.Infof("Create GFuzz mutations")
-				gfuzz.CreateMutations()
+				gfuzz.CreateMutations(false)
 			}
 
 			// add new mutations based on flow path expansion

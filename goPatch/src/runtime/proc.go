@@ -475,7 +475,7 @@ func goparkWithTimeout(
 	if timeout > 0 {
 		if gp.timer == nil {
 			gp.timer = new(timer)
-			gp.timer.init(goroutineReady, gp)
+			gp.timer.init(goroutineReadyWithTimeout, gp)
 		}
 		now := nanotime()
 		when := now + timeout
@@ -483,6 +483,7 @@ func goparkWithTimeout(
 			when = maxWhen
 		}
 		gp.sleepWhen = when
+		gp.timer.reset(when, 0)
 	}
 
 	if reason != waitReasonSleep {
@@ -502,6 +503,14 @@ func goparkWithTimeout(
 	releasem(mp)
 
 	mcall(park_m)
+}
+
+func goroutineReadyWithTimeout(arg any, _ uintptr, _ int64) {
+	gp := arg.(*g)
+
+	gp.advocateRoutineInfo.wokenButTimeout = true
+
+	goready(gp, 0)
 }
 
 // Puts the current goroutine into a waiting state and unlocks the lock.

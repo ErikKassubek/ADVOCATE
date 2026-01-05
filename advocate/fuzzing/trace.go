@@ -75,7 +75,7 @@ func ParseTrace(tr *trace.Trace) {
 					parseChannelOp(e, -2) // -2: not part of select
 				}
 			case *trace.ElementSelect:
-				if baseF.FuzzingModeGFuzz {
+				if baseF.FuzzingModeGFuzz || baseF.FuzzingModeGuided {
 					parseSelectOp(e)
 				}
 			}

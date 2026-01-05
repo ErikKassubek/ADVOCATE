@@ -73,10 +73,17 @@ func SetReplayInfo(oldest, disabled, ack, activeReached, allActiveReleased int) 
 // GetTimeoutHappened return if any kind of timeout happened
 // A timeout happened if at least one of the three timeout var is not 0
 //
+// Parameter:
+//   - ack bool: if false, ignore acknowledgement timeouts
+//
 // Returns:
 //   - - bool: true if a timeout happened, false otherwise
-func GetTimeoutHappened() bool {
-	return (replayTimeoutOldest + replayTimeoutDisabled + replayTimeoutAck) != 0
+func GetTimeoutHappened(ack bool) bool {
+	if ack {
+		return (replayTimeoutOldest + replayTimeoutDisabled + replayTimeoutAck) != 0
+	} else {
+		return (replayTimeoutOldest + replayTimeoutDisabled) != 0
+	}
 }
 
 // SetRuntimeDurationSec is a setter for durationInSeconds

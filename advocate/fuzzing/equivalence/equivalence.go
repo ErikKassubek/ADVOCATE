@@ -80,8 +80,8 @@ func areEquivalent(t1, t2 *TraceEq) bool {
 		shared[id] = true
 	}
 
-	signature1 := t1.BuildCanonicalSignature(shared)
-	signature2 := t2.BuildCanonicalSignature(shared)
+	signature1 := t1.BuildCanonicalSignature(shared, true)
+	signature2 := t2.BuildCanonicalSignature(shared, len(t1.trace) == len(t2.trace))
 
 	return signature1 == signature2
 }

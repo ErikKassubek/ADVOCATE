@@ -20,9 +20,11 @@ import (
 	"strings"
 )
 
-func (this *TraceEq) BuildCanonicalSignature(shared map[int]bool) string {
-	this.calcVc()
-	return this.calcSignature(shared)
+func (this *TraceEq) BuildCanonicalSignature(shared map[int]bool, full bool) string {
+	if !this.vcHaveBeenCalc {
+		this.calcVc()
+	}
+	return this.calcSignature(shared, full)
 }
 
 func (this *TraceEq) calcVc() {
@@ -47,9 +49,15 @@ func (this *TraceEq) calcVc() {
 			vc.UpdateHBWait(e)
 		}
 	}
+	this.vcHaveBeenCalc = true
 }
 
-func (this *TraceEq) calcSignature(shared map[int]bool) string {
+func (this *TraceEq) calcSignature(shared map[int]bool, full bool) string {
+
+	if full && this.fullSig != "" {
+		return this.fullSig
+	}
+
 	events := make([]trace.Element, 0)
 	for _, e := range this.trace {
 		if shared[e.GetID()] {
@@ -134,5 +142,9 @@ func (this *TraceEq) calcSignature(shared map[int]bool) string {
 			sb.WriteByte('|')
 		}
 	}
-	return sb.String()
+	res := sb.String()
+	if full {
+		this.fullSig = res
+	}
+	return res
 }

@@ -21,7 +21,8 @@ import (
 type TraceEq struct {
 	trace []trace.Element
 
-	wellFormed bool
+	wellFormed     bool
+	vcHaveBeenCalc bool
 
 	minT      int
 	closed    map[int]struct{} // channel id
@@ -31,6 +32,8 @@ type TraceEq struct {
 	onceDo    map[int]struct{}              // once id
 	wgCounter map[int]int                   // wg counter
 	condVal   map[int]int                   // wg counter, number signal - release, 0.5*maxInt if broadcast
+
+	fullSig string
 }
 
 // NewTraceEq creates a new, empty trace

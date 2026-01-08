@@ -119,9 +119,5 @@ func CheckGoMod() string {
 		log.Error("Failed to update go.mod:", err)
 	}
 
-	if flags.ExecName == "" {
-		log.Error("Could not determine module name")
-	}
-
 	return flags.ExecName
 }

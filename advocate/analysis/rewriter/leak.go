@@ -77,7 +77,10 @@ func rewriteUnbufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 //   - error: An error if the trace could not be created
 func rewriteUnbufChanLeakChanChan(tr *trace.Trace, bug bugs.Bug) error {
 	stuck := bug.TraceElement1[0]
-	possiblePartner := bug.TraceElement2[0].(*trace.ElementChannel)
+	possiblePartner, ok := (bug.TraceElement2[0]).(*trace.ElementChannel)
+	if !ok {
+		return errors.New("Incorrect type of possible partner. Cannot rewrite trace")
+	}
 	possiblePartnerPartner := possiblePartner.GetPartner()
 
 	if possiblePartnerPartner != nil {

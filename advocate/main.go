@@ -85,9 +85,9 @@ func main() {
 		"\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tu: Unlock of unlocked mutex\n"+
-		"\tc: Cyclic deadlock\n",
+		"\tc: Cyclic deadlock\n"+
+		"\tm: Mixed deadlock\n",
 	)
-	// "\tm: Mixed deadlock\n"
 
 	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
@@ -153,6 +153,10 @@ func main() {
 		flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR) {
 		flags.Scenarios = "-"
 		flags.OnlyAPanicAndLeak = true
+	}
+
+	if flags.FuzzingMode == "" {
+		flags.FuzzingMode = baseF.Guided
 	}
 
 	var err error

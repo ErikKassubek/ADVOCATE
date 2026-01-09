@@ -11,8 +11,6 @@
 
 package equivalence
 
-import "strings"
-
 var processedTraces = make(map[int][]TraceEq)
 
 // HasEquivalent checks if there is an independent trace in processedTraces
@@ -24,12 +22,12 @@ var processedTraces = make(map[int][]TraceEq)
 // Returns:
 //   - true if there is an independent trace (we do not need to rerun t1), false otherwise
 func HasEquivalent(t1 TraceEq, origID int) bool {
-	if !t1.wellFormed {
+	if t1.illFormedBug {
 		return false
 	}
 
 	for _, t := range processedTraces[origID] {
-		if areEquivalent(&t1, &t) {
+		if areEquivalent(&t, &t1) {
 			return true
 		}
 	}
@@ -42,8 +40,6 @@ func HasEquivalent(t1 TraceEq, origID int) bool {
 // AddOrig adds an actually executed trace to processed traces. Must be run
 // before running HasEquivalence with the given id
 func AddOrig(t TraceEq, id int) {
-	t.BuildCanonicalSignature()
-
 	processedTraces[id] = make([]TraceEq, 0)
 	processedTraces[id] = append(processedTraces[id], t)
 }
@@ -58,20 +54,30 @@ func AddOrig(t TraceEq, id int) {
 // Returns:
 //   - bool: true if the traces are equivalent
 func areEquivalent(t1, t2 *TraceEq) bool {
-	if !t1.wellFormed || !t2.wellFormed {
-		return false
+	// t1 should be longer
+	if len(t1.trace) < len(t2.trace) {
+		t1, t2 = t2, t1
 	}
 
-	if t1.signature == "" {
-		t1.BuildCanonicalSignature()
+	// Build a set of IDs for t1
+	ids1 := make(map[int]bool)
+	for _, e := range t1.trace {
+		ids1[e.GetID()] = true
 	}
 
-	if t2.signature == "" {
-		t1.BuildCanonicalSignature()
+	// Check that every element of t2 exists in t1
+	shared := make(map[int]bool)
+	for _, e := range t2.trace {
+		id := e.GetID()
+		if !ids1[id] {
+			// Found an element in t2 not in t1 -> t2 is not subset
+			return false
+		}
+		shared[id] = true
 	}
 
-	if len(t1.signature) <= len(t2.signature) {
-		return strings.HasPrefix(t2.signature, t1.signature)
-	}
-	return strings.HasPrefix(t1.signature, t2.signature)
+	signature1 := t1.BuildCanonicalSignature(shared, true)
+	signature2 := t2.BuildCanonicalSignature(shared, len(t1.trace) == len(t2.trace))
+
+	return signature1 == signature2
 }

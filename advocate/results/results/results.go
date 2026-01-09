@@ -45,12 +45,14 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.ADeadlock:               "Actual Leak",
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
+	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
 
 	helper.PSendOnClosed:     "Possible send on closed channel",
 	helper.PRecvOnClosed:     "Possible receive on closed channel",
 	helper.PNegWG:            "Possible negative waitgroup counter",
 	helper.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
+	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
 	helper.LUnknown:           "Leak on routine or unknown element",
 	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
@@ -196,7 +198,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	if resType.IsLeak() {
 		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: ", err.Error())
+			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
 		}
 		if falsePositive {
 			falsePos = "fp"

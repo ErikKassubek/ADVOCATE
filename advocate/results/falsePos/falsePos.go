@@ -14,7 +14,6 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"fmt"
-	"strings"
 )
 
 // IsFalsePositive checks if the given bug is likely a false positive based on
@@ -33,14 +32,14 @@ func IsFalsePositive(resultType helper.ResultType, fileName string, line int, bl
 	parents := buildParentMap(file)
 
 	// fix header shift
-	lineShift := line
-	if strings.HasSuffix(fileName, "main.go") || strings.HasSuffix(fileName, "_test.go") {
-		lineShift -= 5
-	}
+	// lineShift := line
+	// if strings.HasSuffix(fileName, "main.go") || strings.HasSuffix(fileName, "_test.go") {
+	// 	lineShift -= 5
+	// }
 
-	node := findNodeAtLine(fset, file, lineShift)
+	node := findNodeAtLine(fset, file, line)
 	if node == nil {
-		return false, fmt.Errorf("Could not find node")
+		return false, fmt.Errorf("Could not find node: %s:%d", fileName, line)
 	}
 
 	endlessLoop := isInsideEndlessLoop(node, parents)

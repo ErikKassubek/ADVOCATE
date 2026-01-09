@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementReplayStop.go
+// File: /advocate/trace/replay.go
 // Brief: Struct and functions for replay control elements in the trace
 //
 // Author: Erik Kassubek

@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/elements/mutex.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: hbMutex.go
@@ -33,14 +35,15 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	id := mu.GetObjId()
 
 	switch mu.GetType(true) {
+
+	// --------- WRITE LOCK ---------
 	case trace.MutexLock:
 		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
-		scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
+		LockSetAddLock(mu, false)
 
-		// for fuzzing
 		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
@@ -48,38 +51,56 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
 
+	// --------- READ LOCK (RWMutex RLock) ---------
 	case trace.MutexRLock:
-		// for fuzzing
-		baseA.CurrentlyHoldLock[id] = mu
-		scenarios.IncFuzzingCounter(mu)
-
 		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
+		LockSetAddLock(mu, true)
+
+		baseA.CurrentlyHoldLock[id] = mu
+		scenarios.IncFuzzingCounter(mu)
+
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockLock(mu)
 		}
+
+	// --------- TRY LOCK (write) ---------
 	case trace.MutexTryLock:
 		if mu.IsSuc() {
 			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
+			LockSetAddLock(mu, false)
+
+			baseA.CurrentlyHoldLock[id] = mu
+			scenarios.IncFuzzingCounter(mu)
+
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
+
+	// --------- TRY RLOCK (read) ---------
 	case trace.MutexTryRLock:
 		if mu.IsSuc() {
 			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
+			LockSetAddLock(mu, true)
+
+			baseA.CurrentlyHoldLock[id] = mu
+			scenarios.IncFuzzingCounter(mu)
+
 			if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 				scenarios.CheckForUnlockBeforeLockLock(mu)
 			}
 		}
+
+	// --------- UNLOCK (write) ---------
 	case trace.MutexUnlock:
 		baseA.RelW[id] = &baseA.ElemWithVc{
 			Elem: mu,
@@ -91,35 +112,92 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-			scenarios.LockSetRemoveLock(routine, id)
-		}
+		LockSetRemoveLock(mu, false)
 
-		// for fuzzing
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
+
+	// --------- RUNLOCK (read) ---------
 	case trace.MutexRUnlock:
 		baseA.RelR[id] = &baseA.ElemWithVc{
 			Elem: mu,
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-			scenarios.LockSetAddLock(mu, vc.CurrentWVC[routine])
-			scenarios.LockSetRemoveLock(routine, id)
-		}
+		LockSetRemoveLock(mu, true)
 
-		// for fuzzing
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
 			scenarios.CheckForUnlockBeforeLockUnlock(mu)
 		}
+
 	default:
-		err := "Unknown mutex operation: " + mu.ToString()
-		log.Error(err)
+		log.Error("Unknown mutex operation: " + mu.ToString())
+	}
+}
+
+func ensureLockTracking(routine int) {
+	if _, ok := baseA.LockSet[routine]; !ok {
+		baseA.LockSet[routine] = make(map[int]string) // lockID -> TID
+	}
+	if _, ok := baseA.MostRecentAcquire[routine]; !ok {
+		baseA.MostRecentAcquire[routine] = make(map[int]baseA.ElemWithVc)
+	}
+	if _, ok := baseA.MostRecentRelease[routine]; !ok {
+		baseA.MostRecentRelease[routine] = make(map[int]baseA.ElemWithVc)
+	}
+	if _, ok := baseA.RLockCount[routine]; !ok {
+		baseA.RLockCount[routine] = make(map[int]int) // lockID -> count
+	}
+}
+
+// LockSetAddLock adds to LockSet and MostRecentAcquire
+func LockSetAddLock(mu *trace.ElementMutex, isReadLock bool) {
+	routine := mu.GetRoutine()
+	id := mu.GetID()
+
+	ensureLockTracking(routine)
+
+	// RLock-Counter
+	if isReadLock {
+		baseA.RLockCount[routine][id]++
+	}
+
+	baseA.LockSet[routine][id] = mu.GetTID()
+
+	baseA.MostRecentAcquire[routine][id] = baseA.ElemWithVc{
+		Vc:   vc.CurrentVC[routine].Copy(),
+		Elem: mu,
+	}
+}
+
+// LockSetRemoveLock removes from Lockset and MostRecentRelease
+func LockSetRemoveLock(mu *trace.ElementMutex, isReadUnlock bool) {
+	routine := mu.GetRoutine()
+	id := mu.GetID()
+
+	ensureLockTracking(routine)
+
+	baseA.MostRecentRelease[routine][id] = baseA.ElemWithVc{
+		Vc:   vc.CurrentVC[routine].Copy(),
+		Elem: mu,
+	}
+
+	if isReadUnlock {
+		baseA.RLockCount[routine][id]--
+		if baseA.RLockCount[routine][id] <= 0 {
+			baseA.RLockCount[routine][id] = 0
+			delete(baseA.LockSet[routine], id)
+		}
+	} else {
+		delete(baseA.LockSet[routine], id)
+
+		if cnt, ok := baseA.RLockCount[routine][id]; ok && cnt > 0 {
+			baseA.RLockCount[routine][id] = 0
+		}
 	}
 }

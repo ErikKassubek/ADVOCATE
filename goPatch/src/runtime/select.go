@@ -298,6 +298,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// is never executed.
 	advocateIndex := AdvocateSelectPre(&scases, nsends, ncases, block)
 	advocateRClose := false // case was chosen, because channel was closed
+	wasTimeout := false
 	// ADVOCATE-END
 
 	var (
@@ -404,7 +405,11 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
+	// ADVOCATE-START
+	goparkWithTimeout(selparkcommit, nil, waitReason, traceBlockSelect, 1, preferredTimeout)
+	wasTimeout = gp.advocateRoutineInfo.wokenButTimeout
+	// ADVOCATE-END
+	gp.advocateRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)
@@ -499,6 +504,10 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	}
 
 	// ADVOCATE-START
+	if wasTimeout {
+		return true, 0, false, advocateIndex
+	}
+
 	advocateRClose = !caseSuccess
 	AdvocateSelectPost(advocateIndex, c, casi, advocateRClose)
 	// ADVOCATE-END
@@ -884,6 +893,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
 	gopark(selparkcommit, nil, waitReason, traceBlockSelect, 1)
+	gp.advocateRoutineInfo.wokenButTimeout = false
 	gp.activeStackChans = false
 
 	sellock(scases, lockorder)

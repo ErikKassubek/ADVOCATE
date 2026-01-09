@@ -154,7 +154,7 @@ func CreateMutations(mutNumber int) error {
 func getEnergy() int {
 
 	// not interesting
-	if baseA.GetTimeoutHappened() {
+	if baseA.GetTimeoutHappened(false) {
 		return 0
 	}
 

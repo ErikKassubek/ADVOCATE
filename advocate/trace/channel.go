@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementChannel.go
+// File: /advocate/trace/channel.go
 // Brief: Struct and functions for channel operations in the trace
 //
 // Author: Erik Kassubek
@@ -557,7 +557,11 @@ func (this *ElementChannel) ToString() string {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementChannel) toStringSep(sep string, sel bool) string {
-	op := string(string(this.op)[1])
+	opFull := string(this.op)
+	op := "?"
+	if len(opFull) > 1 {
+		op = string(opFull[1])
+	}
 
 	cl := "f"
 	if this.cl {

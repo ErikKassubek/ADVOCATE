@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/elements/channel.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: hbChannel.go
@@ -21,6 +23,7 @@ import (
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"fmt"
 )
 
 // UpdateChannel updates the vector clocks to a channel element
@@ -200,6 +203,18 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
+	// Lockset Snapshot
+	if s, ok := sender.(*trace.ElementChannel); ok {
+		buildCSSnapshot(s.GetRoutine(), s.GetID(), s.GetOID(), s.GetVC())
+	}
+	switch r := recv.(type) {
+	case *trace.ElementChannel:
+		buildCSSnapshot(r.GetRoutine(), r.GetID(), r.GetOID(), r.GetVC())
+	case *trace.ElementSelect:
+		c := r.GetChosenCase()
+		buildCSSnapshot(c.GetRoutine(), c.GetID(), c.GetOID(), c.GetVC())
+	}
+
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
 		if baseA.MostRecentReceive[recv.GetRoutine()] == nil {
 			baseA.MostRecentReceive[recv.GetRoutine()] = make(map[int]baseA.ElemWithVcVal)
@@ -229,8 +244,10 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
+	log.Info(fmt.Sprintf("[Channel] MixedDeadlock flag = %v", baseA.AnalysisCasesMap[flags.MixedDeadlock]))
+
 	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(sender.GetRoutine(), recv.GetRoutine())
+		scenarios.CheckForMixedDeadlock(sender, recv)
 	}
 
 	if baseA.ModeIsFuzzing {
@@ -257,6 +274,8 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	if ch.GetTPost() == 0 {
 		return
 	}
+
+	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
 
 	if baseA.MostRecentSend[routine] == nil {
 		baseA.MostRecentSend[routine] = make(map[int]baseA.ElemWithVcVal)
@@ -314,6 +333,8 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		return
 	}
 
+	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
+
 	if baseA.MostRecentReceive[routine] == nil {
 		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
@@ -331,8 +352,9 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		routSend := ch.GetPartner().GetRoutine()
-		scenarios.CheckForMixedDeadlock(routSend, routine)
+		if ch.GetPartner() != nil {
+			scenarios.CheckForMixedDeadlock(ch.GetPartner(), ch)
+		}
 	}
 	if baseA.AnalysisCasesMap[flags.Leak] {
 		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
@@ -361,6 +383,8 @@ func Close(ch *trace.ElementChannel) {
 
 	routine := ch.GetRoutine()
 	id := ch.GetObjId()
+
+	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
 
 	ch.SetClosed(true)
 
@@ -408,6 +432,20 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
+	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
+
+	if baseA.MostRecentReceive[routine] == nil {
+		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
+	}
+
+	// for detection of receive on closed
+	baseA.HasReceived[id] = true
+	baseA.MostRecentReceive[routine][id] = baseA.ElemWithVcVal{
+		Elem: ch,
+		Vc:   baseA.MostRecentReceive[routine][id].Vc.Sync(vc[routine]),
+		Val:  id,
+	}
+
 	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
 		scenarios.FoundReceiveOnClosedChannel(ch, true)
 	}
@@ -417,7 +455,9 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	}
 
 	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(baseA.CloseData[id].GetRoutine(), routine)
+		if closer := baseA.CloseData[ch.GetID()]; closer != nil {
+			scenarios.CheckForMixedDeadlock(closer, ch)
+		}
 	}
 
 	if baseA.AnalysisCasesMap[flags.Leak] {
@@ -472,4 +512,18 @@ func setChannelAsLastReceive(c trace.Element) {
 		Val:  id,
 	}
 	baseA.HasReceived[id] = true
+}
+
+// Creates channel event snapshot
+func buildCSSnapshot(routine, chanID, oid int, eventVc *clock.VectorClock) {
+	if eventVc == nil {
+		return
+	}
+	flags := scenarios.DecideCSForEvent(routine, eventVc)
+
+	baseA.CSSnaps[baseA.EventKey{Routine: routine, ChanID: chanID, OID: oid}] =
+		baseA.CSSnapshot{
+			ByLock:  flags,
+			EventVC: eventVc.Copy(),
+		}
 }

@@ -134,6 +134,7 @@ func replayEndFound(replayElem ReplayElement) {
 	// foundReplayElement()
 	sleep(0.1)
 
+	// [REMOVE] || replayElem.Line == ExitCodeMixedDeadlock
 	// Check if a deadlock has been reached
 	if replayElem.Line == ExitCodeCyclic {
 		stuckRoutines := checkForStuckRoutines(1.0, 100)

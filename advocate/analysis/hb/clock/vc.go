@@ -140,7 +140,7 @@ func (this *VectorClock) ToString() string {
 func (this *VectorClock) AsSlice() []int {
 	vc := make([]int, this.size)
 	for k, v := range this.clock {
-		vc[k] = int(v)
+		vc[k-1] = int(v)
 	}
 
 	return vc

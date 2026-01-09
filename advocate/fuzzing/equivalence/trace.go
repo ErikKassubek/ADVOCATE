@@ -21,8 +21,9 @@ import (
 type TraceEq struct {
 	trace []trace.Element
 
-	signature  string
-	wellFormed bool
+	illFormedBug        bool
+	IllFormedImpossible bool
+	vcHaveBeenCalc      bool
 
 	minT      int
 	closed    map[int]struct{} // channel id
@@ -32,6 +33,8 @@ type TraceEq struct {
 	onceDo    map[int]struct{}              // once id
 	wgCounter map[int]int                   // wg counter
 	condVal   map[int]int                   // wg counter, number signal - release, 0.5*maxInt if broadcast
+
+	fullSig string
 }
 
 // NewTraceEq creates a new, empty trace
@@ -42,14 +45,18 @@ func NewTraceEq() TraceEq {
 	return TraceEq{
 		trace: make([]trace.Element, 0),
 
-		wellFormed: true,
+		illFormedBug:        false,
+		IllFormedImpossible: false,
 
 		minT:     0,
 		closed:   make(map[int]struct{}),
 		qCount:   make(map[int]int),
 		qMessage: make(map[int]*types.Queue[*trace.ElementChannel]),
 
-		critSec: make(map[int]types.Pair[bool, int]),
+		critSec:   make(map[int]types.Pair[bool, int]),
+		onceDo:    make(map[int]struct{}),
+		wgCounter: make(map[int]int),
+		condVal:   make(map[int]int),
 	}
 }
 
@@ -125,14 +132,14 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 		case trace.ChannelClose:
 			// close on closed
 			if _, ok := this.closed[objId]; ok {
-				this.wellFormed = false
+				this.illFormedBug = true
 			}
 
 			this.closed[objId] = struct{}{}
 		case trace.ChannelSend:
 			// send on closed
 			if _, ok := this.closed[objId]; ok {
-				this.wellFormed = false
+				this.illFormedBug = true
 			}
 
 			this.qCount[objId]++
@@ -145,7 +152,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 
 			// recv before send
 			if this.qCount[objId] < 0 {
-				this.wellFormed = false
+				this.IllFormedImpossible = true
 			}
 
 			if _, ok := this.qMessage[objId]; !ok {
@@ -165,7 +172,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 		case trace.MutexLock:
 			// double lock
 			if _, ok := this.critSec[objId]; ok {
-				this.wellFormed = false
+				this.illFormedBug = true
 			}
 
 			this.critSec[objId] = types.NewPair(false, 1)
@@ -174,7 +181,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 
 			// lock followed by rlock
 			if ok && !val.X {
-				this.wellFormed = false
+				this.illFormedBug = true
 				break
 			}
 
@@ -200,13 +207,13 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 
 			// unlock without lock
 			if !ok {
-				this.wellFormed = false
+				this.illFormedBug = true
 				break
 			}
 
 			// unlock of rlocked
 			if val.X {
-				this.wellFormed = false
+				this.illFormedBug = true
 				break
 			}
 
@@ -216,13 +223,13 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 
 			// unlock without lock
 			if !ok {
-				this.wellFormed = false
+				this.illFormedBug = true
 				break
 			}
 
 			// runlock of locked
 			if !val.X {
-				this.wellFormed = false
+				this.illFormedBug = true
 				break
 			}
 
@@ -246,7 +253,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 		if e.GetType(true) == trace.WaitWait {
 			// wait release with non 0 value
 			if val, ok := this.wgCounter[objId]; !ok || val != 0 {
-				this.wellFormed = false
+				this.IllFormedImpossible = true
 			}
 			break
 		}
@@ -255,7 +262,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 
 		// negative wg
 		if this.wgCounter[objId] < 0 {
-			this.wellFormed = false
+			this.illFormedBug = true
 		}
 
 		e.SetVal(this.wgCounter[objId])
@@ -265,7 +272,7 @@ func (this *TraceEq) AddElem(elem trace.Element) {
 			this.condVal[objId]--
 			// release without signal/broadcast
 			if this.condVal[objId] < 0 {
-				this.wellFormed = false
+				this.IllFormedImpossible = true
 			}
 		case trace.CondSignal:
 			this.condVal[objId]++

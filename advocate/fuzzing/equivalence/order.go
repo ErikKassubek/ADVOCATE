@@ -20,9 +20,11 @@ import (
 	"strings"
 )
 
-func (this *TraceEq) BuildCanonicalSignature() {
-	this.calcVc()
-	this.signature = this.calcSignature()
+func (this *TraceEq) BuildCanonicalSignature(shared map[int]bool, full bool) string {
+	if !this.vcHaveBeenCalc {
+		this.calcVc()
+	}
+	return this.calcSignature(shared, full)
 }
 
 func (this *TraceEq) calcVc() {
@@ -47,86 +49,102 @@ func (this *TraceEq) calcVc() {
 			vc.UpdateHBWait(e)
 		}
 	}
+	this.vcHaveBeenCalc = true
 }
 
-func (this *TraceEq) calcSignature() string {
-	n := len(this.trace)
+func (this *TraceEq) calcSignature(shared map[int]bool, full bool) string {
+
+	if full && this.fullSig != "" {
+		return this.fullSig
+	}
+
+	events := make([]trace.Element, 0)
+	for _, e := range this.trace {
+		if shared[e.GetID()] {
+			events = append(events, e)
+		}
+	}
+
+	n := len(events)
 	if n == 0 {
 		return ""
 	}
 
-	k := this.trace[0].GetVC().GetSize() // number of routines
+	k := events[0].GetVC().GetSize() // number of routines
 
 	// use stable sort to sort events according to vector clocks
 
-	type eventWithVC struct {
+	type E struct {
 		id int
 		vc []int
 	}
 
-	events := make([]eventWithVC, n)
-	for i := 0; i < n; i++ {
-		events[i] = eventWithVC{
-			id: this.trace[i].GetID(),
-			vc: this.trace[i].GetVC().AsSlice(),
+	es := make([]E, n)
+	for i, e := range events {
+		es[i] = E{
+			id: e.GetID(),
+			vc: e.GetVC().AsSlice(),
 		}
 	}
 
 	sort.SliceStable(events, func(i, j int) bool {
-		hbRel := clock.GetHappensBeforeSlice(&events[i].vc, &events[j].vc)
+		hbRel := clock.GetHappensBeforeSlice(&es[i].vc, &es[j].vc)
 		switch hbRel {
 		case hb.Before:
 			return true
 		case hb.After:
 			return false
 		default:
-			return events[i].id < events[j].id
+			return es[i].id < es[j].id
 		}
 	})
 
-	normalizedVCs := make([][]int, n)
+	norm := make([][]int, n)
 	for i := 0; i < n; i++ {
-		normalizedVCs[i] = make([]int, k)
+		norm[i] = make([]int, k)
 	}
 
 	for r := 0; r < k; r++ {
 		// Collect all values of routine r in sorted order
-		values := make([]int, n)
+		vals := make(map[int]bool)
 		for i := 0; i < n; i++ {
-			values[i] = events[i].vc[r]
+			vals[i] = true
 		}
 
 		// Map unique values to ranks
-		valueSet := make(map[int]bool)
-		for _, v := range values {
-			valueSet[v] = true
+		uniq := make([]int, 0, len(vals))
+		for v := range vals {
+			uniq = append(uniq, v)
 		}
-		uniqueVals := make([]int, 0, len(valueSet))
-		for v := range valueSet {
-			uniqueVals = append(uniqueVals, v)
-		}
-		sort.Ints(uniqueVals)
+		sort.Ints(uniq)
 
-		valToRank := make(map[int]int)
-		for idx, v := range uniqueVals {
-			valToRank[v] = idx + 1
+		rank := make(map[int]int)
+		for idx, v := range uniq {
+			rank[v] = idx + 1
 		}
 
 		// Assign normalized rank
 		for i := 0; i < n; i++ {
-			normalizedVCs[i][r] = valToRank[events[i].vc[r]]
+			norm[i][r] = rank[es[i].vc[r]]
 		}
 	}
 
 	// generate canonical signature
-	sigParts := make([]string, n)
+	var sb strings.Builder
 	for i := 0; i < n; i++ {
-		compStrings := make([]string, k)
 		for r := 0; r < k; r++ {
-			compStrings[r] = fmt.Sprintf("%d", normalizedVCs[i][r])
+			sb.WriteString(fmt.Sprintf("%d", norm[i][r]))
+			if r+1 < k {
+				sb.WriteByte('-')
+			}
 		}
-		sigParts[i] = strings.Join(compStrings, "-")
+		if i+1 < n {
+			sb.WriteByte('|')
+		}
 	}
-
-	return strings.Join(sigParts, "|")
+	res := sb.String()
+	if full {
+		this.fullSig = res
+	}
+	return res
 }

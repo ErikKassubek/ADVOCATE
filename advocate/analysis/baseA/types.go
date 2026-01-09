@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/types.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: types.go
@@ -18,6 +20,24 @@ import (
 )
 
 // TODO: clean this all up
+
+type EventKey struct {
+	Routine int
+	ChanID  int
+	OID     int
+}
+
+type CSFlag struct {
+	InCS bool
+	PCS  bool
+	Acq  ElemWithVc
+	Rel  ElemWithVc
+}
+
+type CSSnapshot struct {
+	ByLock  map[int]CSFlag
+	EventVC *clock.VectorClock
+}
 
 // ElemWithVc is a helper element for an element with an additional vector clock
 type ElemWithVc struct {

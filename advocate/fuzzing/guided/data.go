@@ -13,7 +13,7 @@ package guided
 const (
 	maxNumberConstraints    = 10
 	maxNumberOfMutsPerConst = 10
-	maxTries                = 1000
+	maxTries                = 100
 	lengthConstraint        = 10
 )
 

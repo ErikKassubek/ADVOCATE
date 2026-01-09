@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
 	"advocate/fuzzing/equivalence"
+	"advocate/fuzzing/gfuzz"
 	"advocate/utils/log"
 )
 
@@ -25,7 +26,16 @@ import (
 // bug is detected
 func CreateMutations() {
 	numberMuts = 0
+
+	// drop runs where the mutation could not be fully satisfied
+	if baseA.GetTimeoutHappened(false) {
+		return
+	}
+
 	traceID++
+
+	// select based mutations
+	gfuzz.CreateMutations(true)
 
 	// add new original trace to equivalence
 	minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)
@@ -37,14 +47,28 @@ func CreateMutations() {
 
 	for _, c := range constraint {
 		for numberMuts < maxNumberOfMutsPerConst || numTry > maxTries {
-			numTry++
 
 			mutatedConstr := baseF.Mutate(c, -1, nil, nil)
 
 			for _, ch := range mutatedConstr {
+				numTry++
+
+				if numTry > maxTries {
+					log.Important(baseF.NumberTry, baseF.NumberEquiv, float64(baseF.NumberEquiv)/float64(baseF.NumberTry), baseF.NumberIll, float64(baseF.NumberIll)/float64(baseF.NumberTry))
+					return
+				}
+
+				baseF.NumberTry++
+
 				minTrace := equivalence.TraceEqFromConstraint(ch)
 
+				if minTrace.IllFormedImpossible {
+					baseF.NumberIll++
+					continue
+				}
+
 				if equivalence.HasEquivalent(minTrace, traceID) {
+					baseF.NumberEquiv++
 					continue
 				}
 
@@ -57,4 +81,5 @@ func CreateMutations() {
 			}
 		}
 	}
+	log.Important(baseF.NumberTry, baseF.NumberEquiv, float64(baseF.NumberEquiv)/float64(baseF.NumberTry), baseF.NumberIll, float64(baseF.NumberIll)/float64(baseF.NumberTry))
 }

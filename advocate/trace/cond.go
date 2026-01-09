@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementCond.go
+// File: /advocate/trace/cond.go
 // Brief: Struct and functions for operations of conditional variables in the trace
 //
 // Author: Erik Kassubek

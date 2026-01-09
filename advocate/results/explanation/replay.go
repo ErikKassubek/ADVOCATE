@@ -195,7 +195,7 @@ func getReplayInfo(codes map[string]string, index string) (string, string, strin
 	if exitCodeInt == 0 {
 		replaySuc = "ended without confirming the bug"
 	} else if exitCodeInt >= 20 {
-		replaySuc = "was successful"
+		replaySuc = "confirmed the bug"
 	}
 
 	return exitCode, exitCodeExplanation[exitCode], replaySuc, nil

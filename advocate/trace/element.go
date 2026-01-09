@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElements.go
+// File: /advocate/trace/element.go
 // Brief: Interface for all trace element types
 //
 // Author: Erik Kassubek
@@ -65,8 +65,8 @@ const (
 	OnceSuc  OperationType = "OS"
 	OnceFail OperationType = "OF"
 
-	Replay   OperationType = "X"
-	ReplayOP OperationType = "XR"
+	Replay   OperationType = "R"
+	ReplayOP OperationType = "RR"
 
 	Select   OperationType = "S"
 	SelectOp OperationType = "SS"
@@ -75,6 +75,8 @@ const (
 	WaitAdd  OperationType = "WA"
 	WaitDone OperationType = "WD"
 	WaitWait OperationType = "WW"
+
+	UnknownOperation OperationType = "XX"
 )
 
 // GetElemTypeFromObjectType returns the object type from the operation type

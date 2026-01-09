@@ -84,21 +84,32 @@ func buildParentMap(root ast.Node) map[ast.Node]ast.Node {
 // Returns:
 //   - ast.Node: the ast Node that represents to operation in the given line
 func findNodeAtLine(fset *token.FileSet, file *ast.File, line int) ast.Node {
-	var found ast.Node
+	var result ast.Node
 
 	ast.Inspect(file, func(n ast.Node) bool {
 		if n == nil {
+			return true
+		}
+
+		start := fset.Position(n.Pos()).Line
+		end := fset.Position(n.End()).Line
+
+		if start <= line && line <= end {
+			// This node contains the line.
+			// Keep it and continue to find a more specific one.
+			result = n
+			return true
+		}
+
+		// Prune traversal if the node starts after the line
+		if start > line {
 			return false
 		}
-		pos := fset.Position(n.Pos())
-		if pos.Line == line {
-			found = n
-			return false
-		}
+
 		return true
 	})
 
-	return found
+	return result
 }
 
 // finds the label attached to a loop: "<label>: for { ... }"

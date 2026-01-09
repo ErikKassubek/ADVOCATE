@@ -44,7 +44,7 @@ func happensBefore(vc1 *VectorClock, vc2 *VectorClock) bool {
 //   - bool: True if vc1 is a cause of vc2, false otherwise
 func happensBeforeSlice(vc1 *[]int, vc2 *[]int) bool {
 	atLeastOneSmaller := false
-	for i := 1; i <= len(*vc1); i++ {
+	for i := 0; i < len(*vc1); i++ {
 		if (*vc1)[i] > (*vc2)[i] {
 			return false
 		} else if (*vc1)[i] < (*vc2)[i] {

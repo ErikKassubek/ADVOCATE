@@ -33,9 +33,9 @@ import (
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
 func Fuzzing() error {
-	modes := []string{baseF.GoPie, baseF.GoCR, baseF.GoCRHB, baseF.GFuzz, baseF.GFuzzHBFlow, baseF.GFuzzHB, baseF.Flow}
+	modes := []string{baseF.GoPie, baseF.GoCR, baseF.GoCRHB, baseF.GFuzz, baseF.GFuzzHBFlow, baseF.GFuzzHB, baseF.Flow, baseF.Guided}
 	if !types.Contains(modes, flags.FuzzingMode) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", flags.FuzzingMode)
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are Guided, GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", flags.FuzzingMode)
 	}
 
 	baseF.MaxNumberRuns = flags.MaxFuzzingRun

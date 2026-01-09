@@ -198,7 +198,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	if resType.IsLeak() {
 		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: ", err.Error())
+			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
 		}
 		if falsePositive {
 			falsePos = "fp"

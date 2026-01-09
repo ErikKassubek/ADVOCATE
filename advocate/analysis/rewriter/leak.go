@@ -449,8 +449,8 @@ func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
 	log.Info("Start rewriting trace for mutex leak...")
 
 	// get l and l'
-	lockOp := bug.TraceElement1[0].(*trace.ElementMutex)
-	lastLockOp := bug.TraceElement2[0].(*trace.ElementMutex)
+	lockOp := bug.TraceElement1[0]
+	lastLockOp := bug.TraceElement2[0]
 
 	hbInfo := clock.GetHappensBefore(lockOp.GetVC(), lastLockOp.GetVC())
 	if hbInfo != hb.Concurrent {

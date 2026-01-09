@@ -32,7 +32,7 @@ import (
 func InfoFromTID(tID string) (string, int, int, error) {
 	spilt1 := strings.Split(tID, "@")
 
-	if len(spilt1) != 3 {
+	if len(spilt1) < 3 {
 		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no @: ", tID))
 	}
 

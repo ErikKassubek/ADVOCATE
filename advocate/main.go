@@ -155,6 +155,10 @@ func main() {
 		flags.OnlyAPanicAndLeak = true
 	}
 
+	if flags.FuzzingMode == "" {
+		flags.FuzzingMode = baseF.Guided
+	}
+
 	var err error
 	baseA.AnalysisCasesMap, err = flags.ParseAnalysisCases()
 	if err != nil {

@@ -355,7 +355,7 @@ func writeFile(path string, index string, description map[string]string,
 
 	confirmed := false
 	if description["crit"] == "Bug" {
-		if replayDouble || replay["replaySuc"] == "was successful" ||
+		if replayDouble || replay["replaySuc"] == "confirmed the bug" ||
 			strings.HasPrefix(description["name"], "Actual") {
 			confirmed = true
 		}

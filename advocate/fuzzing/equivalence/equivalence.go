@@ -22,7 +22,7 @@ var processedTraces = make(map[int][]TraceEq)
 // Returns:
 //   - true if there is an independent trace (we do not need to rerun t1), false otherwise
 func HasEquivalent(t1 TraceEq, origID int) bool {
-	if !t1.wellFormed {
+	if t1.illFormedBug {
 		return false
 	}
 
@@ -54,10 +54,6 @@ func AddOrig(t TraceEq, id int) {
 // Returns:
 //   - bool: true if the traces are equivalent
 func areEquivalent(t1, t2 *TraceEq) bool {
-	if !t1.wellFormed || !t2.wellFormed {
-		return false
-	}
-
 	// t1 should be longer
 	if len(t1.trace) < len(t2.trace) {
 		t1, t2 = t2, t1

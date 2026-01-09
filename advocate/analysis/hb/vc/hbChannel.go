@@ -178,7 +178,7 @@ func Send(ch *trace.ElementChannel) {
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
+	if len(chanBuffer[id]) >= count {
 		chanBuffer[id] = append(chanBuffer[id], baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil})

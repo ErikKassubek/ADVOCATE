@@ -54,21 +54,16 @@ func CreateMutations() {
 				numTry++
 
 				if numTry > maxTries {
-					log.Important(baseF.NumberTry, baseF.NumberEquiv, float64(baseF.NumberEquiv)/float64(baseF.NumberTry), baseF.NumberIll, float64(baseF.NumberIll)/float64(baseF.NumberTry))
 					return
 				}
-
-				baseF.NumberTry++
 
 				minTrace := equivalence.TraceEqFromConstraint(ch)
 
 				if minTrace.IllFormedImpossible {
-					baseF.NumberIll++
 					continue
 				}
 
 				if equivalence.HasEquivalent(minTrace, traceID) {
-					baseF.NumberEquiv++
 					continue
 				}
 
@@ -81,5 +76,4 @@ func CreateMutations() {
 			}
 		}
 	}
-	log.Important(baseF.NumberTry, baseF.NumberEquiv, float64(baseF.NumberEquiv)/float64(baseF.NumberTry), baseF.NumberIll, float64(baseF.NumberIll)/float64(baseF.NumberTry))
 }

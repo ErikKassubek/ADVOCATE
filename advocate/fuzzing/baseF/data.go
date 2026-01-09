@@ -44,10 +44,6 @@ var (
 	NumberWrittenMutations = 0
 	// for each mutation file, store the file number and the chain
 	ChainFiles = make(map[int]Constraint)
-
-	NumberTry   = 0
-	NumberIll   = 0
-	NumberEquiv = 0
 )
 
 // ClearDataFull resets the fuzzing data that is unique for each test but used for each fuzzing

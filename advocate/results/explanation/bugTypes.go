@@ -60,7 +60,7 @@ var bugNames = map[helper.ResultType]string{
 
 	helper.PSendOnClosed:     "Possible Send on Closed Channel",
 	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
-	helper.PNegWG:            "Possible Negative WaitGroup cCounter",
+	helper.PNegWG:            "Possible Negative WaitGroup Counter",
 	helper.PUnlockBeforeLock: "Possible unlock of not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 	helper.PMixedDeadlock:    "Possible Mixed deadlock",

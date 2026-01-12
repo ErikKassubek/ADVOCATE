@@ -16,7 +16,7 @@ import (
 	"advocate/fuzzing/flow"
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
-	"advocate/fuzzing/guided"
+	"advocate/fuzzing/roc"
 	"advocate/results/results"
 	"advocate/results/stats"
 	"advocate/toolchain"
@@ -243,8 +243,8 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 			// add mutation based on guided fuzzing
 			if baseF.FuzzingModeGuided {
-				log.Infof("Create hb guided mutation")
-				guided.CreateMutations()
+				log.Infof("Create roc mutation")
+				roc.CreateMutations()
 			}
 
 			// Add mutation based on GFuzz

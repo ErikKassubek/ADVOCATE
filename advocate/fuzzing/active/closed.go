@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package rewriter
+package active
 
 import (
 	"advocate/results/bugs"

@@ -13,7 +13,7 @@ package toolchain
 import (
 	"advocate/analysis/analysis"
 	"advocate/analysis/baseA"
-	"advocate/analysis/rewriter"
+	"advocate/fuzzing/active"
 	"advocate/io"
 	"advocate/results/results"
 	"advocate/utils/control"
@@ -204,7 +204,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, err
 	}
 
-	rewriteNeeded, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
+	rewriteNeeded, code, err := active.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
 
 	if err != nil {
 		return rewriteNeeded, err

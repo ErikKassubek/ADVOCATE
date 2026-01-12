@@ -182,7 +182,6 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 
 		active[fields[0]] = append(active[fields[0]], counter)
 		numberActive++
-		println(fields[0], " -> ", counter)
 
 		activeTPre[tPre] = struct{}{}
 	}

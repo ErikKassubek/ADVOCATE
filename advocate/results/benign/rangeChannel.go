@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package falsepos
+package benign
 
 import (
 	"go/ast"

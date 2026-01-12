@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package guided
+package roc
 
 const (
 	maxNumberConstraints    = 10

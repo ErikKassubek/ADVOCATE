@@ -93,7 +93,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 
 			// Rule 3 -> substitute
 			// if ch.len() <= bound && rand.Int()%2 == 1 {
-			if rand.Int()%2 == 1 {
+			if rel1 != nil && rand.Int()%2 == 1 {
 				newChs := substitute(ch, rel1)
 
 				if maxMutPerStep != -1 {
@@ -106,7 +106,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 			}
 
 			// Rule 4 -> augment
-			if ch.Len() <= bound && rand.Int()%2 == 1 {
+			if rel2 != nil && ch.Len() <= bound && rand.Int()%2 == 1 {
 				newChs := augment(c, rel2)
 
 				if maxMutPerStep != -1 {

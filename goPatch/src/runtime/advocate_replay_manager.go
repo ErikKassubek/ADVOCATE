@@ -30,8 +30,6 @@ func ReplayManager() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 
-	defer println("STOP REPLAY MANAGER")
-
 	for {
 		// wait for acknowledgement of element that was directly
 		// released when it was called, because it was the next element

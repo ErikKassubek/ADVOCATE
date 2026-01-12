@@ -1,14 +1,14 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: chain.go
-// Brief: Chain for guided fuzzing
+// File: constraint.go
+// Brief: Constraints for guided fuzzing
 //
 // Author: Erik Kassubek
 // Created: 2025-10-21
 //
 // License: BSD-3-Clause
 
-package guided
+package roc
 
 import (
 	"advocate/analysis/baseA"
@@ -79,6 +79,10 @@ func startConstraint(num, length int) []baseF.Constraint {
 
 	if len(top) == 0 {
 		return res
+	}
+
+	if len(top) > num {
+		top = top[:num]
 	}
 
 	// for each constraint store the constraints

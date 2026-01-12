@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package falsepos
+package benign
 
 import (
 	"advocate/utils/helper"
@@ -16,9 +16,9 @@ import (
 	"fmt"
 )
 
-// IsFalsePositive checks if the given bug is likely a false positive based on
+// IsBenign checks if the given bug is likely a false positive based on
 // the program code and gc based leak detection
-func IsFalsePositive(resultType helper.ResultType, fileName string, line int, blocked map[string]map[int]struct{}, contextCancel map[int]struct{}, contextDone map[string]map[int]int) (bool, error) {
+func IsBenign(resultType helper.ResultType, fileName string, line int, blocked map[string]map[int]struct{}, contextCancel map[int]struct{}, contextDone map[string]map[int]int) (bool, error) {
 	// is confirmed dead by GC
 	if _, ok := blocked[fileName][line]; ok {
 		return false, nil

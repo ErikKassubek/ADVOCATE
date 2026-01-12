@@ -9,7 +9,7 @@
 // License: BSD-3-Clause
 
 // Package rewriter provides functions for rewriting traces.
-package rewriter
+package active
 
 import (
 	"advocate/results/bugs"

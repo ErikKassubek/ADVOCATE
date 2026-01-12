@@ -11,7 +11,7 @@
 package results
 
 import (
-	falsepos "advocate/results/falsePos"
+	"advocate/results/benign"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -196,7 +196,7 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	falsePos := "tp"
 
 	if resType.IsLeak() {
-		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
+		falsePositive, err := benign.IsBenign(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
 			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
 		}

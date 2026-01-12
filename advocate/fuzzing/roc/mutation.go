@@ -1,14 +1,14 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: partialOrder.go
-// Brief: Fuzzing using the partial order
+// File: mutation.go
+// Brief: ROC Creation and mutation
 //
 // Author: Erik Kassubek
 // Created: 2025-10-04
 //
 // License: BSD-3-Clause
 
-package guided
+package roc
 
 import (
 	"advocate/analysis/baseA"

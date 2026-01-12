@@ -70,8 +70,6 @@ func Blocked() error {
 	reportGCBlocked()
 	reportNonDeadlockLeaks()
 
-	log.Info("Finish check for actual partial deadlocks")
-
 	return nil
 }
 

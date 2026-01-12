@@ -421,6 +421,10 @@ func (this *ElementWait) setID(ID int) {
 	this.id = ID
 }
 
+func (this *ElementWait) IsValid() bool {
+	return this != nil
+}
+
 // Copy the element
 //
 // Parameter:

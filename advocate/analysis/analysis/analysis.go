@@ -214,10 +214,8 @@ func RunHBAnalysis(fuzzing bool) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.Leak] {
-		log.Info("Check for leak")
 		scenarios.CheckForLeak()
 		scenarios.CheckForStuckRoutine(false)
-		log.Info("Finish check for leak")
 	}
 
 	if control.CheckCanceled() {
@@ -225,9 +223,7 @@ func RunHBAnalysis(fuzzing bool) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] {
-		log.Info("Check for done before add")
 		scenarios.CheckForDoneBeforeAdd()
-		log.Info("Finish check for done before add")
 	}
 
 	if control.CheckCanceled() {
@@ -235,9 +231,7 @@ func RunHBAnalysis(fuzzing bool) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
-		log.Info("Check for cyclic deadlock")
 		scenarios.CheckForResourceDeadlock()
-		log.Info("Finish check for cyclic deadlock")
 	}
 
 	if control.CheckCanceled() {
@@ -245,9 +239,7 @@ func RunHBAnalysis(fuzzing bool) {
 	}
 
 	if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
-		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
-		log.Info("Finish check for unlock before lock")
 	}
 }
 

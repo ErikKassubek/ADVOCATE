@@ -63,15 +63,17 @@ const (
 
 var ResultTypes = []ResultType{
 	ASendOnClosed,
-	// ARecvOnClosed,
+	ARecvOnClosed,
 	ACloseOnClosed,
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
 	ALeak,
+	ADeadlock,
 	AConcurrentRecv,
+	AMixedDeadlock,
 	PSendOnClosed,
-	PRecvOnClosed,
+	// PRecvOnClosed,
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
@@ -97,7 +99,9 @@ var ResultTypesActual = []ResultType{
 	ANegWG,
 	AUnlockOfNotLockedMutex,
 	ALeak,
+	ADeadlock,
 	AConcurrentRecv,
+	AMixedDeadlock,
 }
 
 var ResultTypesPotential = []ResultType{
@@ -216,4 +220,12 @@ const MinExitCodeSuc = ExitCodeLeakUnbuf
 
 func (rt ResultType) IsLeak() bool {
 	return string(rt)[0] == 'L'
+}
+
+func (rt ResultType) IsPos() bool {
+	return string(rt)[0] == 'P'
+}
+
+func (rt ResultType) IsActual() bool {
+	return string(rt)[0] == 'A'
 }

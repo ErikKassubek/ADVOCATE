@@ -54,18 +54,18 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
-	helper.LUnknown:           "Leak on routine or unknown element",
-	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
-	helper.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
-	helper.LBufferedWith:      "Leak on buffered channel with possible partner",
-	helper.LBufferedWithout:   "Leak on unbuffered channel without possible partner",
-	helper.LNilChan:           "Leak on nil channel",
-	helper.LSelectWith:        "Leak on select with possible partner",
-	helper.LSelectWithout:     "Leak on select without partner or nil case",
-	helper.LMutex:             "Leak on mutex",
-	helper.LWaitGroup:         "Leak on wait group",
-	helper.LCond:              "Leak on conditional variable",
-	helper.LContext:           "Leak on a channel or select on context",
+	helper.LUnknown:           "Block on routine or unknown element",
+	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
+	helper.LUnbufferedWithout: "Block on unbuffered channel without possible partner",
+	helper.LBufferedWith:      "Block on buffered channel with possible partner",
+	helper.LBufferedWithout:   "Block on unbuffered channel without possible partner",
+	helper.LNilChan:           "Block on nil channel",
+	helper.LSelectWith:        "Block on select with possible partner",
+	helper.LSelectWithout:     "Block on select without partner or nil case",
+	helper.LMutex:             "Block on mutex",
+	helper.LWaitGroup:         "Block on wait group",
+	helper.LCond:              "Block on conditional variable",
+	helper.LContext:           "Block on a channel or select on context",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",
@@ -178,6 +178,10 @@ func (this TraceElementResult) isInvalid() bool {
 //   - arg2 []ResultElem]: elements indirectly involved in the bug (e.g. in send on closed the close)
 func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 []ResultElem, argType2 string, arg2 []ResultElem) {
 	if filterInvalidResults(resType, arg1) {
+		return
+	}
+
+	if flags.FuzzingMode == "Guided" && !resType.IsActual() {
 		return
 	}
 

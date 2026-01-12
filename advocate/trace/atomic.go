@@ -118,6 +118,10 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	return nil
 }
 
+func (this *ElementAtomic) IsValid() bool {
+	return this != nil
+}
+
 // GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:

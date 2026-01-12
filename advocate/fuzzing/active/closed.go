@@ -56,7 +56,7 @@ import (
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteClosedChannel(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
-	log.Info("Start rewriting trace for send/receive on closed channel...")
+	log.Info("Start active fuzzing rewrite for send/receive on closed channel...")
 
 	if len(bug.TraceElement1) == 0 || bug.TraceElement1[0] == nil { // close
 		return errors.New("TraceElement1 is nil") // send/recv

@@ -363,6 +363,10 @@ func (this *ElementFork) Copy(mapping map[string]Element, keep bool) Element {
 	}
 }
 
+func (this *ElementFork) IsValid() bool {
+	return this != nil
+}
+
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //

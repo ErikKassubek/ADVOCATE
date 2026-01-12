@@ -121,11 +121,12 @@ func (this *TraceEq) Flip(i, j int) {
 func (this *TraceEq) AddElem(elem trace.Element) {
 	// objID := elem.GetID()
 
-	if elem == nil {
+	if !elem.IsValid() {
 		return
 	}
 
 	this.minT++
+
 	elem.SetT(this.minT)
 
 	objId := elem.GetObjId()

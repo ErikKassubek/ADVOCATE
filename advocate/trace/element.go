@@ -143,6 +143,7 @@ type Element interface {
 	Copy(mapping map[string]Element, keep bool) Element
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
+	IsValid() bool
 }
 
 func IsOp(elem Element) bool {

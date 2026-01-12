@@ -13,7 +13,7 @@ package roc
 const (
 	maxNumberConstraints    = 10
 	maxNumberOfMutsPerConst = 10
-	maxTries                = 100
+	maxTries                = 10000
 	lengthConstraint        = 10
 )
 

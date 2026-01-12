@@ -308,6 +308,10 @@ func (this *ElementRoutineEnd) Copy(mapping map[string]Element, keep bool) Eleme
 	}
 }
 
+func (this *ElementRoutineEnd) IsValid() bool {
+	return this != nil
+}
+
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 func (this *ElementRoutineEnd) GetNumberConcurrent(_, _ bool) int {

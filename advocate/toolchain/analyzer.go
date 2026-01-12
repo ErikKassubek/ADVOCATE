@@ -67,20 +67,6 @@ func runAnalyzer(pathTrace string,
 
 	log.Infof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
-	if flags.OnlyAPanicAndLeak {
-		log.Info("Start Analysis for actual panics and leaks")
-	} else if baseA.AnalysisCasesMap[flags.All] {
-		log.Info("Start Analysis for all scenarios")
-	} else {
-		info := "Start Analysis for the following scenarios: "
-		for key, value := range baseA.AnalysisCasesMap {
-			if value {
-				info += (string(key) + ",")
-			}
-		}
-		log.Info(info)
-	}
-
 	analysis.RunAnalysis(fuzzingRun >= 0)
 
 	if control.CheckCanceled() {
@@ -118,7 +104,7 @@ func runAnalyzer(pathTrace string,
 	}
 
 	if numberOfResults != 0 {
-		log.Info("Start rewriting")
+		log.Info("Start active fuzzing rewrite")
 	}
 
 	rewrittenBugs := make(map[helper.ResultType][]string) // bug type -> paths string

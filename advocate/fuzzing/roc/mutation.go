@@ -44,13 +44,12 @@ func CreateMutations() {
 	numTry := 0
 
 	constraint := startConstraint(maxNumberConstraints, lengthConstraint)
-
 	for _, c := range constraint {
 		for numberMuts < maxNumberOfMutsPerConst || numTry > maxTries {
-
 			mutatedConstr := baseF.Mutate(c, -1, nil, nil)
 
 			for _, ch := range mutatedConstr {
+				baseF.TotalRuns++
 				numTry++
 
 				if numTry > maxTries {
@@ -60,10 +59,12 @@ func CreateMutations() {
 				minTrace := equivalence.TraceEqFromConstraint(ch)
 
 				if minTrace.IllFormedImpossible {
+					baseF.IllFormed++
 					continue
 				}
 
 				if equivalence.HasEquivalent(minTrace, traceID) {
+					baseF.Equiv++
 					continue
 				}
 

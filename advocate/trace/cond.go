@@ -333,6 +333,10 @@ func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
+func (this *ElementCond) IsValid() bool {
+	return this != nil
+}
+
 // ToString returns the string representation of the element
 //
 // Returns:

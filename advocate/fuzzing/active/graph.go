@@ -26,9 +26,9 @@ import (
 func rewriteGraph(tr *trace.Trace, bug bugs.Bug, expectedErrorCode int) error {
 	switch bug.Type {
 	case helper.PNegWG:
-		log.Info("Start rewriting trace for negative wait group counter...")
+		log.Info("Start active fuzzing rewrite for negative wait group counter...")
 	case helper.PUnlockBeforeLock:
-		log.Info("Start rewriting trace for unlock before lock...")
+		log.Info("Start active fuzzing rewrite for unlock before lock...")
 	}
 
 	minTime := -1

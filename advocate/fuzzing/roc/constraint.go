@@ -39,6 +39,8 @@ func startConstraint(num, length int) []baseF.Constraint {
 
 	top := []baseF.ElemWithQual{}
 
+	alreadyAdded := make(map[int]struct{})
+
 	for i := 0; i < 1000; i++ {
 		key := rand.Intn(len(traces)) + 1
 		trace := traces[key]
@@ -48,6 +50,11 @@ func startConstraint(num, length int) []baseF.Constraint {
 
 		ind := rand.Intn(len(trace))
 		elem := trace[ind]
+
+		if _, ok := alreadyAdded[elem.GetTPost()]; ok {
+			continue
+		}
+		alreadyAdded[elem.GetTPost()] = struct{}{}
 
 		if !baseF.CanBeAddedToConstraint(elem) {
 			continue
@@ -85,52 +92,43 @@ func startConstraint(num, length int) []baseF.Constraint {
 		top = top[:num]
 	}
 
-	// for each constraint store the constraints
-	routs := make(map[int]map[int]struct{})
+	for _, e := range top {
+		c := baseF.NewConstraint()
+		c.Add(e.Elem)
 
-	for i := 0; i < length; i++ {
-		if len(res) == 0 {
-			for j, e := range top {
-				posPartner := concurrent.GetConcurrent(e.Elem, true, true, settings.SameElementTypeInSC, true)
-				if len(posPartner) == 0 {
-					posPartner = concurrent.GetConcurrent(e.Elem, true, false, settings.SameElementTypeInSC, true)
-					if len(posPartner) == 0 {
-						continue
+		for i := 0; i < length; i++ {
+			posNext := concurrent.GetConcurrent(c.LastElem(), true, true, settings.SameElementTypeInSC, true)
+			if len(posNext) == 0 {
+				posNext = concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
+				if len(posNext) == 0 {
+					break
+				}
+			}
+
+			concToAll := make([]trace.Element, 0)
+
+			for _, next := range posNext {
+				isPos := true
+				for _, e := range c.Elems {
+					if !concurrent.IsConcurrentWeak(next, e) {
+						isPos = false
+						break
 					}
 				}
-
-				partner := posPartner[rand.Intn(len(posPartner))]
-				c := baseF.NewConstraint()
-				c.Add(e.Elem, partner)
-				res = append(res, c)
-				routs[j] = make(map[int]struct{})
-				routs[j][e.Elem.GetRoutine()] = struct{}{}
-				routs[j][partner.GetRoutine()] = struct{}{}
+				if isPos {
+					concToAll = append(concToAll, next)
+				}
 			}
-		} else {
-			for j, c := range res { // for every constraint
-				lastElem := c.LastElem()
-				if lastElem == nil {
-					continue
-				}
 
-				posNext := concurrent.GetConcurrent(lastElem, true, true, settings.SameElementTypeInSC, true)
-
-				posNextOtherRoutine := make([]trace.Element, 0)
-				for _, pos := range posNext {
-					if _, ok := routs[j][pos.GetRoutine()]; !ok {
-						posNextOtherRoutine = append(posNextOtherRoutine, pos)
-					}
-				}
-
-				if len(posNextOtherRoutine) == 0 {
-					continue
-				}
-				next := posNextOtherRoutine[rand.Intn(len(posNextOtherRoutine))]
-				res[j].Add(next)
-				routs[j][next.GetRoutine()] = struct{}{}
+			if len(concToAll) == 0 {
+				break
 			}
+
+			next := concToAll[rand.Intn(len(concToAll))]
+			c.Add(next)
 		}
+
+		res = append(res, c)
 	}
 
 	return res

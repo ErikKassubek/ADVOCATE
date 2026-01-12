@@ -390,7 +390,7 @@ func CheckForResourceDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 	if baseA.CurrentState.Failed {
-		log.Error("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
+		// log.Error("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
 	}
 	// for i, t := range baseA.CurrentState.threads {

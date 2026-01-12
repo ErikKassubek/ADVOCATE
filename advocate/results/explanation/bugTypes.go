@@ -65,18 +65,18 @@ var bugNames = map[helper.ResultType]string{
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 	helper.PMixedDeadlock:    "Possible Mixed deadlock",
 
-	helper.LUnknown:           "Leak",
-	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
-	helper.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
-	helper.LBufferedWith:      "Leak on buffered Channel with possible partner",
-	helper.LBufferedWithout:   "Leak on buffered Channel without possible partner",
-	helper.LNilChan:           "Leak on nil channel",
-	helper.LSelectWith:        "Leak on select with possible partner",
-	helper.LSelectWithout:     "Leak on select without possible partner",
-	helper.LMutex:             "Leak on sync.Mutex",
-	helper.LWaitGroup:         "Leak on sync.WaitGroup",
-	helper.LCond:              "Leak on sync.Cond",
-	helper.LContext:           "Leak on channel or select on context",
+	helper.LUnknown:           "Block",
+	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
+	helper.LUnbufferedWithout: "Block on unbuffered channel without possible partner",
+	helper.LBufferedWith:      "Block on buffered Channel with possible partner",
+	helper.LBufferedWithout:   "Block on buffered Channel without possible partner",
+	helper.LNilChan:           "Block on nil channel",
+	helper.LSelectWith:        "Block on select with possible partner",
+	helper.LSelectWithout:     "Block on select without possible partner",
+	helper.LMutex:             "Block on sync.Mutex",
+	helper.LWaitGroup:         "Block on sync.WaitGroup",
+	helper.LCond:              "Block on sync.Cond",
+	helper.LContext:           "Block on channel or select on context",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",
@@ -286,30 +286,30 @@ var objectTypes = map[string]string{
 // adaptExplanationMaps changes the bugNames and bugExplanation maps, if
 // the analysis did not search for possible partners
 func adaptExplanationMaps() {
-	bugNames[helper.LUnbufferedWith] = "Leak on unbuffered channel"
-	bugNames[helper.LUnbufferedWithout] = "Leak on unbuffered channel"
-	bugNames[helper.LBufferedWith] = "Leak on buffered channel"
-	bugNames[helper.LBufferedWithout] = "Leak on buffered channel"
-	bugNames[helper.LNilChan] = "Leak on nil channel"
-	bugNames[helper.LSelectWith] = "Leak on select"
-	bugNames[helper.LSelectWithout] = "Leak on select"
+	bugNames[helper.LUnbufferedWith] = "Block on unbuffered channel"
+	bugNames[helper.LUnbufferedWithout] = "Block on unbuffered channel"
+	bugNames[helper.LBufferedWith] = "Block on buffered channel"
+	bugNames[helper.LBufferedWithout] = "Block on buffered channel"
+	bugNames[helper.LNilChan] = "Block on nil channel"
+	bugNames[helper.LSelectWith] = "Block on select"
+	bugNames[helper.LSelectWithout] = "Block on select"
 
-	bugExplanations[helper.LUnbufferedWith] = "The analyzer detected a Leak on an unbuffered channel .\n" +
-		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
+	bugExplanations[helper.LUnbufferedWith] = "The analyzer detected a Block on an unbuffered channel .\n" +
+		"A Block on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations[helper.LUnbufferedWithout] = "The analyzer detected a Leak on an unbuffered channel.\n" +
-		"A Leak on an unbuffered channel is a situation, where a unbuffered channel is " +
+	bugExplanations[helper.LUnbufferedWithout] = "The analyzer detected a Block on an unbuffered channel.\n" +
+		"A Block on an unbuffered channel is a situation, where a unbuffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations[helper.LBufferedWith] = "The analyzer detected a Leak on a buffered channel.\n" +
-		"A Leak on a buffered channel is a situation, where a buffered channel is " +
+	bugExplanations[helper.LBufferedWith] = "The analyzer detected a Block on a buffered channel.\n" +
+		"A Block on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations[helper.LBufferedWithout] = "The analyzer detected a Leak on a buffered channel.\n" +
-		"A Leak on a buffered channel is a situation, where a buffered channel is " +
+	bugExplanations[helper.LBufferedWithout] = "The analyzer detected a Block on a buffered channel.\n" +
+		"A Block on a buffered channel is a situation, where a buffered channel is " +
 		"still blocking at the end of the program.\n"
-	bugExplanations[helper.LSelectWith] = "The analyzer detected a Leak on a select.\n" +
-		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
-	bugExplanations[helper.LSelectWithout] = "The analyzer detected a Leak on a select.\n" +
-		"A Leak on a select is a situation, where a select is still blocking at the end of the program.\n"
+	bugExplanations[helper.LSelectWith] = "The analyzer detected a Block on a select.\n" +
+		"A Block on a select is a situation, where a select is still blocking at the end of the program.\n"
+	bugExplanations[helper.LSelectWithout] = "The analyzer detected a Block on a select.\n" +
+		"A Block on a select is a situation, where a select is still blocking at the end of the program.\n"
 }
 
 // GetCodeFromDescription returns the code key from the description

@@ -70,6 +70,10 @@ type ElementChannel struct {
 	numberConcurrentWeakSame int
 }
 
+func (this *ElementChannel) IsValid() bool {
+	return this != nil
+}
+
 // AddTraceElementChannel adds a new channel element to the main trace
 //
 // Parameter:

@@ -271,7 +271,7 @@ func CanBeAddedToConstraint(elem trace.Element) bool {
 		return t == trace.Mutex || t == trace.Channel || t == trace.Select
 	}
 
-	return t != trace.Atomic && !IgnoreFuzzing(elem, true)
+	return !IgnoreFuzzing(elem, true)
 }
 
 // quality calculates how fit for mutation an element is

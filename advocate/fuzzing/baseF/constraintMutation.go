@@ -69,7 +69,7 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 			tSet := make(map[string]Constraint, 0)
 
 			// Rule 1 -> abridge
-			if ch.Len() >= 2 && rand.Int()%2 == 1 {
+			if flags.FuzzingMode != Guided && ch.Len() >= 2 && rand.Int()%2 == 1 {
 				newCh1, newCh2 := abridge(ch)
 				tSet[newCh1.ToString()] = newCh1
 				tSet[newCh2.ToString()] = newCh2

@@ -419,6 +419,10 @@ func (this *ElementOnce) Copy(_ map[string]Element, keep bool) Element {
 	}
 }
 
+func (this *ElementOnce) IsValid() bool {
+	return this != nil
+}
+
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //

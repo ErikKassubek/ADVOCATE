@@ -107,7 +107,7 @@ func Fuzzing() error {
 
 	for i, testFile := range testFiles {
 		fileCounter++
-		log.Progressf("Progress %s: %d/%d\n", flags.ProgName, fileCounter, totalFiles)
+		log.Progressf("Progress %s: %d/%d", flags.ProgName, fileCounter, totalFiles)
 		log.Infof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
@@ -125,7 +125,7 @@ func Fuzzing() error {
 
 			timer.Start(timer.TotalTest)
 
-			log.Infof("Run fuzzing for %s->%s", testFile, testFunc)
+			log.Progress("Run fuzzing for %s->%s", testFile, testFunc)
 
 			firstRun := (i == 0 && j == 0)
 
@@ -283,9 +283,15 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 		}
 
 		// cancel if max fuzzing time has been reached
-		if baseF.MaxTimeSet && time.Since(startTime) > baseF.MaxTime {
-			log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min) has been reached", int(baseF.MaxTime.Minutes()))
-			return nil
+		if baseF.MaxTimeSet {
+			since := time.Since(startTime)
+			if since > baseF.MaxTime {
+				log.Infof("Finish fuzzing because maximum runtime for fuzzing (%d min) has been reached", int(baseF.MaxTime.Minutes()))
+				return nil
+			} else {
+				remaining := baseF.MaxTime - time.Since(startTime)
+				log.Infof("Remaining fuzzing time: %d:%d min", int(remaining.Minutes()), int(remaining.Seconds())%60)
+			}
 		}
 
 		// cancel if bug was found

@@ -11,7 +11,7 @@
 package benign
 
 import (
-	"fmt"
+	"advocate/utils/log"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -44,7 +44,7 @@ func parseFile(fileName string) (*token.FileSet, *ast.File, *types.Info, error) 
 	_, err = conf.Check("", fset, []*ast.File{file}, info)
 	// Type errors are not fatal—we can still proceed
 	if err != nil {
-		fmt.Errorf("Warning: type checking not perfect:", err)
+		log.Error("Warning: type checking not perfect:", err)
 	}
 
 	return fset, file, info, nil

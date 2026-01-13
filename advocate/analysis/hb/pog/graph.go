@@ -112,9 +112,9 @@ func Print(weak bool) {
 func (this *PoGraph) toString() string {
 	res := ""
 	for start, end := range this.data {
-		res += fmt.Sprintf("%d -> ", start.GetPos())
+		res += fmt.Sprintf("%s -> ", start.GetPos())
 		for e := range end {
-			res += fmt.Sprintf("%d, ", e.GetPos())
+			res += fmt.Sprintf("%s, ", e.GetPos())
 		}
 	}
 	return res

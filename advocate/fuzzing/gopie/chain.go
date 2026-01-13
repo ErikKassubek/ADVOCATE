@@ -14,7 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/baseF"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"math/rand"
 )
 

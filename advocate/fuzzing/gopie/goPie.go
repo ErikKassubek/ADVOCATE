@@ -17,7 +17,7 @@ import (
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"math"
 )
 

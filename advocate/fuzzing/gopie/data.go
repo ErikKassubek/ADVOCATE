@@ -13,7 +13,7 @@ package gopie
 import (
 	"advocate/fuzzing/baseF"
 	"advocate/trace"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"advocate/utils/types"
 )
 

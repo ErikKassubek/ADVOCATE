@@ -17,7 +17,7 @@ import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"advocate/utils/timer"
 	"fmt"
 	"os"

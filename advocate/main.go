@@ -26,7 +26,7 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"advocate/utils/timer"
 )
 

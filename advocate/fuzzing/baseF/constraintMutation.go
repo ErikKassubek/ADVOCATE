@@ -14,7 +14,7 @@ import (
 	"advocate/analysis/hb/concurrent"
 	"advocate/trace"
 	"advocate/utils/flags"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"maps"
 	"math/rand/v2"
 )

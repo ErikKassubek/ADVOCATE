@@ -42,7 +42,7 @@ const (
 )
 
 var (
-	timer  = make([]Timer, numberTimer)
+	timer  = make([]*Timer, numberTimer)
 	paused = make([]int, 0)
 )
 
@@ -52,7 +52,7 @@ var (
 //   - progPath string:  path to the result folder
 func Init(progPath string) {
 	for i := range numberTimer {
-		timer[i] = Timer{}
+		timer[i] = &Timer{}
 	}
 }
 

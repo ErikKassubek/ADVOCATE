@@ -59,6 +59,10 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 			analysisCases[c] = true
 		}
 
+		// not in thesis
+		analysisCases[ConcurrentRecv] = false
+		analysisCases[ReceiveOnClosed] = false
+
 		return analysisCases, nil
 	}
 

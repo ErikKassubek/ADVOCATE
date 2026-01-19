@@ -325,35 +325,37 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// write the info about the replay, if possible including the command to read the bug
-	replayPossible := replay["replaySuc"] != "was not possible" && replay["replaySuc"] != "was not run"
+	// replayPossible := replay["replaySuc"] != "was not possible" && replay["replaySuc"] != "was not run"
 	replayDouble := replay["exitCode"] == "double"
 
-	res += "## Replay\n"
-	if replayPossible && !replayDouble {
-		res += replay["description"] + "\n\n"
-	}
+	// res += "## Replay\n"
+	// if replayPossible && !replayDouble {
+	// 	res += replay["description"] + "\n\n"
+	// }
 
-	if replayDouble {
-		res += "The replay was not performed, because the same bug had been found before."
-	} else {
-		res += "**Replaying " + replay["replaySuc"] + "**.\n\n"
-		if replayPossible {
-			// res += "The replayed trace can be found in: "
-			// res += "rewrittenTrace_" + index + "\n\n"
-			if replay["replaySuc"] == "panicked" {
-				res += "It panicked with the following message:\n\n"
-				res += replay["exitCode"] + "\n\n"
-			} else if replay["exitCode"] == "fail" {
-				res += replay["exitCodeExplanation"] + "\n\n"
-			} else {
-				res += "It exited with the following code: "
-				res += replay["exitCode"] + "\n\n"
-				res += replay["exitCodeExplanation"] + "\n\n"
-			}
-		}
-	}
+	// if replayDouble {
+	// 	res += "The replay was not performed, because the same bug had been found before."
+	// } else {
+	// 	res += "**Replaying " + replay["replaySuc"] + "**.\n\n"
+	// 	if replayPossible {
+	// 		// res += "The replayed trace can be found in: "
+	// 		// res += "rewrittenTrace_" + index + "\n\n"
+	// 		if replay["replaySuc"] == "panicked" {
+	// 			res += "It panicked with the following message:\n\n"
+	// 			res += replay["exitCode"] + "\n\n"
+	// 		} else if replay["exitCode"] == "fail" {
+	// 			res += replay["exitCodeExplanation"] + "\n\n"
+	// 		} else {
+	// 			res += "It exited with the following code: "
+	// 			res += replay["exitCode"] + "\n\n"
+	// 			res += replay["exitCodeExplanation"] + "\n\n"
+	// 		}
+	// 	}
+	// }
 
 	confirmed := false
+	dep := strings.TrimPrefix(description["name"], "Possible")
+
 	if description["crit"] == "Bug" {
 		if replayDouble || replay["replaySuc"] == "confirmed the bug" ||
 			strings.HasPrefix(description["name"], "Actual") {
@@ -364,8 +366,10 @@ func writeFile(path string, index string, description map[string]string,
 	id := progInfo["file"] + "#" + progInfo["name"]
 	if replay["replaySuc"] == "was not run" {
 		log.Resultf(true, confirmed, id, "Found %s.", description["name"])
-	} else {
-		log.Resultf(true, confirmed, id, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
+	} else if replay["replaySuc"] == "confirmed the bug" {
+		log.Resultf(true, confirmed, id, "Found %s.", dep)
+	} else if !confirmed {
+		return nil
 	}
 
 	// if in path, the folder "bugs" does not exist, create it

@@ -12,9 +12,10 @@ package roc
 
 const (
 	maxNumberConstraints    = 10
-	maxNumberOfMutsPerConst = 10
-	maxTries                = 10000
-	lengthConstraint        = 10
+	maxNumberOfMutsPerConst = 5
+	maxTries                = 1000
+	lengthConstraint        = 8
+	propToSkipEquiv         = 0.9
 )
 
 var (

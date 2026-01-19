@@ -15,7 +15,6 @@ import (
 	"advocate/analysis/hb/concurrent"
 	"advocate/fuzzing/baseF"
 	"advocate/trace"
-	"advocate/utils/log"
 	"advocate/utils/settings"
 	"math/rand"
 )
@@ -84,8 +83,6 @@ func startConstraint(num, length int) []baseF.Constraint {
 			top = append(top, e)
 		}
 	}
-
-	log.Important(len(res))
 
 	if len(top) == 0 {
 		return res

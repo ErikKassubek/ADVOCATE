@@ -104,7 +104,7 @@ func runAnalyzer(pathTrace string,
 	}
 
 	if numberOfResults != 0 {
-		log.Info("Start active fuzzing rewrite")
+		log.Info("Start po guided rewrite")
 	}
 
 	rewrittenBugs := make(map[helper.ResultType][]string) // bug type -> paths string

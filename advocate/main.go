@@ -79,17 +79,16 @@ func main() {
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
 		"\ts: Send on closed channel\n"+
-		"\tr: Receive on closed channel\n"+
+		// "\tr: Receive on closed channel\n"+
 		"\tw: Done before add on waitGroup\n"+
 		"\tn: Close of closed channel\n"+
-		"\tb: Concurrent receive on channel\n"+
+		// "\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tu: Unlock of unlocked mutex\n"+
 		"\tc: Cyclic deadlock\n"+
 		"\tm: Mixed deadlock\n",
 	)
 
-	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
 		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB\n\tDefault: Guided")
 

@@ -50,20 +50,20 @@ var bugNames = map[helper.ResultType]string{
 	helper.ASendOnClosed:           "Actual Send on Closed Channel",
 	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
 	helper.ACloseOnClosed:          "Actual Close on Closed Channel",
-	helper.ACloseOnNilChannel:      "Actual close on nil channel",
-	helper.ANegWG:                  "Actual negative Wait Group",
-	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
+	helper.ACloseOnNilChannel:      "Actual Close on nil channel",
+	helper.ANegWG:                  "Actual Negative Wait Group",
+	helper.AUnlockOfNotLockedMutex: "Actual Unlock of not locked mutex",
 	helper.ALeak:                   "Actual Leak",
 	helper.ADeadlock:               "Actual Deadlock",
-	helper.AConcurrentRecv:         "Concurrent Receive",
+	helper.AConcurrentRecv:         "Actual Concurrent Receive",
 	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
 
-	helper.PSendOnClosed:     "Possible Send on Closed Channel",
-	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
-	helper.PNegWG:            "Possible Negative WaitGroup Counter",
-	helper.PUnlockBeforeLock: "Possible unlock of not locked mutex",
-	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
-	helper.PMixedDeadlock:    "Possible Mixed deadlock",
+	helper.PSendOnClosed:     "Send on Closed Channel",
+	helper.PRecvOnClosed:     "Receive on Closed Channel",
+	helper.PNegWG:            "Negative WaitGroup Counter",
+	helper.PUnlockBeforeLock: "Unlock of not locked mutex",
+	helper.PCyclicDeadlock:   "Cyclic deadlock",
+	helper.PMixedDeadlock:    "Mixed deadlock",
 
 	helper.LUnknown:           "Block",
 	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
@@ -107,32 +107,20 @@ var bugExplanations = map[helper.ResultType]string{
 	helper.AMixedDeadlock: "The analysis detected an actual mixed deadlock.",
 	helper.RUnknownPanic:  "During the execution of the program, a unknown panic occurred",
 	helper.RTimeout:       "The execution of the program timed out",
-	helper.PSendOnClosed: "The analyzer detected a possible send on a closed channel.\n" +
-		"Although the send on a closed channel did not occur during the recording, " +
-		"it is possible that it will occur, based on the happens before relation.\n" +
-		"Such a send on a closed channel leads to a panic.",
+	helper.PSendOnClosed: "During the execution of the program, a close on a close channel occurred.\n" +
+		"The occurrence of a close on a closed channel lead to a panic.",
 	helper.PRecvOnClosed: "The analyzer detected a possible receive on a closed channel.\n" +
 		"Although the receive on a closed channel did not occur during the recording, " +
 		"it is possible that it will occur, based on the happens before relation." +
 		"This is not necessarily a bug, but it can be an indication of a bug.",
-	helper.PNegWG: "The analyzer detected a possible negative WaitGroup counter.\n" +
-		"Although the negative counter did not occur during the recording, " +
-		"it is possible that it will occur, based on the happens before relation.\n" +
-		"A negative counter will lead to a panic.",
-	helper.PUnlockBeforeLock: "The analyzer detected a possible unlock on a not locked mutex.\n" +
-		"Although the unlock of a not locked mutex did not occur during the recording, " +
-		"it is possible that it will occur, based on the happens before relation.\n" +
-		"A unlock of a not locked mutex will result in a panic.",
-	helper.PCyclicDeadlock: "The analysis detected a possible cyclic deadlock.\n" +
-		"If this deadlock contains or influences the run of the main routine, this can " +
-		"result in the program getting stuck. Otherwise it can lead to an unnecessary use of " +
-		"resources.",
-	helper.PMixedDeadlock: "The analysis detected a Possible Mixed Deadlock.\n" +
-		"A mixed deadlock is a situation, where two routines are blocked on each other, " +
-		"because they are waiting to send or receive on a channel, while holding locks " +
-		"that the other routine needs to proceed.\n" +
-		"This can lead to the program getting stuck, if one of the routines is the main routine. " +
-		"Otherwise it can lead to an unnecessary use of resources.",
+	helper.PNegWG: "During the execution, a negative waitgroup counter occurred.\n" +
+		"The occurrence of a negative wait group counter lead to a panic.",
+	helper.PUnlockBeforeLock: "During the execution, a not locked mutex was unlocked.\n" +
+		"The occurrence of this lead to a panic.",
+	helper.PCyclicDeadlock: "During the execution, a deadlock was detected.\n" +
+		"This means, there is are routine that are cyclicaly blocked, and there is not possibility of it being unblocked in the future",
+	helper.PMixedDeadlock: "During the execution, a deadlock was detected.\n" +
+		"This means, there is are routine that are cyclicaly blocked, and there is not possibility of it being unblocked in the future",
 	helper.LUnknown: "The analyzer detected a leak.\n" +
 		"This means that the routine was terminated because of a panic in another routine " +
 		"or because the main routine terminated while this routine was still running.\n" +

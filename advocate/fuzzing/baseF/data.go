@@ -46,7 +46,6 @@ var (
 	ChainFiles = make(map[int]Constraint)
 
 	TotalRuns = 0
-	IllFormed = 0
 	Equiv     = 0
 )
 

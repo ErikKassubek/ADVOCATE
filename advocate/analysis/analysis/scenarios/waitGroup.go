@@ -133,6 +133,10 @@ func CheckForDoneBeforeAdd() {
 				}
 			}
 
+			if len(donesNEgWgSorted) == 0 {
+				return
+			}
+
 			args1 := []results.ResultElem{} // dones
 			args2 := []results.ResultElem{} // adds
 

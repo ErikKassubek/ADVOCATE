@@ -13,9 +13,9 @@ package roc
 import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
-	"advocate/fuzzing/equivalence"
 	"advocate/fuzzing/gfuzz"
 	"advocate/utils/log"
+	"math/rand"
 )
 
 // CreateMutations will create randomized mutations.
@@ -38,8 +38,8 @@ func CreateMutations() {
 	gfuzz.CreateMutations(true)
 
 	// add new original trace to equivalence
-	minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)
-	equivalence.AddOrig(minTrace, traceID)
+	// minTrace := equivalence.TraceEqFromTrace(&baseA.MainTrace)
+	// equivalence.AddOrig(minTrace, traceID)
 
 	numTry := 0
 
@@ -48,7 +48,7 @@ func CreateMutations() {
 		for numberMuts < maxNumberOfMutsPerConst || numTry > maxTries {
 			mutatedConstr := baseF.Mutate(c, -1, nil, nil)
 
-			for _, ch := range mutatedConstr {
+			for _, cr := range mutatedConstr {
 				baseF.TotalRuns++
 				numTry++
 
@@ -56,20 +56,23 @@ func CreateMutations() {
 					return
 				}
 
-				minTrace := equivalence.TraceEqFromConstraint(ch)
+				// minTrace := equivalence.TraceEqFromConstraint(ch)
 
-				if minTrace.IllFormedImpossible {
-					baseF.IllFormed++
-					continue
-				}
+				// if minTrace.IllFormedImpossible {
+				// 	baseF.IllFormed++
+				// 	continue
+				// }
 
-				if equivalence.HasEquivalent(minTrace, traceID) {
+				if isEquivalent(cr) {
 					baseF.Equiv++
-					continue
+					if rand.Float64() < propToSkipEquiv {
+						continue
+					}
 				}
+				baseF.TotalRuns++
 
 				firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
-				_, err := baseF.WriteMutConstraint(ch, firstMut)
+				_, err := baseF.WriteMutConstraint(cr, firstMut)
 				if err != nil {
 					log.Error("Error in writing mutation: ", err.Error())
 				}

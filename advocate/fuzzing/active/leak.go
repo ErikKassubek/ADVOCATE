@@ -449,7 +449,7 @@ func rewriteBufChanLeak(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
-	log.Info("Start active fuzzing rewrite for mutex leak...")
+	log.Info("Start po guided rewrite for mutex leak...")
 
 	// get l and l'
 	lockOp := bug.TraceElement1[0]
@@ -487,7 +487,7 @@ func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteWaitGroupLeak(tr *trace.Trace, bug bugs.Bug) error {
-	log.Info("Start active fuzzing rewrite for waitgroup leak...")
+	log.Info("Start po guided rewrite for waitgroup leak...")
 
 	wait := bug.TraceElement1[0]
 
@@ -519,7 +519,7 @@ func rewriteWaitGroupLeak(tr *trace.Trace, bug bugs.Bug) error {
 // Returns:
 //   - error: An error if the trace could not be created
 func rewriteCondLeak(tr *trace.Trace, bug bugs.Bug) error {
-	log.Info("Start active fuzzing rewrite trace for cond leak...")
+	log.Info("Start po guided rewrite trace for cond leak...")
 
 	couldRewrite := false
 

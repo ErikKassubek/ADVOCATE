@@ -181,9 +181,9 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		return
 	}
 
-	if flags.FuzzingMode == "Guided" && !resType.IsActual() {
-		return
-	}
+	// if flags.FuzzingMode == "Guided" && !resType.IsActual() {
+	// 	return
+	// }
 
 	foundBug = true
 
@@ -310,11 +310,6 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 	}
 
 	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
-		return true
-	}
-
-	// TODO: remove test completely
-	if resType == helper.ARecvOnClosed {
 		return true
 	}
 

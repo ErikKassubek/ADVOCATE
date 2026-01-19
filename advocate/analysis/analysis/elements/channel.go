@@ -163,15 +163,15 @@ func UpdateSelect(se *trace.ElementSelect) {
 		}
 	}
 
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		for _, c := range cases {
-			scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
-				baseA.ElemWithVc{
-					Vc:   se.GetVC().Copy(),
-					Elem: se},
-				c.GetType(true), c.IsBuffered())
-		}
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	for _, c := range cases {
+	// 		scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
+	// 			baseA.ElemWithVc{
+	// 				Vc:   se.GetVC().Copy(),
+	// 				Elem: se},
+	// 			c.GetType(true), c.IsBuffered())
+	// 	}
+	// }
 }
 
 // Unbuffered updates and calculates the vector clocks given a send/receive pair on a unbuffered
@@ -254,10 +254,10 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		scenarios.CheckForSelectCaseWithPartnerChannel(recv, vc.CurrentVC[recv.GetRoutine()], false, false)
 	}
 
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
-		scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	scenarios.CheckForLeakChannelRun(sender.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[sender.GetRoutine()].Copy(), Elem: sender}, trace.ChannelSend, false)
+	// 	scenarios.CheckForLeakChannelRun(recv.GetRoutine(), sender.GetObjId(), baseA.ElemWithVc{Vc: vc.CurrentVC[recv.GetRoutine()].Copy(), Elem: recv}, trace.ChannelRecv, false)
+	// }
 }
 
 // Send updates and calculates the vector clocks given a send on a buffered channel.
@@ -298,12 +298,12 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, trace.ChannelSend, true)
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
+	// 		Vc:   vc[routine].Copy(),
+	// 		Elem: ch,
+	// 	}, trace.ChannelSend, true)
+	// }
 
 	for i, hold := range baseA.HoldRecv {
 		if hold.Ch.GetObjId() == id {
@@ -355,12 +355,12 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 			scenarios.CheckForMixedDeadlock(ch.GetPartner(), ch)
 		}
 	}
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, trace.ChannelRecv, true)
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
+	// 		Vc:   vc[routine].Copy(),
+	// 		Elem: ch,
+	// 	}, trace.ChannelRecv, true)
+	// }
 
 	for i, hold := range baseA.HoldSend {
 		if hold.Ch.GetObjId() == id {
@@ -401,12 +401,12 @@ func Close(ch *trace.ElementChannel) {
 		scenarios.CheckForSelectCaseWithPartnerClose(ch, vc.CurrentVC[routine])
 	}
 
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
-			Vc:   vc.CurrentVC[routine].Copy(),
-			Elem: ch,
-		}, trace.ChannelClose, true)
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
+	// 		Vc:   vc.CurrentVC[routine].Copy(),
+	// 		Elem: ch,
+	// 	}, trace.ChannelClose, true)
+	// }
 }
 
 // SendC record an actual send on closed
@@ -459,12 +459,12 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 		}
 	}
 
-	if baseA.AnalysisCasesMap[flags.Leak] {
-		scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
-			Vc:   vc[routine].Copy(),
-			Elem: ch,
-		}, trace.ChannelRecv, buffered)
-	}
+	// if baseA.AnalysisCasesMap[flags.Leak] {
+	// 	scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
+	// 		Vc:   vc[routine].Copy(),
+	// 		Elem: ch,
+	// 	}, trace.ChannelRecv, buffered)
+	// }
 }
 
 // setChannelAsLastSend sets the channel as the last send operation.

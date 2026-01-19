@@ -111,6 +111,16 @@ func AdvocateDetectBlocking() []string {
 	GC()
 	collectPartialDeadlockInfo = false
 
+	for obj, routine := range haveRef {
+		print(obj, " -> ")
+		for i, rout := range routine {
+			if rout {
+				print(i+1, " ")
+			}
+		}
+		print("\n")
+	}
+
 	return checkForBlocked()
 }
 

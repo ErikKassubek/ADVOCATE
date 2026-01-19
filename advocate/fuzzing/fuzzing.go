@@ -168,10 +168,9 @@ func Fuzzing() error {
 func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) error {
 	clearDataFull()
 
-	startTime := time.Now()
-
 	// while there are available mutations, run them
 	for baseF.NumberFuzzingRuns == 0 || len(baseF.MutationQueue) != 0 {
+		startTime := time.Now()
 
 		// clean up
 		clearDataRun()

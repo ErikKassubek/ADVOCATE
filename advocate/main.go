@@ -60,8 +60,8 @@ func main() {
 	flag.BoolVar(&flags.IgnoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 	flag.BoolVar(&flags.OnlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
-	flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
-	flag.BoolVar(&flags.NoRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
+	// flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
+	// flag.BoolVar(&flags.NoRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
 	flag.BoolVar(&flags.KeepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
 	flag.BoolVar(&flags.SkipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
@@ -83,14 +83,14 @@ func main() {
 		"\tw: Done before add on waitGroup\n"+
 		"\tn: Close of closed channel\n"+
 		// "\tb: Concurrent receive on channel\n"+
-		"\tl: Leaking routine\n"+
+		"\tb: Blocking Bug\n"+
 		"\tu: Unlock of unlocked mutex\n"+
 		"\tc: Cyclic deadlock\n"+
 		"\tm: Mixed deadlock\n",
 	)
 
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
-		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB\n\tDefault: Guided")
+		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGoPie\n\tDefault: Guided")
 
 	flag.BoolVar(&flags.ModeMain, "main", false, "set to run on main function")
 
@@ -116,8 +116,7 @@ func main() {
 			helper.PrintHelp()
 			return
 		}
-		helper.PrintHelp()
-		return
+		mode = "fuzzing"
 	}
 
 	// If -main is set, the path needs to be the path to the main file

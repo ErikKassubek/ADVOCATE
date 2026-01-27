@@ -70,15 +70,15 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 		switch c {
 		case 's':
 			analysisCases[SendOnClosed] = true
-		case 'r':
-			analysisCases[ReceiveOnClosed] = true
+		// case 'r':
+		// 	analysisCases[ReceiveOnClosed] = true
 		case 'w':
 			analysisCases[DoneBeforeAdd] = true
 		case 'n':
 			analysisCases[CloseOnClosed] = true
+		// case 'l':
+		// 	analysisCases[ConcurrentRecv] = true
 		case 'b':
-			analysisCases[ConcurrentRecv] = true
-		case 'l':
 			analysisCases[Leak] = true
 		case 'u':
 			analysisCases[UnlockBeforeLock] = true

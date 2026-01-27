@@ -21,7 +21,7 @@ var (
 
 	// submodes
 	runMain      = newFlagVal("main", "false", "", "Set to run on main function. If not set, the unit tests are run")
-	fuzzingModes = newFlagVal("mode", "", "", "Mode for fuzzing. Possible values are:", "\tGFuzz", "\tGFuzzHB", "\tGFuzzHBFlow", "\tFlow", "\tGoPie", "\tGoCR", "\tGoCRHB")
+	fuzzingModes = newFlagVal("mode", "", "", "Mode for fuzzing. Possible values are:", "\tGuided (Default)", "\tGFuzz", "\tGoPie")
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
@@ -36,13 +36,12 @@ var (
 		"If not set, all scenarios are run.",
 		"Options:",
 		"\ts: Send on closed channel",
-		"\tr: Receive on closed channel",
 		"\tw: Done before add on waitGroup",
 		"\tn: Close of closed channel",
-		"\tb: Concurrent receive on channel",
-		"\tl: Leaking routine",
+		"\tb: Blocking Bug",
 		"\tu: Unlock of unlocked mutex",
-		"\tc: Cyclic deadlock")
+		"\tc: Cyclic deadlock",
+		"\tm: Mixed deadlock")
 	noWarning = newFlagVal("noWarning", "false", "", "Only show critical bugs")
 	onlyA     = newFlagVal("onlyActual", "false", "", "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
@@ -74,14 +73,13 @@ var (
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
-	noFifo                = newFlagVal("ignoreFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
 	ignoreCriticalSection = newFlagVal("ignoreCritSec", "false", "", "Ignore happens before relations of critical sections")
 	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
-	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
-	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
-	keepTrace             = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
-	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
-	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
+	// replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
+	// noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
+	keepTrace         = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	settings          = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
+	cancelTestIfFound = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
 )
 
 // flagValue is a struct to store one flag value and its description
@@ -143,11 +141,12 @@ func printFlagHeader() {
 
 // PrintHelp prints the main help header
 func PrintHelp() {
-	fmt.Println("Welcome to ADVOCATE")
-	fmt.Println("")
-	fmt.Println("AdvocateGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
-	fmt.Println("")
-	printHeader()
+	printHelpFuzzing()
+	// fmt.Println("Welcome to ADVOCATE")
+	// fmt.Println("")
+	// fmt.Println("AdvocateGo is an analysis tool for concurrent Go programs. It tries to detects concurrency bugs and gives diagnostic insight.")
+	// fmt.Println("")
+	// printHeader()
 }
 
 // PrintHelpMode prints the help for a specific mode
@@ -325,11 +324,10 @@ func printHelpAnalysis() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
 	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
+	// fmt.Println(replayAll.toString(false))
+	// fmt.Println(noRewrite.toString(false))
 	fmt.Println(keepTrace.toString(false))
 }
 
@@ -382,11 +380,10 @@ func printHelpFuzzing() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
 	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
+	// fmt.Println(replayAll.toString(false))
+	// fmt.Println(noRewrite.toString(false))
 	fmt.Println(keepTrace.toString(false))
 	fmt.Println(settings.toString(false))
 	fmt.Println(cancelTestIfFound.toString(false))

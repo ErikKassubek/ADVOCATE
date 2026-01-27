@@ -13,7 +13,6 @@ package fuzzing
 import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing/baseF"
-	"advocate/fuzzing/flow"
 	"advocate/fuzzing/gfuzz"
 	"advocate/fuzzing/gopie"
 	"advocate/fuzzing/roc"
@@ -33,9 +32,9 @@ import (
 
 // Fuzzing creates the fuzzing data and runs the fuzzing executions
 func Fuzzing() error {
-	modes := []string{baseF.GoPie, baseF.GoCR, baseF.GoCRHB, baseF.GFuzz, baseF.GFuzzHBFlow, baseF.GFuzzHB, baseF.Flow, baseF.Guided}
+	modes := []string{baseF.GoPie, baseF.GoCR, baseF.GoCRHB, baseF.GFuzz, baseF.GFuzzHB, baseF.Guided}
 	if !types.Contains(modes, flags.FuzzingMode) {
-		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are Guided, GoPie, GoCR, GoCRHB, GFuzz, GFuzzFlow, GFuzzHB, Flow", flags.FuzzingMode)
+		return fmt.Errorf("Invalid fuzzing mode '%s'. Possible values are Guided, GoPie, GoCR, GFuzz", flags.FuzzingMode)
 	}
 
 	baseF.MaxNumberRuns = flags.MaxFuzzingRun
@@ -46,10 +45,9 @@ func Fuzzing() error {
 
 	baseF.FuzzingModeGoPie = (flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
 	baseF.FuzzingModeGoCRHBPlus = (flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
-	baseF.FuzzingModeGFuzz = (flags.FuzzingMode == baseF.GFuzz || flags.FuzzingMode == baseF.GFuzzHBFlow || flags.FuzzingMode == baseF.GFuzzHB)
-	baseF.FuzzingModeFlow = (flags.FuzzingMode == baseF.Flow || flags.FuzzingMode == baseF.GFuzzHBFlow)
+	baseF.FuzzingModeGFuzz = (flags.FuzzingMode == baseF.GFuzz || flags.FuzzingMode == baseF.GFuzzHB)
 	baseF.FuzzingModeGuided = (flags.FuzzingMode == baseF.Guided || flags.FuzzingMode == baseF.Default)
-	baseF.UseHBInfoFuzzing = (flags.FuzzingMode == baseF.Guided || flags.FuzzingMode == baseF.GFuzzHB || flags.FuzzingMode == baseF.GFuzzHBFlow || flags.FuzzingMode == baseF.Flow || flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
+	baseF.UseHBInfoFuzzing = (flags.FuzzingMode == baseF.Guided || flags.FuzzingMode == baseF.GFuzzHB || flags.FuzzingMode == baseF.GoCR || flags.FuzzingMode == baseF.GoCRHB)
 
 	if flags.Continue {
 		log.Info("Continue fuzzing")
@@ -252,12 +250,6 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 				gfuzz.CreateMutations(false)
 			}
 
-			// add new mutations based on flow path expansion
-			if baseF.FuzzingModeFlow {
-				log.Infof("Create Flow mutations")
-				flow.CreateMutations()
-			}
-
 			// add mutations based on GoPie
 			if baseF.FuzzingModeGoPie {
 				log.Infof("Create GoPie mutations")
@@ -334,11 +326,9 @@ func clearDataFull() {
 	baseF.ClearDataFull()
 	gopie.ClearData()
 	gfuzz.ClearDataFull()
-	flow.ClearData()
 }
 
 func clearDataRun() {
 	gopie.ClearDataRun()
 	gfuzz.ClearDataRun()
-	flow.ClearData()
 }

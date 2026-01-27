@@ -15,7 +15,6 @@ import (
 	"advocate/fuzzing/baseF"
 	"advocate/fuzzing/gfuzz"
 	"advocate/utils/log"
-	"math/rand"
 )
 
 // CreateMutations will create randomized mutations.
@@ -49,27 +48,11 @@ func CreateMutations() {
 			mutatedConstr := baseF.Mutate(c, -1, nil, nil)
 
 			for _, cr := range mutatedConstr {
-				baseF.TotalRuns++
 				numTry++
 
 				if numTry > maxTries {
 					return
 				}
-
-				// minTrace := equivalence.TraceEqFromConstraint(ch)
-
-				// if minTrace.IllFormedImpossible {
-				// 	baseF.IllFormed++
-				// 	continue
-				// }
-
-				if isEquivalent(cr) {
-					baseF.Equiv++
-					if rand.Float64() < propToSkipEquiv {
-						continue
-					}
-				}
-				baseF.TotalRuns++
 
 				firstMut := baseF.NumberFuzzingRuns <= 1 && numberMuts == 0
 				_, err := baseF.WriteMutConstraint(cr, firstMut)

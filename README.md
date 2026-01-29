@@ -99,7 +99,7 @@ unit tests. To execute only one specific test, run with `-exec [testName]`.
   - `-timeoutRep [in sec]`: timeout for execution of mutation in seconds
   - `-timeoutFuz [in sec]`: timeout for full fuzzing in seconds. This is per test.
   - `-maxFuzzingRuns [number]`: maximum number of fuzzing runs
-- `-keepTrace`: reduce the memory usage, traces are automatically deleted after the analysis.
+- `-keepTrace`: the reduce the memory usage, traces are automatically deleted after the analysis.
 To keep the traces set `-keepTrace`
 - `-stats`: use this to create statistics
 

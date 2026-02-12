@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"errors"
@@ -24,13 +25,13 @@ import (
 )
 
 type bug struct {
-	bugType string
+	bugType helper.ResultType
 	pos     string
 }
 
 var printedExplanations = make(map[bug]struct{})
 
-func writeBug(bugType string, positions map[int][]string) bool {
+func writeBug(bugType helper.ResultType, positions map[int][]string) bool {
 	posSet := make(map[string]struct{})
 	for _, p := range positions {
 		for _, l := range p {
@@ -127,13 +128,13 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 				id += elem[len(elem)-1] + "_" + strconv.Itoa(index)
 			}
 
-			bugType, bugPos, bugElemType, err := readAnalysisResults(result, index, progInfo["file"], hl)
+			bugType, bugPos, bugElemType, falsePositive, err := readAnalysisResults(result, index, progInfo["file"], hl)
 			if err != nil {
 				log.Error("Could not read analysis result: ", err.Error())
 				continue
 			}
 
-			if strings.HasPrefix(bugType, "S") {
+			if bugType == helper.Empty {
 				break
 			}
 
@@ -158,7 +159,7 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 			}
 
 			err = writeFile(paths.CurrentResult, id, bugTypeDescription, bugPos, bugElemType, code,
-				replay, progInfo, fuzzing)
+				replay, progInfo, fuzzing, falsePositive)
 		}
 	}
 
@@ -175,14 +176,15 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 //   - headerLine int: line number of the first line of the header
 //
 // Returns:
-//   - string: bug type
+//   - helper.ResultType: bug type
 //   - map[int][]string: bug element positions
 //   - map[int]string: bug element types
+//   - bool: true if false positive
 //   - error
-func readAnalysisResults(path string, index int, fileWithHeader string, headerLine int) (string, map[int][]string, map[int]string, error) {
+func readAnalysisResults(path string, index int, fileWithHeader string, headerLine int) (helper.ResultType, map[int][]string, map[int]string, bool, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
-		return "", nil, nil, err
+		return "", nil, nil, false, err
 	}
 
 	lines := strings.Split(string(file), "\n")
@@ -190,19 +192,20 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 	index-- // the index is 1-based
 
 	if index >= len(lines) {
-		return "", nil, nil, errors.New("index out of range")
+		return "", nil, nil, false, errors.New("index out of range")
 	}
 
 	bugStr := string(lines[index])
 	bugFields := strings.Split(bugStr, ",")
-	bugType := bugFields[0]
+	bugType := helper.ResultTypeFromString(bugFields[0])
+	falsePositive := (bugFields[1] == "fp")
 
 	bugPos := make(map[int][]string)
 	bugElemType := make(map[int]string)
 
 	posAlreadyKnown := make([]string, 0)
 
-	for i := 1; i < len(bugFields); i++ {
+	for i := 2; i < len(bugFields); i++ {
 		bugElems := strings.Split(bugFields[i], ";")
 		if len(bugElems) == 0 {
 			continue
@@ -246,7 +249,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 		}
 	}
 
-	return bugType, bugPos, bugElemType, nil
+	return bugType, bugPos, bugElemType, falsePositive, nil
 }
 
 // writeFile(path, id, bugTypeDescription, bugPos, bugElemType, code,
@@ -264,12 +267,13 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 //   - replay map[string]string: information about the replay
 //   - progInfo map[string]sting: Info about the prog, e.g. prog/test name
 //   - fuzzing int: Fuzzing run number
+//   - falsePositive bool: true if it is likely a false positive
 //
 // Returns:
 //   - error
 func writeFile(path string, index string, description map[string]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
-	replay map[string]string, progInfo map[string]string, fuzzing int) error {
+	replay map[string]string, progInfo map[string]string, fuzzing int, falsePositive bool) error {
 
 	// write the bug type description
 	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
@@ -295,6 +299,11 @@ func writeFile(path string, index string, description map[string]string,
 	} else {
 		res += "- Trace: unknown" + "\n\n"
 	}
+
+	if falsePositive {
+		res += "The bug is likely a false positive\n\n"
+	}
+
 	// write the code of the bug elements
 	res += "## Bug Elements\n"
 	res += "The elements involved in the found "

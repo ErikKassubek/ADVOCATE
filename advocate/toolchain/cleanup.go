@@ -40,9 +40,9 @@ func collect(progPath, packagePath, destination string, total bool) {
 	}
 
 	logsToCollect := []string{
-		paths.NameResultMachine,
-		paths.NameResultReadable,
-		paths.NameOutput,
+		filepath.Join(packagePath, paths.NameResultMachine),
+		filepath.Join(packagePath, paths.NameResultReadable),
+		filepath.Join(progPath, paths.NameOutput),
 	}
 
 	pathTraces := filepath.Join(destination, paths.NameTraces)
@@ -60,22 +60,22 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 	if total {
 		for _, file := range logsToCollect {
-			src := filepath.Join(progPath, file)
-			dest := filepath.Join(pathOut, "total_"+file)
+			src := file
+			dest := filepath.Join(pathOut, "total_"+filepath.Base(file))
 
 			_, err := os.Stat(dest)
 			new := os.IsNotExist(err)
 
 			srcFile, err := os.Open(src)
 			if err != nil {
-				log.Errorf("Could not open: %s %s", src, err.Error())
+				// log.Errorf("Could not open src file: %s %s", src, err.Error())
 				continue
 			}
 			defer srcFile.Close()
 
 			destFile, err := os.OpenFile(dest, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				log.Errorf("Could not open: %s %s", dest, err.Error())
+				// log.Errorf("Could not open dest file: %s %s", dest, err.Error())
 				continue
 			}
 			defer destFile.Close()
@@ -105,10 +105,10 @@ func collect(progPath, packagePath, destination string, total bool) {
 			dest = filepath.Join(pathOut, file)
 		}
 
-		err := os.Rename(src, dest)
-		if err != nil {
-			log.Errorf("Could not open: %s %s", dest, err.Error())
-		}
+		_ = os.Rename(src, dest)
+		// if err != nil {
+			// log.Errorf("Could not rename: %s %s", dest, err.Error())
+		// }
 	}
 
 	for _, pattern := range pattersToMove {

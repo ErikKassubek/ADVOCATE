@@ -53,7 +53,7 @@ Advocate provides 4 different modes:
 
 > [!IMPORTANT]
 > advocate is implemented for go version 1.25.
-> Make sure, that the program does not choose another version/toolchain and is compatible with go 1.24.
+> Make sure, that the program does not choose another version/toolchain and is compatible with go 1.25.
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
 
 For an explanation on how to use advocate, see [here](./doc/usage.md).

@@ -30,54 +30,54 @@ import (
 // Returns:
 //   - map[string]int: map with the stats
 //   - error
-func statsTraces(traceID int) (map[string]int, error) {
-	res := map[string]int{
-		"numberElements": 0,
+func statsTraces(traceID int) (map[statsType]int, error) {
+	res := map[statsType]int{
+		numberElements: 0,
 
-		"numberRoutines":         0,
-		"numberNonEmptyRoutines": 0,
+		numberRoutines:         0,
+		numberNonEmptyRoutines: 0,
 
-		"numberOfSpawns":    0,
-		"numberRoutineEnds": 0,
+		numberOfSpawns:    0,
+		numberRoutineEnds: 0,
 
-		"numberAtomics":          0,
-		"numberAtomicOperations": 0,
+		numberAtomics:          0,
+		numberAtomicOperations: 0,
 
-		"numberChannels":           0,
-		"numberBufferedChannels":   0,
-		"numberUnbufferedChannels": 0,
-		"numberChannelOperations":  0,
-		"numberBufferedOps":        0,
-		"numberUnbufferedOps":      0,
+		numberChannels:           0,
+		numberBufferedChannels:   0,
+		numberUnbufferedChannels: 0,
+		numberChannelOperations:  0,
+		numberBufferedOps:        0,
+		numberUnbufferedOps:      0,
 
-		"numberSelects":          0,
-		"numberSelectCases":      0,
-		"numberSelectChanOps":    0, // number of executed channel operations in select
-		"numberSelectDefaultOps": 0, // number of executed default operations in select
+		numberSelects:          0,
+		numberSelectCases:      0,
+		numberSelectChanOps:    0, // number of executed channel operations in select
+		numberSelectDefaultOps: 0, // number of executed default operations in select
 
-		"numberMutexes":         0,
-		"numberMutexOperations": 0,
+		numberMutexes:         0,
+		numberMutexOperations: 0,
 
-		"numberWaitGroups":          0,
-		"numberWaitGroupOperations": 0,
+		numberWaitGroups:          0,
+		numberWaitGroupOperations: 0,
 
-		"numberCondVars":          0,
-		"numberCondVarOperations": 0,
+		numberCondVars:          0,
+		numberCondVarOperations: 0,
 
-		"numberOnce":           0,
-		"numberOnceOperations": 0,
+		numberOnce:           0,
+		numberOnceOperations: 0,
 	}
 
 	tracePath := filepath.Join(paths.ResultTraces, fmt.Sprintf("advocateTrace_%d", traceID))
 
 	// do not count the same twice
-	known := map[string][]string{
-		"atomic":    {},
-		"channel":   {},
-		"mutex":     {},
-		"waitGroup": {},
-		"condVar":   {},
-		"once":      {},
+	known := map[statsType][]string{
+		atomicElem:    {},
+		channelElem:   {},
+		mutexElem:     {},
+		waitGroupElem: {},
+		condVarElem:   {},
+		onceElem:      {},
 	}
 
 	err := filepath.Walk(tracePath, func(path string, info os.FileInfo, err error) error {
@@ -102,13 +102,13 @@ func statsTraces(traceID int) (map[string]int, error) {
 //
 // Parameter:
 //   - tracePath string: Path the the trace file
-//   - stats *map[string]int: Map to store the information in
-//   - known *map[string][]string: Information about primitives that have already been
+//   - stats *map[statsType]int: Map to store the information in
+//   - known *map[statsType][]string: Information about primitives that have already been
 //   - seem in other trace files
 //
 // Returns:
 //   - error
-func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][]string) error {
+func parseTraceFile(tracePath string, stats *map[statsType]int, known *map[statsType][]string) error {
 	// open the file
 	file, err := os.Open(tracePath)
 	if err != nil {
@@ -119,7 +119,7 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 	// if err != nil {
 	// 	return fmt.Errorf("%s not an trace file", tracePath)
 	// }
-	(*stats)["numberRoutines"]++
+	(*stats)[numberRoutines]++
 
 	scanner := bufio.NewScanner(file)
 
@@ -129,71 +129,71 @@ func parseTraceFile(tracePath string, stats *map[string]int, known *map[string][
 		elem := scanner.Text()
 
 		if elem != "" && !foundNonEmpty {
-			(*stats)["numberNonEmptyRoutines"]++
+			(*stats)[numberNonEmptyRoutines]++
 			foundNonEmpty = true
 		}
-		(*stats)["numberElements"]++
+		(*stats)[numberElements]++
 		fields := strings.Split(elem, ",")
 		switch fields[0] {
 		case "G":
-			(*stats)["numberOfSpawns"]++
+			(*stats)[numberOfSpawns]++
 		case "A":
-			(*stats)["numberAtomicOperations"]++
-			if !types.Contains((*known)["atomic"], fields[2]) {
-				(*stats)["numberAtomics"]++
-				(*known)["atomic"] = append((*known)["atomic"], fields[2])
+			(*stats)[numberAtomicOperations]++
+			if !types.Contains((*known)[atomicElem], fields[2]) {
+				(*stats)[numberAtomics]++
+				(*known)[atomicElem] = append((*known)[atomicElem], fields[2])
 			}
 		case "C":
-			(*stats)["numberChannelOperations"]++
+			(*stats)[numberChannelOperations]++
 			if fields[7] == "0" {
-				(*stats)["numberUnbufferedOps"]++
+				(*stats)[numberUnbufferedOps]++
 			} else {
-				(*stats)["numberBufferedOps"]++
+				(*stats)[numberBufferedOps]++
 			}
-			if !types.Contains((*known)["channel"], fields[3]) {
-				(*stats)["numberChannels"]++
+			if !types.Contains((*known)[channelElem], fields[3]) {
+				(*stats)[numberChannels]++
 				if fields[7] == "0" {
-					(*stats)["numberUnbufferedChannels"]++
+					(*stats)[numberUnbufferedChannels]++
 				} else {
-					(*stats)["numberBufferedChannels"]++
+					(*stats)[numberBufferedChannels]++
 				}
-				(*known)["channel"] = append((*known)["channel"], fields[3])
+				(*known)[channelElem] = append((*known)[channelElem], fields[3])
 			}
 		case "S":
-			(*stats)["numberSelects"]++
+			(*stats)[numberSelects]++
 			cases := strings.Split(fields[4], "~")
-			(*stats)["numberSelectCases"] += len(cases)
+			(*stats)[numberSelectCases] += len(cases)
 			if cases[len(cases)-1] == "D" {
-				(*stats)["numberSelectDefaultOps"]++
+				(*stats)[numberSelectDefaultOps]++
 			} else {
-				(*stats)["numberSelectChanOps"] += len(cases)
+				(*stats)[numberSelectChanOps] += len(cases)
 			}
 		case "M":
-			(*stats)["numberMutexOperations"]++
-			if !types.Contains((*known)["mutex"], fields[3]) {
-				(*stats)["numberMutexes"]++
-				(*known)["mutex"] = append((*known)["mutex"], fields[3])
+			(*stats)[numberMutexOperations]++
+			if !types.Contains((*known)[mutexElem], fields[3]) {
+				(*stats)[numberMutexes]++
+				(*known)[mutexElem] = append((*known)[mutexElem], fields[3])
 			}
 		case "W":
-			(*stats)["numberWaitGroupOperations"]++
-			if !types.Contains((*known)["waitGroup"], fields[3]) {
-				(*stats)["numberWaitGroups"]++
-				(*known)["waitGroup"] = append((*known)["waitGroup"], fields[3])
+			(*stats)[numberWaitGroupOperations]++
+			if !types.Contains((*known)[waitGroupElem], fields[3]) {
+				(*stats)[numberWaitGroups]++
+				(*known)[waitGroupElem] = append((*known)[waitGroupElem], fields[3])
 			}
 		case "O":
-			(*stats)["numberOnceOperations"]++
-			if !types.Contains((*known)["once"], fields[3]) {
-				(*stats)["numberOnce"]++
-				(*known)["once"] = append((*known)["once"], fields[3])
+			(*stats)[numberOnceOperations]++
+			if !types.Contains((*known)[onceElem], fields[3]) {
+				(*stats)[numberOnce]++
+				(*known)[onceElem] = append((*known)[onceElem], fields[3])
 			}
 		case "D":
-			(*stats)["numberCondVarOperations"]++
-			if !types.Contains((*known)["condVar"], fields[3]) {
-				(*stats)["numberCondVars"]++
-				(*known)["condVar"] = append((*known)["condVar"], fields[3])
+			(*stats)[numberCondVarOperations]++
+			if !types.Contains((*known)[condVarElem], fields[3]) {
+				(*stats)[numberCondVars]++
+				(*known)[condVarElem] = append((*known)[condVarElem], fields[3])
 			}
 		case "E":
-			(*stats)["numberRoutineEnds"]++
+			(*stats)[numberRoutineEnds]++
 		case "N":
 			// do notring
 		default:

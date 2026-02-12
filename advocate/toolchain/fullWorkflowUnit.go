@@ -228,7 +228,11 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	if flags.ExecName == "" {
 		log.Info("Finished run for all tests")
 		log.Infof("Attempted tests: %d", attemptedTests)
-		log.Infof("Skipped tests: %d", skippedTests)
+		if attemptedTests == 0 {
+			log.Errorf("Could not find any tests")
+		} else {
+			log.Infof("Skipped tests: %d", skippedTests)
+		}
 	} else {
 		log.Infof("Finished run for %s", flags.ExecName)
 	}

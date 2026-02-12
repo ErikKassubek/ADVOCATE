@@ -19,6 +19,7 @@ import (
 	"advocate/analysis/hb/clock"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/analysis/hb/vc"
+	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/log"
@@ -63,6 +64,8 @@ func UpdateChannel(ch *trace.ElementChannel) {
 	if ch.GetTPost() == 0 {
 		return
 	}
+
+	results.AddContext(ch.GetFile(), ch.GetLine(), ch.GetID())
 
 	if ch.IsBuffered() {
 		switch opC {

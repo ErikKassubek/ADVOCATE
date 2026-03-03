@@ -142,10 +142,6 @@ func (this Bug) ToString() string {
 	case helper.AUnlockOfNotLockedMutex:
 		typeStr = "Actual unlock of not locked mutex:"
 		arg1Str = "unlock:"
-	case helper.AMixedDeadlock:
-		typeStr = "Actual mixed deadlock:"
-		arg1Str = "send/close: "
-		arg2Str = "recv: "
 	case helper.PSendOnClosed:
 		typeStr = "Possible send on closed channel:"
 		arg1Str = "send: "
@@ -306,9 +302,6 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		actual = true
 	case "A09":
 		bug.Type = helper.AConcurrentRecv
-		actual = true
-	case "A10":
-		bug.Type = helper.AMixedDeadlock
 		actual = true
 	case "P01":
 		bug.Type = helper.PSendOnClosed

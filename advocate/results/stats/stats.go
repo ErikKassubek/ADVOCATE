@@ -70,7 +70,7 @@ func CreateStats(testName string, traceID, fuzzing int) error {
 
 	statsTrace, err := statsTraces(traceID)
 	// if err != _ {
-		// log.Error("Failed to create trace statistics: ", err.Error())
+	// log.Error("Failed to create trace statistics: ", err.Error())
 	// }
 
 	statsFuzz, err := statsFuzz()

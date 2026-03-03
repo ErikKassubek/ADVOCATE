@@ -356,14 +356,40 @@ func classifyMDCase(cand *mixedCandidate) bool {
 		return false
 	}
 
-	// Determine CS/PCS at time of channel operation (not current lockset)
 	sendInCS := inCSAt(cand.SendEvent, cand.LockID)
 	recvInCS := inCSAt(cand.RecvEvent, cand.LockID)
 	sendPCS := hasPCSBefore(cand.SendEvent, cand.LockID)
 	recvPCS := hasPCSBefore(cand.RecvEvent, cand.LockID)
 
+	isClose := cand.SendEvent.GetType(true) == trace.ChannelClose
+
+	if isClose {
+		// MD2-2-Close: Closer in CS, Receiver PCS
+		// close() is non-blocking, receiver can always release lock after PCS
+		if sendInCS && recvPCS {
+			return false
+		}
+
+		// MD2-1-Close: Both in CS (symmetric)
+		if sendInCS && recvInCS {
+			cand.Case = "MD2-1-Close"
+			return true
+		}
+
+		// MD2-3-Close: Closer PCS, Receiver in CS
+		if sendPCS && recvInCS {
+			cand.Case = "MD2-3-Close"
+			return true
+		}
+
+		return false
+	}
+
 	// MD2-2: Sender in CS, Receiver PCS
 	if sendInCS && recvPCS {
+		if cand.Buffered && !recvInCS {
+			return false // FP for buffered
+		}
 		cand.Case = "MD2-2"
 		return true
 	}
@@ -374,7 +400,7 @@ func classifyMDCase(cand *mixedCandidate) bool {
 		return true
 	}
 
-	// MD2-1: Sender & Receiver in CS (Buffered)
+	// MD2-1: Both in CS (Buffered only, Unbuffered not observable)
 	if sendInCS && recvInCS && cand.Buffered && !sendPCS && !recvPCS {
 		cand.Case = "MD2-1"
 		return true

@@ -45,7 +45,6 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.ADeadlock:               "Actual Leak",
 	helper.ANegWG:                  "Actual negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual unlock of not locked mutex",
-	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
 
 	helper.PSendOnClosed:     "Possible send on closed channel",
 	helper.PRecvOnClosed:     "Possible receive on closed channel",

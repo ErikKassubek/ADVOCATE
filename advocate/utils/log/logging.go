@@ -82,6 +82,25 @@ func Importantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
 }
 
+// Debug logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - v ...any: the content of the log
+func Debug(v ...any) {
+	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
+}
+
+// Debugf logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
+func Debugf(format string, v ...any) {
+	log.Printf(Yellow+format+Reset, v...)
+}
+
 // Result logs a result to the terminal
 // Printed in green
 //

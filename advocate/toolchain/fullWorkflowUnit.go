@@ -118,7 +118,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 		}
 
 		for _, testFunc := range testFunctions {
-			if (pathToTest == "" || pathToTest != file) && flags.ExecName != "" && flags.ExecName != testFunc {
+			if flags.ExecName != "" && flags.ExecName != testFunc {
 				continue
 			}
 
@@ -145,10 +145,10 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				adjustedPackagePath = adjustedPackagePath + string(filepath.Separator)
 			}
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
-			directoryName := paths.SetCurrentResult(currentFile, attemptedTests, fileNameWithoutEnding, testFunc)
-			if flags.Continue && fileNumber != 0 {
-				directoryName = paths.SetCurrentResult(fileNumber, testNumber, fileNameWithoutEnding, testFunc)
-			}
+			directoryName := paths.SetCurrentResult(currentFile, testNumber, fileNameWithoutEnding, testFunc)
+			// if flags.Continue && fileNumber != 0 {
+			// 	directoryName = paths.SetCurrentResult(fileNumber, testNumber, fileNameWithoutEnding, testFunc)
+			// }
 
 			if fuzzing < 1 {
 				log.Info("Create ", directoryName)

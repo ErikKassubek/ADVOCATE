@@ -171,6 +171,7 @@ func main() {
 	}
 
 	helper.CheckGoMod()
+	helper.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")

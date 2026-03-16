@@ -515,9 +515,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -560,10 +560,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	runCommand(osOut, osErr, paths.Go, "version")
+	helper.RunCommand(osOut, osErr, paths.Go, "version")
 
 	pkgPath := helper.MakePathLocal(pkg)
-	err := runCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -670,7 +670,7 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run po guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := helper.MakePathLocal(pkg)
-		runCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished po guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

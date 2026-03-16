@@ -89,11 +89,11 @@ func CheckGoMod() string {
 				log.Error("Invalid go version")
 			}
 
-			if len(versionSplit) > 2 {
-				version = versionSplit[0] + "." + versionSplit[1]
-				line = "go " + version
-				log.Importantf("Updated Go version in go.mod to %s", version)
-			}
+			// if len(versionSplit) > 2 {
+			// 	version = versionSplit[0] + "." + versionSplit[1]
+			// 	line = "go " + version
+			// 	log.Importantf("Updated Go version in go.mod to %s", version)
+			// }
 
 			if versionSplit[0] != "1" || versionSplit[1] != "25" {
 				errString := "ADVOCATE is implemented for go version 1.25. "
@@ -120,4 +120,9 @@ func CheckGoMod() string {
 	}
 
 	return flags.ExecName
+}
+
+func RunGoModTidy() {
+	log.Info("Run go mod tidy")
+	RunCommand(nil, nil, "go", "mod", "tidy")
 }

@@ -112,7 +112,7 @@ func startReplay(timeout int) {
 		}()
 	}
 
-	DetectBlockingGC(0)
+	// DetectBlockingGC(0)
 
 	runtime.EnableReplay()
 }

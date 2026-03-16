@@ -129,20 +129,15 @@ func reportGCBlocked() {
 func reportNonDeadlockLeaks() {
 	for _, leak := range leaks {
 		results.Result(results.CRITICAL, leak.resultType,
-			leak.argType1, leak.arg2, leak.argType1, leak.arg2)
+			leak.argType1, leak.arg1, leak.argType1, leak.arg2)
 	}
 }
 
 // CheckForLeakChannelStuck is run for channel operation without a post event.
-// It checks if the operation has a possible communication partner in
-// baseA.MostRecentSend, baseA.MostRecentReceive or baseA.ClosebaseA.
-// If so, add an the data to leaks
-// If not, add to baseA.LeakingChannels, for later check.
 //
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 //   - vc VectorClock: The vector clock of the operation
-//   - func CheckForLeakChannelStuck(routineID int, objID int, vc clock.VectorClock, tID string, opType int, buffered bool) {
 func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	// buffered := (ch.GetQSize() != 0)
 	id := ch.GetObjId()
@@ -156,8 +151,18 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	arg1 := results.TraceElementResult{
 		RoutineID: routine, ObjID: id, TPre: ch.GetTPre(), ObjType: opC, File: ch.GetFile(), Line: ch.GetLine()}
 
-	leaks[routine] = TERLeak{helper.LNilChan,
-		"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{}}
+	if id == -1 {
+		leaks[routine] = TERLeak{helper.LNilChan,
+			"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{}}
+	} else {
+		if ch.IsBuffered() {
+			leaks[routine] = TERLeak{helper.LBufferedWithout,
+				"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{}}
+		} else {
+			leaks[routine] = TERLeak{helper.LUnbufferedWithout,
+				"Channel", []results.ResultElem{arg1}, "", []results.ResultElem{}}
+		}
+	}
 }
 
 // CheckForLeak is run after all operations have been analyzed, and checks if there are still leaking

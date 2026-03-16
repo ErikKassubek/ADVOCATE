@@ -328,7 +328,7 @@ func checkCyclic() map[uint64]struct{} {
 				}
 			}
 
-			// must be cycle
+			// must be cycle with multiple elements
 			if len(scc) == 1 {
 				return
 			}

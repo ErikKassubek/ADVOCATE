@@ -276,7 +276,7 @@ func writeFile(path string, index string, description map[string]string,
 	replay map[string]string, progInfo map[string]string, fuzzing int, falsePositive bool) error {
 
 	// write the bug type description
-	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
+	res := "# " + description["crit"] + ": " + description["type"] + " - " + description["name"] + "\n\n"
 	res += description["explanation"] + "\n\n"
 
 	// write the positions of the bug

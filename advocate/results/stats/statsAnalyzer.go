@@ -11,7 +11,6 @@
 package stats
 
 import (
-	"advocate/results/explanation"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -192,12 +191,10 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 				continue
 			}
 
-			line = textSplit[1]
+			textSplit2 := strings.Split(line, " - ")
 
-			bugType = explanation.GetCodeFromDescription(line)
-			if bugType == "" {
-				return fmt.Errorf("Unknown error type %s", line)
-			}
+			bugType = helper.ResultType(textSplit2[0])
+			line = textSplit2[1]
 			bug.bugType = bugType
 		} else if strings.HasPrefix(line, "-> ") { // get paths
 			bug.paths = append(bug.paths, strings.TrimPrefix(line, "-> "))

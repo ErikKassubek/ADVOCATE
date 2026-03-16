@@ -208,14 +208,18 @@ func replayTimeout(replayElem ReplayElement) {
  * Wait until all operations in the trace are executed.
  * This function should be called after the main routine is finished, to prevent
  * the program to terminate before the trace is finished.
+ *
+ * Returns:
+ *    - bool: true if all events in the pre trace and roc have been executed, false otherwise
  */
-func WaitForReplayFinish() {
+func WaitForReplayFinish() bool {
 	if printDebug {
 		println("Wait for replay finish")
 		defer println("Finish Wait")
 	}
 
 	startTime := currentTime()
+	allEventExec := true
 
 	if IsReplayEnabled() || PartialReplay {
 		for {
@@ -232,6 +236,7 @@ func WaitForReplayFinish() {
 			}
 
 			if hasTimePast(startTime, 5) {
+				allEventExec = false
 				break
 			}
 
@@ -251,6 +256,8 @@ func WaitForReplayFinish() {
 
 		sleep(0.001)
 	}
+
+	return allEventExec
 }
 
 func ReleaseAllWaiting() {

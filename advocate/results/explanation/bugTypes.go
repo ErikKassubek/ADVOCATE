@@ -10,7 +10,9 @@
 
 package explanation
 
-import "advocate/utils/helper"
+import (
+	"advocate/utils/helper"
+)
 
 // type (bug / diagnostics)
 var bugCrit = map[helper.ResultType]string{
@@ -50,33 +52,33 @@ var bugNames = map[helper.ResultType]string{
 	helper.ASendOnClosed:           "Actual Send on Closed Channel",
 	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
 	helper.ACloseOnClosed:          "Actual Close on Closed Channel",
-	helper.ACloseOnNilChannel:      "Actual Close on nil channel",
+	helper.ACloseOnNilChannel:      "Actual Close on Nil Channel",
 	helper.ANegWG:                  "Actual Negative Wait Group",
-	helper.AUnlockOfNotLockedMutex: "Actual Unlock of not locked mutex",
-	helper.ALeak:                   "Actual Leak",
-	helper.ADeadlock:               "Actual Deadlock",
+	helper.AUnlockOfNotLockedMutex: "Actual Unlock of Not Locked Mutex",
+	helper.ALeak:                   "Actual Non-Cyclic Blocking Bug",
+	helper.ADeadlock:               "Actual Cyclic Deadlock",
 	helper.AConcurrentRecv:         "Actual Concurrent Receive",
 	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
 
 	helper.PSendOnClosed:     "Possible Send on Closed Channel",
 	helper.PRecvOnClosed:     "Possible Receive on Closed Channel",
-	helper.PNegWG:            "Possible Negative WaitGroup cCounter",
-	helper.PUnlockBeforeLock: "Possible unlock of not locked mutex",
-	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
-	helper.PMixedDeadlock:    "Possible mixed deadlock",
+	helper.PNegWG:            "Possible Negative WaitGroup Counter",
+	helper.PUnlockBeforeLock: "Possible Unlock of Not Locked Mutex",
+	helper.PCyclicDeadlock:   "Possible Cyclic Deadlock",
+	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
-	helper.LUnknown:           "Block",
-	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
-	helper.LUnbufferedWithout: "Block on unbuffered channel without possible partner",
-	helper.LBufferedWith:      "Block on buffered Channel with possible partner",
-	helper.LBufferedWithout:   "Block on buffered Channel without possible partner",
-	helper.LNilChan:           "Block on nil channel",
-	helper.LSelectWith:        "Block on select with possible partner",
-	helper.LSelectWithout:     "Block on select without possible partner",
-	helper.LMutex:             "Block on sync.Mutex",
-	helper.LWaitGroup:         "Block on sync.WaitGroup",
-	helper.LCond:              "Block on sync.Cond",
-	helper.LContext:           "Block on channel or select on context",
+	helper.LUnknown:           "Leak",
+	helper.LUnbufferedWith:    "Leak on Unbuffered Channel",
+	helper.LUnbufferedWithout: "Leak on Unbuffered Channel",
+	helper.LBufferedWith:      "Leak on Buffered Channel",
+	helper.LBufferedWithout:   "Leak on Buffered Channel",
+	helper.LNilChan:           "Leak on Nil Channel",
+	helper.LSelectWith:        "Leak on Select",
+	helper.LSelectWithout:     "Leak on Select",
+	helper.LMutex:             "Leak on Sync.Mutex",
+	helper.LWaitGroup:         "Leak on Sync.WaitGroup",
+	helper.LCond:              "Leak on Sync.Cond",
+	helper.LContext:           "Leak on Channel or Select on Context",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",
@@ -336,6 +338,7 @@ func getBugTypeDescription(bugType helper.ResultType) map[string]string {
 	return map[string]string{
 		"crit":        bugCrit[bugType],
 		"name":        bugNames[bugType],
+		"type":        string(bugType),
 		"explanation": bugExplanations[bugType],
 	}
 }

@@ -111,15 +111,15 @@ func AdvocateDetectBlocking() []string {
 	GC()
 	collectPartialDeadlockInfo = false
 
-	for obj, routine := range haveRef {
-		print(obj, " -> ")
-		for i, rout := range routine {
-			if rout {
-				print(i+1, " ")
-			}
-		}
-		print("\n")
-	}
+	// for obj, routine := range haveRef {
+	// 	print(obj, " -> ")
+	// 	for i, rout := range routine {
+	// 		if rout {
+	// 			print(i+1, " ")
+	// 		}
+	// 	}
+	// 	print("\n")
+	// }
 
 	return checkForBlocked()
 }
@@ -328,8 +328,8 @@ func checkCyclic() map[uint64]struct{} {
 				}
 			}
 
-			// must be cycle
-			if len(scc) == 1 && !selfLoop[v] {
+			// must be cycle with multiple elements
+			if len(scc) == 1 {
 				return
 			}
 
@@ -344,7 +344,10 @@ func checkCyclic() map[uint64]struct{} {
 				}
 			}
 
+			println("SCC: ", len(scc))
+
 			for r := range scc {
+				println("SCC ELEM: ", r)
 				result[r] = struct{}{}
 			}
 		}

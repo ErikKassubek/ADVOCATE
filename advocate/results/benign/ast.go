@@ -13,6 +13,7 @@ package benign
 import (
 	"advocate/utils/log"
 	"go/ast"
+	"go/importer"
 	"go/parser"
 	"go/token"
 	"go/types"
@@ -36,7 +37,7 @@ func parseFile(fileName string) (*token.FileSet, *ast.File, *types.Info, error) 
 	}
 
 	// Prepare type info
-	conf := &types.Config{Importer: nil}
+	conf := &types.Config{Importer: importer.Default()}
 	info := &types.Info{
 		Types: make(map[ast.Expr]types.TypeAndValue),
 	}

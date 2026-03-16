@@ -11,15 +11,10 @@
 package baseF
 
 import (
-	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
-	"advocate/analysis/hb/concurrent"
 	"advocate/analysis/hb/hbcalc"
 	"advocate/trace"
-	"advocate/utils/flags"
 	"fmt"
-	"math"
-	"math/rand/v2"
 )
 
 // Constraint is a representation of a scheduling Constraint
@@ -218,87 +213,15 @@ func (this *Constraint) IsValid() bool {
 	return true
 }
 
-func (this *Constraint) MutSelect() map[string]Constraint {
-	res := make(map[string]Constraint)
-
-	for i, elem := range this.Elems {
-		if elem.GetType(false) != trace.Select {
-			continue
-		}
-
-		sel := elem.(*trace.ElementSelect)
-		chosen := sel.GetChosenCase()
-		if chosen != nil {
-			partner := sel.GetChosenCase().GetPartner()
-			if partner != nil && this.Contains(partner) {
-				continue
-			}
-		}
-
-		if sel.GetContainsDefault() && !sel.GetChosenDefault() {
-			c := this.Copy()
-			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(-1)
-			res[c.ToString()] = c
-		}
-
-		for ca := range sel.GetCases() {
-			if ca == sel.GetChosenIndex() {
-				continue
-			}
-
-			c := this.Copy()
-			c.Elems[i].(*trace.ElementSelect).SetCaseByIndex(ca)
-			res[c.ToString()] = c
-		}
+// Get the map of all elements in the constraint
+//
+// Returns:
+//
+//	map[trace.Element]struct{}: map containing all elements in the constraint as keys
+func (this *Constraint) toMap() map[trace.Element]struct{} {
+	res := make(map[trace.Element]struct{})
+	for _, elem := range this.Elems {
+		res[elem] = struct{}{}
 	}
-
 	return res
-}
-
-// CanBeAddedToConstraint decides if an element can be added to a scheduling chain
-// For GoPie without improvements (!useHBInfoFuzzing) those are only mutex and channel (incl. select)
-// With improvements those are all not ignored fuzzing elements
-//
-// Parameter:
-//   - elem analysis.TraceElement: Element to check
-//
-// Returns:
-//   - true if it can be added to a scheduling chain, false otherwise
-func CanBeAddedToConstraint(elem trace.Element) bool {
-	t := elem.GetType(false)
-	if flags.FuzzingMode == GoPie {
-		// for standard GoPie, only mutex, channel and select operations are considered
-		return t == trace.Mutex || t == trace.Channel || t == trace.Select
-	}
-
-	return !IgnoreFuzzing(elem, true)
-}
-
-// quality calculates how fit for mutation an element is
-// This is based on how many times was an operation called on the same element
-// and how many concurrent operation has the operations
-//
-// Parameters:
-//   - elem trace.Element: the element to check for
-//
-// Returns:
-//   - float64: the quality
-func Quality(elem trace.Element) float64 {
-	w1 := 0.2
-	w2 := 0.3
-	w3 := 0.5
-
-	numberOps, _ := baseA.GetOpsPerID(elem.GetObjId())
-	numberConcurrentTotal := concurrent.GetNumberConcurrent(elem, false, false, true)
-	numberConcurrentSame := concurrent.GetNumberConcurrent(elem, true, false, true)
-
-	if numberConcurrentSame == 0 && numberConcurrentTotal == 0 {
-		return 0
-	}
-
-	q := w1*math.Log1p(float64(numberOps)) +
-		w2*float64(numberConcurrentSame)/float64(numberConcurrentTotal+1) +
-		w3*math.Log1p(float64(numberConcurrentTotal))
-
-	return q * ((rand.Float64() * 0.2) - 0.1)
 }

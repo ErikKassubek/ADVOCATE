@@ -37,9 +37,9 @@ type TERLeak struct {
 	arg2       []results.ResultElem
 }
 
-var leaks = make(map[int]TERLeak, 0)
-var GCLeak = make([]results.ResultElem, 0)
-var GCDeadlock = make([]results.ResultElem, 0)
+var leaks = make(map[int]TERLeak, 0)           // based on trace (could be released if program continues)
+var GCLeak = make([]results.ResultElem, 0)     // based on GC not cyclic (guaranteed to be stuck)
+var GCDeadlock = make([]results.ResultElem, 0) // based on GC and cyclic (guaranteed to be stuck)
 
 func Blocked() error {
 	output := filepath.Join(paths.ProgDir, paths.NameOutput)

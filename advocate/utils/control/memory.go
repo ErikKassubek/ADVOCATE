@@ -52,15 +52,15 @@ func Supervisor() {
 	}
 
 	// Get the swap stats
-	s, err := mem.SwapMemory()
-	if err != nil {
-		log.Errorf("Error getting swap info: %v", err)
-	}
+	// s, err := mem.SwapMemory()
+	// if err != nil {
+	// 	log.Errorf("Error getting swap info: %v", err)
+	// }
 
-	thresholdRAM := uint64(float64(v.Total) * 0.02)
-	thresholdSwap := uint64(1025 * 1024 * 1024) // 1GB
+	thresholdRAM := uint64(float64(v.Total) * 0.15)
+	// thresholdSwap := uint64(1025 * 1024 * 1024) // 1GB
 
-	startSwap := s.Used
+	// startSwap := s.Used
 
 	for {
 		// Get the memory stats
@@ -70,10 +70,10 @@ func Supervisor() {
 		}
 
 		// Get the swap stats
-		s, err = mem.SwapMemory()
-		if err != nil {
-			log.Errorf("Error getting swap info: %v", err)
-		}
+		// s, err = mem.SwapMemory()
+		// if err != nil {
+		// 	log.Errorf("Error getting swap info: %v", err)
+		// }
 
 		// cancel if available RAM is below the threshold or the used swap is above the threshold
 		if v.Available < thresholdRAM {
@@ -84,13 +84,13 @@ func Supervisor() {
 			Reset()
 		}
 
-		if s.Used > thresholdSwap+startSwap {
-			cancelRAM()
-			time.Sleep(5 * time.Second)
-			continue
-		} else {
-			Reset()
-		}
+		// if s.Used > thresholdSwap+startSwap {
+		// 	cancelRAM()
+		// 	time.Sleep(5 * time.Second)
+		// 	continue
+		// } else {
+		// 	Reset()
+		// }
 
 		// Sleep for a while before checking again
 		time.Sleep(500 * time.Millisecond)

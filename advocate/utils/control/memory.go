@@ -80,12 +80,16 @@ func Supervisor() {
 			cancelRAM()
 			time.Sleep(5 * time.Second)
 			continue
+		} else {
+			Reset()
 		}
 
 		if s.Used > thresholdSwap+startSwap {
 			cancelRAM()
 			time.Sleep(5 * time.Second)
 			continue
+		} else {
+			Reset()
 		}
 
 		// Sleep for a while before checking again
@@ -107,7 +111,7 @@ func cancelRAM() {
 	log.Error("Not enough RAM")
 
 	// give all function time to cancel and then make sure to clear the memory
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	runtime.GC()
 	debug.FreeOSMemory()
 }

@@ -305,7 +305,7 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return true
 	}
 

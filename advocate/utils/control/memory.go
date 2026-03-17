@@ -26,8 +26,8 @@ import (
 
 // variables for memory management
 var (
-	wasCanceled    atomic.Bool
-	WasCanceledRAM atomic.Bool
+	isCanceled    atomic.Bool
+	IsCanceledRAM atomic.Bool
 
 	numberCommands  int
 	commandsLock    = sync.Mutex{}
@@ -99,13 +99,13 @@ func Supervisor() {
 
 // Cancel sets the analysis to canceled
 func Cancel() {
-	wasCanceled.Store(true)
+	isCanceled.Store(true)
 }
 
 // Cancel the analysis if not enough ram is available
 func cancelRAM() {
-	wasCanceled.Store(true)
-	WasCanceledRAM.Store(true)
+	isCanceled.Store(true)
+	IsCanceledRAM.Store(true)
 	printAllGoroutines()
 	cancelAllRunningCom()
 	log.Error("Not enough RAM")
@@ -116,26 +116,26 @@ func cancelRAM() {
 	debug.FreeOSMemory()
 }
 
-// CheckCanceled returns if the analysis was canceled
+// WasCanceled returns if the analysis was canceled
 //
 // Returns:
 //   - bool: true if the analysis was canceled
-func CheckCanceled() bool {
-	return wasCanceled.Load()
+func WasCanceled() bool {
+	return isCanceled.Load()
 }
 
-// CheckCanceledRAM returns if the analysis was canceled because of insufficient ram
+// WasCanceledRAM returns if the analysis was canceled because of insufficient ram
 //
 // Returns:
 //   - bool: true if the analysis was canceled because of insufficient ram*
-func CheckCanceledRAM() bool {
-	return WasCanceledRAM.Load()
+func WasCanceledRAM() bool {
+	return IsCanceledRAM.Load()
 }
 
 // Reset the cancel values to false
 func Reset() {
-	wasCanceled.Store(false)
-	WasCanceledRAM.Store(false)
+	isCanceled.Store(false)
+	IsCanceledRAM.Store(false)
 }
 
 // AddRunningCom stores the cancel function for a context of a running command

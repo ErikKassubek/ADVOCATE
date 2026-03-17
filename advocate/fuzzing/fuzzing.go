@@ -119,6 +119,10 @@ func Fuzzing() error {
 		for j, testFunc := range testFunctions {
 			flags.ExecName = testFunc
 
+			if control.WasCanceledRAM() {
+				time.Sleep(6 * time.Second)
+			}
+
 			resetFuzzing()
 			timer.ResetTest()
 			control.Reset()
@@ -230,7 +234,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			// and to create the mutations
 			ParseTrace(&baseA.MainTrace)
 
-			if control.CheckCanceled() {
+			if control.WasCanceled() {
 				log.Error("Fuzzing run was canceled due to memory")
 				gopie.ClearDataRun()
 				baseA.ClearTrace()

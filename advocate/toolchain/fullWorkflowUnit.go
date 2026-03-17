@@ -29,6 +29,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Run ADVOCATE for all given unit tests
@@ -120,6 +121,10 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 		for _, testFunc := range testFunctions {
 			if flags.ExecName != "" && flags.ExecName != testFunc {
 				continue
+			}
+
+			if control.WasCanceledRAM() {
+				time.Sleep(6 * time.Second)
 			}
 
 			baseA.Clear()

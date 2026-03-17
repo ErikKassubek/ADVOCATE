@@ -80,7 +80,6 @@ func Fuzzing() error {
 
 		clearDataFull()
 		timer.ResetFuzzing()
-		control.Reset()
 
 		if !flags.KeepTraces {
 			toolchain.RemoveTraces(flags.ProgPath)
@@ -119,13 +118,13 @@ func Fuzzing() error {
 		for j, testFunc := range testFunctions {
 			flags.ExecName = testFunc
 
-			if control.WasCanceledRAM() {
+			for control.WasCanceledRAM() {
+				log.Error("Wait RAM")
 				time.Sleep(6 * time.Second)
 			}
 
 			resetFuzzing()
 			timer.ResetTest()
-			control.Reset()
 
 			timer.Start(timer.TotalTest)
 
@@ -179,7 +178,6 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 		// clean up
 		clearDataRun()
 		timer.ResetFuzzing()
-		control.Reset()
 
 		if flags.CancelTestIfBugFound && results.GetBugWasFound() {
 			log.Infof("Cancel test after %d runs", baseF.NumberFuzzingRuns)

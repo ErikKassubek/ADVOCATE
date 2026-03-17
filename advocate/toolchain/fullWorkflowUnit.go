@@ -123,12 +123,12 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				continue
 			}
 
-			if control.WasCanceledRAM() {
+			for control.WasCanceledRAM() {
+				log.Error("Wait RAM")
 				time.Sleep(6 * time.Second)
 			}
 
 			baseA.Clear()
-			control.Reset()
 
 			if !isFuzzing {
 				timer.ResetTest()

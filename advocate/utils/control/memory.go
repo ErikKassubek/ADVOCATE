@@ -134,8 +134,11 @@ func WasCanceledRAM() bool {
 
 // Reset the cancel values to false
 func Reset() {
-	isCanceled.Store(false)
-	IsCanceledRAM.Store(false)
+	if WasCanceled() {
+		log.Important("RAM Reset")
+		isCanceled.Store(false)
+		IsCanceledRAM.Store(false)
+	}
 }
 
 // AddRunningCom stores the cancel function for a context of a running command

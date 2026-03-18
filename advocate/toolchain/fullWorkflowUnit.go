@@ -13,6 +13,7 @@ package toolchain
 
 import (
 	"advocate/analysis/baseA"
+	"advocate/fuzzing/baseF"
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
@@ -129,6 +130,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			}
 
 			baseA.Clear()
+			baseF.Clear()
 
 			if !isFuzzing {
 				timer.ResetTest()

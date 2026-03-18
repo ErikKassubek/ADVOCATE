@@ -123,7 +123,8 @@ func Fuzzing() error {
 				time.Sleep(6 * time.Second)
 			}
 
-			resetFuzzing()
+			baseA.Clear()
+			ResetFuzzing()
 			timer.ResetTest()
 
 			timer.Start(timer.TotalTest)
@@ -325,11 +326,13 @@ func popMutation() baseF.Mutation {
 }
 
 // Reset fuzzing
-func resetFuzzing() {
+func ResetFuzzing() {
 	baseF.NumberFuzzingRuns = 0
 	baseF.MutationQueue = make([]baseF.Mutation, 0)
 	// count how often a specific mutation has been in the queue
 	baseF.AllMutations = make(map[string]int)
+	baseF.ChainFiles = make(map[int]baseF.Constraint)
+
 }
 
 func clearDataFull() {

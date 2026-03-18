@@ -189,6 +189,10 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int) (int, er
 			log.Error("Error in processing trace element: ", err)
 		}
 		counter++
+
+		if control.WasCanceled() {
+			return counter, fmt.Errorf("Canceled by memory")
+		}
 	}
 
 	return counter, scanner.Err()

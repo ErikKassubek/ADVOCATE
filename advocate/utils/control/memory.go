@@ -44,7 +44,7 @@ func SetMaxNumberElem() {
 // Supervisor periodically checks the used and free memory
 // If the trace is to big and the available RAM to small, this can lead
 // to problems. In this case we abort the analysis
-func Supervisor() {
+func Supervisor(baseAClearTrace, baseAClearData, baseFClear func()) {
 	// Get the memory stats
 	v, err := mem.VirtualMemory()
 	if err != nil {
@@ -77,7 +77,7 @@ func Supervisor() {
 
 		// cancel if available RAM is below the threshold or the used swap is above the threshold
 		if v.Available < thresholdRAM {
-			cancelRAM()
+			cancelRAM(baseAClearTrace, baseAClearData, baseFClear)
 			time.Sleep(5 * time.Second)
 			continue
 		} else {
@@ -103,12 +103,16 @@ func Cancel() {
 }
 
 // Cancel the analysis if not enough ram is available
-func cancelRAM() {
+func cancelRAM(baseAClearTrace, baseAClearData, baseFClear func()) {
 	isCanceled.Store(true)
 	IsCanceledRAM.Store(true)
+	log.Error("Not enough RAM")
 	printAllGoroutines()
 	cancelAllRunningCom()
-	log.Error("Not enough RAM")
+
+	baseAClearTrace()
+	baseAClearData()
+	baseFClear()
 
 	// give all function time to cancel and then make sure to clear the memory
 	time.Sleep(2 * time.Second)

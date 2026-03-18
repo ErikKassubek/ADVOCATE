@@ -128,7 +128,7 @@ func Fuzzing() error {
 
 			timer.Start(timer.TotalTest)
 
-			log.Progressf("Run fuzzing for %s->%s", testFile, testFunc)
+			log.Progressf("Run fuzzing for %s (%d/%d) -> %s (%d/%d)", testFile, fileCounter, totalFiles, testFunc, j+1, len(testFunctions))
 
 			firstRun := (i == 0 && j == 0)
 

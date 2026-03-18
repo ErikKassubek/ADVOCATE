@@ -172,8 +172,8 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 	clearDataFull()
 
 	// while there are available mutations, run them
+	startTime := time.Now()
 	for baseF.NumberFuzzingRuns == 0 || len(baseF.MutationQueue) != 0 {
-		startTime := time.Now()
 
 		// clean up
 		clearDataRun()

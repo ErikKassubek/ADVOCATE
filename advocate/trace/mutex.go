@@ -122,7 +122,7 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := ElementMutex{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

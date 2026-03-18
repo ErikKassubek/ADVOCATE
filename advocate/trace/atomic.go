@@ -99,7 +99,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
 		objId:                    idInt,

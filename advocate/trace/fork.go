@@ -75,7 +75,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	}
 
 	elem := ElementFork{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
 		objId:                    idInt,

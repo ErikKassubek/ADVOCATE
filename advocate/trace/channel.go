@@ -150,7 +150,7 @@ func (this *Trace) AddTraceElementChannel(routine int, tPre string,
 	}
 
 	elem := ElementChannel{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

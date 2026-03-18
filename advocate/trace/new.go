@@ -101,7 +101,7 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 	}
 
 	elem := ElementNew{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
 		objId:                    idInt,

@@ -28,21 +28,15 @@ import (
 // Fields:
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
-//   - numberElemsInTrace map[int]int: per routine number of elems in trace, routineId -> number
-//   - numberElems: total number of elems in trace
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
 type Trace struct {
 	traces                map[int][]Element
 	hbWasCalc             bool
-	numberElemsInTrace    map[int]int
-	numberElems           int
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
 }
-
-// TODO: update numberElemsInTrace on trace modification
 
 // NewTrace creates a new empty trace structure
 //
@@ -52,8 +46,6 @@ func NewTrace() Trace {
 	return Trace{
 		traces:                make(map[int][]Element),
 		hbWasCalc:             false,
-		numberElemsInTrace:    make(map[int]int),
-		numberElems:           0,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
 	}
@@ -63,7 +55,6 @@ func NewTrace() Trace {
 func (this *Trace) Clear() {
 	this.traces = make(map[int][]Element)
 	this.hbWasCalc = false
-	this.numberElemsInTrace = make(map[int]int)
 	this.minTraceID = 0
 }
 
@@ -78,8 +69,6 @@ func (this *Trace) AddElement(elem Element) {
 	elem.setID(this.minTraceID)
 
 	this.traces[routine] = append(this.traces[routine], elem)
-	this.numberElemsInTrace[routine]++
-	this.numberElems++
 }
 
 // AddRoutine adds an empty routine if not exists
@@ -162,7 +151,7 @@ func (this *Trace) GetRoutineTrace(id int) []Element {
 // Returns:
 //   - int: total number of elems in trace
 func (this *Trace) GetNumberElements() int {
-	return this.numberElems
+	return this.NumberElemInRoutine(-1)
 }
 
 // GetTraceElementFromTID returns the routine and index of the element
@@ -333,23 +322,23 @@ func (this *Trace) GetTraceLengths() []int {
 	return l
 }
 
-// NumberElemInTrace returns the number of elements in the trace.
+// NumberElemInRoutine returns the number of elements in the trace.
 //
 // Parameter:
 //   - routine: return the number of elements in this routine, if -1, return the number of all elements
 //
 // Returns:
 //   - int: the number of element in a routine or the complete trace
-func (this *Trace) NumberElemInTrace(routine int) int {
+func (this *Trace) NumberElemInRoutine(routine int) int {
 	if routine == -1 {
 		total := 0
-		for _, n := range this.numberElemsInTrace {
-			total += n
+		for _, n := range this.traces {
+			total += len(n)
 		}
 		return total
 	}
 
-	return this.numberElemsInTrace[routine]
+	return len(this.traces[routine])
 }
 
 // GetLastElemPerRout returns the last elements in each routine
@@ -699,16 +688,10 @@ func (this *Trace) Copy(keep bool) (Trace, error) {
 		}
 	}
 
-	numberElemsInTraceCopy := make(map[int]int)
-	for routine, elem := range this.numberElemsInTrace {
-		numberElemsInTraceCopy[routine] = elem
-	}
-
 	return Trace{
-		traces:             tracesCopy,
-		hbWasCalc:          this.hbWasCalc,
-		numberElemsInTrace: numberElemsInTraceCopy,
-		minTraceID:         this.minTraceID,
+		traces:     tracesCopy,
+		hbWasCalc:  this.hbWasCalc,
+		minTraceID: this.minTraceID,
 	}, nil
 }
 
@@ -853,7 +836,7 @@ func (this *Trace) GetTraceSection(start, end int) []Element {
 	}
 
 	start = max(0, start)
-	end = min(end, this.numberElems-1)
+	end = min(end, this.GetNumberElements()-1)
 	numElems := end - start
 
 	res := make([]Element, numElems)

@@ -46,7 +46,7 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := ElementRoutineEnd{
-		index:   this.numberElemsInTrace[routine],
+		index:   this.NumberElemInRoutine(routine),
 		routine: routine,
 		tPost:   tPostInt,
 		vc:      nil,

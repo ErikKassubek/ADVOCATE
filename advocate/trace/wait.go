@@ -113,7 +113,7 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

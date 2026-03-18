@@ -104,7 +104,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := ElementSelect{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

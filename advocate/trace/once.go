@@ -88,7 +88,7 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := ElementOnce{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

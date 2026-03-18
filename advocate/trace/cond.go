@@ -92,7 +92,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,

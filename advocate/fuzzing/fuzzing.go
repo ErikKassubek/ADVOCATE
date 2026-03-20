@@ -106,7 +106,7 @@ func Fuzzing() error {
 
 	for i, testFile := range testFiles {
 		fileCounter++
-		log.Progressf("Progress %s: %d/%d", flags.ProgName, fileCounter, totalFiles)
+		// log.Progressf("Progress %s: %d/%d", flags.ProgName, fileCounter, totalFiles)
 		log.Infof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)

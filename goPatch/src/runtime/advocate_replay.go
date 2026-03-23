@@ -67,6 +67,8 @@ var (
 	releasedFork = 0
 )
 
+var detectBlockingGC func(i int)
+
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
 }
@@ -195,8 +197,10 @@ var (
 )
 
 // Enable the replay by starting the replay manager
-func EnableReplay() {
+func EnableReplay(detectBlockingGCFunc func(i int)) {
 	numberElementsInTrace = len(replayData)
+
+	detectBlockingGC = detectBlockingGCFunc
 
 	if printDebug {
 		println("\nTRACE\n")

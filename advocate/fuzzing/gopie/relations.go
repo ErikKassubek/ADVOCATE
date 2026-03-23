@@ -56,7 +56,7 @@ func CalculateRelRule1(routineTrace []trace.Element) {
 		rel1[elem2][elem1] = struct{}{}
 		counterCPOP1++
 	}
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 }
@@ -103,7 +103,7 @@ func CalculateRelRule2And4() {
 					rel2[elem2][elem1] = struct{}{}
 					counterCPOP2++
 				}
-				if control.CheckCanceled() {
+				if control.WasCanceled() {
 					return
 				}
 			}

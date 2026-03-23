@@ -69,9 +69,9 @@ func runAnalyzer(pathTrace string,
 
 	analysis.RunAnalysis(fuzzingRun >= 0)
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		// analysis.LogSizes()
-		if control.CheckCanceledRAM() {
+		if control.WasCanceledRAM() {
 			baseA.Clear()
 			return fmt.Errorf("Analysis was canceled due to insufficient RAM")
 		}
@@ -131,12 +131,12 @@ func runAnalyzer(pathTrace string,
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			failedRewrites += max(0, numberOfResults-resultIndex-1)
 			break
 		}
 	}
-	if control.CheckCanceledRAM() {
+	if control.WasCanceledRAM() {
 		log.Error("Rewrite Canceled: Not enough RAM")
 	} else {
 		log.Info("Finished Rewrite")

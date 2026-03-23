@@ -80,7 +80,6 @@ func Fuzzing() error {
 
 		clearDataFull()
 		timer.ResetFuzzing()
-		control.Reset()
 
 		if !flags.KeepTraces {
 			toolchain.RemoveTraces(flags.ProgPath)
@@ -107,7 +106,7 @@ func Fuzzing() error {
 
 	for i, testFile := range testFiles {
 		fileCounter++
-		log.Progressf("Progress %s: %d/%d", flags.ProgName, fileCounter, totalFiles)
+		// log.Progressf("Progress %s: %d/%d", flags.ProgName, fileCounter, totalFiles)
 		log.Infof("Processing file: %s\n", testFile)
 
 		testFunctions, err := toolchain.FindTestFunctions(testFile)
@@ -119,13 +118,18 @@ func Fuzzing() error {
 		for j, testFunc := range testFunctions {
 			flags.ExecName = testFunc
 
-			resetFuzzing()
+			for control.WasCanceledRAM() {
+				log.Error("Wait RAM")
+				time.Sleep(6 * time.Second)
+			}
+
+			baseA.Clear()
+			ResetFuzzing()
 			timer.ResetTest()
-			control.Reset()
 
 			timer.Start(timer.TotalTest)
 
-			log.Progressf("Run fuzzing for %s->%s", testFile, testFunc)
+			log.Progressf("Run fuzzing for %s (%d/%d) -> %s (%d/%d)", testFile, fileCounter, totalFiles, testFunc, j+1, len(testFunctions))
 
 			firstRun := (i == 0 && j == 0)
 
@@ -169,13 +173,12 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 	clearDataFull()
 
 	// while there are available mutations, run them
+	startTime := time.Now()
 	for baseF.NumberFuzzingRuns == 0 || len(baseF.MutationQueue) != 0 {
-		startTime := time.Now()
 
 		// clean up
 		clearDataRun()
 		timer.ResetFuzzing()
-		control.Reset()
 
 		if flags.CancelTestIfBugFound && results.GetBugWasFound() {
 			log.Infof("Cancel test after %d runs", baseF.NumberFuzzingRuns)
@@ -230,7 +233,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 			// and to create the mutations
 			ParseTrace(&baseA.MainTrace)
 
-			if control.CheckCanceled() {
+			if control.WasCanceled() {
 				log.Error("Fuzzing run was canceled due to memory")
 				gopie.ClearDataRun()
 				baseA.ClearTrace()
@@ -323,11 +326,13 @@ func popMutation() baseF.Mutation {
 }
 
 // Reset fuzzing
-func resetFuzzing() {
+func ResetFuzzing() {
 	baseF.NumberFuzzingRuns = 0
 	baseF.MutationQueue = make([]baseF.Mutation, 0)
 	// count how often a specific mutation has been in the queue
 	baseF.AllMutations = make(map[string]int)
+	baseF.ChainFiles = make(map[int]baseF.Constraint)
+
 }
 
 func clearDataFull() {

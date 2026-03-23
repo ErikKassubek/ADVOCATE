@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package toolchain
+package helper
 
 import (
 	"advocate/utils/control"
@@ -20,7 +20,7 @@ import (
 	"time"
 )
 
-// runCommand runs a command line (shell) commands
+// RunCommand runs a command line (shell) commands
 //
 // Parameter:
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
@@ -30,7 +30,7 @@ import (
 //
 // Returns:
 //   - error
-func runCommand(osOut, osErr *os.File, name string, args ...string) error {
+func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)

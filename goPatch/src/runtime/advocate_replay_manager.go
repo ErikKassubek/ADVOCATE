@@ -121,44 +121,49 @@ func replayEndFound(replayElem ReplayElement) {
 	println("Found ReplayEnd Marker with exit code", replayElem.Line)
 	// wait long enough, that all operations that have been released but not
 	// finished executing can execute
-	if replayElem.Line == ExitCodeCyclic {
-		lock(&waitDeadlockDetectLock)
-		waitDeadlockDetect = true
-		unlock(&waitDeadlockDetectLock)
-	}
+	// if replayElem.Line == ExitCodeCyclic {
+	// 	lock(&waitDeadlockDetectLock)
+	// 	waitDeadlockDetect = true
+	// 	unlock(&waitDeadlockDetectLock)
+	// }
 	sleep(0.5)
 
 	DisableReplay()
-	// foundReplayElement()
-	sleep(0.1)
 
-	// [REMOVE] || replayElem.Line == ExitCodeMixedDeadlock
-	// Check if a deadlock has been reached
-	if replayElem.Line == ExitCodeCyclic {
-		stuckRoutines := checkForStuckRoutines(1.0, 100)
-
-		stuckMutexCounter := 0
-		for id, reason := range stuckRoutines {
-			println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
-			// TODO invert to everything that could NOT be a deadlock
-			if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
-				stuckMutexCounter++
-			}
-		}
-
-		println("Number of routines waiting on mutexes:", stuckMutexCounter)
-
-		if stuckMutexCounter > 0 {
-			// SetForceExit(true)
-			ExitReplayWithCode(replayElem.Line, "")
-		}
-
-		lock(&waitDeadlockDetectLock)
-		waitDeadlockDetect = false
-		unlock(&waitDeadlockDetectLock)
-	} else if isExitCodeConfOnEndElem(replayElem.Line) {
-		ExitReplayWithCode(replayElem.Line, "")
+	if detectBlockingGC != nil {
+		detectBlockingGC(0)
 	}
+
+	// foundReplayElement()
+	// sleep(0.1)
+
+	// // [REMOVE] || replayElem.Line == ExitCodeMixedDeadlock
+	// // Check if a deadlock has been reached
+	// if replayElem.Line == ExitCodeCyclic {
+	// 	stuckRoutines := checkForStuckRoutines(1.0, 100)
+
+	// 	stuckMutexCounter := 0
+	// 	for id, reason := range stuckRoutines {
+	// 		println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
+	// 		// TODO invert to everything that could NOT be a deadlock
+	// 		if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
+	// 			stuckMutexCounter++
+	// 		}
+	// 	}
+
+	// 	println("Number of routines waiting on mutexes:", stuckMutexCounter)
+
+	// 	if stuckMutexCounter > 0 {
+	// 		// SetForceExit(true)
+	// 		ExitReplayWithCode(replayElem.Line, "")
+	// 	}
+
+	// 	lock(&waitDeadlockDetectLock)
+	// 	waitDeadlockDetect = false
+	// 	unlock(&waitDeadlockDetectLock)
+	// } else if isExitCodeConfOnEndElem(replayElem.Line) {
+	// 	ExitReplayWithCode(replayElem.Line, "")
+	// }
 }
 
 func replayTimeout(replayElem ReplayElement) {

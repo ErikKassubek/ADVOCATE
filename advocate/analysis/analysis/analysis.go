@@ -67,7 +67,7 @@ func RunAnalysis(fuzzing bool) {
 	if baseA.AnalysisCasesMap[flags.Leak] || flags.OnlyAPanicAndLeak {
 		err := scenarios.Blocked()
 		if err != nil {
-			log.Error("Failed to read partial deadlock info: ", err.Error())
+			log.Error("Failed to read block info: ", err.Error())
 		}
 	}
 
@@ -120,7 +120,7 @@ func RunHBAnalysis(fuzzing bool) {
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 
 		// not enough memory
-		if control.WasCanceledRAM.Load() {
+		if control.IsCanceledRAM.Load() {
 			return
 		}
 
@@ -195,7 +195,7 @@ func RunHBAnalysis(fuzzing bool) {
 			checkLeak(elem)
 		}
 
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			return
 		}
 	}
@@ -209,7 +209,7 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.CheckForSelectCaseWithPartner()
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
@@ -218,7 +218,7 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.CheckForStuckRoutine(false)
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
@@ -226,7 +226,7 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.CheckForDoneBeforeAdd()
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
@@ -234,7 +234,7 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.CheckForResourceDeadlock()
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 

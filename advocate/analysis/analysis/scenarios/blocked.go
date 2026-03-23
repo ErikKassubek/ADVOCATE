@@ -51,6 +51,9 @@ func Blocked() error {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+
+	buf := make([]byte, 0, 1024*1024) // 1 MB initial buffer
+	scanner.Buffer(buf, 10*1024*1024)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.HasPrefix(line, "LEAK_GC@") {
@@ -63,9 +66,9 @@ func Blocked() error {
 		}
 	}
 
-	if err := scanner.Err(); err != nil {
-		return err
-	}
+	// if err := scanner.Err(); err != nil {
+	// 	return err
+	// }
 
 	reportGCBlocked()
 	reportNonDeadlockLeaks()

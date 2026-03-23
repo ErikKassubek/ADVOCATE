@@ -144,7 +144,7 @@ func main() {
 
 	control.SetMaxNumberElem()
 	if !flags.NoMemorySupervisor {
-		go control.Supervisor() // cancel analysis if not enough ram
+		go control.Supervisor(baseA.ClearTrace, baseA.ClearData, fuzzing.ResetFuzzing) // cancel analysis if not enough ram
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
@@ -171,6 +171,7 @@ func main() {
 	}
 
 	helper.CheckGoMod()
+	helper.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")

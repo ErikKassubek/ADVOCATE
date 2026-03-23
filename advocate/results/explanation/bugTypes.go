@@ -30,6 +30,7 @@ var bugCrit = map[helper.ResultType]string{
 	helper.PNegWG:                  "Bug",
 	helper.PUnlockBeforeLock:       "Bug",
 	helper.PCyclicDeadlock:         "Bug",
+	helper.PMixedDeadlock:          "Bug",
 	helper.LUnknown:                "Leak",
 	helper.LUnbufferedWith:         "Leak",
 	helper.LUnbufferedWithout:      "Leak",

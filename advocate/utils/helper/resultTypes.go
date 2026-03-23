@@ -77,6 +77,7 @@ var ResultTypes = []ResultType{
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
+	PMixedDeadlock,
 	LUnknown,
 	LUnbufferedWith,
 	LUnbufferedWithout,
@@ -110,6 +111,7 @@ var ResultTypesPotential = []ResultType{
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
+	PMixedDeadlock,
 }
 
 var ResultTypesLeak = []ResultType{
@@ -162,6 +164,8 @@ func ResultTypeFromString(code string) ResultType {
 		return PUnlockBeforeLock
 	case "P05":
 		return PCyclicDeadlock
+	case "P06":
+		return PMixedDeadlock
 	case "L00":
 		return LUnknown
 	case "L01":

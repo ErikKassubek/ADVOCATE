@@ -158,7 +158,7 @@ func ensureLockTracking(routine int) {
 // LockSetAddLock adds to LockSet and MostRecentAcquire
 func LockSetAddLock(mu *trace.ElementMutex, isReadLock bool) {
 	routine := mu.GetRoutine()
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	ensureLockTracking(routine)
 
@@ -178,7 +178,7 @@ func LockSetAddLock(mu *trace.ElementMutex, isReadLock bool) {
 // LockSetRemoveLock removes from Lockset and MostRecentRelease
 func LockSetRemoveLock(mu *trace.ElementMutex, isReadUnlock bool) {
 	routine := mu.GetRoutine()
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	ensureLockTracking(routine)
 

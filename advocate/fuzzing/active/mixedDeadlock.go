@@ -39,9 +39,9 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
 		return err
 	}
 
-	if acqE.GetID() != acqF.GetID() {
+	if acqE.GetObjId() != acqF.GetObjId() {
 		return fmt.Errorf("acquires are on different mutex IDs (%d vs %d)",
-			acqE.GetID(), acqF.GetID())
+			acqE.GetObjId(), acqF.GetObjId())
 	}
 
 	// Compute timeline frontier
@@ -101,7 +101,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
 	tr.AddTraceElementReplay(lastTime+1, exitCode)
 
 	fmt.Printf("[rewriteMixedDeadlock] reversed acquire order for mutex %d: %d<->%d\n",
-		acqE.GetID(), acqE.GetRoutine(), acqF.GetRoutine())
+		acqE.GetObjId(), acqE.GetRoutine(), acqF.GetRoutine())
 
 	return nil
 }
@@ -158,8 +158,8 @@ func pickAcquirePair(tr *trace.Trace, bug bugs.Bug) (*trace.ElementMutex, *trace
 	}
 
 	// If not the same mutex, find a common id by walking further back
-	if a.GetID() != b.GetID() {
-		return nil, nil, fmt.Errorf("derived acquires are on different mutex IDs (%d vs %d)", a.GetID(), b.GetID())
+	if a.GetObjId() != b.GetObjId() {
+		return nil, nil, fmt.Errorf("derived acquires are on different mutex IDs (%d vs %d)", a.GetObjId(), b.GetObjId())
 	}
 	return a, b, nil
 }
@@ -174,7 +174,7 @@ func pickAcquirePair(tr *trace.Trace, bug bugs.Bug) (*trace.ElementMutex, *trace
 func ensureEarlyUnlocks(tr *trace.Trace, lockset []trace.Element, lastTime *int) {
 	hasID := func(id int) bool {
 		for _, e := range lockset {
-			if e.GetID() == id {
+			if e.GetObjId() == id {
 				return true
 			}
 		}
@@ -184,7 +184,7 @@ func ensureEarlyUnlocks(tr *trace.Trace, lockset []trace.Element, lastTime *int)
 	for _, l := range lockset {
 		r := l.GetRoutine()
 		for _, e := range tr.GetRoutineTrace(r) {
-			if mu, ok := e.(*trace.ElementMutex); ok && !mu.IsLock() && hasID(mu.GetID()) {
+			if mu, ok := e.(*trace.ElementMutex); ok && !mu.IsLock() && hasID(mu.GetObjId()) {
 				// Find first element in the other routine that is concurrent to this unlock
 				// and move that routine’s tail behind unlock; also push concurrent/after to after.
 				var concurrentStart trace.Element

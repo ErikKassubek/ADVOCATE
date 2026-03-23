@@ -191,9 +191,10 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 				continue
 			}
 
-			textSplit2 := strings.Split(line, " - ")
+			textSplit2 := strings.Split(textSplit[1], " - ")
 
 			bugType = helper.ResultType(textSplit2[0])
+			log.Debug(textSplit2[0])
 			line = textSplit2[1]
 			bug.bugType = bugType
 		} else if strings.HasPrefix(line, "-> ") { // get paths
@@ -230,6 +231,8 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 	}
 
 	if resTotal != nil {
+		log.Debug("ISNOTNIL")
+		log.Debug(detected, bugType)
 		(resTotal)[detected][bugType]++
 
 		if bug.replayWritten {
@@ -243,7 +246,8 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 		if bug.falsePos {
 			(resTotal)[falsePositive][bugType]++
 		}
-
+	} else {
+		log.Debug("ISNIL")
 	}
 
 	key := bug.getKey()

@@ -1,0 +1,7 @@
+S,3438,3440,2400000000003,C.3438.0.2400000000002.R.f.0.0~D,-1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:309
+S,4700,4702,2400000000026,C.4700.0.2400000000002.R.f.0.0~D,-1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:342
+S,5548,5550,2400000000041,C.5548.0.2400000000002.R.f.0.0~D,-1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:379
+G,5568,40,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:470
+C,5570,9976,2400000000025,R,f,1,1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:347
+S,9978,9980,2400000000043,C.9978.9980.2400000000002.R.f.1.0~d,0,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:342
+C,10310,10310,1400000000035,C,f,0,0,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul_test.go:370

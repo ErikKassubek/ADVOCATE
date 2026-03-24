@@ -1,0 +1,10 @@
+A,5096,24635049984,L,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/internal/poll/fd_mutex.go:132
+A,5100,24635049984,C,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/internal/poll/fd_mutex.go:150
+A,5160,24635049984,L,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/internal/poll/fd_mutex.go:177
+A,5162,24635049984,C,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/internal/poll/fd_mutex.go:186
+M,5166,5172,2700000000002,-,L,t,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/net/http/server.go:658
+A,5168,24635000648,C,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/sync/mutex.go:119
+M,5176,5180,2700000000002,-,U,t,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/net/http/server.go:664
+A,5192,24635000648,A,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/sync/mutex.go:334
+N,5196,5202,2700000000003,B,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/net/http/server.go:717
+E,5204

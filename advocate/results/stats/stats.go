@@ -223,7 +223,6 @@ func writeStatsToFile(testName string, statsTraces map[statsType]int, statsFuzz 
 
 	headers := make([]string, 0)
 	data := make([]string, 0)
-	log.Debug(statsAnalyzerTotal)
 	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
 		for _, count := range []string{"Total", "Unique"} {
 			for _, code := range helper.ResultTypes {

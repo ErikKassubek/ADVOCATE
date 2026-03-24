@@ -1,0 +1,3 @@
+C,2850,2852,1400000000026,S,f,1,10,/home/erik/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/vec.go:327
+C,2854,2854,1400000000026,C,f,0,10,/home/erik/go/pkg/mod/github.com/prometheus/client_golang@v1.19.1/prometheus/registry.go:280
+E,2856

@@ -6,7 +6,7 @@ UNIQUE = True
 
 res_total = []
 
-def read_data(path) -> dict[str, dict]:
+def read_data(path) -> dict[str, dict[str, list[BlockInfo]]]:
     res = {}
 
     for entry in os.listdir(path):
@@ -46,13 +46,14 @@ def read_data_test(path) -> list[BlockInfo]:
         return []
 
     res = {}
-    info = BlockInfo()
 
     for bug in os.listdir(path_result):
-        run = bug.split("_")[1]
         res_path = os.path.join(path_result, bug)
+        info = BlockInfo()
+        run = bug.split("_")[1]
         if run in res.keys():
             info = res[run]
+        type_id = ""
         with open(res_path, "r") as f:
             for line in f:
                 line = line.strip()
@@ -81,37 +82,17 @@ def read_data_test(path) -> list[BlockInfo]:
                 elif line.startswith("->"):
                     posStr = line.removeprefix("-> ")
                     if not posStr.startswith("/home/erik/Uni/Advocate/goPatch"):
-                        info.pos[posStr] = None
+                        info.pos[posStr] = info.deadlock_mutex or info.deadlock_mixed
 
 
         if info.set and len(info.pos.keys()) > 0 and (not UNIQUE or not contains(info)):
+            print(run, " -> ", type_id, " -> ", info.pos.keys())
             res[run] = info
             res_total.append(info)
 
     return res.values()
 
 
-def getPositions(line):
-    resPosDict = {}
-    
-    fields = line.split(",")
-
-    for field in fields:
-        if not field.startswith("T"):
-            continue
-
-        elem = field.split(":")
-
-        if len(elem) < 2:
-            continue
-
-        pos = elem[-2] + ":"+ elem[-1]
-
-        if pos.startswith("/home/erik/Uni/Advocate/goPatch"):
-            continue
-        resPosDict[pos] = None
-
-    return resPosDict
 
 def contains(info: BlockInfo):
     for res in res_total:

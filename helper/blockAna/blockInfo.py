@@ -48,18 +48,23 @@ class BlockInfo:
         if self.leak != other.deadlock_mixed:
             return False 
         
-        if posString(self.pos) != posString(other.pos):
+        pos1, _ = posString(self.pos)
+        pos2, _ = posString(other.pos)
+        if pos1 != pos2:
             return False 
         
         return True
     
 
-def posString(pos: dict):
+def posString(pos: dict) -> tuple[str, int]:
     resList = []
+    counter = 0
     for key in pos.keys():
         resList.append(key)
+        if pos[key] is True:
+            counter += 1
     
     resList.sort()
     resStr = "-".join(resList)
 
-    return resStr
+    return resStr, counter

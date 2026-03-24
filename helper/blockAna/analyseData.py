@@ -18,9 +18,6 @@ def analyze_data(data: dict[str, dict[str, list[BlockInfo]]]) -> tuple[list[int]
 
         for data_per_test in data_per_prog.values():
             for data_per_run in data_per_test:
-                if data_per_run.deadlock_mutex or data_per_run.deadlock_mixed:
-                    _, l = posString(data_per_run.pos)
-                    print(l)
                 numbers = data_per_run.as_number()
                 add_slices(res_per_prog[prog], numbers)
                 add_slices(res_total, numbers)

@@ -1,6 +1,6 @@
 from analyseData import analyze_data
-from readData import read_data
-from plotData import plot_data
+from readData import read_data, lenCycle
+from plotData import plot_results, plot_len_cycle
 
 numTest = {
     "argo-cd": 1918,
@@ -28,10 +28,12 @@ def main():
     path = "/home/erik/Uni/Programs/"
     data = read_data(path)
     res_total, res_per_prog = analyze_data(data)
-    plot_data(res_total)
+    plot_results(res_total)
+    plot_len_cycle(lenCycle)
     
     printResults(res_per_prog)
     print(res_total)
+    print(lenCycle)
 
 
 def printResults(res: dict[str, list[int]]):

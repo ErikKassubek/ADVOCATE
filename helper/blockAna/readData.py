@@ -5,6 +5,7 @@ UNIQUE = True
 
 
 res_total = []
+lenCycle = {}
 
 def read_data(path) -> dict[str, dict[str, list[BlockInfo]]]:
     res = {}
@@ -54,6 +55,7 @@ def read_data_test(path) -> list[BlockInfo]:
         if run in res.keys():
             info = res[run]
         type_id = ""
+        posInFile = []
         with open(res_path, "r") as f:
             for line in f:
                 line = line.strip()
@@ -83,10 +85,17 @@ def read_data_test(path) -> list[BlockInfo]:
                     posStr = line.removeprefix("-> ")
                     if not posStr.startswith("/home/erik/Uni/Advocate/goPatch"):
                         info.pos[posStr] = info.deadlock_mutex or info.deadlock_mixed
+                        if info.deadlock_mutex or info.deadlock_mixed:
+                            posInFile.append(posStr)
 
 
         if info.set and len(info.pos.keys()) > 0 and (not UNIQUE or not contains(info)):
-            print(run, " -> ", type_id, " -> ", info.pos.keys())
+            if len(posInFile) != 0 and (type_id == "A08" or type_id == "A10"):
+                lc = max(2, len(posInFile))
+                if lc not in lenCycle.keys():
+                    lenCycle[lc] = 1
+                else:
+                    lenCycle[lc] = lenCycle[lc] + 1
             res[run] = info
             res_total.append(info)
 

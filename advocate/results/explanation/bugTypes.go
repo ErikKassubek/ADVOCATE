@@ -251,6 +251,7 @@ var exitCodeExplanation = map[string]string{
 	"33": "The replay resulted in an expected lock of an unlocked mutex triggering a panic. The bug was triggered. " +
 		"The replay was therefore able to confirm, that the unlock of a not locked mutex can actually occur.",
 	"41": "The replay reached the expected point and found stuck mutexes." + "The replay was therefore able to confirm that a deadlock can actually occur.",
+	"42": "The replay reached the expected point and found stuck channels." + "The replay was therefore able to confirm that a mixed deadlock can actually occur.",
 }
 
 var objectTypes = map[string]string{

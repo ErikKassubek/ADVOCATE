@@ -111,6 +111,10 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.ResetState()
 	}
 
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+		scenarios.ResetMixedDeadlockState()
+	}
+
 	if hb.CalcVC {
 		vc.CurrentVC[1].Inc(1)
 		vc.CurrentWVC[1].Inc(1)
@@ -190,6 +194,15 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		}
 
+		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+			switch e := elem.(type) {
+			case *trace.ElementMutex:
+				scenarios.HandleMutexEventForMixedDeadlock(e)
+			case *trace.ElementChannel:
+				scenarios.HandleChannelEventForMixedDeadlock(e)
+			}
+		}
+
 		// check for leak
 		if baseA.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
 			checkLeak(elem)
@@ -232,6 +245,14 @@ func RunHBAnalysis(fuzzing bool) {
 
 	if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
 		scenarios.CheckForResourceDeadlock()
+	}
+
+	if control.WasCanceled() {
+		return
+	}
+
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+		scenarios.CheckForMixedDeadlock()
 	}
 
 	if control.WasCanceled() {

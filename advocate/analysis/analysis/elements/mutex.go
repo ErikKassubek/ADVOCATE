@@ -42,8 +42,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
 
-		LockSetAddLock(mu, false)
-
 		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
 
@@ -56,8 +54,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		if baseA.AnalysisCasesMap[flags.Leak] {
 			scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 		}
-
-		LockSetAddLock(mu, true)
 
 		baseA.CurrentlyHoldLock[id] = mu
 		scenarios.IncFuzzingCounter(mu)
@@ -73,8 +69,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
 
-			LockSetAddLock(mu, false)
-
 			baseA.CurrentlyHoldLock[id] = mu
 			scenarios.IncFuzzingCounter(mu)
 
@@ -89,8 +83,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			if baseA.AnalysisCasesMap[flags.Leak] {
 				scenarios.AddMostRecentAcquireTotal(mu, vc.CurrentVC[routine])
 			}
-
-			LockSetAddLock(mu, true)
 
 			baseA.CurrentlyHoldLock[id] = mu
 			scenarios.IncFuzzingCounter(mu)
@@ -112,8 +104,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		LockSetRemoveLock(mu, false)
-
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
@@ -127,8 +117,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 			Vc:   vc.CurrentVC[routine].Copy(),
 		}
 
-		LockSetRemoveLock(mu, true)
-
 		baseA.CurrentlyHoldLock[id] = nil
 
 		if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
@@ -137,67 +125,5 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	default:
 		log.Error("Unknown mutex operation: " + mu.ToString())
-	}
-}
-
-func ensureLockTracking(routine int) {
-	if _, ok := baseA.LockSet[routine]; !ok {
-		baseA.LockSet[routine] = make(map[int]string) // lockID -> TID
-	}
-	if _, ok := baseA.MostRecentAcquire[routine]; !ok {
-		baseA.MostRecentAcquire[routine] = make(map[int]baseA.ElemWithVc)
-	}
-	if _, ok := baseA.MostRecentRelease[routine]; !ok {
-		baseA.MostRecentRelease[routine] = make(map[int]baseA.ElemWithVc)
-	}
-	if _, ok := baseA.RLockCount[routine]; !ok {
-		baseA.RLockCount[routine] = make(map[int]int) // lockID -> count
-	}
-}
-
-// LockSetAddLock adds to LockSet and MostRecentAcquire
-func LockSetAddLock(mu *trace.ElementMutex, isReadLock bool) {
-	routine := mu.GetRoutine()
-	id := mu.GetObjId()
-
-	ensureLockTracking(routine)
-
-	// RLock-Counter
-	if isReadLock {
-		baseA.RLockCount[routine][id]++
-	}
-
-	baseA.LockSet[routine][id] = mu.GetTID()
-
-	baseA.MostRecentAcquire[routine][id] = baseA.ElemWithVc{
-		Vc:   vc.CurrentVC[routine].Copy(),
-		Elem: mu,
-	}
-}
-
-// LockSetRemoveLock removes from Lockset and MostRecentRelease
-func LockSetRemoveLock(mu *trace.ElementMutex, isReadUnlock bool) {
-	routine := mu.GetRoutine()
-	id := mu.GetObjId()
-
-	ensureLockTracking(routine)
-
-	baseA.MostRecentRelease[routine][id] = baseA.ElemWithVc{
-		Vc:   vc.CurrentVC[routine].Copy(),
-		Elem: mu,
-	}
-
-	if isReadUnlock {
-		baseA.RLockCount[routine][id]--
-		if baseA.RLockCount[routine][id] <= 0 {
-			baseA.RLockCount[routine][id] = 0
-			delete(baseA.LockSet[routine], id)
-		}
-	} else {
-		delete(baseA.LockSet[routine], id)
-
-		if cnt, ok := baseA.RLockCount[routine][id]; ok && cnt > 0 {
-			baseA.RLockCount[routine][id] = 0
-		}
 	}
 }

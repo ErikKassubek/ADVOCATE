@@ -131,7 +131,10 @@ func replayEndFound(replayElem ReplayElement) {
 	DisableReplay()
 
 	if detectBlockingGC != nil {
-		detectBlockingGC(0)
+		res := detectBlockingGC()
+		if res > 0 {
+			ExitReplayWithCode(res, "GC")
+		}
 	}
 
 	// foundReplayElement()

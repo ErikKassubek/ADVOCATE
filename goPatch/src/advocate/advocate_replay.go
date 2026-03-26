@@ -466,7 +466,7 @@ func FinishReplay() {
 	println("FinishReplay")
 	runtime.WaitForReplayFinish()
 
-	DetectBlockingGC(0)
+	DetectBlockingGC()
 
 	time.Sleep(time.Second)
 

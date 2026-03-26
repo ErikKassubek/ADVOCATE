@@ -1,39 +1,33 @@
+// Copyright (c) 2026 Erik Kassubek
+//
+// File: parseFiles.go
+// Brief: Parse source code file to read access information
+//
+// Author: Erik Kassubek
+// Created: 2026-03-25
+//
+// License: BSD-3-Clause
+
 package blocking
 
-// var functionVar = make(map[string]map[string]map[string]struct{}{}) // function creation location -> variable -> function
-// var funcInFunc = make(map[string][]string)                          // function creation location -> called created in function
+import (
+	"advocate/utils/log"
+	"go/ast"
+	"go/token"
+)
 
-// // varNames: variable names to look for
-// // TODO: can this be made unique?
-// func AreFunctionsAvailable(varNames []string) {
-// 	fset := token.NewFileSet()
+func blocking() {
+	dir := ""                     // TODO: determine program directory
+	vars := make([]*ast.Ident, 0) // TODO: determine vars
 
-// 	parseFiles(fset)
+	fset := token.NewFileSet()
 
-// }
+	pkgs, err := loadPackagesAndFset(dir)
+	if err != nil {
+		log.Error(err.Error())
+	}
 
-// func parseFiles(fset *token.FileSet, varNames []string) {
-// 	files := make([]string, 0) // TODO: get files
+	npm := buildNodePackageMap(pkgs)
 
-// 	for _, file := range files {
-// 		parseFile(fset, file)
-// 	}
-// }
-
-// // for now only channel and mutex
-// func parseFile(fset *token.FileSet, fileName string, varNames []string) error {
-// 	file, err := parser.ParseFile(fset, fileName, nil, 0)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-
-// 	funcname = file.Name.Name + ":" + fn.Name.Name // packageName:functionName
-
-// 	for _, decl := range file.Decls {
-// 		if fn, ok := decl.(*ast.FuncDecl); ok {
-// 			// ast.Inspect(fn.Body, func(n ast.Node) bool) {
-
-// 			// }
-// 		}
-// 	}
-// }
+	_ = parseFiles(fset, npm, dir, vars) // information on which function contains which variables from vars
+}

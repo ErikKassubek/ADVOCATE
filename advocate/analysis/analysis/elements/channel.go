@@ -202,18 +202,6 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	// Lockset Snapshot
-	if s, ok := sender.(*trace.ElementChannel); ok {
-		buildCSSnapshot(s.GetRoutine(), s.GetID(), s.GetOID(), s.GetVC())
-	}
-	switch r := recv.(type) {
-	case *trace.ElementChannel:
-		buildCSSnapshot(r.GetRoutine(), r.GetID(), r.GetOID(), r.GetVC())
-	case *trace.ElementSelect:
-		c := r.GetChosenCase()
-		buildCSSnapshot(c.GetRoutine(), c.GetID(), c.GetOID(), c.GetVC())
-	}
-
 	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
 		if baseA.MostRecentReceive[recv.GetRoutine()] == nil {
 			baseA.MostRecentReceive[recv.GetRoutine()] = make(map[int]baseA.ElemWithVcVal)
@@ -243,12 +231,6 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	// log.Info(fmt.Sprintf("[Channel] MixedDeadlock flag = %v", baseA.AnalysisCasesMap[flags.MixedDeadlock]))
-
-	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		scenarios.CheckForMixedDeadlock(sender, recv)
-	}
-
 	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(sender, vc.CurrentVC[sender.GetRoutine()], true, false)
 		scenarios.CheckForSelectCaseWithPartnerChannel(recv, vc.CurrentVC[recv.GetRoutine()], false, false)
@@ -273,8 +255,6 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	if ch.GetTPost() == 0 {
 		return
 	}
-
-	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
 
 	if baseA.MostRecentSend[routine] == nil {
 		baseA.MostRecentSend[routine] = make(map[int]baseA.ElemWithVcVal)
@@ -332,8 +312,6 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		return
 	}
 
-	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
-
 	if baseA.MostRecentReceive[routine] == nil {
 		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
@@ -350,11 +328,6 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], true, true)
 	}
 
-	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		if ch.GetPartner() != nil {
-			scenarios.CheckForMixedDeadlock(ch.GetPartner(), ch)
-		}
-	}
 	// if baseA.AnalysisCasesMap[flags.Leak] {
 	// 	scenarios.CheckForLeakChannelRun(routine, id, baseA.ElemWithVc{
 	// 		Vc:   vc[routine].Copy(),
@@ -382,8 +355,6 @@ func Close(ch *trace.ElementChannel) {
 
 	routine := ch.GetRoutine()
 	id := ch.GetObjId()
-
-	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
 
 	ch.SetClosed(true)
 
@@ -431,8 +402,6 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
-	buildCSSnapshot(ch.GetRoutine(), ch.GetID(), ch.GetOID(), ch.GetVC())
-
 	if baseA.MostRecentReceive[routine] == nil {
 		baseA.MostRecentReceive[routine] = make(map[int]baseA.ElemWithVcVal)
 	}
@@ -451,12 +420,6 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 
 	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)
-	}
-
-	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
-		if closer := baseA.CloseData[ch.GetID()]; closer != nil {
-			scenarios.CheckForMixedDeadlock(closer, ch)
-		}
 	}
 
 	// if baseA.AnalysisCasesMap[flags.Leak] {
@@ -511,18 +474,4 @@ func setChannelAsLastReceive(c trace.Element) {
 		Val:  id,
 	}
 	baseA.HasReceived[id] = true
-}
-
-// Creates channel event snapshot
-func buildCSSnapshot(routine, chanID, oid int, eventVc *clock.VectorClock) {
-	if eventVc == nil {
-		return
-	}
-	flags := scenarios.DecideCSForEvent(routine, eventVc)
-
-	baseA.CSSnaps[baseA.EventKey{Routine: routine, ChanID: chanID, OID: oid}] =
-		baseA.CSSnapshot{
-			ByLock:  flags,
-			EventVC: eventVc.Copy(),
-		}
 }

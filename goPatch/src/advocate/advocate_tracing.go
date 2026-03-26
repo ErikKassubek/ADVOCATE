@@ -87,7 +87,7 @@ func FinishTracing() {
 
 	runtime.DisableTracing()
 
-	DetectBlockingGC(0)
+	DetectBlockingGC()
 
 	if timerStarted {
 		duration = time.Since(startTime)

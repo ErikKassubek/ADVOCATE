@@ -12,7 +12,7 @@ package advocate
 
 import (
 	"runtime"
-	"time"
+	"strings"
 )
 
 var partialDeadlocks = make([]string, 0)
@@ -20,27 +20,38 @@ var partialDeadlocks = make([]string, 0)
 // DetectBlockingGC runs a partial deadlock detection in the current execution
 // Parameter:
 //   - interval bool: interval to run the detector. Set to 0 to run only once
-func DetectBlockingGC(interval int) {
+func DetectBlockingGC() int {
 	runtime.AdvocatePDDetectionStopped = false
 
-	go func() {
-		for {
-			if runtime.AdvocatePDDetectionStopped {
-				return
-			}
+	if runtime.AdvocatePDDetectionStopped {
+		return 0
+	}
 
-			res := runtime.AdvocateDetectBlocking()
-			if len(res) != 0 {
-				partialDeadlocks = append(partialDeadlocks, res...)
-			}
-
-			if interval <= 0 {
-				return
-			}
-
-			time.Sleep(time.Duration(interval) * time.Millisecond)
+	res := runtime.AdvocateDetectBlocking()
+	containsChan := false
+	for _, r := range res {
+		fields := strings.Split(r, "@")
+		if len(fields) == 0 {
+			continue
 		}
-	}()
+		elems := strings.Split(fields[len(fields)-1], ":")
+		if len(elems) == 0 {
+			continue
+		}
+		if elems[0] == "chan" {
+			containsChan = true
+			break
+		}
+	}
+	if len(res) != 0 {
+		partialDeadlocks = append(partialDeadlocks, res...)
+		if containsChan {
+			return runtime.ExitCodeMixedDeadlock
+		}
+		return runtime.ExitCodeCyclic
+	}
+
+	return 0
 }
 
 // StopPartialDeadlockDetection stops the partial deadlock detection before

@@ -46,7 +46,9 @@ func ReplayManager() {
 		// 	break
 		// }
 
-		if !PartialReplay && replayElem.Op == OperationReplayEnd {
+		// println(replayElem.Key())
+
+		if replayElem.Op == OperationReplayEnd {
 			replayEndFound(replayElem)
 			return
 		}
@@ -126,9 +128,14 @@ func replayEndFound(replayElem ReplayElement) {
 	// 	waitDeadlockDetect = true
 	// 	unlock(&waitDeadlockDetectLock)
 	// }
-	sleep(0.5)
 
+	sleep(0.1)
+
+	println("Disable Replay")
 	DisableReplay()
+
+	// time.Sleep(100 * time.Millisecond)
+	sleep(0.1)
 
 	if detectBlockingGC != nil {
 		res := detectBlockingGC()
@@ -196,6 +203,8 @@ func replayTimeout(replayElem ReplayElement) {
 			}
 		}
 		unlock(&waitingOpsMutex)
+
+		println("REL4")
 
 		suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
@@ -270,7 +279,10 @@ func WaitForReplayFinish() bool {
 
 func ReleaseAllWaiting() {
 	lock(&waitingOpsMutex)
-	for _, w := range waitingOps {
+	for key, w := range waitingOps {
+		if printDebug {
+			println("RELEASE ALL: ", key)
+		}
 		w.chWait <- ReplayElement{Blocked: false, Index: -1}
 	}
 	waitingOps = make(map[string]replayChan)

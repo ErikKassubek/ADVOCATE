@@ -114,6 +114,8 @@ func ExitReplayTimeout() {
 
 	// println("ExitPosition:" + top)
 
+	detectBlockingGC()
+
 	advocateExitCode = ExitCodeTimeout
 	AdvocatePanic("Timeout")
 }

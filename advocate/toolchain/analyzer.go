@@ -196,7 +196,7 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return rewriteNeeded, err
 	}
 
-	err = io.WriteTrace(&traceCopy, newTrace, true)
+	err = io.WriteTrace(&traceCopy, newTrace, true, true)
 	if err != nil {
 		return rewriteNeeded, err
 	}

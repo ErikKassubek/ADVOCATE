@@ -63,7 +63,8 @@ func startReplay(timeout int) {
 	// check for and if exists, read the rewrite_active.log file
 	activeStartTime, active, activeTime, numberActive := readReplayActive(tracePathRewritten)
 
-	if active != nil {
+	// if activeStartTime == 0 && numberActive == 0, add later
+	if active != nil && !(activeStartTime == 0 && numberActive == 0) {
 		runtime.AddActiveTrace(activeStartTime, active, numberActive)
 	}
 
@@ -102,6 +103,12 @@ func startReplay(timeout int) {
 	sort.Slice(*replayData, func(i, j int) bool {
 		return (*replayData)[i].Time < (*replayData)[j].Time
 	})
+
+	// add active trace if activeStartTime is 0 and number active is also zero
+	if activeStartTime == 0 && numberActive == 0 {
+		active, numberActive = allTraceElemToRuntimeActive(replayData)
+		runtime.AddActiveTrace(activeStartTime, active, numberActive)
+	}
 
 	if timeout > 0 {
 		// start time timeout
@@ -471,4 +478,32 @@ func FinishReplay() {
 	time.Sleep(time.Second)
 
 	runtime.ExitReplayWithCode(runtime.ExitCodeDefault, "")
+}
+
+func allTraceElemToRuntimeActive(replayTrace *runtime.AdvocateReplayTrace) (map[string][]int, int) {
+	counter := make(map[string]int)
+	res := make(map[string][]int)
+	resCounter := 0
+	for _, elem := range *replayTrace {
+		if elem.NotExec() {
+			continue
+		}
+
+		pos := elem.Key()
+		counter[pos] += 1
+
+		if _, ok := res[pos]; !ok {
+			res[pos] = make([]int, 0)
+		}
+		res[pos] = append(res[pos], counter[pos])
+		resCounter++
+	}
+
+	for key, _ := range res {
+		println("KEY:", key)
+	}
+	println(resCounter)
+
+	return res, resCounter
+
 }

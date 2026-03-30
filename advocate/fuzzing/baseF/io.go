@@ -70,7 +70,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	fuzzingTracePath := filepath.Join(paths.FuzzingTraces, fmt.Sprintf("fuzzingTrace_%d", NumberWrittenMutations))
 	ChainFiles[NumberWrittenMutations] = mut
 
-	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true)
+	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true, false)
 	if err != nil {
 		return false, fmt.Errorf("Could not create mutation: %s", err.Error())
 	}

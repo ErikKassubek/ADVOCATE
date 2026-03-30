@@ -30,7 +30,8 @@ import (
 //   - traceToWrite *analysis.Trace: Pointer to the trace to write
 //   - path string: The path to the file to write to
 //   - replay bool: If true, write only the elements relevant for replay
-func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
+//   - control bool: If true, write the active file to start in control mode
+func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) error {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -95,6 +96,11 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay bool) error {
 		}(i)
 	}
 	wg.Wait()
+
+	if control {
+		writeControlFile(path)
+	}
+
 	return nil
 }
 
@@ -136,4 +142,17 @@ func WriteRewriteInfoFile(path string, bug bugs.Bug, exitCode int, resultIndex i
 	}
 
 	return nil
+}
+
+func writeControlFile(path string) {
+	activePath := filepath.Join(path, paths.NameReplayActive)
+
+	f, err := os.Create(activePath)
+	if err != nil {
+		return
+	}
+
+	defer f.Close()
+
+	f.WriteString("0\n")
 }

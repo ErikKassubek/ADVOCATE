@@ -51,7 +51,7 @@ Advocate provides 4 different modes:
 ## Usage
 
 > [!WARNING]
-> This program currently only runs / is tested under Linux
+> This program is currently only tested under Linux
 
 > [!IMPORTANT]
 > advocate is implemented for go version 1.25.

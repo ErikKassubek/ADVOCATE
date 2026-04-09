@@ -499,13 +499,6 @@ func allTraceElemToRuntimeActive(replayTrace *runtime.AdvocateReplayTrace) (map[
 		resCounter++
 	}
 
-	if printDebug {
-		for key, _ := range res {
-			println("KEY:", key)
-		}
-		println(resCounter)
-	}
-
 	return res, resCounter
 
 }

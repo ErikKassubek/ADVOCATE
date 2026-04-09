@@ -1,0 +1,3 @@
+S,5590,5592,4000000000004,C.5590.0.4000000000003.R.f.0.0~D,-1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:477
+S,9742,9744,4000000000072,C.9742.0.4000000000003.R.f.0.0~D,-1,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:509
+S,10311,10311,4000000000073,C.9762.9764.1400000000035.S.f.1.0~C.9762.0.4000000000003.R.f.0.0,0,/home/erik/Uni/HiWi/ADVOCATE/examples/prometheus/discovery/consul/consul.go:581

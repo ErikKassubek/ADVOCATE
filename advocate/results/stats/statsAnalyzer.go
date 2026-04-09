@@ -11,6 +11,7 @@
 package stats
 
 import (
+	consts "advocate/utils/consts"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -194,19 +195,18 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 			textSplit2 := strings.Split(textSplit[1], " - ")
 
 			bugType = helper.ResultType(textSplit2[0])
-			log.Debug(textSplit2[0])
 			line = textSplit2[1]
 			bug.bugType = bugType
 		} else if strings.HasPrefix(line, "-> ") { // get paths
 			bug.paths = append(bug.paths, strings.TrimPrefix(line, "-> "))
 		} else if strings.Contains(line, "The analyzer found a way to resolve the leak") {
 			bug.replayWritten = true
-		} else if strings.Contains(line, "The analyzer has tries to rewrite the trace in such a way") {
+		} else if strings.Contains(line, consts.TheAnalyzerHasTriedToRewriteTheTraceInSuchAWay) {
 			bug.replayWritten = true
-		} else if strings.Contains(line, "The bug is likely a false positive") {
+		} else if strings.Contains(line, consts.TheBugIsLikelyAFalsePositive) {
 			bug.falsePos = true
-		} else if strings.HasPrefix(line, "It exited with the following code: ") {
-			code := strings.TrimPrefix(line, "It exited with the following code: ")
+		} else if strings.HasPrefix(line, consts.ItExitedWithTheFollowingCode) {
+			code := strings.TrimPrefix(line, consts.ItExitedWithTheFollowingCode)
 
 			num, err := strconv.Atoi(code)
 			if err != nil {
@@ -231,8 +231,6 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 	}
 
 	if resTotal != nil {
-		log.Debug("ISNOTNIL")
-		log.Debug(detected, bugType)
 		(resTotal)[detected][bugType]++
 
 		if bug.replayWritten {
@@ -246,8 +244,6 @@ func processBugFile(filePath string, foundBugs map[string]processedBug,
 		if bug.falsePos {
 			(resTotal)[falsePositive][bugType]++
 		}
-	} else {
-		log.Debug("ISNIL")
 	}
 
 	key := bug.getKey()

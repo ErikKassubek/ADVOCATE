@@ -1,341 +1,237 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate/analysis/rewriter/mixedDeadlock.go
-// Brief: Rewrite trace for mixed deadlocks
+// File: rewriteMixedDeadlock.go
+// Brief: Rewrite trace for mixed deadlocks (channel + mutex cycles)
 //
-// Author: Erik Kassubek, Ilian Kohl
-// Created: 2025-01-01
+// Author: Ilian Kohl
 //
 // License: BSD-3-Clause
 
 package active
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
 	"advocate/results/bugs"
 	"advocate/trace"
+	"advocate/utils/helper"
 	"errors"
 	"fmt"
 )
 
-// -----------------------------------------------------------------------
+// rewriteMixedDeadlock rewrites the trace to trigger the mixed deadlock.
 //
-// rewriteMixedDeadlock rewrites trace to provoke mixed deadlock
-// (Bug encoding TraceElement2, as produced by reportMixedDeadlockCycle)
+// Input:
 //
-// -----------------------------------------------------------------------
-// Algorithm (mirrors rewriteCyclicDeadlock):
+//	bug.TraceElement1 – *trace.ElementMutex, one per RDNode in cycle order
+//	bug.TraceElement2 – *trace.ElementChannel, one per CDNode in cycle order
+//	lockElems[i] and chanElems[i] are in the same goroutine.
 //
-//  1. lastTime = max tPre across all cycle elements
-
-//  2. ShortenTrace(lastTime, true) - drop everything after lastTime
-
-//  3. For each element in the cycle:
-//       CB (ElementChannel)-> ShortenRoutine(r, CB.tPre)
-//                             (re-executes channel op, blocks while holding lock)
-
-//       MB (ElementMutex)  -> ShortenRoutine(r, MB.tPre)
-// 							   (first of a pair where next is channel, same routine)
-//							   (re-executes lock acquire, blocks because InCS side holds it)
-
-//       DC (ElementMutex)  -> ShortenRoutine(r, DC.tPre)
-// 							   (lone DC with no adjacent channel of same routine)
-// 							   (RD node: re-executes lock request, blocks)
-
-//       DC following a CB (InCS acquire) -> no shortening; used for ordering only
-//       informational channel (after MB) -> no shortening
-
-//  4. Enforce acquire ordering for InCS pairs on same lock:
-//  	- In  original trace one InCS routine acquired before the other
-//        To provoke deadlock, routine that acquired LATER must now acquire FIRST
-//      - Use ShiftRoutine to push originally-earlier routine's acquire to after
-// 		  the originally-later one (like rewriteCyclicDeadlock)
-
-//  5. Shift any unlock of a cycle lock appearing after the blocking point to before it
-
-//  6. AddTraceElementReplay(lastTime+1, ExitCodeMixedDeadlock)
+// Cycle structure: [CD_0, RD_0, CD_1, RD_1, ..., CD_{n-1}, RD_{n-1}]
 //
-// -----------------------------------------------------------------------
-// Example: MD2-1B (both InCS, buffered channel):
+//	lockElems[i] = RD_i's lock acquire element
+//	chanElems[i] = CD_i's channel op element
+//	Inter-thread edge: RD_i -> CD_{(i+1)%n}
+//	  goroutine i needs the lock held/needed by goroutine (i+1)%n.
 //
-//	Original trace:
-//	  Routine 2 (sender):   m.Lock(tPre=14)  c<-1(tPre=20)  m.Unlock(tPre=24)
-//	  Routine 3 (receiver): m.Lock(tPre=36)  <-c(tPre=42)   m.Unlock(tPre=46)
-//	  Sender acquired the lock first (14 < 36); send succeeded (buffered)
-//	  Receiver acquired after, received from buffer; no deadlock
+// Deadlocking schedule:
 //
-//	Cycle elements from reportMixedDeadlockCycle:
-//	  CB: ElementChannel routine=2 tPre=20 (send — InCS blocking point)
-//	  DC: ElementMutex   routine=2 tPre=14 (InCS acquire, lock ID + ordering)
-//	  CB: ElementChannel routine=3 tPre=42 (recv — InCS blocking point)
-//	  DC: ElementMutex   routine=3 tPre=36 (InCS acquire, lock ID + ordering)
+//	The cycle is reported with the canonical root (smallest tPre CD),
+//	producing a single rewrite per unique cycle.
 //
-//	Rewritten trace:
-//	  Routine 3 acquires first -> m.Lock(36) -> <-c on empty buffer -> blocks
-//	  Routine 2 tries m.Lock(14) -> blocks (routine 3 holds it)
-//	  Deadlock: routine 3 blocks on empty channel; routine 2 blocks on mutex.
+//	We identify for each pair (i, (i+1)%n):
+//	  Holder = goroutine (i+1)%n: holds lock while its channel op blocks.
+//	  Waiter = goroutine i: tries to acquire lock, blocks before its channel op.
 //
-//	Shortening:
-//	  ShortenRoutine(2, 20) -> routine 2 retains only: m.Lock(14)
-//	  ShortenRoutine(3, 42) -> routine 3 retains only: m.Lock(36)
+//	For CS holder: holds lock during channel op -> chan op blocks (no partner/
+//	               empty buffer) -> keep acq(x) + chan_op, set chan_op.tPost=0.
+//	For PCS waiter: needs to re-acquire lock before reaching channel op ->
+//	                blocks on acq(x) -> keep only acq(x), set acq.tPost=0,
+//	                remove chan_op from trace.
 //
-//	Ordering:
-//	  DC for routine 2 has tPre=14, DC for routine 3 has tPre=36.
-//	  Routine 2 acquired first (14 < 36) -> routine 3 must go first.
-//	  ShiftRoutine(routine=2, startTPre=14, shift) so that routine 2's lock
-//	  acquire is pushed after routine 3's, by finding the first element in
-//	  routine 2's remaining trace that is concurrent with routine 3's acquire
-//	  and shifting from there.
-// -----------------------------------------------------------------------
+//	For n=2 with one CS and one PCS:
+//	  MD2-2 (sender CS, receiver PCS):
+//	    Sender is holder (CS): keep acq(x) + snd(c), snd.tPost=0 (blocks, no recv)
+//	    Receiver is waiter (PCS): keep acq(x) only, acq.tPost=0 (blocks on lock)
+//	  MD2-3 (sender PCS, receiver CS):
+//	    Receiver is holder (CS): keep acq(x) + rcv(c), rcv.tPost=0
+//	    Sender is waiter (PCS): keep acq(x) only, acq.tPost=0
+//
+//	Ordering: shift holder's elements to run before waiter's acq(x).
+//
+// tPost=0 sentinel: GetTSort()=MaxInt -> replayer blocks at this operation.
+func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
+	lockElems := bug.TraceElement1
+	chanElems := bug.TraceElement2
 
-// rewriteMixedDeadlock rewrites trace to provoke the mixed deadlock encoded in bug.TraceElement2 (cycle elements)
-func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, exitCode int) error {
-	cycle := bug.TraceElement2
-	if len(cycle) < 2 {
-		return errors.New("mixed deadlock rewrite: need at least 2 cycle elements")
+	if len(lockElems) == 0 {
+		return errors.New("rewriteMixedDeadlock: no lock elements in bug")
+	}
+	if len(chanElems) == 0 {
+		return errors.New("rewriteMixedDeadlock: no channel elements in bug")
+	}
+	if len(lockElems) != len(chanElems) {
+		return fmt.Errorf("rewriteMixedDeadlock: lock count %d != channel count %d",
+			len(lockElems), len(chanElems))
 	}
 
-	// Step 1: lastTime = max tPre across all cycle elements
-	lastTime := findLastTime(cycle)
-	if lastTime <= 0 {
-		return errors.New("mixed deadlock rewrite: invalid lastTime")
-	}
+	n := len(lockElems)
 
-	// Step 2: drop everything after lastTime
+	// -----------------------------------------------------------------------
+	// Step 1: find latest tPost, shorten overall trace.
+	// -----------------------------------------------------------------------
+	lastTime := 0
+	for _, e := range lockElems {
+		if e.GetTPost() > lastTime {
+			lastTime = e.GetTPost()
+		}
+	}
+	for _, e := range chanElems {
+		if e.GetTPost() > lastTime {
+			lastTime = e.GetTPost()
+		}
+	}
+	fmt.Println("rewriteMixedDeadlock: lastTime =", lastTime)
 	tr.ShortenTrace(lastTime, true)
 
-	// Step 3: determine the blocking point for each routine and shorten & walk cycle list
+	// -----------------------------------------------------------------------
+	// Step 2: for each inter-thread pair (waiter i -> holder (i+1)%n),
+	// shorten and mark blocking elements.
 	//
-	// Encoding from reportMixedDeadlockCycle produces alternating pairs (channel, mutex)
-	// or (mutex, channel) for CD nodes, and lone mutex elements for RD nodes
+	// Waiter goroutine i:
+	//   - Keep only acq(x) = lockElems[i], remove chanElems[i] onward.
+	//   - Set lockElems[i].tPost = 0 (blocks acquiring lock).
 	//
-	// Classification rules based on Go type of adjacent elements
-	//   [ElementChannel at i, ElementMutex at i+1, same routine]
-	//     -> CB + DC  (InCS): shorten to channel element's tPre
+	// Holder goroutine (i+1)%n:
+	//   - Keep acq(x) = lockElems[(i+1)%n] AND chanElems[(i+1)%n].
+	//   - Set chanElems[(i+1)%n].tPost = 0 (blocks on channel op).
 	//
-	//   [ElementMutex at i, ElementChannel at i+1, same routine]
-	//     -> MB + informational channel  (PCS): shorten to mutex element's tPre
-	//
-	//   [ElementMutex at i, no adjacent channel of same routine]
-	//     -> lone DC  (RD node): shorten to mutex element's tPre
-	n := len(cycle)
-
-	// shortenTo: routine -> tPre to shorten to (the blocking element's tPre)
-	shortenTo := make(map[int]int)
-
-	// dcAcqTPre: lockID -> list of (routine, tPre-of-acquire) for InCS DC elements
-	// To later enforce ordering between InCS pairs
-	type dcInfo struct {
-		routine int
-		tPre    int
-	}
-	dcAcqByLock := make(map[int][]dcInfo) // lockID -> []dcInfo
-
-	claimed := make([]bool, n)
-
-	// First pass: identify adjacent same-routine pairs.
+	// For n=2 each goroutine plays both roles. We process pair 0 only
+	// (waiter=goroutine 0, holder=goroutine 1). This produces one consistent
+	// deadlocking schedule. The canonical root deduplication ensures only one
+	// rewrite is generated per unique cycle, making the second pair redundant.
+	// -----------------------------------------------------------------------
 	for i := 0; i < n; i++ {
-		if claimed[i] {
-			continue
-		}
-		next := (i + 1) % n
-		if claimed[next] {
-			continue
-		}
-		ei := cycle[i]
-		ej := cycle[next]
-		if ei == nil || ej == nil || ei.GetRoutine() != ej.GetRoutine() {
-			continue
-		}
+		holderIdx := (i + 1) % n
 
-		chanI, isChannelI := ei.(*trace.ElementChannel)
-		mutI, isMutexI := ei.(*trace.ElementMutex)
-		chanJ, isChannelJ := ej.(*trace.ElementChannel)
-		mutJ, isMutexJ := ej.(*trace.ElementMutex)
+		waiterLock := lockElems[i]
+		waiterChan := chanElems[i]
+		holderLock := lockElems[holderIdx]
+		holderChan := chanElems[holderIdx]
 
-		switch {
-		case isChannelI && isMutexJ && mutJ.IsLock():
-			// CB + DC  (InCS)
-			claimed[i] = true
-			claimed[next] = true
-			// Shorten to channel blocking point
-			r := chanI.GetRoutine()
-			t := chanI.GetTPre()
-			if cur, set := shortenTo[r]; !set || t < cur {
-				shortenTo[r] = t
-			}
-			// Record DC acquire info for ordering
-			dcAcqByLock[mutJ.GetObjId()] = append(dcAcqByLock[mutJ.GetObjId()], dcInfo{
-				routine: mutJ.GetRoutine(),
-				tPre:    mutJ.GetTPre(),
-			})
+		waiterRout := waiterLock.GetRoutine()
+		holderRout := holderLock.GetRoutine()
 
-		case isMutexI && mutI.IsLock() && isChannelJ:
-			// MB + informational channel  (PCS)
-			claimed[i] = true
-			claimed[next] = true
-			// Shorten to mutex blocking point.
-			r := mutI.GetRoutine()
-			t := mutI.GetTPre()
-			if cur, set := shortenTo[r]; !set || t < cur {
-				shortenTo[r] = t
-			}
-			// MB lock ID is collected for unlock-shift but NOT for ordering
-			// (only one side holds the lock in PCS patterns)
-			_ = chanJ
-		}
+		fmt.Printf("rewriteMixedDeadlock: pair %d: waiter=R%d holder=R%d\n", i, waiterRout, holderRout)
+
+		// Shorten waiter to just before chanElems[i], keeps lockElems[i], drops rest.
+		// ShortenRoutine(rout, t) removes tSort >= t.
+		// waiterLock.tPost < waiterChan.tPost (same goroutine, earlier event).
+		// We want to keep waiterLock but drop waiterChan+.
+		// Pass waiterChan's tSort (= waiterChan.tPost since tPost≠0) to remove it.
+		tr.ShortenRoutine(waiterRout, waiterChan.GetTSort())
+		fmt.Printf("rewriteMixedDeadlock: waiter R%d shortened (drop chanElem tSort=%d)\n",
+			waiterRout, waiterChan.GetTSort())
+
+		// Shorten holder to just after chanElems[holderIdx] — keeps both M and C.
+		// holderChan.tPost+1 removes everything after holderChan.
+		tr.ShortenRoutine(holderRout, holderChan.GetTPost()+1)
+		fmt.Printf("rewriteMixedDeadlock: holder R%d shortened to C.tPost=%d\n",
+			holderRout, holderChan.GetTPost())
+
+		// Mark waiterLock as blocking: tPost=0.
+		setTPostZero(waiterLock)
+		fmt.Printf("rewriteMixedDeadlock: waiterLock R%d tPre=%d tPost=%d\n",
+			waiterRout, waiterLock.GetTPre(), waiterLock.GetTPost())
+
+		// Mark holderChan as blocking: tPost=0.
+		setTPostZero(holderChan)
+		fmt.Printf("rewriteMixedDeadlock: holderChan R%d tPre=%d tPost=%d\n",
+			holderRout, holderChan.GetTPre(), holderChan.GetTPost())
 	}
 
-	// Second pass: handle unclaimed elements (lone DC / RD nodes)
-	for i := 0; i < n; i++ {
-		if claimed[i] || cycle[i] == nil {
-			continue
-		}
-		mut, isMutex := cycle[i].(*trace.ElementMutex)
-		if !isMutex || !mut.IsLock() {
-			continue
-		}
-		// Lone DC: RD node - shorten to lock-request tPre
-		r := mut.GetRoutine()
-		t := mut.GetTPre()
-		if cur, set := shortenTo[r]; !set || t < cur {
-			shortenTo[r] = t
-		}
-	}
-
-	// Apply shortening
-	for r, t := range shortenTo {
-		tr.ShortenRoutine(r, t)
-		fmt.Printf("[rewriteMixedDeadlock] ShortenRoutine(%d, %d)\n", r, t)
-	}
-
-	// Step 4: enforce acquire ordering for InCS pairs on the same lock
+	// -----------------------------------------------------------------------
+	// Step 3: reorder, holder's elements before waiter's lock acquire.
 	//
-	// For each lock that has exactly two InCS DC entries, we know which
-	// routine acquired first in the original trace (smaller tPre)
-	// To provoke deadlock we must make the later-acquiring routine go first
-	for lockID, infos := range dcAcqByLock {
-		if len(infos) != 2 {
-			// Not a two-InCS pair on this lock - skip
+	// For each pair i, assign holder's elements tPre values just before the
+	// waiter's lock acquire tPre. This forces the holder to acquire the lock
+	// first in the replay ordering.
+	//
+	// holderLock gets a real tPost (non-zero) so it sorts by tPost and
+	// appears before the waiter. holderChan has tPost=0 so it's at MaxInt
+	// (end of trace) — the replayer will reach it and block there.
+	//
+	// We use SetTPre (not SetTSort) on holderLock to preserve its tPost=non-zero:
+	//   - SetTPre only adjusts tPost upward if tPost < tPre.
+	//   - We keep holderLock.tPost as-is (it completed in working trace).
+	//   - We only change holderLock.tPre to the new ordering position.
+	// -----------------------------------------------------------------------
+	for i := 0; i < n; i++ {
+		holderIdx := (i + 1) % n
+
+		waiterLock := lockElems[i]
+		holderLock := lockElems[holderIdx]
+		holderRout := holderLock.GetRoutine()
+
+		waiterTPre := waiterLock.GetTPre()
+		holderElems := tr.GetRoutineTrace(holderRout)
+		nHolder := len(holderElems)
+
+		if nHolder == 0 {
+			fmt.Printf("rewriteMixedDeadlock: holder R%d has empty trace — skip reorder\n", holderRout)
 			continue
 		}
-		_ = lockID
 
-		// Identify which routine acquired first
-		first, second := infos[0], infos[1]
-		if second.tPre < first.tPre {
-			first, second = second, first
+		// Ensure room before waiterTPre for nHolder elements.
+		if waiterTPre <= nHolder {
+			shift := nHolder - waiterTPre + 1
+			tr.ShiftTrace(waiterTPre, shift)
+			// Update waiterLock's tPre reference after shift.
+			waiterTPre = waiterLock.GetTPre() // re-read after shift
+			fmt.Printf("rewriteMixedDeadlock: ShiftTrace by %d, new waiterTPre=%d\n",
+				shift, waiterTPre)
 		}
-		// first acquired earlier; second acquired later
-		// We want second to go before first -> shift first's remaining trace
 
-		// Find the acquire element of 'second' in the (already shortened) trace
-		var secondAcqElem trace.Element
-		for _, e := range tr.GetRoutineTrace(second.routine) {
-			mut, ok := e.(*trace.ElementMutex)
-			if ok && mut.IsLock() && mut.GetTPre() == second.tPre {
-				secondAcqElem = e
-				break
+		// Assign holder elements new tPre: [waiterTPre-nHolder .. waiterTPre-1].
+		// - Non-blocking elements (tPost≠0): use SetT to set both tPre and tPost
+		//   so they sort correctly by tPost.
+		// - Blocking elements (tPost=0): use SetTPre only — tPost stays 0,
+		//   keeping GetTSort()=MaxInt.
+		newT := waiterTPre - nHolder
+		for _, hElem := range holderElems {
+			oldTPre := hElem.GetTPre()
+			if hElem.GetTPost() == 0 {
+				hElem.SetTPre(newT)
+			} else {
+				hElem.SetT(newT)
 			}
-		}
-		if secondAcqElem == nil {
-			fmt.Printf("[rewriteMixedDeadlock] ordering: could not find acquire elem"+
-				" for routine %d lock tPre=%d\n", second.routine, second.tPre)
-			continue
-		}
-
-		// Find the first element in 'first' routine's remaining trace that is
-		// concurrent with second's acquire (same as rewriteCyclicDeadlock)
-		var concurrentStart trace.Element
-		for _, e := range tr.GetRoutineTrace(first.routine) {
-			if clock.GetHappensBefore(e.GetWVC(), secondAcqElem.GetWVC()) == hb.Concurrent {
-				concurrentStart = e
-				break
-			}
-		}
-		if concurrentStart == nil {
-			fmt.Printf("[rewriteMixedDeadlock] ordering: no concurrent start"+
-				" for routine %d vs routine %d\n", first.routine, second.routine)
-			continue
-		}
-
-		// Compute shift so that first's concurrent section starts after second's acquire
-		shift := (secondAcqElem.GetTSort() - concurrentStart.GetTSort()) + 1
-
-		rt := tr.GetRoutineTrace(first.routine)
-		routineEnd := rt[len(rt)-1]
-		tr.ShiftRoutine(first.routine, concurrentStart.GetTPre(), shift)
-		if routineEnd.GetTPost() > lastTime {
-			lastTime = routineEnd.GetTPost()
-		}
-		tr.ShiftConcurrentOrAfterToAfter(secondAcqElem)
-
-		fmt.Printf("[rewriteMixedDeadlock] ordering: shifted routine %d by %d"+
-			" to execute after routine %d\n", first.routine, shift, second.routine)
-	}
-
-	// Step 5: shift unlocks of cycle locks appearing after the blocking point to before it
-	// Collect all lock IDs involved in the cycle for the unlock scan
-	cycleLockIDs := make(map[int]struct{})
-	for _, e := range cycle {
-		if e == nil {
-			continue
-		}
-		if mut, ok := e.(*trace.ElementMutex); ok && mut.IsLock() {
-			cycleLockIDs[mut.GetObjId()] = struct{}{}
+			fmt.Printf("rewriteMixedDeadlock: holder R%d elem tPre %d->%d tPost=%d\n",
+				holderRout, oldTPre, newT, hElem.GetTPost())
+			newT++
 		}
 	}
 
-	for routine, blockTPre := range shortenTo {
-		for _, cand := range tr.GetRoutineTrace(routine) {
-			unlock, ok := cand.(*trace.ElementMutex)
-			if !ok || unlock.IsLock() {
-				continue
-			}
-			if _, isCycleLock := cycleLockIDs[unlock.GetObjId()]; !isCycleLock {
-				continue
-			}
-			if unlock.GetTSort() < blockTPre {
-				// Already before the blocking point - nothing to do
-				continue
-			}
+	// -----------------------------------------------------------------------
+	// Step 4: insert replay exit-code marker.
+	// -----------------------------------------------------------------------
+	tr.AddTraceElementReplay(lastTime+1, code)
 
-			var concurrentStart trace.Element
-			for _, e := range tr.GetRoutineTrace(routine) {
-				if clock.GetHappensBefore(e.GetWVC(), unlock.GetWVC()) == hb.Concurrent {
-					concurrentStart = e
-					break
-				}
-			}
-			if concurrentStart == nil {
-				fmt.Printf("[rewriteMixedDeadlock] unlock shift: no concurrent start"+
-					" for routine %d unlock lock %d\n", routine, unlock.GetObjId())
-				continue
-			}
-
-			rt := tr.GetRoutineTrace(routine)
-			routineEnd := rt[len(rt)-1]
-			tr.ShiftRoutine(routine, concurrentStart.GetTPre(),
-				(unlock.GetTSort()-concurrentStart.GetTSort())+1)
-			if routineEnd.GetTPost() > lastTime {
-				lastTime = routineEnd.GetTPost()
-			}
-			tr.ShiftConcurrentOrAfterToAfter(unlock)
-		}
-	}
-
-	// Step 6: replay end marker
-	tr.AddTraceElementReplay(lastTime+1, exitCode)
-
-	fmt.Println("[rewriteMixedDeadlock] cycle elements:")
-	for _, e := range cycle {
-		if e == nil {
-			continue
-		}
-		fmt.Printf("  routine=%d type=%T tPre=%d id=%d\n",
-			e.GetRoutine(), e, e.GetTPre(), e.GetObjId())
-	}
+	fmt.Printf("rewriteMixedDeadlock: done. Marker at %d code %d (ExitCodeMixedDeadlock=%d)\n",
+		lastTime+1, code, helper.ExitCodeMixedDeadlock)
 
 	return nil
+}
+
+// setTPostZero sets tPost=0 on an element while preserving tPre.
+//
+// tPost=0 is ADVOCATE's sentinel for "operation never completed" ->
+// GetTSort()=MaxInt -> replayer blocks at this operation.
+//
+// Method:
+//
+//	SetTSort(0) sets tPre=tPost=0.
+//	SetTPre(savedTPre) restores tPre; since tPost==0, SetTPre's guard
+//	(tPost!=0 && tPost<tPre) does NOT fire, so tPost stays at 0.
+func setTPostZero(elem trace.Element) {
+	savedTPre := elem.GetTPre()
+	elem.SetTSort(0)        // tPre=0, tPost=0
+	elem.SetTPre(savedTPre) // restore tPre; tPost stays 0
 }

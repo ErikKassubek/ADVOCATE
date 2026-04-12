@@ -1,8 +1,9 @@
 // advocate/analysis/analysis/scenarios/mixedDeadlock.go
 
 // Copyright (c) 2024 Erik Kassubek
+//
 // File: mixedDeadlock.go
-// Brief: Two-phase mixed deadlock detection.
+// Brief: Analysis for mixed deadlocks involving both mutexes and channels.
 //
 // Author: Ilian Kohl
 //
@@ -14,725 +15,637 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb"
 	"advocate/analysis/hb/clock"
-	"advocate/analysis/hb/vc"
 	"advocate/results/results"
 	"advocate/trace"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
+	"fmt"
 )
 
-// -----------------------------------------------------------------------
-// Two-phase mixed deadlock detection
-// -----------------------------------------------------------------------
-// Phase 1 (online):  mutex events     -> AcqHist / RelHist  (mutex.go)
-//                    channel events   -> CommHist           (channel.go)
-// Phase 2 (offline): build RD ∪ CD dependency graph, find cycles, filter, report
+// ---------------------------------------------------------------------------
+// Data structures
+// ---------------------------------------------------------------------------
 
-// -----------------------------------------------------------------------
-// Data Structures
-// -----------------------------------------------------------------------
+type mdLockRef struct {
+	LockID baseA.LockID
+	IsCS   bool
+	RD     *mdRDNode
+}
 
-// ResetMixedDeadlockState resets all MD-specific recording state
+type mdRDNode struct {
+	Thread   baseA.ThreadID
+	Lock     baseA.LockID
+	Lockset  baseA.Lockset
+	Requests []baseA.LockEvent
+}
+
+type mdCDNode struct {
+	Thread   baseA.ThreadID
+	ChanID   int
+	OpType   trace.OperationType
+	Buffered bool
+	Event    baseA.LockEvent
+	AssocRDs []mdLockRef
+}
+
+type mdThreadState struct {
+	CurrentLockset baseA.Lockset
+	ActiveRDs      map[baseA.LockID]*mdRDNode
+	MostRecentRD   map[baseA.LockID]*mdRDNode
+}
+
+type mdState struct {
+	Threads map[baseA.ThreadID]*mdThreadState
+	AllRDs  []*mdRDNode
+	AllCDs  []*mdCDNode
+}
+
+var currentMDState mdState
+
+// ---------------------------------------------------------------------------
+// Phase 1: Online Record Dependencies
+// ---------------------------------------------------------------------------
+
+// Reset data structures for a new analysis run (analysis.go)
 func ResetMixedDeadlockState() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
-
-	baseA.CurrentMDState = baseA.MDState{
-		AcqHist:  make(map[int]map[int][]baseA.MDLockHistEntry), // routine -> lockID -> list of acquires
-		RelHist:  make(map[int]map[int][]baseA.MDLockHistEntry), // routine -> lockID -> list of releases
-		CommHist: make(map[int]map[int][]baseA.MDCommHistEntry), // routine -> chanID -> list of comm events
+	currentMDState = mdState{
+		Threads: make(map[baseA.ThreadID]*mdThreadState),
 	}
 }
 
-// MDNodeKind for RD and CD nodes in graph
-type mdNodeKind int
-
-const (
-	mdNodeRD mdNodeKind = iota // resource (lock) dependency
-	mdNodeCD                   // communication dependency
-)
-
-// mdRD wraps lock dependency: RD = (T, l, LS, Req)
-type mdRD struct {
-	dep baseA.LockDependency
-}
-
-// mdCD wraps communication dependency: CD = (T, op(c)?, LS, Req)
-type mdCD struct {
-	routine  int
-	chanID   int
-	op       trace.OperationType
-	lockset  mdLockset // contains InCS/PCS info
-	buffered bool
-	req      baseA.MDCommHistEntry
-}
-
-// mdLockset maps lockID -> mdLockEntry
-type mdLockset map[int]mdLockEntry
-
-// mdLockEntry is ONE entry in a CD's lockset
-type mdLockEntry struct {
-	acq   baseA.MDLockHistEntry
-	inCS  bool // inCS:  the routine held this lock at channel-event time
-	isPCS bool // isPCS: the routine had a preceding CS on this lock
-}
-
-// mdNode as tagged union of mdRD and mdCD
-type mdNode struct {
-	kind mdNodeKind
-	rd   *mdRD
-	cd   *mdCD
-}
-
-// -----------------------------------------------------------------------
-// Online recording of dependencies
-// -----------------------------------------------------------------------
-
-// HandleChannelEventForMixedDeadlock records a completed channel event
-// Pupulates MD communication history (baseA.CurrentMDState.CommHist)
-func HandleChannelEventForMixedDeadlock(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
-		return
+func getOrCreateMDThread(tid baseA.ThreadID) *mdThreadState {
+	if t, ok := currentMDState.Threads[tid]; ok {
+		return t
 	}
-	routine := ch.GetRoutine()
-	entry := baseA.MDCommHistEntry{
-		Routine:  routine,
-		ChanID:   ch.GetObjId(),
-		Op:       ch.GetType(true),
-		OID:      ch.GetOID(),
-		TraceID:  ch.GetTID(),
-		VC:       vc.CurrentVC[routine].Copy(),
-		WVC:      vc.CurrentWVC[routine].Copy(),
-		Elem:     ch,
-		Buffered: ch.IsBuffered(),
+	t := &mdThreadState{
+		CurrentLockset: make(baseA.Lockset),
+		ActiveRDs:      make(map[baseA.LockID]*mdRDNode),
+		MostRecentRD:   make(map[baseA.LockID]*mdRDNode),
 	}
-	baseA.RecordMDCommEvent(entry)
+	currentMDState.Threads[tid] = t
+	return t
 }
 
-// HandleMutexEventForMixedDeadlock records a mutex acquire or release
-// Populates MD lock history (baseA.CurrentMDState.AcqHist / RelHist)
-func HandleMutexEventForMixedDeadlock(mu *trace.ElementMutex) {
-	routine := mu.GetRoutine()
+// Record resource requests
+func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
 
-	entry := baseA.MDLockHistEntry{
-		Routine: routine,
-		LockID:  mu.GetObjId(),
-		TraceID: mu.GetTID(),
-		VC:      vc.CurrentVC[routine].Copy(),
-		WVC:     vc.CurrentWVC[routine].Copy(),
-	}
+	tid := baseA.ThreadID(element.GetRoutine())
+	t := getOrCreateMDThread(tid)
 
-	switch mu.GetType(true) {
-	case trace.MutexLock, trace.MutexTryLock:
-		entry.IsRead = false
-		entry.IsAcq = true
-		baseA.RecordMDAcquire(entry)
+	readLock := false
+	switch element.GetType(true) {
 	case trace.MutexRLock, trace.MutexTryRLock:
-		entry.IsRead = true
-		entry.IsAcq = true
-		baseA.RecordMDAcquire(entry)
-	case trace.MutexUnlock:
-		entry.IsRead = false
-		entry.IsAcq = false
-		baseA.RecordMDRelease(entry)
-	case trace.MutexRUnlock:
-		entry.IsRead = true
-		entry.IsAcq = false
-		baseA.RecordMDRelease(entry)
+		readLock = true
+	}
+	lockID := baseA.LockID{ID: element.GetObjId(), ReadLock: readLock}
+
+	event := baseA.LockEvent{
+		ThreadID:    tid,
+		TraceID:     element.GetTID(),
+		LockID:      element.GetObjId(),
+		VectorClock: element.GetWVC().Copy(),
+	}
+
+	switch element.GetType(true) {
+	case trace.MutexLock, trace.MutexTryLock, trace.MutexRLock, trace.MutexTryRLock:
+		mdInsertRD(t, tid, lockID, event)
+		t.CurrentLockset.Add(lockID)
+		log.Debug(fmt.Sprintf("MD phase1: T%d acq(lock=%d) LS=%v -> RD recorded",
+			tid, element.GetObjId(), t.CurrentLockset))
+
+	case trace.MutexUnlock, trace.MutexRUnlock:
+		if rd, ok := t.ActiveRDs[lockID]; ok {
+			t.MostRecentRD[lockID] = rd
+			delete(t.ActiveRDs, lockID)
+			log.Debug(fmt.Sprintf("MD phase1: T%d rel(lock=%d) -> moved to MostRecentRD",
+				tid, element.GetObjId()))
+		}
+		t.CurrentLockset.Remove(lockID)
+	}
+}
+
+// Insert RD nodes for requested lock acquires
+func mdInsertRD(t *mdThreadState, tid baseA.ThreadID, lockID baseA.LockID, event baseA.LockEvent) {
+	ls := t.CurrentLockset.Clone()
+	if existing, ok := t.ActiveRDs[lockID]; ok {
+		if existing.Lockset.Equal(ls) {
+			existing.Requests = append(existing.Requests, event.Clone())
+			return
+		}
+	}
+	rd := &mdRDNode{
+		Thread:   tid,
+		Lock:     lockID,
+		Lockset:  ls,
+		Requests: []baseA.LockEvent{event.Clone()},
+	}
+	t.ActiveRDs[lockID] = rd
+	currentMDState.AllRDs = append(currentMDState.AllRDs, rd)
+}
+
+// Record channel requests
+func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
+	opType := element.GetType(true)
+	switch opType {
+	case trace.ChannelSend, trace.ChannelRecv, trace.ChannelClose:
 	default:
 		return
 	}
-}
 
-// -----------------------------------------------------------------------
-// Lockset reconstruction
-// -----------------------------------------------------------------------
+	tid := baseA.ThreadID(element.GetRoutine())
+	t := getOrCreateMDThread(tid)
 
-// reconstructLockset returns  lock context of `routine` at `eventVC`
-//
-// For each lock x acquired by routine:
-//   - nacq = number of acquires with VC <HB eventVC
-//   - nrel = number of releases with VC <HB eventVC
-//   - nacq > nrel  -> InCS
-//   - nacq == nrel -> PCS
-//
-// Counting handles re-entrant RLocks correctly (2 RLocks - 1 RUnlock = InCS)
-func reconstructLockset(routine int, eventVC *clock.VectorClock) mdLockset {
-	ls := make(mdLockset)
-	if eventVC == nil {
-		return ls
+	event := baseA.LockEvent{
+		ThreadID:    tid,
+		TraceID:     element.GetTID(),
+		LockID:      element.GetObjId(),
+		VectorClock: element.GetWVC().Copy(),
 	}
 
-	acqMap := baseA.CurrentMDState.AcqHist[routine]
-	relMap := baseA.CurrentMDState.RelHist[routine]
+	var assocRDs []mdLockRef
 
-	for lockID, acqList := range acqMap {
-		nacq := 0
-		var latestAcq *baseA.MDLockHistEntry
-		for i := range acqList {
-			a := &acqList[i]
-			if a.VC == nil || clock.GetHappensBefore(a.VC, eventVC) != hb.Before {
-				continue
-			}
-			nacq++
-			if latestAcq == nil || clock.GetHappensBefore(latestAcq.VC, a.VC) == hb.Before {
-				latestAcq = a
-			}
+	for lockID := range t.CurrentLockset {
+		if rd, ok := t.ActiveRDs[lockID]; ok {
+			assocRDs = append(assocRDs, mdLockRef{LockID: lockID, IsCS: true, RD: rd})
 		}
-		if nacq == 0 || latestAcq == nil {
+	}
+	for lockID, rd := range t.MostRecentRD {
+		if _, held := t.CurrentLockset[lockID]; held {
 			continue
 		}
-
-		nrel := 0
-		for i := range relMap[lockID] {
-			r := &relMap[lockID][i]
-			if r.VC != nil && clock.GetHappensBefore(r.VC, eventVC) == hb.Before {
-				nrel++
-			}
-		}
-
-		if nacq > nrel {
-			ls[lockID] = mdLockEntry{acq: *latestAcq, inCS: true}
-		} else {
-			ls[lockID] = mdLockEntry{acq: *latestAcq, isPCS: true}
-		}
-	}
-	return ls
-}
-
-// buildCD constructs CD node from recorded comm event
-func buildCD(g baseA.MDCommHistEntry) *mdCD {
-	return &mdCD{
-		routine:  g.Routine,
-		chanID:   g.ChanID,
-		op:       g.Op,
-		lockset:  reconstructLockset(g.Routine, g.VC),
-		buffered: g.Buffered,
-		req:      g,
-	}
-}
-
-// hasRelevantLock returns true if CD has at least one InCS or PCS lock
-func (cd *mdCD) hasRelevantLock() bool {
-	return len(cd.lockset) > 0
-}
-
-// -----------------------------------------------------------------------
-// Typed dependency edges
-// -----------------------------------------------------------------------
-
-// edgeRD_RD: l_a ∈ LS_b = RD a requests lock that RD b holds (a blocks on b)
-func edgeRD_RD(a, b *mdRD) bool {
-	for l := range b.dep.Lockset {
-		if a.dep.Lock.EqualsCouldBlock(l) {
-			return true
-		}
-	}
-	return false
-}
-
-// edgeRD_CD: l_rd ∈ InCS(cd) = CD holds lock RD is requesting (CD blocks RD)
-func edgeRD_CD(rd *mdRD, cd *mdCD) bool {
-	for lockID, entry := range cd.lockset {
-		if entry.inCS && rd.dep.Lock.ID == lockID {
-			return true
-		}
-	}
-	return false
-}
-
-// edgeCD_CD detects two-cycle cases:
-//
-//	MD2-1B  InCS/InCS  buffered            both hold lock; channel async
-//	MD2-1U  InCS/InCS  unbuffered snd/rcv  rejected - not observable / mutually exclusive
-//	MD2-2U  InCS/PCS   unbuffered          sender blocks on send; recv can't re-acquire
-//	MD2-2B  InCS/PCS   buffered            rejected - send unblocking and recv lock acq/rel unblocking
-//	MD2-3   PCS/InCS   any                 receiver blocks on recv; sender can't re-acquire
-//	        InCS/PCS   close side          rejected - close is non-blocking
-//	        PCS/PCS    any                 rejected - neither side blocking
-//	        Read/Read  any                 rejected - RLocks compatible
-func edgeCD_CD(a, b *mdCD) bool {
-	if a.chanID != b.chanID || a.routine == b.routine {
-		return false
+		assocRDs = append(assocRDs, mdLockRef{LockID: lockID, IsCS: false, RD: rd})
 	}
 
-	aIsSend := a.op == trace.ChannelSend
-	bIsSend := b.op == trace.ChannelSend
-	aIsRecv := a.op == trace.ChannelRecv
-	bIsRecv := b.op == trace.ChannelRecv
-	aIsClose := a.op == trace.ChannelClose
-	bIsClose := b.op == trace.ChannelClose
-
-	if !(aIsSend && bIsRecv) && !(aIsClose && bIsRecv) &&
-		!(bIsSend && aIsRecv) && !(bIsClose && aIsRecv) {
-		return false
+	if len(assocRDs) == 0 {
+		log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — no lock context, skipping",
+			tid, opType, element.GetObjId()))
+		return
 	}
 
-	for lockID, aEntry := range a.lockset {
-		bEntry, ok := b.lockset[lockID]
-		if !ok {
-			continue
-		}
-		if aEntry.acq.IsRead && bEntry.acq.IsRead {
-			continue // Read/Read
-		}
-		if aEntry.isPCS && bEntry.isPCS {
-			continue // PCS/PCS
-		}
-		if aEntry.inCS && bEntry.inCS {
-			if !a.buffered && !b.buffered && ((aIsSend && bIsRecv) || (bIsSend && aIsRecv)) {
-				continue // MD2-1U
-			}
-			return true // MD2-1B or close/recv InCS/InCS
-		}
-		// InCS/PCS or PCS/InCS
-		senderInCS_recvPCS := (aIsSend && aEntry.inCS && bIsRecv && bEntry.isPCS) ||
-			(bIsSend && bEntry.inCS && aIsRecv && aEntry.isPCS)
-		closeInCS_recvPCS := (aIsClose && aEntry.inCS && bIsRecv && bEntry.isPCS) ||
-			(bIsClose && bEntry.inCS && aIsRecv && aEntry.isPCS)
-		if closeInCS_recvPCS {
-			continue // MD2-2-Close
-		}
-		if senderInCS_recvPCS && (a.buffered || b.buffered) {
-			continue // MD2-2B
-		}
-		return true // MD2-2U or MD2-3
-	}
-	return false
-}
-
-// -----------------------------------------------------------------------
-// Graph construction and cycle search
-// -----------------------------------------------------------------------
-
-type mdGraph struct {
-	nodes []mdNode
-	adj   [][]int
-}
-
-func buildGraph(rds []mdRD, cds []mdCD) mdGraph {
-	n := len(rds) + len(cds)
-	g := mdGraph{
-		nodes: make([]mdNode, 0, n),
-		adj:   make([][]int, 0, n),
-	}
-	for i := range rds {
-		g.nodes = append(g.nodes, mdNode{kind: mdNodeRD, rd: &rds[i]})
-		g.adj = append(g.adj, nil)
-	}
-	for i := range cds {
-		g.nodes = append(g.nodes, mdNode{kind: mdNodeCD, cd: &cds[i]})
-		g.adj = append(g.adj, nil)
-	}
-	for i, ni := range g.nodes {
-		for j, nj := range g.nodes {
-			if i == j {
-				continue
-			}
-			var has bool
-			switch {
-			case ni.kind == mdNodeRD && nj.kind == mdNodeRD:
-				has = edgeRD_RD(ni.rd, nj.rd)
-			case ni.kind == mdNodeRD && nj.kind == mdNodeCD:
-				has = edgeRD_CD(ni.rd, nj.cd)
-			case ni.kind == mdNodeCD && nj.kind == mdNodeCD:
-				has = edgeCD_CD(ni.cd, nj.cd)
-			}
-			if has {
-				g.adj[i] = append(g.adj[i], j)
-			}
-		}
-	}
-	return g
-}
-
-type mdCycle []int
-
-// findCycles finds all simple cycles using Johnson-style DFS
-// Only follow edges to nodes with index > start to avoid duplicate rotations
-func findCycles(g *mdGraph) []mdCycle {
-	n := len(g.nodes)
-	var cycles []mdCycle
-	onStack := make([]bool, n)
-	var stack []int
-
-	var dfs func(start, cur int)
-	dfs = func(start, cur int) {
-		onStack[cur] = true
-		stack = append(stack, cur)
-		for _, next := range g.adj[cur] {
-			if next == start && len(stack) >= 2 {
-				c := make(mdCycle, len(stack))
-				copy(c, stack)
-				cycles = append(cycles, c)
-			} else if !onStack[next] && next > start {
-				dfs(start, next)
-			}
-		}
-		stack = stack[:len(stack)-1]
-		onStack[cur] = false
+	cd := &mdCDNode{
+		Thread:   tid,
+		ChanID:   element.GetObjId(),
+		OpType:   opType,
+		Buffered: element.IsBuffered(),
+		Event:    event,
+		AssocRDs: assocRDs,
 	}
 
-	for start := 0; start < n; start++ {
-		dfs(start, start)
-	}
-	return cycles
-}
-
-// -----------------------------------------------------------------------
-// Feasibility filters
-// -----------------------------------------------------------------------
-
-// wvcForNode returns WVCs used by the WMHB filter
-func wvcForNode(node mdNode) []*clock.VectorClock {
-	switch node.kind {
-	case mdNodeRD:
-		wvcs := make([]*clock.VectorClock, 0, len(node.rd.dep.Requests))
-		for _, r := range node.rd.dep.Requests {
-			if r.VectorClock != nil {
-				wvcs = append(wvcs, r.VectorClock)
-			}
-		}
-		return wvcs
-	case mdNodeCD:
-		var wvcs []*clock.VectorClock
-		for _, entry := range node.cd.lockset {
-			if entry.acq.WVC != nil {
-				wvcs = append(wvcs, entry.acq.WVC)
-			}
-		}
-		return wvcs
-	}
-	return nil
-}
-
-// passesWMHBFilter rejects cycle if any consecutive node pair has no concurrent WVC pair
-func passesWMHBFilter(g *mdGraph, cycle mdCycle) bool {
-	n := len(cycle)
-	for i := 0; i < n; i++ {
-		wvcA := wvcForNode(g.nodes[cycle[i]])
-		wvcB := wvcForNode(g.nodes[cycle[(i+1)%n]])
-		if len(wvcA) == 0 || len(wvcB) == 0 {
-			continue
-		}
-		anyConcurrent := false
-		for _, va := range wvcA {
-			for _, vb := range wvcB {
-				if clock.GetHappensBefore(va, vb) == hb.Concurrent {
-					anyConcurrent = true
-					break
+	currentMDState.AllCDs = append(currentMDState.AllCDs, cd)
+	log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — CD recorded with %d assocRDs (CS=%d PCS=%d)",
+		tid, opType, element.GetObjId(), len(assocRDs),
+		func() int {
+			n := 0
+			for _, r := range assocRDs {
+				if r.IsCS {
+					n++
 				}
 			}
-			if anyConcurrent {
-				break
+			return n
+		}(),
+		func() int {
+			n := 0
+			for _, r := range assocRDs {
+				if !r.IsCS {
+					n++
+				}
 			}
+			return n
+		}(),
+	))
+}
+
+// ---------------------------------------------------------------------------
+// Phase 2: Offline Cycle Detection
+// ---------------------------------------------------------------------------
+
+type mdCycleNode struct {
+	RD *mdRDNode
+	CD *mdCDNode
+}
+
+func (n mdCycleNode) isCD() bool { return n.CD != nil }
+func (n mdCycleNode) isRD() bool { return n.RD != nil }
+
+func (n mdCycleNode) thread() baseA.ThreadID {
+	if n.isCD() {
+		return n.CD.Thread
+	}
+	return n.RD.Thread
+}
+
+// CheckForMixedDeadlock performs DFS to find cyclces in MD graph
+// applies feasability filtering, and reports detected cycles (analysis.go)
+func CheckForMixedDeadlock() {
+	timer.Start(timer.AnaResource)
+	defer timer.Stop(timer.AnaResource)
+
+	log.Debug(fmt.Sprintf("MD phase2: starting cycle detection. AllRDs=%d AllCDs=%d",
+		len(currentMDState.AllRDs), len(currentMDState.AllCDs)))
+
+	visitedCDRoots := make(map[*mdCDNode]bool)
+	var stack []mdCycleNode
+
+	for _, cd := range currentMDState.AllCDs {
+		if visitedCDRoots[cd] {
+			continue
 		}
-		if !anyConcurrent {
-			return false
+		visitedCDRoots[cd] = true
+
+		log.Debug(fmt.Sprintf("MD phase2: DFS root CD T%d chan=%d op=%s assocRDs=%d",
+			cd.Thread, cd.ChanID, cd.OpType, len(cd.AssocRDs)))
+
+		stack = append(stack[:0], mdCycleNode{CD: cd})
+		for _, ref := range cd.AssocRDs {
+			stack = append(stack[:1], mdCycleNode{RD: ref.RD})
+			mdDFS(&stack, cd)
+		}
+	}
+}
+
+// mDFS performs depth-first search to find cycles in MD graph,
+// starting from a root CD node, alternates between CD and RD nodes
+func mdDFS(stack *[]mdCycleNode, rootCD *mdCDNode) {
+	top := (*stack)[len(*stack)-1]
+	if !top.isRD() {
+		log.Error("mixedDeadlock: mdDFS invariant violated: top of stack is not an RD")
+		return
+	}
+	rdTop := top.RD
+	stackThreads := mdStackThreadSet(stack)
+
+	log.Debug(fmt.Sprintf("MD phase2: mdDFS top=RD(T%d lock=%d ls_size=%d) stackLen=%d",
+		rdTop.Thread, rdTop.Lock.ID, len(rdTop.Lockset), len(*stack)))
+
+	// RD -> CD (inter-thread)
+	for _, cd := range currentMDState.AllCDs {
+		if cd.Thread == rdTop.Thread {
+			continue
+		}
+		if stackThreads[cd.Thread] && cd != rootCD {
+			continue
+		}
+
+		for _, ref := range cd.AssocRDs {
+			if !rdTop.Lock.EqualsCouldBlock(ref.LockID) {
+				continue
+			}
+
+			log.Debug(fmt.Sprintf("MD phase2:   RD->CD edge: RD(T%d lock=%d) -> CD(T%d ch=%d isCS=%v)",
+				rdTop.Thread, rdTop.Lock.ID, cd.Thread, cd.ChanID, ref.IsCS))
+
+			if cd == rootCD {
+				candidate := make([]mdCycleNode, len(*stack))
+				copy(candidate, *stack)
+				log.Debug(fmt.Sprintf("MD phase2:   cycle candidate of length %d", len(candidate)))
+				if mdIsCycleRoot(rootCD, &candidate) && mdCheckFeasibility(&candidate) {
+					log.Debug("MD phase2:   feasibility PASSED -> reporting cycle")
+					mdReportCycle(&candidate)
+				} else if !mdIsCycleRoot(rootCD, &candidate) {
+					log.Debug("MD phase2:   skipping cycle (not canonical root — duplicate rotation)")
+				} else {
+					log.Debug("MD phase2:   feasibility FAILED -> discarding")
+				}
+				continue
+			}
+
+			*stack = append(*stack, mdCycleNode{CD: cd})
+			for _, nextRef := range cd.AssocRDs {
+				if mdRDOnStack(stack, nextRef.RD) {
+					continue
+				}
+				*stack = append(*stack, mdCycleNode{RD: nextRef.RD})
+				mdDFS(stack, rootCD)
+				*stack = (*stack)[:len(*stack)-1]
+			}
+			*stack = (*stack)[:len(*stack)-1]
+		}
+	}
+
+	// RD -> RD (inter-thread)
+	for _, rdNext := range currentMDState.AllRDs {
+		if rdNext.Thread == rdTop.Thread {
+			continue
+		}
+		if stackThreads[rdNext.Thread] {
+			continue
+		}
+		if !mdRDChainCondition(rdTop, rdNext) {
+			continue
+		}
+		if mdRDOnStack(stack, rdNext) {
+			continue
+		}
+
+		log.Debug(fmt.Sprintf("MD phase2:   RD->RD edge: RD(T%d lock=%d) -> RD(T%d lock=%d)",
+			rdTop.Thread, rdTop.Lock.ID, rdNext.Thread, rdNext.Lock.ID))
+
+		*stack = append(*stack, mdCycleNode{RD: rdNext})
+		mdDFS(stack, rootCD)
+		*stack = (*stack)[:len(*stack)-1]
+	}
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+// mdIsCycleRoot returns true if rootCD has the smallest tPre among all CDs
+// in the cycle. Ensures each unique cycle is reported exactly once,
+// eliminating duplicate rotations found by rooting from different CD nodes.
+func mdIsCycleRoot(rootCD *mdCDNode, cycle *[]mdCycleNode) bool {
+	_, _, rootTPre, err := trace.InfoFromTID(rootCD.Event.TraceID)
+	if err != nil {
+		return true // cannot determine, allow
+	}
+	for _, node := range *cycle {
+		if !node.isCD() {
+			continue
+		}
+		if node.CD == rootCD {
+			continue
+		}
+		_, _, tPre, err := trace.InfoFromTID(node.CD.Event.TraceID)
+		if err != nil {
+			continue
+		}
+		if tPre < rootTPre {
+			return false // another CD in the cycle has smaller tPre -> not canonical root
 		}
 	}
 	return true
 }
 
-// passesRWFilter rejects cycles where all RD nodes involve only read locks
-func passesRWFilter(g *mdGraph, cycle mdCycle) bool {
-	hasRD := false
-	for _, idx := range cycle {
-		if g.nodes[idx].kind == mdNodeRD {
-			hasRD = true
-			if g.nodes[idx].rd.dep.Lock.IsWrite() {
-				return true
-			}
+func mdRDChainCondition(rdFrom, rdTo *mdRDNode) bool {
+	if rdTo.Lockset.Empty() {
+		return false
+	}
+	if !rdFrom.Lockset.DisjointCouldBlock(rdTo.Lockset) {
+		return false
+	}
+	for l := range rdTo.Lockset {
+		if rdFrom.Lock.EqualsCouldBlock(l) {
+			return true
 		}
 	}
-	return !hasRD
+	return false
 }
 
-// -----------------------------------------------------------------------
-// Reporting
-// -----------------------------------------------------------------------
-// Encoding layout in TraceElement2 (cycle witness list), one block per node:
+func mdStackThreadSet(stack *[]mdCycleNode) map[baseA.ThreadID]bool {
+	m := make(map[baseA.ThreadID]bool, len(*stack))
+	for _, n := range *stack {
+		m[n.thread()] = true
+	}
+	return m
+}
+
+func mdRDOnStack(stack *[]mdCycleNode, rd *mdRDNode) bool {
+	for _, n := range *stack {
+		if n.isRD() && n.RD == rd {
+			return true
+		}
+	}
+	return false
+}
+
+// ---------------------------------------------------------------------------
+// Feasibility filter
+// ---------------------------------------------------------------------------
+
+// mdCheckFeasibility checks that each inter-thread RD->CD or RD->RD edge in
+// the cycle is feasible under the weak happens-before relation.
 //
-//	RD node:
-//	- ElementMutex  ObjType "DC"
-//	-> rewriter shortens to DC.tPre (re-executes lock request, blocks)
+//	For a RD->CD inter-thread edge, do NOT use the CD's channel-op VC.
+//	The channel op VC for a PCS node is AFTER the lock release, which is
+//	always happens-after other goroutines' lock acquires, so the check
+//	would always fail for PCS dependencies.
 //
-//	CD node, InCS side (routine holds lock at channel-op time):
-//	- ElementChannel  ObjType "CB"  - channel blocking point
-//	- ElementMutex    ObjType "DC"  - InCS lock acquire
-//	-> rewriter shortens to CB.tPre (re-executes channel op while holding lock)
-//	-> DC gives lock ID and original acquire time for ordering
+//	Instead, use the CD's AssocRD's lock-acquire VC (the VC at the time
+//	the goroutine acquired the lock for this CS/PCS). This VC represents
+//	the actual point of contention and may be concurrent with the RD's
+//	lock-acquire VC.
 //
-//	CD node, PCS side (routine released lock before channel op):
-//	- ElementMutex    ObjType "MB"  	- PCS lock acquire (already released)
-//	- ElementChannel  ObjType CS/CR/CC  - informational only
-//	-> rewriter shortens to MB.tPre (re-executes lock acquire, which blocks because InCS side still holds it
+//	For each RD node, find the AssocRD of the NEXT CD in the cycle that
+//	corresponds to the RD->CD edge (matched by lock id), and use that
+//	AssocRD's earliest request VC for the feasibility check.
 //
-// ObjType tags signal to rewriter:
-// - "CB" -> ShortenRoutine to this element's tPre
-// - "MB" -> ShortenRoutine to this element's tPre
-// - "DC" -> collect lock ID; used for acquire ordering (not for shortening)
-// - CS/CR/CC -> ignored by rewriter (informational)
-func reportMixedDeadlockCycle(g *mdGraph, cycle mdCycle) {
-	var cycleElements []results.ResultElem
+// For RD->RD edges: use request VCs of both RDs
+func mdCheckFeasibility(cycle *[]mdCycleNode) bool {
+	n := len(*cycle)
+	for i, node := range *cycle {
+		if !node.isRD() {
+			continue
+		}
+		rd := node.RD
+		nextIdx := (i + 1) % n
+		nextNode := (*cycle)[nextIdx]
 
-	for _, idx := range cycle {
-		node := g.nodes[idx]
-
-		switch node.kind {
-
-		// RD node
-		case mdNodeRD:
-			if len(node.rd.dep.Requests) == 0 {
-				continue
-			}
-			req := node.rd.dep.Requests[0]
-			f, l, tp, err := trace.InfoFromTID(req.TraceID)
-			if err != nil {
-				log.Error("mixedDeadlock report RD: InfoFromTID: ", err.Error())
-				continue
-			}
-			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: int(req.ThreadID),
-				ObjID:     req.LockID,
-				TPre:      tp,
-				ObjType:   trace.OperationType("DC"),
-				File:      f,
-				Line:      l,
-			})
-
-		// CD node
-		case mdNodeCD:
-			req := node.cd.req
-
-			cf, cl, ctp, cerr := trace.InfoFromTID(req.TraceID)
-			if cerr != nil {
-				log.Error("mixedDeadlock report CD chan: InfoFromTID: ", cerr.Error())
-				continue
-			}
-
-			var chanObjType trace.OperationType
-			switch req.Op {
-			case trace.ChannelSend:
-				chanObjType = trace.ChannelSend
-			case trace.ChannelRecv:
-				chanObjType = trace.ChannelRecv
-			case trace.ChannelClose:
-				chanObjType = trace.ChannelClose
-			default:
-				chanObjType = trace.UnknownOperation
+		if nextNode.isCD() {
+			// Inter-thread RD->CD edge.
+			// Find the AssocRD of nextCD that matches this RD's lock.
+			nextCD := nextNode.CD
+			var assocRDVCs []*clock.VectorClock
+			for _, ref := range nextCD.AssocRDs {
+				if rd.Lock.EqualsCouldBlock(ref.LockID) {
+					// Use the lock-acquire VCs from the AssocRD, not the channel-op VC.
+					for _, req := range ref.RD.Requests {
+						if req.VectorClock != nil {
+							assocRDVCs = append(assocRDVCs, req.VectorClock)
+						}
+					}
+					break
+				}
 			}
 
-			// Find best lock entry: prefer InCS; within same category take latest by VC.
-			var bestLockID int
-			var bestEntry *mdLockEntry
-			for lockID := range node.cd.lockset {
-				e := node.cd.lockset[lockID]
-				eCopy := e
-				if bestEntry == nil {
-					bestEntry = &eCopy
-					bestLockID = lockID
+			if len(assocRDVCs) == 0 {
+				// Cannot find matching AssocRD VC — use channel-op VC as fallback.
+				if nextCD.Event.VectorClock == nil {
+					log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD) nil VC — skipping", i))
 					continue
 				}
-				if e.inCS && !bestEntry.inCS {
-					bestEntry = &eCopy
-					bestLockID = lockID
+				assocRDVCs = []*clock.VectorClock{nextCD.Event.VectorClock}
+			}
+
+			// Check: at least one request VC of RD is concurrent with at least
+			// one lock-acquire VC of the next CD's AssocRD.
+			found := false
+		outerCS:
+			for _, rdVC := range mdNodeVCs(node) {
+				if rdVC == nil {
 					continue
 				}
-				if e.inCS == bestEntry.inCS &&
-					clock.GetHappensBefore(bestEntry.acq.VC, e.acq.VC) == hb.Before {
-					bestEntry = &eCopy
-					bestLockID = lockID
+				for _, cdAcqVC := range assocRDVCs {
+					if clock.GetHappensBefore(rdVC, cdAcqVC) == hb.Concurrent {
+						found = true
+						break outerCS
+					}
 				}
 			}
-			_ = bestLockID
+			if !found {
+				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD T%d ch=%d isCS=%v) failed concurrency check",
+					i, nextCD.Thread, nextCD.ChanID,
+					func() bool {
+						for _, ref := range nextCD.AssocRDs {
+							if rd.Lock.EqualsCouldBlock(ref.LockID) {
+								return ref.IsCS
+							}
+						}
+						return false
+					}()))
+				return false
+			}
 
-			if bestEntry == nil {
-				// No lock context - emit channel element informally only
-				cycleElements = append(cycleElements, results.TraceElementResult{
-					RoutineID: req.Routine,
-					ObjID:     req.ChanID,
-					TPre:      ctp,
-					ObjType:   chanObjType,
-					File:      cf,
-					Line:      cl,
-				})
+		} else {
+			// Inter-thread RD->RD edge. Use request VCs of both.
+			nextRD := nextNode.RD
+			prevIdx := (n + i - 1) % n
+			prevNode := (*cycle)[prevIdx]
+
+			prevVCs := mdNodeVCs(prevNode)
+			nextVCs := mdNodeVCs(nextNode)
+
+			if mdAnyNilVC(prevVCs) || mdAnyNilVC(nextVCs) {
+				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD) has nil VC — skipping", i))
 				continue
 			}
 
-			af, al, atp, aerr := trace.InfoFromTID(bestEntry.acq.TraceID)
-			if aerr != nil {
-				log.Error("mixedDeadlock report CD acq: InfoFromTID: ", aerr.Error())
-				cycleElements = append(cycleElements, results.TraceElementResult{
-					RoutineID: req.Routine,
-					ObjID:     req.ChanID,
-					TPre:      ctp,
-					ObjType:   chanObjType,
-					File:      cf,
-					Line:      cl,
-				})
-				continue
+			found := false
+		outerRR:
+			for _, vc := range mdNodeVCs(node) {
+				if vc == nil {
+					continue
+				}
+				for _, pvc := range prevVCs {
+					if clock.GetHappensBefore(vc, pvc) != hb.Concurrent {
+						continue
+					}
+					for _, nvc := range nextVCs {
+						if clock.GetHappensBefore(vc, nvc) == hb.Concurrent {
+							found = true
+							break outerRR
+						}
+					}
+				}
 			}
-
-			if bestEntry.inCS {
-				// InCS: goroutine holds lock and blocks on channel op
-				// CB = channel blocking point, DC = lock acquire for ordering
-				cycleElements = append(cycleElements,
-					results.TraceElementResult{
-						RoutineID: req.Routine,
-						ObjID:     req.ChanID,
-						TPre:      ctp,
-						ObjType:   trace.OperationType("CB"),
-						File:      cf,
-						Line:      cl,
-					},
-					results.TraceElementResult{
-						RoutineID: bestEntry.acq.Routine,
-						ObjID:     bestEntry.acq.LockID,
-						TPre:      atp,
-						ObjType:   trace.OperationType("DC"),
-						File:      af,
-						Line:      al,
-					},
-				)
-			} else {
-				// PCS: goroutine released lock; blocking point is re-acquiring it
-				// MB = mutex blocking point, channel element is informational
-				cycleElements = append(cycleElements,
-					results.TraceElementResult{
-						RoutineID: bestEntry.acq.Routine,
-						ObjID:     bestEntry.acq.LockID,
-						TPre:      atp,
-						ObjType:   trace.OperationType("MB"),
-						File:      af,
-						Line:      al,
-					},
-					results.TraceElementResult{
-						RoutineID: req.Routine,
-						ObjID:     req.ChanID,
-						TPre:      ctp,
-						ObjType:   chanObjType,
-						File:      cf,
-						Line:      cl,
-					},
-				)
+			if !found {
+				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD T%d lock=%d) failed concurrency check",
+					i, nextRD.Thread, nextRD.Lock.ID))
+				return false
 			}
 		}
 	}
+	return true
+}
 
-	if len(cycleElements) == 0 {
+func mdAnyNilVC(vcs []*clock.VectorClock) bool {
+	for _, vc := range vcs {
+		if vc == nil {
+			return true
+		}
+	}
+	return len(vcs) == 0
+}
+
+func mdNodeVCs(n mdCycleNode) []*clock.VectorClock {
+	if n.isCD() {
+		return []*clock.VectorClock{n.CD.Event.VectorClock}
+	}
+	vcs := make([]*clock.VectorClock, len(n.RD.Requests))
+	for i, r := range n.RD.Requests {
+		vcs[i] = r.VectorClock
+	}
+	return vcs
+}
+
+// ---------------------------------------------------------------------------
+// Reporting
+// ---------------------------------------------------------------------------
+
+func mdReportCycle(cycle *[]mdCycleNode) {
+	var lockElems []results.ResultElem
+	var chanElems []results.ResultElem
+
+	for idx, node := range *cycle {
+		if node.isRD() {
+			rd := node.RD
+			req := mdFindEarliestRequest(rd)
+			file, line, tPre, err := trace.InfoFromTID(req.TraceID)
+			if err != nil {
+				log.Error("mixedDeadlock: InfoFromTID for RD: ", err.Error())
+				return
+			}
+			log.Debug(fmt.Sprintf("MD report: cycle[%d] RD T%d lock=%d tPre=%d %s:%d",
+				idx, rd.Thread, rd.Lock.ID, tPre, file, line))
+			lockElems = append(lockElems, results.TraceElementResult{
+				RoutineID: int(rd.Thread),
+				ObjID:     req.LockID,
+				TPre:      tPre,
+				ObjType:   "DC",
+				File:      file,
+				Line:      line,
+			})
+		} else {
+			cd := node.CD
+			file, line, tPre, err := trace.InfoFromTID(cd.Event.TraceID)
+			if err != nil {
+				log.Error("mixedDeadlock: InfoFromTID for CD: ", err.Error())
+				return
+			}
+			log.Debug(fmt.Sprintf("MD report: cycle[%d] CD T%d ch=%d op=%s tPre=%d %s:%d",
+				idx, cd.Thread, cd.ChanID, cd.OpType, tPre, file, line))
+			chanElems = append(chanElems, results.TraceElementResult{
+				RoutineID: int(cd.Thread),
+				ObjID:     cd.ChanID,
+				TPre:      tPre,
+				ObjType:   cd.OpType,
+				File:      file,
+				Line:      line,
+			})
+		}
+	}
+
+	if len(lockElems) == 0 || len(chanElems) == 0 {
+		log.Error("mixedDeadlock: cycle has no RD or no CD elements — skipping report")
 		return
 	}
 
-	// stuckElem (arg1, ObjType "DH") is the last "CB" in the list
-	// the channel op that will be observed as stuck during replay
-	var stuckElem results.TraceElementResult
-	foundStuck := false
-	for i := len(cycleElements) - 1; i >= 0; i-- {
-		te, ok := cycleElements[i].(results.TraceElementResult)
-		if !ok {
-			continue
-		}
-		if string(te.ObjType) == "CB" {
-			stuckElem = te
-			stuckElem.ObjType = "DH"
-			foundStuck = true
-			break
-		}
-	}
-	if !foundStuck {
-		stuckElem = cycleElements[len(cycleElements)-1].(results.TraceElementResult)
-		stuckElem.ObjType = "DH"
-	}
+	log.Debug(fmt.Sprintf("MD report: PMixedDeadlock with %d lock elems and %d chan elems",
+		len(lockElems), len(chanElems)))
 
 	results.Result(
 		results.CRITICAL,
 		helper.PMixedDeadlock,
-		"stuck",
-		[]results.ResultElem{stuckElem},
-		"cycle",
-		cycleElements,
+		"stuck", lockElems,
+		"cycle", chanElems,
 	)
-
-	log.Info("Mixed deadlock cycle reported with ", len(cycle), " nodes")
 }
 
-// -----------------------------------------------------------------------
-// Offline cycle detection
-// -----------------------------------------------------------------------
-
-// CheckForMixedDeadlock runs offline detection phase after trace loop
-func CheckForMixedDeadlock() {
-	// Step 1: collect RD objects from CurrentState
-	// CurrentState is populated by HandleMutexEventForRessourceDeadlock which
-	// analysis.go calls whenever MixedDeadlock is active.  ResetState() in
-	// analysis.go resets it for both ResourceDeadlock and MixedDeadlock, so
-	// MD-only runs also get a correctly populated CurrentState.
-	var rds []mdRD
-	for _, thread := range baseA.CurrentState.Threads {
-		for lock, deps := range thread.LockDependencies {
-			for _, dep := range deps {
-				if len(dep.Requests) == 0 {
-					continue
-				}
-				rds = append(rds, mdRD{
-					dep: baseA.LockDependency{
-						Thread:   dep.Requests[0].ThreadID,
-						Lock:     lock,
-						Lockset:  dep.Lockset,
-						Requests: dep.Requests,
-					},
-				})
-			}
-		}
+func mdFindEarliestRequest(rd *mdRDNode) baseA.LockEvent {
+	if len(rd.Requests) == 0 {
+		return baseA.LockEvent{}
 	}
-
-	// Step 2: construct CD objects; discard events with no lock context
-	var cds []mdCD
-	for _, chanMap := range baseA.CurrentMDState.CommHist {
-		for _, entries := range chanMap {
-			for _, g := range entries {
-				cd := buildCD(g)
-				if cd.hasRelevantLock() {
-					cds = append(cds, *cd)
-				}
-			}
-		}
+	earliest := rd.Requests[0]
+	_, _, earliestTime, err := trace.InfoFromTID(earliest.TraceID)
+	if err != nil {
+		return earliest
 	}
-
-	log.Info("Mixed deadlock: ", len(rds), " RD nodes, ", len(cds), " CD nodes")
-
-	if len(cds) == 0 {
-		return
-	}
-
-	// Step 3: build typed dependency graph G = (V_RD ∪ V_CD, E)
-	g := buildGraph(rds, cds)
-	if len(g.nodes) < 2 {
-		return
-	}
-
-	// Step 4: find all simple cycles
-	cycles := findCycles(&g)
-	log.Info("Mixed deadlock: ", len(cycles), " raw cycle(s) found")
-	if len(cycles) == 0 {
-		return
-	}
-
-	// Steps 5-6: apply feasibility filters and report survivors
-	reported := 0
-	for _, cycle := range cycles {
-		if !passesWMHBFilter(&g, cycle) {
+	for _, r := range rd.Requests[1:] {
+		_, _, t, err := trace.InfoFromTID(r.TraceID)
+		if err != nil {
 			continue
 		}
-
-		if !passesRWFilter(&g, cycle) {
-			continue
+		if t < earliestTime {
+			earliest = r
+			earliestTime = t
 		}
-		reportMixedDeadlockCycle(&g, cycle)
-		reported++
 	}
-
-	log.Info("Mixed deadlock analysis complete: ", reported, " cycle(s) reported")
+	return earliest
 }

@@ -12,7 +12,6 @@ package active
 import (
 	"advocate/results/bugs"
 	"advocate/trace"
-	"advocate/utils/helper"
 	"errors"
 	"fmt"
 )
@@ -89,7 +88,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 			lastTime = e.GetTPost()
 		}
 	}
-	fmt.Println("rewriteMixedDeadlock: lastTime =", lastTime)
+	// fmt.Println("rewriteMixedDeadlock: lastTime =", lastTime)
 	tr.ShortenTrace(lastTime, true)
 
 	// -----------------------------------------------------------------------
@@ -120,7 +119,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		waiterRout := waiterLock.GetRoutine()
 		holderRout := holderLock.GetRoutine()
 
-		fmt.Printf("rewriteMixedDeadlock: pair %d: waiter=R%d holder=R%d\n", i, waiterRout, holderRout)
+		// fmt.Printf("rewriteMixedDeadlock: pair %d: waiter=R%d holder=R%d\n", i, waiterRout, holderRout)
 
 		// Shorten waiter to just before chanElems[i], keeps lockElems[i], drops rest.
 		// ShortenRoutine(rout, t) removes tSort >= t.
@@ -128,24 +127,24 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		// We want to keep waiterLock but drop waiterChan+.
 		// Pass waiterChan's tSort (= waiterChan.tPost since tPost≠0) to remove it.
 		tr.ShortenRoutine(waiterRout, waiterChan.GetTSort())
-		fmt.Printf("rewriteMixedDeadlock: waiter R%d shortened (drop chanElem tSort=%d)\n",
-			waiterRout, waiterChan.GetTSort())
+		// fmt.Printf("rewriteMixedDeadlock: waiter R%d shortened (drop chanElem tSort=%d)\n",
+		// waiterRout, waiterChan.GetTSort())
 
 		// Shorten holder to just after chanElems[holderIdx] — keeps both M and C.
 		// holderChan.tPost+1 removes everything after holderChan.
 		tr.ShortenRoutine(holderRout, holderChan.GetTPost()+1)
-		fmt.Printf("rewriteMixedDeadlock: holder R%d shortened to C.tPost=%d\n",
-			holderRout, holderChan.GetTPost())
+		// fmt.Printf("rewriteMixedDeadlock: holder R%d shortened to C.tPost=%d\n",
+		// holderRout, holderChan.GetTPost())
 
 		// Mark waiterLock as blocking: tPost=0.
 		setTPostZero(waiterLock)
-		fmt.Printf("rewriteMixedDeadlock: waiterLock R%d tPre=%d tPost=%d\n",
-			waiterRout, waiterLock.GetTPre(), waiterLock.GetTPost())
+		// fmt.Printf("rewriteMixedDeadlock: waiterLock R%d tPre=%d tPost=%d\n",
+		// waiterRout, waiterLock.GetTPre(), waiterLock.GetTPost())
 
 		// Mark holderChan as blocking: tPost=0.
 		setTPostZero(holderChan)
-		fmt.Printf("rewriteMixedDeadlock: holderChan R%d tPre=%d tPost=%d\n",
-			holderRout, holderChan.GetTPre(), holderChan.GetTPost())
+		// fmt.Printf("rewriteMixedDeadlock: holderChan R%d tPre=%d tPost=%d\n",
+		// holderRout, holderChan.GetTPre(), holderChan.GetTPost())
 	}
 
 	// -----------------------------------------------------------------------
@@ -186,8 +185,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 			tr.ShiftTrace(waiterTPre, shift)
 			// Update waiterLock's tPre reference after shift.
 			waiterTPre = waiterLock.GetTPre() // re-read after shift
-			fmt.Printf("rewriteMixedDeadlock: ShiftTrace by %d, new waiterTPre=%d\n",
-				shift, waiterTPre)
+			// fmt.Printf("rewriteMixedDeadlock: ShiftTrace by %d, new waiterTPre=%d\n",
+			// shift, waiterTPre)
 		}
 
 		// Assign holder elements new tPre: [waiterTPre-nHolder .. waiterTPre-1].
@@ -197,14 +196,14 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		//   keeping GetTSort()=MaxInt.
 		newT := waiterTPre - nHolder
 		for _, hElem := range holderElems {
-			oldTPre := hElem.GetTPre()
+			// oldTPre := hElem.GetTPre()
 			if hElem.GetTPost() == 0 {
 				hElem.SetTPre(newT)
 			} else {
 				hElem.SetT(newT)
 			}
-			fmt.Printf("rewriteMixedDeadlock: holder R%d elem tPre %d->%d tPost=%d\n",
-				holderRout, oldTPre, newT, hElem.GetTPost())
+			// fmt.Printf("rewriteMixedDeadlock: holder R%d elem tPre %d->%d tPost=%d\n",
+			// holderRout, oldTPre, newT, hElem.GetTPost())
 			newT++
 		}
 	}
@@ -214,8 +213,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	// -----------------------------------------------------------------------
 	tr.AddTraceElementReplay(lastTime+1, code)
 
-	fmt.Printf("rewriteMixedDeadlock: done. Marker at %d code %d (ExitCodeMixedDeadlock=%d)\n",
-		lastTime+1, code, helper.ExitCodeMixedDeadlock)
+	// fmt.Printf("rewriteMixedDeadlock: done. Marker at %d code %d (ExitCodeMixedDeadlock=%d)\n",
+	// 	lastTime+1, code, helper.ExitCodeMixedDeadlock)
 
 	return nil
 }

@@ -646,7 +646,7 @@ func unitTestReplay(dir, pkg, file,
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
-	log.Info("Start po guided execution")
+	log.Info("Start guided execution")
 
 	pathPkg := filepath.Join(dir, pkg)
 
@@ -658,7 +658,7 @@ func unitTestReplay(dir, pkg, file,
 		rewrittenTraces = append(rewrittenTraces, flags.TracePath)
 	}
 
-	log.Infof("Found %d po guided rewritten traces", len(rewrittenTraces))
+	log.Infof("Found %d rewritten traces", len(rewrittenTraces))
 
 	for i, trace := range rewrittenTraces {
 		traceNum, bugString := extractTraceNumber(trace)
@@ -675,10 +675,10 @@ func unitTestReplay(dir, pkg, file,
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
-		log.Infof("Run po guided execution %d/%d", i+1, len(rewrittenTraces))
+		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := helper.MakePathLocal(pkg)
 		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-		log.Infof("Finished po guided execution %d/%d", i+1, len(rewrittenTraces))
+		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {
 			results.AddBug(bugString, true)

@@ -20,7 +20,6 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/timer"
-	"fmt"
 )
 
 // ---------------------------------------------------------------------------
@@ -115,15 +114,15 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 	case trace.MutexLock, trace.MutexTryLock, trace.MutexRLock, trace.MutexTryRLock:
 		mdInsertRD(t, tid, lockID, event)
 		t.CurrentLockset.Add(lockID)
-		log.Debug(fmt.Sprintf("MD phase1: T%d acq(lock=%d) LS=%v -> RD recorded",
-			tid, element.GetObjId(), t.CurrentLockset))
+		// log.Debug(fmt.Sprintf("MD phase1: T%d acq(lock=%d) LS=%v -> RD recorded",
+		// 	tid, element.GetObjId(), t.CurrentLockset))
 
 	case trace.MutexUnlock, trace.MutexRUnlock:
 		if rd, ok := t.ActiveRDs[lockID]; ok {
 			t.MostRecentRD[lockID] = rd
 			delete(t.ActiveRDs, lockID)
-			log.Debug(fmt.Sprintf("MD phase1: T%d rel(lock=%d) -> moved to MostRecentRD",
-				tid, element.GetObjId()))
+			// log.Debug(fmt.Sprintf("MD phase1: T%d rel(lock=%d) -> moved to MostRecentRD",
+			// 	tid, element.GetObjId()))
 		}
 		t.CurrentLockset.Remove(lockID)
 	}
@@ -185,8 +184,8 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 	}
 
 	if len(assocRDs) == 0 {
-		log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — no lock context, skipping",
-			tid, opType, element.GetObjId()))
+		// log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — no lock context, skipping",
+		// 	tid, opType, element.GetObjId()))
 		return
 	}
 
@@ -200,27 +199,27 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 	}
 
 	currentMDState.AllCDs = append(currentMDState.AllCDs, cd)
-	log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — CD recorded with %d assocRDs (CS=%d PCS=%d)",
-		tid, opType, element.GetObjId(), len(assocRDs),
-		func() int {
-			n := 0
-			for _, r := range assocRDs {
-				if r.IsCS {
-					n++
-				}
-			}
-			return n
-		}(),
-		func() int {
-			n := 0
-			for _, r := range assocRDs {
-				if !r.IsCS {
-					n++
-				}
-			}
-			return n
-		}(),
-	))
+	// log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — CD recorded with %d assocRDs (CS=%d PCS=%d)",
+	// 	tid, opType, element.GetObjId(), len(assocRDs),
+	// 	func() int {
+	// 		n := 0
+	// 		for _, r := range assocRDs {
+	// 			if r.IsCS {
+	// 				n++
+	// 			}
+	// 		}
+	// 		return n
+	// 	}(),
+	// 	func() int {
+	// 		n := 0
+	// 		for _, r := range assocRDs {
+	// 			if !r.IsCS {
+	// 				n++
+	// 			}
+	// 		}
+	// 		return n
+	// 	}(),
+	// ))
 }
 
 // ---------------------------------------------------------------------------
@@ -248,8 +247,8 @@ func CheckForMixedDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	log.Debug(fmt.Sprintf("MD phase2: starting cycle detection. AllRDs=%d AllCDs=%d",
-		len(currentMDState.AllRDs), len(currentMDState.AllCDs)))
+	// log.Debug(fmt.Sprintf("MD phase2: starting cycle detection. AllRDs=%d AllCDs=%d",
+	// 	len(currentMDState.AllRDs), len(currentMDState.AllCDs)))
 
 	visitedCDRoots := make(map[*mdCDNode]bool)
 	var stack []mdCycleNode
@@ -260,8 +259,8 @@ func CheckForMixedDeadlock() {
 		}
 		visitedCDRoots[cd] = true
 
-		log.Debug(fmt.Sprintf("MD phase2: DFS root CD T%d chan=%d op=%s assocRDs=%d",
-			cd.Thread, cd.ChanID, cd.OpType, len(cd.AssocRDs)))
+		// log.Debug(fmt.Sprintf("MD phase2: DFS root CD T%d chan=%d op=%s assocRDs=%d",
+		// 	cd.Thread, cd.ChanID, cd.OpType, len(cd.AssocRDs)))
 
 		stack = append(stack[:0], mdCycleNode{CD: cd})
 		for _, ref := range cd.AssocRDs {
@@ -282,8 +281,8 @@ func mdDFS(stack *[]mdCycleNode, rootCD *mdCDNode) {
 	rdTop := top.RD
 	stackThreads := mdStackThreadSet(stack)
 
-	log.Debug(fmt.Sprintf("MD phase2: mdDFS top=RD(T%d lock=%d ls_size=%d) stackLen=%d",
-		rdTop.Thread, rdTop.Lock.ID, len(rdTop.Lockset), len(*stack)))
+	// log.Debug(fmt.Sprintf("MD phase2: mdDFS top=RD(T%d lock=%d ls_size=%d) stackLen=%d",
+	// 	rdTop.Thread, rdTop.Lock.ID, len(rdTop.Lockset), len(*stack)))
 
 	// RD -> CD (inter-thread)
 	for _, cd := range currentMDState.AllCDs {
@@ -299,21 +298,21 @@ func mdDFS(stack *[]mdCycleNode, rootCD *mdCDNode) {
 				continue
 			}
 
-			log.Debug(fmt.Sprintf("MD phase2:   RD->CD edge: RD(T%d lock=%d) -> CD(T%d ch=%d isCS=%v)",
-				rdTop.Thread, rdTop.Lock.ID, cd.Thread, cd.ChanID, ref.IsCS))
+			// log.Debug(fmt.Sprintf("MD phase2:   RD->CD edge: RD(T%d lock=%d) -> CD(T%d ch=%d isCS=%v)",
+			// 	rdTop.Thread, rdTop.Lock.ID, cd.Thread, cd.ChanID, ref.IsCS))
 
 			if cd == rootCD {
 				candidate := make([]mdCycleNode, len(*stack))
 				copy(candidate, *stack)
-				log.Debug(fmt.Sprintf("MD phase2:   cycle candidate of length %d", len(candidate)))
+				// log.Debug(fmt.Sprintf("MD phase2:   cycle candidate of length %d", len(candidate)))
 				if mdIsCycleRoot(rootCD, &candidate) && mdCheckFeasibility(&candidate) {
-					log.Debug("MD phase2:   feasibility PASSED -> reporting cycle")
+					// log.Debug("MD phase2:   feasibility PASSED -> reporting cycle")
 					mdReportCycle(&candidate)
-				} else if !mdIsCycleRoot(rootCD, &candidate) {
-					log.Debug("MD phase2:   skipping cycle (not canonical root — duplicate rotation)")
-				} else {
-					log.Debug("MD phase2:   feasibility FAILED -> discarding")
-				}
+				} // else if !mdIsCycleRoot(rootCD, &candidate) {
+				// 	log.Debug("MD phase2:   skipping cycle (not canonical root — duplicate rotation)")
+				// } else {
+				// 	log.Debug("MD phase2:   feasibility FAILED -> discarding")
+				// }
 				continue
 			}
 
@@ -345,8 +344,8 @@ func mdDFS(stack *[]mdCycleNode, rootCD *mdCDNode) {
 			continue
 		}
 
-		log.Debug(fmt.Sprintf("MD phase2:   RD->RD edge: RD(T%d lock=%d) -> RD(T%d lock=%d)",
-			rdTop.Thread, rdTop.Lock.ID, rdNext.Thread, rdNext.Lock.ID))
+		// log.Debug(fmt.Sprintf("MD phase2:   RD->RD edge: RD(T%d lock=%d) -> RD(T%d lock=%d)",
+		// 	rdTop.Thread, rdTop.Lock.ID, rdNext.Thread, rdNext.Lock.ID))
 
 		*stack = append(*stack, mdCycleNode{RD: rdNext})
 		mdDFS(stack, rootCD)
@@ -468,7 +467,7 @@ func mdCheckFeasibility(cycle *[]mdCycleNode) bool {
 			if len(assocRDVCs) == 0 {
 				// Cannot find matching AssocRD VC — use channel-op VC as fallback.
 				if nextCD.Event.VectorClock == nil {
-					log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD) nil VC — skipping", i))
+					// log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD) nil VC — skipping", i))
 					continue
 				}
 				assocRDVCs = []*clock.VectorClock{nextCD.Event.VectorClock}
@@ -490,22 +489,22 @@ func mdCheckFeasibility(cycle *[]mdCycleNode) bool {
 				}
 			}
 			if !found {
-				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD T%d ch=%d isCS=%v) failed concurrency check",
-					i, nextCD.Thread, nextCD.ChanID,
-					func() bool {
-						for _, ref := range nextCD.AssocRDs {
-							if rd.Lock.EqualsCouldBlock(ref.LockID) {
-								return ref.IsCS
-							}
-						}
-						return false
-					}()))
+				// log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->CD T%d ch=%d isCS=%v) failed concurrency check",
+				// 	i, nextCD.Thread, nextCD.ChanID,
+				// 	func() bool {
+				// 		for _, ref := range nextCD.AssocRDs {
+				// 			if rd.Lock.EqualsCouldBlock(ref.LockID) {
+				// 				return ref.IsCS
+				// 			}
+				// 		}
+				// 		return false
+				// 	}()))
 				return false
 			}
 
 		} else {
 			// Inter-thread RD->RD edge. Use request VCs of both.
-			nextRD := nextNode.RD
+			// nextRD := nextNode.RD
 			prevIdx := (n + i - 1) % n
 			prevNode := (*cycle)[prevIdx]
 
@@ -513,7 +512,7 @@ func mdCheckFeasibility(cycle *[]mdCycleNode) bool {
 			nextVCs := mdNodeVCs(nextNode)
 
 			if mdAnyNilVC(prevVCs) || mdAnyNilVC(nextVCs) {
-				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD) has nil VC — skipping", i))
+				// log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD) has nil VC — skipping", i))
 				continue
 			}
 
@@ -536,8 +535,8 @@ func mdCheckFeasibility(cycle *[]mdCycleNode) bool {
 				}
 			}
 			if !found {
-				log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD T%d lock=%d) failed concurrency check",
-					i, nextRD.Thread, nextRD.Lock.ID))
+				// log.Debug(fmt.Sprintf("MD feasibility: RD node %d (RD->RD T%d lock=%d) failed concurrency check",
+				// 	i, nextRD.Thread, nextRD.Lock.ID))
 				return false
 			}
 		}
@@ -573,7 +572,7 @@ func mdReportCycle(cycle *[]mdCycleNode) {
 	var lockElems []results.ResultElem
 	var chanElems []results.ResultElem
 
-	for idx, node := range *cycle {
+	for _, node := range *cycle {
 		if node.isRD() {
 			rd := node.RD
 			req := mdFindEarliestRequest(rd)
@@ -582,8 +581,8 @@ func mdReportCycle(cycle *[]mdCycleNode) {
 				log.Error("mixedDeadlock: InfoFromTID for RD: ", err.Error())
 				return
 			}
-			log.Debug(fmt.Sprintf("MD report: cycle[%d] RD T%d lock=%d tPre=%d %s:%d",
-				idx, rd.Thread, rd.Lock.ID, tPre, file, line))
+			// log.Debug(fmt.Sprintf("MD report: cycle[%d] RD T%d lock=%d tPre=%d %s:%d",
+			// 	idx, rd.Thread, rd.Lock.ID, tPre, file, line))
 			lockElems = append(lockElems, results.TraceElementResult{
 				RoutineID: int(rd.Thread),
 				ObjID:     req.LockID,
@@ -599,8 +598,8 @@ func mdReportCycle(cycle *[]mdCycleNode) {
 				log.Error("mixedDeadlock: InfoFromTID for CD: ", err.Error())
 				return
 			}
-			log.Debug(fmt.Sprintf("MD report: cycle[%d] CD T%d ch=%d op=%s tPre=%d %s:%d",
-				idx, cd.Thread, cd.ChanID, cd.OpType, tPre, file, line))
+			// log.Debug(fmt.Sprintf("MD report: cycle[%d] CD T%d ch=%d op=%s tPre=%d %s:%d",
+			// 	idx, cd.Thread, cd.ChanID, cd.OpType, tPre, file, line))
 			chanElems = append(chanElems, results.TraceElementResult{
 				RoutineID: int(cd.Thread),
 				ObjID:     cd.ChanID,
@@ -617,8 +616,8 @@ func mdReportCycle(cycle *[]mdCycleNode) {
 		return
 	}
 
-	log.Debug(fmt.Sprintf("MD report: PMixedDeadlock with %d lock elems and %d chan elems",
-		len(lockElems), len(chanElems)))
+	// log.Debug(fmt.Sprintf("MD report: PMixedDeadlock with %d lock elems and %d chan elems",
+	// 	len(lockElems), len(chanElems)))
 
 	results.Result(
 		results.CRITICAL,

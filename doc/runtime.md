@@ -7,7 +7,7 @@ We want to avoid this. We therefore directly integrate the [recording](recording
 and [replay](replay.md) creating an modified go runtime.
 
 The runtime can be found in the [goPatch](../goPatch/) folder.
-It is currently based on go1.24.1
+It is currently based on go1.25.1
 
 Before we can use this runtime, we first need to build the runtime.
 This can be done by running [this](../goPatch/src/make.bash) script,

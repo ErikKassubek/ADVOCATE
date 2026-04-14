@@ -30,8 +30,6 @@ func ReplayManager() {
 	lastTime = currentTime()
 	lastTimeWithoutOldest = currentTime()
 
-	defer println("STOP REPLAY MANAGER")
-
 	for {
 		// wait for acknowledgement of element that was directly
 		// released when it was called, because it was the next element
@@ -48,7 +46,9 @@ func ReplayManager() {
 		// 	break
 		// }
 
-		if !PartialReplay && replayElem.Op == OperationReplayEnd {
+		// println(replayElem.Key())
+
+		if replayElem.Op == OperationReplayEnd {
 			replayEndFound(replayElem)
 			return
 		}
@@ -123,43 +123,57 @@ func replayEndFound(replayElem ReplayElement) {
 	println("Found ReplayEnd Marker with exit code", replayElem.Line)
 	// wait long enough, that all operations that have been released but not
 	// finished executing can execute
-	if replayElem.Line == ExitCodeCyclic {
-		lock(&waitDeadlockDetectLock)
-		waitDeadlockDetect = true
-		unlock(&waitDeadlockDetectLock)
-	}
-	sleep(0.5)
+	// if replayElem.Line == ExitCodeCyclic {
+	// 	lock(&waitDeadlockDetectLock)
+	// 	waitDeadlockDetect = true
+	// 	unlock(&waitDeadlockDetectLock)
+	// }
 
-	DisableReplay()
-	// foundReplayElement()
 	sleep(0.1)
 
-	// Check if a deadlock has been reached
-	if replayElem.Line == ExitCodeCyclic {
-		stuckRoutines := checkForStuckRoutines(1.0, 100)
+	println("Disable Replay")
+	DisableReplay()
 
-		stuckMutexCounter := 0
-		for id, reason := range stuckRoutines {
-			println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
-			// TODO invert to everything that could NOT be a deadlock
-			if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
-				stuckMutexCounter++
-			}
+	// time.Sleep(100 * time.Millisecond)
+	sleep(0.1)
+
+	if detectBlockingGC != nil {
+		res := detectBlockingGC()
+		if res > 0 {
+			ExitReplayWithCode(res, "GC")
 		}
-
-		println("Number of routines waiting on mutexes:", stuckMutexCounter)
-
-		if stuckMutexCounter > 0 {
-			// SetForceExit(true)
-			ExitReplayWithCode(replayElem.Line, "")
-		}
-
-		lock(&waitDeadlockDetectLock)
-		waitDeadlockDetect = false
-		unlock(&waitDeadlockDetectLock)
-	} else if isExitCodeConfOnEndElem(replayElem.Line) {
-		ExitReplayWithCode(replayElem.Line, "")
 	}
+
+	// foundReplayElement()
+	// sleep(0.1)
+
+	// // [REMOVE] || replayElem.Line == ExitCodeMixedDeadlock
+	// // Check if a deadlock has been reached
+	// if replayElem.Line == ExitCodeCyclic {
+	// 	stuckRoutines := checkForStuckRoutines(1.0, 100)
+
+	// 	stuckMutexCounter := 0
+	// 	for id, reason := range stuckRoutines {
+	// 		println("Routine", id, "is possibly stuck. Waiting with reason:", waitReasonStrings[reason])
+	// 		// TODO invert to everything that could NOT be a deadlock
+	// 		if reason == waitReasonSyncMutexLock || reason == waitReasonSyncRWMutexLock || reason == waitReasonSyncRWMutexRLock {
+	// 			stuckMutexCounter++
+	// 		}
+	// 	}
+
+	// 	println("Number of routines waiting on mutexes:", stuckMutexCounter)
+
+	// 	if stuckMutexCounter > 0 {
+	// 		// SetForceExit(true)
+	// 		ExitReplayWithCode(replayElem.Line, "")
+	// 	}
+
+	// 	lock(&waitDeadlockDetectLock)
+	// 	waitDeadlockDetect = false
+	// 	unlock(&waitDeadlockDetectLock)
+	// } else if isExitCodeConfOnEndElem(replayElem.Line) {
+	// 	ExitReplayWithCode(replayElem.Line, "")
+	// }
 }
 
 func replayTimeout(replayElem ReplayElement) {
@@ -190,6 +204,8 @@ func replayTimeout(replayElem ReplayElement) {
 		}
 		unlock(&waitingOpsMutex)
 
+		println("REL4")
+
 		suc := releaseElement(oldest, replayElemFromKey(oldestKey), true, false)
 
 		if releaseOldestWait > 1 {
@@ -209,14 +225,18 @@ func replayTimeout(replayElem ReplayElement) {
  * Wait until all operations in the trace are executed.
  * This function should be called after the main routine is finished, to prevent
  * the program to terminate before the trace is finished.
+ *
+ * Returns:
+ *    - bool: true if all events in the pre trace and roc have been executed, false otherwise
  */
-func WaitForReplayFinish() {
+func WaitForReplayFinish() bool {
 	if printDebug {
 		println("Wait for replay finish")
 		defer println("Finish Wait")
 	}
 
 	startTime := currentTime()
+	allEventExec := true
 
 	if IsReplayEnabled() || PartialReplay {
 		for {
@@ -233,6 +253,7 @@ func WaitForReplayFinish() {
 			}
 
 			if hasTimePast(startTime, 5) {
+				allEventExec = false
 				break
 			}
 
@@ -252,11 +273,16 @@ func WaitForReplayFinish() {
 
 		sleep(0.001)
 	}
+
+	return allEventExec
 }
 
 func ReleaseAllWaiting() {
 	lock(&waitingOpsMutex)
-	for _, w := range waitingOps {
+	for key, w := range waitingOps {
+		if printDebug {
+			println("RELEASE ALL: ", key)
+		}
 		w.chWait <- ReplayElement{Blocked: false, Index: -1}
 	}
 	waitingOps = make(map[string]replayChan)

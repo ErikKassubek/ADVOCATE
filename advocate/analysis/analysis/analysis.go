@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/analysis.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: analysis.go
@@ -65,7 +67,7 @@ func RunAnalysis(fuzzing bool) {
 	if baseA.AnalysisCasesMap[flags.Leak] || flags.OnlyAPanicAndLeak {
 		err := scenarios.Blocked()
 		if err != nil {
-			log.Error("Failed to read partial deadlock info: ", err.Error())
+			log.Error("Failed to read block info: ", err.Error())
 		}
 	}
 
@@ -109,6 +111,10 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.ResetState()
 	}
 
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+		scenarios.ResetMixedDeadlockState()
+	}
+
 	if hb.CalcVC {
 		vc.CurrentVC[1].Inc(1)
 		vc.CurrentWVC[1].Inc(1)
@@ -118,13 +124,13 @@ func RunHBAnalysis(fuzzing bool) {
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 
 		// not enough memory
-		if control.WasCanceledRAM.Load() {
+		if control.IsCanceledRAM.Load() {
 			return
 		}
 
 		// add edge between element of same routine to partial order trace
 		if hb.CalcPog {
-			pog.AddEdgeSameRoutineAndFork(elem)
+			pog.AddEdgeSameRoutineAndFork(nil, elem)
 		}
 
 		// count how many operations where executed on the underlying structure
@@ -132,7 +138,7 @@ func RunHBAnalysis(fuzzing bool) {
 		switch e := elem.(type) {
 		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
-			baseA.AddOpsPerID(e.GetID())
+			baseA.AddOpsPerID(e.GetObjId())
 		}
 
 		switch e := elem.(type) {
@@ -158,10 +164,10 @@ func RunHBAnalysis(fuzzing bool) {
 			for _, c := range cases {
 				switch c.GetType(true) {
 				case trace.ChannelSend:
-					ids = append(ids, c.GetID())
+					ids = append(ids, c.GetObjId())
 					opTypes = append(opTypes, 0)
 				case trace.ChannelRecv:
-					ids = append(ids, c.GetID())
+					ids = append(ids, c.GetObjId())
 					opTypes = append(opTypes, 1)
 				}
 			}
@@ -188,12 +194,21 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		}
 
+		if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+			switch e := elem.(type) {
+			case *trace.ElementMutex:
+				scenarios.HandleMutexEventForMixedDeadlock(e)
+			case *trace.ElementChannel:
+				scenarios.HandleChannelEventForMixedDeadlock(e)
+			}
+		}
+
 		// check for leak
 		if baseA.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
 			checkLeak(elem)
 		}
 
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			return
 		}
 	}
@@ -207,45 +222,45 @@ func RunHBAnalysis(fuzzing bool) {
 		scenarios.CheckForSelectCaseWithPartner()
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
 	if baseA.AnalysisCasesMap[flags.Leak] {
-		log.Info("Check for leak")
 		scenarios.CheckForLeak()
 		scenarios.CheckForStuckRoutine(false)
-		log.Info("Finish check for leak")
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
 	if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] {
-		log.Info("Check for done before add")
 		scenarios.CheckForDoneBeforeAdd()
-		log.Info("Finish check for done before add")
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
 	if baseA.AnalysisCasesMap[flags.ResourceDeadlock] {
-		log.Info("Check for cyclic deadlock")
 		scenarios.CheckForResourceDeadlock()
-		log.Info("Finish check for cyclic deadlock")
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
+		return
+	}
+
+	if baseA.AnalysisCasesMap[flags.MixedDeadlock] {
+		scenarios.CheckForMixedDeadlock()
+	}
+
+	if control.WasCanceled() {
 		return
 	}
 
 	if baseA.AnalysisCasesMap[flags.UnlockBeforeLock] {
-		log.Info("Check for unlock before lock")
 		scenarios.CheckForUnlockBeforeLock()
-		log.Info("Finish check for unlock before lock")
 	}
 }
 
@@ -267,9 +282,9 @@ func checkLeak(elem trace.Element) {
 		cases := e.GetCases()
 		ids := make([]int, 0)
 		buffered := make([]bool, 0)
-		opTypes := make([]trace.ObjectType, 0)
+		opTypes := make([]trace.OperationType, 0)
 		for _, c := range cases {
-			ids = append(ids, c.GetID())
+			ids = append(ids, c.GetObjId())
 			opTypes = append(opTypes, c.GetType(true))
 			buffered = append(buffered, c.IsBuffered())
 

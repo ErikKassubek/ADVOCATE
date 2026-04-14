@@ -29,6 +29,7 @@ const (
 	ALeak                   ResultType = "A07"
 	ADeadlock               ResultType = "A08"
 	AConcurrentRecv         ResultType = "A09"
+	AMixedDeadlock          ResultType = "A10"
 
 	// possible
 	PSendOnClosed     ResultType = "P01"
@@ -36,6 +37,7 @@ const (
 	PNegWG            ResultType = "P03"
 	PUnlockBeforeLock ResultType = "P04"
 	PCyclicDeadlock   ResultType = "P05"
+	PMixedDeadlock    ResultType = "P06"
 
 	// leaks
 	LUnknown           ResultType = "L00"
@@ -61,18 +63,21 @@ const (
 
 var ResultTypes = []ResultType{
 	ASendOnClosed,
-	// ARecvOnClosed,
+	ARecvOnClosed,
 	ACloseOnClosed,
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
 	ALeak,
+	ADeadlock,
 	AConcurrentRecv,
+	AMixedDeadlock,
 	PSendOnClosed,
-	PRecvOnClosed,
+	// PRecvOnClosed,
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
+	PMixedDeadlock,
 	LUnknown,
 	LUnbufferedWith,
 	LUnbufferedWithout,
@@ -95,7 +100,9 @@ var ResultTypesActual = []ResultType{
 	ANegWG,
 	AUnlockOfNotLockedMutex,
 	ALeak,
+	ADeadlock,
 	AConcurrentRecv,
+	AMixedDeadlock,
 }
 
 var ResultTypesPotential = []ResultType{
@@ -104,6 +111,7 @@ var ResultTypesPotential = []ResultType{
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
+	PMixedDeadlock,
 }
 
 var ResultTypesLeak = []ResultType{
@@ -156,6 +164,8 @@ func ResultTypeFromString(code string) ResultType {
 		return PUnlockBeforeLock
 	case "P05":
 		return PCyclicDeadlock
+	case "P06":
+		return PMixedDeadlock
 	case "L00":
 		return LUnknown
 	case "L01":
@@ -206,6 +216,7 @@ const (
 	ExitCodeNegativeWG       = 34
 	ExitCodeUnlockBeforeLock = 35
 	ExitCodeCyclic           = 41
+	ExitCodeMixedDeadlock    = 42
 )
 
 // MinExitCodeSuc is the minimum exit code for successful replay
@@ -213,4 +224,12 @@ const MinExitCodeSuc = ExitCodeLeakUnbuf
 
 func (rt ResultType) IsLeak() bool {
 	return string(rt)[0] == 'L'
+}
+
+func (rt ResultType) IsPos() bool {
+	return string(rt)[0] == 'P'
+}
+
+func (rt ResultType) IsActual() bool {
+	return string(rt)[0] == 'A'
 }

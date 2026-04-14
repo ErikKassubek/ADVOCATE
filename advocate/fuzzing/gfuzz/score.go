@@ -12,7 +12,7 @@ package gfuzz
 
 import (
 	"advocate/fuzzing/baseF"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"math"
 )
 

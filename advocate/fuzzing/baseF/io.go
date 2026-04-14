@@ -11,13 +11,97 @@
 package baseF
 
 import (
+	"advocate/analysis/baseA"
+	"advocate/io"
 	"advocate/trace"
+	"advocate/utils/flags"
+	"advocate/utils/log"
 	"advocate/utils/paths"
+	"advocate/utils/settings"
 	"advocate/utils/timer"
 	"fmt"
 	"os"
 	"path/filepath"
 )
+
+// WriteMutConstraint writes a chain based mutation the mutation to file and add it to the queue
+//
+// Parameter:
+//   - mut Chain: the mutation to write
+//   - first bool: set to true, if it is the first mutation for a given test/prog
+//
+// Returns:
+//   - bool: true if max number muts in reached
+//   - error
+func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
+	if MaxNumberRuns != -1 && NumberWrittenMutations > MaxNumberRuns {
+		return true, nil
+	}
+	NumberWrittenMutations++
+
+	traceCopy, err := baseA.CopyMainTrace()
+	if err != nil {
+		return false, err
+	}
+
+	t1 := -1
+	for _, elem := range mut.Elems {
+		tPost := elem.GetTPost()
+		if t1 == -1 || tPost < t1 {
+			t1 = tPost
+		}
+	}
+
+	// remove all elements after the first elem in the chain
+	traceCopy.ShortenTrace(t1, false)
+
+	// add in all the elements in the chain
+	mapping := make(map[string]trace.Element)
+	for i, elem := range mut.Elems {
+		c := elem.Copy(mapping, true)
+		c.SetTSort(t1 + i*2)
+		traceCopy.AddElement(c)
+	}
+
+	if first {
+		AddFuzzingTraceFolder(paths.FuzzingTraces)
+	}
+
+	fuzzingTracePath := filepath.Join(paths.FuzzingTraces, fmt.Sprintf("fuzzingTrace_%d", NumberWrittenMutations))
+	ChainFiles[NumberWrittenMutations] = mut
+
+	err = io.WriteTrace(&traceCopy, fuzzingTracePath, true, false)
+	if err != nil {
+		return false, fmt.Errorf("Could not create mutation: %s", err.Error())
+	}
+
+	// write the active map to a "replay_active.log"
+	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
+	} else {
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTPost())
+	}
+
+	traceCopy.Clear()
+
+	muta := Mutation{MutType: MutPiType, MutPie: NumberWrittenMutations}
+
+	AddMutToQueue(muta, false, false)
+
+	return false, nil
+}
+
+// Create the folder for the fuzzing traces
+//
+// Parameter:
+//   - path string: path to the folder
+func AddFuzzingTraceFolder(path string) {
+	os.RemoveAll(path)
+	err := os.MkdirAll(path, os.ModePerm)
+	if err != nil {
+		log.Error("Could not create fuzzing folder")
+	}
+}
 
 // WriteMutationToFile writes a given mutation to a mutation file.
 // These files are used to run the mutation
@@ -108,7 +192,7 @@ func GetPath(path string) string {
 //   - partTime int: if 0, the replay will partial replay from the beginning
 //     otherwise it will switch to partial replay when the element with this
 //     time is the next element to be replayed
-func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Chain, partTime int) {
+func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, partTime int) {
 	activePath := filepath.Join(fuzzingTracePath, paths.NameReplayActive)
 
 	f, err := os.Create(activePath)

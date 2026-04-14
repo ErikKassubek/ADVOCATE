@@ -60,7 +60,6 @@ var (
 var (
 	IgnoreAtomics         bool
 	IgnoreCriticalSection bool
-	IgnoreFifo            bool
 
 	OnlyAPanicAndLeak bool
 

@@ -40,6 +40,7 @@ type AdvocateRoutine struct {
 	parkOn            []unsafe.Pointer
 	parkPos           string
 	parkForeverReplay bool
+	wokenButTimeout   bool
 }
 
 // Create a new advocate routine

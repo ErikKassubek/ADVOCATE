@@ -26,6 +26,7 @@ const (
 	ExitCodeNegativeWG       = 34
 	ExitCodeUnlockBeforeLock = 35
 	ExitCodeCyclic           = 41
+	ExitCodeMixedDeadlock    = 42
 )
 
 const (
@@ -51,6 +52,7 @@ var ExitCodeNames = map[int]string{
 	34: "Negative WaitGroup counter",
 	35: "Unlock of unlocked mutex",
 	41: "Cyclic deadlock",
+	42: "Mixed Deadlock",
 }
 
 var (
@@ -64,6 +66,8 @@ var (
 
 	releasedFork = 0
 )
+
+var detectBlockingGC func() int
 
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
@@ -193,8 +197,10 @@ var (
 )
 
 // Enable the replay by starting the replay manager
-func EnableReplay() {
+func EnableReplay(detectBlockingGCFunc func() int) {
 	numberElementsInTrace = len(replayData)
+
+	detectBlockingGC = detectBlockingGCFunc
 
 	if printDebug {
 		println("\nTRACE\n")

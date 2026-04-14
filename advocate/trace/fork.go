@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementFork.go
+// File: /advocate/trace/fork.go
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek
@@ -19,11 +19,11 @@ import (
 
 // ElementFork is a trace element for a go statement
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: the index of the fork in the routine
 //   - routine int: The routine id of
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the new go routine
+//   - objId int: The id of the new go routine
 //   - file (string), line int: The position of the trace element in the file
 //   - vc *clock.VectorClock: the vector clock of the element
 //   - wVc *clock.VectorClock: the weak vector clock of the element
@@ -32,11 +32,11 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementFork struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPost                    int
-	id                       int
+	objId                    int
 	file                     string
 	line                     int
 	vc                       *clock.VectorClock
@@ -75,10 +75,10 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	}
 
 	elem := ElementFork{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		file:                     file,
 		line:                     line,
 		vc:                       nil,
@@ -97,12 +97,12 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	return nil
 }
 
-// GetID returns the ID of the newly created routine
+// GetObjId returns the ID of the newly created routine
 //
 // Returns:
 //   - int: The id of the new routine
-func (this *ElementFork) GetID() int {
-	return this.id
+func (this *ElementFork) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -217,7 +217,7 @@ func (this *ElementFork) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementFork) GetType(operation bool) ObjectType {
+func (this *ElementFork) GetType(operation bool) OperationType {
 	if !operation {
 		return Fork
 	}
@@ -299,43 +299,59 @@ func (this *ElementFork) SetTWithoutNotExecuted(tSort int) {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementFork) ToString() string {
-	return "G" + "," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.id) +
+	return "G" + "," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) +
 		"," + this.GetPos()
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementFork) GetTraceID() int {
-	return this.traceID
+func (this *ElementFork) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementFork) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementFork) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since forks do not contain reference to other elements and no other
-//     elements contain referents to forks, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementFork) Copy(_ map[string]Element) Element {
+func (this *ElementFork) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementFork{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPost:                    0,
+			objId:                    this.objId,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
 
 	return &ElementFork{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		file:                     this.file,
 		line:                     this.line,
 		vc:                       this.vc.Copy(),
@@ -345,6 +361,10 @@ func (this *ElementFork) Copy(_ map[string]Element) Element {
 		numberConcurrentSame:     this.numberConcurrentSame,
 		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
+}
+
+func (this *ElementFork) IsValid() bool {
+	return this != nil
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

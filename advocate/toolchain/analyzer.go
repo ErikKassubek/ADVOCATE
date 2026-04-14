@@ -13,7 +13,7 @@ package toolchain
 import (
 	"advocate/analysis/analysis"
 	"advocate/analysis/baseA"
-	"advocate/analysis/rewriter"
+	"advocate/fuzzing/active"
 	"advocate/io"
 	"advocate/results/results"
 	"advocate/utils/control"
@@ -67,25 +67,11 @@ func runAnalyzer(pathTrace string,
 
 	log.Infof("Read trace with %d elements in %d routines", numberElems, numberOfRoutines)
 
-	if flags.OnlyAPanicAndLeak {
-		log.Info("Start Analysis for actual panics and leaks")
-	} else if baseA.AnalysisCasesMap[flags.All] {
-		log.Info("Start Analysis for all scenarios")
-	} else {
-		info := "Start Analysis for the following scenarios: "
-		for key, value := range baseA.AnalysisCasesMap {
-			if value {
-				info += (string(key) + ",")
-			}
-		}
-		log.Info(info)
-	}
-
 	analysis.RunAnalysis(fuzzingRun >= 0)
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		// analysis.LogSizes()
-		if control.CheckCanceledRAM() {
+		if control.WasCanceledRAM() {
 			baseA.Clear()
 			return fmt.Errorf("Analysis was canceled due to insufficient RAM")
 		}
@@ -118,10 +104,10 @@ func runAnalyzer(pathTrace string,
 	}
 
 	if numberOfResults != 0 {
-		log.Info("Start rewriting")
+		log.Info("Start rewrite")
 	}
 
-	rewrittenBugs := make(map[helper.ResultType][]string) // bugtype -> paths string
+	rewrittenBugs := make(map[helper.ResultType][]string) // bug type -> paths string
 
 	file := filepath.Base(pathTrace)
 	rewriteNr := "0"
@@ -145,12 +131,12 @@ func runAnalyzer(pathTrace string,
 			fmt.Printf("Bugreport info: %s_%d,suc\n", rewriteNr, resultIndex+1)
 		}
 
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			failedRewrites += max(0, numberOfResults-resultIndex-1)
 			break
 		}
 	}
-	if control.CheckCanceledRAM() {
+	if control.WasCanceledRAM() {
 		log.Error("Rewrite Canceled: Not enough RAM")
 	} else {
 		log.Info("Finished Rewrite")
@@ -204,13 +190,13 @@ func rewriteTrace(outMachine string, newTrace string, resultIndex int,
 		return false, err
 	}
 
-	rewriteNeeded, code, err := rewriter.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
+	rewriteNeeded, code, err := active.RewriteTrace(&traceCopy, bug, *rewrittenTrace)
 
 	if err != nil {
 		return rewriteNeeded, err
 	}
 
-	err = io.WriteTrace(&traceCopy, newTrace, true)
+	err = io.WriteTrace(&traceCopy, newTrace, true, true)
 	if err != nil {
 		return rewriteNeeded, err
 	}

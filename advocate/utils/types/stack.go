@@ -15,6 +15,10 @@ type Stack[T any] struct {
 	items []T
 }
 
+func NewStack[T any]() *Stack[T] {
+	return &Stack[T]{items: make([]T, 0)}
+}
+
 // Push adds an item to the top
 //
 // Parameter:

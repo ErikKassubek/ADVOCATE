@@ -23,6 +23,7 @@ const (
 	Green  = "\033[32m"
 	Yellow = "\033[33m"
 	Purple = "\033[35m"
+	Cyan   = "\033[36m"
 )
 
 var numberErr = 0
@@ -81,6 +82,25 @@ func Importantf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
 }
 
+// Debug logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - v ...any: the content of the log
+func Debug(v ...any) {
+	log.Print(Yellow, fmt.Sprint(v...), Reset, "\n")
+}
+
+// Debugf logs an debug information to the terminal
+// Printed in yellow
+//
+// Parameter:
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
+func Debugf(format string, v ...any) {
+	log.Printf(Yellow+format+Reset, v...)
+}
+
 // Result logs a result to the terminal
 // Printed in green
 //
@@ -135,7 +155,7 @@ func Progress(v ...any) {
 	if flags.NoProgress {
 		return
 	}
-	log.Print(fmt.Sprint(v...), "\n")
+	log.Print(Purple, fmt.Sprint(v...), Reset, "\n")
 }
 
 // Progressf logs a the progress to the terminal
@@ -148,7 +168,7 @@ func Progressf(format string, v ...any) {
 	if flags.NoProgress {
 		return
 	}
-	log.Printf(format, v...)
+	log.Printf(Purple+format+Reset, v...)
 }
 
 // Timeout logs a timeout to the terminal
@@ -158,7 +178,7 @@ func Progressf(format string, v ...any) {
 // Parameter:
 //   - v ...any: the content of the log
 func Timeout(v ...any) {
-	log.Print(Purple, fmt.Sprint(v...), Reset, "\n")
+	log.Print(Cyan, fmt.Sprint(v...), Reset, "\n")
 	numberTimeout++
 }
 
@@ -170,7 +190,7 @@ func Timeout(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func Timeoutf(format string, v ...any) {
-	log.Printf(Purple+format+Reset, v...)
+	log.Printf(Cyan+format+Reset, v...)
 	numberTimeout++
 }
 

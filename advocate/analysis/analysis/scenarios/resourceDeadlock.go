@@ -1,3 +1,5 @@
+// advocate/analysis/analysis/scenarios/resourceDeadlock.go
+
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: analysisResourceDeadlock.go
@@ -365,7 +367,7 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 	event := baseA.LockEvent{
 		ThreadID:    baseA.ThreadID(element.GetRoutine()),
 		TraceID:     element.GetTID(),
-		LockID:      element.GetID(),
+		LockID:      element.GetObjId(),
 		VectorClock: element.GetWVC().Copy(),
 	}
 
@@ -388,7 +390,7 @@ func CheckForResourceDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 	if baseA.CurrentState.Failed {
-		log.Error("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
+		// log.Error("Failed flag is set, probably encountered unsupported lock operation. No deadlock analysis possible.")
 		return
 	}
 	// for i, t := range baseA.CurrentState.threads {

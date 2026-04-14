@@ -18,26 +18,6 @@ import (
 	"reflect"
 )
 
-// AddEdge adds an edge between start and end
-//
-// Parameter:
-//   - start trace.Element: the start element
-//   - end trace.Element: the end element
-//   - notWeak bool: if true, add to weak happens before
-func AddEdge(start, end trace.Element, weak bool) {
-	if start == nil || end == nil {
-		return
-	}
-
-	po.addEdge(start, end)
-	poInverted.addEdge(end, start)
-
-	if weak {
-		poWeak.addEdge(start, end)
-		poWeakInverted.addEdge(end, start)
-	}
-}
-
 // GetConcurrent find one or all elements that are concurrent to a given element
 //
 // Parameter
@@ -64,7 +44,7 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 		}
 
 		for _, tElem := range trace {
-			if sameElem && elem.GetID() != tElem.GetID() {
+			if sameElem && elem.GetObjId() != tElem.GetObjId() {
 				continue
 			}
 
@@ -72,7 +52,7 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 				continue
 			}
 
-			if !reachableFromN[tElem.GetTraceID()] && !reachableToN[tElem.GetTraceID()] {
+			if !reachableFromN[tElem.GetID()] && !reachableToN[tElem.GetID()] {
 				res = append(res, tElem)
 				if !all {
 					return res
@@ -119,7 +99,7 @@ func GetHappensBefore(t1, t2 trace.Element, weak bool) hb.HappensBefore {
 //   - bool: if end is nil, return if end has been reached, otherwise return true
 func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 	inverted, weak bool) bool {
-	if end != nil && start.GetTraceID() == end.GetTraceID() {
+	if end != nil && start.GetID() == end.GetID() {
 		return true
 	}
 
@@ -129,7 +109,7 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 
 	stack := []trace.Element{start}
 
-	var g *poGraph
+	var g *PoGraph
 	if weak {
 		if inverted {
 			g = &poWeakInverted
@@ -147,21 +127,21 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 	for len(stack) > 0 {
 		curr := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		if reachable[curr.GetTraceID()] {
+		if reachable[curr.GetID()] {
 			continue
 		}
 
-		reachable[curr.GetTraceID()] = true
+		reachable[curr.GetID()] = true
 
-		if end != nil && start.GetTraceID() == end.GetTraceID() {
+		if end != nil && start.GetID() == end.GetID() {
 			return true
 		}
 
-		for child := range g.getChildren(curr) {
+		for child := range g.GetChildren(curr) {
 			if child == nil || reflect.ValueOf(child).IsNil() {
 				continue
 			}
-			if !reachable[child.GetTraceID()] {
+			if !reachable[child.GetID()] {
 				stack = append(stack, child)
 			}
 		}

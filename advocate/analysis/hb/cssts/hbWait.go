@@ -20,10 +20,10 @@ import (
 // Parameter:
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
-	switch wa.GetOpW() {
-	case trace.ChangeOp:
+	switch wa.GetType(true) {
+	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
-	case trace.WaitOp:
+	case trace.WaitWait:
 		Wait(wa)
 	default:
 		err := "Unknown operation on wait group: " + wa.ToString()
@@ -36,7 +36,7 @@ func UpdateHBWait(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Change(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 
 	lw := baseA.LastChangeWG[id]
 	if lw != nil {
@@ -50,7 +50,7 @@ func Change(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Wait(wa *trace.ElementWait) {
-	id := wa.GetID()
+	id := wa.GetObjId()
 
 	if wa.GetTPost() != 0 {
 		lc := baseA.LastChangeWG[id]

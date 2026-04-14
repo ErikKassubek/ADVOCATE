@@ -31,7 +31,7 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBAtomic(at)
+		pog.UpdateHBAtomic(nil, at)
 	}
 
 	if CalcCssts {
@@ -52,7 +52,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBChannel(ch)
+		pog.UpdateHBChannel(nil, ch, true)
 	}
 
 	if CalcCssts {
@@ -73,7 +73,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBSelect(se)
+		pog.UpdateHBSelect(nil, se, true)
 	}
 
 	if CalcCssts {
@@ -94,7 +94,7 @@ func UpdateHBCond(co *trace.ElementCond) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBCond(co)
+		pog.UpdateHBCond(nil, co)
 	}
 
 	if CalcCssts {
@@ -135,7 +135,7 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBMutex(mu)
+		pog.UpdateHBMutex(nil, mu, true)
 	}
 
 	if CalcCssts {
@@ -172,7 +172,7 @@ func UpdateHBOnce(on *trace.ElementOnce) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBOnce(on)
+		pog.UpdateHBOnce(nil, on)
 	}
 
 	if CalcCssts {
@@ -209,7 +209,7 @@ func UpdateHBWait(wa *trace.ElementWait) {
 	}
 
 	if CalcPog {
-		pog.UpdateHBWait(wa)
+		pog.UpdateHBWait(nil, wa, true)
 	}
 
 	if CalcCssts {

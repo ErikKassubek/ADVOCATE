@@ -70,7 +70,7 @@ func CreateStats(testName string, traceID, fuzzing int) error {
 
 	statsTrace, err := statsTraces(traceID)
 	// if err != _ {
-		// log.Error("Failed to create trace statistics: ", err.Error())
+	// log.Error("Failed to create trace statistics: ", err.Error())
 	// }
 
 	statsFuzz, err := statsFuzz()
@@ -226,7 +226,7 @@ func writeStatsToFile(testName string, statsTraces map[statsType]int, statsFuzz 
 	for _, mode := range []statsType{detected, replayWritten, replaySuccessful, unexpectedPanic} {
 		for _, count := range []string{"Total", "Unique"} {
 			for _, code := range helper.ResultTypes {
-				headers = append(headers, "No"+count+string(mode)[1:]+string(code))
+				headers = append(headers, "Nr"+count+strings.ToUpper(string(string(mode)[0]))+string(mode)[1:]+string(code))
 				if count == "Total" {
 					data = append(data, strconv.Itoa(statsAnalyzerTotal[mode][code]))
 				} else {

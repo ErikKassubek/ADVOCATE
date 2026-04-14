@@ -24,8 +24,6 @@ var (
 	drain  = trace.EmptyWait(-2)
 )
 
-// TODO: change to graph of elems, not tID
-
 // Build a st graph for a wait group.
 // The graph has the following structure:
 // - a start node s

@@ -227,7 +227,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationChannelSend, 3, false)
+		wait, ch, _, _ := WaitForReplay(OperationChannelSend, CallerSkipChanSendRecv, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -538,7 +538,7 @@ func closechan(c *hchan) {
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
-		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, 2, true)
+		wait, chWait, chAck, _ := WaitForReplay(OperationChannelClose, CallerSkipChanClose, true)
 		if wait {
 			defer func() { chAck <- struct{}{} }()
 			<-chWait
@@ -687,7 +687,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
-		wait, ch, _, _ := WaitForReplay(OperationChannelRecv, 3, false)
+		wait, ch, _, _ := WaitForReplay(OperationChannelRecv, CallerSkipChanSendRecv, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
@@ -1005,12 +1005,12 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 	var wait bool
 	var ch chan ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ = WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+				_ = AdvocateSelectPreOneNonDef(c, true)
 				unlock(&c.lock)
 				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true)
 				BlockForever()
@@ -1079,7 +1079,7 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 	var wait bool
 	var ch chan ReplayElement
 	if c != nil && !c.advocateIgnore {
-		wait, ch, _, _ = WaitForReplay(OperationSelect, 2, false)
+		wait, ch, _, _ = WaitForReplay(OperationSelect, CallerSkipSelectOneDef, false)
 		if wait {
 			replayElem = <-ch
 			if replayElem.Blocked {

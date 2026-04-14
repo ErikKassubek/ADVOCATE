@@ -1,7 +1,7 @@
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: pair.go
-// Brief: Implement a pair data type
+// Brief: Implement a comparable pair data type
 //
 // Author: Erik Kassubek
 // Created: 2025-07-02
@@ -24,4 +24,15 @@ type Pair[K comparable, V comparable] struct {
 //   - y comparable: second value
 func NewPair[K comparable, V comparable](x K, y V) Pair[K, V] {
 	return Pair[K, V]{X: x, Y: y}
+}
+
+// IsEqual check if two pairs are equal.
+//
+// Parameter:
+//   - other *Pair[K, V]: the pair to check agains
+//
+// Returns:
+//   - bool: true if equal, false if not
+func (this *Pair[K, V]) IsEqual(other Pair[K, V]) bool {
+	return this.X == other.X && this.Y == other.Y
 }

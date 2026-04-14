@@ -99,7 +99,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *clock.Vect
 
 	for casi, c := range se.GetCases() {
 
-		id := c.GetID()
+		id := c.GetObjId()
 
 		buffered := (c.GetQSize() > 0)
 		send := (c.GetType(true) == trace.ChannelSend)
@@ -184,7 +184,7 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *clock.VectorCloc
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	for i, c := range baseA.SelectCases {
-		if c.PartnerFound || c.ChanID != ch.GetID() || c.Send == send || c.Elem.Elem.GetTID() == ch.GetTID() {
+		if c.PartnerFound || c.ChanID != ch.GetObjId() || c.Send == send || c.Elem.Elem.GetTID() == ch.GetTID() {
 			continue
 		}
 
@@ -226,7 +226,7 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *clock.Vect
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	for i, c := range baseA.SelectCases {
-		if c.PartnerFound || c.ChanID != cl.GetID() || c.Send {
+		if c.PartnerFound || c.ChanID != cl.GetObjId() || c.Send {
 			continue
 		}
 

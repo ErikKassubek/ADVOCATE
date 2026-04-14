@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementSelect.go
+// File: /advocate/trace/select.go
 // Brief: Struct and functions for select operations in the trace
 //
 // Author: Erik Kassubek
@@ -21,12 +21,12 @@ import (
 
 // ElementSelect is a trace element for a select statement
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the select statement
+//   - objId int: The id of the select statement
 //   - cases []traceElementSelectCase: The cases of the select statement, ordered by casi starting from 0
 //   - chosenIndex int: The internal index of chosen case
 //   - containsDefault bool: Whether the select statement contains a default case
@@ -43,12 +43,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementSelect struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	cases                    []ElementChannel
 	chosenCase               ElementChannel
 	chosenIndex              int
@@ -104,11 +104,11 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := ElementSelect{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		chosenIndex:              chosenIndexInt,
 		file:                     file,
 		line:                     line,
@@ -181,7 +181,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 			routine:  routine,
 			tPre:     tPreInt,
 			tPost:    cTPost,
-			id:       cID,
+			objId:    cID,
 			op:       cOpC,
 			cl:       cCl,
 			oID:      cOID,
@@ -208,12 +208,12 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementSelect) GetID() int {
-	return this.id
+func (this *ElementSelect) GetObjId() int {
+	return this.objId
 }
 
 // GetCases returns the cases of the select statement
@@ -379,7 +379,7 @@ func (this *ElementSelect) GetPartner() *ElementChannel {
 //
 // Returns:
 //   - the object type
-func (this *ElementSelect) GetType(operation bool) ObjectType {
+func (this *ElementSelect) GetType(operation bool) OperationType {
 	if !operation {
 		return Select
 	}
@@ -609,7 +609,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 //
 // Returns:
 //   - error
-func (this *ElementSelect) SetCase(chanID int, op ObjectType) error {
+func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	if chanID == -1 {
 		if this.containsDefault {
 			this.chosenDefault = true
@@ -625,7 +625,7 @@ func (this *ElementSelect) SetCase(chanID int, op ObjectType) error {
 
 	found := false
 	for i, c := range this.cases {
-		if c.id == chanID && c.op == op {
+		if c.objId == chanID && c.op == op {
 			tPost := this.GetTPost()
 			if !this.chosenDefault {
 				this.cases[this.chosenIndex].SetTPost(0)
@@ -653,7 +653,7 @@ func (this *ElementSelect) SetCase(chanID int, op ObjectType) error {
 //   - string: The simple string representation of the element
 func (this *ElementSelect) ToString() string {
 	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
-		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.id) + ","
+		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
 
 	notNil := 0
 	for _, ca := range this.cases { // cases
@@ -681,20 +681,20 @@ func (this *ElementSelect) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementSelect) GetTraceID() int {
-	return this.traceID
+func (this *ElementSelect) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementSelect) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementSelect) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
@@ -702,23 +702,61 @@ func (this *ElementSelect) setTraceID(ID int) {
 // Parameter:
 //   - mapping map[string]Element: map containing all already copied elements.
 //     This avoids double copy of referenced elements
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementSelect) Copy(mapping map[string]Element) Element {
+func (this *ElementSelect) Copy(mapping map[string]Element, keep bool) Element {
 	tID := this.GetTID()
 
 	if existing, ok := mapping[tID]; ok {
 		return existing
 	}
 
+	if !keep {
+		elem := &ElementSelect{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			chosenIndex:              this.chosenIndex,
+			containsDefault:          this.containsDefault,
+			chosenDefault:            this.chosenDefault,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+
+		mapping[tID] = elem
+
+		elem.cases = make([]ElementChannel, 0)
+		for _, c := range this.cases {
+			elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
+		}
+
+		elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
+
+		for _, c := range elem.cases {
+			c.sel = elem
+		}
+
+		return elem
+	}
+
 	elem := &ElementSelect{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		chosenIndex:              this.chosenIndex,
 		containsDefault:          this.containsDefault,
 		chosenDefault:            this.chosenDefault,
@@ -736,16 +774,20 @@ func (this *ElementSelect) Copy(mapping map[string]Element) Element {
 
 	elem.cases = make([]ElementChannel, 0)
 	for _, c := range this.cases {
-		elem.cases = append(elem.cases, *c.Copy(mapping).(*ElementChannel))
+		elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
 	}
 
-	elem.chosenCase = *this.chosenCase.Copy(mapping).(*ElementChannel)
+	elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
 
 	for _, c := range elem.cases {
 		c.sel = elem
 	}
 
 	return elem
+}
+
+func (this *ElementSelect) IsValid() bool {
+	return this != nil
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
@@ -805,45 +847,14 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - bool: true if this and s have at least one common channel
 func (this *ElementSelect) HasCommonChannel(s *ElementSelect) bool {
-	for _, c := range s.GetCases() {
-		if this.IsInCases(&c) {
-			return true
-		}
+	seen := make(map[int]struct{}, len(this.GetCases()))
+
+	for _, v := range this.GetCases() {
+		seen[v.objId] = struct{}{}
 	}
 
-	return false
-}
-
-// GetCommonChannels returns the set of cases that are in both the receiver
-// select and the argument select. The result does not contain the default case
-//
-// Parameter:
-//   - s *trace.ElementSelect: the other select
-//
-// Returns:
-//   - []trace.ElementChannel: the set of channels in both the receiver and the argument
-func (this *ElementSelect) GetCommonChannel(s *ElementSelect) []ElementChannel {
-	res := make([]ElementChannel, 0)
-	for _, c := range s.GetCases() {
-		if this.IsInCases(&c) {
-			res = append(res, c)
-		}
-	}
-
-	return res
-}
-
-// IsInCases returns true, if the given channel is in the cases. We only care
-// about the channel, not the same operations
-//
-// Parameter:
-//   - ch *trace.ElementChannel: the channel element
-//
-// Returns:
-//   - bool: true if the channel of the operations in ch is in a case in the select
-func (this *ElementSelect) IsInCases(ch *ElementChannel) bool {
-	for _, c := range this.GetCases() {
-		if c.IsSameElement(ch) {
+	for _, v := range s.GetCases() {
+		if _, ok := seen[v.objId]; ok {
 			return true
 		}
 	}

@@ -56,6 +56,7 @@ func FinishTracing() {
 	if hasFinished {
 		// needed to prevent program stop while still writing
 		// otherwise, trace may be empty
+		time.Sleep(time.Second * 20)
 		return
 	}
 	hasFinished = true
@@ -86,7 +87,7 @@ func FinishTracing() {
 
 	runtime.DisableTracing()
 
-	DetectBlockingGC(0)
+	DetectBlockingGC()
 
 	if timerStarted {
 		duration = time.Since(startTime)

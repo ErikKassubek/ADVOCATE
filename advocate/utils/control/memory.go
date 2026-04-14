@@ -26,8 +26,8 @@ import (
 
 // variables for memory management
 var (
-	wasCanceled    atomic.Bool
-	WasCanceledRAM atomic.Bool
+	isCanceled    atomic.Bool
+	IsCanceledRAM atomic.Bool
 
 	numberCommands  int
 	commandsLock    = sync.Mutex{}
@@ -44,7 +44,7 @@ func SetMaxNumberElem() {
 // Supervisor periodically checks the used and free memory
 // If the trace is to big and the available RAM to small, this can lead
 // to problems. In this case we abort the analysis
-func Supervisor() {
+func Supervisor(baseAClearTrace, baseAClearData, baseFClear func()) {
 	// Get the memory stats
 	v, err := mem.VirtualMemory()
 	if err != nil {
@@ -52,15 +52,15 @@ func Supervisor() {
 	}
 
 	// Get the swap stats
-	s, err := mem.SwapMemory()
-	if err != nil {
-		log.Errorf("Error getting swap info: %v", err)
-	}
+	// s, err := mem.SwapMemory()
+	// if err != nil {
+	// 	log.Errorf("Error getting swap info: %v", err)
+	// }
 
-	thresholdRAM := uint64(float64(v.Total) * 0.02)
-	thresholdSwap := uint64(1025 * 1024 * 1024) // 1GB
+	thresholdRAM := uint64(float64(v.Total) * 0.15)
+	// thresholdSwap := uint64(1025 * 1024 * 1024) // 1GB
 
-	startSwap := s.Used
+	// startSwap := s.Used
 
 	for {
 		// Get the memory stats
@@ -70,23 +70,27 @@ func Supervisor() {
 		}
 
 		// Get the swap stats
-		s, err = mem.SwapMemory()
-		if err != nil {
-			log.Errorf("Error getting swap info: %v", err)
-		}
+		// s, err = mem.SwapMemory()
+		// if err != nil {
+		// 	log.Errorf("Error getting swap info: %v", err)
+		// }
 
 		// cancel if available RAM is below the threshold or the used swap is above the threshold
 		if v.Available < thresholdRAM {
-			cancelRAM()
+			cancelRAM(baseAClearTrace, baseAClearData, baseFClear)
 			time.Sleep(5 * time.Second)
 			continue
+		} else {
+			Reset()
 		}
 
-		if s.Used > thresholdSwap+startSwap {
-			cancelRAM()
-			time.Sleep(5 * time.Second)
-			continue
-		}
+		// if s.Used > thresholdSwap+startSwap {
+		// 	cancelRAM()
+		// 	time.Sleep(5 * time.Second)
+		// 	continue
+		// } else {
+		// 	Reset()
+		// }
 
 		// Sleep for a while before checking again
 		time.Sleep(500 * time.Millisecond)
@@ -95,43 +99,50 @@ func Supervisor() {
 
 // Cancel sets the analysis to canceled
 func Cancel() {
-	wasCanceled.Store(true)
+	isCanceled.Store(true)
 }
 
 // Cancel the analysis if not enough ram is available
-func cancelRAM() {
-	wasCanceled.Store(true)
-	WasCanceledRAM.Store(true)
+func cancelRAM(baseAClearTrace, baseAClearData, baseFClear func()) {
+	isCanceled.Store(true)
+	IsCanceledRAM.Store(true)
+	log.Error("Not enough RAM")
 	printAllGoroutines()
 	cancelAllRunningCom()
-	log.Error("Not enough RAM")
+
+	baseAClearTrace()
+	baseAClearData()
+	baseFClear()
 
 	// give all function time to cancel and then make sure to clear the memory
-	time.Sleep(3 * time.Second)
+	time.Sleep(2 * time.Second)
 	runtime.GC()
 	debug.FreeOSMemory()
 }
 
-// CheckCanceled returns if the analysis was canceled
+// WasCanceled returns if the analysis was canceled
 //
 // Returns:
 //   - bool: true if the analysis was canceled
-func CheckCanceled() bool {
-	return wasCanceled.Load()
+func WasCanceled() bool {
+	return isCanceled.Load()
 }
 
-// CheckCanceledRAM returns if the analysis was canceled because of insufficient ram
+// WasCanceledRAM returns if the analysis was canceled because of insufficient ram
 //
 // Returns:
 //   - bool: true if the analysis was canceled because of insufficient ram*
-func CheckCanceledRAM() bool {
-	return WasCanceledRAM.Load()
+func WasCanceledRAM() bool {
+	return IsCanceledRAM.Load()
 }
 
 // Reset the cancel values to false
 func Reset() {
-	wasCanceled.Store(false)
-	WasCanceledRAM.Store(false)
+	if WasCanceled() {
+		log.Important("RAM Reset")
+		isCanceled.Store(false)
+		IsCanceledRAM.Store(false)
+	}
 }
 
 // AddRunningCom stores the cancel function for a context of a running command

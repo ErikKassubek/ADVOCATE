@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementMutex.go
+// File: /advocate/trace/mutex.go
 // Brief: Struct and functions for mutex operations in the trace
 //
 // Author: Erik Kassubek
@@ -22,12 +22,12 @@ import (
 // ElementMutex is a trace element for a mutex
 //
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the mutex
+//   - objId int: The id of the mutex
 //   - rw bool: Whether the mutex is a read-write mutex
 //   - op ObjectType: The operation on the mutex
 //   - suc bool: Whether the operation was successful (only for trylock else always true)
@@ -40,14 +40,14 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementMutex struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	rw                       bool
-	op                       ObjectType
+	op                       OperationType
 	suc                      bool
 	file                     string
 	line                     int
@@ -93,7 +93,7 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 		rwBool = true
 	}
 
-	var opMInt ObjectType
+	var opMInt OperationType
 	switch opM {
 	case "L":
 		opMInt = MutexLock
@@ -122,11 +122,11 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := ElementMutex{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		rw:                       rwBool,
 		op:                       opMInt,
 		suc:                      sucBool,
@@ -144,12 +144,12 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementMutex) GetID() int {
-	return this.id
+func (this *ElementMutex) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -276,7 +276,7 @@ func (this *ElementMutex) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementMutex) GetType(operation bool) ObjectType {
+func (this *ElementMutex) GetType(operation bool) OperationType {
 	if !operation {
 		return Mutex
 	}
@@ -290,6 +290,14 @@ func (this *ElementMutex) GetType(operation bool) ObjectType {
 //   - For trylock wether it was successful, otherwise always true
 func (this *ElementMutex) IsSuc() bool {
 	return this.suc
+}
+
+// IsSuc sets whether the locking was successful of the element
+//
+// Parameter:
+//   - s bool: For trylock wether it was successful, otherwise always true
+func (this *ElementMutex) SetSuc(s bool) {
+	this.suc = s
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -316,7 +324,7 @@ func (this *ElementMutex) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -376,7 +384,7 @@ func (this *ElementMutex) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementMutex) ToString() string {
 	res := "M,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 
 	if this.rw {
 		res += "R,"
@@ -395,39 +403,60 @@ func (this *ElementMutex) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementMutex) GetTraceID() int {
-	return this.traceID
+func (this *ElementMutex) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementMutex) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementMutex) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since mutex do not contain reference to other elements and no other
-//     elements contain referents to mutex, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementMutex) Copy(_ map[string]Element) Element {
+func (this *ElementMutex) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementMutex{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			rw:                       this.rw,
+			op:                       this.op,
+			suc:                      true,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementMutex{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		rw:                       this.rw,
 		op:                       this.op,
 		suc:                      this.suc,
@@ -440,6 +469,10 @@ func (this *ElementMutex) Copy(_ map[string]Element) Element {
 		numberConcurrentSame:     this.numberConcurrentSame,
 		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
+}
+
+func (this *ElementMutex) IsValid() bool {
+	return this != nil
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

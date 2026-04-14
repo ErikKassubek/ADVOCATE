@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -28,39 +29,39 @@ import (
 //   - index int: index of the bug that is explained
 //
 // Returns:
-//   - map[string]string: Information for the rewrite/replay part of the explanation file
-func getRewriteInfo(bugType helper.ResultType, codes map[string]string, index string) map[string]string {
-	res := make(map[string]string)
+//   - map[bugKeys]string: Information for the rewrite/replay part of the explanation file
+func getRewriteInfo(bugType helper.ResultType, codes map[string]string, index string) map[bugKeys]string {
+	res := make(map[bugKeys]string)
 
 	rewType := getRewriteType(bugType)
 
-	res["description"] = ""
-	res["exitCode"] = ""
-	res["exitCodeExplanation"] = ""
-	res["replaySuc"] = "was not possible"
+	res[desc] = ""
+	res[exitCode] = ""
+	res[exitCodeDesc] = ""
+	res[replaySuc] = "was not possible"
 
 	var err error
 
-	if rewType == "Actual" {
-		res["description"] += "The bug is an actual bug. Therefore no rewrite is possible."
+	if rewType == consts.Actual {
+		res[desc] += "The bug is an actual bug. Therefore no rewrite is possible."
 		codes[fmt.Sprint(index)] = "fail"
-	} else if rewType == "Possible" {
-		res["description"] += "The bug is a potential bug.\n"
-		res["description"] += "The analyzer has tries to rewrite the trace in such a way, "
-		res["description"] += "that the bug will be triggered when replaying the trace."
+	} else if rewType == consts.Possible {
+		res[desc] += "The bug is a potential bug.\n"
+		res[desc] += consts.TheAnalyzerHasTriedToRewriteTheTraceInSuchAWay + " "
+		res[desc] += "that the bug will be triggered when replaying the trace."
 	} else if rewType == "LeakPos" {
-		res["description"] += "The analyzer found a leak in the recorded trace.\n"
-		res["description"] += "The analyzer found a way to resolve the leak, meaning the "
-		res["description"] += "leak should not reappear in the rewritten trace."
-	} else if rewType == "Leak" {
-		res["description"] += "The analyzer found a leak in the recorded trace.\n"
-		res["description"] += "The analyzer could not find a way to resolve the leak. "
-		res["description"] += "No rewritten trace was created. This does not need to mean, "
-		res["description"] += "that the leak can not be resolved, especially because the "
-		res["description"] += "analyzer is only aware of executed operations."
+		res[desc] += "The analyzer found a leak in the recorded trace.\n"
+		res[desc] += "The analyzer found a way to resolve the leak, meaning the "
+		res[desc] += "leak should not reappear in the rewritten trace."
+	} else if rewType == consts.Leak {
+		res[desc] += "The analyzer found a leak in the recorded trace.\n"
+		res[desc] += "The analyzer could not find a way to resolve the leak. "
+		res[desc] += "No rewritten trace was created. This does not need to mean, "
+		res[desc] += "that the leak can not be resolved, especially because the "
+		res[desc] += "analyzer is only aware of executed operations."
 		codes[fmt.Sprint(index)] = "fail"
 	}
-	res["exitCode"], res["exitCodeExplanation"], res["replaySuc"], err = getReplayInfo(codes, index)
+	res[exitCode], res[exitCodeDesc], res[replaySuc], err = getReplayInfo(codes, index)
 
 	if err != nil {
 		log.Error("Error getting replay info: ", err)
@@ -80,11 +81,11 @@ func getRewriteInfo(bugType helper.ResultType, codes map[string]string, index st
 func getRewriteType(bugCode helper.ResultType) string {
 	switch string(bugCode)[:1] {
 	case "A":
-		return "Actual"
+		return consts.Actual
 	case "P":
-		return "Possible"
+		return consts.Possible
 	case "L":
-		res := "Leak"
+		res := consts.Leak
 		if bugCode == "L01" || bugCode == "L03" || bugCode == "L06" ||
 			bugCode == "L08" || bugCode == "L09" || bugCode == "L10" {
 			res += "Pos"
@@ -195,7 +196,7 @@ func getReplayInfo(codes map[string]string, index string) (string, string, strin
 	if exitCodeInt == 0 {
 		replaySuc = "ended without confirming the bug"
 	} else if exitCodeInt >= 20 {
-		replaySuc = "was successful"
+		replaySuc = "confirmed the bug"
 	}
 
 	return exitCode, exitCodeExplanation[exitCode], replaySuc, nil

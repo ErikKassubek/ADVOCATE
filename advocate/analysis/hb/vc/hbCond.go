@@ -50,7 +50,7 @@ func CondWait(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondSignal(co *trace.ElementCond) {
-	id := co.GetID()
+	id := co.GetObjId()
 	routine := co.GetRoutine()
 
 	if len(baseA.CurrentlyWaiting[id]) != 0 {
@@ -67,7 +67,7 @@ func CondSignal(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(co *trace.ElementCond) {
-	id := co.GetID()
+	id := co.GetObjId()
 	routine := co.GetRoutine()
 
 	for _, wait := range baseA.CurrentlyWaiting[id] {

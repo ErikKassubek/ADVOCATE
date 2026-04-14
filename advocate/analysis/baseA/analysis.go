@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/analysis.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: vc.go
@@ -10,9 +12,7 @@
 
 package baseA
 
-import (
-	"advocate/trace"
-)
+import "advocate/trace"
 
 // MaxNumberElements is the maximum number of elements fow which a HB analysis is run
 const MaxNumberElements = 10000000
@@ -82,6 +82,7 @@ var (
 	LockSet                = make(map[int]map[int]string)     // routine -> id -> string
 	MostRecentAcquire      = make(map[int]map[int]ElemWithVc) // routine -> id -> vcTID
 	MostRecentAcquireTotal = make(map[int]ElemWithVc)         // id -> vc and elem
+	RLockCount             = make(map[int]map[int]int)        // routine -> lockID -> count
 
 	// lock/unlocks on mutexes
 	AllLocks   = make(map[int][]trace.Element)
@@ -90,9 +91,6 @@ var (
 	// add/done on waitGroup
 	WGAddData  = make(map[int][]trace.Element) // id  -> []TraceElement
 	WgDoneData = make(map[int][]trace.Element) // id -> []TraceElement
-
-	// last analyzed element per routine
-	LastAnalyzedElementPerRoutine = make(map[int]trace.Element) // routine -> elem
 
 	// state for resource deadlock
 	CurrentState State
@@ -372,7 +370,7 @@ func SortTrace() {
 //   - Trace: The copy of the trace
 //   - error
 func CopyMainTrace() (trace.Trace, error) {
-	return MainTrace.Copy()
+	return MainTrace.Copy(true)
 }
 
 // SetTrace sets the main trace

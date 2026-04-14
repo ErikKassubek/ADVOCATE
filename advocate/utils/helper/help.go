@@ -53,9 +53,9 @@ var (
 	maxFuzzingRun = newFlagVal("maxFuzzingRuns", "-1", "", "Maximum number of fuzzing runs per test/prog. To Disable, set to -1")
 
 	// statistics
-	time    = newFlagVal("time", "false", "", "Measure the execution times of programs/tests and analysis")
-	notExec = newFlagVal("notExec", "false", "", "Find never executed operations")
-	stats   = newFlagVal("stats", "false", "", "Create statistics")
+	measureTime = newFlagVal("time", "false", "", "Measure the execution times of programs/tests and analysis")
+	notExec     = newFlagVal("notExec", "false", "", "Find never executed operations")
+	stats       = newFlagVal("stats", "false", "", "Create statistics")
 
 	// logging and output
 	noInfo     = newFlagVal("noInfo", "false", "", "Do not show infos in the terminal (will only show results, errors, important and progress)")
@@ -215,7 +215,7 @@ func printHelpRecord() {
 	fmt.Println(timeoutRec.toString(false))
 
 	// statistics
-	fmt.Println(time.toString(false))
+	fmt.Println(measureTime.toString(false))
 	fmt.Println(notExec.toString(false))
 	fmt.Println(stats.toString(false))
 
@@ -304,7 +304,7 @@ func printHelpAnalysis() {
 	fmt.Println(timeoutRep.toString(false))
 
 	// statistics
-	fmt.Println(time.toString(false))
+	fmt.Println(measureTime.toString(false))
 	fmt.Println(notExec.toString(false))
 	fmt.Println(stats.toString(false))
 
@@ -365,7 +365,7 @@ func printHelpFuzzing() {
 	fmt.Println(maxFuzzingRun.toString(false))
 
 	// statistics
-	fmt.Println(time.toString(false))
+	fmt.Println(measureTime.toString(false))
 	fmt.Println(notExec.toString(false))
 	fmt.Println(stats.toString(false))
 

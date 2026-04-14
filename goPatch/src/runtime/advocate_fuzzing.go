@@ -57,7 +57,6 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int,
 // Parameter:
 //   - finishFuzzing func(): advocate.FinishFuzzing function
 func InitFuzzingReplay(finishFuzzing func()) {
-	println("Init FuzzingReplay")
 	finishFuzzingFunc = finishFuzzing
 	advocateFuzzingEnabled = true
 	advocateFuzzingReplayEnabled = true

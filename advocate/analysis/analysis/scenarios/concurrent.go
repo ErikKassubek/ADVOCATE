@@ -35,7 +35,7 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 	timer.Start(timer.FuzzingAna)
 	defer timer.Stop(timer.FuzzingAna)
 
-	id := sender.GetID()
+	id := sender.GetObjId()
 	routine := sender.GetRoutine()
 
 	IncFuzzingCounter(sender)
@@ -83,7 +83,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 	timer.Start(timer.AnaConcurrent)
 	defer timer.Stop(timer.AnaConcurrent)
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	IncFuzzingCounter(ch)
@@ -157,7 +157,7 @@ func GetConcurrentMutexForFuzzing(mu *trace.ElementMutex) {
 		return
 	}
 
-	id := mu.GetID()
+	id := mu.GetObjId()
 
 	// not executed try lock
 	// get currently hold lock because of witch the try lock failed
@@ -184,7 +184,7 @@ func GetConcurrentOnceForFuzzing(on *trace.ElementOnce) {
 	timer.Start(timer.FuzzingAna)
 	timer.Stop(timer.FuzzingAna)
 
-	id := on.GetID()
+	id := on.GetObjId()
 	vc := on.GetVC()
 
 	IncFuzzingCounter(on)
@@ -223,7 +223,7 @@ func GetConcurrentInfoForFuzzing() (*[]baseA.ConcurrentEntry, *[]baseA.Concurren
 // Returns:
 //   - int: the current fuzzing counter for the element
 func getFuzzingCounter(te trace.Element) int {
-	id := te.GetID()
+	id := te.GetObjId()
 	pos := te.GetPos()
 
 	if _, ok := baseA.FuzzingCounter[id]; !ok {
@@ -241,7 +241,7 @@ func getFuzzingCounter(te trace.Element) int {
 // Parameter:
 //   - te TraceElement: The element to increase the counter for
 func IncFuzzingCounter(te trace.Element) {
-	id := te.GetID()
+	id := te.GetObjId()
 	pos := te.GetPos()
 
 	if _, ok := baseA.FuzzingCounter[id]; !ok {

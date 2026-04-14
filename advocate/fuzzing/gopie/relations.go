@@ -56,7 +56,7 @@ func CalculateRelRule1(routineTrace []trace.Element) {
 		rel1[elem2][elem1] = struct{}{}
 		counterCPOP1++
 	}
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 }
@@ -70,7 +70,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.GetID()
+	id := elem.GetObjId()
 	if _, ok := ElemsByID[id]; !ok {
 		ElemsByID[id] = make([]trace.Element, 0)
 	}
@@ -103,7 +103,7 @@ func CalculateRelRule2And4() {
 					rel2[elem2][elem1] = struct{}{}
 					counterCPOP2++
 				}
-				if control.CheckCanceled() {
+				if control.WasCanceled() {
 					return
 				}
 			}
@@ -168,13 +168,13 @@ func isGoPieElem(elem trace.Element) bool {
 	elemTypeShort := elem.GetType(false)
 
 	if flags.FuzzingMode == baseF.GoPie {
-		validTypes := []trace.ObjectType{
+		validTypes := []trace.OperationType{
 			trace.Mutex, trace.Channel,
 			trace.Select}
 		return types.Contains(validTypes, elemTypeShort)
 	}
 
-	invalidTypes := []trace.ObjectType{trace.New,
+	invalidTypes := []trace.OperationType{trace.New,
 		trace.Replay, trace.End}
 	return !types.Contains(invalidTypes, elemTypeShort)
 }

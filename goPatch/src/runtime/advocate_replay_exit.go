@@ -77,7 +77,8 @@ var hasPanicked = false
 //
 // Parameter:
 //   - msg: the panic message
-func ExitReplayPanic(msg any) {
+func AdvocatePanic(msg any) {
+	println("HAS: ", hasPanicked)
 	if hasPanicked {
 		exit(1)
 	}
@@ -86,6 +87,7 @@ func ExitReplayPanic(msg any) {
 	ReleaseAllWaiting()
 
 	SetExitCodeFromPanicMsg(msg)
+
 	if IsAdvocateFuzzingEnabled() {
 		finishFuzzingFunc()
 	} else if IsTracingEnabled() {
@@ -112,5 +114,8 @@ func ExitReplayTimeout() {
 
 	// println("ExitPosition:" + top)
 
-	ExitReplayPanic("Timeout")
+	detectBlockingGC()
+
+	advocateExitCode = ExitCodeTimeout
+	AdvocatePanic("Timeout")
 }

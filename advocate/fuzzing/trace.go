@@ -33,13 +33,13 @@ func ParseTrace(tr *trace.Trace) {
 	gfuzz.SelectInfoTrace = make(map[string][]baseF.FuzzingSelect)
 
 	// clear chains for goPie
-	gopie.SchedulingChains = make([]baseF.Chain, 0)
-	gopie.CurrentChain = baseF.NewChain()
+	gopie.SchedulingChains = make([]baseF.Constraint, 0)
+	gopie.CurrentChain = baseF.NewConstraint()
 	gopie.LastRoutine = -1
 
 	for _, routine := range tr.GetTraces() {
 
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			return
 		}
 
@@ -49,7 +49,7 @@ func ParseTrace(tr *trace.Trace) {
 
 		for _, elem := range routine {
 
-			if control.CheckCanceled() {
+			if control.WasCanceled() {
 				return
 			}
 
@@ -57,7 +57,7 @@ func ParseTrace(tr *trace.Trace) {
 				continue
 			}
 
-			if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing && gopie.CanBeAddedToChain(elem) {
+			if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing && baseF.CanBeAddedToConstraint(elem) {
 				gopie.CalculateRelRule2AddElem(elem)
 			}
 
@@ -75,7 +75,7 @@ func ParseTrace(tr *trace.Trace) {
 					parseChannelOp(e, -2) // -2: not part of select
 				}
 			case *trace.ElementSelect:
-				if baseF.FuzzingModeGFuzz {
+				if baseF.FuzzingModeGFuzz || baseF.FuzzingModeGuided {
 					parseSelectOp(e)
 				}
 			}
@@ -84,18 +84,18 @@ func ParseTrace(tr *trace.Trace) {
 
 	if baseF.FuzzingModeGoPie && gopie.CurrentChain.Len() != 0 {
 		gopie.SchedulingChains = append(gopie.SchedulingChains, gopie.CurrentChain)
-		gopie.CurrentChain = baseF.NewChain()
+		gopie.CurrentChain = baseF.NewConstraint()
 	}
 
 	if baseF.FuzzingModeGoPie && !baseF.UseHBInfoFuzzing {
 		gopie.CalculateRelRule2And4()
-		if control.CheckCanceled() {
+		if control.WasCanceled() {
 			return
 		}
 		gopie.CalculateRelRule3()
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return
 	}
 
@@ -119,7 +119,7 @@ func parseNew(elem *trace.ElementNew) {
 	if baseF.FuzzingModeGFuzz {
 		fuzzingElem := gfuzz.FuzzingChannel{
 			GlobalID:  elem.GetPos(),
-			LocalID:   elem.GetID(),
+			LocalID:   elem.GetObjId(),
 			CloseInfo: gfuzz.Never,
 			QSize:     elem.GetNum(),
 			MaxQCount: 0,
@@ -142,9 +142,9 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 		// close -> update channelInfoTrace
 		switch op {
 		case trace.ChannelClose:
-			e := gfuzz.ChannelInfoTrace[elem.GetID()]
+			e := gfuzz.ChannelInfoTrace[elem.GetObjId()]
 			e.CloseInfo = gfuzz.Always // before is always unknown
-			gfuzz.ChannelInfoTrace[elem.GetID()] = e
+			gfuzz.ChannelInfoTrace[elem.GetObjId()] = e
 			gfuzz.NumberClose++
 		case trace.ChannelSend:
 			if elem.GetTPost() == 0 {
@@ -152,7 +152,7 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			}
 
 			recv := elem.GetPartner()
-			chanID := elem.GetID()
+			chanID := elem.GetObjId()
 
 			if recv != nil {
 				sendPos := elem.GetPos()

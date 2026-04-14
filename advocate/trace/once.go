@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementOnce.go
+// File: /advocate/trace/once.go
 // Brief: Struct and functions for once operations in the trace
 //
 // Author: Erik Kassubek
@@ -21,11 +21,11 @@ import (
 
 // ElementOnce is a trace element for a once
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the mutex
+//   - objId int: The id of the mutex
 //   - suc bool: Whether the operation was successful
 //   - file (string), line int: The position of the mutex operation in the code
 //   - vc *clock.VectorClock: the vector clock of the element
@@ -34,12 +34,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementOnce struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
+	objId                    int
 	suc                      bool
 	file                     string
 	line                     int
@@ -88,11 +88,11 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	}
 
 	elem := ElementOnce{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		suc:                      sucBool,
 		file:                     file,
 		line:                     line,
@@ -109,12 +109,12 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementOnce) GetID() int {
-	return this.id
+func (this *ElementOnce) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -233,7 +233,7 @@ func (this *ElementOnce) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementOnce) GetType(operation bool) ObjectType {
+func (this *ElementOnce) GetType(operation bool) OperationType {
 	if !operation {
 		return Once
 	}
@@ -250,6 +250,14 @@ func (this *ElementOnce) GetType(operation bool) ObjectType {
 //   - bool: true if function in Do was executed, false otherwise
 func (this *ElementOnce) GetSuc() bool {
 	return this.suc
+}
+
+// SetSuc sets whether the once do was executed successful
+//
+// Parameter:
+//   - bool: true if function in Do was executed, false otherwise
+func (this *ElementOnce) SetSuc(s bool) {
+	this.suc = s
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -276,7 +284,7 @@ func (this *ElementOnce) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -337,7 +345,7 @@ func (this *ElementOnce) ToString() string {
 	res := "O,"
 	res += strconv.Itoa(this.tPre) + ","
 	res += strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 	if this.suc {
 		res += "t"
 	} else {
@@ -347,39 +355,58 @@ func (this *ElementOnce) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementOnce) GetTraceID() int {
-	return this.traceID
+func (this *ElementOnce) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementOnce) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementOnce) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since once do not contain reference to other elements and no other
-//     elements contain referents to once, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementOnce) Copy(_ map[string]Element) Element {
+func (this *ElementOnce) Copy(_ map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementOnce{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			suc:                      false,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementOnce{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		suc:                      this.suc,
 		file:                     this.file,
 		line:                     this.line,
@@ -390,6 +417,10 @@ func (this *ElementOnce) Copy(_ map[string]Element) Element {
 		numberConcurrentSame:     this.numberConcurrentSame,
 		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
 	}
+}
+
+func (this *ElementOnce) IsValid() bool {
+	return this != nil
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

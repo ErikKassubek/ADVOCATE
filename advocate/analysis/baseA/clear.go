@@ -1,3 +1,5 @@
+// advocate/analysis/baseA/clear.go
+
 // Copyright (c) 2025 Erik Kassubek
 //
 // File: clear.go
@@ -13,7 +15,6 @@ package baseA
 import (
 	"advocate/results/results"
 	"advocate/trace"
-	"advocate/utils/control"
 )
 
 // Clear the data structures used for the analysis
@@ -21,7 +22,6 @@ func Clear() {
 	ClearTrace()
 	ClearData()
 	results.Reset()
-	control.Reset()
 }
 
 // ClearData resets all data structures used in th analysis
@@ -30,7 +30,6 @@ func ClearData() {
 	LastSendRoutine = make(map[int]map[int]ElemWithVc)
 	LastRecvRoutine = make(map[int]map[int]ElemWithVc)
 	ForkOperations = make(map[int]*trace.ElementFork)
-	LastAnalyzedElementPerRoutine = make(map[int]trace.Element)
 	HasSend = make(map[int]bool)
 	MostRecentSend = make(map[int]map[int]ElemWithVcVal)
 	HasReceived = make(map[int]bool)
@@ -42,12 +41,12 @@ func ClearData() {
 	LockSet = make(map[int]map[int]string)
 	MostRecentAcquire = make(map[int]map[int]ElemWithVc)
 	MostRecentAcquireTotal = make(map[int]ElemWithVc)
+	RLockCount = make(map[int]map[int]int)
 	LastAtomicWriter = make(map[int]*trace.ElementAtomic)
 	NewChan = make(map[int]string)
 	CurrentlyWaiting = make(map[int][]*trace.ElementCond)
 	LeakingChannels = make(map[int][]VectorClockTID2)
 	SelectCases = make([]AllSelectCase, 0)
-	ForkOperations = make(map[int]*trace.ElementFork)
 	LastChangeWG = make(map[int]*trace.ElementWait)
 	RelR = make(map[int]*ElemWithVc)
 	RelW = make(map[int]*ElemWithVc)

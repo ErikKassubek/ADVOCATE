@@ -14,46 +14,87 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
+	"advocate/utils/types"
 	"fmt"
 )
 
 var (
-	po         poGraph
-	poInverted poGraph
+	po         PoGraph
+	poInverted PoGraph
 
-	poWeak         poGraph
-	poWeakInverted poGraph
+	poWeak         PoGraph
+	poWeakInverted PoGraph
 )
 
-type poGraph struct {
-	data map[trace.Element]map[trace.Element]struct{}
+type PoGraph struct {
+	data       map[trace.Element]map[trace.Element]struct{}
+	DataSimple map[int]map[int]struct{}
+
+	lastAdded map[int]trace.Element
+
+	lastAtomicWriter map[int]*trace.ElementAtomic
+	chanBuffer       map[int]([]baseA.BufferedVC)
+	chanBufferSize   map[int]int
+	closeData        map[int]trace.Element
+	curWaitingCond   map[int]*types.Queue[*trace.ElementCond]
+	relR             map[int]*baseA.ElemWithVc
+	relW             map[int]*baseA.ElemWithVc
+	oSuc             map[int]*trace.ElementOnce
+	lastChangeWg     map[int]*trace.ElementWait
+	ForkOps          map[int]*trace.ElementFork
 }
 
-func newPoGraph() poGraph {
-	return poGraph{make(map[trace.Element]map[trace.Element]struct{})}
+func NewPoGraph() PoGraph {
+	po.chanBuffer = make(map[int]([]baseA.BufferedVC))
+	po.chanBufferSize = make(map[int]int)
+
+	return PoGraph{
+		data:           make(map[trace.Element]map[trace.Element]struct{}),
+		DataSimple:     make(map[int]map[int]struct{}),
+		lastAdded:      make(map[int]trace.Element),
+		chanBuffer:     make(map[int][]baseA.BufferedVC),
+		chanBufferSize: make(map[int]int),
+		closeData:      make(map[int]trace.Element),
+		curWaitingCond: make(map[int]*types.Queue[*trace.ElementCond]),
+		relR:           make(map[int]*baseA.ElemWithVc),
+		relW:           make(map[int]*baseA.ElemWithVc),
+		oSuc:           make(map[int]*trace.ElementOnce),
+		lastChangeWg:   make(map[int]*trace.ElementWait),
+		ForkOps:        make(map[int]*trace.ElementFork),
+	}
 }
 
 // InitPOG initializes the directed acyclic partial order graph
 func InitPOG() {
-	chanBuffer = make(map[int]([]baseA.BufferedVC))
-	chanBufferSize = make(map[int]int)
 
-	po = newPoGraph()
-	poInverted = newPoGraph()
+	po = NewPoGraph()
+	poInverted = NewPoGraph()
 
-	poWeak = newPoGraph()
-	poWeakInverted = newPoGraph()
+	poWeak = NewPoGraph()
+	poWeakInverted = NewPoGraph()
 }
 
-func (this *poGraph) addEdge(from, to trace.Element) {
+func (this *PoGraph) AddEdge(from, to trace.Element) {
 	if _, ok := this.data[from]; !ok {
 		this.data[from] = make(map[trace.Element]struct{})
 	}
+	if _, ok := this.DataSimple[from.GetID()]; !ok {
+		this.DataSimple[from.GetID()] = make(map[int]struct{})
+	}
 	this.data[from][to] = struct{}{}
+	this.DataSimple[from.GetID()][to.GetID()] = struct{}{}
 }
 
-func (this *poGraph) getChildren(from trace.Element) map[trace.Element]struct{} {
+func (this *PoGraph) GetChildren(from trace.Element) map[trace.Element]struct{} {
 	return this.data[from]
+}
+
+func (this *PoGraph) GetChildrenSimple(from int) map[int]struct{} {
+	return this.DataSimple[from]
+}
+
+func (this *PoGraph) IsEmpty() bool {
+	return len(this.data) == 0
 }
 
 // Print prints the current graph
@@ -68,13 +109,44 @@ func Print(weak bool) {
 	}
 }
 
-func (this *poGraph) toString() string {
+func (this *PoGraph) toString() string {
 	res := ""
 	for start, end := range this.data {
-		res += fmt.Sprintf("%d -> ", start.GetLine())
+		res += fmt.Sprintf("%s -> ", start.GetPos())
 		for e := range end {
-			res += fmt.Sprintf("%d, ", e.GetLine())
+			res += fmt.Sprintf("%s, ", e.GetPos())
 		}
 	}
 	return res
+}
+
+func (this *PoGraph) toStringSimple() string {
+	res := ""
+	for start, end := range this.DataSimple {
+		res += fmt.Sprintf("%d -> ", start)
+		for e := range end {
+			res += fmt.Sprintf("%d, ", e)
+		}
+	}
+	return res
+}
+
+// AddEdge adds an edge between start and end in po
+//
+// Parameter:
+//   - start trace.Element: the start element
+//   - end trace.Element: the end element
+//   - notWeak bool: if true, add to weak happens before
+func AddEdge(start, end trace.Element, weak bool) {
+	if start == nil || end == nil {
+		return
+	}
+
+	po.AddEdge(start, end)
+	poInverted.AddEdge(end, start)
+
+	if weak {
+		poWeak.AddEdge(start, end)
+		poWeakInverted.AddEdge(end, start)
+	}
 }

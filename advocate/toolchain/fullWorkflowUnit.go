@@ -13,6 +13,7 @@ package toolchain
 
 import (
 	"advocate/analysis/baseA"
+	"advocate/fuzzing/baseF"
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
@@ -29,6 +30,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Run ADVOCATE for all given unit tests
@@ -118,12 +120,17 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 		}
 
 		for _, testFunc := range testFunctions {
-			if (pathToTest == "" || pathToTest != file) && flags.ExecName != "" && flags.ExecName != testFunc {
+			if flags.ExecName != "" && flags.ExecName != testFunc {
 				continue
 			}
 
+			for control.WasCanceledRAM() {
+				log.Error("Wait RAM")
+				time.Sleep(6 * time.Second)
+			}
+
 			baseA.Clear()
-			control.Reset()
+			baseF.Clear()
 
 			if !isFuzzing {
 				timer.ResetTest()
@@ -145,10 +152,10 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				adjustedPackagePath = adjustedPackagePath + string(filepath.Separator)
 			}
 			fileNameWithoutEnding := strings.TrimSuffix(fileName, ".go")
-			directoryName := paths.SetCurrentResult(currentFile, attemptedTests, fileNameWithoutEnding, testFunc)
-			if flags.Continue && fileNumber != 0 {
-				directoryName = paths.SetCurrentResult(fileNumber, testNumber, fileNameWithoutEnding, testFunc)
-			}
+			directoryName := paths.SetCurrentResult(currentFile, testNumber, fileNameWithoutEnding, testFunc)
+			// if flags.Continue && fileNumber != 0 {
+			// 	directoryName = paths.SetCurrentResult(fileNumber, testNumber, fileNameWithoutEnding, testFunc)
+			// }
 
 			if fuzzing < 1 {
 				log.Info("Create ", directoryName)
@@ -515,9 +522,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = runCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -560,10 +567,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	runCommand(osOut, osErr, paths.Go, "version")
+	helper.RunCommand(osOut, osErr, paths.Go, "version")
 
 	pkgPath := helper.MakePathLocal(pkg)
-	err := runCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -639,7 +646,7 @@ func unitTestReplay(dir, pkg, file,
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
-	log.Info("Start Replay")
+	log.Info("Start guided execution")
 
 	pathPkg := filepath.Join(dir, pkg)
 
@@ -661,7 +668,6 @@ func unitTestReplay(dir, pkg, file,
 		// we do not need to replay a bug that has already been replayed by
 		// another replay
 		if !flags.NoSkipRewrite && results.WasAlreadyConfirmed(bugString) {
-			// TODO: check if the report are still working with this
 			continue
 		}
 
@@ -669,10 +675,10 @@ func unitTestReplay(dir, pkg, file,
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
-		log.Infof("Run replay %d/%d", i+1, len(rewrittenTraces))
+		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := helper.MakePathLocal(pkg)
-		runCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-		log.Infof("Finished replay %d/%d", i+1, len(rewrittenTraces))
+		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {
 			results.AddBug(bugString, true)

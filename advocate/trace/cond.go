@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementCond.go
+// File: /advocate/trace/cond.go
 // Brief: Struct and functions for operations of conditional variables in the trace
 //
 // Author: Erik Kassubek
@@ -20,11 +20,11 @@ import (
 
 // ElementCond is a trace element for a condition variable
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the condition variable
+//   - objId int: The id of the condition variable
 //   - op objectType: The operation on the condition variable
 //   - file string, The file of the condition variable operation in the code
 //   - line int, The line of the condition variable operation in the code
@@ -35,13 +35,13 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementCond struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
-	op                       ObjectType
+	objId                    int
+	op                       OperationType
 	file                     string
 	line                     int
 	vc                       *clock.VectorClock
@@ -74,7 +74,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	if err != nil {
 		return errors.New("id is not an integer")
 	}
-	var op ObjectType
+	var op OperationType
 	switch opN {
 	case "W":
 		op = CondWait
@@ -92,11 +92,11 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		op:                       op,
 		file:                     file,
 		line:                     line,
@@ -112,12 +112,12 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementCond) GetID() int {
-	return this.id
+func (this *ElementCond) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -240,7 +240,7 @@ func (this *ElementCond) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementCond) GetType(operation bool) ObjectType {
+func (this *ElementCond) GetType(operation bool) OperationType {
 	if !operation {
 		return Cond
 	}
@@ -272,7 +272,7 @@ func (this *ElementCond) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -333,6 +333,10 @@ func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
+func (this *ElementCond) IsValid() bool {
+	return this != nil
+}
+
 // ToString returns the string representation of the element
 //
 // Returns:
@@ -340,7 +344,7 @@ func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementCond) ToString() string {
 	res := "D,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
+	res += strconv.Itoa(this.objId) + ","
 	switch this.op {
 	case CondWait:
 		res += "W"
@@ -353,39 +357,60 @@ func (this *ElementCond) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementCond) GetTraceID() int {
-	return this.traceID
+func (this *ElementCond) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementCond) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementCond) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
+//   - mapping map[string]Element: map containing all already copied elements.
 //     since conds do not contain reference to other elements and no other
 //     elements contain referents to conds, this is not used
-//
+//   - keep bool: if true, keep vc and order information
+
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementCond) Copy(_ map[string]Element) Element {
+func (this *ElementCond) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementCond{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementCond{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		op:                       this.op,
 		file:                     this.file,
 		line:                     this.line,

@@ -111,6 +111,16 @@ func AdvocateDetectBlocking() []string {
 	GC()
 	collectPartialDeadlockInfo = false
 
+	// for obj, routine := range haveRef {
+	// 	print(obj, " -> ")
+	// 	for i, rout := range routine {
+	// 		if rout {
+	// 			print(i+1, " ")
+	// 		}
+	// 	}
+	// 	print("\n")
+	// }
+
 	return checkForBlocked()
 }
 
@@ -229,15 +239,15 @@ func checkForBlocked() []string {
 		}
 	}
 
-	deadlock := make(map[uint64]struct{})
-
 	// NoOtherRule
 	for rID, status := range routineStatusInfo {
 		if status == waiting {
 			routineStatusInfo[rID] = dead
-			deadlock[rID] = struct{}{}
 		}
 	}
+
+	// Check for cyclic deadlock
+	deadlock := checkCyclic()
 
 	// Report dead routines
 	foundDeadlocks := make([]string, 0)
@@ -252,6 +262,108 @@ func checkForBlocked() []string {
 	}
 
 	return foundDeadlocks
+}
+
+// check for cyclic dependencies
+func checkCyclic() map[uint64]struct{} {
+	deadRoutines := map[uint64]struct{}{}
+	for rID, status := range routineStatusInfo {
+		if status == dead {
+			deadRoutines[rID] = struct{}{}
+		}
+	}
+
+	graph := map[uint64][]uint64{}
+	selfLoop := map[uint64]bool{}
+
+	for rID := range deadRoutines {
+		for _, e := range parkedOpsPerRoutine[rID] {
+			for _, rID2 := range routinesWithRef[e] {
+				if _, ok := deadRoutines[rID2]; ok {
+					graph[rID] = append(graph[rID], rID2)
+					if rID == rID2 {
+						selfLoop[rID] = true
+					}
+				}
+			}
+		}
+	}
+
+	// Tarjan SCC
+	index := 0
+	stack := []uint64{}
+	onStack := map[uint64]bool{}
+	indices := map[uint64]int{}
+	lowlink := map[uint64]int{}
+
+	result := map[uint64]struct{}{}
+
+	var strongConnect func(uint64)
+	strongConnect = func(v uint64) {
+		indices[v] = index
+		lowlink[v] = index
+		index++
+		stack = append(stack, v)
+		onStack[v] = true
+
+		for _, w := range graph[v] {
+			if _, seen := indices[w]; !seen {
+				strongConnect(w)
+				lowlink[v] = min(lowlink[v], lowlink[w])
+			} else if onStack[w] {
+				lowlink[v] = min(lowlink[v], indices[w])
+			}
+		}
+
+		// Root of SCC
+		if lowlink[v] == indices[v] {
+			scc := map[uint64]struct{}{}
+			for {
+				w := stack[len(stack)-1]
+				stack = stack[:len(stack)-1]
+				onStack[w] = false
+				scc[w] = struct{}{}
+				if w == v {
+					break
+				}
+			}
+
+			// must be cycle with multiple elements
+			if len(scc) == 1 {
+				return
+			}
+
+			// must be closed
+			for r := range scc {
+				for _, e := range parkedOpsPerRoutine[r] {
+					for _, r2 := range routinesWithRef[e] {
+						if _, ok := scc[r2]; !ok {
+							return
+						}
+					}
+				}
+			}
+
+			if printDebug {
+				println("SCC: ", len(scc))
+			}
+
+			for r := range scc {
+				if printDebug {
+					println("SCC ELEM: ", r)
+				}
+				result[r] = struct{}{}
+			}
+		}
+	}
+
+	for r := range deadRoutines {
+		if _, seen := indices[r]; !seen {
+			strongConnect(r)
+		}
+	}
+
+	return result
 }
 
 func reportDeadlock(routineID uint64, deadlock bool) string {

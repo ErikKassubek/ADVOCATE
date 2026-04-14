@@ -78,7 +78,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 				continue
 			}
 
-			if sameElem && elem.GetID() != tElem.GetID() {
+			if sameElem && elem.GetObjId() != tElem.GetObjId() {
 				continue
 			}
 

@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -28,6 +29,23 @@ type bug struct {
 	bugType helper.ResultType
 	pos     string
 }
+
+type bugKeys int
+
+const (
+	crit bugKeys = iota
+	bugType
+	name
+	explanation
+	file
+	importLine
+	headerLine
+	trace
+	replaySuc
+	exitCodeDesc
+	exitCode
+	desc
+)
 
 var printedExplanations = make(map[bug]struct{})
 
@@ -102,9 +120,9 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 	if err != nil {
 		log.Error("Error reading prog info: ", err)
 	}
-	progInfo["trace"] = fmt.Sprintf("advocateTrace_%d", traceID)
+	progInfo[trace] = fmt.Sprintf("advocateTrace_%d", traceID)
 
-	hl, err := strconv.Atoi(progInfo["headerLine"])
+	hl, err := strconv.Atoi(progInfo[headerLine])
 	if err != nil {
 		log.Error("Could not read header line: ", err)
 	}
@@ -114,8 +132,8 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 
 	var numberResults int
 	for _, result := range resultsMachine {
-		file, _ := os.ReadFile(result)
-		numberResults = len(strings.Split(string(file), "\n")) - 1
+		f, _ := os.ReadFile(result)
+		numberResults = len(strings.Split(string(f), "\n")) - 1
 
 		// timeoutFound := false
 
@@ -128,7 +146,7 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 				id += elem[len(elem)-1] + "_" + strconv.Itoa(index)
 			}
 
-			bugType, bugPos, bugElemType, falsePositive, err := readAnalysisResults(result, index, progInfo["file"], hl)
+			bugType, bugPos, bugElemType, falsePositive, err := readAnalysisResults(result, index, progInfo[file], hl)
 			if err != nil {
 				log.Error("Could not read analysis result: ", err.Error())
 				continue
@@ -150,7 +168,7 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 			// get the replay info
 			replay := getRewriteInfo(bugType, replayCodes, id)
 
-			if ignoreDouble && replay["exitCode"] == "double" {
+			if ignoreDouble && replay[exitCode] == "double" {
 				continue
 			}
 
@@ -271,31 +289,31 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 //
 // Returns:
 //   - error
-func writeFile(path string, index string, description map[string]string,
+func writeFile(path string, index string, description map[bugKeys]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
-	replay map[string]string, progInfo map[string]string, fuzzing int, falsePositive bool) error {
+	replay map[bugKeys]string, progInfo map[bugKeys]string, fuzzing int, falsePositive bool) error {
 
 	// write the bug type description
-	res := "# " + description["crit"] + ": " + description["name"] + "\n\n"
-	res += description["explanation"] + "\n\n"
+	res := "# " + description[crit] + ": " + description[bugType] + " - " + description[name] + "\n\n"
+	res += description[explanation] + "\n\n"
 
 	// write the positions of the bug
 	res += "## Test/Program\n"
 	res += "The bug was found in the following test/program:\n\n"
-	if progInfo["name"] != "" {
-		res += "- Test/Prog: " + progInfo["name"] + "\n"
+	if progInfo[name] != "" {
+		res += "- Test/Prog: " + progInfo[name] + "\n"
 	} else {
 		res += "- Test: unknown" + "\n"
 	}
 
-	if progInfo["file"] != "" {
-		res += "- File: " + progInfo["file"] + "\n"
+	if progInfo[file] != "" {
+		res += "- File: " + progInfo[file] + "\n"
 	} else {
 		res += "- File: unknown" + "\n"
 	}
 
-	if progInfo["trace"] != "" {
-		res += "- Trace: " + progInfo["trace"] + "\n\n"
+	if progInfo[trace] != "" {
+		res += "- Trace: " + progInfo[trace] + "\n\n"
 	} else {
 		res += "- Trace: unknown" + "\n\n"
 	}
@@ -307,7 +325,7 @@ func writeFile(path string, index string, description map[string]string,
 	// write the code of the bug elements
 	res += "## Bug Elements\n"
 	res += "The elements involved in the found "
-	res += strings.ToLower(description["crit"])
+	res += strings.ToLower(description[crit])
 	res += " are located at the following positions:\n\n"
 
 	for key := range positions {
@@ -325,47 +343,51 @@ func writeFile(path string, index string, description map[string]string,
 	}
 
 	// write the info about the replay, if possible including the command to read the bug
-	replayPossible := replay["replaySuc"] != "was not possible" && replay["replaySuc"] != "was not run"
-	replayDouble := replay["exitCode"] == "double"
+	replayPossible := replay[replaySuc] != "was not possible" && replay[replaySuc] != "was not run"
+	replayDouble := replay[exitCode] == "double"
 
 	res += "## Replay\n"
 	if replayPossible && !replayDouble {
-		res += replay["description"] + "\n\n"
+		res += replay[desc] + "\n\n"
 	}
 
 	if replayDouble {
 		res += "The replay was not performed, because the same bug had been found before."
 	} else {
-		res += "**Replaying " + replay["replaySuc"] + "**.\n\n"
+		res += "**Replaying " + replay[replaySuc] + "**.\n\n"
 		if replayPossible {
 			// res += "The replayed trace can be found in: "
 			// res += "rewrittenTrace_" + index + "\n\n"
-			if replay["replaySuc"] == "panicked" {
+			if replay[replaySuc] == "panicked" {
 				res += "It panicked with the following message:\n\n"
-				res += replay["exitCode"] + "\n\n"
-			} else if replay["exitCode"] == "fail" {
-				res += replay["exitCodeExplanation"] + "\n\n"
+				res += replay[replaySuc] + "\n\n"
+			} else if replay[exitCode] == "fail" {
+				res += replay[exitCodeDesc] + "\n\n"
 			} else {
-				res += "It exited with the following code: "
-				res += replay["exitCode"] + "\n\n"
-				res += replay["exitCodeExplanation"] + "\n\n"
+				res += consts.ItExitedWithTheFollowingCode
+				res += replay[exitCode] + "\n\n"
+				res += replay[exitCodeDesc] + "\n\n"
 			}
 		}
 	}
 
 	confirmed := false
-	if description["crit"] == "Bug" {
-		if replayDouble || replay["replaySuc"] == "was successful" ||
-			strings.HasPrefix(description["name"], "Actual") {
+	dep := strings.TrimPrefix(description[name], consts.Possible)
+
+	if description[crit] == "Bug" {
+		if replayDouble || replay[replaySuc] == "confirmed the bug" ||
+			strings.HasPrefix(description[name], consts.Actual) {
 			confirmed = true
 		}
 	}
 
-	id := progInfo["file"] + "#" + progInfo["name"]
-	if replay["replaySuc"] == "was not run" {
-		log.Resultf(true, confirmed, id, "Found %s.", description["name"])
-	} else {
-		log.Resultf(true, confirmed, id, "Found %s. Replay %s.", description["name"], replay["replaySuc"])
+	id := progInfo[file] + "#" + progInfo[name]
+	if replay[replaySuc] == "was not run" {
+		log.Resultf(true, confirmed, id, "Found %s.", description[name])
+	} else if replay[replaySuc] == "confirmed the bug" {
+		log.Resultf(true, confirmed, id, "Found %s.", dep)
+	} else if !confirmed {
+		return nil
 	}
 
 	// if in path, the folder "bugs" does not exist, create it
@@ -387,9 +409,9 @@ func writeFile(path string, index string, description map[string]string,
 	// create the file
 	fileName := ""
 	if fuzzing == -1 {
-		fileName = filepath.Join(folderName, strings.ToLower(description["crit"])) + "_" + index + ".md"
+		fileName = filepath.Join(folderName, strings.ToLower(description[crit])) + "_" + index + ".md"
 	} else {
-		fileName = filepath.Join(folderName, fmt.Sprintf("%s_%d_%s.md", strings.ToLower(description["crit"]), fuzzing, index))
+		fileName = filepath.Join(folderName, fmt.Sprintf("%s_%d_%s.md", strings.ToLower(description[crit]), fuzzing, index))
 	}
 	file, err := os.Create(fileName)
 	if err != nil {

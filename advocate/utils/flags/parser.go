@@ -59,8 +59,9 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 			analysisCases[c] = true
 		}
 
-		// remove when implemented
-		analysisCases[MixedDeadlock] = false
+		// not in thesis
+		analysisCases[ConcurrentRecv] = false
+		analysisCases[ReceiveOnClosed] = false
 
 		return analysisCases, nil
 	}
@@ -83,8 +84,9 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 			analysisCases[UnlockBeforeLock] = true
 		case 'c':
 			analysisCases[ResourceDeadlock] = true
-		// case 'm':
-		// analysisCases[MixedDeadlock] = true
+		// MIXED DEADLOCK [REMOVE]
+		case 'm':
+			analysisCases[MixedDeadlock] = true
 		default:
 			return nil, fmt.Errorf("Invalid analysis case: %c", c)
 		}

@@ -26,7 +26,7 @@ import (
 	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
-	"advocate/utils/settings.go"
+	"advocate/utils/settings"
 	"advocate/utils/timer"
 )
 
@@ -56,7 +56,6 @@ func main() {
 	flag.BoolVar(&flags.CreateStatistics, "stats", false, "Create statistics.")
 	flag.BoolVar(&flags.NotExecuted, "notExec", false, "Find never executed operations")
 
-	flag.BoolVar(&flags.IgnoreFifo, "ignoreFifo", false, "Do not assume a FIFO ordering for buffered channels")
 	flag.BoolVar(&flags.IgnoreCriticalSection, "ignoreCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&flags.IgnoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 	flag.BoolVar(&flags.OnlyAPanicAndLeak, "onlyActual", false, "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
@@ -80,19 +79,18 @@ func main() {
 		"If not set, all scenarios are run.\n"+
 		"Options:\n"+
 		"\ts: Send on closed channel\n"+
-		"\tr: Receive on closed channel\n"+
+		// "\tr: Receive on closed channel\n"+
 		"\tw: Done before add on waitGroup\n"+
 		"\tn: Close of closed channel\n"+
-		"\tb: Concurrent receive on channel\n"+
+		// "\tb: Concurrent receive on channel\n"+
 		"\tl: Leaking routine\n"+
 		"\tu: Unlock of unlocked mutex\n"+
-		"\tc: Cyclic deadlock\n",
+		"\tc: Cyclic deadlock\n"+
+		"\tm: Mixed deadlock\n",
 	)
-	// "\tm: Mixed deadlock\n"
 
-	// TODO: make it possible to select multiple at the same time
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
-		"Mode for fuzzing. Possible values are:\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB")
+		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB\n\tDefault: Guided")
 
 	flag.BoolVar(&flags.ModeMain, "main", false, "set to run on main function")
 
@@ -146,7 +144,7 @@ func main() {
 
 	control.SetMaxNumberElem()
 	if !flags.NoMemorySupervisor {
-		go control.Supervisor() // cancel analysis if not enough ram
+		go control.Supervisor(baseA.ClearTrace, baseA.ClearData, fuzzing.ResetFuzzing) // cancel analysis if not enough ram
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
@@ -154,6 +152,10 @@ func main() {
 		flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR) {
 		flags.Scenarios = "-"
 		flags.OnlyAPanicAndLeak = true
+	}
+
+	if flags.FuzzingMode == "" {
+		flags.FuzzingMode = baseF.Guided
 	}
 
 	var err error
@@ -169,6 +171,7 @@ func main() {
 	}
 
 	helper.CheckGoMod()
+	helper.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")
@@ -276,7 +279,6 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	}
 
 	if flags.CreateStatistics {
-		// TODO: check if this
 		err = stats.CreateStatsTotal(flags.ProgPath)
 		if err != nil {
 			log.Error("Failed to create stats total: ", err.Error())

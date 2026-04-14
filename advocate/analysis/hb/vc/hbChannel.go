@@ -14,7 +14,6 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/analysis/hb/clock"
 	"advocate/trace"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -158,15 +157,13 @@ func Send(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentSend[routine][id]
-		if r.Elem != nil {
-			CurrentVC[routine].Sync(r.Vc)
-		}
+	r := baseA.MostRecentSend[routine][id]
+	if r.Elem != nil {
+		CurrentVC[routine].Sync(r.Vc)
 	}
 
 	// direct communication without using the buffer
@@ -181,7 +178,7 @@ func Send(ch *trace.ElementChannel) {
 	// if the buffer size of the channel is very big, it would be a wast of RAM to create a map that could hold all of then, especially if
 	// only a few are really used. For this reason, only the max number of buffer positions used is allocated.
 	// If the map is full, but the channel has more buffer positions, the map is extended
-	if len(chanBuffer[id]) >= count && len(chanBuffer[id]) < chanBufferSize[id] {
+	if len(chanBuffer[id]) >= count {
 		chanBuffer[id] = append(chanBuffer[id], baseA.BufferedVC{
 			Occupied: false,
 			Send:     nil})
@@ -213,7 +210,7 @@ func Send(ch *trace.ElementChannel) {
 //   - vc map[int]*VectorClock: the current vector clocks
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
@@ -230,11 +227,9 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 		vc[routine] = vc[routine].Sync(s.GetVC())
 	}
 
-	if !flags.IgnoreFifo {
-		r := baseA.MostRecentReceive[routine][id]
-		if r.Elem != nil {
-			vc[routine] = vc[routine].Sync(r.Vc)
-		}
+	r := baseA.MostRecentReceive[routine][id]
+	if r.Elem != nil {
+		vc[routine] = vc[routine].Sync(r.Vc)
 	}
 
 	chanBuffer[id] = append(chanBuffer[id][1:], baseA.BufferedVC{
@@ -280,7 +275,7 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.GetID()
+	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
 	if _, ok := baseA.CloseData[id]; ok {

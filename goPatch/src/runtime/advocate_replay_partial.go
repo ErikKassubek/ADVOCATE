@@ -99,5 +99,7 @@ func releaseActive(key string) {
 		return
 	}
 	NumberActiveReleased++
-	println("RELEASE ACTIVE: ", key)
+	if printDebug {
+		println("RELEASE ACTIVE: ", key)
+	}
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: bugs.go
-// Brief: Operations for handeling found bugs
+// Brief: Operations for handling found bugs
 //
 // Author: Erik Kassubek
 // Created: 2023-11-30
@@ -162,45 +162,49 @@ func (this Bug) ToString() string {
 		typeStr = "Possible cyclic deadlock:"
 		arg1Str = "head: "
 		arg2Str = "tail: "
+	case helper.PMixedDeadlock:
+		typeStr = "Possible Mixed Deadlock:"
+		arg1Str = "send/close: "
+		arg2Str = "recv: "
 	case helper.LUnknown:
-		typeStr = "Leak on routine"
+		typeStr = "Block on routine"
 		arg1Str = "elem: "
 	case helper.LUnbufferedWith:
-		typeStr = "Leak on unbuffered channel with possible partner:"
+		typeStr = "Block on unbuffered channel with possible partner:"
 		arg1Str = "channel: "
 		arg2Str = "partner: "
 	case helper.LUnbufferedWithout:
-		typeStr = "Leak on unbuffered channel without possible partner:"
+		typeStr = "Block on unbuffered channel without possible partner:"
 		arg1Str = "channel: "
 	case helper.LBufferedWith:
-		typeStr = "Leak on buffered channel with possible partner:"
+		typeStr = "Block on buffered channel with possible partner:"
 		arg1Str = "channel: "
 		arg2Str = "partner: "
 	case helper.LBufferedWithout:
-		typeStr = "Leak on buffered channel without possible partner:"
+		typeStr = "Block on buffered channel without possible partner:"
 		arg1Str = "channel: "
 	case helper.LNilChan:
-		typeStr = "Leak on nil channel:"
+		typeStr = "Block on nil channel:"
 		arg1Str = "channel: "
 	case helper.LSelectWith:
-		typeStr = "Leak on select with possible partner:"
+		typeStr = "Block on select with possible partner:"
 		arg1Str = "select: "
 		arg2Str = "partner: "
 	case helper.LSelectWithout:
-		typeStr = "Leak on select without partner:"
+		typeStr = "Block on select without partner:"
 		arg1Str = "select: "
 	case helper.LMutex:
-		typeStr = "Leak on mutex:"
+		typeStr = "Block on mutex:"
 		arg1Str = "mutex: "
 		arg2Str = "last: "
 	case helper.LWaitGroup:
-		typeStr = "Leak on wait group:"
+		typeStr = "Block on wait group:"
 		arg1Str = "waitgroup: "
 	case helper.LCond:
-		typeStr = "Leak on conditional variable:"
+		typeStr = "Block on conditional variable:"
 		arg1Str = "cond: "
 	case helper.LContext:
-		typeStr = "Leak on channel or select on context"
+		typeStr = "Block on channel or select on context"
 	// case helper.SNotExecutedWithPartner:
 	// 	typeStr = "Not executed select with potential partner"
 	// 	arg1Str = "select: "
@@ -248,7 +252,7 @@ func (this Bug) Println() {
 //   - bugStr: The bug that was selected
 //
 // Returns:
-//   - bool: true, if the bug was not a possible, but a actually occuring bug
+//   - bool: true, if the bug was not a possible, but a actually occurring bug
 //     Bug: The bug that was selected
 //     error: An error if the bug could not be processed
 func ProcessBug(bugStr string) (bool, Bug, error) {
@@ -309,8 +313,8 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.PUnlockBeforeLock
 	case "P05":
 		bug.Type = helper.PCyclicDeadlock
-	// case "P06":
-	// 	bug.Type = MixedDeadlock
+	case "P06":
+		bug.Type = helper.PMixedDeadlock
 	case "L00":
 		containsArg1 = false
 		bug.Type = helper.LUnknown

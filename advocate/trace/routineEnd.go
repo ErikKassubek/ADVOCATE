@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: TraceElementRoutineEnd.go
+// File: /advocate/trace/routineEnd.go
 // Brief: Struct and functions for fork operations in the trace
 //
 // Author: Erik Kassubek
@@ -18,13 +18,13 @@ import (
 
 // ElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp at the end of the event
 //   - vc clock.VectorClock: The vector clock
 type ElementRoutineEnd struct {
-	traceID int
+	id      int
 	index   int
 	routine int
 	tPost   int
@@ -46,7 +46,7 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := ElementRoutineEnd{
-		index:   this.numberElemsInTrace[routine],
+		index:   this.NumberElemInRoutine(routine),
 		routine: routine,
 		tPost:   tPostInt,
 		vc:      nil,
@@ -58,11 +58,11 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	return nil
 }
 
-// GetID is a dummy function to implement the traceElement interface
+// GetObjId is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) GetID() int {
+func (this *ElementRoutineEnd) GetObjId() int {
 	return 0
 }
 
@@ -178,7 +178,7 @@ func (this *ElementRoutineEnd) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - string: the object type
-func (this *ElementRoutineEnd) GetType(operation bool) ObjectType {
+func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
 	if !operation {
 		return End
 	}
@@ -262,40 +262,54 @@ func (this *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(this.tPost)
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementRoutineEnd) GetTraceID() int {
-	return this.traceID
+func (this *ElementRoutineEnd) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementRoutineEnd) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementRoutineEnd) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since conds do not contain reference to other elements and no other
-//     elements contain referents to conds, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementRoutineEnd) Copy(_ map[string]Element) Element {
+func (this *ElementRoutineEnd) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementRoutineEnd{
+			id:      this.id,
+			index:   0,
+			routine: this.routine,
+			tPost:   0,
+			vc:      nil,
+			wVc:     nil,
+		}
+	}
+
 	return &ElementRoutineEnd{
-		traceID: this.traceID,
+		id:      this.id,
 		index:   this.index,
 		routine: this.routine,
 		tPost:   this.tPost,
 		vc:      this.vc.Copy(),
 		wVc:     this.wVc.Copy(),
 	}
+}
+
+func (this *ElementRoutineEnd) IsValid() bool {
+	return this != nil
 }
 
 // GetNumberConcurrent returns the number of elements concurrent to the element

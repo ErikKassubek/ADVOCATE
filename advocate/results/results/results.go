@@ -11,7 +11,7 @@
 package results
 
 import (
-	falsepos "advocate/results/falsePos"
+	"advocate/results/benign"
 	"advocate/trace"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -51,19 +51,20 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.PNegWG:            "Possible negative waitgroup counter",
 	helper.PUnlockBeforeLock: "Possible unlock of a not locked mutex",
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
+	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
-	helper.LUnknown:           "Leak on routine or unknown element",
-	helper.LUnbufferedWith:    "Leak on unbuffered channel with possible partner",
-	helper.LUnbufferedWithout: "Leak on unbuffered channel without possible partner",
-	helper.LBufferedWith:      "Leak on buffered channel with possible partner",
-	helper.LBufferedWithout:   "Leak on unbuffered channel without possible partner",
-	helper.LNilChan:           "Leak on nil channel",
-	helper.LSelectWith:        "Leak on select with possible partner",
-	helper.LSelectWithout:     "Leak on select without partner or nil case",
-	helper.LMutex:             "Leak on mutex",
-	helper.LWaitGroup:         "Leak on wait group",
-	helper.LCond:              "Leak on conditional variable",
-	helper.LContext:           "Leak on a channel or select on context",
+	helper.LUnknown:           "Block on routine or unknown element",
+	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
+	helper.LUnbufferedWithout: "Block on unbuffered channel without possible partner",
+	helper.LBufferedWith:      "Block on buffered channel with possible partner",
+	helper.LBufferedWithout:   "Block on unbuffered channel without possible partner",
+	helper.LNilChan:           "Block on nil channel",
+	helper.LSelectWith:        "Block on select with possible partner",
+	helper.LSelectWithout:     "Block on select without partner or nil case",
+	helper.LMutex:             "Block on mutex",
+	helper.LWaitGroup:         "Block on wait group",
+	helper.LCond:              "Block on conditional variable",
+	helper.LContext:           "Block on a channel or select on context",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",
@@ -107,7 +108,7 @@ type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
 	TPre      int
-	ObjType   trace.ObjectType
+	ObjType   trace.OperationType
 	File      string
 	Line      int
 }
@@ -179,6 +180,10 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		return
 	}
 
+	// if flags.FuzzingMode == "Guided" && !resType.IsActual() {
+	// 	return
+	// }
+
 	foundBug = true
 
 	if resType == helper.ALeak {
@@ -194,9 +199,9 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 	falsePos := "tp"
 
 	if resType.IsLeak() {
-		falsePositive, err := falsepos.IsFalsePositive(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
+		falsePositive, err := benign.IsBenign(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: ", err.Error())
+			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
 		}
 		if falsePositive {
 			falsePos = "fp"
@@ -299,16 +304,11 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if control.CheckCanceled() {
+	if control.WasCanceled() {
 		return true
 	}
 
 	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
-		return true
-	}
-
-	// TODO: remove test completely
-	if resType == helper.ARecvOnClosed {
 		return true
 	}
 

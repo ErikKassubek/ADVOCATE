@@ -91,6 +91,34 @@ func MergeLists[T comparable](l1, l2 []T) []T {
 	return res
 }
 
+type Ordered interface {
+	~int | ~float64 | ~string
+}
+
+// IntersectList takes two sorted lists and returns a list containing the elements that are in both
+// lists. The resulting list does not contain duplicated.
+//
+// Parameter:
+//   - l1 []T comparable: list 1
+//   - l2 []T comparable: list 2
+func MergeListsSort[T Ordered](l1, l2 []T) []T {
+	i, j := 0, 0
+	var res []T
+	for i < len(l1) && j < len(l2) {
+		if l1[i] == l2[j] {
+			res = append(res, l1[i])
+			i++
+			j++
+		} else if l1[i] < l2[j] {
+			i++
+		} else {
+			j++
+		}
+	}
+
+	return res
+}
+
 // CopyOfRange copies the content of the slice in a given range
 //
 // Parameters:

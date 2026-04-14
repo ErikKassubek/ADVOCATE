@@ -27,7 +27,7 @@ func UpdateHBFork(fo *trace.ElementFork) {
 	fo.SetWVc(CurrentWVC[routine])
 
 	oldRout := fo.GetRoutine()
-	newRout := fo.GetID()
+	newRout := fo.GetObjId()
 
 	CurrentVC[newRout] = CurrentVC[oldRout].Copy()
 	CurrentVC[oldRout].Inc(oldRout)

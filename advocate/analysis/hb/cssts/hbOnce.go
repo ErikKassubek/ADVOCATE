@@ -21,7 +21,7 @@ import (
 func UpdateHBOnce(on *trace.ElementOnce) {
 	// suc once does not create edge -> only not suc
 	if !on.GetSuc() {
-		suc := baseA.OSuc[on.GetID()]
+		suc := baseA.OSuc[on.GetObjId()]
 		AddEdge(suc, on, false)
 	}
 }

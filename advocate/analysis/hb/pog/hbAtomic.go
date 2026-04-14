@@ -11,7 +11,6 @@
 package pog
 
 import (
-	"advocate/analysis/baseA"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -19,29 +18,51 @@ import (
 // UpdateHBAtomic update the pog for an atomic operation
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - at *trace.TraceElementAtomic: the atomic operation
-func UpdateHBAtomic(at *trace.ElementAtomic) {
+func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
 	switch at.GetType(true) {
-	case trace.AtomicLoad, trace.AtomicSwap, trace.AtomicCompAndSwap:
-		Read(at, true)
+	case trace.AtomicLoad:
+		Read(graph, at)
+	case trace.AtomicSwap, trace.AtomicCompAndSwap:
+		Read(graph, at)
+		Write(graph, at)
 	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
-		// pog does not add an edge for write
+		Write(graph, at)
 	default:
 		err := "Unknown operation: " + at.ToString()
 		log.Error(err)
 	}
+
 }
 
 // Read calculates the new vector clock for a read operation and update cv
 //
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
-//   - sync bool: sync reader with last writer
-func Read(at *trace.ElementAtomic, sync bool) {
-	id := at.GetID()
+func Read(graph *PoGraph, at *trace.ElementAtomic) {
+	id := at.GetObjId()
 
-	if sync && baseA.LastAtomicWriter[id] != nil {
-		AddEdge(at, baseA.LastAtomicWriter[id], false)
+	if graph != nil {
+		if graph.lastAtomicWriter[id] != nil {
+			graph.AddEdge(at, graph.lastAtomicWriter[id])
+		}
+	} else {
+		if po.lastAtomicWriter[id] != nil {
+			AddEdge(at, po.lastAtomicWriter[id], false)
+		}
 	}
+}
+
+func Write(graph *PoGraph, at *trace.ElementAtomic) {
+	id := at.GetObjId()
+
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	gr.lastAtomicWriter[id] = at
 }

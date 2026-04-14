@@ -10,17 +10,19 @@ AdvocateGo tries to detect the following situations:
 - A01: "Actual Send on Closed Channel",
 - A02: "Actual Receive on Closed Channel",
 - A03: "Actual Close on Closed Channel",
-- A04: "Actual close on nil channel",
-- A05: "Actual negative Wait Group",
-- A06: "Actual unlock of not locked mutex",
-- A07: "Partial Deadlock",
-- A08: "Concurrent Receive",
-- A09: "Select Case without Partner",
+- A04: "Actual Close on Nil Channel",
+- A05: "Actual Negative Wait Group",
+- A06: "Actual Unlock of Not Locked Mutex",
+- A07: "Actual Non-Cyclic Blocking Bug",
+- A08: "Actual Cyclic Deadlock with Mutex",
+- A09: "Actual Concurrent Receive on Same Channel",
+- A10: "Actual Cyclic Deadlock with Mutex and Channel
 - P01: "Possible Send on Closed Channel",
 - P02: "Possible Receive on Closed Channel",
 - P03: "Possible Negative WaitGroup cCounter",
 - P04: "Possible unlock of not locked mutex",
-- P05: "Possible cyclic deadlock",
+- P05: "Possible Cyclic Deadlock with Mutex",
+- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
 - L00: "Leak",
 - L01: "Leak on unbuffered channel with possible partner",
 - L02: "Leak on unbuffered channel without possible partner",
@@ -49,7 +51,7 @@ Advocate provides 4 different modes:
 ## Usage
 
 > [!WARNING]
-> This program currently only runs / is tested under Linux
+> This program is currently only tested under Linux
 
 > [!IMPORTANT]
 > advocate is implemented for go version 1.25.

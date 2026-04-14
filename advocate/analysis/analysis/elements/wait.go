@@ -27,14 +27,14 @@ import (
 func AnalyzeWait(wa *trace.ElementWait) {
 	hbcalc.UpdateHBWait(wa)
 
-	switch wa.GetOpW() {
-	case trace.ChangeOp:
-		baseA.LastChangeWG[wa.GetID()] = wa
+	switch wa.GetType(true) {
+	case trace.WaitAdd, trace.WaitDone:
+		baseA.LastChangeWG[wa.GetObjId()] = wa
 
 		if baseA.AnalysisCasesMap[flags.DoneBeforeAdd] || baseF.FuzzingModeGoCRHBPlus {
 			scenarios.CheckForDoneBeforeAddChange(wa)
 		}
-	case trace.WaitOp:
+	case trace.WaitWait:
 	default:
 		err := "Unknown operation on wait group: " + wa.ToString()
 		log.Error(err)

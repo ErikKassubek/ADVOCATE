@@ -68,9 +68,9 @@ command. This will create an `advocate` executable, which will be used to
 run all recordings, replays, analysis and fuzzing.
 
 > [!NOTE]
-> ADVOCATE is implemented for [go version 1.24](https://go.dev/blog/go1.24).\
+> ADVOCATE is implemented for [go version 1.25](https://go.dev/blog/go1.25).\
 > Make sure, that the correct version is installed on your system.\
-> Make sure, that the executed programs and tests do not choose another version/toolchain and are compatible with go 1.24.\
+> Make sure, that the executed programs and tests do not choose another version/toolchain and are compatible with go 1.25.\
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
 
 ## Usage
@@ -276,18 +276,20 @@ The analysis will try to find the following situations:
 - A01: "Actual Send on Closed Channel",
 - A02: "Actual Receive on Closed Channel",
 - A03: "Actual Close on Closed Channel",
-- A04: "Actual Close on nil channel",
-- A05: "Actual negative Wait Group",
-- A06: "Actual unlock of not locked mutex",
-- A07: "Actual Leak (Non-Cyclic blocking bug)",
-- A08: "Actual Deadlock (Cyclic blocking bug)",
-- A09: "Concurrent Receives on the same channel"
+- A04: "Actual Close on Nil Channel",
+- A05: "Actual Negative Wait Group",
+- A06: "Actual Unlock of Not Locked Mutex",
+- A07: "Actual Non-Cyclic Blocking Bug",
+- A08: "Actual Cyclic Deadlock with Mutex",
+- A09: "Actual Concurrent Receive on Same Channel",
+- A10: "Actual Cyclic Deadlock with Mutex and Channel
 - P01: "Possible Send on Closed Channel",
 - P02: "Possible Receive on Closed Channel",
 - P03: "Possible Negative WaitGroup cCounter",
 - P04: "Possible unlock of not locked mutex",
-- P05: "Possible cyclic deadlock",
-- L..: "Leak",
+- P05: "Possible Cyclic Deadlock with Mutex",
+- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
+- L..: "Leak" (Blocked but not necessarily finally blocked routine),
 
 Some of them are only considered warnings. To ignore them, you can set `-noWarning`.
 

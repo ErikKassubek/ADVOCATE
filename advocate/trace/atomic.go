@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementAtomic.go
+// File: /advocate/trace/atomic.go
 // Brief: Struct and functions for atomic operations in the trace
 //
 // Author: Erik Kassubek
@@ -21,11 +21,11 @@ import (
 // ElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: index in the routine
 //   - routine int: The routine id
 //   - tPost int: The timestamp of the event
-//   - id int: The id of the atomic variable
+//   - objId int: The id of the atomic variable
 //   - op ObjectType: The operation on the atomic variable
 //   - vc *clock.VectorClock: The vector clock of the operation
 //   - wVc *clock.VectorClock: The weak vector clock of the operation
@@ -36,12 +36,12 @@ import (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementAtomic struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPost                    int
-	id                       int
-	op                       ObjectType
+	objId                    int
+	op                       OperationType
 	vc                       *clock.VectorClock
 	wVc                      *clock.VectorClock
 	file                     string
@@ -72,7 +72,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 		return errors.New("id is not an integer")
 	}
 
-	var opAInt ObjectType
+	var opAInt OperationType
 	switch operation {
 	case "L":
 		opAInt = AtomicLoad
@@ -99,10 +99,10 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
-		id:                       idInt,
+		objId:                    idInt,
 		op:                       opAInt,
 		file:                     file,
 		line:                     line,
@@ -118,12 +118,16 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	return nil
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+func (this *ElementAtomic) IsValid() bool {
+	return this != nil
+}
+
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAtomic) GetID() int {
-	return this.id
+func (this *ElementAtomic) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -238,7 +242,7 @@ func (this *ElementAtomic) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementAtomic) GetType(operation bool) ObjectType {
+func (this *ElementAtomic) GetType(operation bool) OperationType {
 	if !operation {
 		return Atomic
 	}
@@ -270,7 +274,7 @@ func (this *ElementAtomic) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -324,42 +328,62 @@ func (this *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementAtomic) ToString() string {
 	opString := string(string(this.op)[1])
 
-	return fmt.Sprintf("A,%d,%d,%s,%s", this.tPost, this.id, opString, this.GetPos())
+	return fmt.Sprintf("A,%d,%d,%s,%s", this.tPost, this.objId, opString, this.GetPos())
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementAtomic) GetTraceID() int {
-	return this.traceID
+func (this *ElementAtomic) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementAtomic) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementAtomic) setID(ID int) {
+	this.id = ID
 }
 
 // Copy the atomic element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
+//   - c map[string]Element: map containing all already copied elements, if nil ignore all vc based values.
 //     since atomics do not contain reference to other elements and no other
 //     elements contain referents to atomics, this is not used
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAtomic) Copy(_ map[string]Element) Element {
+func (this *ElementAtomic) Copy(_ map[string]Element, keep bool) Element {
+
+	if !keep {
+		return &ElementAtomic{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+			file:                     this.file,
+			line:                     this.line,
+		}
+	}
 
 	return &ElementAtomic{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPost:                    this.tPost,
-		id:                       this.id,
+		objId:                    this.objId,
 		op:                       this.op,
 		vc:                       this.vc.Copy(),
 		wVc:                      this.wVc.Copy(),

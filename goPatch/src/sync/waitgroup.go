@@ -84,9 +84,9 @@ const waitGroupBubbleFlag = 0x8000_0000
 // See the WaitGroup example.
 func (wg *WaitGroup) Add(delta int) {
 	// ADVOCATE-START
-	skip := 3
+	skip := runtime.CallerSkipWaitGroupDone
 	if delta > 0 {
-		skip = 2
+		skip = runtime.CallerSkipWaitGroupAddWait
 	}
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupAddDone, skip, true)
 	if wait {

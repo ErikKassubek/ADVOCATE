@@ -24,6 +24,7 @@ const (
 	NameResult         = "advocateResult"
 	NameOutput         = "output.log"
 	NameFuzzingData    = "fuzzingData.log"
+	NameFuzzingTraces  = "fuzzingTraces"
 	NameReplayActive   = "replay_active.log"
 	NameTimes          = "times.log"
 	NameTraceInfo      = "trace_info.log"
@@ -50,13 +51,18 @@ var (
 	ProgDir = ""
 )
 
+// work
+var (
+	FuzzingTraces = ""
+	Output        = ""
+)
+
 // Result
 var (
 	Result        = ""
 	CurrentResult = ""
 	ResultOutput  = ""
 	ResultBugs    = ""
-	Output        = ""
 	ResultStats   = ""
 	ResultTime    = ""
 	ResultTraces  = ""
@@ -83,6 +89,8 @@ func pathsAdvocate() {
 func pathsProg() {
 	Prog = helper.CleanPathHome(flags.ProgPath)
 	ProgDir = helper.GetDirectory(Prog) // only for main
+	Output = filepath.Join(ProgDir, NameOutput)
+	FuzzingTraces = filepath.Join(ProgDir, NameFuzzingTraces)
 }
 
 func pathsResult(main bool) {
@@ -95,7 +103,7 @@ func pathsResult(main bool) {
 	ResultOut = filepath.Join(CurrentResult, NameOut)
 	ResultOutput = filepath.Join(ResultOut, NameOutput)
 	ResultBugs = filepath.Join(CurrentResult, NameBugs)
-	Output = filepath.Join(ProgDir, NameOutput)
+
 	ResultStats = filepath.Join(Result, NameStats)
 	ResultTime = filepath.Join(Result, NameStatsTime)
 	ResultTraces = filepath.Join(Result, NameTraces)

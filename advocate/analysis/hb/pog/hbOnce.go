@@ -11,17 +11,30 @@
 package pog
 
 import (
-	"advocate/analysis/baseA"
 	"advocate/trace"
 )
 
 // UpdateHBOnce update the vector clock of the trace and element
 // Parameter:
+//   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - on *trace.TraceElementOnce: the once trace element
-func UpdateHBOnce(on *trace.ElementOnce) {
+func UpdateHBOnce(graph *PoGraph, on *trace.ElementOnce) {
+	gr := graph
+	if graph == nil {
+		gr = &po
+	}
+
+	objId := on.GetObjId()
+
 	// suc once does not create edge -> only not suc
-	if !on.GetSuc() {
-		suc := baseA.OSuc[on.GetID()]
-		AddEdge(suc, on, false)
+	if on.GetSuc() {
+		gr.oSuc[objId] = on
+	} else {
+		suc := gr.oSuc[objId]
+		if graph != nil {
+			graph.AddEdge(suc, on)
+		} else {
+			AddEdge(suc, on, false)
+		}
 	}
 }

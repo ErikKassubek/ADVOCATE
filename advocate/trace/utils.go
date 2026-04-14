@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: analysisUtil.go
+// File: /advocate/trace/utils.go
 // Brief: Collection of utility functiond for trace analysis
 //
 // Author: Erik Kassubek
@@ -32,7 +32,7 @@ import (
 func InfoFromTID(tID string) (string, int, int, error) {
 	spilt1 := strings.Split(tID, "@")
 
-	if len(spilt1) != 3 {
+	if len(spilt1) < 3 {
 		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no @: ", tID))
 	}
 
@@ -106,5 +106,16 @@ func PosFromPosString(pos string) (string, int, error) {
 	}
 
 	return posSplit[0], line, nil
+}
 
+// PosStringFromPos returns the pos string from a file and line
+//
+// Parameter:
+//   - string: file
+//   - int: line
+//
+// Returns:
+//   - pos string: [file]:[line]
+func PosStringFromPos(file string, line int) string {
+	return fmt.Sprintf("%s:%d", file, line)
 }

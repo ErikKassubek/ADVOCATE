@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: traceElementWait.go
+// File: /advocate/trace/routineEnd.go
 // Brief: Struct and functions for wait group operations in the trace
 //
 // Author: Erik Kassubek
@@ -21,20 +21,14 @@ import (
 // OpWait enum
 type OpWait int
 
-// Values for the opW enum
-const (
-	ChangeOp OpWait = iota
-	WaitOp
-)
-
 // ElementWait is a trace element for a wait group statement
 //
 // Fields:
-//   - traceID: id of the element, should never be changed
+//   - id: id of the element, should never be changed
 //   - index int: Index in the routine
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - id int: The id of the wait group
+//   - objId int: The id of the wait group
 //   - opW opW: The operation on the wait group
 //   - delta int: The delta of the wait group
 //   - val int: The value of the wait group
@@ -47,13 +41,13 @@ const (
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
 type ElementWait struct {
-	traceID                  int
+	id                       int
 	index                    int
 	routine                  int
 	tPre                     int
 	tPost                    int
-	id                       int
-	opW                      OpWait
+	objId                    int
+	op                       OperationType
 	delta                    int
 	val                      int
 	file                     string
@@ -94,16 +88,18 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 		return errors.New("id is not an integer")
 	}
 
-	opWOp := ChangeOp
-	if opW == "W" {
-		opWOp = WaitOp
-	} else if opW != "A" {
-		return errors.New("op is not a valid operation")
-	}
-
 	deltaInt, err := strconv.Atoi(delta)
 	if err != nil {
 		return errors.New("delta is not an integer")
+	}
+
+	opWOp := None
+	if opW == "W" {
+		opWOp = WaitWait
+	} else if deltaInt > 0 {
+		opWOp = WaitAdd
+	} else {
+		opWOp = WaitDone
 	}
 
 	valInt, err := strconv.Atoi(val)
@@ -117,12 +113,12 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:                    this.numberElemsInTrace[routine],
+		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPre:                     tPreInt,
 		tPost:                    tPostInt,
-		id:                       idInt,
-		opW:                      opWOp,
+		objId:                    idInt,
+		op:                       opWOp,
 		delta:                    deltaInt,
 		val:                      valInt,
 		file:                     file,
@@ -150,16 +146,16 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 //   - ElementWait: the wait element
 func EmptyWait(id int) ElementWait {
 	return ElementWait{
-		id: id,
+		objId: id,
 	}
 }
 
-// GetID returns the ID of the primitive on which the operation was executed
+// GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementWait) GetID() int {
-	return this.id
+func (this *ElementWait) GetObjId() int {
+	return this.objId
 }
 
 // GetRoutine returns the routine ID of the element.
@@ -244,15 +240,7 @@ func (this *ElementWait) GetTID() string {
 // Returns:
 //   - bool: True if the operation is a wait op
 func (this *ElementWait) IsWait() bool {
-	return this.opW == WaitOp
-}
-
-// GetOpW returns the operation type
-//
-// Returns:
-//   - opWait: the wait operations
-func (this *ElementWait) GetOpW() OpWait {
-	return this.opW
+	return this.op == WaitWait
 }
 
 // GetDelta returns the delta of the element. The delta is the value by which the counter
@@ -263,6 +251,14 @@ func (this *ElementWait) GetOpW() OpWait {
 //   - int: the delta of the wait element
 func (this *ElementWait) GetDelta() int {
 	return this.delta
+}
+
+// SetVal sets the value of the internal counter
+//
+// Parameter:
+//   - v int: the new value
+func (this *ElementWait) SetVal(v int) {
+	this.val = v
 }
 
 // SetVc sets the vector clock
@@ -304,17 +300,12 @@ func (this *ElementWait) GetWVC() *clock.VectorClock {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementWait) GetType(operation bool) ObjectType {
+func (this *ElementWait) GetType(operation bool) OperationType {
 	if !operation {
 		return Wait
 	}
 
-	if this.delta > 0 {
-		return WaitAdd
-	} else if this.delta < 0 {
-		return WaitDone
-	}
-	return WaitWait
+	return this.op
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -341,7 +332,7 @@ func (this *ElementWait) IsSameElement(elem Element) bool {
 		return false
 	}
 
-	return this.id == elem.GetID()
+	return this.objId == elem.GetObjId()
 }
 
 // GetTraceIndex returns trace local index of the element in the trace
@@ -401,11 +392,11 @@ func (this *ElementWait) SetTWithoutNotExecuted(tSort int) {
 func (this *ElementWait) ToString() string {
 	res := "W,"
 	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.id) + ","
-	switch this.opW {
-	case ChangeOp:
+	res += strconv.Itoa(this.objId) + ","
+	switch this.op {
+	case WaitAdd, WaitDone:
 		res += "A,"
-	case WaitOp:
+	case WaitWait:
 		res += "W,"
 	}
 
@@ -414,40 +405,65 @@ func (this *ElementWait) ToString() string {
 	return res
 }
 
-// GetTraceID returns the trace id
+// GetID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementWait) GetTraceID() int {
-	return this.traceID
+func (this *ElementWait) GetID() int {
+	return this.id
 }
 
 // GetTraceID sets the trace id
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementWait) setTraceID(ID int) {
-	this.traceID = ID
+func (this *ElementWait) setID(ID int) {
+	this.id = ID
+}
+
+func (this *ElementWait) IsValid() bool {
+	return this != nil
 }
 
 // Copy the element
 //
 // Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//     since atomics do not contain reference to other elements and no other
-//     elements contain referents to atomics, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementWait) Copy(_ map[string]Element) Element {
+func (this *ElementWait) Copy(mapping map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementWait{
+			id:                       this.id,
+			index:                    0,
+			routine:                  this.routine,
+			tPre:                     0,
+			tPost:                    0,
+			objId:                    this.objId,
+			op:                       this.op,
+			delta:                    this.delta,
+			val:                      0,
+			file:                     this.file,
+			line:                     this.line,
+			vc:                       nil,
+			wVc:                      nil,
+			numberConcurrent:         0,
+			numberConcurrentWeak:     0,
+			numberConcurrentSame:     0,
+			numberConcurrentWeakSame: 0,
+		}
+	}
+
 	return &ElementWait{
-		traceID:                  this.traceID,
+		id:                       this.id,
 		index:                    this.index,
 		routine:                  this.routine,
 		tPre:                     this.tPre,
 		tPost:                    this.tPost,
-		id:                       this.id,
-		opW:                      this.opW,
+		objId:                    this.objId,
+		op:                       this.op,
 		delta:                    this.delta,
 		val:                      this.val,
 		file:                     this.file,

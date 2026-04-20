@@ -124,5 +124,5 @@ func CheckGoMod() string {
 
 func RunGoModTidy() {
 	log.Info("Run go mod tidy")
-	RunCommand(nil, nil, "go", "mod", "tidy")
+	RunCommand(nil, nil, false, "go", "mod", "tidy")
 }

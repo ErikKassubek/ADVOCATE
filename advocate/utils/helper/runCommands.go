@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
 //
-// File: runFullWorkflowMain.go
+// File: runCommand.go
 // Brief: Function to run commands
 //
 // Author: Erik Kassubek, Mario Occhinegro
@@ -11,8 +11,10 @@
 package helper
 
 import (
+	"advocate/utils/comm"
 	"advocate/utils/control"
 	"advocate/utils/flags"
+	"advocate/utils/log"
 	"context"
 	"io"
 	"os"
@@ -30,7 +32,7 @@ import (
 //
 // Returns:
 //   - error
-func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
+func RunCommand(osOut, osErr *os.File, openCom bool, name string, args ...string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)
@@ -47,11 +49,35 @@ func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
 			cmd.Stderr = multiErr
 		}
 	} else {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		cmd.Stdout = osOut
+		cmd.Stderr = osErr
 	}
 
-	return cmd.Run()
+	if err := cmd.Start(); err != nil {
+		return err
+	}
+
+	if openCom {
+		log.Debug("RUN")
+		go func() {
+			comm.Open()
+			res, err := comm.Get()
+			if err != nil {
+				log.Error(err)
+			}
+			log.Debug("RES: ", res)
+			err = comm.Post("HELLO")
+			if err != nil {
+				log.Error(err)
+			}
+			// comm.Close()
+		}()
+	}
+
+	// wait goroutine + cleanup
+	err := cmd.Wait()
+
+	return err
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

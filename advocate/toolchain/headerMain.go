@@ -32,11 +32,12 @@ import (
 //   - record bool: if both replay and record are set, the replay is rerecorded
 //   - fuzzing int: fuzzing run, if no fuzzing: -1, for initial run: 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - output *os.File: output file
 //
 // Returns:
 //   - error
 func headerInserterMain(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, output *os.File) error {
 	if fileName == "" {
 		return errors.New("Please provide a file  name")
 	}
@@ -45,7 +46,7 @@ func headerInserterMain(fileName string, replay bool, replayNumber string,
 		return fmt.Errorf("File %s does not exist", fileName)
 	}
 
-	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record, fuzzing, fuzzingTrace)
+	return addMainHeader(fileName, replay, replayNumber, replayTimeout, record, fuzzing, fuzzingTrace, output)
 }
 
 // Remove the header from a file with a header in a main function
@@ -148,11 +149,12 @@ func mainMethodExists(fileName string) (bool, error) {
 //   - record bool: if both replay and record are set, the replay is rerecorded
 //   - fuzzing int: fuzzing run, if no fuzzing: -1, for initial run: 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - output *os.File: output file
 //
 // Returns:
 //   - error
 func addMainHeader(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) error {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, output *os.File) error {
 	exists, err := mainMethodExists(fileName)
 	if err != nil {
 		return err
@@ -173,8 +175,8 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 		atomicReplayStr = "false"
 	}
 
-	fmt.Println("FileName: ", fileName)
-	fmt.Println("TestName: Main")
+	fmt.Fprintln(output, "FileName: ", fileName)
+	fmt.Fprintln(output, "TestName: Main")
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
@@ -187,15 +189,15 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 
 		if strings.Contains(line, "package main") {
 			lines = append(lines, "import \"advocate\"")
-			fmt.Println("Import added at line:", currentLine)
+			fmt.Fprintln(output, "Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import \"") && !importAdded {
 			lines = append(lines, "import \"advocate\"")
-			fmt.Println("Import added at line:", currentLine)
+			fmt.Fprintln(output, "Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
 			lines = append(lines, "\t\"advocate\"")
-			fmt.Println("Import added at line:", currentLine)
+			fmt.Fprintln(output, "Import added at line:", currentLine)
 			importAdded = true
 		}
 
@@ -231,8 +233,8 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
   defer advocate.FinishTracing()
   // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
-			fmt.Println("Header added at line:", currentLine)
-			fmt.Printf("Header added at file: %s\n", fileName)
+			fmt.Fprintln(output, "Header added at line:", currentLine)
+			fmt.Fprintf(output, "Header added at file: %s\n", fileName)
 		}
 	}
 

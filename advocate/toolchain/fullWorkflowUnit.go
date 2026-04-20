@@ -423,16 +423,16 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	defer outFile.Close()
 
 	// Redirect stdout and stderr to the file
-	origStdout := os.Stdout
-	origStderr := os.Stderr
+	// origStdout := os.Stdout
+	// origStderr := os.Stderr
 
-	os.Stdout = outFile
-	os.Stderr = outFile
+	// os.Stdout = outFile
+	// os.Stderr = outFile
 
-	defer func() {
-		os.Stdout = origStdout
-		os.Stderr = origStderr
-	}()
+	// defer func() {
+	// 	os.Stdout = origStdout
+	// 	os.Stderr = origStderr
+	// }()
 
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -460,7 +460,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	if runRecord {
 		if flags.MeasureTime && fuzzing < 1 {
-			err := unitTestRun(pkg, file, testName, origStdout, origStderr)
+			err := unitTestRun(pkg, file, testName, outFile, outFile)
 			if err != nil {
 				if checkForTimeout(paths.NameOutput) {
 					log.Timeout("Running T0 timed out")
@@ -469,7 +469,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 		}
 
 		err = unitTestRecord(pkg, file,
-			testName, fuzzing, fuzzingTrace, paths.NameOutput, origStdout, origStderr)
+			testName, fuzzing, fuzzingTrace, paths.NameOutput, outFile, outFile)
 		if err != nil {
 			log.Error("Recording failed: ", err.Error())
 		}
@@ -489,7 +489,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
+		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, outFile, outFile)
 	}
 
 	return numberReplay, true, nil
@@ -522,9 +522,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, true, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, true, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -557,7 +557,7 @@ func unitTestRecord(pkg, file, testName string,
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false, osOut); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -567,10 +567,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	helper.RunCommand(osOut, osErr, paths.Go, "version")
+	helper.RunCommand(osOut, osErr, true, paths.Go, "version")
 
 	pkgPath := helper.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := helper.RunCommand(osOut, osErr, true, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -671,13 +671,13 @@ func unitTestReplay(dir, pkg, file,
 			continue
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, record)
+		headerInserterUnit(file, testName, true, -1, traceNum, record, osOut)
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := helper.MakePathLocal(pkg)
-		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		helper.RunCommand(osOut, osErr, true, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

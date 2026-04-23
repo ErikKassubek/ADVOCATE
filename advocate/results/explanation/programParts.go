@@ -11,6 +11,7 @@
 package explanation
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/log"
 	"errors"
 	"os"
@@ -30,7 +31,7 @@ func getBugPositions(traceElems map[int][]string) (map[int][]string, error) {
 
 	for i, elem := range traceElems {
 		for _, e := range elem {
-			pos := strings.Split(e, ":")
+			pos := strings.Split(e, consts.PosSep)
 			file := pos[0]
 			line, err := strconv.Atoi(pos[1])
 			if err != nil {

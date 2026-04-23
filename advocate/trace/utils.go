@@ -49,9 +49,9 @@ func InfoFromTID(tID string) (string, int, int, error) {
 		sp = split3[1]
 	}
 
-	split2 := strings.Split(sp, ":")
+	split2 := strings.Split(sp, consts.PosSep)
 	if len(split2) < 2 {
-		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no ':': ", tID))
+		return "", 0, 0, errors.New(fmt.Sprintf("TID not correct: no '%s': %s", consts.PosSep, tID))
 	}
 
 	line, err := strconv.Atoi(split2[1])
@@ -118,5 +118,5 @@ func PosFromPosString(pos string) (string, int, error) {
 // Returns:
 //   - pos string: [file]:[line]
 func PosStringFromPos(file string, line int) string {
-	return fmt.Sprintf("%s:%d", file, line)
+	return fmt.Sprintf("%s%s%d", file, consts.PosSep, line)
 }

@@ -105,6 +105,7 @@ func getTraceInfoFromFile(filePath string) error {
 		log.Error("Error opening file: " + filePath)
 		return err
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 

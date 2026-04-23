@@ -41,6 +41,7 @@ func ReadAnalysisResults(resMachinePath string, index int) (bool, bugs.Bug, erro
 		log.Error("Error opening file: " + resMachinePath)
 		return false, bugs.Bug{}, err
 	}
+	file.Close()
 
 	scanner := bufio.NewScanner(file)
 

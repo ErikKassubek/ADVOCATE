@@ -84,7 +84,7 @@ func pathsAdvocate() {
 
 	Advocate = helper.CleanPathHome(filepath.Dir(filepath.Dir(execPath)))
 	GoPatch = filepath.Join(Advocate, "goPatch")
-	Go = filepath.Join(Advocate, "goPatch/bin/go")
+	Go = filepath.Join(Advocate, "goPatch", "bin", "go")
 
 	if runtime.GOOS == "windows" {
 		Go += ".exe"

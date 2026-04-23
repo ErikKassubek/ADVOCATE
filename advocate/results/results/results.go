@@ -414,13 +414,13 @@ func CreateResultFiles(noPrint bool) (int, error) {
 		}
 	}
 
-	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
+	fileR, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return getNumberRes(), err
 	}
-	defer file.Close()
+	defer fileR.Close()
 
-	if _, err := file.WriteString(resReadable); err != nil {
+	if _, err := fileR.WriteString(resReadable); err != nil {
 		return getNumberRes(), err
 	}
 
@@ -431,13 +431,14 @@ func CreateResultFiles(noPrint bool) (int, error) {
 		}
 	}
 
-	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
+	var fileM *os.File
+	fileM, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return getNumberRes(), err
 	}
-	defer file.Close()
+	defer fileM.Close()
 
-	if _, err := file.WriteString(resMachine); err != nil {
+	if _, err := fileM.WriteString(resMachine); err != nil {
 		return getNumberRes(), err
 	}
 

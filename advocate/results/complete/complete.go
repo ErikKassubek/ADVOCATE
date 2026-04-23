@@ -169,7 +169,7 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 	// write select cases that were not selected
 	if len(selects) > 0 {
 		for file, lines := range selects {
-			fileName := strings.ReplaceAll(file, "/", "_")
+			fileName := strings.ReplaceAll(file, consts.Sep, "_")
 			fileName = strings.TrimPrefix(fileName, "_")
 			pathFile := fmt.Sprintf("%s/%s.md", pathOperationsFolder, fileName)
 			// if file does not exist, create it otherwise append to it
@@ -177,6 +177,7 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 			if err != nil {
 				return err
 			}
+			defer fileFile.Close()
 			fileFile.WriteString("## Not selected select cases\n")
 
 			for line, cases := range lines {
@@ -204,7 +205,6 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 				}
 				notExecutedSelectFile.WriteString("]\n")
 			}
-			fileFile.Close()
 		}
 	} else {
 		notExecutedSelectFile.WriteString("All select cases were executed\n")

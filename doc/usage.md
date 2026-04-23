@@ -7,7 +7,7 @@
 Download or clone the repository into a local folder.
 
 
-If you are using Windows, make sure that any automatic conversion of line endings (LF -> CRLF) is turned of. For git, this can be done with 
+If you are using Windows, make sure that any automatic conversion of line endings (LF -> CRLF) is turned off. For git, this can be done with 
 
 ```shell
 git config core.autocrlf false

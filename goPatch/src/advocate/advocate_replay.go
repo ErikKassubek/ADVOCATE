@@ -24,6 +24,7 @@ import (
 
 const (
 	activeFile = "replay_active.log"
+	posSep     = "#"
 )
 
 var timeout = false
@@ -267,7 +268,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 		case "G":
 			op = runtime.OperationSpawn
 			// time, _ = strconv.Atoi(fields[1])
-			pos := strings.Split(fields[3], ":")
+			pos := strings.Split(fields[3], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			index, _ = strconv.Atoi(fields[2])
@@ -290,7 +291,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			if time == 0 {
 				blocked = true
 			}
-			pos := strings.Split(fields[9], ":")
+			pos := strings.Split(fields[9], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 		case "M":
@@ -302,7 +303,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			if fields[6] == "f" {
 				suc = false
 			}
-			pos := strings.Split(fields[7], ":")
+			pos := strings.Split(fields[7], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			switch fields[5] {
@@ -346,7 +347,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			if fields[4] == "f" {
 				suc = false
 			}
-			pos := strings.Split(fields[5], ":")
+			pos := strings.Split(fields[5], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 		case "W":
@@ -362,7 +363,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			if time == 0 {
 				blocked = true
 			}
-			pos := strings.Split(fields[7], ":")
+			pos := strings.Split(fields[7], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 		case "S":
@@ -377,7 +378,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 				blocked = true
 			}
 			index, _ = strconv.Atoi(fields[5])
-			pos := strings.Split(fields[6], ":")
+			pos := strings.Split(fields[6], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 		case "D":
@@ -391,7 +392,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			default:
 				panic("Unknown cond operation: " + fields[4])
 			}
-			pos := strings.Split(fields[5], ":")
+			pos := strings.Split(fields[5], posSep)
 			file = pos[0]
 			line, _ = strconv.Atoi(pos[1])
 			if fields[2] == "0" {
@@ -417,7 +418,7 @@ func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int
 			case "O":
 				op = runtime.OperationAtomicOr
 			}
-			pos := strings.Split(fields[4], ":")
+			pos := strings.Split(fields[4], posSep)
 			if len(pos) < 2 {
 				runtime.SetReplayAtomic(false)
 				file = ""

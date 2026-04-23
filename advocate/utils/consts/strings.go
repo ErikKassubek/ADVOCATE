@@ -11,4 +11,6 @@ const (
 
 	Actual   = "Actual"
 	Possible = "Possible"
+
+	PosSep = "#"
 )

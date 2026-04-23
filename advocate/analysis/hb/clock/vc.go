@@ -11,6 +11,7 @@
 package clock
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/log"
 	"fmt"
 	"runtime"
@@ -185,7 +186,7 @@ func (this *VectorClock) Sync(rec *VectorClock) *VectorClock {
 
 	if this.size == 0 && rec.size == 0 {
 		_, file, line, _ := runtime.Caller(1)
-		log.Error("Sync of empty vector clocks: " + file + ":" + strconv.Itoa(line))
+		log.Error("Sync of empty vector clocks: " + file + consts.PosSep + strconv.Itoa(line))
 	}
 
 	if this.size == 0 {

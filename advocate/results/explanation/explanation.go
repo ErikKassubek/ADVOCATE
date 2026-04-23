@@ -256,7 +256,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 				}
 			}
 
-			pos := file + ":" + line
+			pos := file + consts.PosSep + line
 
 			if slices.Contains(posAlreadyKnown, pos) {
 				continue

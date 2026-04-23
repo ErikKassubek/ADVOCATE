@@ -11,6 +11,7 @@
 package trace
 
 import (
+	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"strconv"
@@ -95,7 +96,7 @@ func SameRoutine(elems ...[]Element) bool {
 //   - int: line
 //   - error
 func PosFromPosString(pos string) (string, int, error) {
-	posSplit := strings.Split(pos, ":")
+	posSplit := strings.Split(pos, consts.PosSep)
 	if len(posSplit) != 2 {
 		return "", 0, fmt.Errorf("Invalid pos %s", pos)
 	}

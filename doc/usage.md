@@ -1,6 +1,17 @@
 # How To Use Advocate
 
-This file provides a detailed explanation on how to use the ADVOCATE framework.
+
+
+## Download
+
+Download or clone the repository into a local folder.
+
+
+If using windows, make sure that any automatic conversion of line endings (LF -> CRLF) is turned of. For git, this can be done with 
+
+```shell
+git config core.autocrlf false
+```
 
 ## Docker
 

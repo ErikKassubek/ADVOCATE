@@ -50,8 +50,8 @@ Advocate provides 4 different modes:
 
 ## Usage
 
-> [!WARNING]
-> This program is currently only tested under Linux
+For an explanation on how to use advocate, see [here](./doc/usage.md).
+
 
 > [!IMPORTANT]
 > advocate is implemented for go version 1.25.
@@ -59,7 +59,6 @@ Advocate provides 4 different modes:
 > The output `package advocate is not in std ` or similar indicates a problem with the used version.
 > It can help to shorten the go version number in the go.mod file of the analyzed program from go 1.25.x to go 1.25.
 
-For an explanation on how to use advocate, see [here](./doc/usage.md).
 
 ## Documentation
 

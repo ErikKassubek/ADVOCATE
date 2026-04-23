@@ -7,15 +7,56 @@
 Download or clone the repository into a local folder.
 
 
-If using windows, make sure that any automatic conversion of line endings (LF -> CRLF) is turned of. For git, this can be done with 
+If you are using Windows, make sure that any automatic conversion of line endings (LF -> CRLF) is turned of. For git, this can be done with 
 
 ```shell
 git config core.autocrlf false
 ```
 
+
+## Local
+
+Before Advocate can be used, it must first be build.
+
+There are two elements that need to be build.
+
+### Runtime
+
+To run the recording and replay for Go, a modified version of the Go runtime
+has been provided. It can be found in the [go-path](../goPatch/) folder.
+
+Before it can be used, it needs to be build. To do this, move into
+[go-path/src](../goPatch/src/) directory and run the
+
+```shell
+./src/make.bash
+```
+
+or 
+
+```shell
+./src/make.bat
+```
+
+script. This will create a go executable in the `bin` directory.
+
+### Advocate
+
+Additionally, the advocate program needs to be build. This is a standard Go
+program. To build it, move into the [advocate](../advocate/) directory
+and build it with the standard
+
+```shell
+go build
+```
+
+command. This will create an `advocate` executable, which will be used to
+run all recordings, replays, analysis and fuzzing.
+
+
 ## Docker
 
-We provide a docker file to create the environment.
+We also provide a docker file to create the environment.
 
 To build the docker file, run
 
@@ -36,53 +77,11 @@ e.g.
 ```shell
 docker run --rm -it \
   -v /home/erik/progToTest:/prog \
-  advocate-app fuzzing -path /prog -exec TestLoadConcurrent -fuzzingMode GoPie
+  advocate-app fuzzing -path /prog
 ```
 
 For the modes and args, see [usage](#usage).
 Note that the -path argument has already been set and does not need to be set again.
-
-## Local
-
-If you do not want to use the Docker container, you can also
-build al the required parts yourself.
-
-Before Advocate can be used, it must first be build.
-
-There are two elements that need to be build.
-
-### Runtime
-
-To run the recording and replay for Go, a modified version of the Go runtime
-has been provided. It can be found in the [go-path](../goPatch/) folder.
-
-Before it can be used, it needs to be build. To do this, move into
-[go-path/src](../goPatch/src/) directory and run the
-
-```shell
-./src/make.bash
-```
-
-script. This will create a go executable in the `bin` directory.
-
-### Advocate
-
-Additionally, the advocate program needs to be build. This is a standard Go
-program. To build it, move into the [advocate](../advocate/) directory
-and build it with the standard
-
-```shell
-go build
-```
-
-command. This will create an `advocate` executable, which will be used to
-run all recordings, replays, analysis and fuzzing.
-
-> [!NOTE]
-> ADVOCATE is implemented for [go version 1.25](https://go.dev/blog/go1.25).\
-> Make sure, that the correct version is installed on your system.\
-> Make sure, that the executed programs and tests do not choose another version/toolchain and are compatible with go 1.25.\
-> The output `package advocate is not in std ` or similar indicates a problem with the used version.
 
 ## Usage
 

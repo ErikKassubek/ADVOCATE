@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/utils/consts"
-	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"strconv"
@@ -51,7 +50,6 @@ func InfoFromTID(tID string) (string, int, int, error) {
 	}
 
 	file := split2[0]
-	log.Debug(file)
 
 	line, err := strconv.Atoi(split2[1])
 	if err != nil {

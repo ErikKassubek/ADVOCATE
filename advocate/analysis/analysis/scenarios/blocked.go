@@ -742,5 +742,5 @@ func chanIsTimerOrCtx(id int) (bool, bool) {
 		return false, false
 	}
 
-	return strings.Contains(pos, "/src/time/"), strings.Contains(pos, "/src/context/")
+	return strings.Contains(pos, paths.Join(true, true, "src", "time")), strings.Contains(pos, paths.Join(true, true, "src", "context"))
 }

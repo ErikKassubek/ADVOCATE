@@ -11,6 +11,7 @@
 package helper
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/log"
 	"errors"
 	"fmt"
@@ -145,8 +146,8 @@ func CheckPath(path string) (string, error) {
 // Returns:
 //   - string: name for the program
 func GetProgName(path string) string {
-	path = strings.ReplaceAll(path, "~/"+string(os.PathSeparator), "")
-	path = strings.ReplaceAll(path, "."+string(os.PathSeparator), "")
+	path = strings.ReplaceAll(path, "~"+consts.Sep, "")
+	path = strings.ReplaceAll(path, "."+consts.Sep, "")
 	path = strings.ReplaceAll(path, ".", "-")
-	return strings.ReplaceAll(path, string(os.PathSeparator), "-")
+	return strings.ReplaceAll(path, consts.Sep, "-")
 }

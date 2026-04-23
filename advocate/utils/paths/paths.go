@@ -11,6 +11,7 @@
 package paths
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
@@ -18,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // names
@@ -124,4 +126,21 @@ func SetCurrentResult(fileNumber, testNumber int, fileName, testName string) str
 	ResultTime = filepath.Join(CurrentResult, NameStatsTime)
 	ResultTraces = filepath.Join(CurrentResult, NameTraces)
 	return CurrentResult
+}
+
+func Join(pre, post bool, elem ...string) string {
+	res := filepath.Join(elem...)
+	if pre {
+		res = consts.Sep + res
+	}
+	if post {
+		res = res + consts.Sep
+	}
+	return res
+}
+
+func ToLocal(path string) string {
+	path = strings.ReplaceAll(path, "/", consts.Sep)
+	path = strings.ReplaceAll(path, "\\", consts.Sep)
+	return path
 }

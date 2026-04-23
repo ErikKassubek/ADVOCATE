@@ -93,8 +93,10 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 					continue
 				}
 
-				pos := strings.Split(field[len(field)-1], consts.PosSep)
+				posStr := field[len(field)-1]
+				pos := strings.Split(posStr, consts.PosSep)
 				if len(pos) != 2 {
+					log.Error("Invalid pos: ", posStr)
 					continue
 				}
 

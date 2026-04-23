@@ -240,7 +240,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 		bugPos[i] = make([]string, 0)
 
 		for j, elem := range bugElems {
-			fields := strings.Split(elem, ":")
+			fields := strings.Split(elem, consts.PosSep)
 
 			if fields[0] != "T" {
 				continue
@@ -403,14 +403,14 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	}
 
 	// if in path, the folder "bugs" does not exist, create it
-	if _, err := os.Stat(path + "/bugs"); os.IsNotExist(err) {
-		err := os.Mkdir(path+"/bugs", 0755)
+	if _, err := os.Stat(path + consts.Sep + "bugs"); os.IsNotExist(err) {
+		err := os.Mkdir(path+consts.Sep+"bugs", 0755)
 		if err != nil {
 			return err
 		}
 	}
 
-	folderName := path + "/bugs"
+	folderName := path + consts.Sep + "bugs"
 	if _, err := os.Stat(folderName); os.IsNotExist(err) {
 		err := os.Mkdir(folderName, 0755)
 		if err != nil {

@@ -16,6 +16,7 @@ import (
 	"advocate/fuzzing/active"
 	"advocate/io"
 	"advocate/results/results"
+	"advocate/utils/consts"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -118,7 +119,7 @@ func runAnalyzer(pathTrace string,
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
 		needed, err := rewriteTrace(outMachine,
-			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, &rewrittenBugs)
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+consts.Sep, resultIndex, &rewrittenBugs)
 
 		if !needed {
 			notNeededRewrites++

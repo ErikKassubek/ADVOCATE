@@ -127,12 +127,20 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 		log.Error("Could not read header line: ", err)
 	}
 
-	resultsMachine, _ := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
+	resultsMachine, err := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	resultsMachine = append(resultsMachine, filepath.Join(paths.ResultOut, paths.NameResultMachine))
 
 	var numberResults int
 	for _, result := range resultsMachine {
-		f, _ := os.ReadFile(result)
+		f, err := os.ReadFile(result)
+		if err != nil {
+			log.Error(err)
+		}
+
 		numberResults = len(strings.Split(string(f), "\n")) - 1
 
 		// timeoutFound := false
@@ -248,7 +256,11 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 			// correct the line number, if the file is the main file of the program
 			// because of the inserted preamble
 			if file == fileWithHeader {
-				lineInt, _ := strconv.Atoi(line)
+				lineInt, err := strconv.Atoi(line)
+				if err != nil {
+					log.Error(err.Error())
+				}
+
 				if lineInt >= headerLine {
 					line = fmt.Sprint(lineInt - 5) // import + header
 				} else {

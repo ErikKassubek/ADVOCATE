@@ -1,5 +1,7 @@
 package consts
 
+import "path/filepath"
+
 const (
 	ItExitedWithTheFollowingCode                   = "It exited with the following code: "
 	TheBugIsLikelyAFalsePositive                   = "The bug is likely a false positive"
@@ -13,4 +15,6 @@ const (
 	Possible = "Possible"
 
 	PosSep = "#"
+
+	Sep = string(filepath.Separator)
 )

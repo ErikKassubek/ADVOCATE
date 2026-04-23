@@ -13,6 +13,7 @@ package paths
 import (
 	"advocate/utils/flags"
 	"advocate/utils/helper"
+	"advocate/utils/log"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -76,7 +77,11 @@ func BuildPaths(main bool) {
 }
 
 func pathsAdvocate() {
-	execPath, _ := os.Executable()
+	execPath, err := os.Executable()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	Advocate = helper.CleanPathHome(filepath.Dir(filepath.Dir(execPath)))
 	GoPatch = filepath.Join(Advocate, "goPatch")
 	Go = filepath.Join(Advocate, "goPatch/bin/go")

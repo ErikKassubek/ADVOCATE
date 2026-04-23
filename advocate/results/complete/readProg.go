@@ -138,9 +138,13 @@ func analyzeFiles(files []string) (*types.Package, error) {
 	}
 
 	conf := types.Config{Importer: importer.Default()}
-	pkg, _ := conf.Check("mypackage", fset, astFiles, &types.Info{
+	pkg, err := conf.Check("mypackage", fset, astFiles, &types.Info{
 		Uses: make(map[*ast.Ident]types.Object),
 	})
+
+	if err != nil {
+		log.Error(err.Error())
+	}
 
 	return pkg, nil
 }

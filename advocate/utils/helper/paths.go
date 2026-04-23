@@ -11,6 +11,7 @@
 package helper
 
 import (
+	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -101,7 +102,11 @@ func GetMainPath(path string) (string, error) {
 // CleanPathHome takes a path containing a ~ and replaces it with the
 // path to the home folder
 func CleanPathHome(path string) string {
-	home, _ := os.UserHomeDir()
+	home, err := os.UserHomeDir()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	return strings.Replace(path, "~", home, -1)
 }
 

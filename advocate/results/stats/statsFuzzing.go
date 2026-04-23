@@ -160,10 +160,25 @@ func CreateStatsFuzzing(pathFolder string) error {
 			td.fuzzData = make(map[string]int)
 		}
 
-		nrMut, _ := strconv.Atoi(fields[1])
-		nrMutInvalid, _ := strconv.Atoi(fields[2])
-		nrMutDouble, _ := strconv.Atoi(fields[3])
-		nrActiveReleased, _ := strconv.Atoi(fields[4])
+		nrMut, err := strconv.Atoi(fields[1])
+		if err != nil {
+			log.Error(err.Error())
+		}
+
+		nrMutInvalid, err := strconv.Atoi(fields[2])
+		if err != nil {
+			log.Error(err.Error())
+		}
+
+		nrMutDouble, err := strconv.Atoi(fields[3])
+		if err != nil {
+			log.Error(err.Error())
+		}
+
+		nrActiveReleased, err := strconv.Atoi(fields[4])
+		if err != nil {
+			log.Error(err.Error())
+		}
 
 		td.fuzzData["nrMut"] += nrMut
 		td.fuzzData["nrMutInvalid"] += nrMutInvalid

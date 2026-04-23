@@ -12,6 +12,7 @@ package complete
 
 import (
 	"advocate/results/explanation"
+	"advocate/utils/consts"
 	"advocate/utils/log"
 	"advocate/utils/types"
 	"fmt"
@@ -128,9 +129,9 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 	// write elements that were not executed
 	if len(elements) > 0 {
 		for file, lines := range elements {
-			fileName := strings.ReplaceAll(file, "/", "_")
+			fileName := strings.ReplaceAll(file, consts.Sep, "_")
 			fileName = strings.TrimPrefix(fileName, "_")
-			pathFile := fmt.Sprintf("%s/%s.md", pathOperationsFolder, fileName)
+			pathFile := fmt.Sprintf("%s%s%s.md", pathOperationsFolder, consts.Sep, fileName)
 			fileFile, err := os.Create(pathFile)
 			fileFile.WriteString(fmt.Sprintf("# %s\n", file))
 			fileFile.WriteString("## Not executed operations\n")

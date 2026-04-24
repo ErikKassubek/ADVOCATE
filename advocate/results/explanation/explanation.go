@@ -429,6 +429,7 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	_, err = file.WriteString(res)
 	return err

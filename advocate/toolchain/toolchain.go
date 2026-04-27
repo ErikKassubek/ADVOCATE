@@ -14,7 +14,6 @@ package toolchain
 import (
 	"advocate/analysis/baseA"
 	"advocate/utils/flags"
-	"advocate/utils/helper"
 	"advocate/utils/paths"
 	"fmt"
 )
@@ -57,7 +56,7 @@ func Run(mode, pathToTest string,
 			return 0, 0, fmt.Errorf("Name of the executable required")
 		}
 		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
-			flags.ProgName = helper.GetProgName(flags.ProgPath)
+			flags.ProgName = paths.GetProgName(flags.ProgPath)
 		}
 		return runWorkflowMain(runRecord, runAnalysis, runReplay,
 			fuzzing, fuzzingTrace, firstRun)
@@ -69,7 +68,7 @@ func Run(mode, pathToTest string,
 			return 0, 0, fmt.Errorf("Path to test folder required for mode main")
 		}
 		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
-			flags.ProgName = helper.GetProgName(flags.ProgPath)
+			flags.ProgName = paths.GetProgName(flags.ProgPath)
 		}
 		return runWorkflowUnit(paths.Prog, runRecord, runAnalysis, runReplay,
 			pathToTest, fuzzing, fuzzingTrace,

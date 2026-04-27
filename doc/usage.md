@@ -387,7 +387,7 @@ During the runtime, multiple status messages are shown in the terminal.
 To disable them and only show found bugs, you can set `-noInfo`.
 
 Sometimes the analysis or execution of a test may result in a panic in
-advocate. Since it would be annoying to terminate the total analysis of all tests,
+advocatego. Since it would be annoying to terminate the total analysis of all tests,
 only because the analysis of one of the tests crashed, a catch mechanism
 has been implemented, that will only terminate the analysis of the given tests
 and continue with the next, without crashing the whole program. To disable this,

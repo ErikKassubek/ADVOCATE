@@ -156,8 +156,8 @@ func UpdateSelect(se *trace.ElementSelect) {
 				switch opC {
 				case trace.ChannelSend:
 					scenarios.FoundSendOnClosedChannel(&c, false)
-				case trace.ChannelRecv:
-					scenarios.FoundReceiveOnClosedChannel(&c, false)
+					// case trace.ChannelRecv:
+					// scenarios.FoundReceiveOnClosedChannel(&c, false)
 				}
 			}
 		}
@@ -364,7 +364,7 @@ func Close(ch *trace.ElementChannel) {
 
 	baseA.CloseData[id] = ch
 
-	if baseA.AnalysisCasesMap[flags.SendOnClosed] || baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
+	if baseA.AnalysisCasesMap[flags.SendOnClosed] { // || baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
 		scenarios.CheckForCommunicationOnClosedChannel(ch)
 	}
 
@@ -414,9 +414,9 @@ func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock, buffere
 		Val:  id,
 	}
 
-	if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
-		scenarios.FoundReceiveOnClosedChannel(ch, true)
-	}
+	// if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] {
+	// 	scenarios.FoundReceiveOnClosedChannel(ch, true)
+	// }
 
 	if baseA.ModeIsFuzzing {
 		scenarios.CheckForSelectCaseWithPartnerChannel(ch, vc[routine], false, buffered)

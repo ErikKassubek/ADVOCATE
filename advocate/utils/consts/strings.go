@@ -11,8 +11,11 @@ const (
 	Leak       = "Leak"
 	Diagnostic = "Diagnostic"
 
-	Actual   = "Actual"
-	Possible = "Possible"
+	Actual    = "Actual"
+	Possible  = "Possible"
+	Confirmed = "Confirmed"
+
+	ConfirmedTheBug = "confirmed the bug"
 
 	PosSep = "#"
 

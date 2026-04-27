@@ -34,7 +34,7 @@ was not possible for the atomics, since they are partially implemented in
 go-assembly. We therefore needed to add a layer between the call of a
 atomic operation and its assembly execution.
 The main signatures for the functions are defined in [sync/atomic/doc.go](../../goPatch/src/sync/atomic/doc.go) and the implementations are in [sync/atomic/asm.s](../../goPatch/src/sync/atomic/asm.s) (in practice the function in the asm.s file only jump to the actual architecture specific implementations in runtime/atomic/, but for here this is not relevant). To add the recording and replay code, we rename all functions in
-the [doc](../../goPatch/src/sync/atomic/doc.go) and [asm](../../goPatch/src/sync/atomic/asm.s) files to [oldName]Advocate. The same is also done in the
+the [doc](../../goPatch/src/sync/atomic/doc.go) and [asm](../../goPatch/src/sync/atomic/asm.s) files to [oldName]advocatego. The same is also done in the
 [doc_32](../../goPatch/src/sync/atomic/doc_32.go) and [doc_64](../../goPatch/src/sync/atomic/doc_64.go) files. We add two new files [advocate_atomic.go](../../goPatch/src/sync/atomic/advocate_atomic.go) and [advocate_atomic_type.go](../../goPatch/src/sync/atomic/advocate_atomic_type.go). In them, we now implement a function for each of the
 atomic functions with the original function name. Those functions
 contain the code for the replay and the [recording](../../goPatch/src/runtime/advocate_trace_atomic.go) and then a call

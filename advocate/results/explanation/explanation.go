@@ -305,6 +305,10 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
 	replay map[bugKeys]string, progInfo map[bugKeys]string, fuzzing int, falsePositive bool) error {
 
+	if replay[replaySuc] == consts.ConfirmedTheBug {
+		description[name] = strings.ReplaceAll(description[name], consts.Possible, consts.Confirmed)
+	}
+
 	// write the bug type description
 	res := "# " + description[crit] + ": " + description[bugType] + " - " + description[name] + "\n\n"
 	res += description[explanation] + "\n\n"

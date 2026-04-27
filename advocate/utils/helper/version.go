@@ -13,6 +13,7 @@ package helper
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"bufio"
 	"fmt"
 	"os"
@@ -40,7 +41,7 @@ func CheckGoMod() string {
 	}
 
 	// Search for go.mod
-	err := filepath.WalkDir(GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(paths.GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -125,5 +126,10 @@ func CheckGoMod() string {
 
 func RunGoModTidy() {
 	log.Info("Run go mod tidy")
+
+	err := os.Setenv("GOROOT", paths.GoPatch)
+	if err == nil {
+		defer os.Unsetenv("GOROOT")
+	}
 	RunCommand(nil, nil, "go", "mod", "tidy")
 }

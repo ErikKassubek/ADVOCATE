@@ -110,7 +110,7 @@ func runWorkflowMain(
 			// run the program
 			log.Info("Execute Program")
 			timer.Start(timer.Run)
-			execPath := helper.MakePathLocal(flags.ExecName)
+			execPath := paths.MakePathLocal(flags.ExecName)
 			if err := helper.RunCommand(origStdout, origStderr, execPath); err != nil {
 				headerRemoverMain(paths.Prog)
 			}
@@ -133,7 +133,7 @@ func runWorkflowMain(
 		// run the recording
 		log.Info("Run program for recording")
 		timer.Start(timer.Recording)
-		execPath := helper.MakePathLocal(flags.ExecName)
+		execPath := paths.MakePathLocal(flags.ExecName)
 		if err := helper.RunCommand(origStdout, origStderr, execPath); err != nil {
 			// log.Error("Error in Run Recording: ", err.Error())
 			headerRemoverMain(paths.Prog)
@@ -191,7 +191,7 @@ func runWorkflowMain(
 
 			// run the program
 			log.Info("Run program for replay")
-			execPath := helper.MakePathLocal(flags.ExecName)
+			execPath := paths.MakePathLocal(flags.ExecName)
 			helper.RunCommand(origStdout, origStderr, execPath)
 
 			fmt.Printf("Remove replay header from %s\n", paths.Prog)

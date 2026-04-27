@@ -144,11 +144,11 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 		lines = append(lines, line)
 
 		if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import \"advocate\"")
+			lines = append(lines, "import \"advocatego\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t\"advocate\"")
+			lines = append(lines, "\t\"advocatego\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
@@ -165,24 +165,24 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 				}
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s", %d)
-  defer advocate.FinishFuzzing()
+  advocatego.InitFuzzing("%s", %d)
+  defer advocatego.FinishFuzzing()
   // ======= Preamble End =======`, replayPath, flags.TimeoutReplay))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", %d, %s)
-  defer advocate.FinishReplay()
+  advocatego.InitReplay("%s", %d, %s)
+  defer advocatego.FinishReplay()
   // ======= Preamble End =======`, replayPath, flags.TimeoutReplay, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s", %d)
-  defer advocate.FinishFuzzing()
+  advocatego.InitFuzzing("%s", %d)
+  defer advocatego.FinishFuzzing()
   // ======= Preamble End =======`, replayInfo, flags.TimeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitTracing(%d)
-  defer advocate.FinishTracing()
+  advocatego.InitTracing(%d)
+  defer advocatego.FinishTracing()
   // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)
@@ -239,7 +239,7 @@ func removeHeaderUnit(fileName string) error {
 			continue
 		}
 
-		if strings.Contains(line, "import \"advocate\"") {
+		if strings.Contains(line, "import \"advocatego\"") {
 			continue
 		}
 
@@ -247,7 +247,7 @@ func removeHeaderUnit(fileName string) error {
 			inImports = true
 		}
 
-		if inImports && strings.Contains(line, "\"advocate\"") {
+		if inImports && strings.Contains(line, "\"advocatego\"") {
 			continue
 		}
 

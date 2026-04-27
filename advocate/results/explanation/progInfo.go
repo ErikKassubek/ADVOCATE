@@ -52,7 +52,7 @@ func readProgInfo() (map[bugKeys]string, error) {
 		}
 	}
 
-	res[file] = strings.TrimSpace(res[file])
+	res[file] = paths.ToUnix(strings.TrimSpace(res[file]))
 	res[name] = strings.TrimSpace(res[name])
 	res[importLine] = strings.TrimSpace(res[importLine])
 	res[headerLine] = strings.TrimSpace(res[headerLine])

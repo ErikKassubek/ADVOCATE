@@ -11,23 +11,49 @@
 package blocking
 
 import (
-	"advocate/utils/log"
-	"go/ast"
-	"go/token"
+	"fmt"
+
+	"golang.org/x/tools/go/packages"
 )
 
-func blocking() {
-	dir := ""                     // TODO: determine program directory
-	vars := make([]*ast.Ident, 0) // TODO: determine vars
+// init to static blocking analysis
+func RunStaticBlockingAnalysis() error {
+	dir := "" // TODO: determine program directory
+	// vars := make([]*ast.Ident, 0) // TODO: determine vars
 
-	fset := token.NewFileSet()
-
-	pkgs, err := loadPackagesAndFset(dir)
+	data, err := buildStaticData(dir)
 	if err != nil {
-		log.Error(err.Error())
+		return err
 	}
 
-	npm := buildNodePackageMap(pkgs)
+	data.determineOperations() // information on which function contains which variables from vars, TODO: incomplete
 
-	_ = parseFiles(fset, npm, dir, vars) // information on which function contains which variables from vars
+	return nil
+}
+
+// Determine the packages and type info
+//
+// Parameter:
+//   - dir: string: root directory of project
+func (self *staticData) loadPackages() error {
+	cfg := &packages.Config{
+		Mode: packages.NeedName |
+			packages.NeedFiles |
+			packages.NeedCompiledGoFiles |
+			packages.NeedSyntax |
+			packages.NeedTypes |
+			packages.NeedTypesInfo,
+	}
+
+	pkgs, err := packages.Load(cfg, self.dir)
+	if err != nil {
+		return fmt.Errorf("failed to load packages: %w", err)
+	}
+
+	if packages.PrintErrors(pkgs) > 0 {
+		return fmt.Errorf("packages contain errors")
+	}
+
+	self.pkgs = pkgs
+	return nil
 }

@@ -57,6 +57,9 @@ const (
 
 	OperationNewChan
 
+	OperationFunctionCall
+	OperationFunctionReturn
+
 	OperationReplayEnd
 )
 

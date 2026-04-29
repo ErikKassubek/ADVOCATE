@@ -27,8 +27,8 @@ func DetectBlockingGC() int {
 		return 0
 	}
 
-	req := AdvocateRequest("Check blocking bug")
-	println("RES:", req)
+	// req := AdvocateRequest("Check blocking bug")
+	// println("RES:", req)
 
 	res := runtime.AdvocateDetectBlocking()
 	containsChan := false

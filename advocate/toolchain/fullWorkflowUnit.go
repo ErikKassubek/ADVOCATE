@@ -189,7 +189,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				skippedTests++
 			}
 
-			if anaPassed {
+			if runAnalysis && anaPassed {
 				numberResults += generateBugReports(movedTraces, fuzzing)
 			}
 
@@ -522,9 +522,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = helper.RunCommand(origStdout, origStderr, true, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, false, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = helper.RunCommand(origStdout, origStderr, true, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, false, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -567,15 +567,11 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	helper.RunCommand(osOut, osErr, true, paths.Go, "version")
+	helper.RunCommand(osOut, osErr, false, paths.Go, "version")
 
-<<<<<<< HEAD
-	pkgPath := helper.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, true, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-=======
 	pkgPath := paths.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
->>>>>>> main
+	err := helper.RunCommand(osOut, osErr, false, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -681,8 +677,8 @@ func unitTestReplay(dir, pkg, file,
 		os.Setenv("GOROOT", paths.GoPatch)
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
-		pkgPath := helper.MakePathLocal(pkg)
-		helper.RunCommand(osOut, osErr, true, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		pkgPath := paths.MakePathLocal(pkg)
+		helper.RunCommand(osOut, osErr, false, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

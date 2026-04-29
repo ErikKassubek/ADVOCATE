@@ -27,6 +27,7 @@ import (
 // Parameter:
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
 //   - osErr *os.File: file/output to write to not being what os.Stdout points to
+//   - openCom bool: open communication to runtime, TODO: not working yet
 //   - name string: main command
 //   - args ...string: command line parameters
 //

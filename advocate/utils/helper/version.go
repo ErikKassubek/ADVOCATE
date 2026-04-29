@@ -131,5 +131,5 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, "go", "mod", "tidy")
+	RunCommand(nil, nil, false, "go", "mod", "tidy")
 }

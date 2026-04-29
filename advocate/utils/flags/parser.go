@@ -19,9 +19,9 @@ type AnalysisCases string
 
 // Possible type ob bug/leak/info the HB info should look for
 const (
-	All              AnalysisCases = "all"
-	SendOnClosed     AnalysisCases = "sendOnClosed"
-	ReceiveOnClosed  AnalysisCases = "receiveOnClosed"
+	All          AnalysisCases = "all"
+	SendOnClosed AnalysisCases = "sendOnClosed"
+	// ReceiveOnClosed  AnalysisCases = "receiveOnClosed"
 	DoneBeforeAdd    AnalysisCases = "doneBeforeAdd"
 	CloseOnClosed    AnalysisCases = "closeOnClosed"
 	ConcurrentRecv   AnalysisCases = "concurrentRecv"
@@ -38,9 +38,9 @@ const (
 //   - error: An error if the cases could not be parsed
 func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 	analysisCases := map[AnalysisCases]bool{
-		All:              false, // all cases enabled
-		SendOnClosed:     false,
-		ReceiveOnClosed:  false,
+		All:          false, // all cases enabled
+		SendOnClosed: false,
+		// ReceiveOnClosed:  false,
 		DoneBeforeAdd:    false,
 		CloseOnClosed:    false,
 		ConcurrentRecv:   false,
@@ -61,7 +61,7 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 
 		// not in thesis
 		analysisCases[ConcurrentRecv] = false
-		analysisCases[ReceiveOnClosed] = false
+		// analysisCases[ReceiveOnClosed] = false
 
 		return analysisCases, nil
 	}
@@ -71,7 +71,7 @@ func ParseAnalysisCases() (map[AnalysisCases]bool, error) {
 		case 's':
 			analysisCases[SendOnClosed] = true
 		case 'r':
-			analysisCases[ReceiveOnClosed] = true
+			// analysisCases[ReceiveOnClosed] = true
 		case 'w':
 			analysisCases[DoneBeforeAdd] = true
 		case 'n':

@@ -105,6 +105,7 @@ func getTraceInfoFromFile(filePath string) error {
 		log.Error("Error opening file: " + filePath)
 		return err
 	}
+	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 
@@ -124,6 +125,8 @@ func getTraceInfoFromFile(filePath string) error {
 			continue
 		}
 
+		var err error
+
 		switch lineSplit[0] {
 		case "Runtime":
 			rt, err := strconv.Atoi(lineSplit[1])
@@ -138,18 +141,23 @@ func getTraceInfoFromFile(filePath string) error {
 		case "ExitPosition":
 			exitPos = lineSplit[1]
 		case "ReplayTimeout":
-			timeoutOldest, _ = strconv.Atoi(lineSplit[1])
+			timeoutOldest, err = strconv.Atoi(lineSplit[1])
 		case "ReplayDisabled":
-			timeoutDisabled, _ = strconv.Atoi(lineSplit[1])
+			timeoutDisabled, err = strconv.Atoi(lineSplit[1])
 		case "ReplayAck":
-			timeoutAck, _ = strconv.Atoi(lineSplit[1])
+			timeoutAck, err = strconv.Atoi(lineSplit[1])
 		case "ActiveReached":
-			activeReplayReached, _ := strconv.Atoi(lineSplit[1])
+			var activeReplayReached int
+			activeReplayReached, err = strconv.Atoi(lineSplit[1])
 			if activeReplayReached > 0 {
 				activeReleased = 1
 			}
 		case "AllActiveReleased":
 			allActiveReleased, _ = strconv.Atoi(lineSplit[1])
+		}
+
+		if err != nil {
+			log.Error(err.Error())
 		}
 	}
 

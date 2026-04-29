@@ -22,8 +22,8 @@ import (
 	"advocate/toolchain"
 	"advocate/utils/control"
 	"advocate/utils/flags"
-	"advocate/utils/helper"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/timer"
 	"advocate/utils/types"
 	"fmt"
@@ -188,7 +188,7 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 		log.Info("Fuzzing Run: ", baseF.NumberFuzzingRuns+1)
 
 		fuzzingPath := ""
-		progPathDir := helper.GetDirectory(flags.ProgPath)
+		progPathDir := paths.GetDirectory(flags.ProgPath)
 		var order baseF.Mutation
 		if baseF.NumberFuzzingRuns != 0 {
 			order = popMutation()

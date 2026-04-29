@@ -13,10 +13,12 @@ package results
 import (
 	"advocate/results/benign"
 	"advocate/trace"
+	"advocate/utils/consts"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/types"
 	"fmt"
 	"os"
@@ -137,7 +139,7 @@ func (this TraceElementResult) getLine() int {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringMachineShort() string {
-	return fmt.Sprintf("T:%d:%s:%s:%d", this.ObjID, this.ObjType, this.File, this.Line)
+	return fmt.Sprintf("T%s%d%s%s%s%s%s%d", consts.PosSep, this.ObjID, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 
 // stringMachine returns a machine readable string representation
@@ -146,7 +148,8 @@ func (this TraceElementResult) stringMachineShort() string {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringMachine() string {
-	return fmt.Sprintf("T:%d:%d:%d:%s:%s:%d", this.RoutineID, this.ObjID, this.TPre, this.ObjType, this.File, this.Line)
+	return fmt.Sprintf("T%s%d%s%d%s%d%s%s%s%s%s%d", consts.PosSep, this.RoutineID, consts.PosSep, this.ObjID,
+		consts.PosSep, this.TPre, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 
 // stringReadable returns a human readable string representation
@@ -308,7 +311,7 @@ func filterInvalidResults(resType helper.ResultType, arg1 []ResultElem) bool {
 		return true
 	}
 
-	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), "/src/testing/testing.go") {
+	if resType == helper.ALeak && len(arg1) == 1 && strings.HasSuffix(arg1[0].getFile(), paths.Join(true, false, "src", "testing", "testing.go")) {
 		return true
 	}
 
@@ -414,13 +417,13 @@ func CreateResultFiles(noPrint bool) (int, error) {
 		}
 	}
 
-	file, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
+	fileR, err := os.OpenFile(outputReadableFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return getNumberRes(), err
 	}
-	defer file.Close()
+	defer fileR.Close()
 
-	if _, err := file.WriteString(resReadable); err != nil {
+	if _, err := fileR.WriteString(resReadable); err != nil {
 		return getNumberRes(), err
 	}
 
@@ -431,13 +434,14 @@ func CreateResultFiles(noPrint bool) (int, error) {
 		}
 	}
 
-	file, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
+	var fileM *os.File
+	fileM, err = os.OpenFile(outputMachineFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return getNumberRes(), err
 	}
-	defer file.Close()
+	defer fileM.Close()
 
-	if _, err := file.WriteString(resMachine); err != nil {
+	if _, err := fileM.WriteString(resMachine); err != nil {
 		return getNumberRes(), err
 	}
 

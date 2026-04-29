@@ -518,7 +518,7 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	os.Unsetenv("GOROOT")
 
 	log.Info("Run T0")
-	packagePath := helper.MakePathLocal(pkg)
+	packagePath := paths.MakePathLocal(pkg)
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
@@ -569,8 +569,13 @@ func unitTestRecord(pkg, file, testName string,
 
 	helper.RunCommand(osOut, osErr, true, paths.Go, "version")
 
+<<<<<<< HEAD
 	pkgPath := helper.MakePathLocal(pkg)
 	err := helper.RunCommand(osOut, osErr, true, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+=======
+	pkgPath := paths.MakePathLocal(pkg)
+	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+>>>>>>> main
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {

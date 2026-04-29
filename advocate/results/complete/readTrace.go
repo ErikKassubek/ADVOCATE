@@ -11,6 +11,7 @@
 package complete
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"advocate/utils/types"
@@ -92,8 +93,10 @@ func getTraceElements(resultFolderPath string) (map[string][]int, error) {
 					continue
 				}
 
-				pos := strings.Split(field[len(field)-1], ":")
+				posStr := field[len(field)-1]
+				pos := strings.Split(posStr, consts.PosSep)
 				if len(pos) != 2 {
+					log.Error("Invalid pos: ", posStr)
 					continue
 				}
 

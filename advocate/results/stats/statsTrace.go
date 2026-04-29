@@ -114,6 +114,7 @@ func parseTraceFile(tracePath string, stats *map[statsType]int, known *map[stats
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	// routine, err := getRoutineFromFileName(filepath.Base(tracePath))
 	// if err != nil {

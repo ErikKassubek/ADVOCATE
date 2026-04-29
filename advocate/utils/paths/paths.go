@@ -11,12 +11,16 @@
 package paths
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/flags"
-	"advocate/utils/helper"
+	"advocate/utils/log"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 )
 
 // names
@@ -76,10 +80,14 @@ func BuildPaths(main bool) {
 }
 
 func pathsAdvocate() {
-	execPath, _ := os.Executable()
-	Advocate = helper.CleanPathHome(filepath.Dir(filepath.Dir(execPath)))
+	execPath, err := os.Executable()
+	if err != nil {
+		log.Error(err.Error())
+	}
+
+	Advocate = CleanPathHome(filepath.Dir(filepath.Dir(execPath)))
 	GoPatch = filepath.Join(Advocate, "goPatch")
-	Go = filepath.Join(Advocate, "goPatch/bin/go")
+	Go = filepath.Join(Advocate, "goPatch", "bin", "go")
 
 	if runtime.GOOS == "windows" {
 		Go += ".exe"
@@ -87,8 +95,8 @@ func pathsAdvocate() {
 }
 
 func pathsProg() {
-	Prog = helper.CleanPathHome(flags.ProgPath)
-	ProgDir = helper.GetDirectory(Prog) // only for main
+	Prog = CleanPathHome(flags.ProgPath)
+	ProgDir = GetDirectory(Prog) // only for main
 	Output = filepath.Join(ProgDir, NameOutput)
 	FuzzingTraces = filepath.Join(ProgDir, NameFuzzingTraces)
 }
@@ -119,4 +127,100 @@ func SetCurrentResult(fileNumber, testNumber int, fileName, testName string) str
 	ResultTime = filepath.Join(CurrentResult, NameStatsTime)
 	ResultTraces = filepath.Join(CurrentResult, NameTraces)
 	return CurrentResult
+}
+
+// GetDirectory returns the folder a file is in from the path
+//
+// Parameter:
+//   - path string: the path to the file
+//
+// Returns:
+//   - string: if path points to file, the folder it is in, if it points to a folder, the path
+func GetDirectory(path string) string {
+	info, err := os.Stat(path)
+	if err != nil {
+		return path
+	}
+
+	if info.IsDir() {
+		// Already a directory
+		return filepath.Clean(path)
+	}
+
+	// It's a file, return its directory
+	return filepath.Dir(path)
+}
+
+// GetMainPath takes a path. If the path points to a file, it will return the path.
+// If not it will check if the folder it points to contains a main.go file.
+// If it does, it will return the path to the file
+//
+// Parameter:
+//   - path string: path
+//
+// Returns:
+//   - string: path to the main file
+//   - error
+func GetMainPath(path string) (string, error) {
+	path = CleanPathHome(path)
+	info, err := os.Stat(path)
+	if err != nil {
+		return "", err
+	}
+
+	if info.IsDir() {
+		mainPath := filepath.Join(path, "main.go")
+
+		if _, err := os.Stat(mainPath); err != nil {
+			if os.IsNotExist(err) {
+				return "", fmt.Errorf("main.go not found in directory %s", path)
+			}
+			return "", err
+		}
+		return mainPath, nil
+	}
+
+	// It's a file, return the path as is
+	return filepath.Clean(path), nil
+}
+
+// CheckPath checks if the provided path to the program that should
+// be run/analyzed exists. If not, it panics.
+//
+// Parameter:
+//   - path string: path to check
+//
+// Returns:
+//   - string: the cleaned path
+//   - error: error if path not exists, nil otherwise
+func CheckPath(path string) (string, error) {
+	if path == "" {
+		return "", fmt.Errorf("Path cannot be empty")
+	}
+
+	progPath := CleanPathHome(path)
+
+	_, err := os.Stat(progPath)
+	if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return progPath, fmt.Errorf("Path %s does not exists", progPath)
+		}
+		return progPath, err
+	}
+
+	return progPath, nil
+}
+
+// GetProgName returns a program name from the path
+//
+// Parameter:
+//   - path string: path to the program
+//
+// Returns:
+//   - string: name for the program
+func GetProgName(path string) string {
+	path = strings.ReplaceAll(path, "~"+consts.Sep, "")
+	path = strings.ReplaceAll(path, "."+consts.Sep, "")
+	path = strings.ReplaceAll(path, ".", "-")
+	return strings.ReplaceAll(path, consts.Sep, "-")
 }

@@ -53,7 +53,7 @@ is more than one operation in it, which helps GoPie to limit the length of an $S
 Not all run executions are again selected for mutations. The selection mainly depends on whether the run was successful. Meaning, if the mutation replay was interrupted by a timeout on one of the waiting operations being triggered or if the runtime of a mutation exceeds a predefined values (e.g. 7 min per test).
 
 ## Order Enforcement
-The order enforcement is similar to the enforcement used for ADVOCATE.
+The order enforcement is similar to the enforcement used for advocatego.
 An operation will only execute if it is the next element in the schedule. Otherwise it will wait.
 
 <center><img src="../../../img/relatedWorkGoPieOrder.png" alt="Order enforcement" width="400px" height=auto></center>

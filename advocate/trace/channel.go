@@ -17,6 +17,7 @@ import (
 	"strconv"
 
 	"advocate/analysis/hb/clock"
+	"advocate/utils/consts"
 )
 
 // ElementChannel is a trace element for a channel
@@ -225,7 +226,7 @@ func (this *ElementChannel) GetTSort() int {
 // Returns:
 //   - string: The position of the element
 func (this *ElementChannel) GetPos() string {
-	return fmt.Sprintf("%s:%d", this.file, this.line)
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }
 
 // GetReplayID returns the replay id of the element

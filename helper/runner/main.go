@@ -12,38 +12,38 @@ import (
 	"time"
 )
 
-const advocatePath = "/home/erik/Uni/Advocate/advocate/"
-const srcPath = "/home/erik/Uni/Programs/"
+const advocatePath = "/home/advocate/Advocate/Advocate/advocate/"
+const srcPath = "/home/advocate/Advocate/Experiments/Progs/Working/"
 
 var progs = []string{
+	// "argo-cd",
 	"bleve",
 	"bosun",
 	"caddy",
 	"dns",
-	"etcd",
-	"fabiolb",
-	"flannel",
-	"frp",
-	"gin",
+	// "etcd",
+	// "fabiolb",
+	// "flannel",
+	// "frp",
+	// "gin",
 	"go-ethereum",
-	"gofiber",
+	// "gofiber",
 	"gorums",
-	"gravitational",
+	// "gravitational",
 	"grpc",
-	"argo-cd",
 	// "hugo",
-	// "kubernetes",
+	"kubernetes",
 	// "moby",
 	"nsq",
-	"octant",
+	// "octant",
 	"ollama",
-	"pholcus",
-	"pipeline",
-	"ponzu-cms",
+	// "pholcus",
+	// "pipeline",
+	// "ponzu-cms",
 	"prometheus",
-	"syncthing",
+	// "syncthing",
 	"terraform",
-	"traefik",
+	// "traefik",
 	"zinx",
 }
 
@@ -57,9 +57,9 @@ var modes = []string{
 	// "GoCR",
 }
 
-var settings = "-timeoutRec 30 -timeoutRep 30 -maxNumberElements 100000 -stats -noInfo -timeoutFuz 300 -keepTrace -noRewrite -scen lcm"
+var settings = "-timeoutRec 30 -timeoutRep 30 -stats -noInfo -maxNumberElements 1000000"
 
-var maxWorker = 4
+var maxWorker = 10
 
 var fileMutex sync.Mutex
 
@@ -149,11 +149,9 @@ func worker(path, name string, wg *sync.WaitGroup, sem chan struct{}, last bool)
 
 	log(fmt.Sprintf("START : %s", name))
 
-	settings += " -cont"
+	cmdStr := fmt.Sprintf("analysis -path %s %s", path, settings)
 
-	cmdStr := fmt.Sprintf("./advocate fuzzing -path %s %s", path, settings)
-
-	cmd := exec.Command("bash", "-c", cmdStr)
+	cmd := exec.Command("./advocate", strings.Split(cmdStr, " ")...)
 
 	// Set the working directory
 	cmd.Dir = advocatePath

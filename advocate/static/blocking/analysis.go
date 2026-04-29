@@ -16,14 +16,14 @@ import (
 )
 
 // parse the files the determine the type information
-func (self *staticData) determineOperations() {
-
+func (self *staticData) collectOperations() {
+	// per function
 	for _, file := range self.ast {
-		self.getOpsInFile(file)
+		self.detOpsInFile(file)
 	}
 }
 
-func (self *staticData) getOpsInFile(file *ast.File) {
+func (self *staticData) detOpsInFile(file *ast.File) {
 	for _, decl := range file.Decls {
 		fdecl, ok := decl.(*ast.FuncDecl)
 		if !ok || fdecl.Body == nil {
@@ -36,16 +36,18 @@ func (self *staticData) getOpsInFile(file *ast.File) {
 func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 	ast.Inspect(fdecl, func(n ast.Node) bool {
 		switch x := n.(type) {
-		// channel send
-		case *ast.SendStmt:
+		case *ast.GoStmt: // new routine
+			self.recordGoStatement(fdecl, x)
+		case *ast.SendStmt: // channel send
 			self.recordOperation(fdecl, &x.Chan, chanSend)
-		case *ast.UnaryExpr:
-			// channel recv
+		case *ast.UnaryExpr: // channel recv
 			if x.Op == token.ARROW {
 				self.recordOperation(fdecl, &x.X, chanRecv)
 			}
-
 		case *ast.CallExpr:
+			// all functions
+			self.recordFunctionCall(fdecl, x.Fun)
+
 			// channel close
 			if ident, ok := x.Fun.(*ast.Ident); ok && ident.Name == "close" {
 				self.recordOperation(fdecl, &(x.Args[0]), chanClose)
@@ -65,9 +67,27 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 					case "Unlock":
 						self.recordOperation(fdecl, &sel.X, mutexUnlock)
 					}
+				} else if self.isCondVar(sel.Sel) {
+					switch sel.Sel.Name {
+					case "Wait":
+						self.recordOperation(fdecl, &sel.X, condWait)
+					case "Signal":
+						self.recordOperation(fdecl, &sel.X, condSignal)
+					case "Broadcast":
+						self.recordOperation(fdecl, &sel.X, condBroadcast)
+					}
+				} else if self.isWaitGroup(sel.Sel) {
+					switch sel.Sel.Name {
+					case "Wait":
+						self.recordOperation(fdecl, &sel.X, wgWait)
+					case "Add":
+						self.recordOperation(fdecl, &sel.X, wgAdd)
+					case "Done":
+						self.recordOperation(fdecl, &sel.X, wgDone)
+					case "Go":
+						self.recordOperation(fdecl, &sel.X, wgGo)
+					}
 				}
-
-				// TODO: continue
 			}
 		}
 
@@ -75,21 +95,30 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 	})
 }
 
-func (self *staticData) recordOperation(fdecl *ast.FuncDecl, variable *ast.Expr, f funcs) {
+func (self *staticData) recordOperation(fdecl *ast.FuncDecl, variable *ast.Expr, f funcName) {
 	if _, ok := self.opsPerFunk[fdecl]; !ok {
-		self.opsPerFunk[fdecl] = make(map[*ast.Expr]map[funcs]struct{})
+		self.opsPerFunk[fdecl] = make(map[*ast.Expr]map[funcName]struct{})
 	}
 
 	if _, ok := self.opsPerFunk[fdecl][variable]; !ok {
-		self.opsPerFunk[fdecl][variable] = make(map[funcs]struct{})
+		self.opsPerFunk[fdecl][variable] = make(map[funcName]struct{})
 	}
 
 	self.opsPerFunk[fdecl][variable][f] = struct{}{}
 }
 
-func (self *staticData) isMutex(id *ast.Ident) bool {
-	named, ok := self.getNamed(id)
+func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, f ast.Expr) {
+	if _, ok := self.funcsPerFunc[fdecl]; !ok {
+		self.funcsPerFunc[fdecl] = make([]ast.Expr, 0)
+	}
 
-	return ok && named.Obj().Pkg().Path() == "sync" &&
-		(named.Obj().Name() == "Mutex" || named.Obj().Name() == "RWMutex")
+	self.funcsPerFunc[fdecl] = append(self.funcsPerFunc[fdecl], f)
+}
+
+func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, f *ast.GoStmt) {
+	if _, ok := self.funcsPerFunc[fdecl]; !ok {
+		self.goStatementPerFunc[fdecl] = make([]*ast.GoStmt, 0)
+	}
+
+	self.goStatementPerFunc[fdecl] = append(self.goStatementPerFunc[fdecl], f)
 }

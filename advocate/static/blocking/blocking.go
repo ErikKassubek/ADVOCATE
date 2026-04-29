@@ -17,8 +17,7 @@ import (
 )
 
 // init to static blocking analysis
-func RunStaticBlockingAnalysis() error {
-	dir := "" // TODO: determine program directory
+func RunStaticBlockingAnalysis(dir string) error {
 	// vars := make([]*ast.Ident, 0) // TODO: determine vars
 
 	data, err := buildStaticData(dir)
@@ -26,7 +25,7 @@ func RunStaticBlockingAnalysis() error {
 		return err
 	}
 
-	data.determineOperations() // information on which function contains which variables from vars, TODO: incomplete
+	data.collectOperations()
 
 	return nil
 }

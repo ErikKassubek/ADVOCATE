@@ -37,11 +37,23 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	ssa     *ssa.Program // static single assignment (intermediate program representation where each variable is assigned exactly once)
 	ssaPkgs []*ssa.Package
 
+	// TODO: do we even need this?. Is there any more information in callGraph than in funcPerFunc?
 	callGraph *callgraph.Graph
 
-	// TODO: determine
-	opsPerFunk map[*ast.FuncDecl]map[*ast.Expr]map[funcs]struct{} // operations per function: func -> vartiable id (TODO: define) -> funcs
-	opsPerRout map[int]map[*ast.Expr]map[funcs]struct{}           // operations per routine routine id (TODO: define or use ast value) -> vartiable id (TODO: define) -> funcs
+	// operations per function: func -> vartiable id (TODO: change to point to variable and not expression) -> funcs
+	opsPerFunk map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}
+
+	// functions called in each function,
+	// ast.Expr.(type) -> *ast.Ident: direct function (foo())
+	// ast.Expr.(type) -> *ast.SelectorExpr: methodCall (obj.Method())
+	// ast.Expr.(type) -> *ast.FuncLit: function literal (func() {...}())
+	funcsPerFunc map[*ast.FuncDecl][]ast.Expr
+
+	// routine spawns from functions
+	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
+	// *ast.GoStmt.Call.(type) -> *ast.SelectorExpr: methodCall (go obj.Method())
+	// *ast.GoStmt.Call.(type) -> *ast.FuncLit: function literal (go func() { ... }())
+	goStatementPerFunc map[*ast.FuncDecl][]*ast.GoStmt
 }
 
 func buildStaticData(dir string) (*staticData, error) {

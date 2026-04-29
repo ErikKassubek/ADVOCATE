@@ -10,7 +10,9 @@
 
 package blocking
 
-type funcs int
+import "go/ast"
+
+type funcName int
 
 const (
 	unknown = iota
@@ -26,28 +28,57 @@ const (
 	mutexUnlock
 	mutexRUnlock
 
+	condWait
+	condBroadcast
+	condSignal
+
+	wgWait
+	wgAdd
+	wgDone
+	wgGo
+
 	// TODO: list all
 )
 
-// func (self *staticData) isCompatible(a, b *ast.Ident) bool {
-// 	if !self.sameVar(a, b) {
-// 		return false
-// 	}
+func isCompatibleFunc(a, b funcName) bool {
+	// a should be less then
+	if int(a) > int(b) {
+		a, b = b, a
+	}
 
-// 	funcA, err := getFuncsFromIdent(a)
-// 	if err != nil {
-// 		return false
-// 	}
+	switch a {
+	case chanSend:
+		return b == chanRecv
+	case chanRecv:
+		return b == chanClose
+	case mutexLock, mutexTryLock:
+		return b == mutexUnlock
+	case mutexRLock, mutexTryRLock:
+		return b == mutexRUnlock
+	case condWait:
+		return b == condBroadcast || b == condSignal
+	case wgWait:
+		return b == wgDone
+	}
 
-// 	funcB, err := getFuncsFromIdent(b)
-// 	if err != nil {
-// 		return false
-// 	}
-// 	return isCompatibleFunc(funcA, funcB)
-// }
-
-func isCompatibleFunc(a, b funcs) bool {
-
-	// TODO: implement
 	return false
+}
+
+func (self *staticData) isMutex(id *ast.Ident) bool {
+	named, ok := self.getNamed(id)
+
+	return ok && named.Obj().Pkg().Path() == "sync" &&
+		(named.Obj().Name() == "Mutex" || named.Obj().Name() == "RWMutex")
+}
+
+func (self *staticData) isCondVar(id *ast.Ident) bool {
+	named, ok := self.getNamed(id)
+
+	return ok && named.Obj().Pkg().Path() == "sync" && named.Obj().Name() == "Cond"
+}
+
+func (self *staticData) isWaitGroup(id *ast.Ident) bool {
+	named, ok := self.getNamed(id)
+
+	return ok && named.Obj().Pkg().Path() == "sync" && named.Obj().Name() == "WaitGroup"
 }

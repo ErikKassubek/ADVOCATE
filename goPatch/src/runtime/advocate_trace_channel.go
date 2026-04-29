@@ -152,7 +152,7 @@ func AdvocateChanPost(index int, c *hchan, op Operation) {
 			}
 			unlock(&unbufferedChannelComRecvMutex)
 			set = true
-		} else if elem.op == OperationChannelSend {
+		} else if elem.op == OperationChannelRecv {
 			lock(&unbufferedChannelComSendMutex)
 			if tpost, ok := unbufferedChannelComSend[elem.id]; ok {
 				elem.tPost = tpost + 1

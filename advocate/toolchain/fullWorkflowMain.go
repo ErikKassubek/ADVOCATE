@@ -151,7 +151,7 @@ func runWorkflowMain(
 		analyzerOutput := filepath.Join(paths.ProgDir, "advocateTrace")
 
 		err = runAnalyzer(analyzerOutput, paths.NameResultReadable, paths.NameResultMachine,
-			"rewrittenTrace", fuzzing)
+			"rewrittenTrace", fuzzing, "", "main")
 
 		if err != nil {
 			return 0, 0, err

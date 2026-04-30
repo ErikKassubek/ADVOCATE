@@ -103,7 +103,8 @@ func readFlag() {
 		}
 	}
 
-	if *sectionFlag == 1 {
+	switch *sectionFlag {
+	case 1:
 		progs = []string{
 			// "bleve",
 			// "bosun",
@@ -120,7 +121,7 @@ func readFlag() {
 			// "argo-cd",
 			"terraform",
 		}
-	} else if *sectionFlag == 2 {
+	case 2:
 		progs = []string{
 			// "hugo",
 			// "kubernetes",

@@ -144,3 +144,7 @@ func ToLocal(path string) string {
 	path = strings.ReplaceAll(path, "\\", consts.Sep)
 	return path
 }
+
+func ToUnix(path string) string {
+	return strings.ReplaceAll(path, "\\", "/")
+}

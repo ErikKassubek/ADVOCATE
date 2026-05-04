@@ -20,17 +20,17 @@ import (
 // Read the program info from the output.log file
 //
 // Returns:
-//   - map[string]string: information about the analyzed test, e.g. file/test name and header position info
+//   - map[bugKeys]string: information about the analyzed test, e.g. file/test name and header position info
 //   - error
-func readProgInfo() (map[string]string, error) {
-	res := make(map[string]string)
+func readProgInfo() (map[bugKeys]string, error) {
+	res := make(map[bugKeys]string)
 
-	file, err := os.ReadFile(paths.ResultOutput)
+	f, err := os.ReadFile(paths.ResultOutput)
 	if err != nil {
 		return res, err
 	}
 
-	lines := strings.Split(string(file), "\n")
+	lines := strings.Split(string(f), "\n")
 
 	if len(lines) < 3 {
 		return res, errors.New("output file is too short")
@@ -42,20 +42,20 @@ func readProgInfo() (map[string]string, error) {
 		}
 
 		if strings.Contains(lines[i], "FileName: ") {
-			res["file"] = strings.TrimPrefix(lines[i], "FileName: ")
+			res[file] = strings.TrimPrefix(lines[i], "FileName: ")
 		} else if strings.Contains(lines[i], "TestName: ") {
-			res["name"] = strings.TrimPrefix(lines[i], "TestName: ")
+			res[name] = strings.TrimPrefix(lines[i], "TestName: ")
 		} else if strings.Contains(lines[i], "Import added at line: ") {
-			res["importLine"] = strings.TrimPrefix(lines[i], "Import added at line: ")
+			res[importLine] = strings.TrimPrefix(lines[i], "Import added at line: ")
 		} else if strings.Contains(lines[i], "Header added at line: ") {
-			res["headerLine"] = strings.TrimPrefix(lines[i], "Header added at line: ")
+			res[headerLine] = strings.TrimPrefix(lines[i], "Header added at line: ")
 		}
 	}
 
-	res["file"] = strings.TrimSpace(res["file"])
-	res["name"] = strings.TrimSpace(res["name"])
-	res["importLine"] = strings.TrimSpace(res["importLine"])
-	res["headerLine"] = strings.TrimSpace(res["headerLine"])
+	res[file] = strings.TrimSpace(res[file])
+	res[name] = strings.TrimSpace(res[name])
+	res[importLine] = strings.TrimSpace(res[importLine])
+	res[headerLine] = strings.TrimSpace(res[headerLine])
 
 	return res, nil
 }

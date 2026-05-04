@@ -11,41 +11,42 @@
 package explanation
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/helper"
 )
 
 // type (bug / diagnostics)
 var bugCrit = map[helper.ResultType]string{
-	helper.RUnknownPanic:           "Bug",
-	helper.RTimeout:                "Bug",
-	helper.ASendOnClosed:           "Bug",
-	helper.ARecvOnClosed:           "Diagnostics",
-	helper.ACloseOnClosed:          "Bug",
-	helper.ACloseOnNilChannel:      "Bug",
-	helper.ANegWG:                  "Bug",
-	helper.AUnlockOfNotLockedMutex: "Bug",
-	helper.ALeak:                   "Bug",
-	helper.ADeadlock:               "Bug",
-	helper.AConcurrentRecv:         "Diagnostics",
-	helper.AMixedDeadlock:          "Bug",
-	helper.PSendOnClosed:           "Bug",
-	helper.PRecvOnClosed:           "Diagnostic",
-	helper.PNegWG:                  "Bug",
-	helper.PUnlockBeforeLock:       "Bug",
-	helper.PCyclicDeadlock:         "Bug",
-	helper.PMixedDeadlock:          "Bug",
-	helper.LUnknown:                "Leak",
-	helper.LUnbufferedWith:         "Leak",
-	helper.LUnbufferedWithout:      "Leak",
-	helper.LBufferedWith:           "Leak",
-	helper.LBufferedWithout:        "Leak",
-	helper.LNilChan:                "Leak",
-	helper.LSelectWith:             "Leak",
-	helper.LSelectWithout:          "Leak",
-	helper.LMutex:                  "Leak",
-	helper.LWaitGroup:              "Leak",
-	helper.LCond:                   "Leak",
-	helper.LContext:                "Leak",
+	helper.RUnknownPanic:           consts.Bug,
+	helper.RTimeout:                consts.Bug,
+	helper.ASendOnClosed:           consts.Bug,
+	helper.ARecvOnClosed:           consts.Diagnostic,
+	helper.ACloseOnClosed:          consts.Bug,
+	helper.ACloseOnNilChannel:      consts.Bug,
+	helper.ANegWG:                  consts.Bug,
+	helper.AUnlockOfNotLockedMutex: consts.Bug,
+	helper.ALeak:                   consts.Bug,
+	helper.ADeadlock:               consts.Bug,
+	helper.AConcurrentRecv:         consts.Diagnostic,
+	helper.AMixedDeadlock:          consts.Bug,
+	helper.PSendOnClosed:           consts.Bug,
+	helper.PRecvOnClosed:           consts.Diagnostic,
+	helper.PNegWG:                  consts.Bug,
+	helper.PUnlockBeforeLock:       consts.Bug,
+	helper.PCyclicDeadlock:         consts.Bug,
+	helper.PMixedDeadlock:          consts.Bug,
+	helper.LUnknown:                consts.Leak,
+	helper.LUnbufferedWith:         consts.Leak,
+	helper.LUnbufferedWithout:      consts.Leak,
+	helper.LBufferedWith:           consts.Leak,
+	helper.LBufferedWithout:        consts.Leak,
+	helper.LNilChan:                consts.Leak,
+	helper.LSelectWith:             consts.Leak,
+	helper.LSelectWithout:          consts.Leak,
+	helper.LMutex:                  consts.Leak,
+	helper.LWaitGroup:              consts.Leak,
+	helper.LCond:                   consts.Leak,
+	helper.LContext:                consts.Leak,
 }
 
 var bugNames = map[helper.ResultType]string{
@@ -67,7 +68,7 @@ var bugNames = map[helper.ResultType]string{
 	helper.PCyclicDeadlock:   "Possible Cyclic Deadlock",
 	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
-	helper.LUnknown:           "Leak",
+	helper.LUnknown:           consts.Leak,
 	helper.LUnbufferedWith:    "Leak on Unbuffered Channel",
 	helper.LUnbufferedWithout: "Leak on Unbuffered Channel",
 	helper.LBufferedWith:      "Leak on Buffered Channel",
@@ -331,16 +332,16 @@ func GetCodeFromDescription(description string) helper.ResultType {
 // Get the bug type descriptions from the bug type codes
 //
 // Parameter:
-//   - bugType string: bug type code
+//   - bt string: bug type code
 //
 // Returns:
-//   - map[string]string: bug type descriptions
-func getBugTypeDescription(bugType helper.ResultType) map[string]string {
-	return map[string]string{
-		"crit":        bugCrit[bugType],
-		"name":        bugNames[bugType],
-		"type":        string(bugType),
-		"explanation": bugExplanations[bugType],
+//   - map[bugKeys]string: bug type descriptions
+func getBugTypeDescription(bt helper.ResultType) map[bugKeys]string {
+	return map[bugKeys]string{
+		crit:        bugCrit[bt],
+		name:        bugNames[bt],
+		bugType:     string(bt),
+		explanation: bugExplanations[bt],
 	}
 }
 

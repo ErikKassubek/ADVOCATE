@@ -124,8 +124,8 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 	case trace.MutexLock, trace.MutexTryLock, trace.MutexRLock, trace.MutexTryRLock:
 		mdInsertRD(t, tid, lockID, event, element)
 		t.CurrentLockset.Add(lockID)
-		log.Debug(fmt.Sprintf("MD phase1: T%d acq(lock=%d) LS=%v -> RD recorded",
-			tid, element.GetObjId(), t.CurrentLockset))
+		// log.Debug(fmt.Sprintf("MD phase1: T%d acq(lock=%d) LS=%v -> RD recorded",
+		// 	tid, element.GetObjId(), t.CurrentLockset))
 
 	case trace.MutexUnlock, trace.MutexRUnlock:
 		// Determine if this is unlocking a read lock or write lock
@@ -213,8 +213,8 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 	}
 
 	if len(assocRDs) == 0 {
-		log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — no lock context, skipping",
-			tid, opType, element.GetObjId()))
+		// log.Debug(fmt.Sprintf("MD phase1: T%d chan(op=%s, ch=%d) — no lock context, skipping",
+		// 	tid, opType, element.GetObjId()))
 		return
 	}
 

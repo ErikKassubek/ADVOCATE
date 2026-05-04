@@ -344,10 +344,14 @@ func checkCyclic() map[uint64]struct{} {
 				}
 			}
 
-			println("SCC: ", len(scc))
+			if printDebug {
+				println("SCC: ", len(scc))
+			}
 
 			for r := range scc {
-				println("SCC ELEM: ", r)
+				if printDebug {
+					println("SCC ELEM: ", r)
+				}
 				result[r] = struct{}{}
 			}
 		}

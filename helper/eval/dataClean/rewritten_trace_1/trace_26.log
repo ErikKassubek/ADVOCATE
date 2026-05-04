@@ -1,3 +1,0 @@
-S,3710,3720,2600000000001,C.3710.3720.2500000000013.R.f.1.0~C.3710.0.2400000000010.R.f.0.0,0,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/net/fd_unix.go:118
-C,3724,3730,2500000000014,S,f,1,0,/home/erik/Uni/HiWi/ADVOCATE/go-patch/src/net/fd_unix.go:127
-E,3734

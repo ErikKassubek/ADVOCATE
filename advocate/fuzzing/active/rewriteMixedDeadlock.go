@@ -45,8 +45,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		mainRout = 1
 	}
 
-	fmt.Printf("rewriteMixedDeadlock: main=R%d, holder=R%d (lock=%d, chan=%d), waiter=R%d (lock=%d)\n",
-		mainRout, holderRout, lockHolder.GetTPre(), cdHolder.GetTPre(), waiterRout, lockWaiter.GetTPre())
+	//fmt.Printf("rewriteMixedDeadlock: main=R%d, holder=R%d (lock=%d, chan=%d), waiter=R%d (lock=%d)\n",
+	//	mainRout, holderRout, lockHolder.GetTPre(), cdHolder.GetTPre(), waiterRout, lockWaiter.GetTPre())
 
 	lastTime := max(lockHolder.GetTPost(), lockWaiter.GetTPost())
 	if mainTrace := tr.GetRoutineTrace(mainRout); len(mainTrace) > 0 {
@@ -59,10 +59,10 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	tr.ShortenRoutine(holderRout, cdHolder.GetTPost()+1)
 	tr.ShortenRoutine(waiterRout, lockWaiter.GetTPost()+1)
 
-	fmt.Printf("rewriteMixedDeadlock: holder R%d kept to t=%d, waiter R%d kept to t=%d\n",
-		holderRout, cdHolder.GetTPost(), waiterRout, lockWaiter.GetTPost())
+	//fmt.Printf("rewriteMixedDeadlock: holder R%d kept to t=%d, waiter R%d kept to t=%d\n",
+	//	holderRout, cdHolder.GetTPost(), waiterRout, lockWaiter.GetTPost())
 
-	// Reorder if needed
+	// Reorder
 	if lockWaiter.GetTPre() < lockHolder.GetTPre() {
 		targetTPre := lockHolder.GetTPost() + 1
 		shift := targetTPre - lockWaiter.GetTPre()
@@ -73,7 +73,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 			}
 			startElem := waiterTrace[0]
 			startTPre := startElem.GetTPre()
-			fmt.Printf("rewriteMixedDeadlock: shifting waiter R%d by %d\n", waiterRout, shift)
+			//fmt.Printf("rewriteMixedDeadlock: shifting waiter R%d by %d\n", waiterRout, shift)
 			tr.ShiftRoutine(waiterRout, startTPre, shift)
 			tr.ShiftConcurrentOrAfterToAfter(lockWaiter)
 		}
@@ -91,15 +91,15 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 
 	// Calculate final time
 	newLastTime := 0
-	for rid, traceSlice := range tr.GetTraces() {
+	for _, traceSlice := range tr.GetTraces() {
 		for _, elem := range traceSlice {
 			t := elem.GetTSort()
 			if t > newLastTime && t != math.MaxInt {
 				newLastTime = t
 			}
 		}
-		fmt.Printf("rewriteMixedDeadlock: R%d has %d elements, last t=%d\n",
-			rid, len(traceSlice), newLastTime)
+		//fmt.Printf("rewriteMixedDeadlock: R%d has %d elements, last t=%d\n",
+		//	rid, len(traceSlice), newLastTime)
 	}
 
 	// Use SetTWithoutNotExecuted to set tPost=0 while preserving tPre behavior
@@ -107,7 +107,7 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	blockElement(lockWaiter)
 
 	tr.AddTraceElementReplay(newLastTime+1, code)
-	fmt.Printf("rewriteMixedDeadlock: replay marker at t=%d, code=%d\n", newLastTime+1, code)
+	//fmt.Printf("rewriteMixedDeadlock: replay marker at t=%d, code=%d\n", newLastTime+1, code)
 
 	return nil
 }
@@ -126,12 +126,12 @@ func blockElement(elem trace.Element) {
 	// element will be marked as "never completed"
 	elem.SetTWithoutNotExecuted(0)
 	elem.SetTPre(savedTPre)
-	fmt.Printf("rewriteMixedDeadlock: blocked element %T (tPre=%d, tPost=0)\n", elem, savedTPre)
+	//fmt.Printf("rewriteMixedDeadlock: blocked element %T (tPre=%d, tPost=0)\n", elem, savedTPre)
 }
 
 func forceChannelBlock(ch *trace.ElementChannel) {
 	ch.SetPartner(nil)
 	ch.SetOID(-1)
 	ch.SetQCount(0)
-	fmt.Printf("rewriteMixedDeadlock: forceChannelBlock on ch=%d\n", ch.GetObjId())
+	//fmt.Printf("rewriteMixedDeadlock: forceChannelBlock on ch=%d\n", ch.GetObjId())
 }

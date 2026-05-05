@@ -33,8 +33,8 @@ or the test that is analyzed:
 
 ```go
 // ======= Preamble Start =======
-  advocate.InitTracing()
-  defer advocate.FinishTracing()
+  advocatego.InitTracing()
+  defer advocatego.FinishTracing()
 // ======= Preamble End =======
 ```
 

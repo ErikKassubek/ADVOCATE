@@ -60,6 +60,8 @@ const (
 	OperationReplayEnd
 )
 
+const posSep = "#"
+
 type prePost int // enum for pre/post
 const (
 	pre prePost = iota

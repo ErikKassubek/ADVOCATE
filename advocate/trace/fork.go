@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/clock"
+	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"strconv"
@@ -142,7 +143,7 @@ func (this *ElementFork) GetTSort() int {
 // Returns:
 //   - string: The position of the element
 func (this *ElementFork) GetPos() string {
-	return fmt.Sprintf("%s:%d", this.file, this.line)
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }
 
 // GetReplayID returns the replay id of the element

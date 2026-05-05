@@ -11,7 +11,9 @@
 package explanation
 
 import (
+	"advocate/utils/consts"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"errors"
 	"os"
 	"strconv"
@@ -30,7 +32,7 @@ func getBugPositions(traceElems map[int][]string) (map[int][]string, error) {
 
 	for i, elem := range traceElems {
 		for _, e := range elem {
-			pos := strings.Split(e, ":")
+			pos := strings.Split(e, consts.PosSep)
 			file := pos[0]
 			line, err := strconv.Atoi(pos[1])
 			if err != nil {
@@ -40,6 +42,7 @@ func getBugPositions(traceElems map[int][]string) (map[int][]string, error) {
 			code, err := GetProgramCode(file, line, true)
 			if err != nil {
 				res[i] = append(res[i], "")
+				log.Error(err.Error())
 			} else {
 				res[i] = append(res[i], code)
 			}
@@ -60,6 +63,7 @@ func getBugPositions(traceElems map[int][]string) (map[int][]string, error) {
 //   - string: The code snippet
 //   - error: An error if the file could not be read
 func GetProgramCode(file string, line int, numbers bool) (string, error) {
+	file = paths.ToLocal(file)
 	content, err := os.ReadFile(file)
 	if err != nil {
 		return "", err

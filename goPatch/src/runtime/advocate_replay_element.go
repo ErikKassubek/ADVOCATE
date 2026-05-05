@@ -17,7 +17,7 @@ package runtime
 //   - file string: code position file of the element
 //   - line int: code position line of the element
 func BuildReplayKey(routine int, file string, line int) string {
-	return intToString(routine) + ":" + file + ":" + intToString(line)
+	return intToString(routine) + ":" + file + posSep + intToString(line)
 }
 
 // The replay data structure.

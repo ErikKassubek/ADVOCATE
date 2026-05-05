@@ -16,6 +16,7 @@ import (
 	"advocate/fuzzing/active"
 	"advocate/io"
 	"advocate/results/results"
+	"advocate/utils/consts"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -38,12 +39,14 @@ import (
 //   - fifo bool: assume, that the channels work as a fifo queue
 //   - newTrace string: path to where the rewritten trace should be created
 //   - fuzzingRun int: number of fuzzing run (0 for recording, then always add 1)
+//   - testFile string: name of the analzed test file
+//   - testName string: name of the analzed test, "main" if main
 //
 // Returns:
 //   - error
 func runAnalyzer(pathTrace string,
 	outReadable string, outMachine string,
-	newTrace string, fuzzingRun int) error {
+	newTrace string, fuzzingRun int, testFile, testName string) error {
 
 	if pathTrace == "" {
 		return fmt.Errorf("Please provide a path to the trace files. Set with -trace [folder]")
@@ -57,7 +60,13 @@ func runAnalyzer(pathTrace string,
 	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace)
 
 	if err != nil && fuzzingRun <= 0 {
-		// log.Error("Could not read trace: ", err.Error())
+		if strings.HasSuffix(err.Error(), "no such file or directory") {
+			if testFile != "" {
+				return fmt.Errorf("Test run failed and no trace was recorded for: %s -> %s", testFile, testName)
+			} else {
+				return fmt.Errorf("Program run failed and no trace was recorded")
+			}
+		}
 		return err
 	}
 
@@ -118,7 +127,7 @@ func runAnalyzer(pathTrace string,
 
 	for resultIndex := 0; resultIndex < numberOfResults; resultIndex++ {
 		needed, err := rewriteTrace(outMachine,
-			newTrace+"_"+strconv.Itoa(resultIndex+1)+"/", resultIndex, &rewrittenBugs)
+			newTrace+"_"+strconv.Itoa(resultIndex+1)+consts.Sep, resultIndex, &rewrittenBugs)
 
 		if !needed {
 			notNeededRewrites++

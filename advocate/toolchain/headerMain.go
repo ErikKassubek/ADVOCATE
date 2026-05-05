@@ -86,9 +86,9 @@ func headerRemoverMain(fileName string) error {
 		} else if inImportBlock && strings.Contains(line, ")") {
 			inImportBlock = false
 			lines = append(lines, line)
-		} else if inImportBlock && strings.Contains(line, "\"advocate\"") {
+		} else if inImportBlock && strings.Contains(line, "\"advocatego\"") {
 			continue
-		} else if strings.Contains(line, "import \"advocate\"") {
+		} else if strings.Contains(line, "import \"advocatego\"") {
 			continue
 		} else {
 			lines = append(lines, line)
@@ -186,15 +186,15 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 		lines = append(lines, line)
 
 		if strings.Contains(line, "package main") {
-			lines = append(lines, "import \"advocate\"")
+			lines = append(lines, "import \"advocatego\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import \"advocate\"")
+			lines = append(lines, "import \"advocatego\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t\"advocate\"")
+			lines = append(lines, "\t\"advocatego\"")
 			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
@@ -211,24 +211,24 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				}
 				if record {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.Fuzzing("%s", %d)
-  defer advocate.Fuzzing()
+  advocatego.Fuzzing("%s", %d)
+  defer advocatego.Fuzzing()
   // ======= Preamble End =======`, replayPath, flags.TimeoutRecording))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitReplay("%s", %d, %s)
-  defer advocate.FinishReplay()
+  advocatego.InitReplay("%s", %d, %s)
+  defer advocatego.FinishReplay()
   // ======= Preamble End =======`, replayPath, replayTimeout, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitFuzzing("%s", %d)
-  defer advocate.FinishFuzzing()
+  advocatego.InitFuzzing("%s", %d)
+  defer advocatego.FinishFuzzing()
   // ======= Preamble End =======`, fuzzingTrace, flags.TimeoutRecording))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
-  advocate.InitTracing(%d)
-  defer advocate.FinishTracing()
+  advocatego.InitTracing(%d)
+  defer advocatego.FinishTracing()
   // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
 			fmt.Println("Header added at line:", currentLine)

@@ -18,7 +18,7 @@ The detection is started by adding the following line at the beginning
 of the program code:
 
 ```go
-advocate.DetectPartialDeadlock(1000)
+advocatego.DetectPartialDeadlock(1000)
 ```
 
 For this to work, the program must be run with the [modified go runtime](../../goPatch/).

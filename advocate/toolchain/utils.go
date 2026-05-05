@@ -43,15 +43,17 @@ func extractTraceNumber(trace string) (string, string) {
 	// read bug string
 	rewrittenInfoPath := filepath.Join(trace, paths.NameRewrittenInfo)
 	file, err := os.Open(rewrittenInfoPath)
-	if err == nil {
-		defer file.Close()
-		scanner := bufio.NewScanner(file)
-		if scanner.Scan() {
-			line := scanner.Text()
-			elems := strings.Split(line, "#")
-			if len(elems) > 1 {
-				bugString = elems[1]
-			}
+	if err != nil {
+		return traceNumber, bugString
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	if scanner.Scan() {
+		line := scanner.Text()
+		elems := strings.Split(line, "#")
+		if len(elems) > 1 {
+			bugString = elems[1]
 		}
 	}
 

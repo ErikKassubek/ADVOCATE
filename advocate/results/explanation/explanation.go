@@ -127,12 +127,20 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 		log.Error("Could not read header line: ", err)
 	}
 
-	resultsMachine, _ := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
+	resultsMachine, err := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
+	if err != nil {
+		log.Error(err.Error())
+	}
+
 	resultsMachine = append(resultsMachine, filepath.Join(paths.ResultOut, paths.NameResultMachine))
 
 	var numberResults int
 	for _, result := range resultsMachine {
-		f, _ := os.ReadFile(result)
+		f, err := os.ReadFile(result)
+		if err != nil {
+			log.Error(err)
+		}
+
 		numberResults = len(strings.Split(string(f), "\n")) - 1
 
 		// timeoutFound := false
@@ -232,7 +240,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 		bugPos[i] = make([]string, 0)
 
 		for j, elem := range bugElems {
-			fields := strings.Split(elem, ":")
+			fields := strings.Split(elem, consts.PosSep)
 
 			if fields[0] != "T" {
 				continue
@@ -248,7 +256,11 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 			// correct the line number, if the file is the main file of the program
 			// because of the inserted preamble
 			if file == fileWithHeader {
-				lineInt, _ := strconv.Atoi(line)
+				lineInt, err := strconv.Atoi(line)
+				if err != nil {
+					log.Error(err.Error())
+				}
+
 				if lineInt >= headerLine {
 					line = fmt.Sprint(lineInt - 5) // import + header
 				} else {
@@ -256,7 +268,7 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 				}
 			}
 
-			pos := file + ":" + line
+			pos := file + consts.PosSep + line
 
 			if slices.Contains(posAlreadyKnown, pos) {
 				continue
@@ -292,6 +304,10 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 func writeFile(path string, index string, description map[bugKeys]string,
 	positions map[int][]string, bugElemType map[int]string, code map[int][]string,
 	replay map[bugKeys]string, progInfo map[bugKeys]string, fuzzing int, falsePositive bool) error {
+
+	if replay[replaySuc] == consts.ConfirmedTheBug {
+		description[name] = strings.ReplaceAll(description[name], consts.Possible, consts.Confirmed)
+	}
 
 	// write the bug type description
 	res := "# " + description[crit] + ": " + description[bugType] + " - " + description[name] + "\n\n"
@@ -391,14 +407,14 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	}
 
 	// if in path, the folder "bugs" does not exist, create it
-	if _, err := os.Stat(path + "/bugs"); os.IsNotExist(err) {
-		err := os.Mkdir(path+"/bugs", 0755)
+	if _, err := os.Stat(path + consts.Sep + "bugs"); os.IsNotExist(err) {
+		err := os.Mkdir(path+consts.Sep+"bugs", 0755)
 		if err != nil {
 			return err
 		}
 	}
 
-	folderName := path + "/bugs"
+	folderName := path + consts.Sep + "bugs"
 	if _, err := os.Stat(folderName); os.IsNotExist(err) {
 		err := os.Mkdir(folderName, 0755)
 		if err != nil {
@@ -417,6 +433,7 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	if err != nil {
 		return err
 	}
+	defer file.Close()
 
 	_, err = file.WriteString(res)
 	return err

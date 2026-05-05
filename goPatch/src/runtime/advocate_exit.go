@@ -72,7 +72,7 @@ func SetExitCodeFromPanicMsg(msg any) {
 	}
 
 	_, file, line, _ := Caller(skip)
-	advocateExitCodePos = file + ":" + intToString(line)
+	advocateExitCodePos = file + posSep + intToString(line)
 	if printDebug {
 		println("AECP: ", advocateExitCodePos, " ", advocateExitCode)
 	}

@@ -13,6 +13,7 @@ package helper
 import (
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"bufio"
 	"fmt"
 	"os"
@@ -40,7 +41,7 @@ func CheckGoMod() string {
 	}
 
 	// Search for go.mod
-	err := filepath.WalkDir(GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
+	err := filepath.WalkDir(paths.GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -89,17 +90,18 @@ func CheckGoMod() string {
 				log.Error("Invalid go version")
 			}
 
-			// if len(versionSplit) > 2 {
-			// 	version = versionSplit[0] + "." + versionSplit[1]
-			// 	line = "go " + version
-			// 	log.Importantf("Updated Go version in go.mod to %s", version)
-			// }
+			if len(versionSplit) > 2 {
+				version = versionSplit[0] + "." + versionSplit[1]
+				line = "go " + version
+				log.Importantf("Updated Go version in go.mod to %s", version)
+			}
 
 			if versionSplit[0] != "1" || versionSplit[1] != "25" {
 				errString := "ADVOCATE is implemented for go version 1.25. "
 				errString += fmt.Sprintf("Found version %s. ", version)
 				errString += fmt.Sprintf("This may result in the analysis not working correctly, especially if go %s.%s is installed on the computer. ", versionSplit[0], versionSplit[1])
-				errString += "The message 'package advocate is not in std' in the output.log file may indicate this."
+				errString += "The message 'package advocate is not in std' in the output.log file may indicate this.\t"
+				errString += "If this message appears it may help to remove the minor version number in the go.mod file of the analyzed program (e.g. in go 1.25.7 -> 1.25)"
 				// errString += `'/home/.../go/pkg/mod/golang.org/toolchain@v0.0.1-go1.23.0.linux-amd64/src/advocate' or 'package advocate is not in std' in the output files may indicate an incompatible go version.`
 				log.Important(errString)
 			}
@@ -124,5 +126,10 @@ func CheckGoMod() string {
 
 func RunGoModTidy() {
 	log.Info("Run go mod tidy")
+
+	err := os.Setenv("GOROOT", paths.GoPatch)
+	if err == nil {
+		defer os.Unsetenv("GOROOT")
+	}
 	RunCommand(nil, nil, "go", "mod", "tidy")
 }

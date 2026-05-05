@@ -477,7 +477,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	if runAnalysis {
 		pkgPath := filepath.Join(dir, pkg)
-		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
+		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing, file, testName)
 		if err != nil {
 			return 0, false, err
 		}
@@ -518,7 +518,7 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	os.Unsetenv("GOROOT")
 
 	log.Info("Run T0")
-	packagePath := helper.MakePathLocal(pkg)
+	packagePath := paths.MakePathLocal(pkg)
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
@@ -569,7 +569,7 @@ func unitTestRecord(pkg, file, testName string,
 
 	helper.RunCommand(osOut, osErr, paths.Go, "version")
 
-	pkgPath := helper.MakePathLocal(pkg)
+	pkgPath := paths.MakePathLocal(pkg)
 	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
@@ -602,12 +602,14 @@ func unitTestRecord(pkg, file, testName string,
 //   - pkgPath string: path to the analyzed package
 //   - traceName string: name of the trace to analyze
 //   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
+//   - testFile string: name of the analzed test file
+//   - testName string: name of the analzed test, "main" if main
 //
 // Returns:
 //   - error
 //
 // The trace is expected to be at dir/pkg/traceName
-func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
+func unitTestAnalyzer(pkgPath, traceName string, fuzzing int, testFile, testName string) error {
 	tracePath := filepath.Join(pkgPath, traceName)
 
 	log.Infof("Run the analyzer for %s", tracePath)
@@ -615,7 +617,7 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 	outM := filepath.Join(pkgPath, paths.NameResultMachine)
 	outR := filepath.Join(pkgPath, paths.NameResultReadable)
 	outT := filepath.Join(pkgPath, "rewrittenTrace")
-	err := runAnalyzer(tracePath, outR, outM, outT, fuzzing)
+	err := runAnalyzer(tracePath, outR, outM, outT, fuzzing, testFile, testName)
 
 	if err != nil {
 		return err
@@ -676,7 +678,7 @@ func unitTestReplay(dir, pkg, file,
 		os.Setenv("GOROOT", paths.GoPatch)
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
-		pkgPath := helper.MakePathLocal(pkg)
+		pkgPath := paths.MakePathLocal(pkg)
 		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 

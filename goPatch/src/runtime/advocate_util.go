@@ -257,7 +257,7 @@ func convToString(val any) string {
 // Returns:
 //   - string: [file]:[line]
 func posToString(file string, line int) string {
-	return file + ":" + intToString(line)
+	return file + posSep + intToString(line)
 }
 
 // Get a pos from a caller
@@ -269,7 +269,7 @@ func posToString(file string, line int) string {
 //   - string: the position in the form [file]:[line]
 func posFromCaller(skip int) string {
 	_, file, line, _ := Caller(skip + 1)
-	return file + ":" + intToString(line)
+	return file + posSep + intToString(line)
 }
 
 // Check if a list contains an element

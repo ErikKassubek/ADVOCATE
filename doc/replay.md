@@ -47,8 +47,8 @@ flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 The replay is run, if the test of main function starts with the following header:
 
 ```go
-advocate.InitReplay(index, timeout, atomic)
-defer advocate.FinishReplay()
+advocatego.InitReplay(index, timeout, atomic)
+defer advocatego.FinishReplay()
 ```
 
 The parameters are as follows:

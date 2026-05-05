@@ -107,12 +107,16 @@ func collect(progPath, packagePath, destination string, total bool) {
 
 		_ = os.Rename(src, dest)
 		// if err != nil {
-			// log.Errorf("Could not rename: %s %s", dest, err.Error())
+		// log.Errorf("Could not rename: %s %s", dest, err.Error())
 		// }
 	}
 
 	for _, pattern := range pattersToMove {
-		files, _ := filepath.Glob(filepath.Join(packagePath, pattern))
+		files, err := filepath.Glob(filepath.Join(packagePath, pattern))
+		if err != nil {
+			log.Error(err.Error())
+		}
+
 		for _, trace := range files {
 			dest := filepath.Join(pathTraces, filepath.Base(trace))
 			_ = os.Rename(trace, dest)

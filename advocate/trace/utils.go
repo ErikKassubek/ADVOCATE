@@ -11,6 +11,7 @@
 package trace
 
 import (
+	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"strconv"
@@ -41,23 +42,19 @@ func InfoFromTID(tID string) (string, int, int, error) {
 		return "", 0, 0, err
 	}
 
-	// for windows test
 	sp := spilt1[1]
-	split3 := strings.Split(sp, ":/")
-	if len(split3) == 2 {
-		sp = split3[1]
+
+	split2 := strings.Split(sp, consts.PosSep)
+	if len(split2) < 2 {
+		return "", 0, 0, (fmt.Errorf("TID not correct: no '%s': %s", consts.PosSep, tID))
 	}
 
-	split2 := strings.Split(sp, ":")
-	if len(split2) < 2 {
-		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no ':': ", tID))
-	}
+	file := split2[0]
 
 	line, err := strconv.Atoi(split2[1])
 	if err != nil {
 		return "", 0, 0, err
 	}
-	file := split2[0]
 
 	return file, line, tPre, nil
 }
@@ -95,7 +92,7 @@ func SameRoutine(elems ...[]Element) bool {
 //   - int: line
 //   - error
 func PosFromPosString(pos string) (string, int, error) {
-	posSplit := strings.Split(pos, ":")
+	posSplit := strings.Split(pos, consts.PosSep)
 	if len(posSplit) != 2 {
 		return "", 0, fmt.Errorf("Invalid pos %s", pos)
 	}
@@ -117,5 +114,5 @@ func PosFromPosString(pos string) (string, int, error) {
 // Returns:
 //   - pos string: [file]:[line]
 func PosStringFromPos(file string, line int) string {
-	return fmt.Sprintf("%s:%d", file, line)
+	return fmt.Sprintf("%s%s%d", file, consts.PosSep, line)
 }

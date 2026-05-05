@@ -125,7 +125,7 @@ func main() {
 	// If so, fix the path. Otherwise return error and finish
 	if flags.ModeMain {
 		var err error
-		flags.ProgPath, err = helper.GetMainPath(flags.ProgPath)
+		flags.ProgPath, err = paths.GetMainPath(flags.ProgPath)
 		if err != nil {
 			log.Error("Could not find main file. If -main is set, -path should point to the main file.")
 			log.Error(err)
@@ -137,7 +137,7 @@ func main() {
 	settings.SetSettings()
 	paths.BuildPaths(flags.ModeMain)
 
-	progPathDir := helper.GetDirectory(flags.ProgPath)
+	progPathDir := paths.GetDirectory(flags.ProgPath)
 	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
@@ -221,11 +221,11 @@ func main() {
 // modeFuzzing starts the fuzzing
 func modeFuzzing() {
 	if flags.ProgName == "" {
-		flags.ProgName = helper.GetProgName(flags.ProgPath)
+		flags.ProgName = paths.GetProgName(flags.ProgPath)
 	}
 
 	var err error
-	flags.ProgPath, err = helper.CheckPath(flags.ProgPath)
+	flags.ProgPath, err = paths.CheckPath(flags.ProgPath)
 	if err != nil {
 		log.Error("Error on checking prog path: ", err)
 		log.Error("Set path with -path [path]")
@@ -251,14 +251,14 @@ func modeFuzzing() {
 //   - If recording is false, but analysis or replay is set, -trace must be set
 func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	var err error
-	flags.ProgPath, err = helper.CheckPath(flags.ProgPath)
+	flags.ProgPath, err = paths.CheckPath(flags.ProgPath)
 	if err != nil {
 		log.Error("Error on checking prog path: ", err)
 		panic(err)
 	}
 
 	if !record && (analysis || replay) {
-		flags.TracePath, err = helper.CheckPath(flags.TracePath)
+		flags.TracePath, err = paths.CheckPath(flags.TracePath)
 		if err != nil {
 			log.Error("Error on checking trace path: ", err)
 			panic(err)

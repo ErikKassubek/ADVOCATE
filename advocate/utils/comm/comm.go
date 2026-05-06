@@ -19,6 +19,11 @@ import (
 	"sync"
 )
 
+const (
+	OpenCom = true
+	NoCom   = false
+)
+
 var ln net.Listener
 var conn net.Conn
 var commMutex sync.Mutex
@@ -33,12 +38,13 @@ func Open() {
 		return
 	}
 
-	log.Debug("OPEN")
+	log.Important("OPEN")
 	var err error
-	ln, err = net.Listen("tcp", ":9000")
+	ln, err = net.Listen("tcp", ":8080")
 	if err != nil {
-		log.Debug("ERROR: ", err.Error())
+		log.Error("Communication Error: ", err.Error())
 	}
+
 	conn, _ = ln.Accept()
 
 	commIsOpen = true
@@ -52,8 +58,8 @@ func Close() {
 		return
 	}
 
-	log.Debug("CLOSE")
 	conn.Close()
+	ln.Close()
 	commIsOpen = false
 }
 
@@ -79,24 +85,25 @@ func Request(msg string) (string, error) {
 // Function to send a message to the runtime
 //
 // Parameter:
-//   - msg string: message to send
+//   - msg string: message to send, must not contain the line "EOM"
 //
 // Returns:
 //   - error
 func Post(msg string) error {
-	log.Debug("POST")
 	commMutex.Lock()
-	log.Debug("POST 0")
 	defer commMutex.Unlock()
 	if !commIsOpen {
 		return fmt.Errorf("Comm not open")
 	}
 
-	log.Debug("Post 1")
-	_, err := fmt.Fprintln(conn, msg)
-	log.Debug("Post 2")
+	var err error
+	for _, line := range strings.Split(msg, "\n") {
+		_, err = fmt.Fprintln(conn, line)
+		if err != nil {
+			log.Error(err)
+		}
+	}
 	fmt.Fprintln(conn, "EOM")
-	log.Debug("Post 3")
 	return err
 }
 
@@ -106,7 +113,6 @@ func Post(msg string) error {
 //   - string: recved message
 //   - error
 func Get() (string, error) {
-	log.Debug("GET")
 	commMutex.Lock()
 	defer commMutex.Unlock()
 	if !commIsOpen {

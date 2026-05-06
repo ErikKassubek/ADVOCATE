@@ -18,8 +18,8 @@ var alreadyExecutedAsOldest = make(map[string]int)
 // Parameters:
 //   - checkStuckTime float64: find routines that have been waiting for at least this many seconds
 //   - checkStuckIterations int: iterations to check
-func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
-	stuckRoutines := make(map[uint64]waitReason)
+func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]WaitReason {
+	stuckRoutines := make(map[uint64]WaitReason)
 
 	lock(&AdvocateRoutinesLock)
 	for id, routine := range AdvocateRoutines {

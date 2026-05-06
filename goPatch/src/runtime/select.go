@@ -101,7 +101,7 @@ func selparkcommit(gp *g, _ unsafe.Pointer) bool {
 }
 
 func block() {
-	gopark(nil, nil, waitReasonSelectNoCases, traceBlockForever, 1) // forever
+	gopark(nil, nil, WaitReasonSelectNoCases, traceBlockForever, 1) // forever
 }
 
 // selectgo implements the select statement.
@@ -235,7 +235,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := waitReasonSelect
+	waitReason := WaitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
@@ -728,7 +728,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := waitReasonSelect
+	waitReason := WaitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.

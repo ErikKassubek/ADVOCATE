@@ -48,7 +48,7 @@ func CheckForPartialReplay(elemReplay ReplayElement) {
 			unlock(&partialReplayMutex)
 
 			// the operation is sometimes active, but not this time
-			if !isInSlice(c, currentCounter) {
+			if !IsInSlice(c, currentCounter) {
 				repEl, _ := getSelect(key)
 
 				println(currentCounter)

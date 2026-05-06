@@ -59,7 +59,7 @@ func RunCommand(osOut, osErr *os.File, openCom bool, name string, args ...string
 	}
 
 	if openCom {
-		log.Debug("RUN")
+		log.Debug("RUN: ", cmd.String())
 		go func() {
 			comm.Open()
 			res, err := comm.Get()

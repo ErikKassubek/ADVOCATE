@@ -14,6 +14,7 @@ package toolchain
 import (
 	"advocate/results/complete"
 	"advocate/results/stats"
+	"advocate/utils/comm"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"advocate/utils/log"
@@ -91,6 +92,7 @@ func runWorkflowMain(
 	}
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
+
 	if runRecord {
 		// Remove header
 		if err := headerRemoverMain(paths.Prog); err != nil {
@@ -101,7 +103,7 @@ func runWorkflowMain(
 		if flags.MeasureTime && fuzzing < 1 {
 			log.Info("Build Program")
 			fmt.Printf("%s build\n", paths.Go)
-			if err := helper.RunCommand(outFile, outFile, false, paths.Go, "build"); err != nil {
+			if err := helper.RunCommand(outFile, outFile, comm.OpenCom, paths.Go, "build"); err != nil {
 				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(paths.Prog)
 				return 0, 0, err
@@ -111,7 +113,7 @@ func runWorkflowMain(
 			log.Info("Execute Program")
 			timer.Start(timer.Run)
 			execPath := paths.MakePathLocal(flags.ExecName)
-			if err := helper.RunCommand(outFile, outFile, false, execPath); err != nil {
+			if err := helper.RunCommand(outFile, outFile, comm.OpenCom, execPath); err != nil {
 				headerRemoverMain(paths.Prog)
 			}
 			timer.Stop(timer.Run)
@@ -124,7 +126,7 @@ func runWorkflowMain(
 
 		// build the program
 		log.Info("Build program for recording")
-		if err := helper.RunCommand(outFile, outFile, false, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
+		if err := helper.RunCommand(outFile, outFile, comm.OpenCom, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
 			log.Error("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(paths.Prog)
 			return 0, 0, err
@@ -134,7 +136,7 @@ func runWorkflowMain(
 		log.Info("Run program for recording")
 		timer.Start(timer.Recording)
 		execPath := paths.MakePathLocal(flags.ExecName)
-		if err := helper.RunCommand(outFile, outFile, false, execPath); err != nil {
+		if err := helper.RunCommand(outFile, outFile, comm.OpenCom, execPath); err != nil {
 			// log.Error("Error in Run Recording: ", err.Error())
 			headerRemoverMain(paths.Prog)
 		}
@@ -183,7 +185,7 @@ func runWorkflowMain(
 
 			// build the program
 			log.Info("Build program for replay")
-			if err := helper.RunCommand(outFile, outFile, false, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
+			if err := helper.RunCommand(outFile, outFile, comm.OpenCom, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
 				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(paths.Prog)
 				continue
@@ -192,7 +194,7 @@ func runWorkflowMain(
 			// run the program
 			log.Info("Run program for replay")
 			execPath := paths.MakePathLocal(flags.ExecName)
-			helper.RunCommand(outFile, outFile, false, execPath)
+			helper.RunCommand(outFile, outFile, comm.OpenCom, execPath)
 
 			fmt.Printf("Remove replay header from %s\n", paths.Prog)
 			if err := headerRemoverMain(paths.Prog); err != nil {

@@ -203,7 +203,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !block {
 			return false
 		}
-		gopark(nil, nil, waitReasonChanSendNilChan, traceBlockForever, 2)
+		gopark(nil, nil, WaitReasonChanSendNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
 
@@ -367,7 +367,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	reason := waitReasonChanSend
+	reason := WaitReasonChanSend
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
@@ -667,7 +667,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		if !block {
 			return
 		}
-		gopark(nil, nil, waitReasonChanReceiveNilChan, traceBlockForever, 2)
+		gopark(nil, nil, WaitReasonChanReceiveNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
 
@@ -862,7 +862,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// changes and when we set gp.activeStackChans is not safe for
 	// stack shrinking.
 	gp.parkingOnChan.Store(true)
-	reason := waitReasonChanReceive
+	reason := WaitReasonChanReceive
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanReceive
 	}

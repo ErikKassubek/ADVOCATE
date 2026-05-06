@@ -440,7 +440,7 @@ func goschedIfBusy() {
 // See go.dev/issue/67401.
 //
 //go:linkname gopark
-func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason waitReason, traceReason traceBlockReason, traceskip int) {
+func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason WaitReason, traceReason traceBlockReason, traceskip int) {
 	if reason != waitReasonSleep {
 		checkTimeouts() // timeouts may expire while two goroutines keep the scheduler busy
 	}
@@ -464,7 +464,7 @@ func gopark(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointer, reason w
 func goparkWithTimeout(
 	unlockf func(*g, unsafe.Pointer) bool,
 	lock unsafe.Pointer,
-	reason waitReason,
+	reason WaitReason,
 	traceReason traceBlockReason,
 	traceskip int,
 	timeout int64,
@@ -515,7 +515,7 @@ func goroutineReadyWithTimeout(arg any, _ uintptr, _ int64) {
 
 // Puts the current goroutine into a waiting state and unlocks the lock.
 // The goroutine can be made runnable again by calling goready(gp).
-func goparkunlock(lock *mutex, reason waitReason, traceReason traceBlockReason, traceskip int) {
+func goparkunlock(lock *mutex, reason WaitReason, traceReason traceBlockReason, traceskip int) {
 	gopark(parkunlock_c, unsafe.Pointer(lock), reason, traceReason, traceskip)
 }
 
@@ -1418,7 +1418,7 @@ func casgstatus(gp *g, oldval, newval uint32) {
 // casGToWaiting transitions gp from old to _Gwaiting, and sets the wait reason.
 //
 // Use this over casgstatus when possible to ensure that a waitreason is set.
-func casGToWaiting(gp *g, old uint32, reason waitReason) {
+func casGToWaiting(gp *g, old uint32, reason WaitReason) {
 	// Set the wait reason before calling casgstatus, because casgstatus will use it.
 	gp.waitreason = reason
 	casgstatus(gp, old, _Gwaiting)
@@ -1428,7 +1428,7 @@ func casGToWaiting(gp *g, old uint32, reason waitReason) {
 // The wait reason must be a valid isWaitingForSuspendG wait reason.
 //
 // Use this over casgstatus when possible to ensure that a waitreason is set.
-func casGToWaitingForSuspendG(gp *g, old uint32, reason waitReason) {
+func casGToWaitingForSuspendG(gp *g, old uint32, reason WaitReason) {
 	if !reason.isWaitingForSuspendG() {
 		throw("casGToWaitingForSuspendG with non-isWaitingForSuspendG wait reason")
 	}
@@ -2152,7 +2152,7 @@ found:
 //
 // The caller must hold worldsema. fn must not refer to any
 // part of the current goroutine's stack, since the GC may move it.
-func forEachP(reason waitReason, fn func(*p)) {
+func forEachP(reason WaitReason, fn func(*p)) {
 	systemstack(func() {
 		gp := getg().m.curg
 		// Mark the user stack as preemptible so that it may be scanned
@@ -5265,7 +5265,7 @@ func newproc(fn *funcval) {
 // Create a new g in state _Grunnable (or _Gwaiting if parked is true), starting at fn.
 // callerpc is the address of the go statement that created this. The caller is responsible
 // for adding the new g to the scheduler. If parked is true, waitreason must be non-zero.
-func newproc1(fn *funcval, callergp *g, callerpc uintptr, parked bool, waitreason waitReason) *g {
+func newproc1(fn *funcval, callergp *g, callerpc uintptr, parked bool, waitreason WaitReason) *g {
 	if fn == nil {
 		fatal("go of nil func value")
 	}

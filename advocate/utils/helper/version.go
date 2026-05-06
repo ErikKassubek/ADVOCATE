@@ -11,6 +11,7 @@
 package helper
 
 import (
+	"advocate/utils/comm"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -131,5 +132,5 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, false, "go", "mod", "tidy")
+	RunCommand(nil, nil, comm.NoCom, "go", "mod", "tidy")
 }

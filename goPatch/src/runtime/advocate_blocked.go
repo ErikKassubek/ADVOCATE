@@ -14,39 +14,60 @@ import (
 	"unsafe"
 )
 
-type routineStatus int
+var CollectPartialDeadlockInfo = false
+var DeadlockInfoHaveRef = make(map[uintptr][]bool) // pointer to parked operation -> list of routines with reference to this
 
-const (
-	unknown routineStatus = iota
-	alive
-	suspect
-	dead
-	waiting
-)
-
-var blockedConcurrencyReasons = []waitReason{
-	waitReasonChanReceiveNilChan,
-	waitReasonChanSendNilChan,
-	waitReasonSelect,
-	waitReasonSelectNoCases,
-	waitReasonChanReceive,
-	waitReasonChanSend,
-	waitReasonSyncCondWait,
-	waitReasonSyncMutexLock,
-	waitReasonSyncRWMutexRLock,
-	waitReasonSyncRWMutexLock,
-	waitReasonSyncWaitGroupWait,
+var BlockedConcurrencyReasons = []WaitReason{
+	WaitReasonChanReceiveNilChan,
+	WaitReasonChanSendNilChan,
+	WaitReasonSelect,
+	WaitReasonSelectNoCases,
+	WaitReasonChanReceive,
+	WaitReasonChanSend,
+	WaitReasonSyncCondWait,
+	WaitReasonSyncMutexLock,
+	WaitReasonSyncRWMutexRLock,
+	WaitReasonSyncRWMutexLock,
+	WaitReasonSyncWaitGroupWait,
 }
 
-var currentParkedToRoutine = make(map[uintptr][]uint64) // pointer to parked operation -> list of routines parked on operation
-var parkedOpsPerRoutine = make(map[uint64][]uintptr, 0) // routine -> waiting elements
-var haveRef = make(map[uintptr][]bool)                  // pointer to parked operation -> list of routines with reference to this
-var routinesByID = make(map[uint64]*g)                  // internal id to g
-var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
-var collectPartialDeadlockInfo = false
-var routineStatusInfo = make(map[uint64]routineStatus)
-var routinesWithRef = make(map[uintptr][]uint64)
-var AdvocatePDDetectionStopped = false
+type AdvocateG struct {
+	rout *g
+}
+
+func (self *AdvocateG) ParkForeverReplay() bool {
+	return self.rout.advocateRoutineInfo.parkForeverReplay
+}
+
+func (self *AdvocateG) ParkPos() string {
+	return self.rout.advocateRoutineInfo.parkPos
+}
+
+func (self *AdvocateG) SetParkPos(pos string) {
+	self.rout.advocateRoutineInfo.parkPos = pos
+}
+
+func (self *AdvocateG) ParkOn() []unsafe.Pointer {
+	return self.rout.advocateRoutineInfo.parkOn
+}
+
+func (self *AdvocateG) Id() uint64 {
+	return self.rout.advocateRoutineInfo.id
+}
+
+func (self *AdvocateG) GoId() uint64 {
+	return self.rout.goid
+}
+
+func (self *AdvocateG) GetWaitReason() WaitReason {
+	return self.rout.waitreason
+}
+
+func ForEachAdvocateG(fn func(adGp *AdvocateG)) {
+	forEachG(func(gp *g) {
+		fn(&AdvocateG{gp})
+	})
+}
 
 // StorePark stores in a routine, a pointer to the last concurrency element,
 // on which the routine parked
@@ -83,374 +104,6 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 	currentGoRoutineInfo().parkPos = posFromCaller(skip)
 }
 
-// detectPD checks, if the currently running program
-// contains a deadlock. Is this the case it print a corresponding info.
-func AdvocateDetectBlocking() []string {
-	currentParkedToRoutine = make(map[uintptr][]uint64)
-	parkedOpsPerRoutine = make(map[uint64][]uintptr)
-	routinesByID = make(map[uint64]*g)
-
-	// search for routines, that are blocked on a concurrency primitive
-	_, _, maxID := getWaitingRoutines()
-
-	// initialize haveRef. For each waiting element, we store a list
-	// containing one bool variable initialized to false per routine.
-	// This is necessary, since we need to count the number of unique
-	// routines that hold a reference, while at the same time we should
-	// avoid allocating memory while the GC is running (therefore we cannot
-	// use a map)
-	// We add 10 more places for the case, that between the allocation and
-	// running the GC, more routines are created
-	haveRef = make(map[uintptr][]bool)
-	for obj := range currentParkedToRoutine {
-		haveRef[obj] = make([]bool, maxID+10)
-	}
-
-	// Run the garbage collector, to find for which sleeping operations, other routines have a reference
-	collectPartialDeadlockInfo = true
-	GC()
-	collectPartialDeadlockInfo = false
-
-	// for obj, routine := range haveRef {
-	// 	print(obj, " -> ")
-	// 	for i, rout := range routine {
-	// 		if rout {
-	// 			print(i+1, " ")
-	// 		}
-	// 	}
-	// 	print("\n")
-	// }
-
-	return checkForBlocked()
-}
-
-// getWaitingRoutines searches for waiting routines and stores the corresponding
-// infos in the corresponding global maps
-//
-// Returns:
-//   - int: total number of running routines
-//   - int: number of waiting routines
-//   - uint64: maximum ID
-func getWaitingRoutines() (int, int, uint64) {
-	numberRoutines := 0
-	numberWaitingRoutines := 0
-	var maxID uint64 = 0
-	forEachG(func(gp *g) {
-		numberRoutines++
-		id := gp.goid
-
-		if id > maxID {
-			maxID = id
-		}
-
-		routinesByID[id] = gp
-
-		if routineStatusInfo[id] != dead {
-			routineStatusInfo[id] = alive
-		}
-
-		if !isRoutineWaitingOnConcurrency(gp) {
-			return
-		}
-
-		if gp.advocateRoutineInfo.parkOn == nil {
-			return
-		}
-
-		numberWaitingRoutines++
-		if routineStatusInfo[id] != dead {
-			routineStatusInfo[id] = waiting
-		}
-
-		for _, p := range gp.advocateRoutineInfo.parkOn {
-			parkOn := uintptr(p)
-			currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
-			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], uintptr(p))
-		}
-	})
-
-	return numberRoutines, numberWaitingRoutines, maxID
-}
-
-func checkForBlocked() []string {
-	routinesWithRef = make(map[uintptr][]uint64)
-
-	for opID := range currentParkedToRoutine {
-		for routID, hasRef := range haveRef[opID] {
-			if hasRef {
-				routinesWithRef[opID] = append(routinesWithRef[opID], uint64(routID))
-			}
-		}
-	}
-
-	routineRefs := make(map[uint64][]uint64) // for each blocke routine, the routines that have a reference
-	for routineID, opIDs := range parkedOpsPerRoutine {
-		for _, opID := range opIDs {
-			for _, ref := range routinesWithRef[opID] {
-				if routineID == ref {
-					continue
-				}
-				routineRefs[routineID] = append(routineRefs[routineID], ref)
-			}
-		}
-	}
-
-	for {
-		couldApplyRule := false
-		for rID, status := range routineStatusInfo {
-			// not in waiting'
-			if status != waiting {
-				continue
-			}
-
-			// NoReference
-			if len(routineRefs[rID]) == 0 {
-				routineStatusInfo[rID] = dead
-				couldApplyRule = true
-				continue
-			}
-
-			allRefDead := true
-			for _, ref := range routineRefs[rID] {
-				refStatus := routineStatusInfo[ref]
-
-				// DeadReference
-				if refStatus != dead {
-					allRefDead = false
-				}
-
-				// NonDeadReference
-				if refStatus == alive || refStatus == suspect {
-					routineStatusInfo[rID] = suspect
-					couldApplyRule = true
-					continue
-				}
-			}
-
-			// DeadReference
-			if allRefDead {
-				routineStatusInfo[rID] = dead
-				couldApplyRule = true
-			}
-		}
-
-		if !couldApplyRule {
-			break
-		}
-	}
-
-	// NoOtherRule
-	for rID, status := range routineStatusInfo {
-		if status == waiting {
-			routineStatusInfo[rID] = dead
-		}
-	}
-
-	// Check for cyclic deadlock
-	deadlock := checkCyclic()
-
-	// Report dead routines
-	foundDeadlocks := make([]string, 0)
-	for rID, status := range routineStatusInfo {
-		if status == dead {
-			_, dl := deadlock[rID]
-			res := reportDeadlock(rID, dl)
-			if res != "" {
-				foundDeadlocks = append(foundDeadlocks, res)
-			}
-		}
-	}
-
-	return foundDeadlocks
-}
-
-// check for cyclic dependencies
-func checkCyclic() map[uint64]struct{} {
-	deadRoutines := map[uint64]struct{}{}
-	for rID, status := range routineStatusInfo {
-		if status == dead {
-			deadRoutines[rID] = struct{}{}
-		}
-	}
-
-	graph := map[uint64][]uint64{}
-	selfLoop := map[uint64]bool{}
-
-	for rID := range deadRoutines {
-		for _, e := range parkedOpsPerRoutine[rID] {
-			for _, rID2 := range routinesWithRef[e] {
-				if _, ok := deadRoutines[rID2]; ok {
-					graph[rID] = append(graph[rID], rID2)
-					if rID == rID2 {
-						selfLoop[rID] = true
-					}
-				}
-			}
-		}
-	}
-
-	// Tarjan SCC
-	index := 0
-	stack := []uint64{}
-	onStack := map[uint64]bool{}
-	indices := map[uint64]int{}
-	lowlink := map[uint64]int{}
-
-	result := map[uint64]struct{}{}
-
-	var strongConnect func(uint64)
-	strongConnect = func(v uint64) {
-		indices[v] = index
-		lowlink[v] = index
-		index++
-		stack = append(stack, v)
-		onStack[v] = true
-
-		for _, w := range graph[v] {
-			if _, seen := indices[w]; !seen {
-				strongConnect(w)
-				lowlink[v] = min(lowlink[v], lowlink[w])
-			} else if onStack[w] {
-				lowlink[v] = min(lowlink[v], indices[w])
-			}
-		}
-
-		// Root of SCC
-		if lowlink[v] == indices[v] {
-			scc := map[uint64]struct{}{}
-			for {
-				w := stack[len(stack)-1]
-				stack = stack[:len(stack)-1]
-				onStack[w] = false
-				scc[w] = struct{}{}
-				if w == v {
-					break
-				}
-			}
-
-			// must be cycle with multiple elements
-			if len(scc) == 1 {
-				return
-			}
-
-			// must be closed
-			for r := range scc {
-				for _, e := range parkedOpsPerRoutine[r] {
-					for _, r2 := range routinesWithRef[e] {
-						if _, ok := scc[r2]; !ok {
-							return
-						}
-					}
-				}
-			}
-
-			if printDebug {
-				println("SCC: ", len(scc))
-			}
-
-			for r := range scc {
-				if printDebug {
-					println("SCC ELEM: ", r)
-				}
-				result[r] = struct{}{}
-			}
-		}
-	}
-
-	for r := range deadRoutines {
-		if _, seen := indices[r]; !seen {
-			strongConnect(r)
-		}
-	}
-
-	return result
-}
-
-func reportDeadlock(routineID uint64, deadlock bool) string {
-	if _, ok := alreadyReportedPartialDeadlock[routineID]; ok {
-		return ""
-	}
-	alreadyReportedPartialDeadlock[routineID] = struct{}{}
-
-	g := routinesByID[routineID]
-
-	if g.advocateRoutineInfo.parkForeverReplay {
-		return ""
-	}
-
-	if AdvocateIgnore(g.advocateRoutineInfo.parkPos) {
-		return ""
-	}
-
-	res := ""
-
-	header := "LEAK_GC"
-	if deadlock {
-		header = "DEADLOCK_GC"
-	}
-
-	if g.advocateRoutineInfo.parkPos == "" {
-		g.advocateRoutineInfo.parkPos = "-"
-	}
-	if g.advocateRoutineInfo.id != 0 {
-		res = header + "@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
-		print(res, "\n")
-	} else {
-		res = header + "@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
-		print(res, "\n")
-	}
-
-	return res
-}
-
-func isRoutineWaitingOnConcurrency(gp *g) bool {
-	if readgstatus(gp) != _Gwaiting {
-		return false
-	}
-
-	if !isInSlice(blockedConcurrencyReasons, gp.waitreason) {
-		return false
-	}
-
-	return true
-}
-
-// getWaitingReasonString takes a waitReason of a routine and returns a
-// string representation
-//
-// Parameter:
-//   - wr waitReason: the wait reason enum value
-//
-// Returns:
-//   - string: the string representation of wr
-func getWaitingReasonString(wr waitReason) string {
-	switch wr {
-	case waitReasonChanReceiveNilChan:
-		return "chan:recvOnNil"
-	case waitReasonChanSendNilChan:
-		return "chan:sendOnNil"
-	case waitReasonSelect:
-		return "select:select"
-	case waitReasonSelectNoCases:
-		return "select:withoutCases"
-	case waitReasonChanReceive:
-		return "chan:revc"
-	case waitReasonChanSend:
-		return "chan:send"
-	case waitReasonSyncCondWait:
-		return "cond:wait"
-	case waitReasonSyncMutexLock:
-		return "mutex:lock"
-	case waitReasonSyncRWMutexRLock:
-		return "rwmutex:rlock"
-	case waitReasonSyncRWMutexLock:
-		return "rwmutex:lock"
-	case waitReasonSyncWaitGroupWait:
-		return "waitGroup:wait"
-	}
-	return "unknown:unknown"
-}
-
 // noDeadlockSelect checks for a blocked element, if it is blocked in a select,
 // and if so if all cases in the select have no running routines
 //
@@ -481,3 +134,43 @@ func getWaitingReasonString(wr waitReason) string {
 // 	}
 // 	return false
 // }
+
+// GetWaitingReasonString takes a waitReason of a routine and returns a
+// string representation
+//
+// Parameter:
+//   - wr waitReason: the wait reason enum value
+//
+// Returns:
+//   - string: the string representation of wr
+func GetWaitingReasonString(wr WaitReason) string {
+	switch wr {
+	case WaitReasonChanReceiveNilChan:
+		return "chan:recvOnNil"
+	case WaitReasonChanSendNilChan:
+		return "chan:sendOnNil"
+	case WaitReasonSelect:
+		return "select:select"
+	case WaitReasonSelectNoCases:
+		return "select:withoutCases"
+	case WaitReasonChanReceive:
+		return "chan:revc"
+	case WaitReasonChanSend:
+		return "chan:send"
+	case WaitReasonSyncCondWait:
+		return "cond:wait"
+	case WaitReasonSyncMutexLock:
+		return "mutex:lock"
+	case WaitReasonSyncRWMutexRLock:
+		return "rwmutex:rlock"
+	case WaitReasonSyncRWMutexLock:
+		return "rwmutex:lock"
+	case WaitReasonSyncWaitGroupWait:
+		return "waitGroup:wait"
+	}
+	return "unknown:unknown"
+}
+
+func ReadyStatusWaiting(gp *AdvocateG) bool {
+	return readgstatus(gp.rout) == _Gwaiting
+}

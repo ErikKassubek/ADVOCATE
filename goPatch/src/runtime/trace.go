@@ -354,7 +354,7 @@ func traceAdvance(stopTrace bool) {
 		mid          int64
 		stackID      uint64
 		status       uint32
-		waitreason   waitReason
+		waitreason   WaitReason
 		inMarkAssist bool
 	}
 	var untracedGs []untracedG

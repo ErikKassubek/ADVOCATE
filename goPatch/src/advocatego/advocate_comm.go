@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"strings"
 )
 
 // Function to send a message to advocate and return the response
@@ -27,10 +28,10 @@ import (
 //   - error
 func AdvocateRequest(msg string) string {
 	println("CONN")
-	var conn, err = net.Dial("tcp", "localhost:9000")
+	var conn, err = net.Dial("tcp", "localhost:8080")
 
 	if err != nil {
-		panic("CON ERROR")
+		panic(err)
 	}
 	println("POST")
 	AdvocatePost(conn, msg)
@@ -42,32 +43,28 @@ func AdvocateRequest(msg string) string {
 
 // Function to send a message to advocate
 //
-// Parameter:
-//   - msg string: message to send
+// Parameter:"
+//   - msg string: message to send, must not contain the line "EOM"
 func AdvocatePost(conn io.Writer, msg string) {
-	fmt.Fprintln(conn, msg)
+	for _, line := range strings.Split(msg, "\n") {
+		fmt.Fprintln(conn, line)
+	}
 	fmt.Fprintln(conn, "EOM")
 }
 
 // Function to recv a message to advocate. End read if message is EOM
 //
 // Returns:
-//   - string: recved message
+//   - string: received message
 //   - error
 func AdvocateGet(conn io.Reader) string {
-
-	println("Create Scanner")
 	scanner := bufio.NewScanner(conn)
-	println("Created Scanner")
 
 	res := ""
 
-	println(scanner.Scan())
 	for scanner.Scan() {
 		line := scanner.Text()
-		println("LINE: ", line)
 		if line == "EOM" {
-			println("EOM")
 			break
 		}
 		res += line + "\n"

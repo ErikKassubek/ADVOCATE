@@ -112,7 +112,7 @@ func (w traceWriter) writeProcStatus(pid uint64, status tracev2.ProcStatus, inSw
 // have any stack growth.
 //
 //go:nosplit
-func goStatusToTraceGoStatus(status uint32, wr waitReason) tracev2.GoStatus {
+func goStatusToTraceGoStatus(status uint32, wr WaitReason) tracev2.GoStatus {
 	// N.B. Ignore the _Gscan bit. We don't model it in the tracer.
 	var tgs tracev2.GoStatus
 	switch status &^ _Gscan {

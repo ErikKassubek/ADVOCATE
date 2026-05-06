@@ -3,7 +3,7 @@
 // File: comm.go
 // Brief: Function to communicate between runtime and advocate
 //
-// Author: Erik Kassubek, Mario Occhinegro
+// Author: Erik Kassubek
 // Created: 2026-04-20
 //
 // License: BSD-3-Clause
@@ -24,43 +24,49 @@ const (
 	NoCom   = false
 )
 
-var ln net.Listener
-var conn net.Conn
-var commMutex sync.Mutex
+type CommProcess string
 
-var commIsOpen bool
+const (
+	StaticBlock CommProcess = ":8080"
+)
 
-func Open() {
-	commMutex.Lock()
-	defer commMutex.Unlock()
+type Communication struct {
+	process   CommProcess
+	ln        net.Listener
+	conn      net.Conn
+	commMutex sync.Mutex
+	isOpen    bool
+}
 
-	if commIsOpen {
-		return
+func Open(process CommProcess) *Communication {
+	comm := Communication{
+		process:   process,
+		commMutex: sync.Mutex{},
 	}
 
-	log.Important("OPEN")
 	var err error
-	ln, err = net.Listen("tcp", ":8080")
+	comm.ln, err = net.Listen("tcp", string(process))
 	if err != nil {
 		log.Error("Communication Error: ", err.Error())
 	}
 
-	conn, _ = ln.Accept()
+	comm.conn, _ = comm.ln.Accept()
+	comm.isOpen = true
 
-	commIsOpen = true
+	return &comm
 }
 
-func Close() {
-	commMutex.Lock()
-	defer commMutex.Unlock()
+func (self *Communication) Close() {
+	self.commMutex.Lock()
+	defer self.commMutex.Unlock()
 
-	if !commIsOpen {
+	if !self.isOpen {
 		return
 	}
 
-	conn.Close()
-	ln.Close()
-	commIsOpen = false
+	self.conn.Close()
+	self.ln.Close()
+	self.isOpen = false
 }
 
 // Function to send a message to the runtime and return the response
@@ -71,15 +77,14 @@ func Close() {
 // Returns:
 //   - string: returned message
 //   - error
-func Request(msg string) (string, error) {
-	commMutex.Lock()
-	if !commIsOpen {
-		commMutex.Unlock()
+func (self *Communication) Request(msg string) (string, error) {
+	self.commMutex.Lock()
+	defer self.commMutex.Unlock()
+	if !self.isOpen {
 		return "", fmt.Errorf("Comm not open")
 	}
-	commMutex.Unlock()
-	Post(msg)
-	return Get()
+	self.Post(msg)
+	return self.Get()
 }
 
 // Function to send a message to the runtime
@@ -89,21 +94,22 @@ func Request(msg string) (string, error) {
 //
 // Returns:
 //   - error
-func Post(msg string) error {
-	commMutex.Lock()
-	defer commMutex.Unlock()
-	if !commIsOpen {
+func (self *Communication) Post(msg string) error {
+	self.commMutex.Lock()
+	defer self.commMutex.Unlock()
+
+	if !self.isOpen {
 		return fmt.Errorf("Comm not open")
 	}
 
 	var err error
 	for _, line := range strings.Split(msg, "\n") {
-		_, err = fmt.Fprintln(conn, line)
+		_, err = fmt.Fprintln(self.conn, line)
 		if err != nil {
 			log.Error(err)
 		}
 	}
-	fmt.Fprintln(conn, "EOM")
+	fmt.Fprintln(self.conn, "EOM")
 	return err
 }
 
@@ -112,21 +118,20 @@ func Post(msg string) error {
 // Returns:
 //   - string: recved message
 //   - error
-func Get() (string, error) {
-	commMutex.Lock()
-	defer commMutex.Unlock()
-	if !commIsOpen {
+func (self *Communication) Get() (string, error) {
+	self.commMutex.Lock()
+	defer self.commMutex.Unlock()
+	if !self.isOpen {
 		return "", fmt.Errorf("Comm not open")
 	}
 
-	scanner := bufio.NewScanner(conn)
+	scanner := bufio.NewScanner(self.conn)
 
 	res := ""
 
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "EOM" {
-			log.Debug("BREAK")
 			break
 		}
 		res += line + "\n"

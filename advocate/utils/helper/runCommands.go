@@ -14,7 +14,6 @@ import (
 	"advocate/utils/comm"
 	"advocate/utils/control"
 	"advocate/utils/flags"
-	"advocate/utils/log"
 	"context"
 	"io"
 	"os"
@@ -58,25 +57,18 @@ func RunCommand(osOut, osErr *os.File, openCom bool, name string, args ...string
 		return err
 	}
 
+	var c comm.Communication
 	if openCom {
-		log.Debug("RUN: ", cmd.String())
 		go func() {
-			comm.Open()
-			res, err := comm.Get()
-			if err != nil {
-				log.Error(err)
-			}
-			log.Debug("RES: ", res)
-			err = comm.Post("HELLO")
-			if err != nil {
-				log.Error(err)
-			}
-			// comm.Close()
+			c := comm.Open(comm.StaticBlock)
+			c.Run()
 		}()
 	}
 
 	// wait goroutine + cleanup
 	err := cmd.Wait()
+
+	c.Close()
 
 	return err
 }

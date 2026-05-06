@@ -279,6 +279,10 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 2", element, len(fields))
 		}
 		err = tr.AddTraceElementRoutineEnd(routine, fields[1])
+	case "F":
+		// TODO: process function call
+	case "R":
+		// TODO: process function return
 	default:
 		return errors.New("Unknown element type in: " + element)
 	}

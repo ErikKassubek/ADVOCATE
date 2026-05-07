@@ -82,7 +82,7 @@ func (o *Once) Do(f func()) {
 				o.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateOncePre(o.id)
-			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true)
+			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}

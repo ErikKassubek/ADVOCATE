@@ -11,6 +11,7 @@
 package advocatego
 
 import (
+	"fmt"
 	"runtime"
 	"strconv"
 	"strings"
@@ -28,13 +29,15 @@ const (
 
 var partialDeadlocks = make([]string, 0)
 
-var currentParkedToRoutine = make(map[uintptr][]uint64) // poruntimeinter to parked operation -> list of routines parked onreadgstatus(gp) != _Gwaiting operation
-var parkedOpsPerRoutine = make(map[uint64][]uintptr, 0) // routine -> waiting elements
-var routinesByID = make(map[uint64]*runtime.AdvocateG)  // internal id to g
+var currentParkedToRoutine = make(map[uintptr][]uint64)   // poruntimeinter to parked operation -> list of routines parked onreadgstatus(gp) != _Gwaiting operation
+var parkedElemsPerRoutine = make(map[uint64][]uintptr, 0) // routine -> waiting elements
+var parkedOpsPerRoutine = make(map[uint64][]runtime.Operation)
+var routinesByID = make(map[uint64]*runtime.AdvocateG) // internal id to g
 var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
 var routineStatusInfo = make(map[uint64]routineStatus)
 var routinesWithRef = make(map[uintptr][]uint64)
 var AdvocatePDDetectionStopped = false
+var routCanReleasedBy = make(map[uint64]map[uint64]bool)
 
 // DetectBlockingGC runs a partial deadlock detection in the current execution
 // Parameter:
@@ -88,7 +91,8 @@ func StopPartialDeadlockDetection() {
 // contains a deadlock. Is this the case it print a corresponding info.
 func AdvocateDetectBlocking() []string {
 	currentParkedToRoutine = make(map[uintptr][]uint64)
-	parkedOpsPerRoutine = make(map[uint64][]uintptr)
+	parkedElemsPerRoutine = make(map[uint64][]uintptr)
+	parkedOpsPerRoutine = make(map[uint64][]runtime.Operation)
 	routinesByID = make(map[uint64]*runtime.AdvocateG)
 
 	// search for routines, that are blocked on a concurrency primitive
@@ -166,7 +170,11 @@ func getWaitingRoutines() (int, int, uint64) {
 		for _, p := range gp.ParkOn() {
 			parkOn := uintptr(p)
 			currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
-			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], uintptr(p))
+			parkedElemsPerRoutine[id] = append(parkedElemsPerRoutine[id], uintptr(p))
+		}
+
+		for _, p := range gp.ParkOp() {
+			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], p)
 		}
 	})
 
@@ -185,7 +193,7 @@ func checkForBlocked() []string {
 	}
 
 	routineRefs := make(map[uint64][]uint64) // for each blocke routine, the routines that have a reference
-	for routineID, opIDs := range parkedOpsPerRoutine {
+	for routineID, opIDs := range parkedElemsPerRoutine {
 		for _, opID := range opIDs {
 			for _, ref := range routinesWithRef[opID] {
 				if routineID == ref {
@@ -222,6 +230,15 @@ func checkForBlocked() []string {
 
 				// NonDeadReference
 				if refStatus == alive || refStatus == suspect {
+					releasable, err := staticReleasable(rID, ref) // store this information
+					if err != nil {
+						println("Error: ", err.Error())
+						continue
+					}
+					if !releasable {
+						continue
+					}
+
 					routineStatusInfo[rID] = suspect
 					couldApplyRule = true
 					continue
@@ -278,7 +295,7 @@ func checkCyclic() map[uint64]struct{} {
 	selfLoop := map[uint64]bool{}
 
 	for rID := range deadRoutines {
-		for _, e := range parkedOpsPerRoutine[rID] {
+		for _, e := range parkedElemsPerRoutine[rID] {
 			for _, rID2 := range routinesWithRef[e] {
 				if _, ok := deadRoutines[rID2]; ok {
 					graph[rID] = append(graph[rID], rID2)
@@ -336,7 +353,7 @@ func checkCyclic() map[uint64]struct{} {
 
 			// must be closed
 			for r := range scc {
-				for _, e := range parkedOpsPerRoutine[r] {
+				for _, e := range parkedElemsPerRoutine[r] {
 					for _, r2 := range routinesWithRef[e] {
 						if _, ok := scc[r2]; !ok {
 							return
@@ -407,4 +424,61 @@ func isRoutineWaitingOnConcurrency(gp *runtime.AdvocateG) bool {
 	}
 
 	return true
+}
+
+// Given a blocked routine and a routine with a reference to the blocked element,
+// call the static analysis in advocate to determine if the reference
+// routine could actually release the blocked operations
+//
+//	Parameter:
+//	   - blockedRoutId uint64: id of the blocked routine
+//	   - refereceRoutId uint64: id of the routine holding a reference
+//
+// Returns:
+//   - bool: true, if the referece routine can release the blocked operation, false otherwise
+//   - error
+func staticReleasable(blockedRoutId, referenceRoutId uint64) (bool, error) {
+	if r, ok := routCanReleasedBy[blockedRoutId]; ok {
+		if s, ok := r[referenceRoutId]; ok {
+			return s, nil
+		} else {
+			routCanReleasedBy[blockedRoutId] = make(map[uint64]bool)
+		}
+	} else {
+		routCanReleasedBy[blockedRoutId] = make(map[uint64]bool)
+	}
+
+	blockedElemStr := make([]string, len(parkedElemsPerRoutine[blockedRoutId]))
+	for i, elem := range parkedElemsPerRoutine[blockedRoutId] {
+		blockedElemStr[i] = fmt.Sprintf("%p", elem) // TODO: get into format that can be understood from static
+	}
+
+	if len(blockedElemStr) == 0 {
+		return true, fmt.Errorf("Could not query static analsis: parkedOpsPerRoutine at routine %d is empty", blockedRoutId)
+	}
+
+	blockedOpsStr := make([]string, len(parkedOpsPerRoutine[blockedRoutId]))
+	for i, elem := range parkedOpsPerRoutine[blockedRoutId] {
+		blockedOpsStr[i] = string(elem) // TODO: get into format that can be understood from static
+	}
+	if len(blockedElemStr) != len(blockedOpsStr) {
+		return true, fmt.Errorf("Could not query static analsis: missmatch between number of blocked elements and number of blocked operationbs (%d != %d)",
+			len(blockedElemStr), len(blockedOpsStr))
+	}
+
+	blockedElemId := strings.Join(blockedElemStr, ",")
+	blockedOpsId := strings.Join(blockedOpsStr, ",")
+
+	msg := fmt.Sprintf("STATICRELEASABLE?%d~%d~%s~%s", blockedRoutId, referenceRoutId, blockedElemId, blockedOpsId)
+
+	res := AdvocateRequest(msg)
+
+	switch res {
+	case "0":
+		return false, nil
+	case "1":
+		return true, nil
+	default:
+		return true, fmt.Errorf("Could not query static analsis: error in communication")
+	}
 }

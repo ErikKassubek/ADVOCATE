@@ -214,7 +214,7 @@ func (wg *WaitGroup) Wait() {
 				wg.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateWaitGroupWait(wg.id)
-			runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, true)
+			runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}
@@ -239,7 +239,7 @@ func (wg *WaitGroup) Wait() {
 	}
 
 	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, false)
+	runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, false, runtime.OperationWaitgroupWait)
 	// ADVOCATE-END
 
 	for {

@@ -82,7 +82,7 @@ func (rw *RWMutex) RLock() {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRLock)
-			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}
@@ -111,7 +111,7 @@ func (rw *RWMutex) RLock() {
 	}
 
 	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false)
+	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false, runtime.OperationRWMutexRLock)
 	// ADVOCATE-END
 
 	if rw.readerCount.Add(1) < 0 {
@@ -144,7 +144,7 @@ func (rw *RWMutex) TryRLock() bool {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryRLock)
-			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}
@@ -210,7 +210,7 @@ func (rw *RWMutex) RUnlock() {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexRUnlock)
-			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}
@@ -265,7 +265,7 @@ func (rw *RWMutex) Lock() {
 				rw.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexLock)
-			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}
@@ -294,7 +294,7 @@ func (rw *RWMutex) Lock() {
 	}
 
 	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false)
+	runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, false, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
 	// First, resolve competition with other writers.
@@ -334,7 +334,7 @@ func (rw *RWMutex) TryLock() bool {
 			// AdvocateMutexPre records, that a routine tries to lock a mutex.
 			// advocateIndex is used for AdvocateMutexPost to find the pre event.
 			_ = runtime.AdvocateMutexPre(rw.id, runtime.OperationRWMutexTryLock)
-			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true)
+			runtime.StorePark(unsafe.Pointer(&rw.w), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
 			runtime.BlockForever()
 		}
 	}

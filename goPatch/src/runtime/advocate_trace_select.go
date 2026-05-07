@@ -44,7 +44,6 @@ type AdvocateTraceSelect struct {
 //   - nsends: number of send cases
 //   - ncases: total number of non default cases
 //   - block: true if the select is blocking (has no default), false otherwise
-//   - lockOrder: internal order of the locks
 //
 // Returns:
 //   - index of the operation in the trace

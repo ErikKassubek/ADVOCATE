@@ -51,6 +51,10 @@ func (self *AdvocateG) ParkOn() []unsafe.Pointer {
 	return self.rout.advocateRoutineInfo.parkOn
 }
 
+func (self *AdvocateG) ParkOp() []Operation {
+	return self.rout.advocateRoutineInfo.parkOp
+}
+
 func (self *AdvocateG) Id() uint64 {
 	return self.rout.advocateRoutineInfo.id
 }
@@ -76,9 +80,11 @@ func ForEachAdvocateG(fn func(adGp *AdvocateG)) {
 //   - p unsafe.Pointer: pointer to the chan, (rw)mutex, wait group or conditional variable
 //   - skip int: caller skip
 //   - replay bool: park is forever park due to replay
-func StorePark(p unsafe.Pointer, skip int, replay bool) {
+//   - op ...Operations: opertion types waiting on, only multiple in select
+func StorePark(p unsafe.Pointer, skip int, replay bool, op Operation) {
 	currentGoRoutineInfo().parkOn = []unsafe.Pointer{p}
 	currentGoRoutineInfo().parkPos = posFromCaller(skip)
+	currentGoRoutineInfo().parkOp = []Operation{op}
 	currentGoRoutineInfo().parkForeverReplay = replay
 }
 
@@ -87,20 +93,40 @@ func StorePark(p unsafe.Pointer, skip int, replay bool) {
 // Do not call if the select has a default.
 //
 // Parameter:
-//   - cas0 *scase: cas0 from the select implementation
-//   - order0 *uint16: order0 from the select implementation
-//   - ncases int: number of cases in the select (nsends+nrecvs from the select implementation)
+//   - cas0: cases of the select
+//   - nsends: number of send cases
+//   - ncases: total number of non default cases
 //   - skip int: caller skip
-func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
+func StoreParkSelect(cas0 *scase, nsends int, ncases int, skip int) {
 	cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
-
 	scases := cas1[:ncases:ncases]
+	for casi := 0; casi < ncases; casi++ {
+		cas := &scases[casi]
+		c := cas.c
 
-	currentGoRoutineInfo().parkOn = []unsafe.Pointer{}
+		if c == nil { // ignore nil cases
+			continue
+		}
 
-	for _, scase := range scases {
-		currentGoRoutineInfo().parkOn = append(currentGoRoutineInfo().parkOn, unsafe.Pointer(scase.c))
+		chanOp := OperationChannelRecv
+		if casi < nsends {
+			chanOp = OperationChannelSend
+		}
+
+		currentGoRoutineInfo().parkOn = append(currentGoRoutineInfo().parkOn, unsafe.Pointer(cas.c))
+		currentGoRoutineInfo().parkOp = append(currentGoRoutineInfo().parkOp, chanOp)
 	}
+
+	// cas1 := (*[1 << 16]scase)(unsafe.Pointer(cas0))
+
+	// scases := cas1[:ncases:ncases]
+
+	// currentGoRoutineInfo().parkOn = []unsafe.Pointer{}
+	// currentGoRoutineInfo().parkOp = []Operation{}
+
+	// for _, scase := range scases {
+	// 	currentGoRoutineInfo().parkOn = append(currentGoRoutineInfo().parkOn, unsafe.Pointer(scase.c))
+	// }
 	currentGoRoutineInfo().parkPos = posFromCaller(skip)
 }
 

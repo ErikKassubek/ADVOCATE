@@ -13,18 +13,36 @@ package comm
 import (
 	"advocate/static/blockingStatic"
 	"advocate/utils/log"
+	"strings"
 )
 
 func (self *Communication) staticBlocking() {
-	data, err := self.Get()
-	if err != nil {
-		log.Error(err)
-	}
+	go func() {
+		for self.isOpen {
+			msg, err := self.Get()
+			if err != nil {
+				log.Error(err)
+			}
 
-	res := blockingStatic.RunDynamicBlockingAnalysis(data)
+			data := strings.SplitN(msg, "?", 1)
 
-	err = self.Post(res)
-	if err != nil {
-		log.Error(err)
-	}
+			res := ""
+
+			if len(data) == 2 {
+				switch data[0] {
+				case "STATICRELEASABLE":
+					res = blockingStatic.RunDynamicBlockingAnalysis(data[1]) // TODO: return "0" if cannot releas, "1" otherwise
+				default:
+					res = "UNKNOWN KEY: " + data[0]
+				}
+			} else {
+				res = "UNKNOWN MESSAGE: " + msg
+			}
+
+			err = self.Post(res)
+			if err != nil {
+				log.Error(err)
+			}
+		}
+	}()
 }

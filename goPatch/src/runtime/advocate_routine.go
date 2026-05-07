@@ -39,6 +39,7 @@ type AdvocateRoutine struct {
 	replayID          int
 	parkOn            []unsafe.Pointer
 	parkPos           string
+	parkOp            []Operation
 	parkForeverReplay bool
 	wokenButTimeout   bool
 }
@@ -60,6 +61,7 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 			G:           g,
 			Trace:       make([]traceElem, 0),
 			replayID:    replayRoutine,
+			parkOp:      make([]Operation, 0),
 			parkOn:      make([]unsafe.Pointer, 0),
 		}
 	}

@@ -12,55 +12,56 @@
 
 package runtime
 
-type Operation int // enum for operation
+type Operation string // enum for operation
 
 const (
-	OperationNone Operation = iota
-	OperationSpawn
-	OperationSpawned
-	OperationRoutineExit
+	OperationNone        Operation = "none"
+	OperationSpawn       Operation = "routineSpawn"
+	OperationSpawned     Operation = "routineSpawned"
+	OperationRoutineExit Operation = "routineExit"
 
-	OperationChannelSend
-	OperationChannelRecv
-	OperationChannelClose
+	OperationChannelSend  Operation = "chanSend"
+	OperationChannelRecv  Operation = "chanRecv"
+	OperationChannelClose Operation = "chanClose"
 
-	OperationMutexLock
-	OperationMutexUnlock
-	OperationMutexTryLock
-	OperationRWMutexLock
-	OperationRWMutexUnlock
-	OperationRWMutexTryLock
-	OperationRWMutexRLock
-	OperationRWMutexRUnlock
-	OperationRWMutexTryRLock
+	OperationMutexLock       Operation = "mutexLock"
+	OperationMutexUnlock     Operation = "mutexUnlock"
+	OperationMutexTryLock    Operation = "mutexTrylock"
+	OperationRWMutexLock     Operation = "rwmutexLock"
+	OperationRWMutexUnlock   Operation = "rwmutexUnlock"
+	OperationRWMutexTryLock  Operation = "rwmutexTrylock"
+	OperationRWMutexRLock    Operation = "rwmutexRlock"
+	OperationRWMutexRUnlock  Operation = "rwmutexrunlock"
+	OperationRWMutexTryRLock Operation = "rwmutexTryrlock"
 
-	OperationOnceDo
+	OperationOnceDo Operation = "onceDo"
 
-	OperationWaitgroupAddDone
-	OperationWaitgroupWait
+	OperationWaitgroupAddDone Operation = "wgAdddone"
+	OperationWaitgroupWait    Operation = "wgWait"
 
-	OperationSelect
-	OperationSelectCase
-	OperationSelectDefault
+	OperationSelect        Operation = "wgSelect"
+	OperationSelectCase    Operation = "wgSelectcase"
+	OperationSelectDefault Operation = "wgSelectdefault"
 
-	OperationCondSignal
-	OperationCondBroadcast
-	OperationCondWait
+	OperationCondSignal    Operation = "condSignal"
+	OperationCondBroadcast Operation = "condBroadcast"
+	OperationCondWait      Operation = "condWait"
 
-	OperationAtomicLoad
-	OperationAtomicStore
-	OperationAtomicAdd
-	OperationAtomicSwap
-	OperationAtomicCompareAndSwap
-	OperationAtomicAnd
-	OperationAtomicOr
+	OperationAtomicLoad           Operation = "atomicLoad"
+	OperationAtomicStore          Operation = "atoicStore"
+	OperationAtomicAdd            Operation = "atomicAdd"
+	OperationAtomicSwap           Operation = "atomicSwap"
+	OperationAtomicCompareAndSwap Operation = "atomicCompareandswap"
+	OperationAtomicAnd            Operation = "atomicAnd"
+	OperationAtomicOr             Operation = "atomicOr"
 
-	OperationNewChan
+	OperationNewChan Operation = "newChan"
 
-	OperationFunctionCall
-	OperationFunctionReturn
+	OperationFunctionCall   Operation = "funcCall"
+	OperationFunctionReturn Operation = "funcReturn"
 
-	OperationReplayEnd
+	OperationReplayNever Operation = "replayNever"
+	OperationReplayEnd   Operation = "replayEnd"
 )
 
 const posSep = "#"

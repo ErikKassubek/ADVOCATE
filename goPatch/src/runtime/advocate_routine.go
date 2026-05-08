@@ -28,15 +28,20 @@ var projectPath string
 //   - G *g: the g struct of the routine
 //   - Trace []traceElem: the trace of the routine
 //   - replayID int: when used in reply, id of the new routine in the replayed trace
+//   - forkFile string: file where the routine was created in, "main" for main routine
+//   - forkLine int: line where ther routine was created in, 0 for main routine
 //   - parkOn []unsafe.Pointer: list of elements the routine was last parked on
 //   - parkPos string: position of last park in form file:line
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
+//   - wokenByTimeout bool: in replay block was woken up by timeout
 type AdvocateRoutine struct {
 	id                uint64
 	maxObjectId       uint64
 	G                 *g
 	Trace             []traceElem
 	replayID          int
+	forkFile          string
+	forkLine          int
 	parkOn            []unsafe.Pointer
 	parkPos           string
 	parkOp            []Operation
@@ -47,12 +52,13 @@ type AdvocateRoutine struct {
 // Create a new advocate routine
 // Params:
 //   - g: the g struct of the routine
-//   - replayRoutine int: when used in reply, id of the new routine in the replayed trace
-//   - the replay ids of the routines forked from this routine
+//   - replayRoutine int: when used in reply, id of the new routine in the replayed trace the replay ids of the routines forked from this routine
+//   - file string: file, where the routine was created
+//   - line int: line, where the routine was created
 //
 // Return:
 //   - the new advocate routine
-func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
+func newAdvocateRoutine(g *g, replayRoutine int, file string, line int) *AdvocateRoutine {
 	// ignore the internal routines that are run before the main/test function starts
 	if advocateTracingDisabled {
 		return &AdvocateRoutine{
@@ -60,6 +66,8 @@ func newAdvocateRoutine(g *g, replayRoutine int) *AdvocateRoutine {
 			maxObjectId: 0,
 			G:           g,
 			Trace:       make([]traceElem, 0),
+			forkFile:    file,
+			forkLine:    line,
 			replayID:    replayRoutine,
 			parkOp:      make([]Operation, 0),
 			parkOn:      make([]unsafe.Pointer, 0),
@@ -156,6 +164,10 @@ func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
 	}
 
 	gi.Trace[index] = elem
+}
+
+func (gi *AdvocateRoutine) GetForkPos() string {
+	return gi.forkFile + ":" + intToString(gi.forkLine)
 }
 
 // Get the current routine

@@ -10,15 +10,37 @@
 
 package blockingStatic
 
+import (
+	"advocate/utils/log"
+	"strings"
+)
+
 // Run the blocking bug analysis given a specific program run
 //
 // Parameter:
 //   - data string: message received from runtime in form
-//     "blockedRoutId~refRoutId~blockedObjects(sep by , for select~blockedOperations(sep by , for select)"
+//     "posForkBlockedRoutine~posForkRefRoutine~posBlockedOp"
 //
 // Returns:
 //   - string: "1" if refRout contains correct operation to release blockedRout, "0" if it cannot release it, message for error
+//
+// Todo:
+//   - add last called function in ref routine
 func RunDynamicBlockingAnalysis(data string) string {
-	// TODO: implement
+	fields := strings.Split(data, "~")
+	if len(fields) != 3 {
+		return "ERROR: incorrect number of fields in data " + data
+	}
+
+	blockedRoutinePos := fields[0]
+	refRoutinePos := fields[1]
+	blockedOp := fields[2]
+
+	log.Debug("blockedRoutinePos: ", blockedRoutinePos)
+	log.Debug("refRoutinePos: ", refRoutinePos)
+	log.Debug("blockedOp: ", blockedOp)
+
+	// TODO: implement check if
+
 	return "RESULT OF STATIC ANALYSIS"
 }

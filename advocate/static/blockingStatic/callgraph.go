@@ -16,11 +16,6 @@ import (
 	"golang.org/x/tools/go/ssa/ssautil"
 )
 
-func (self *staticData) buildSsa() {
-	self.ssa, self.ssaPkgs = ssautil.AllPackages(self.pkgs, ssa.SanityCheckFunctions)
-	self.ssa.Build()
-}
-
 func (self *staticData) buildCallGraph() {
 	var roots []*ssa.Function
 

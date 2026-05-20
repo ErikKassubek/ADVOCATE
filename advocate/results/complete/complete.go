@@ -97,7 +97,7 @@ func areAllProgElemInTrace(progElems map[string][]int, traceElems map[string][]i
 func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[int][]int,
 	path string) error {
 
-	path = fmt.Sprintf("%s/AdvocateNotExecuted", path)
+	path = fmt.Sprintf("%s%sAdvocateNotExecuted", path, consts.Sep)
 
 	// create a folder to store results
 	err := os.MkdirAll(path, os.ModePerm)
@@ -105,8 +105,8 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 		return err
 	}
 
-	pathOperations := fmt.Sprintf("%s/AdvocateNotExecutedOperations.txt", path)
-	pathSelects := fmt.Sprintf("%s/AdvocateNotExecutedSelectCases.txt", path)
+	pathOperations := fmt.Sprintf("%s%sAdvocateNotExecutedOperations.txt", path, consts.Sep)
+	pathSelects := fmt.Sprintf("%s%sAdvocateNotExecutedSelectCases.txt", path, consts.Sep)
 
 	notExecutedOperationsFile, err := os.Create(pathOperations)
 	if err != nil {
@@ -120,7 +120,7 @@ func printNotExecutedToFiles(elements map[string][]int, selects map[string]map[i
 	}
 	defer notExecutedSelectFile.Close()
 
-	pathOperationsFolder := fmt.Sprintf("%s/Operations", path)
+	pathOperationsFolder := fmt.Sprintf("%s%sOperations", path, consts.Sep)
 	err = os.MkdirAll(pathOperationsFolder, os.ModePerm)
 	if err != nil {
 		return err

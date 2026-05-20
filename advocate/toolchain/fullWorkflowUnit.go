@@ -480,7 +480,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	if runAnalysis {
 		pkgPath := filepath.Join(dir, pkg)
-		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing)
+		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing, file, testName)
 		if err != nil {
 			return 0, false, err
 		}
@@ -607,12 +607,14 @@ func unitTestRecord(pkg, file, testName string,
 //   - pkgPath string: path to the analyzed package
 //   - traceName string: name of the trace to analyze
 //   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
+//   - testFile string: name of the analzed test file
+//   - testName string: name of the analzed test, "main" if main
 //
 // Returns:
 //   - error
 //
 // The trace is expected to be at dir/pkg/traceName
-func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
+func unitTestAnalyzer(pkgPath, traceName string, fuzzing int, testFile, testName string) error {
 	tracePath := filepath.Join(pkgPath, traceName)
 
 	log.Infof("Run the analyzer for %s", tracePath)
@@ -620,7 +622,7 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int) error {
 	outM := filepath.Join(pkgPath, paths.NameResultMachine)
 	outR := filepath.Join(pkgPath, paths.NameResultReadable)
 	outT := filepath.Join(pkgPath, "rewrittenTrace")
-	err := runAnalyzer(tracePath, outR, outM, outT, fuzzing)
+	err := runAnalyzer(tracePath, outR, outM, outT, fuzzing, testFile, testName)
 
 	if err != nil {
 		return err

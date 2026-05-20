@@ -1617,7 +1617,7 @@ func findIntrinsic(sym *types.Sym) intrinsicBuilder {
 	// ADVAOCATE-START
 	// if base.Flag.Race && pkg == "sync/atomic" {
 	if pkg == "sync/atomic" {
-		// ADVOCATE-END
+		// GOCDR-END
 		// The race detector needs to be able to intercept these calls.
 		// We can't intrinsify them.
 		return nil

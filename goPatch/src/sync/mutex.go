@@ -12,11 +12,10 @@ package sync
 
 import (
 	isync "internal/sync"
-	"unsafe"
 
-	// ADVOCATE-START
+	// GOCDR-START
 	"runtime"
-	// ADVOCATE-END
+	// GOCDR-END
 )
 
 // A Mutex is a mutual exclusion lock.
@@ -37,9 +36,9 @@ type Mutex struct {
 
 	mu isync.Mutex
 
-	// ADVOCATE-START
+	// GOCDR-START
 	id uint64 // id for the mutex
-	// ADVOCATE-END
+	// GOCDR-END
 }
 
 // A Locker represents an object that can be locked and unlocked.
@@ -52,17 +51,16 @@ type Locker interface {
 // If the lock is already in use, the calling goroutine
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
-	// ADVOCATE-START
+	// GOCDR-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexLock, runtime.CallerSkipMutex, false)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if m.id == 0 {
-			m.id = runtime.GetAdvocateObjectID()
+			m.id = runtime.GetGocdrObjectID()
 		}
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexLock)
 			runtime.BlockForever()
 		}
 	}
@@ -74,26 +72,22 @@ func (m *Mutex) Lock() {
 	// is directly in the lock function. If the id of the channel is the default
 	// value, it is set to a new, unique object id.
 	if m.id == 0 {
-		m.id = runtime.GetAdvocateObjectID()
+		m.id = runtime.GetGocdrObjectID()
 	}
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
-	// AdvocatePost is called, if the mutex was locked successfully.
+	// GocdrMutexPre records, that a routine tries to lock a mutex.
+	// GocdrPost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
-	// this information. advocateIndex is used for AdvocatePost to find the
+	// this information. gocdrIndex is used for GocdrPost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-	// ADVOCATE-END
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false, runtime.OperationMutexLock)
-	// ADVOCATE-END
+	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexLock)
+	// GOCDR-END
 
 	m.mu.Lock()
 
-	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
-	//ADVOCATE-END
+	// GOCDR-START
+	runtime.GocdrMutexPost(gocdrIndex, true)
+	//GOCDR-END
 }
 
 // TryLock tries to lock m and reports whether it succeeded.
@@ -102,17 +96,16 @@ func (m *Mutex) Lock() {
 // and use of TryLock is often a sign of a deeper problem
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
-	// ADVOCATE-START
+	// GOCDR-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexTryLock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {
-				m.id = runtime.GetAdvocateObjectID()
+				m.id = runtime.GetGocdrObjectID()
 			}
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
@@ -124,20 +117,20 @@ func (m *Mutex) TryLock() bool {
 	// is directly in the lock function. If the id of the channel is the default
 	// value, it is set to a new, unique object id
 	if m.id == 0 {
-		m.id = runtime.GetAdvocateObjectID()
+		m.id = runtime.GetGocdrObjectID()
 	}
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocateMutexPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-	// ADVOCATE-END
+	// GocdrMutexPre records, that a routine tries to lock a mutex.
+	// gocdrIndex is used for GocdrMutexPost to find the pre event.
+	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexTryLock)
+	// GOCDR-END
 
 	res := m.mu.TryLock()
 
-	runtime.AdvocateMutexPost(advocateIndex, res)
+	runtime.GocdrMutexPost(gocdrIndex, res)
 
 	return res
-	// ADVOCATE-END
+	// GOCDR-END
 }
 
 // Unlock unlocks m.
@@ -147,22 +140,21 @@ func (m *Mutex) TryLock() bool {
 // It is allowed for one goroutine to lock a Mutex and then
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
-	// ADVOCATE-START
+	// GOCDR-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexUnlock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {
-				m.id = runtime.GetAdvocateObjectID()
+				m.id = runtime.GetGocdrObjectID()
 			}
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			_ = runtime.GocdrMutexPre(m.id, runtime.OperationMutexUnlock)
 			runtime.BlockForever()
 		}
 	}
-	// AdvocateMutexPre is used to record the unlocking of a mutex.
-	// AdvocatePost records the successful unlocking of a mutex.
+	// GocdrMutexPre is used to record the unlocking of a mutex.
+	// GocdrPost records the successful unlocking of a mutex.
 	// For non rw mutexe, the unlock cannot fail. Therefore it is not
 	// strictly necessary to record the post for the unlocking of a mutex.
 	// For rw mutexes, the unlock can fail (e.g. unlock after rlock). Therefore
@@ -170,12 +162,12 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-	// ADVOCATE-END
+	gocdrIndex := runtime.GocdrMutexPre(m.id, runtime.OperationMutexUnlock)
+	// GOCDR-END
 
 	m.mu.Unlock()
 
-	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
-	// ADVOCATE-END
+	// GOCDR-START
+	runtime.GocdrMutexPost(gocdrIndex, true)
+	// GOCDR-END
 }

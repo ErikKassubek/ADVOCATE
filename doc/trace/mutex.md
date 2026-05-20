@@ -48,4 +48,4 @@ the counter at the end of the operation ([tPost]), the information that the
 operation finished ([exec]) and the success of try lock operations ([suc]).
 
 The implementation of those function calls can be found in
-`goPatch/src/runtime/advocate_trace.go` in the functions [AdvocateMutexPre](../../goPatch/src/runtime/advocate_trace_mutex.go#L46) and [AdvocateMutexPost](../../goPatch/src/runtime/advocate_trace_mutex.go#L77)
+`goPatch/src/runtime/gocdr_trace.go` in the functions [GocdrMutexPre](../../goPatch/src/runtime/gocdr_trace_mutex.go#L46) and [GocdrMutexPost](../../goPatch/src/runtime/gocdr_trace_mutex.go#L77)

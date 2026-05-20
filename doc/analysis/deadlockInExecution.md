@@ -18,7 +18,7 @@ The detection is started by adding the following line at the beginning
 of the program code:
 
 ```go
-advocatego.DetectPartialDeadlock(1000)
+gocdrgo.DetectPartialDeadlock(1000)
 ```
 
 For this to work, the program must be run with the [modified go runtime](../../goPatch/).
@@ -39,7 +39,7 @@ This will finish the currently running check end then end a loop. The loop
 can be started and stopped multiple time. Calling stop while the
 partial deadlock detection is running has no effect.
 
-When using advocate in the fuzzing mode, the partial deadlock detection
+When using gocdr in the fuzzing mode, the partial deadlock detection
 is automatically started.
 
 ## Output
@@ -53,7 +53,7 @@ DEADLOCK@[routID]@[pos]@[waitReason]
 
 with
 
-- routID: the id of the blocked routine. If run while advocate recording is run
+- routID: the id of the blocked routine. If run while gocdr recording is run
 (e.g. in tracing or fuzzing mode), this is equal to the id of the recorded trace
 - pos: position of the blocking element in the code in the form [file]:[line]
 - blocking operation type and operation in the form [type]:[operation], e.g. mutex:lock,

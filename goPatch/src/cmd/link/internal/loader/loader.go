@@ -2440,11 +2440,11 @@ var blockedLinknames = map[string][]string{
 	// Others
 	"net.newWindowsFile":                   {"net"},              // pushed from os
 	"testing/synctest.testingSynctestTest": {"testing/synctest"}, // pushed from testing
-	// ADVOCATE-START
+	// GOCDR-START
 	"sync/atomic.StoreUintptr":          {"runtime"},
 	"sync/atomic.SwapUintptr":           {"runtime"},
 	"sync/atomic.CompareAndSwapUintptr": {"runtime"},
-	// ADVOCATE-END
+	// GOCDR-END
 }
 
 // check if a linkname reference to symbol s from pkg is allowed

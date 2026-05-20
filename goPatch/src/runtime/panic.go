@@ -588,8 +588,6 @@ func deferreturn() {
 		}
 		fn()
 	}
-
-	AdvocateFunctionReturn()
 }
 
 // Goexit terminates the goroutine that calls it. No other goroutine is affected.
@@ -733,11 +731,11 @@ var panicnil = &godebugInc{name: "panicnil"}
 //
 //go:linkname gopanic
 func gopanic(e any) {
-	// ADVOCATE-START
+	// GOCDR-START
 	if IsTracingEnabled() || replayEnabled {
-		AdvocatePanic(e)
+		GocdrPanic(e)
 	}
-	// ADVOCATE-END
+	// GOCDR-END
 	if e == nil {
 		if debug.panicnil.Load() != 1 {
 			e = new(PanicNilError)

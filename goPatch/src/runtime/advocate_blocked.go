@@ -67,6 +67,10 @@ func (self *AdvocateG) GetWaitReason() WaitReason {
 	return self.rout.waitreason
 }
 
+func (self *AdvocateG) GetForkPos() string {
+	return self.rout.advocateRoutineInfo.GetForkPos()
+}
+
 func ForEachAdvocateG(fn func(adGp *AdvocateG)) {
 	forEachG(func(gp *g) {
 		fn(&AdvocateG{gp})

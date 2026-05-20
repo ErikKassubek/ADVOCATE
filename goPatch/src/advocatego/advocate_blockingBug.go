@@ -31,7 +31,7 @@ var partialDeadlocks = make([]string, 0)
 
 var currentParkedToRoutine = make(map[uintptr][]uint64)   // poruntimeinter to parked operation -> list of routines parked onreadgstatus(gp) != _Gwaiting operation
 var parkedElemsPerRoutine = make(map[uint64][]uintptr, 0) // routine -> waiting elements
-var parkedOpsPerRoutine = make(map[uint64][]runtime.Operation)
+var parkedPosPerRoutine = make(map[uint64]string)
 var routinesByID = make(map[uint64]*runtime.AdvocateG) // internal id to g
 var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
 var routineStatusInfo = make(map[uint64]routineStatus)
@@ -88,7 +88,7 @@ func StopPartialDeadlockDetection() {
 func AdvocateDetectBlocking() []string {
 	currentParkedToRoutine = make(map[uintptr][]uint64)
 	parkedElemsPerRoutine = make(map[uint64][]uintptr)
-	parkedOpsPerRoutine = make(map[uint64][]runtime.Operation)
+	parkedPosPerRoutine = make(map[uint64]string)
 	routinesByID = make(map[uint64]*runtime.AdvocateG)
 
 	// search for routines, that are blocked on a concurrency primitive
@@ -169,9 +169,7 @@ func getWaitingRoutines() (int, int, uint64) {
 			parkedElemsPerRoutine[id] = append(parkedElemsPerRoutine[id], uintptr(p))
 		}
 
-		for _, p := range gp.ParkOp() {
-			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], p)
-		}
+		parkedPosPerRoutine[id] = gp.ParkPos()
 	})
 
 	return numberRoutines, numberWaitingRoutines, maxID
@@ -446,28 +444,11 @@ func staticReleasable(blockedRoutId, referenceRoutId uint64) (bool, error) {
 		routCanReleasedBy[blockedRoutId] = make(map[uint64]bool)
 	}
 
-	blockedElemStr := make([]string, len(parkedElemsPerRoutine[blockedRoutId]))
-	for i, elem := range parkedElemsPerRoutine[blockedRoutId] {
-		blockedElemStr[i] = fmt.Sprintf("%p", elem) // TODO: get into format that can be understood from static
-	}
+	blockedRoutine := routinesByID[blockedRoutId].GetForkPos()
+	refRoutine := routinesByID[referenceRoutId].GetForkPos()
 
-	if len(blockedElemStr) == 0 {
-		return true, fmt.Errorf("Could not query static analsis: parkedOpsPerRoutine at routine %d is empty", blockedRoutId)
-	}
-
-	blockedOpsStr := make([]string, len(parkedOpsPerRoutine[blockedRoutId]))
-	for i, elem := range parkedOpsPerRoutine[blockedRoutId] {
-		blockedOpsStr[i] = string(elem) // TODO: get into format that can be understood from static
-	}
-	if len(blockedElemStr) != len(blockedOpsStr) {
-		return true, fmt.Errorf("Could not query static analsis: missmatch between number of blocked elements and number of blocked operationbs (%d != %d)",
-			len(blockedElemStr), len(blockedOpsStr))
-	}
-
-	blockedElemId := strings.Join(blockedElemStr, ",")
-	blockedOpsId := strings.Join(blockedOpsStr, ",")
-
-	msg := fmt.Sprintf("STATICRELEASABLE?%d~%d~%s~%s", blockedRoutId, referenceRoutId, blockedElemId, blockedOpsId)
+	// TODO: add last called function in ref routine
+	msg := fmt.Sprintf("STATICRELEASABLE?%s~%s~%s", blockedRoutine, refRoutine, parkedPosPerRoutine[blockedRoutId])
 
 	res := AdvocateRequest(msg)
 

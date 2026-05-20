@@ -62,7 +62,7 @@ func startReplay(timeout int) {
 	}
 
 	// check for and if exists, read the rewrite_active.log file
-	activeStartTime, active, activeTime, numberActive := readReplayActive(tracePathRewritten)
+	activeStartTime, active, _, numberActive := readReplayActive(tracePathRewritten)
 
 	// if activeStartTime == 0 && numberActive == 0, add later
 	if active != nil && !(activeStartTime == 0 && numberActive == 0) {
@@ -91,7 +91,7 @@ func startReplay(timeout int) {
 		if strings.HasSuffix(file.Name(), ".log") &&
 			file.Name() != "rewrite_info.log" &&
 			file.Name() != activeFile {
-			readTraceFile(tracePathRewritten+"/"+file.Name(), activeTime, activeStartTime, replayData, spawns, selects)
+			readTraceFile(tracePathRewritten+"/"+file.Name(), replayData, spawns, selects)
 			foundTraceFiles = true
 		}
 	}
@@ -209,17 +209,7 @@ func readReplayActive(tracePathRewritten string) (int, map[string][]int, map[int
 //   - select
 //
 // We only record the relevant information for each operation.
-//
-// Parameter:
-//   - fileName string: The name of the file that contains the trace.
-//   - active map[int]struct{}: map with all active tPre, or nil if all are active
-//   - startTime int: switch to active replay if the element with time startTime
-//     has been replayed. If 0, start with active from the beginning,
-//     if -1 never switch to active replay
-//   - replayData *runtime.AdvocateReplayTrace: the elements are added into this replay data
-//   - spawns map[int][]int: for each routine store the ids of all routines spawned from this routine
-//   - map[string][]ReplayElement: for each routPath with a select, store the replay elements
-func readTraceFile(fileName string, activeTime map[int]struct{}, activeStart int,
+func readTraceFile(fileName string,
 	replayData *runtime.AdvocateReplayTrace, spawns *map[int][]int, selects *map[string][]runtime.ReplayElement) {
 	// get the routine id from the file name
 	routineID, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(fileName, tracePathRewritten+"/trace_"), ".log"))

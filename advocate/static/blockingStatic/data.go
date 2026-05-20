@@ -77,6 +77,7 @@ func buildStaticData(dir string) (*staticData, error) {
 	data.buildAst()
 	// must be called afer load packages
 	data.buildSsa()
+	data.runPointerAnalysis()
 	data.buildCallGraph()
 
 	return data, nil

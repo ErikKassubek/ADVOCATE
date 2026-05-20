@@ -215,7 +215,8 @@ func runFuzzing(testPath string, firstRun bool, fileNumber, testNumber int) erro
 
 		runAnalysis := true
 		runRecord := true
-		traceID, numberResults, err := toolchain.Run(mode, testPath, runRecord, runAnalysis, runAnalysis,
+		run := false
+		traceID, numberResults, err := toolchain.Run(mode, testPath, run, runRecord, runAnalysis, runAnalysis,
 			baseF.NumberFuzzingRuns, fuzzingPath, firstRun, fileNumber, testNumber)
 
 		baseF.NumberFuzzingRuns++

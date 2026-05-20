@@ -30,10 +30,10 @@ const (
 )
 
 const (
-	releaseOldestWaitLastMax  int64 = 6
-	releaseWaitMaxWait              = 3
-	releaseWaitMaxNoWait            = 2
-	acknowledgementMaxWaitSec       = 1
+	releaseOldestWaitLastMax  int64   = 6
+	releaseWaitMaxWait        float64 = 3
+	releaseWaitMaxNoWait      float64 = 2
+	acknowledgementMaxWaitSec float64 = 1
 )
 
 var ExitCodeNames = map[int]string{

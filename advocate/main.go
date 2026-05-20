@@ -20,7 +20,6 @@ import (
 	"advocate/fuzzing"
 	"advocate/fuzzing/baseF"
 	"advocate/results/stats"
-	"advocate/static/blockingStatic"
 	"advocate/toolchain"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -179,22 +178,38 @@ func main() {
 		panic(fmt.Errorf("Could not determine executable name"))
 	}
 
+	modeTool := false
+	run := false
+	record := false
+	analysis := false
+	replay := false
+
 	switch mode {
 	case "analysis":
-		modeToolchain(modeMainTest, true, true, true)
+		modeTool = true
+		record = true
+		analysis = true
+		replay = true
 	case "fuzzing":
 		modeFuzzing()
 	case "record", "recording":
-		flags.DeleteTrace = false
-		modeToolchain(modeMainTest, true, false, false)
+		flags.KeepTraces = true
+		modeTool = true
+		record = true
 	case "replay":
-		modeToolchain(modeMainTest, false, false, true)
-	case "static": // TODO: this is only temporary for testing, remove when static is fully implemented
-		blockingStatic.Test()
+		modeTool = true
+		replay = true
+	case "run":
+		modeTool = true
+		run = true
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
 		log.Error("Select one mode from  'analysis', 'fuzzing' or 'record'")
 		helper.PrintHelp()
+	}
+
+	if modeTool {
+		modeToolchain(modeMainTest, run, record, analysis, replay)
 	}
 
 	numberBugs, _, numberTestWithRes, numberErr, numberTimeout := log.GetLoggingNumbers()
@@ -246,13 +261,14 @@ func modeFuzzing() {
 //
 // Parameter:
 //   - mode string: main for main function, test for test function
+//   - run bool: if true, the toolchain will run without recording/replay
 //   - record bool: if true, the toolchain will run the recording
 //   - analysis bool: if true, the toolchain will run analysis
 //   - replay bool: if true, the toolchain will run replays
 //
 // Note:
 //   - If recording is false, but analysis or replay is set, -trace must be set
-func modeToolchain(mode string, record bool, analysis bool, replay bool) {
+func modeToolchain(mode string, run bool, record bool, analysis bool, replay bool) {
 	var err error
 	flags.ProgPath, err = paths.CheckPath(flags.ProgPath)
 	if err != nil {
@@ -275,7 +291,7 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 
 	firstRun := true
 	fileNumber, testNumber := 1, 0
-	_, _, err = toolchain.Run(mode, "", record, analysis,
+	_, _, err = toolchain.Run(mode, "", run, record, analysis,
 		replay, -1, "", firstRun, fileNumber, testNumber)
 	if err != nil {
 		log.Error("Failed to run toolchain: ", err.Error())

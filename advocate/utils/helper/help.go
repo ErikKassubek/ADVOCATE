@@ -156,6 +156,8 @@ func PrintHelp() {
 //   - mode string: the mode
 func PrintHelpMode(mode string) {
 	switch mode {
+	case "run":
+		printHelpRun()
 	case "analysis":
 		printHelpAnalysis()
 	case "fuzzing":
@@ -176,11 +178,13 @@ func printHeader() {
 	fmt.Println("Usage: ./advocate [mode] [args]")
 	fmt.Println("")
 	fmt.Println("Advocate contains four different mode. These are:")
+	fmt.Println("\trun")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
 	fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
 	fmt.Println("")
+	fmt.Println("With 'run', the program or test is run without any recording or replay")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
 	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
 	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
@@ -190,6 +194,47 @@ func printHeader() {
 	fmt.Println("For information on how to prepare the required runtime, see the usage file linked in the README")
 	fmt.Println("")
 	fmt.Println("To get information about one of the modes, including the required and optional tags, run\n\t./advocate [mode] -help.")
+}
+
+// print help for record mode
+func printHelpRun() {
+	fmt.Println("Mode: run")
+	fmt.Println("")
+
+	printFlagHeader()
+
+	// help
+	fmt.Println(help1.toString(false))
+	fmt.Println(help2.toString(false))
+
+	// submodes
+	fmt.Println(runMain.toString(false))
+
+	// paths
+	fmt.Println(path.toString(true))
+	fmt.Println(prog.toString(false))
+	fmt.Println(exec1.toString(false))
+
+	// statistics
+	fmt.Println(measureTime.toString(false))
+	fmt.Println(notExec.toString(false))
+	fmt.Println(stats.toString(false))
+
+	// logging and output
+	fmt.Println(noInfo.toString(false))
+	fmt.Println(noProgress.toString(false))
+	fmt.Println(output.toString(false))
+
+	// continue
+	fmt.Println(cont.toString(false))
+	fmt.Println(skipExisting.toString(false))
+
+	// memory
+	fmt.Println(maxNumberElem.toString(false))
+	fmt.Println(noMemorySupervisor.toString(false))
+
+	// panic
+	fmt.Println(alwaysPanic.toString(false))
 }
 
 // print help for record mode

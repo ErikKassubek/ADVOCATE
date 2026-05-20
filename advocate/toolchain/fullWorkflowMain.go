@@ -29,6 +29,7 @@ import (
 // Run ADVOCATE on a program with a main function
 //
 // Parameter:
+//   - run bool: run without recording/replay
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -44,7 +45,7 @@ import (
 //   - int: number results
 //   - error
 func runWorkflowMain(
-	runRecord, runAnalysis, runReplay bool,
+	run, runRecord, runAnalysis, runReplay bool,
 	fuzzing int, fuzzingTrace string,
 	firstRun bool) (int, int, error) {
 	if _, err := os.Stat(paths.Prog); os.IsNotExist(err) {
@@ -93,31 +94,32 @@ func runWorkflowMain(
 	// Unset GOROOT
 	defer os.Unsetenv("GOROOT")
 
+	// Remove header
+	if err := headerRemoverMain(paths.Prog); err != nil {
+		return 0, 0, fmt.Errorf("Error removing header: %v", err)
+	}
+
+	// run the program without record/replay
+	if run || (flags.MeasureTime && fuzzing < 1) {
+		log.Info("Build Program")
+		fmt.Printf("%s build\n", paths.Go)
+		if err := helper.RunCommand(outFile, outFile, comm.OpenCom, paths.Go, "build"); err != nil {
+			log.Error("Error in building program, removing header and stopping workflow")
+			headerRemoverMain(paths.Prog)
+			return 0, 0, err
+		}
+
+		// run the program
+		log.Info("Execute Program")
+		timer.Start(timer.Run)
+		execPath := paths.MakePathLocal(flags.ExecName)
+		if err := helper.RunCommand(outFile, outFile, comm.OpenCom, execPath); err != nil {
+			headerRemoverMain(paths.Prog)
+		}
+		timer.Stop(timer.Run)
+	}
+
 	if runRecord {
-		// Remove header
-		if err := headerRemoverMain(paths.Prog); err != nil {
-			return 0, 0, fmt.Errorf("Error removing header: %v", err)
-		}
-
-		// build the program
-		if flags.MeasureTime && fuzzing < 1 {
-			log.Info("Build Program")
-			fmt.Printf("%s build\n", paths.Go)
-			if err := helper.RunCommand(outFile, outFile, comm.OpenCom, paths.Go, "build"); err != nil {
-				log.Error("Error in building program, removing header and stopping workflow")
-				headerRemoverMain(paths.Prog)
-				return 0, 0, err
-			}
-
-			// run the program
-			log.Info("Execute Program")
-			timer.Start(timer.Run)
-			execPath := paths.MakePathLocal(flags.ExecName)
-			if err := helper.RunCommand(outFile, outFile, comm.OpenCom, execPath); err != nil {
-				headerRemoverMain(paths.Prog)
-			}
-			timer.Stop(timer.Run)
-		}
 
 		// Add header
 		if err := headerInserterMain(paths.Prog, false, "1", flags.TimeoutReplay, false, fuzzing, fuzzingTrace, outFile); err != nil {

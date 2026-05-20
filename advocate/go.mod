@@ -5,7 +5,6 @@ go 1.25.0
 require (
 	github.com/shirou/gopsutil v3.21.11+incompatible
 	golang.org/x/tools v0.43.0
-	golang.org/x/tools/go/pointer v0.1.0-deprecated
 )
 
 require (

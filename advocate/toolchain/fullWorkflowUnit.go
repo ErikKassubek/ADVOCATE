@@ -39,6 +39,7 @@ import (
 // Parameter:
 //   - pathToAdvocate string: pathToAdvocate
 //   - dir string: path to the folder containing the unit tests
+//   - run bool: run without recording/replay
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -55,7 +56,7 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
+func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
 	pathToTest string, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber,
 	testNumber int) (int, int, error) {
@@ -171,7 +172,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 
 			// Execute full workflow
 			nrReplay, anaPassed, err := unitTestFullWorkflow(paths.Advocate,
-				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
+				dir, run, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(testFunc, nrReplay)
@@ -396,6 +397,7 @@ func FindTestFunctions(file string) ([]string, error) {
 // Parameter:
 //   - pathToAdvocate string: path to advocate
 //   - dir string: path to the package to test
+//   - run bool: run the code without recording/replay
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -413,7 +415,7 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - bool: true if analysis passed without error
 //   - error
 func unitTestFullWorkflow(pathToAdvocate, dir string,
-	runRecord, runAnalysis, runReplay bool,
+	run, runRecord, runAnalysis, runReplay bool,
 	testName, pkg, file string,
 	fuzzing int, fuzzingTrace string) (int, bool, error) {
 
@@ -459,16 +461,16 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	pkg = strings.TrimPrefix(pkg, dir)
 
-	if runRecord {
-		if flags.MeasureTime && fuzzing < 1 {
-			err := unitTestRun(pkg, file, testName, outFile, outFile)
-			if err != nil {
-				if checkForTimeout(paths.NameOutput) {
-					log.Timeout("Running T0 timed out")
-				}
+	if run || (flags.MeasureTime && fuzzing < 1) {
+		err := unitTestRun(pkg, file, testName, outFile, outFile)
+		if err != nil {
+			if checkForTimeout(paths.NameOutput) {
+				log.Timeout("Running T0 timed out")
 			}
 		}
+	}
 
+	if runRecord {
 		err = unitTestRecord(pkg, file,
 			testName, fuzzing, fuzzingTrace, paths.NameOutput, outFile, outFile)
 		if err != nil {

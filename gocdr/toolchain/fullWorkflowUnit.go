@@ -16,7 +16,6 @@ import (
 	"fmt"
 	"gocdr/analysis/baseA"
 	"gocdr/fuzzing/baseF"
-	"gocdr/results/complete"
 	"gocdr/results/results"
 	"gocdr/results/stats"
 	"gocdr/utils/control"
@@ -224,14 +223,6 @@ func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
 
 	if flags.ExecName != "" && !ranTest {
 		return 0, 0, fmt.Errorf("could not find test function %s", flags.ExecName)
-	}
-
-	// Check for untriggered selects
-	if flags.NotExecuted && flags.ExecName != "" {
-		err := complete.Check(filepath.Join(dir, "gocdrResult"), dir)
-		if err != nil {
-			log.Error("Could not run check for untriggered select and not executed progs: ", err.Error())
-		}
 	}
 
 	// Output test summary
@@ -601,7 +592,7 @@ func unitTestRecord(pkg, file, testName string,
 // Parameter:
 //   - pkgPath string: path to the analyzed package
 //   - traceName string: name of the trace to analyze
-//   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0
+//   - fuzzing int: number of fuzzing run. If not fuzzing, or first fuzzing run without guidance set to 0//
 //
 // Returns:
 //   - error

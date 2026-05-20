@@ -25,7 +25,7 @@ var (
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
-	prog  = newFlagVal("prog", "", "-stat/-time/-notExec", "Name of the program")
+	prog  = newFlagVal("prog", "", "-stat/-time", "Name of the program")
 	prog2 = newFlagVal("prog", "", "", "Name of the program")
 	exec1 = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
 	exec2 = newFlagVal("exec", "", "", "Name of the executable or test")

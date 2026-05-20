@@ -48,7 +48,6 @@ var (
 var (
 	MeasureTime      bool
 	CreateStatistics bool
-	NotExecuted      bool
 )
 
 // memory and panic

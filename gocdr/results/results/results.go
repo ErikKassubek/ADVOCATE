@@ -12,13 +12,11 @@ package results
 
 import (
 	"fmt"
-	"gocdr/results/benign"
 	"gocdr/trace"
 	"gocdr/utils/consts"
 	"gocdr/utils/control"
 	"gocdr/utils/flags"
 	"gocdr/utils/helper"
-	"gocdr/utils/log"
 	"gocdr/utils/paths"
 	"gocdr/utils/types"
 	"os"
@@ -199,20 +197,8 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 		}
 	}
 
-	falsePos := "tp"
-
-	if resType.IsLeak() {
-		falsePositive, err := benign.IsBenign(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
-		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
-		}
-		if falsePositive {
-			falsePos = "fp"
-		}
-	}
-
-	resultReadable := resultTypeMap[resType] + ":" + falsePos + ":\n\t" + argType1 + ": "
-	resultMachine := string(resType) + "," + falsePos + ","
+	resultReadable := resultTypeMap[resType] + ":" + "tp" + ":\n\t" + argType1 + ": "
+	resultMachine := string(resType) + "," + "tp" + ","
 	resultMachineShort := string(resType)
 
 	for i, arg := range arg1 {

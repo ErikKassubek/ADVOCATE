@@ -13,7 +13,6 @@ package toolchain
 
 import (
 	"fmt"
-	"gocdr/results/complete"
 	"gocdr/results/stats"
 	"gocdr/utils/flags"
 	"gocdr/utils/helper"
@@ -221,10 +220,6 @@ func runWorkflowMain(
 		numberResults = generateBugReports(movedTraces, fuzzing)
 
 		timer.UpdateTimeFileDetail("Main", len(rewrittenTraces))
-	}
-
-	if flags.NotExecuted {
-		complete.Check(paths.Result, paths.Prog)
 	}
 
 	if flags.CreateStatistics {

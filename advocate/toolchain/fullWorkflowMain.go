@@ -204,7 +204,7 @@ func runWorkflowMain(
 		timer.Stop(timer.Replay)
 	}
 
-	if !flags.KeepTraces && !flags.CreateStatistics {
+	if flags.DeleteTrace && !flags.CreateStatistics {
 		RemoveTraces(paths.Prog)
 	}
 

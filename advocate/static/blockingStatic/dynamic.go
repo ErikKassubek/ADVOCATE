@@ -10,6 +10,8 @@
 
 package blockingStatic
 
+import "time"
+
 // Run the blocking bug analysis given a specific program run
 //
 // Parameter:
@@ -19,6 +21,7 @@ package blockingStatic
 // Returns:
 //   - string: "1" if refRout contains correct operation to release blockedRout, "0" if it cannot release it, message for error
 func RunDynamicBlockingAnalysis(data string) string {
+	time.Sleep(5 * time.Second)
 	// TODO: implement
 	return "RESULT OF STATIC ANALYSIS"
 }

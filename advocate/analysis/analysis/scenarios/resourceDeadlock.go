@@ -112,64 +112,6 @@ func insert(dependencies []baseA.Dependency, ls baseA.Lockset, event baseA.LockE
 	)
 }
 
-// The above insert function records all requests that share the same dependency (tid,l,ls).
-// In case of loops, we may end up with many request entries.
-// For performance reasons, we may want to reduce their size.
-//
-// Eviction strategy.
-// Insert variant where we evict event an already stored event f by e,
-// if in between f and e no intra-thread synchronization took place.
-// This can be checked via helper function equalModuloTID.
-// Assumption: Vector clocks underapproximate the must happen-before relation.
-// func insert2(dependencies []baseA.Dependency, lockset baseA.Lockset, event baseA.LockEvent) []baseA.Dependency {
-// 	// Helper function.
-// 	// Assumes that vc1 and vc2 are connected to two events that are from the same thread tid.
-// 	// Yields true if vc1[k] == vc2[k] for all threads k but tid.
-// 	// Since vc1 and vc2 are underapproximations of the must happen before relation and ignores locks, we also need to check tid itself
-// 	equalModuloTID := func(tid baseA.ThreadID, vc1 *clock.VectorClock, vc2 *clock.VectorClock) bool {
-// 		if vc1.GetSize() != vc2.GetSize() {
-// 			return false
-// 		}
-
-// 		for i := 1; i <= vc1.GetSize(); i++ {
-// 			// if i == int(tid) {
-// 			// 	continue
-// 			// }
-
-// 			if vc1.GetValue(i) != vc2.GetValue(i) {
-// 				return false
-// 			}
-// 		}
-
-// 		return true
-// 	}
-
-// 	for i, v := range dependencies {
-// 		if v.Lockset.Equal(lockset) {
-// 			addVc := true
-
-// 			for _, f := range dependencies[i].Requests {
-// 				if equalModuloTID(event.ThreadID, event.VectorClock, f.VectorClock) {
-// 					// dependencies[i].requests[j] = event // We want to keep the first request for a better replay
-// 					fmt.Println("Ignoring an event because it is concurrent with an already stored event")
-// 					addVc = false
-// 				}
-
-// 			}
-
-// 			if addVc {
-// 				dependencies[i].Requests = append(dependencies[i].Requests, event)
-// 			}
-
-// 			return dependencies
-// 		}
-// 	}
-// 	return append(dependencies, baseA.Dependency{
-// 		Lockset:  lockset.Clone(),
-// 		Requests: []baseA.LockEvent{event},
-// 	})
-// }
-
 // Algorithm phase 2
 
 // Based on lock dependencies we can check for cycles.

@@ -18,31 +18,30 @@ import (
 
 func (self *Communication) staticBlocking() {
 	go func() {
-		for self.isOpen {
-			msg, err := self.Get()
-			if err != nil {
-				log.Error(err)
+		msg, err := self.Get()
+		if err != nil {
+			log.Error(err)
+			return
+		}
+
+		data := strings.SplitN(msg, "?", 1)
+
+		res := ""
+
+		if len(data) == 2 {
+			switch data[0] {
+			case "STATICRELEASABLE":
+				res = blockingStatic.RunDynamicBlockingAnalysis(data[1]) // TODO: return "0" if cannot releas, "1" otherwise
+			default:
+				res = "UNKNOWN KEY: " + data[0]
 			}
+		} else {
+			res = "UNKNOWN MESSAGE: " + msg
+		}
 
-			data := strings.SplitN(msg, "?", 1)
-
-			res := ""
-
-			if len(data) == 2 {
-				switch data[0] {
-				case "STATICRELEASABLE":
-					res = blockingStatic.RunDynamicBlockingAnalysis(data[1]) // TODO: return "0" if cannot releas, "1" otherwise
-				default:
-					res = "UNKNOWN KEY: " + data[0]
-				}
-			} else {
-				res = "UNKNOWN MESSAGE: " + msg
-			}
-
-			err = self.Post(res)
-			if err != nil {
-				log.Error(err)
-			}
+		err = self.Post(res)
+		if err != nil {
+			log.Error("Post error: ", err)
 		}
 	}()
 }

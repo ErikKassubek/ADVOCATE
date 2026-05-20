@@ -16,6 +16,7 @@ import (
 	"advocate/results/bugs"
 	"advocate/trace"
 	"advocate/utils/helper"
+	"advocate/utils/log"
 	"errors"
 	"fmt"
 )
@@ -35,12 +36,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 		return errors.New("at least 2 trace elements are needed for a deadlock")
 	}
 
-	// fmt.Println("Original trace:")
-	// analysis.PrintTrace()
-
 	lastTime := findLastTime(bug.TraceElement2)
-
-	// fmt.Println("Last time:", lastTime)
 
 	// remove tail after lastTime and the last lock
 	tr.ShortenTrace(lastTime, true)
@@ -87,14 +83,13 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							var concurrentStartElem trace.Element = nil
 							for _, possibleStart := range tr.GetRoutineTrace(lockElem.GetRoutine()) {
 								if clock.GetHappensBefore(possibleStart.GetWVC(), (*unlock).GetWVC()) == hb.Concurrent {
-									// fmt.Println("Concurrent to", possibleStart.GetTID(), possibleStart.GetTPre(), possibleStart.GetTPost(), possibleStart.GetRoutine(), possibleStart.GetID())
 									concurrentStartElem = possibleStart
 									break
 								}
 							}
 
 							if concurrentStartElem == nil {
-								fmt.Println("Could not find concurrent element for Routine", lockElem.GetRoutine(), "so we cannot move it behind unlock", unlock.GetObjId(), "in Routine", unlock.GetRoutine())
+								log.Info("Could not find concurrent element for Routine", lockElem.GetRoutine(), "so we cannot move it behind unlock", unlock.GetObjId(), "in Routine", unlock.GetRoutine())
 								break
 							}
 
@@ -112,9 +107,6 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	}
 
 	tr.AddTraceElementReplay(lastTime+1, helper.ExitCodeCyclic)
-
-	// fmt.Println("Rewritten Trace:")
-	// analysis.PrintTrace()
 
 	for _, elem := range bug.TraceElement2 {
 		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetObjId())

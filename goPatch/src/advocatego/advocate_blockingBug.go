@@ -49,10 +49,6 @@ func DetectBlockingGC() int {
 		return 0
 	}
 
-	println("Request")
-	req := AdvocateRequest("Check blocking bug")
-	println("RES:", req)
-
 	res := AdvocateDetectBlocking()
 	containsChan := false
 	for _, r := range res {
@@ -438,6 +434,8 @@ func isRoutineWaitingOnConcurrency(gp *runtime.AdvocateG) bool {
 //   - bool: true, if the referece routine can release the blocked operation, false otherwise
 //   - error
 func staticReleasable(blockedRoutId, referenceRoutId uint64) (bool, error) {
+	println("Check")
+
 	if r, ok := routCanReleasedBy[blockedRoutId]; ok {
 		if s, ok := r[referenceRoutId]; ok {
 			return s, nil

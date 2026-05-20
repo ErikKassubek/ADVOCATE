@@ -11,10 +11,17 @@
 package blockingStatic
 
 import (
+	"advocate/utils/flags"
 	"fmt"
 
 	"golang.org/x/tools/go/packages"
 )
+
+// Main function for testing static analysis.
+// Todo: remove when static analysis is fully implemented
+func Test() {
+	RunStaticBlockingAnalysis(flags.ProgPath)
+}
 
 // init to static blocking analysis
 func RunStaticBlockingAnalysis(dir string) error {
@@ -26,7 +33,7 @@ func RunStaticBlockingAnalysis(dir string) error {
 	}
 
 	data.collectOperations()
-
+	data.runAliasAnalysis()
 	return nil
 }
 
@@ -41,16 +48,20 @@ func (self *staticData) loadPackages() error {
 			packages.NeedCompiledGoFiles |
 			packages.NeedSyntax |
 			packages.NeedTypes |
-			packages.NeedTypesInfo,
+			packages.NeedTypesInfo |
+			packages.LoadAllSyntax,
+		Dir: self.dir,
 	}
 
 	pkgs, err := packages.Load(cfg, self.dir)
 	if err != nil {
-		return fmt.Errorf("failed to load packages: %w", err)
+		return fmt.Errorf("static analysis: failed to load packages: %w", err)
 	}
 
-	if packages.PrintErrors(pkgs) > 0 {
-		return fmt.Errorf("packages contain errors")
+	for _, pkg := range pkgs {
+		for _, err := range pkg.Errors {
+			return fmt.Errorf("static analysis: packages contain errors: %s", err.Error())
+		}
 	}
 
 	self.pkgs = pkgs

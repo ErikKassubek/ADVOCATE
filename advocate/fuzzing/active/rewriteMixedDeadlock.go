@@ -88,7 +88,6 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 			lastTime = e.GetTPost()
 		}
 	}
-	// fmt.Println("rewriteMixedDeadlock: lastTime =", lastTime)
 	tr.ShortenTrace(lastTime, true)
 
 	// -----------------------------------------------------------------------

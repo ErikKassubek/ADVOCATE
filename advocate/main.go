@@ -20,6 +20,7 @@ import (
 	"advocate/fuzzing"
 	"advocate/fuzzing/baseF"
 	"advocate/results/stats"
+	"advocate/static/blockingStatic"
 	"advocate/toolchain"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -62,7 +63,7 @@ func main() {
 
 	flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	flag.BoolVar(&flags.NoRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
-	flag.BoolVar(&flags.KeepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	flag.BoolVar(&flags.DeleteTrace, "deleteTrace", false, "If set, the traces will be deleted when they are no longer used. Useful to avoid large result folders in fuzzing.")
 	flag.BoolVar(&flags.SkipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	flag.BoolVar(&flags.Continue, "cont", false, "Continue a partial analysis of tests")
@@ -184,10 +185,12 @@ func main() {
 	case "fuzzing":
 		modeFuzzing()
 	case "record", "recording":
-		flags.KeepTraces = true
+		flags.DeleteTrace = false
 		modeToolchain(modeMainTest, true, false, false)
 	case "replay":
 		modeToolchain(modeMainTest, false, false, true)
+	case "static": // TODO: this is only temporary for testing, remove when static is fully implemented
+		blockingStatic.Test()
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
 		log.Error("Select one mode from  'analysis', 'fuzzing' or 'record'")

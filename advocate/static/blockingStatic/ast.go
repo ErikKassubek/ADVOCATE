@@ -22,8 +22,6 @@ import (
 
 // Build the ast and a map from ast node to package information
 func (self *staticData) buildAst() {
-	self.npm = make(map[ast.Node]*packages.Package)
-
 	for _, pkg := range self.pkgs {
 		self.astMap[pkg.PkgPath] = pkg.Syntax
 		self.ast = append(self.ast, pkg.Syntax...)
@@ -67,22 +65,4 @@ func (self *staticData) getNamed(id *ast.Ident) (*types.Named, bool) {
 	res, ok := t.(*types.Named)
 
 	return res, ok
-}
-
-// sameVar determines, if two variables are the same
-// TODO: this is not correct.
-// TODO: replace
-//
-// Parameter:
-//   - id1 *ast.Ident: first variable
-//   - id2 *ast.Ident: second variable
-func (self *staticData) sameVar(id1, id2 *ast.Ident) bool {
-	obj1, pkg1 := self.getObject(id1)
-	obj2, pkg2 := self.getObject(id2)
-
-	if obj1 == nil || obj2 == nil || pkg1 != pkg2 {
-		return false
-	}
-
-	return obj1 == obj2
 }

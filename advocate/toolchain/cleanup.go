@@ -183,7 +183,7 @@ func removeLogs(path string) {
 // ClearFuzzingTrace removes the fuzzing trace folder
 func ClearFuzzingTrace() {
 
-	if flags.KeepTraces {
+	if !flags.DeleteTrace {
 		_ = os.Rename(paths.FuzzingTraces, filepath.Join(paths.CurrentResult, paths.NameFuzzingTraces))
 		// if err != nil {
 		// 	log.Errorf("failed to move folder %s to %s: %s", fuzzingPath, fuzzingPath, err.Error())

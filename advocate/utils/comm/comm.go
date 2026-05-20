@@ -106,10 +106,10 @@ func (self *Communication) Post(msg string) error {
 	for _, line := range strings.Split(msg, "\n") {
 		_, err = fmt.Fprintln(self.conn, line)
 		if err != nil {
-			log.Error(err)
+			return err
 		}
 	}
-	fmt.Fprintln(self.conn, "EOM")
+	_, err = fmt.Fprintln(self.conn, "EOM")
 	return err
 }
 

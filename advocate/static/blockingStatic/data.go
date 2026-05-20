@@ -60,16 +60,21 @@ func buildStaticData(dir string) (*staticData, error) {
 	data := &staticData{
 		dir: dir,
 		fst: token.NewFileSet(),
-	}
 
+		astMap: make(map[string][]*ast.File),
+		ast:    make([]*ast.File, 0),
+		npm:    make(map[ast.Node]*packages.Package),
+
+		opsPerFunk:         make(map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}),
+		funcsPerFunc:       make(map[*ast.FuncDecl][]ast.Expr),
+		goStatementPerFunc: make(map[*ast.FuncDecl][]*ast.GoStmt),
+	}
 	err := data.loadPackages()
 	if err != nil {
 		log.Error(err.Error())
 		return data, err
 	}
-
 	data.buildAst()
-
 	// must be called afer load packages
 	data.buildSsa()
 	data.buildCallGraph()

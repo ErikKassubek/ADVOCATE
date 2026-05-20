@@ -31,7 +31,7 @@ func UpdateTimeFileDetail(testName string, numberReplay int) {
 
 	err := os.MkdirAll(paths.ResultTime, os.ModePerm)
 	if err != nil {
-		fmt.Println("Error creating directory:", err)
+		log.Errorf("Error creating directory:", err)
 		return
 	}
 
@@ -78,7 +78,7 @@ func UpdateTimeFileOverview(testName string) {
 
 	err := os.MkdirAll(paths.ResultTime, os.ModePerm)
 	if err != nil {
-		fmt.Println("Error creating directory:", err)
+		log.Errorf("Error creating directory:", err)
 		return
 	}
 

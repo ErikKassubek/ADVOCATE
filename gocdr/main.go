@@ -76,7 +76,7 @@ func main() {
 	flag.BoolVar(&flags.KeepResultDir, "keepResultDir", false, "Do not replace old result dirs")
 
 	flag.StringVar(&flags.FuzzingMode, "mode", "",
-		"Mode for fuzzing. Possible values are:\n\tGuided\n\tGFuzz\n\tGFuzzHB\n\tGFuzzHBFlow\n\tFlow\n\tGoPie\n\tGoCR\n\tGoCRHB\n\tDefault: Guided")
+		"Mode for fuzzing. Possible values are:n\tGFuzz\n\tGoPie")
 
 	flag.BoolVar(&flags.ModeMain, "main", false, "set to run on main function")
 
@@ -177,6 +177,9 @@ func main() {
 	case "record", "recording":
 		modeTool = true
 		record = true
+	case "analysis":
+		modeTool = true
+		analysis = true
 	case "replay":
 		modeTool = true
 		replay = true

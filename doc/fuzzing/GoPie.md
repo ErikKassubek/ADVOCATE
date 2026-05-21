@@ -1,6 +1,6 @@
 # Order Based Fuzzing
 
-The order based fuzzing is based on [GoPie](../relatedWorks/PaperAndTools/Fuzzing/GoPie.md).
+The order based fuzzing is based on GoPie [^1]. 
 
 ## Idea
 
@@ -718,3 +718,9 @@ the first lock in G1 (11), we can show, how we get to the buggy execution.
 | Step 3 | Abridge | $\{\langle G2, 18\rangle, \langle G1, 12 \rangle, \langle G3, 17 \rangle\}$ |
 | Step 4 | Flip | $\{\langle G2, 18\rangle, \langle G3, 17 \rangle, \langle G1, 12 \rangle\}$ |
 | Step 5 | Substitute | $\{\langle G2, 18\rangle, \langle G3, 17 \rangle, \langle G1, 11 \rangle\}$ |
+
+[^1]: Jiang, Z., Wen, M., Yang, Y., Peng, C., Yang, P., Jin, H.: Effective con-
+currency testing for go via directional primitive-constrained interleaving
+exploration. In: 2023 38th IEEE/ACM International Conference on Auto-
+mated Software Engineering (ASE). pp. 1364–1376 (2023). https://doi.org/
+10.1109/ASE56229.2023.00086

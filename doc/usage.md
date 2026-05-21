@@ -128,10 +128,10 @@ you can set the `-output` flag.
 If you want to execute and record the unit tests of a program, you need to
 specify the following arg:
 
-- `-path [pathToTests]`
+- `-path [pathToProgram]`
 
 This provides the path to the tests that should be recorded.
-The path should point to the folder containing the tests.
+The path should point to the root folder containing the program.
 
 As a default, this will record all tests
 in this folder (for each test a separate trace will be created).\
@@ -201,9 +201,11 @@ Possible command would therefore be
 ./gocdr -main replay -path ~/program/main.go -trace ~/traceFolder
 ```
 
-Please not, that the trace folder should not be inside the `GocdrResult` folder.
-This means, if you want to replay a given recording, you first need to copy it
-to a location outside the `GocdrResult` folder.
+If you want to replay a test that is placed inside the gocdrResult folder, you must set the 
+
+- `- keepResultDir`
+
+flag. Otherwise it will be overwritten.
 
 Please note, that the replay relies on the program code not being altered
 between recording and replay. Each change, even on non-concurrency elements
@@ -214,16 +216,9 @@ see [here](./replay.md#things-that-can-go-wrong).
 
 ### Mode: analysis
 
-The analysis mode is the main mode to analyzer tests. It will run the program
-or test, [record](./recording.md) the trace, [analyze](./analysis.md) and analyze
-it. It a potential bug was found and it is possible, the mode will [rewrite](./rewrite.md)
-the trace in such a way, that it should contain the potential bug and
-[replay](./replay.md) it, trying to trigger the bug.
-
-For the (specified) tests or the main function, it will run the program and
-record the trace, analyze the trace and, if something was found,
-create a trace that should trigger the found bug and replay this trace,
-to confirm the bug.
+The analysis mode will run the program
+or test, [record](./recording.md) the trace and [analyze](./analysis.md) it.
+If a bug is found, a report will be written.
 
 It can be run with
 
@@ -235,96 +230,19 @@ The arguments for `-path` and if necessary `-main` are required. They are
 defined the same way as in for the [recording](#mode-recording) and [replay](#mode-replay)
 modes.
 
-The default behavior is to run all analysis scenarios. You can select to run
-only certain scenarios to by setting
-
-- `-scen [scenarios]`
-
-with the following possible scenarios:
-
-- `s`: Send on closed channel
-- `r`: Receive on closed channel
-- `w`: Done before add on waitGroup
-- `n`: Close of closed channel
-- `b`: Concurrent receive on channel
-- `l`: Leaking routine
-- `u`: Unlock of unlocked mutex
-- `c`: Cyclic deadlock (resource deadlocks)
-
-To select multiple by adding them together, e.g.
-
-```
-  -scen sc
-```
-
-to run the analysis for send on closed and cyclic (resource) deadlocks.\
-If `-scen` is not set, all scenarios will be searched for.
-
-While running, the analyzer will create a `gocdrResult` folder. In it, it will create on
-folder for each of the analyzed tests. In this folder it will create a file
-for the output of the program runs, as well as two files showing an
-overview over all detected bugs. Additionally, it will create a bug folder.
-This folder contains one file for each of the found bugs, detailing the
-type and position of the bug and information about the replay (if performed).
-
 An example command would be
 
 ```
-./gocdr analysis -path ~/pathToProg/progDir/main.go -prog progName -main
+./gocdr analysis -path ~/pathToProg/progDir/main.go -main
 ```
 
 to run the analysis on the main function of a program, or
 
 ```
-./gocdr analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
+./gocdr analysis -path ~/pathToProg/progDir/ -exec TestOne
 ```
 
-to analyze the test `TestOne` in the given path, only checking for cyclic (resource) deadlocks.
-
-The analysis will try to find the following situations:
-
-- A01: "Actual Send on Closed Channel",
-- A02: "Actual Receive on Closed Channel",
-- A03: "Actual Close on Closed Channel",
-- A04: "Actual Close on Nil Channel",
-- A05: "Actual Negative Wait Group",
-- A06: "Actual Unlock of Not Locked Mutex",
-- A07: "Actual Non-Cyclic Blocking Bug",
-- A08: "Actual Cyclic Deadlock with Mutex",
-- A09: "Actual Concurrent Receive on Same Channel",
-- A10: "Actual Cyclic Deadlock with Mutex and Channel
-- P01: "Possible Send on Closed Channel",
-- P02: "Possible Receive on Closed Channel",
-- P03: "Possible Negative WaitGroup cCounter",
-- P04: "Possible unlock of not locked mutex",
-- P05: "Possible Cyclic Deadlock with Mutex",
-- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
-- L..: "Leak" (Blocked but not necessarily finally blocked routine),
-
-Some of them are only considered warnings. To ignore them, you can set `-noWarning`.
-
-The analysis will try to rewrite and replay found potential bugs. To disable this,
-you can set `-noRewrite`.\
-The default behavior is to not replay bugs that have already been replayed successfully.
-To still replay them, you can set `-replayAll`.
-
-The traces can become very large. When using gocdr for many tests, or multiple
-times, this can lead to a large amount of data being stored in the trace files.
-For this reason, gocdr will delete the trace files, as soon as the analysis
-has finished. To keep the traces, you can set `-keepTrace`.
-
-The [Go Memory-Model](https://go.dev/ref/mem#chan) does not specify, that
-channels behave as a FIFO queue. Since in practice they are implemented as such,
-the analysis assumes that they behave this way. If you do not want to use this
-assumption, you can disable it using `-ignCritSec`.
-
-Additionally, the used happens-before modes assumes, that critical sections
-(mutex) conform to a happens before relation, meaning they cannot be reordered.
-This may be too strong of an assumption in some case. To ignore this relation
-you can set `-ignCritSec`.
-
-If you do not want to perform the happens-before analysis, but only check
-for actually occurring panics or leaks, you can set the `-onlyActual` flag.
+to analyze the test `TestOne` in the given path.
 
 ### Mode: fuzzing
 
@@ -338,12 +256,7 @@ To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
 The available modes are:
 
 - `GFuzz`: Run the [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing
-- `GFuzzHB`: Run the improved [GFuzz](doc/fuzzing/GFuzz.md#improvement-over-original-gfuzz) based fuzzing using happens-before information
-- `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
-- `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
 - `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
-- `GoCR`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
-- `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
 
@@ -365,18 +278,8 @@ To set timeouts, you can set
 - `-timeoutRec [to in s]`: Timeout for the recording in seconds (Default: 10 min)
 - `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 \* recording time)
 
-To get additional information, the following tags can also be set:
-
-- `-time`: measure the runtime for the different phases and create a time file
-- `-stats`: create multiple statistic files as described [here](doc/statistics.md)
-- `-notExec`: Find operations, that have never been executed
-
-If one of these are set, the `-prog [name]` tag can be set to indicate the name of the program.
-
-The created statistic and time files can also be found in the `gocdrResult` folder.
-
 In some situations, especially when only limited storage is available, it may
-be useful to ignore atomic operations during recording and analysis. To do this,
+be useful to ignore atomic operations during recording and replay. To do this,
 you can set the `-ignoreAtomics`.
 
 If the analysis of multiple tests was interrupted, running the toolchain
@@ -401,36 +304,3 @@ tracing. Otherwise the replay is likely to get stuck.
 
 Do not change the program code between trace recording and replay. The identification of the operations is based on the file names and lines, where the operations occur. If they get changed, the program will most likely block without terminating. If you need to change the program, you must either rerun the trace recording or change the effected trace elements in the recorded trace.
 This also includes the adding of the replay header. Make sure, that it is already in the program (but commented out), when you run the recording.
-
-## Settings
-
-There are multiple constants that can be changed from the outside. This is
-normally not necessary, but I you want to experiment with some of the settings,
-you are free to do so.
-
-Those constants can be set using the -settings [args] flag, where the args
-must consists of the values that should be set in the form
-
-```
--settings name1=value1,name2=value2
-```
-
-Make sure to not use spaces in this argument.
-
-The following values can be changed:
-
-| name           | default value | range                       | description                                                                                                            |
-| -------------- | ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| GFuzzW1        | 10            | $\mathbb{Q}$                | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW2        | 10            | $\mathbb{Q}$                | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW3        | 10            | $\mathbb{Q}$                | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW4        | 10            | $\mathbb{Q}$                | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzFlipP     | 0.99          | $\mathbb{Q}, 0 <= val <= 1$ | probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability)            |
-| GFuzzFlipPMin  | 0.1           | $\mathbb{Q}, 0 <= val <= 1$ | minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GoPieW1        | 1             | $\mathbb{Q}$                | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
-| GoPieW2        | 1             | $\mathbb{Q}$                | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
-| GoPieBound     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of scheduling chain (BOUND) as described [here](./fuzzing/GoPie.md#mutation)                            |
-| GoPieMutabound | 3             | $\mathbb{N}_{\neq 0}$       | Mutabound as described [here](./fuzzing/GoPie.md#mutation)                                                             |
-| GoPieSCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for scheduling chains as described [here](./fuzzing/GoPie.md#mutation)                        |
-| SameElementTypeInSC | 0 (false) | $\{0,1\}$ | Only allow elements of the same type in a SC |
-| WithoutReplay | 0 (false) | $\{0,1\}$ | Disable replay for goPie+ fuzzing runs |

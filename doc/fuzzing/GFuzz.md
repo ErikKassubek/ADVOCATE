@@ -1,6 +1,6 @@
 # Select Based Fuzzing
 
-The select based fuzzing is based on [GFuzz](../relatedWorks/PaperAndTools/Fuzzing/GFuzz.md).
+The select based fuzzing is based on GFuzz [^1].
 
 ## Idea
 
@@ -250,113 +250,10 @@ func goparkWithTimeout(unlockf func(*g, unsafe.Pointer) bool, lock unsafe.Pointe
 
 This park method will first start a go routine with a timer. If the timer has run out, it will wake up the routine regardless of whether it has found a partner. Then the normal park function is run. If the routine was woken up because the enqueued channel found a partner, the select continues as in the unmodified version. If it was woken up by the timeout, it will remove the enqueued channel operation, do some clean up and return from the modified select returning $ok = false$. In this case the unmodified select will be run as can be seen in the `selectgo` func above.
 
-## Improvement over original GFuzz
 
-We can improve the original GFuzz by using the HB information.
-
-The improvements over GFuzz are mainly in finding interesting runs faster and
-therefore needing to run fewer runs.
-
-The main improvement is, as always, that
-we do not need to run each mutation multiple times, hoping we run into a
-bug. Running a mutation once (or a small number of times) is enough,
-since the HB analysis can detect possible but not executed bugs. This
-also means, that bugs, which are theoretically possible (and can maybe even be replayed),
-but which are so unlikely, that they are not detected by simply running the
-program a limited amount of runs, can be detected.
-
-GFuzz only mutates the selects. But for some reason, neither the decision
-whether a run is interesting, nor the calculation of the number of mutations
-depend on the selects in the recorded code. But it should be obvious, that the
-number of selects, and especially
-the number of select cases with possible partners influence how likely a
-mutation of selects will result in new paths being explored.
-
-This is done by extending the score function to be
-$$score = \sum\log_2 CountChOpPair + w_1 \cdot CreateCh + w_2 \cdot CloseCh + s_3 \cdot \sum MaxChBufFull$$
-
-In the original GFuzz, the two following examples, assuming in both the
-communication on `x` is executed, result in the same
-decision about whether the runs are are interesting and in the same number
-of mutations (given that the rest of the program is identical)
-
-```go
-a := make(chan int)
-x := make(chan int)
-
-go func() {
-  x <- 1
-}
-
-go func() {
-  a <- 1
-}
-
-
-<-x
-// do stuff
-```
-
-```go
-a := make(chan int)
-x := make(chan int)
-
-go func() {
-  x <- 1
-}
-
-go func() {
-  a <- 1
-}
-
-select {
-  case <-x:
-    // do stuff
-  case <-a:
-    // potential bug
-  ...
-}
-```
-
-But it should be obvious, that a mutation of the second program
-is more useful than a mutation of the first problem. By including the
-number of select cases with possible partners, we are more likely to create
-mutations which lead to new and interesting runs.
-
-Additionally, the changes in the calculation of the score and the
-calculation of the mutations may result in interesting runs been found faster
-and preventing to many mutations that do not change the actual mutation from
-being created.
-
-```go
-go func() {
-  a <- 1
-}()
-
-go func() {
-  z <- 1
-}()
-
-select {
-  case <-a:
-    //does not contain bug
-  case <-b:
-    //does not contain bug
-  ...
-  case <- z:
-    // does contain bug
-  default:
-    // does not contain the bug
-}
-```
-
-This run contains a select with many different cases. Lets assume, that based
-on the HB analysis only the cases with channel `a` and channel `z` actually
-have a partner and that the case with channel `a` has been used in the recorded run.
-In a mutated run, GFuzz will select each of the cases with the same probability,
-whether they have a potential partner or not. This means, that in many cases,
-the mutation run will result in the timeout and therefore no new interesting
-behavior will be triggered. By choosing cases with possible partners with a higher
-probability (3:1), they will be chosen more often, resulting in fewer runs being
-effected by timeout. This can reduce the number of runs needed to explore the
-possible paths.
+[^1]: Liu, Z., Xia, S., Liang, Y., Song, L., Hu, H.: Who goes first? detecting
+go concurrency bugs via message reordering. In: Proceedings of the 27th
+ACM International Conference on Architectural Support for Programming
+Languages and Operating Systems. p. 888–902. ASPLOS ’22, Association
+for Computing Machinery, New York, NY, USA (2022). https://doi.org/10.
+1145/3503222.3507753, https://doi.org/10.1145/3503222.3507753

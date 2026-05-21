@@ -20,12 +20,12 @@ If we want to use this runtime directly, we need to change the
 export GOROOT=/home/.../goPatch
 ```
 
-If the toolchain is used, this is done automatically.
+If the controller is used, this is done automatically.
 
 The only change required in the analyzed program is to add
 a header at the main or test function as described in the [recording](recording.md)
 and [replay](replay.md).\
-If the toolchain is used, this is done automatically.
+If the controller is used, this is done automatically.
 
 ## Changed files
 
@@ -40,6 +40,13 @@ All modifications have been annotated with GOCDR-START and GOCDR-END.
 - [src/runtime/gocdr_exit.go](../goPatch/src/runtime/gocdr_exit.go)
 - [src/runtime/gocdr_fuzzing.go](../goPatch/src/runtime/gocdr_fuzzing.go)
 - [src/runtime/gocdr_ids.go](../goPatch/src/runtime/gocdr_ids.go)
+- [src/runtime/gocdr__replay_element.go](../goPatch/src/runtime/gocdr_element.go)
+- [src/runtime/gocdr__replay_exit.go](../goPatch/src/runtime/gocdr_exit.go)
+- [src/runtime/gocdr__replay_manager.go](../goPatch/src/runtime/gocdr_manager.go)
+- [src/runtime/gocdr__replay_partial.go](../goPatch/src/runtime/gocdr_partial.go)
+- [src/runtime/gocdr__replay_stuck.go](../goPatch/src/runtime/gocdr_stuck.go)
+- [src/runtime/gocdr__replay_trace.go](../goPatch/src/runtime/gocdr_trace.go)
+- [src/runtime/gocdr__replay_wait.go](../goPatch/src/runtime/gocdr_wait.go)
 - [src/runtime/gocdr_replay.go](../goPatch/src/runtime/gocdr_replay.go)
 - [src/runtime/gocdr_routine.go](../goPatch/src/runtime/gocdr_routine.go)
 - [src/runtime/gocdr_time.go](../goPatch/src/runtime/gocdr_time.go)
@@ -70,6 +77,7 @@ Modifications in files are marked with
 - [src/runtime/proc.go](../goPatch/src/runtime/proc.go)
 - [src/runtime/runtime2.go](../goPatch/src/runtime/runtime2.go)
 - [src/runtime/chan.go](../goPatch/src/runtime/chan.go)
+- [src/runtime/malloc.go](../goPatch/src/runtime/malloc.go)
 - [src/runtime/select.go](../goPatch/src/runtime/select.go)
 - [src/runtime/panic.go](../goPatch/src/runtime/panic.go)
 - [src/sync/cond.go](../goPatch/src/sync/cond.go)
@@ -84,3 +92,4 @@ Modifications in files are marked with
 - [src/sync/atomic/type.go](../goPatch/src/sync/atomic/type.go)
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
 - [src/cmd/link/internal/loader/loader.go](../goPatch/src/cmd/link/internal/loader/loader.go)
+/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/malloc.go

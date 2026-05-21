@@ -1614,7 +1614,7 @@ func findIntrinsic(sym *types.Sym) intrinsicBuilder {
 	if sym.Pkg == ir.Pkgs.Runtime {
 		pkg = "runtime"
 	}
-	// ADVAOCATE-START
+	// GOCDR-START
 	// if base.Flag.Race && pkg == "sync/atomic" {
 	if pkg == "sync/atomic" {
 		// GOCDR-END

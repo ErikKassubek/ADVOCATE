@@ -27,10 +27,10 @@ FROM debian:bookworm-slim
 WORKDIR /ADVOCATE
 
 COPY --from=goruntime-builder /ADVOCATE/goPatch ./goPatch
-COPY --from=app-builder /ADVOCATE/advocate/app ./advocate/app
+COPY --from=app-builder /ADVOCATE/gocdr/app ./gocdr/app
 
 WORKDIR /prog
 
-WORKDIR /ADVOCATE/advocate
+WORKDIR /ADVOCATE/gocdr
 
 ENTRYPOINT ["./app"]

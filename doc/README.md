@@ -1,16 +1,10 @@
 # GOCDR
 
-## Index
-
 The documentation has the following sections:
 
 - [Usage](usage.md)
-- [Toolchain](toolchain.md)
-- [Runtime](runtime.md)
-- [Execution, Recording and Trace](recording.md)
-- [Analysis](analysis.md)
-- [Rewrite](rewrite.md)
+- [Recording and Trace](recording.md)
 - [Replay](replay.md)
+- [Analysis](analysis.md)
 - [Fuzzing](fuzzing.md)
-- [Statistics and Runtime](statistics.md)
-- [Related works](relatedWorks.md)
+- [Runtime](runtime.md)

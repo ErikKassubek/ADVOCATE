@@ -1,43 +1,14 @@
-# AdvocateGo
+# GoCDR
 
-## What is AdvocateGo
+## What is GoCDR
 
-AdvocateGo is an analysis tool for concurrent Go programs.
-It tries to detects concurrency bugs and gives diagnostic insight.
+GoCDR allows the user to record and replay executions of concurrent programs in Go.
 
-AdvocateGo tries to detect the following situations:
+<center><img src="./doc/img/Architecture.png" alt="Architecture of GoCDR" width="400px" height=auto></center>
 
-- A01: "Actual Send on Closed Channel",
-- A02: "Actual Receive on Closed Channel",
-- A03: "Actual Close on Closed Channel",
-- A04: "Actual Close on Nil Channel",
-- A05: "Actual Negative Wait Group",
-- A06: "Actual Unlock of Not Locked Mutex",
-- A07: "Actual Non-Cyclic Blocking Bug",
-- A08: "Actual Cyclic Deadlock with Mutex",
-- A09: "Actual Concurrent Receive on Same Channel",
-- A10: "Actual Cyclic Deadlock with Mutex and Channel
-- P01: "Possible Send on Closed Channel",
-- P02: "Possible Receive on Closed Channel",
-- P03: "Possible Negative WaitGroup cCounter",
-- P04: "Possible unlock of not locked mutex",
-- P05: "Possible Cyclic Deadlock with Mutex",
-- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
-- L00: "Leak",
-- L01: "Leak on unbuffered channel with possible partner",
-- L02: "Leak on unbuffered channel without possible partner",
-- L03: "Leak on buffered Channel with possible partner",
-- L04: "Leak on buffered Channel without possible partner",
-- L05: "Leak on nil channel",
-- L06: "Leak on select with possible partner",
-- L07: "Leak on select without possible partner",
-- L08: "Leak on sync.Mutex",
-- L09: "Leak on sync.WaitGroup",
-- L10: "Leak on sync.Cond",
-- L11: "Leak on channel or select on context",
+It also implements an analysis and fuzzing mode based on the record and replay feature
 
-Additionally it is able to record and deterministically replay
-executions of concurrent GO programs.
+<center><img src="./doc/img/Architecture2.png" alt="GoCDR in analysis and fuzzing framework" width="400px" height=auto></center>
 
 ## Modes
 
@@ -45,21 +16,25 @@ Advocate provides 4 different modes:
 
 - record: record the execution of a program or test into a trace
 - replay: given a trace file, execute a program in such a way, that it follows the trace
-- analysis: record a program and analyze the recorded trace to detect potential concurrency bugs. If a potential bug is found, rewrite the trace in such a way that the bug is triggered and replay this trace to confirm that the bug is possible.
-- fuzzing: Apply different fuzzing approaches to increase the reach of the analysis.
+- analysis: record a program and analyze the recorded trace to detect potential concurrency bugs.
+- fuzzing: apply different fuzzing approaches to increase the reach of the analysis.
 
 ## Usage
 
-For an explanation on how to use advocate, see [here](./doc/usage.md).
-
+For an explanation on how to use GoCDR, see [here](./doc/usage.md).
 
 > [!IMPORTANT]
-> advocate is implemented for go version 1.25.
+> GoCDR is implemented for go version 1.25.
 > Make sure, that the program does not choose another version/toolchain and is compatible with go 1.25.
-> The output `package advocate is not in std ` or similar indicates a problem with the used version.
+> The output `package GoCDR is not in std ` or similar indicates a problem with the used version.
 > It can help to shorten the go version number in the go.mod file of the analyzed program from go 1.25.x to go 1.25.
 
+## Files
+
+The project contains two main directories.
+`goPatch` contains a modified version of the go runtime, implementing the capture and replay capabilities.
+`gocdr` contains a controller program to run the recording or replay of programs. 
 
 ## Documentation
 
-A detailed description of how advocate works can be found in the [doc](doc) folder.
+A description of how GoCDR works can be found in the [doc](doc) folder.

@@ -1,4 +1,4 @@
-# Execution, Recording and Trace
+# Recording
 
 Gocdr is able to record a program or test run, and to store the executed
 interleaving in a trace. Those traces can be used to deterministically

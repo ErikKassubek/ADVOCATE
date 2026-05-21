@@ -32,17 +32,6 @@ var (
 	trace = newFlagVal("trace", "", "", "Path to the trace folder to replay")
 
 	// scenarios
-	scenarios = newFlagVal("scen", "", "", "Select which analysis scenario to run, e.g. -scen srd for the option s, r and d",
-		"If not set, all scenarios are run.",
-		"Options:",
-		"\ts: Send on closed channel",
-		"\tr: Receive on closed channel",
-		"\tw: Done before add on waitGroup",
-		"\tn: Close of closed channel",
-		"\tb: Concurrent receive on channel",
-		"\tl: Leaking routine",
-		"\tu: Unlock of unlocked mutex",
-		"\tc: Cyclic deadlock")
 	noWarning = newFlagVal("noWarning", "false", "", "Only show critical bugs")
 	onlyA     = newFlagVal("onlyActual", "false", "", "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
@@ -75,14 +64,8 @@ var (
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
-	noFifo                = newFlagVal("ignoreFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
-	ignoreCriticalSection = newFlagVal("ignoreCritSec", "false", "", "Ignore happens before relations of critical sections")
-	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
-	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
-	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
-	// keepTrace             = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
-	settings          = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
-	cancelTestIfFound = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
+	cancelTestIfFound = newFlagVal("cancelTestIfBugFound", "false", "", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
+	ignoreAtomics     = newFlagVal("ignoreAtomics", "false", "", "Do not record atomic operations")
 )
 
 // flagValue is a struct to store one flag value and its description
@@ -342,7 +325,6 @@ func printHelpAnalysis() {
 	fmt.Println(exec1.toString(false))
 
 	// scenarios
-	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
 	fmt.Println(onlyA.toString(false))
 
@@ -372,11 +354,7 @@ func printHelpAnalysis() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
 	// fmt.Println(keepTrace.toString(false))
 }
 
@@ -401,7 +379,6 @@ func printHelpFuzzing() {
 	fmt.Println(exec1.toString(false))
 
 	// scenarios
-	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
 	fmt.Println(onlyA.toString(false))
 
@@ -429,12 +406,7 @@ func printHelpFuzzing() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
-	fmt.Println(replayAll.toString(false))
-	fmt.Println(noRewrite.toString(false))
 	// fmt.Println(keepTrace.toString(false))
-	fmt.Println(settings.toString(false))
 	fmt.Println(cancelTestIfFound.toString(false))
 }

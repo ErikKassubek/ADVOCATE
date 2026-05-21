@@ -53,9 +53,7 @@ func main() {
 	flag.IntVar(&flags.MaxNumberElements, "maxNumberElements", 10000000, "Set the maximum number of elements in a trace. Traces with more elements will be skipped. To disable set -1. Default: 10000000")
 
 	flag.BoolVar(&flags.MeasureTime, "time", false, "measure the runtime")
-	flag.BoolVar(&flags.CreateStatistics, "stats", false, "Create statistics.")
 
-	flag.BoolVar(&flags.IgnoreCriticalSection, "ignoreCritSec", false, "Ignore happens before relations of critical sections (default false)")
 	flag.BoolVar(&flags.IgnoreAtomics, "ignoreAtomics", false, "Ignore atomic operations (default false). Use to reduce memory header for large traces.")
 
 	flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
@@ -80,12 +78,7 @@ func main() {
 
 	flag.BoolVar(&flags.ModeMain, "main", false, "set to run on main function")
 
-	flag.StringVar(&flags.Settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
-
 	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
-
-	// for experiments
-	flag.BoolVar(&baseF.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
 
 	flag.Parse()
 

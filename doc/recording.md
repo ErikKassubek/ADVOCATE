@@ -55,7 +55,7 @@ the [timestamps](#timestamp).
 To record the execution trace local, we add an new variable `gocdrRoutineInfo`
 into the [g struct](../goPatch/src/runtime/runtime2.go#L517).
 This struct is automatically created for each routine by the runtime.
-This variable (defined [here](../goPatch/src/runtime/gocdr_routine.go#L28)), stores the routine id,
+This variable (defined [here](../goPatch/src/runtime/gocdr_routine.go#L38)), stores the routine id,
 the maximum id of any element used in this routine and the
 trace of this routine as a list of elements.
 

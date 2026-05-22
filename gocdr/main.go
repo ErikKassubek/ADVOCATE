@@ -126,10 +126,14 @@ func main() {
 		go control.Supervisor(baseA.ClearTrace, baseA.ClearData, fuzzing.ResetFuzzing) // cancel analysis if not enough ram
 	}
 
-	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
-	if mode == "fuzzing" && (flags.FuzzingMode == baseF.GFuzz ||
-		flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR) {
-		flags.Scenarios = "-"
+	if mode == "fuzzing" {
+		if flags.FuzzingMode == "" {
+			log.Errorf("Fuzzing mode not set. Set either -mode %s, or -mode %s", baseF.GFuzz, baseF.GoPie)
+			panic("Invalid fuzzing mode")
+		} else if !(flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GFuzz) {
+			log.Errorf("Invalid fuzzing mode '%s'. Set either -mode %s, or -mode %s", flags.FuzzingMode, baseF.GFuzz, baseF.GoPie)
+			panic("Invalid fuzzing mode")
+		}
 	}
 
 	if flags.FuzzingMode == "" {

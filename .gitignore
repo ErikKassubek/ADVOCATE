@@ -14,6 +14,10 @@
 # Dependency directories (remove the comment below to include it)
 # vendor/
 
+# compiled data
+goPatch/bin/
+goPatch/pkg/tool
+advocate/advocate
 
 
 # vscode

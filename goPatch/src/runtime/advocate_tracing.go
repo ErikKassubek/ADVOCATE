@@ -13,6 +13,7 @@
 package runtime
 
 var finishTracingFunc func()
+var writeTraceToFileFunc func(routine int, fromRuntime bool) bool
 
 var tracingStartNano int64
 
@@ -20,9 +21,10 @@ var tracingStartNano int64
 //
 // Parameter:
 //   - finishFuzzing func(): function injection for the advocate.FinishFuzzing function
-func InitTracing(finishFuzzing func()) {
+func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool) {
 	advocateTracingDisabled = false
 	finishTracingFunc = finishFuzzing
+	writeTraceToFileFunc = writeToTraceFile
 	setCurrentRoutineToActive()
 
 	if tracingStartNano == 0 {

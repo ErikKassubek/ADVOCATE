@@ -13,6 +13,7 @@
 package runtime
 
 var finishTracingFunc func()
+var writeTraceToFileFunc func(routine int, fromRuntime bool) bool
 
 var tracingStartNano int64
 
@@ -20,9 +21,11 @@ var tracingStartNano int64
 //
 // Parameter:
 //   - finishFuzzing func(): function injection for the gocdr.FinishFuzzing function
-func InitTracing(finishFuzzing func()) {
+//   - wrwriteToTraceFile func(r int, f bool) bool: function injection for writing to trace files
+func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool) {
 	gocdrTracingDisabled = false
 	finishTracingFunc = finishFuzzing
+	writeTraceToFileFunc = writeToTraceFile
 	setCurrentRoutineToActive()
 
 	if tracingStartNano == 0 {

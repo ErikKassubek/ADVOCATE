@@ -34,19 +34,21 @@ var projectPath string
 //   - parkPos string: position of last park in form file:line
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
 //   - wokenByTimeout bool: in replay block was woken up by timeout
+//   - startedWritingToFile bool: routine has started to be written to file
 type GocdrRoutine struct {
-	id                uint64
-	maxObjectId       uint64
-	G                 *g
-	Trace             []traceElem
-	replayID          int
-	forkFile          string
-	forkLine          int
-	parkOn            []unsafe.Pointer
-	parkPos           string
-	parkOp            []Operation
-	parkForeverReplay bool
-	wokenButTimeout   bool
+	id                   uint64
+	maxObjectId          uint64
+	G                    *g
+	Trace                []traceElem
+	replayID             int
+	forkFile             string
+	forkLine             int
+	parkOn               []unsafe.Pointer
+	parkPos              string
+	parkOp               []Operation
+	parkForeverReplay    bool
+	wokenButTimeout      bool
+	startedWritingToFile bool
 }
 
 // Create a new gocdr routine

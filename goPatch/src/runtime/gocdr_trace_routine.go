@@ -64,7 +64,7 @@ func GocdrSpawnCaller(callerRoutine *GocdrRoutine, newID uint64, file string,
 }
 
 // Record the finish of a routine
-func AdvocatRoutineExit() {
+func GocdrRoutineExit() {
 	if gocdrTracingDisabled {
 		return
 	}

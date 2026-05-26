@@ -4478,7 +4478,8 @@ func goexit1() {
 	}
 
 	// GOCDR-START
-	AdvocatRoutineExit()
+	GocdrRoutineExit()
+	GocdrWriteTraceToFile()
 	// GOCDR-END
 
 	trace := traceAcquire()

@@ -482,7 +482,7 @@ func unitTestFullWorkflow(pathTogocdr, dir string,
 		unitTestReplay(pkgPath, pkg, file, testName, paths.NameOutput, false, outFile, outFile)
 	}
 
-	return 0, true, nil
+	return 0, runAnalysis, nil
 }
 
 // unitTestRun runs a test without recording/replay

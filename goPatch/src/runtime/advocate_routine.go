@@ -35,18 +35,19 @@ var projectPath string
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
 //   - wokenByTimeout bool: in replay block was woken up by timeout
 type AdvocateRoutine struct {
-	id                uint64
-	maxObjectId       uint64
-	G                 *g
-	Trace             []traceElem
-	replayID          int
-	forkFile          string
-	forkLine          int
-	parkOn            []unsafe.Pointer
-	parkPos           string
-	parkOp            []Operation
-	parkForeverReplay bool
-	wokenButTimeout   bool
+	id                   uint64
+	maxObjectId          uint64
+	G                    *g
+	Trace                []traceElem
+	replayID             int
+	forkFile             string
+	forkLine             int
+	parkOn               []unsafe.Pointer
+	parkPos              string
+	parkOp               []Operation
+	parkForeverReplay    bool
+	wokenButTimeout      bool
+	startedWritingToFile bool
 }
 
 // Create a new advocate routine
@@ -142,6 +143,10 @@ func (gi *AdvocateRoutine) getLastElement() traceElem {
 	return gi.Trace[len(gi.Trace)-1]
 }
 
+func (gi *AdvocateRoutine) GetForkPos() string {
+	return posToString(gi.forkFile, gi.forkLine)
+}
+
 // Update an element in the trace of the current routine
 // Params:
 //   - index: the index of the element to update
@@ -164,10 +169,6 @@ func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
 	}
 
 	gi.Trace[index] = elem
-}
-
-func (gi *AdvocateRoutine) GetForkPos() string {
-	return gi.forkFile + ":" + intToString(gi.forkLine)
 }
 
 // Get the current routine

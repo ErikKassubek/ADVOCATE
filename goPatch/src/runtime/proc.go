@@ -4479,6 +4479,7 @@ func goexit1() {
 
 	// ADVOCATE-START
 	AdvocatRoutineExit()
+	AdvocateWriteTraceToFile()
 	// ADVOCATE-END
 
 	trace := traceAcquire()

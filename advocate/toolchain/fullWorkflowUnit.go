@@ -495,7 +495,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, outFile, outFile)
 	}
 
-	return numberReplay, true, nil
+	return numberReplay, runAnalysis, nil
 }
 
 // unitTestRun runs a test without recording/replay

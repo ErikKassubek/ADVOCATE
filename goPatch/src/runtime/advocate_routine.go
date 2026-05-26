@@ -32,15 +32,16 @@ var projectPath string
 //   - parkPos string: position of last park in form file:line
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
 type AdvocateRoutine struct {
-	id                uint64
-	maxObjectId       uint64
-	G                 *g
-	Trace             []traceElem
-	replayID          int
-	parkOn            []unsafe.Pointer
-	parkPos           string
-	parkForeverReplay bool
-	wokenButTimeout   bool
+	id                   uint64
+	maxObjectId          uint64
+	G                    *g
+	Trace                []traceElem
+	replayID             int
+	parkOn               []unsafe.Pointer
+	parkPos              string
+	parkForeverReplay    bool
+	wokenButTimeout      bool
+	startedWritingToFile bool
 }
 
 // Create a new advocate routine

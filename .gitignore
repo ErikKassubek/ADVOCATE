@@ -16,7 +16,7 @@
 
 # compiled data
 goPatch/bin/
-goPatch/pkg/tool/
+goPatch/pkg/tool
 advocate/advocate
 
 

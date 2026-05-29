@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package app
+package run
 
 import (
 	"advocate/fuzzing/baseF"

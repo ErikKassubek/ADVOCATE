@@ -1,4 +1,14 @@
-package app
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: run.go
+// Brief: start/controll the different modes
+//
+// Author: Erik Kassubek
+// Created: 2026-05-29
+//
+// License: BSD-3-Clause
+
+package run
 
 import (
 	"advocate/analysis/baseA"
@@ -16,7 +26,7 @@ import (
 )
 
 // Run starts the execution of advocate
-func Run() {
+func Run() error {
 
 	// If -main is set, the path needs to be the path to the main file
 	// If the given path is to a folder, check if a main.go file exists in this folder
@@ -28,12 +38,17 @@ func Run() {
 			log.Error("Could not find main file. If -main is set, -path should point to the main file.")
 			log.Error(err)
 
-			return
+			return err
 		}
 	}
 
 	settings.SetSettings()
 	paths.BuildPaths(flags.ModeMain)
+
+	err := Check()
+	if err != nil {
+		return err
+	}
 
 	progPathDir := paths.GetDirectory(flags.ProgPath)
 	timer.Init(progPathDir)
@@ -56,11 +71,10 @@ func Run() {
 		flags.FuzzingMode = baseF.Guided
 	}
 
-	var err error
 	baseA.AnalysisCasesMap, err = flags.ParseAnalysisCases()
 	if err != nil {
 		log.Error("Could not read analysis cases: ", err)
-		return
+		return err
 	}
 
 	modeMainTest := "test"
@@ -73,23 +87,28 @@ func Run() {
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")
-		panic(fmt.Errorf("Could not determine executable name"))
+		return fmt.Errorf("Could not determine executable name")
 	}
 
 	switch flags.Mode {
 	case "analysis":
-		modeToolchain(modeMainTest, true, true, true)
+		err = modeToolchain(modeMainTest, true, true, true)
 	case "fuzzing":
-		modeFuzzing()
+		err = modeFuzzing()
 	case "record", "recording":
 		flags.KeepTraces = true
-		modeToolchain(modeMainTest, true, false, false)
+		err = modeToolchain(modeMainTest, true, false, false)
 	case "replay":
-		modeToolchain(modeMainTest, false, false, true)
+		err = modeToolchain(modeMainTest, false, false, true)
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
-		log.Error("Select one mode from  'analysis', 'fuzzing' or 'record'")
+		log.Error("Select one mode from  'analysmodesis', 'fuzzing' or 'record'")
+		err = fmt.Errorf("Unknown mode %s", os.Args[1])
 		helper.PrintHelp()
+	}
+
+	if err != nil {
+		return err
 	}
 
 	numberBugs, _, numberTestWithRes, numberErr, numberTimeout := log.GetLoggingNumbers()
@@ -114,4 +133,6 @@ func Run() {
 		}
 	}
 	timer.UpdateTimeFileOverview("*Total*")
+
+	return nil
 }

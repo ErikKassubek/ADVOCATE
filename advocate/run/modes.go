@@ -1,14 +1,14 @@
 // Copyright (c) 2024 Erik Kassubek
 //
 // File: modes.go
-// Brief: start/controll the different modes
+// Brief: controll the different modes
 //
 // Author: Erik Kassubek
 // Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
-package app
+package run
 
 import (
 	"advocate/fuzzing"
@@ -20,7 +20,7 @@ import (
 )
 
 // modeFuzzing starts the fuzzing
-func modeFuzzing() {
+func modeFuzzing() error {
 	if flags.ProgName == "" {
 		flags.ProgName = paths.GetProgName(flags.ProgPath)
 	}
@@ -30,13 +30,17 @@ func modeFuzzing() {
 	if err != nil {
 		log.Error("Error on checking prog path: ", err)
 		log.Error("Set path with -path [path]")
+		return err
 		panic(err)
 	}
 
 	err = fuzzing.Fuzzing()
 	if err != nil {
 		log.Error("Fuzzing Failed: ", err.Error())
+		return err
 	}
+
+	return nil
 }
 
 // Start point for the toolchain
@@ -50,19 +54,19 @@ func modeFuzzing() {
 //
 // Note:
 //   - If recording is false, but analysis or replay is set, -trace must be set
-func modeToolchain(mode string, record bool, analysis bool, replay bool) {
+func modeToolchain(mode string, record bool, analysis bool, replay bool) error {
 	var err error
 	flags.ProgPath, err = paths.CheckPath(flags.ProgPath)
 	if err != nil {
 		log.Error("Error on checking prog path: ", err)
-		panic(err)
+		return err
 	}
 
 	if !record && (analysis || replay) {
 		flags.TracePath, err = paths.CheckPath(flags.TracePath)
 		if err != nil {
 			log.Error("Error on checking trace path: ", err)
-			panic(err)
+			return err
 		}
 	}
 
@@ -76,13 +80,15 @@ func modeToolchain(mode string, record bool, analysis bool, replay bool) {
 	_, _, err = toolchain.Run(mode, "", record, analysis,
 		replay, -1, "", firstRun, fileNumber, testNumber)
 	if err != nil {
-		log.Error("Failed to run toolchain: ", err.Error())
+		return err
 	}
 
 	if flags.CreateStatistics {
 		err = stats.CreateStatsTotal(flags.ProgPath)
 		if err != nil {
-			log.Error("Failed to create stats total: ", err.Error())
+			return err
 		}
 	}
+
+	return nil
 }

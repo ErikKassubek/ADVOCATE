@@ -11,15 +11,27 @@
 package main
 
 import (
-	"advocate/app"
+	"advocate/gui"
+	"advocate/run"
+	"advocate/utils/flags"
+	"advocate/utils/log"
 )
 
 // Main function
 func main() {
-	cont := app.CommandLine()
+	cont := run.CommandLine()
 	if !cont {
 		return
 	}
 
-	app.Run()
+	gui.Run()
+
+	if flags.Mode == "gui" {
+		gui.Run()
+	} else {
+		err := run.Run()
+		if err != nil {
+			log.Error(err)
+		}
+	}
 }

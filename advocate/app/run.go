@@ -15,7 +15,8 @@ import (
 	"os"
 )
 
-func Run(mode string) {
+// Run starts the execution of advocate
+func Run() {
 
 	// If -main is set, the path needs to be the path to the main file
 	// If the given path is to a folder, check if a main.go file exists in this folder
@@ -45,7 +46,7 @@ func Run(mode string) {
 	}
 
 	// don't run any HB Analysis for direct GFuzz, GoPie and GoCR
-	if mode == "fuzzing" && (flags.FuzzingMode == baseF.GFuzz ||
+	if flags.Mode == "fuzzing" && (flags.FuzzingMode == baseF.GFuzz ||
 		flags.FuzzingMode == baseF.GoPie || flags.FuzzingMode == baseF.GoCR) {
 		flags.Scenarios = "-"
 		flags.OnlyAPanicAndLeak = true
@@ -75,7 +76,7 @@ func Run(mode string) {
 		panic(fmt.Errorf("Could not determine executable name"))
 	}
 
-	switch mode {
+	switch flags.Mode {
 	case "analysis":
 		modeToolchain(modeMainTest, true, true, true)
 	case "fuzzing":
@@ -102,7 +103,7 @@ func Run(mode string) {
 	} else {
 		log.Errorf("%d internal replay timeouts occurred", numberTimeout)
 	}
-	if mode == "analysis" || mode == "fuzzing" {
+	if flags.Mode == "analysis" || flags.Mode == "fuzzing" {
 		if numberTestWithRes == 0 {
 			log.Info("No bugs have been found/indicated")
 		} else {

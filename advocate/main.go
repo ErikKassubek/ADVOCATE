@@ -16,10 +16,10 @@ import (
 
 // Main function
 func main() {
-	mode := app.CommandLine()
-	if mode == "" {
+	cont := app.CommandLine()
+	if !cont {
 		return
 	}
 
-	app.Run(mode)
+	app.Run()
 }

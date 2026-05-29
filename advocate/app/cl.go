@@ -23,7 +23,11 @@ var (
 	help bool
 )
 
-func CommandLine() string {
+// CommandLine reads and processes the command line arguments
+//
+// Returns:
+//   - bool: true if execution can continue, false if it should stop, e.g. because help was selected/shown
+func CommandLine() bool {
 	flag.BoolVar(&help, "h", false, "Print help")
 	flag.BoolVar(&help, "help", false, "Print help")
 
@@ -91,22 +95,22 @@ func CommandLine() string {
 
 	flag.Parse()
 
-	var mode string
 	if len(os.Args) >= 2 && !strings.HasPrefix(os.Args[1], "-") {
-		mode = os.Args[1]
+		flags.Mode = os.Args[1]
 		flag.CommandLine.Parse(os.Args[2:])
 		if help {
-			helper.PrintHelpMode(mode)
-			return ""
+			helper.PrintHelpMode(flags.Mode)
+			return false
 		}
 	} else {
 		if help {
 			helper.PrintHelp()
-			return ""
+			return false
 		}
 		helper.PrintHelp()
-		return ""
+		return false
 	}
 
-	return mode
+	return true
+
 }

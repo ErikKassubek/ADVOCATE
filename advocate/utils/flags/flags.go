@@ -21,6 +21,7 @@ var (
 
 // Modes
 var (
+	Mode        string
 	ModeMain    bool
 	FuzzingMode string
 )

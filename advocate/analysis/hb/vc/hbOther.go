@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: hbAtomic.go
 // Brief: Store the vc for new and routine element

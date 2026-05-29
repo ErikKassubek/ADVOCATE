@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
+// Copyright (c) 2026 Erik Kassubek, Mario Occhinegro
 //
 // File: runFullWorkflowMain.go
 // Brief: Function to run the whole ADVOCATE workflow, including running,

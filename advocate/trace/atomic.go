@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: /advocate/trace/atomic.go
 // Brief: Struct and functions for atomic operations in the trace

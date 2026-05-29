@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: headerUnitTests.go
 // Brief: Functions to add and remove the ADVOCATE header into file containing

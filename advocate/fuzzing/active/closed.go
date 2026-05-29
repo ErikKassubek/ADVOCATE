@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: closed.go
 // Brief: Rewrite traces for send and receive on closed channel

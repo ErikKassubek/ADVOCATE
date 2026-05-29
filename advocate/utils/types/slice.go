@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: slice.go
 // Brief: Utility functions on slices

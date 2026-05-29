@@ -1,6 +1,6 @@
 // advocate/analysis/analysis/analysis.go
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: analysis.go
 // Brief: analysis of traces if performed from here

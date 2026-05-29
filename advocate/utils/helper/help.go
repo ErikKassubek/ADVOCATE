@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: help.go
 // Brief: Function to print help/how to use

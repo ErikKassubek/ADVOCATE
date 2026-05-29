@@ -43,7 +43,11 @@ script. This will create a go executable in the `bin` directory.
 ### Advocate
 
 Additionally, the advocate program needs to be build. This is a standard Go
-program. To build it, move into the [advocate](../advocate/) directory
+program.
+
+Advocate uses Fyne for its graphical interface. Install the prerequisites as found [here](https://docs.fyne.io/started/quick/).
+
+To build it, move into the [advocate](../advocate/) directory
 and build it with the standard
 
 ```shell

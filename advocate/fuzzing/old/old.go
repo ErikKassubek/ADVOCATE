@@ -1,4 +1,4 @@
-// // Copyright (c) 2025 Erik Kassubek
+// // Copyright (c) 2026 Erik Kassubek
 // //
 // // File: precomputations.go
 // // Brief: Calculate all required ress for a trace

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: analyzer.go
 // Brief: Starting point for the analyzer and replay

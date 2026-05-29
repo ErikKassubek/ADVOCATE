@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: analysisGraph.go
 // Brief: Functions to use a graph for analysis. Used fop negative wait group

@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Sebastian Pohsner
+// Copyright (c) 2026 Sebastian Pohsner
 //
 // File: statsMisc.go
 // Brief: Collect miscellaneous statistics about the advocate run

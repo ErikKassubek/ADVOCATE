@@ -1,6 +1,6 @@
 // advocate/analysis/baseA/settings.go
 
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: vc.go
 // Brief: Data required for how the analysis is run

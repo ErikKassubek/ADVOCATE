@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: gui.go
 // Brief: Entry point for graphical interface
@@ -12,6 +12,7 @@ package gui
 
 func Run() {
 	window := window{}
+	window.create()
 	window.build()
 	window.showAndRun()
 }

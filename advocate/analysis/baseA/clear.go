@@ -1,6 +1,6 @@
 // advocate/analysis/baseA/clear.go
 
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: clear.go
 // Brief: Clear trace and data

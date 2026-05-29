@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: /advocate/trace/select.go
 // Brief: Struct and functions for select operations in the trace

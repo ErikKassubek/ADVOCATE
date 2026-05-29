@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: /advocate/trace/trace.go
 // Brief: Functions and structs for the trace

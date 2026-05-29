@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: traceMin.go
 // Brief: Functions and structs to implement a minimal representation of a trace

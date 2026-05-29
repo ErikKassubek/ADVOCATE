@@ -1,4 +1,4 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: /advocate/trace/once.go
 // Brief: Struct and functions for once operations in the trace

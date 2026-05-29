@@ -1,6 +1,6 @@
 // advocate/analysis/analysis/elements/mutex.go
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: hbMutex.go
 // Brief: Update functions for happens before info for mutex operation

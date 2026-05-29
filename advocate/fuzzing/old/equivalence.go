@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: equivalence.go
 // Brief: Functions to check if two mutations/traces are equivalent for the

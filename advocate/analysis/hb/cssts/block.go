@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
 // File: block.go
 // Brief: Implementation of Block.java from CSST paper (sea csst.go)

@@ -12,7 +12,6 @@ package gui
 
 import (
 	"advocate/utils/flags"
-	"advocate/utils/log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -22,18 +21,20 @@ import (
 type componentMainTestSelect struct {
 	*fyne.Container
 
-	mainTest *widget.Select
-	allOne   *widget.Select
-	testName *widget.Entry
+	mainTestSel *widget.Select
+	allOneSel   *widget.Select
+	testNameSel *widget.Select
 
 	showAllOne   bool
 	showTestName bool
+
+	testNames []string
 }
 
 func creatMainTestSelector(w *window) componentMainTestSelect {
 	csmt := componentMainTestSelect{}
 
-	csmt.mainTest = widget.NewSelect(
+	csmt.mainTestSel = widget.NewSelect(
 		[]string{
 			"Unit Tests",
 			"Main",
@@ -52,13 +53,13 @@ func creatMainTestSelector(w *window) componentMainTestSelect {
 		},
 	)
 
-	csmt.allOne = widget.NewSelect(
+	csmt.allOneSel = widget.NewSelect(
 		[]string{
 			"All Tests",
 			"One Test",
 		},
-		func(value string) {
-			if value == "All Tests" {
+		func(s string) {
+			if s == "All Tests" {
 				flags.ExecName = ""
 				csmt.showTestName = false
 			} else {
@@ -69,21 +70,20 @@ func creatMainTestSelector(w *window) componentMainTestSelect {
 		},
 	)
 
-	csmt.testName = widget.NewEntry()
-	csmt.testName.SetPlaceHolder("Test Name")
-	// TODO: add search
-	csmt.testName.OnChanged = func(text string) {
-		flags.ExecName = text
-		w.appendOutput(text, log.GuiLv)
-	}
+	csmt.testNameSel = widget.NewSelect(
+		[]string{},
+		func(s string) {
+			flags.ExecName = s
+		},
+	)
 
 	// create container ONCE
 	csmt.Container = container.NewVBox()
 
 	csmt.creatMainTestSelectorContainer()
 
-	csmt.mainTest.SetSelected("Unit Tests")
-	csmt.allOne.SetSelected("All Tests")
+	csmt.mainTestSel.SetSelected("Unit Tests")
+	csmt.allOneSel.SetSelected("All Tests")
 
 	return csmt
 }
@@ -91,17 +91,24 @@ func creatMainTestSelector(w *window) componentMainTestSelect {
 func (self *componentMainTestSelect) creatMainTestSelectorContainer() {
 	objects := []fyne.CanvasObject{
 		widget.NewLabel("Main/Test:"),
-		self.mainTest,
+		self.mainTestSel,
 	}
 
 	if self.showAllOne {
-		objects = append(objects, self.allOne)
+		objects = append(objects, self.allOneSel)
 	}
 
 	if self.showTestName {
-		objects = append(objects, self.testName)
+		objects = append(objects, self.testNameSel)
 	}
 
 	self.Container.Objects = objects
 	self.Container.Refresh()
+}
+
+func (self *componentMainTestSelect) setTestNames(names *[]string) {
+	self.testNames = *names
+	self.testNameSel.Options = self.testNames
+
+	self.testNameSel.SetSelected(self.testNames[0])
 }

@@ -34,6 +34,7 @@ type window struct {
 	w fyne.Window
 
 	left     *fyne.Container
+	right    *fyne.Container
 	settings *fyne.Container
 
 	modeSelect     componentModeSelect
@@ -41,6 +42,7 @@ type window struct {
 	mainTestSelect componentMainTestSelect
 	runButton      componentRunButton
 	output         componentOutput
+	progressBar    componentProgress
 }
 
 func (self *window) create() {
@@ -82,7 +84,15 @@ func (self *window) build() {
 		),
 	)
 
-	content := container.NewHSplit(self.left, self.output.Container)
+	self.right = container.NewBorder(
+		nil,
+		self.progressBar.Container,
+		nil,
+		nil,
+		self.output.Container,
+	)
+
+	content := container.NewHSplit(self.left, self.right)
 	content.SetOffset(0.33)
 
 	self.w.SetContent(content)
@@ -93,6 +103,7 @@ func (self *window) createComponents() {
 	self.mainTestSelect = creatMainTestSelector(self)
 	self.runButton = createRunButton(self)
 	self.output = createOutput()
+	self.progressBar = createProgressBar()
 
 	self.settings = container.NewVBox()
 

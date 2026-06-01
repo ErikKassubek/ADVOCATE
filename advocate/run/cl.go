@@ -54,7 +54,7 @@ func CommandLine() bool {
 
 	flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	flag.BoolVar(&flags.NoRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
-	flag.BoolVar(&flags.KeepTraces, "keepTrace", false, "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	flag.BoolVar(&flags.DeleteTrace, "deleteTrace", false, "If set, the traces are deleted at the end.")
 	flag.BoolVar(&flags.SkipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	flag.BoolVar(&flags.Continue, "cont", false, "Continue a partial analysis of tests")

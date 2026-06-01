@@ -20,24 +20,65 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// -------------------------------------------------------------------------------------------------------
+// Text Input
+// -------------------------------------------------------------------------------------------------------
+
 type textInput struct {
 	*fyne.Container
 
 	entry *widget.Entry
 	check *widget.Check
 }
-type NumericEntry struct {
+
+func createInputText(labelStr string, val string, canBeDisabled bool) textInput {
+	entry := widget.NewEntry()
+
+	entry.SetText(val)
+
+	var check *widget.Check
+	var middle fyne.CanvasObject
+
+	if canBeDisabled {
+		check = widget.NewCheck("", func(b bool) {
+			if b {
+				entry.Enable()
+			} else {
+				entry.Disable()
+			}
+		})
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
+		if val != "-1" {
+			check.SetChecked(true)
+		} else {
+			entry.Disable()
+		}
+	} else {
+		// empty spacer same size as checkbox
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
+	}
+
+	row := createSettingField(labelStr, middle, entry)
+
+	return textInput{Container: row, entry: entry, check: check}
+}
+
+// -------------------------------------------------------------------------------------------------------
+// Numeric Input
+// -------------------------------------------------------------------------------------------------------
+
+type numericEntry struct {
 	widget.Entry
 	AllowFloat bool
 }
 
-func NewNumericEntry() *NumericEntry {
-	e := &NumericEntry{}
+func NewNumericEntry() *numericEntry {
+	e := &numericEntry{}
 	e.ExtendBaseWidget(e)
 	return e
 }
 
-func (e *NumericEntry) TypedRune(r rune) {
+func (e *numericEntry) TypedRune(r rune) {
 	if unicode.IsDigit(r) {
 		e.Entry.TypedRune(r)
 		return
@@ -50,9 +91,7 @@ func (e *NumericEntry) TypedRune(r rune) {
 	}
 }
 
-func createNumericInput[T math.NumberType](labelStr string, valToSet *T, canBeDisabled bool) textInput {
-	label := widget.NewLabel(labelStr)
-
+func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDisabled bool) textInput {
 	var zero T
 	entry := NewNumericEntry()
 
@@ -94,17 +133,7 @@ func createNumericInput[T math.NumberType](labelStr string, valToSet *T, canBeDi
 		)
 	}
 
-	row := container.NewHBox(
-		container.NewGridWrap(
-			fyne.NewSize(200, 40),
-			label,
-		),
-		middle,
-		container.NewGridWrap(
-			fyne.NewSize(200, 40),
-			entry,
-		),
-	)
+	row := createSettingField(labelStr, middle, entry)
 
 	check.OnChanged = func(b bool) {
 		if b {
@@ -129,40 +158,65 @@ func createNumericInput[T math.NumberType](labelStr string, valToSet *T, canBeDi
 	}
 }
 
-func createTextInput(labelStr string, val string, canBeDisabled bool) textInput {
+// -------------------------------------------------------------------------------------------------------
+// Check Input
+// -------------------------------------------------------------------------------------------------------
 
+type checkInput struct {
+	*fyne.Container
+
+	check *widget.Check
+}
+
+func createInputCheck(labelStr string, valToSet *bool) checkInput {
+	check := widget.NewCheck("", func(b bool) { *valToSet = b })
+
+	row := createSettingField(labelStr, check, nil)
+
+	return checkInput{Container: row, check: check}
+}
+
+// -------------------------------------------------------------------------------------------------------
+// Helper Input
+// -------------------------------------------------------------------------------------------------------
+
+const rowHeight float32 = 40
+const labelWidth float32 = 250
+const checkWidth float32 = 40
+const inputWidth float32 = labelWidth + checkWidth
+
+func createSettingField(labelStr string, middle fyne.CanvasObject, right fyne.CanvasObject) *fyne.Container {
 	label := widget.NewLabel(labelStr)
-	entry := widget.NewEntry()
 
-	entry.SetText(val)
-
-	var check *widget.Check
-	var middle fyne.CanvasObject
-
-	if canBeDisabled {
-		check = widget.NewCheck("", func(b bool) {
-			if b {
-				entry.Enable()
-			} else {
-				entry.Disable()
-			}
-		})
-		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
-		if val != "-1" {
-			check.SetChecked(true)
-		} else {
-			entry.Disable()
-		}
-	} else {
-		// empty spacer same size as checkbox
-		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
+	if right == nil {
+		right = widget.NewLabel("")
 	}
 
-	row := container.NewHBox(
-		container.NewGridWrap(fyne.NewSize(200, 40), label),
-		middle,
-		container.NewGridWrap(fyne.NewSize(200, 40), entry),
+	return container.NewHBox(
+		container.NewGridWrap(
+			fyne.NewSize(labelWidth, rowHeight),
+			label,
+		),
+		container.NewGridWrap(
+			fyne.NewSize(checkWidth, rowHeight),
+			middle,
+		),
+		container.NewGridWrap(
+			fyne.NewSize(inputWidth, rowHeight),
+			right,
+		),
 	)
+}
 
-	return textInput{Container: row, entry: entry, check: check}
+func twoCheck(left, right fyne.CanvasObject) *fyne.Container {
+	return container.NewHBox(
+		container.NewGridWrap(
+			fyne.NewSize(inputWidth, rowHeight),
+			left,
+		),
+		container.NewGridWrap(
+			fyne.NewSize(inputWidth, rowHeight),
+			right,
+		),
+	)
 }

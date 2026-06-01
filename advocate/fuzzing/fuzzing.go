@@ -81,7 +81,7 @@ func Fuzzing() error {
 		clearDataFull()
 		timer.ResetFuzzing()
 
-		if !flags.KeepTraces {
+		if flags.DeleteTrace {
 			toolchain.RemoveTraces(flags.ProgPath)
 		}
 
@@ -156,7 +156,7 @@ func Fuzzing() error {
 		}
 	}
 
-	if !flags.KeepTraces {
+	if flags.DeleteTrace {
 		toolchain.RemoveTraces(flags.ProgPath)
 	}
 

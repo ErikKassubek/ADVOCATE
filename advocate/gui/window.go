@@ -94,11 +94,11 @@ func (self *window) build() {
 }
 
 func (self *window) createComponents() {
+	self.output = createOutput()
 
 	self.projSelector = createProjSelector()
 	self.mainTestSelect = creatMainTestSelector()
 	self.runButton = createRunButton()
-	self.output = createOutput()
 	self.progressBar = createProgressBar()
 	self.settings = createSettings()
 

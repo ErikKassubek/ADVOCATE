@@ -48,20 +48,35 @@ func (self *window) setSettings(content []fyne.CanvasObject) {
 // ------------------------------------------------------------------------------------
 
 type settingComponents struct {
-	toRecord          textInput
-	toReplay          textInput
-	toFuzzing         textInput
+	toRecord  textInput
+	toReplay  textInput
+	toFuzzing textInput
+
 	maxFuzzingRun     textInput
 	maxNumberElements textInput
+
+	measureTime         checkInput
+	createStatistics    checkInput
+	checkForNotExecuted checkInput
+
+	ignoreCriticalSections checkInput
+	ignoreAtomics          checkInput
+	onlyAPanicAndLeak      checkInput
 }
 
 func createSettingComponents() *settingComponents {
 	to := settingComponents{
-		toRecord:          createNumericInput("Timeout Record [s]: ", &flags.TimeoutRecording, true),
-		toReplay:          createNumericInput("Timeout Replay [s]: ", &flags.TimeoutReplay, true),
-		toFuzzing:         createNumericInput("Timeout Fuzzing [s]: ", &flags.TimeoutFuzzing, true),
-		maxFuzzingRun:     createNumericInput("Max. Fuzzing Runs: ", &flags.MaxFuzzingRun, true),
-		maxNumberElements: createNumericInput("Max. Number Elements: ", &flags.MaxNumberElements, true),
+		toRecord:               createInputNumeric("Timeout Record [s]: ", &flags.TimeoutRecording, true),
+		toReplay:               createInputNumeric("Timeout Replay [s]: ", &flags.TimeoutReplay, true),
+		toFuzzing:              createInputNumeric("Timeout Fuzzing [s]: ", &flags.TimeoutFuzzing, true),
+		maxFuzzingRun:          createInputNumeric("Max. Fuzzing Runs: ", &flags.MaxFuzzingRun, true),
+		maxNumberElements:      createInputNumeric("Max. Number Elements: ", &flags.MaxNumberElements, true),
+		measureTime:            createInputCheck("Measure Time: ", &flags.MeasureTime),
+		createStatistics:       createInputCheck("Create Statistics: ", &flags.CreateStatistics),
+		checkForNotExecuted:    createInputCheck("Check for not Executed Ops: ", &flags.NotExecuted),
+		ignoreCriticalSections: createInputCheck("Ignore Critical Sections: ", &flags.IgnoreCriticalSection),
+		ignoreAtomics:          createInputCheck("Ignore Atomics: ", &flags.IgnoreAtomics),
+		onlyAPanicAndLeak:      createInputCheck("Disable Prediction: ", &flags.OnlyAPanicAndLeak),
 	}
 
 	return &to

@@ -17,7 +17,6 @@ import (
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
-	"advocate/utils/comm"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -39,7 +38,6 @@ import (
 // Parameter:
 //   - pathToAdvocate string: pathToAdvocate
 //   - dir string: path to the folder containing the unit tests
-//   - run bool: run without recording/replay
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -56,7 +54,7 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
+func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	pathToTest string, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber,
 	testNumber int) (int, int, error) {
@@ -172,7 +170,7 @@ func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
 
 			// Execute full workflow
 			nrReplay, anaPassed, err := unitTestFullWorkflow(paths.Advocate,
-				dir, run, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
+				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(testFunc, nrReplay)
@@ -191,7 +189,7 @@ func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
 				skippedTests++
 			}
 
-			if runAnalysis && anaPassed {
+			if anaPassed {
 				numberResults += generateBugReports(movedTraces, fuzzing)
 			}
 
@@ -199,7 +197,7 @@ func runWorkflowUnit(dir string, run, runRecord, runAnalysis, runReplay bool,
 				stats.CreateStats(testFunc, movedTraces, fuzzing)
 			}
 
-			if flags.DeleteTrace && !flags.CreateStatistics {
+			if !flags.KeepTraces && !flags.CreateStatistics {
 				RemoveTraces(dir)
 			}
 
@@ -397,7 +395,6 @@ func FindTestFunctions(file string) ([]string, error) {
 // Parameter:
 //   - pathToAdvocate string: path to advocate
 //   - dir string: path to the package to test
-//   - run bool: run the code without recording/replay
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -415,7 +412,7 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - bool: true if analysis passed without error
 //   - error
 func unitTestFullWorkflow(pathToAdvocate, dir string,
-	run, runRecord, runAnalysis, runReplay bool,
+	runRecord, runAnalysis, runReplay bool,
 	testName, pkg, file string,
 	fuzzing int, fuzzingTrace string) (int, bool, error) {
 
@@ -426,16 +423,16 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	defer outFile.Close()
 
 	// Redirect stdout and stderr to the file
-	// origStdout := os.Stdout
-	// origStderr := os.Stderr
+	origStdout := os.Stdout
+	origStderr := os.Stderr
 
-	// os.Stdout = outFile
-	// os.Stderr = outFile
+	os.Stdout = outFile
+	os.Stderr = outFile
 
-	// defer func() {
-	// 	os.Stdout = origStdout
-	// 	os.Stderr = origStderr
-	// }()
+	defer func() {
+		os.Stdout = origStdout
+		os.Stderr = origStderr
+	}()
 
 	// Validate required inputs
 	if pathToAdvocate == "" {
@@ -461,18 +458,18 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	pkg = strings.TrimPrefix(pkg, dir)
 
-	if run || (flags.MeasureTime && fuzzing < 1) {
-		err := unitTestRun(pkg, file, testName, outFile, outFile)
-		if err != nil {
-			if checkForTimeout(paths.NameOutput) {
-				log.Timeout("Running T0 timed out")
+	if runRecord {
+		if flags.MeasureTime && fuzzing < 1 {
+			err := unitTestRun(pkg, file, testName, origStdout, origStderr)
+			if err != nil {
+				if checkForTimeout(paths.NameOutput) {
+					log.Timeout("Running T0 timed out")
+				}
 			}
 		}
-	}
 
-	if runRecord {
 		err = unitTestRecord(pkg, file,
-			testName, fuzzing, fuzzingTrace, paths.NameOutput, outFile, outFile)
+			testName, fuzzing, fuzzingTrace, paths.NameOutput, origStdout, origStderr)
 		if err != nil {
 			log.Error("Recording failed: ", err.Error())
 		}
@@ -492,7 +489,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, outFile, outFile)
+		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
 	}
 
 	return numberReplay, runAnalysis, nil
@@ -523,12 +520,11 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	log.Info("Run T0")
 	packagePath := paths.MakePathLocal(pkg)
 	var err error
-	openCom := true
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = helper.RunCommand(origStdout, origStderr, openCom, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, false, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = helper.RunCommand(origStdout, origStderr, openCom, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = helper.RunCommand(origStdout, origStderr, false, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -561,7 +557,7 @@ func unitTestRecord(pkg, file, testName string,
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false, osOut); err != nil {
+	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -571,11 +567,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	helper.RunCommand(osOut, osErr, comm.NoCom, paths.Go, "version")
+	helper.RunCommand(osOut, osErr, false, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, comm.OpenCom, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-
+	err := helper.RunCommand(osOut, osErr, false, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -678,13 +673,13 @@ func unitTestReplay(dir, pkg, file,
 			continue
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, record, osOut)
+		headerInserterUnit(file, testName, true, -1, traceNum, record)
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		helper.RunCommand(osOut, osErr, comm.OpenCom, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		helper.RunCommand(osOut, osErr, false, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

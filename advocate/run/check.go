@@ -1,17 +1,16 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
-// File: version.go
-// Brief: Check the go version and exec name of a given program
+// File: check.go
+// Brief: run some checks
 //
 // Author: Erik Kassubek
-// Created: 2025-05-19
+// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
-package helper
+package run
 
 import (
-	"advocate/utils/comm"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -22,7 +21,17 @@ import (
 	"strings"
 )
 
-// CheckGoMod checks the version of the program to be analyzed and finds the exec name
+func CheckBin() error {
+	path := filepath.Join(paths.GoPatch, "bin", "go")
+	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
+		pathMake := filepath.Join(paths.GoPatch, "src")
+		return fmt.Errorf("Could not find %s. Run make.bash or make.bat in %s before running advocate.", path, pathMake)
+	}
+
+	return nil
+}
+
+// CheckProg checks the version of the program to be analyzed and finds the exec name
 // Advocate is implemented in and for go1.25. It the analyzed program has another
 // version, especially if the other version is also installed on the machine,
 // this can lead to problems. checkGoMod therefore reads the version of the
@@ -34,15 +43,22 @@ import (
 //
 // Returns:
 //   - string: exec name, or empty if not found
-func CheckGoMod() string {
+func CheckProg() string {
 	var goModPath string
 
 	if flags.ProgPath == "" {
 		return flags.ExecName
 	}
 
+	var err error
+	flags.ProgPath, err = paths.CheckPath(flags.ProgPath)
+	if err != nil {
+		log.Errorf("Could not find %s", flags.ProgName)
+		return ""
+	}
+
 	// Search for go.mod
-	err := filepath.WalkDir(paths.GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
+	err = filepath.WalkDir(paths.GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -54,14 +70,14 @@ func CheckGoMod() string {
 	})
 
 	if goModPath == "" {
-		log.Info("Could not find go.mod")
+		log.Error("Could not find go.mod")
 		return flags.ExecName
 	}
 
 	// Open and read go.mod
 	file, err := os.Open(goModPath)
 	if err != nil {
-		log.Info("Could not find go.mod")
+		log.Error("Could not find go.mod")
 		return flags.ExecName
 	}
 	defer file.Close()
@@ -123,14 +139,4 @@ func CheckGoMod() string {
 	}
 
 	return flags.ExecName
-}
-
-func RunGoModTidy() {
-	log.Info("Run go mod tidy")
-
-	err := os.Setenv("GOROOT", paths.GoPatch)
-	if err == nil {
-		defer os.Unsetenv("GOROOT")
-	}
-	RunCommand(nil, nil, comm.NoCom, "go", "mod", "tidy")
 }

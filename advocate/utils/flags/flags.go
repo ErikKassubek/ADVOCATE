@@ -21,6 +21,7 @@ var (
 
 // Modes
 var (
+	Mode        string
 	ModeMain    bool
 	FuzzingMode string
 )
@@ -76,5 +77,5 @@ var (
 	SkipExisting  bool
 	NoRewrite     bool
 	NoSkipRewrite bool
-	DeleteTrace   bool
+	KeepTraces    bool
 )

@@ -30,11 +30,10 @@ import (
 //   - fuzzing int: -1 if not fuzzing, otherwise number of fuzzing run, starting with 0
 //   - replayInfo string: path of the fuzzing trace or if the replay trace
 //   - record bool: true to rerecord the leaks
-//   - output *os.File: output file
 //
 // Returns:
 //   - error
-func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, record bool, output *os.File) error {
+func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, replayInfo string, record bool) error {
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
 		return fmt.Errorf("file %s does not exist", fileName)
 	}
@@ -48,7 +47,7 @@ func headerInserterUnit(fileName, testName string, replay bool, fuzzing int, rep
 		return errors.New("Test Method not found in file")
 	}
 
-	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, record, output)
+	return addHeaderUnit(fileName, testName, replay, fuzzing, replayInfo, record)
 }
 
 // Remove all headers from a unit test file
@@ -112,11 +111,10 @@ func testExists(fileName string, testName string) (bool, error) {
 //   - replay bool: true for replay, false for only recording
 //   - replayInfo string: path of the fuzzing trace or if the replay trace
 //   - record bool: true to rerecord the trace
-//   - output *os.File: output file
 //
 // Returns:
 //   - error
-func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, record bool, output *os.File) error {
+func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, replayInfo string, record bool) error {
 	importAdded := false
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
@@ -137,8 +135,8 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 	scanner := bufio.NewScanner(file)
 	currentLine := 0
 
-	fmt.Fprintln(output, "FileName: ", fileName)
-	fmt.Fprintln(output, "TestName: ", testName)
+	fmt.Println("FileName: ", fileName)
+	fmt.Println("TestName: ", testName)
 
 	for scanner.Scan() {
 		currentLine++
@@ -147,11 +145,11 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 
 		if strings.Contains(line, "import \"") && !importAdded {
 			lines = append(lines, "import \"advocatego\"")
-			fmt.Fprintln(output, "Import added at line:", currentLine)
+			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
 			lines = append(lines, "\t\"advocatego\"")
-			fmt.Fprintln(output, "Import added at line:", currentLine)
+			fmt.Println("Import added at line:", currentLine)
 			importAdded = true
 		}
 
@@ -187,8 +185,8 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
   defer advocatego.FinishTracing()
   // ======= Preamble End =======`, flags.TimeoutRecording))
 			}
-			fmt.Fprintln(output, "Header added at line:", currentLine)
-			fmt.Fprintf(output, "Header added at file: %s\n", fileName)
+			fmt.Println("Header added at line:", currentLine)
+			fmt.Printf("Header added at file: %s\n", fileName)
 		}
 	}
 

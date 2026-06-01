@@ -47,3 +47,7 @@ func (self *staticData) buildSsa() {
 func (self *staticData) runPointerAnalysis() {
 	// TODO: implement
 }
+
+func (self *staticData) runAliasAnalysis() {
+	// TODO: implement
+}

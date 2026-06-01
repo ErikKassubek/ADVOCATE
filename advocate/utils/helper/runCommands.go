@@ -14,6 +14,8 @@ import (
 	"advocate/utils/comm"
 	"advocate/utils/control"
 	"advocate/utils/flags"
+	"advocate/utils/log"
+	"advocate/utils/paths"
 	"context"
 	"io"
 	"os"
@@ -71,6 +73,16 @@ func RunCommand(osOut, osErr *os.File, openCom bool, name string, args ...string
 	c.Close()
 
 	return err
+}
+
+func RunGoModTidy() {
+	log.Info("Run go mod tidy")
+
+	err := os.Setenv("GOROOT", paths.GoPatch)
+	if err == nil {
+		defer os.Unsetenv("GOROOT")
+	}
+	RunCommand(nil, nil, false, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

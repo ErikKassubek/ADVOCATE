@@ -39,7 +39,7 @@ import (
 //   - int: number results
 //   - error
 func Run(mode, pathToTest string,
-	run bool, runRecord, runAnalysis, runReplay bool, fuzzing int, fuzzingTrace string,
+	runRecord, runAnalysis, runReplay bool, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber, testNumber int) (int, int, error) {
 
 	baseA.Clear()
@@ -58,7 +58,7 @@ func Run(mode, pathToTest string,
 		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
 			flags.ProgName = paths.GetProgName(flags.ProgPath)
 		}
-		return runWorkflowMain(run, runRecord, runAnalysis, runReplay,
+		return runWorkflowMain(runRecord, runAnalysis, runReplay,
 			fuzzing, fuzzingTrace, firstRun)
 	case "test", "tests":
 		if paths.Advocate == "" {
@@ -70,7 +70,7 @@ func Run(mode, pathToTest string,
 		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
 			flags.ProgName = paths.GetProgName(flags.ProgPath)
 		}
-		return runWorkflowUnit(paths.Prog, run, runRecord, runAnalysis, runReplay,
+		return runWorkflowUnit(paths.Prog, runRecord, runAnalysis, runReplay,
 			pathToTest, fuzzing, fuzzingTrace,
 			firstRun, fileNumber, testNumber)
 	default:

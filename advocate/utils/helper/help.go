@@ -63,8 +63,7 @@ var (
 	output     = newFlagVal("output", "false", "", "Show the output of the executed programs in the terminal. Otherwise it is only in output.log file.")
 
 	// continue
-	cont         = newFlagVal("cont", "false", "", "Continue a partial analysis of tests")
-	skipExisting = newFlagVal("skipExisting", "false", "", "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
+	cont = newFlagVal("cont", "false", "", "Continue a partial analysis of tests")
 
 	// memory
 	noMemorySupervisor = newFlagVal("noMemorySupervisor", "false", "", "Disable the memory supervisor")
@@ -226,7 +225,6 @@ func printHelpRecord() {
 
 	// continue
 	fmt.Println(cont.toString(false))
-	fmt.Println(skipExisting.toString(false))
 
 	// memory
 	fmt.Println(maxNumberElem.toString(false))
@@ -315,7 +313,6 @@ func printHelpAnalysis() {
 
 	// continue
 	fmt.Println(cont.toString(false))
-	fmt.Println(skipExisting.toString(false))
 
 	// memory
 	fmt.Println(maxNumberElem.toString(false))

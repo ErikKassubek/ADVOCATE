@@ -11,6 +11,7 @@
 package gui
 
 import (
+	"advocate/utils/flags"
 	"image/color"
 	"os"
 
@@ -35,13 +36,12 @@ type window struct {
 	left  *fyne.Container
 	right *fyne.Container
 
-	modeSelect     componentModeSelect
-	projSelector   componentProjectSelector
-	mainTestSelect componentMainTestSelect
-	runButton      componentRunButton
-	output         componentOutput
-	progressBar    componentProgress
-	settings       componentSetting
+	modeSelect   componentModeSelect
+	projSelector componentPathSelector
+	runButton    componentRunButton
+	output       componentOutput
+	progressBar  componentProgress
+	settings     componentSetting
 }
 
 func (self *window) create() {
@@ -65,10 +65,6 @@ func (self *window) build() {
 			widget.NewSeparator(),
 
 			self.projSelector.Container,
-
-			widget.NewSeparator(),
-
-			self.mainTestSelect.Container,
 		),
 		self.runButton.Container,
 		nil,
@@ -96,8 +92,7 @@ func (self *window) build() {
 func (self *window) createComponents() {
 	self.output = createOutput()
 
-	self.projSelector = createProjSelector()
-	self.mainTestSelect = creatMainTestSelector()
+	self.projSelector = createPathSelector("Project", &flags.ProgPath)
 	self.runButton = createRunButton()
 	self.progressBar = createProgressBar()
 	self.settings = createSettings()

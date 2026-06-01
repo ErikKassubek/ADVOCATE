@@ -39,8 +39,6 @@ var (
 
 	UseHBInfoFuzzing = true
 
-	FinishIfBugFound = false
-
 	NumberWrittenMutations = 0
 	// for each mutation file, store the file number and the chain
 	ChainFiles = make(map[int]Constraint)

@@ -74,7 +74,6 @@ var (
 // execution control
 var (
 	Continue      bool
-	SkipExisting  bool
 	NoRewrite     bool
 	NoSkipRewrite bool
 	DeleteTrace   bool

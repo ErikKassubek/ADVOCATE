@@ -11,6 +11,7 @@
 package gui
 
 import (
+	"advocate/fuzzing/baseF"
 	"advocate/utils/math"
 	"strings"
 	"unicode"
@@ -31,10 +32,44 @@ type textInput struct {
 	check *widget.Check
 }
 
-func createInputText(labelStr string, val string, canBeDisabled bool) textInput {
+func createInputText(labelStr string, valToSet *string, canBeDisabled bool) textInput {
 	entry := widget.NewEntry()
 
-	entry.SetText(val)
+	entry.SetText(*valToSet)
+
+	var check *widget.Check
+	var middle fyne.CanvasObject
+
+	if canBeDisabled {
+		check = widget.NewCheck("", func(b bool) {
+			if b {
+				*valToSet = entry.Text
+				entry.Enable()
+			} else {
+				*valToSet = ""
+				entry.Disable()
+			}
+		})
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
+		if *valToSet != "-1" {
+			check.SetChecked(true)
+		} else {
+			entry.Disable()
+		}
+	} else {
+		// empty spacer same size as checkbox
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
+	}
+
+	row := createSettingField(labelStr, middle, entry)
+
+	return textInput{Container: row, entry: entry, check: check}
+}
+
+func createInputTextFunc(labelStr string, def string, onSet func(e bool, s string), canBeDisabled, isDisabled bool) textInput {
+	entry := widget.NewEntry()
+
+	entry.SetText("")
 
 	var check *widget.Check
 	var middle fyne.CanvasObject
@@ -46,16 +81,17 @@ func createInputText(labelStr string, val string, canBeDisabled bool) textInput 
 			} else {
 				entry.Disable()
 			}
+			onSet(b, entry.Text)
 		})
+		check.SetChecked(!isDisabled)
 		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
-		if val != "-1" {
-			check.SetChecked(true)
-		} else {
-			entry.Disable()
-		}
 	} else {
 		// empty spacer same size as checkbox
 		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
+	}
+
+	entry.OnChanged = func(s string) {
+		onSet(check.Checked, s)
 	}
 
 	row := createSettingField(labelStr, middle, entry)
@@ -111,8 +147,10 @@ func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDi
 		check = widget.NewCheck("", func(b bool) {
 			if b {
 				entry.Enable()
+				*valToSet = math.ToNum[T](entry.Text)
 			} else {
 				entry.Disable()
+				*valToSet = -1
 			}
 		})
 
@@ -134,16 +172,6 @@ func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDi
 	}
 
 	row := createSettingField(labelStr, middle, entry)
-
-	check.OnChanged = func(b bool) {
-		if b {
-			*valToSet = math.ToNum[T](entry.Text)
-			entry.Enable()
-		} else {
-			*valToSet = -1
-			entry.Disable()
-		}
-	}
 
 	entry.OnChanged = func(_ string) {
 		if check.Checked {
@@ -170,10 +198,51 @@ type checkInput struct {
 
 func createInputCheck(labelStr string, valToSet *bool) checkInput {
 	check := widget.NewCheck("", func(b bool) { *valToSet = b })
+	check.SetChecked(*valToSet)
 
 	row := createSettingField(labelStr, check, nil)
 
 	return checkInput{Container: row, check: check}
+}
+
+// -------------------------------------------------------------------------------------------------------
+// Select Input
+// -------------------------------------------------------------------------------------------------------
+
+type selectInput struct {
+	*fyne.Container
+
+	sel   *widget.Select
+	check *widget.Check
+}
+
+func createInputSelect(labelStr string, valToSet *string, values []string, canBeDisabled bool) selectInput {
+	entry := widget.NewSelect(values, func(s string) {
+		*valToSet = s
+	})
+
+	entry.SetSelected(baseF.Modes[0])
+
+	var check *widget.Check
+	var middle fyne.CanvasObject
+
+	if canBeDisabled {
+		check = widget.NewCheck("", func(b bool) {
+			if b {
+				entry.Enable()
+			} else {
+				entry.Disable()
+			}
+		})
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
+	} else {
+		// empty spacer same size as checkbox
+		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
+	}
+
+	row := createSettingField(labelStr, middle, entry)
+
+	return selectInput{Container: row, sel: entry, check: check}
 }
 
 // -------------------------------------------------------------------------------------------------------

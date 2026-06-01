@@ -22,38 +22,55 @@ import (
 type componentModeSelect struct {
 	*fyne.Container
 
+	label componentSectionLabel
+
 	modeSelectWidget *widget.Select
 }
+
+const (
+	record   = "Record"
+	replay   = "Replay"
+	analysis = "Analysis"
+	fuzzing  = "Fuzzing"
+)
 
 func createModeSelect() componentModeSelect {
 	cms := componentModeSelect{}
 
 	cms.modeSelectWidget = widget.NewSelect(
 		[]string{
-			"Record",
-			"Replay",
-			"Analysis",
-			"Fuzzing",
+			record,
+			replay,
+			analysis,
+			fuzzing,
 		},
 		func(value string) {
 			flags.Mode = strings.ToLower(value)
 
+			if value == replay {
+				win.settings.components.mainTestSelect.isReplay(true)
+			} else {
+				win.settings.components.mainTestSelect.isReplay(false)
+			}
+
 			switch value {
-			case "Record":
+			case record:
 				win.setRecord()
-			case "Analysis":
+			case analysis:
 				win.setAnalysis()
-			case "Replay":
+			case replay:
 				win.setReplay()
-			case "Fuzzing":
+			case fuzzing:
 				win.setFuzzing()
 			}
 
 		},
 	)
 
+	cms.label = createSectionLabel("Mode")
+
 	cms.Container = container.NewVBox(
-		widget.NewLabel("Mode:"),
+		cms.label.Container,
 		cms.modeSelectWidget,
 	)
 

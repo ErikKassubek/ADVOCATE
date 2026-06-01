@@ -23,6 +23,8 @@ const (
 	Guided      = "Guided"      // hb guided fuzzing
 )
 
+var Modes = []string{Guided, GoPie, GoCR, GoCRHB, GFuzz, GFuzzHBFlow, GFuzzHB, Flow}
+
 // Possible mut types
 const (
 	MutSelType  = 0

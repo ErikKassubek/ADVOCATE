@@ -18,8 +18,17 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+const (
+	unitTest = "Unit Test"
+	mainFunc = "Main"
+	allTests = "All Tests"
+	oneTest  = "One Test"
+)
+
 type componentMainTestSelect struct {
 	*fyne.Container
+
+	label componentSectionLabel
 
 	mainTestSel *widget.Select
 	allOneSel   *widget.Select
@@ -27,6 +36,8 @@ type componentMainTestSelect struct {
 
 	showAllOne   bool
 	showTestName bool
+
+	replay bool
 
 	testNames []string
 }
@@ -36,17 +47,20 @@ func creatMainTestSelector() componentMainTestSelect {
 
 	csmt.mainTestSel = widget.NewSelect(
 		[]string{
-			"Unit Tests",
-			"Main",
+			unitTest,
+			mainFunc,
 		},
 		func(value string) {
-			if value == "Main" {
+			if value == mainFunc {
 				flags.ModeMain = true
 				csmt.showAllOne = false
 				csmt.showTestName = false
 			} else {
 				flags.ModeMain = false
 				csmt.showAllOne = true
+				csmt.showTestName = (csmt.allOneSel.Selected == oneTest)
+				flags.ExecName = csmt.testNameSel.Selected
+
 			}
 
 			csmt.creatMainTestSelectorContainer()
@@ -55,14 +69,15 @@ func creatMainTestSelector() componentMainTestSelect {
 
 	csmt.allOneSel = widget.NewSelect(
 		[]string{
-			"All Tests",
-			"One Test",
+			allTests,
+			oneTest,
 		},
 		func(s string) {
-			if s == "All Tests" {
+			if s == allTests {
 				flags.ExecName = ""
 				csmt.showTestName = false
 			} else {
+
 				csmt.showTestName = true
 			}
 
@@ -77,20 +92,24 @@ func creatMainTestSelector() componentMainTestSelect {
 		},
 	)
 
-	// create container ONCE
 	csmt.Container = container.NewVBox()
 
 	csmt.creatMainTestSelectorContainer()
 
-	csmt.mainTestSel.SetSelected("Unit Tests")
-	csmt.allOneSel.SetSelected("All Tests")
+	csmt.mainTestSel.SetSelected(unitTest)
+	csmt.allOneSel.SetSelected(allTests)
+
+	if len(csmt.testNameSel.Options) == 0 {
+		csmt.testNameSel.PlaceHolder = "No tests found"
+	}
 
 	return csmt
 }
 
 func (self *componentMainTestSelect) creatMainTestSelectorContainer() {
+	self.label = createSectionLabel("Main/Test")
 	objects := []fyne.CanvasObject{
-		widget.NewLabel("Main/Test:"),
+		self.label.Container,
 		self.mainTestSel,
 	}
 
@@ -110,5 +129,20 @@ func (self *componentMainTestSelect) setTestNames(names *[]string) {
 	self.testNames = *names
 	self.testNameSel.Options = self.testNames
 
-	self.testNameSel.SetSelected(self.testNames[0])
+	if len(*names) != 0 {
+		self.testNameSel.SetSelected(self.testNames[0])
+	} else {
+		self.testNameSel.ClearSelected()
+	}
+}
+
+func (self *componentMainTestSelect) isReplay(r bool) {
+	self.replay = r
+	if r {
+		self.allOneSel.SetSelected(oneTest)
+		self.allOneSel.Hide()
+	} else {
+		self.allOneSel.SetSelected(allTests)
+		self.allOneSel.Show()
+	}
 }

@@ -11,7 +11,7 @@
 package gui
 
 import (
-	"advocate/utils/flags"
+	"fmt"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -27,8 +27,10 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-type componentProjectSelector struct {
+type componentPathSelector struct {
 	*fyne.Container
+
+	label componentSectionLabel
 
 	selectProj        *fyne.Container
 	selectedProjLabel *widget.Label
@@ -37,13 +39,13 @@ type componentProjectSelector struct {
 	path string
 }
 
-func createProjSelector() componentProjectSelector {
-	cps := componentProjectSelector{}
+func createPathSelector(label string, valToSet *string) componentPathSelector {
+	cps := componentPathSelector{}
 
-	cps.selectedProjLabel = widget.NewLabel("No project selected")
+	cps.selectedProjLabel = widget.NewLabel(fmt.Sprintf("No %s selected", strings.ToLower(label)))
 
 	cps.openProjButton = widget.NewButtonWithIcon(
-		"Choose Project",
+		"Select",
 		theme.FolderOpenIcon(),
 		func() {
 			fileDialog := dialog.NewFolderOpen(
@@ -61,7 +63,7 @@ func createProjSelector() componentProjectSelector {
 					cps.selectedProjLabel.SetText(filepath.Base(path))
 
 					cps.path = path
-					flags.ProgPath = path
+					*valToSet = path
 					cps.getAllTestNames()
 				},
 				win.w,
@@ -71,8 +73,10 @@ func createProjSelector() componentProjectSelector {
 		},
 	)
 
+	cps.label = createSectionLabel(label)
+
 	cps.Container = container.NewVBox(
-		widget.NewLabel("Project:"),
+		cps.label.Container,
 		cps.openProjButton,
 		cps.selectedProjLabel,
 	)
@@ -80,7 +84,7 @@ func createProjSelector() componentProjectSelector {
 	return cps
 }
 
-func (self *componentProjectSelector) getAllTestNames() {
+func (self *componentPathSelector) getAllTestNames() {
 	if self.path == "" {
 		return
 	}
@@ -126,5 +130,5 @@ func (self *componentProjectSelector) getAllTestNames() {
 
 	sort.Strings(testNames)
 
-	win.mainTestSelect.setTestNames(&testNames)
+	win.settings.components.mainTestSelect.setTestNames(&testNames)
 }

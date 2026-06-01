@@ -74,14 +74,10 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	}
 
 	if firstRun && !flags.Continue {
-		if !flags.SkipExisting {
-			os.RemoveAll("advocateResult")
-		}
+		os.RemoveAll("advocateResult")
 
-		if info, _ := os.Stat("advocateResult"); info == nil {
-			if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
-				return 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
-			}
+		if err := os.MkdirAll("advocateResult", os.ModePerm); err != nil {
+			return 0, 0, fmt.Errorf("Failed to create advocateResult directory: %v", err)
 		}
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay

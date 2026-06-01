@@ -11,7 +11,6 @@
 package run
 
 import (
-	"advocate/fuzzing/baseF"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
 	"flag"
@@ -55,7 +54,6 @@ func CommandLine() bool {
 	flag.BoolVar(&flags.NoSkipRewrite, "replayAll", false, "Replay a bug even if it has already been confirmed")
 	flag.BoolVar(&flags.NoRewrite, "noRewrite", false, "Do not rewrite the trace file (default false)")
 	flag.BoolVar(&flags.DeleteTrace, "deleteTrace", false, "If set, the traces are deleted at the end.")
-	flag.BoolVar(&flags.SkipExisting, "skipExisting", false, "If set, all tests that already have a results folder will be skipped. Also skips failed tests.")
 
 	flag.BoolVar(&flags.Continue, "cont", false, "Continue a partial analysis of tests")
 
@@ -89,9 +87,6 @@ func CommandLine() bool {
 	flag.StringVar(&flags.Settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
 
 	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
-
-	// for experiments
-	flag.BoolVar(&baseF.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
 
 	flag.Parse()
 

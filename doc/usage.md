@@ -310,8 +310,8 @@ To still replay them, you can set `-replayAll`.
 
 The traces can become very large. When using advocate for many tests, or multiple
 times, this can lead to a large amount of data being stored in the trace files.
-For this reason, advocate will delete the trace files, as soon as the analysis
-has finished. To keep the traces, you can set `-keepTrace`.
+For this reason, advocate can delete the trace files, as soon as the analysis
+has finished. To activate this, you can set `-deleteTrace`.
 
 The [Go Memory-Model](https://go.dev/ref/mem#chan) does not specify, that
 channels behave as a FIFO queue. Since in practice they are implemented as such,

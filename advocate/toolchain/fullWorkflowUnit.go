@@ -197,7 +197,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				stats.CreateStats(testFunc, movedTraces, fuzzing)
 			}
 
-			if !flags.KeepTraces && !flags.CreateStatistics {
+			if flags.DeleteTraces && !flags.CreateStatistics {
 				RemoveTraces(dir)
 			}
 

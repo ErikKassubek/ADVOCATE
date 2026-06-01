@@ -99,7 +99,7 @@ func Run() error {
 	case "fuzzing":
 		err = modeFuzzing()
 	case "record", "recording":
-		flags.KeepTraces = true
+		flags.DeleteTraces = false
 		err = modeToolchain(modeMainTest, true, false, false)
 	case "replay":
 		err = modeToolchain(modeMainTest, false, false, true)

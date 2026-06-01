@@ -11,7 +11,6 @@
 package gui
 
 import (
-	"advocate/utils/log"
 	"image/color"
 	"os"
 
@@ -33,9 +32,8 @@ type window struct {
 	a fyne.App
 	w fyne.Window
 
-	left     *fyne.Container
-	right    *fyne.Container
-	settings *fyne.Container
+	left  *fyne.Container
+	right *fyne.Container
 
 	modeSelect     componentModeSelect
 	projSelector   componentProjectSelector
@@ -43,6 +41,7 @@ type window struct {
 	runButton      componentRunButton
 	output         componentOutput
 	progressBar    componentProgress
+	settings       componentSetting
 }
 
 func (self *window) create() {
@@ -56,10 +55,6 @@ func (self *window) create() {
 	self.handleClose()
 
 	self.createComponents()
-}
-
-func (self *window) appendOutput(msg string, lv log.InfoLevel) {
-	self.output.appendOutput(msg, lv)
 }
 
 func (self *window) build() {
@@ -80,7 +75,7 @@ func (self *window) build() {
 		nil,
 		container.NewVBox(
 			widget.NewSeparator(),
-			self.settings,
+			self.settings.Container,
 		),
 	)
 
@@ -99,15 +94,15 @@ func (self *window) build() {
 }
 
 func (self *window) createComponents() {
-	self.projSelector = createProjSelector(self)
-	self.mainTestSelect = creatMainTestSelector(self)
-	self.runButton = createRunButton(self)
+
+	self.projSelector = createProjSelector()
+	self.mainTestSelect = creatMainTestSelector()
+	self.runButton = createRunButton()
 	self.output = createOutput()
 	self.progressBar = createProgressBar()
+	self.settings = createSettings()
 
-	self.settings = container.NewVBox()
-
-	self.modeSelect = creatModeSelect(self) // must be last create
+	self.modeSelect = createModeSelect() // must be created last
 
 }
 
@@ -117,7 +112,7 @@ func (self *window) showAndRun() {
 
 func (self *window) handleClose() {
 	self.w.SetCloseIntercept(func() {
-		self.output.appendOutput("Application shutting down...", log.GuiLv)
+		self.WriteGui("Application shutting down...")
 		self.w.Close()
 		os.Exit(0)
 	})

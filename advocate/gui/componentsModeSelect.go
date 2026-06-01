@@ -25,7 +25,7 @@ type componentModeSelect struct {
 	modeSelectWidget *widget.Select
 }
 
-func creatModeSelect(win *window) componentModeSelect {
+func createModeSelect() componentModeSelect {
 	cms := componentModeSelect{}
 
 	cms.modeSelectWidget = widget.NewSelect(
@@ -40,15 +40,15 @@ func creatModeSelect(win *window) componentModeSelect {
 
 			switch value {
 			case "Record":
-				win.buildRecord()
+				win.setRecord()
 			case "Analysis":
-				win.buildAnalysis()
+				win.setAnalysis()
 			case "Replay":
-				win.buildReplay()
+				win.setReplay()
 			case "Fuzzing":
-				win.buildFuzzing()
+				win.setFuzzing()
 			}
-			win.settings.Refresh()
+
 		},
 	)
 

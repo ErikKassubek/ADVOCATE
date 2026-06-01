@@ -15,11 +15,11 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (self *window) buildReplay() {
+func (self *window) setReplay() {
 	var content []fyne.CanvasObject
 	content = []fyne.CanvasObject{
 		widget.NewLabel("TODO: replay"),
 	}
 
-	self.settings.Objects = content
+	self.setSettings(content)
 }

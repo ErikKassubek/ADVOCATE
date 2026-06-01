@@ -10,9 +10,10 @@
 
 package gui
 
+var win = window{}
+
 func Run() {
-	window := window{}
-	window.create()
-	window.build()
-	window.showAndRun()
+	win.create()
+	win.build()
+	win.showAndRun()
 }

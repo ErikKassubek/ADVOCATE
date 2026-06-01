@@ -15,11 +15,11 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (self *window) buildFuzzing() {
+func (self *window) setFuzzing() {
 	var content []fyne.CanvasObject
 	content = []fyne.CanvasObject{
 		widget.NewLabel("TODO: Fuzzing"),
 	}
 
-	self.settings.Objects = content
+	self.setSettings(content)
 }

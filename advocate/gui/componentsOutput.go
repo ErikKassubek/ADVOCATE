@@ -22,24 +22,22 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
+// internal storage for log lines
+type logLine struct {
+	text string
+	lv   log.InfoLevel
+}
+
 type componentOutput struct {
 	*fyne.Container
 
+	lines         []logLine
 	outputList    *widget.List
-	appendOutput  func(string, log.InfoLevel)
 	outputChannel chan log.GuiInfo
 }
 
 func createOutput() componentOutput {
 	co := componentOutput{}
-
-	// internal storage for log lines
-	type logLine struct {
-		text string
-		mode log.InfoLevel
-	}
-
-	var lines []logLine
 
 	// color mapping
 	getColor := func(mode log.InfoLevel) color.Color {
@@ -61,32 +59,18 @@ func createOutput() componentOutput {
 
 	// create list
 	co.outputList = widget.NewList(
-		func() int { return len(lines) },
+		func() int { return len(co.lines) },
 		func() fyne.CanvasObject {
 			return container.NewPadded(canvas.NewText("", color.White))
 		},
 		func(i widget.ListItemID, o fyne.CanvasObject) {
 			txt := o.(*fyne.Container).Objects[0].(*canvas.Text)
 
-			txt.Text = lines[i].text
-			txt.Color = getColor(lines[i].mode)
+			txt.Text = co.lines[i].text
+			txt.Color = getColor(co.lines[i].lv)
 			txt.TextSize = 14
 		},
 	)
-
-	co.appendOutput = func(text string, mode log.InfoLevel) {
-		timestamp := time.Now().Format("15:04:05")
-		line := fmt.Sprintf("[%s] %s", timestamp, text)
-
-		lines = append(lines, logLine{
-			text: line,
-			mode: mode,
-		})
-
-		co.outputList.Refresh()
-
-		co.outputList.ScrollToBottom()
-	}
 
 	// self.output.SetMinSize(fyne.NewSize(700, 400))
 
@@ -96,15 +80,56 @@ func createOutput() componentOutput {
 		container.NewVScroll(co.outputList),
 	)
 
-	co.appendOutput("Application started", log.GuiLv)
+	co.write(log.GuiLv, "Application started")
 
 	go func() {
 		for c := range co.outputChannel {
 			fyne.Do(func() {
-				co.appendOutput(c.Msg, c.Lv)
+				co.write(c.Lv, c.Msg)
 			})
 		}
 	}()
 
 	return co
+}
+
+func (self *componentOutput) write(lv log.InfoLevel, text string) {
+	timestamp := time.Now().Format("15:04:05")
+	line := fmt.Sprintf("[%s] %s", timestamp, text)
+
+	self.lines = append(self.lines, logLine{
+		text: line,
+		lv:   lv,
+	})
+
+	self.outputList.Refresh()
+
+	self.outputList.ScrollToBottom()
+}
+
+func (self *window) write(lv log.InfoLevel, msg string) {
+	self.output.write(lv, msg)
+}
+
+func (self *window) writef(lv log.InfoLevel, format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	self.output.write(lv, msg)
+}
+
+func (self *window) WriteGui(msg string) {
+	self.output.write(log.GuiLv, msg)
+}
+
+func (self *window) writeGuif(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	self.output.write(log.GuiLv, msg)
+}
+
+func (self *window) writeErr(msg string) {
+	self.output.write(log.ErrorLv, msg)
+}
+
+func (self *window) writeErrf(format string, a ...any) {
+	msg := fmt.Sprintf(format, a...)
+	self.output.write(log.ErrorLv, msg)
 }

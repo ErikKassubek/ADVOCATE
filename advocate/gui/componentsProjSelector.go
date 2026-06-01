@@ -12,7 +12,6 @@ package gui
 
 import (
 	"advocate/utils/flags"
-	"advocate/utils/log"
 	"go/ast"
 	"go/parser"
 	"go/token"
@@ -31,8 +30,6 @@ import (
 type componentProjectSelector struct {
 	*fyne.Container
 
-	w *window
-
 	selectProj        *fyne.Container
 	selectedProjLabel *widget.Label
 	openProjButton    *widget.Button
@@ -40,10 +37,8 @@ type componentProjectSelector struct {
 	path string
 }
 
-func createProjSelector(win *window) componentProjectSelector {
-	cps := componentProjectSelector{
-		w: win,
-	}
+func createProjSelector() componentProjectSelector {
+	cps := componentProjectSelector{}
 
 	cps.selectedProjLabel = widget.NewLabel("No project selected")
 
@@ -54,7 +49,7 @@ func createProjSelector(win *window) componentProjectSelector {
 			fileDialog := dialog.NewFolderOpen(
 				func(uri fyne.ListableURI, err error) {
 					if err != nil {
-						win.appendOutput("Error opening folder dialog", log.ErrorLv)
+						win.writeErr("Error opening folder dialog")
 						return
 					}
 
@@ -126,10 +121,10 @@ func (self *componentProjectSelector) getAllTestNames() {
 	})
 
 	if err != nil {
-		self.w.appendOutput(err.Error(), log.ErrorLv)
+		win.writeErr(err.Error())
 	}
 
 	sort.Strings(testNames)
 
-	self.w.mainTestSelect.setTestNames(&testNames)
+	win.mainTestSelect.setTestNames(&testNames)
 }

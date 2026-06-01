@@ -12,16 +12,30 @@ package gui
 
 import (
 	"fyne.io/fyne/v2"
-	"fyne.io/fyne/v2/widget"
+	"fyne.io/fyne/v2/container"
 )
 
-func (self *window) buildRecord() {
-	var content []fyne.CanvasObject
-	content = []fyne.CanvasObject{
-		widget.NewLabel("TODO: Record"),
-	}
+type settingsRecord struct {
+	*fyne.Container
+}
 
-	self.settings.Objects = content
+func createSettingsRecord(comp *settingComponents) *settingsRecord {
+	sr := settingsRecord{}
+
+	sr.Container = container.NewVBox(
+		comp.toRecord.Container,
+		comp.maxNumberElements.Container,
+	)
+
+	return &sr
+}
+
+func (self *window) setRecord() {
+	objects := []fyne.CanvasObject{
+		self.settings.components.toRecord.Container,
+		self.settings.components.maxNumberElements.Container,
+	}
+	self.setSettings(objects)
 }
 
 // func buildRecord() {

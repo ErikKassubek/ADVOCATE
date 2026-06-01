@@ -15,11 +15,11 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (self *window) buildAnalysis() {
+func (self *window) setAnalysis() {
 	var content []fyne.CanvasObject
 	content = []fyne.CanvasObject{
 		widget.NewLabel("TODO: Analysis"),
 	}
 
-	self.settings.Objects = content
+	self.setSettings(content)
 }

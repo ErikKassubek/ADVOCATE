@@ -31,7 +31,7 @@ type componentMainTestSelect struct {
 	testNames []string
 }
 
-func creatMainTestSelector(w *window) componentMainTestSelect {
+func creatMainTestSelector() componentMainTestSelect {
 	csmt := componentMainTestSelect{}
 
 	csmt.mainTestSel = widget.NewSelect(

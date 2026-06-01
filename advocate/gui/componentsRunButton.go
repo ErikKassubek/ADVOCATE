@@ -12,7 +12,6 @@ package gui
 
 import (
 	"advocate/run"
-	"advocate/utils/log"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -25,14 +24,14 @@ type componentRunButton struct {
 	runButton *widget.Button
 }
 
-func createRunButton(win *window) componentRunButton {
+func createRunButton() componentRunButton {
 	rb := componentRunButton{}
 
 	rb.runButton = widget.NewButton("Run", func() {
 		rb.runButton.Disable()
 		err := run.Run()
 		if err != nil {
-			win.appendOutput(err.Error(), log.ErrorLv)
+			win.writeErr(err.Error())
 		}
 		rb.runButton.Enable()
 	})

@@ -13,6 +13,8 @@ package helper
 import (
 	"advocate/utils/control"
 	"advocate/utils/flags"
+	"advocate/utils/log"
+	"advocate/utils/paths"
 	"context"
 	"io"
 	"os"
@@ -52,6 +54,16 @@ func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
 	}
 
 	return cmd.Run()
+}
+
+func RunGoModTidy() {
+	log.Info("Run go mod tidy")
+
+	err := os.Setenv("GOROOT", paths.GoPatch)
+	if err == nil {
+		defer os.Unsetenv("GOROOT")
+	}
+	RunCommand(nil, nil, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

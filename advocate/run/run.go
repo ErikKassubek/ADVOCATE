@@ -31,8 +31,8 @@ func Run() error {
 	// If -main is set, the path needs to be the path to the main file
 	// If the given path is to a folder, check if a main.go file exists in this folder
 	// If so, fix the path. Otherwise return error and finish
+	var err error
 	if flags.ModeMain {
-		var err error
 		flags.ProgPath, err = paths.GetMainPath(flags.ProgPath)
 		if err != nil {
 			log.Error("Could not find main file. If -main is set, -path should point to the main file.")
@@ -45,12 +45,15 @@ func Run() error {
 	settings.SetSettings()
 	paths.BuildPaths(flags.ModeMain)
 
-	err := Check()
+	err = CheckBin()
 	if err != nil {
 		return err
 	}
 
 	progPathDir := paths.GetDirectory(flags.ProgPath)
+	if err != nil {
+		return err
+	}
 	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
@@ -82,7 +85,7 @@ func Run() error {
 		modeMainTest = "main"
 	}
 
-	helper.CheckGoMod()
+	CheckProg()
 	helper.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {

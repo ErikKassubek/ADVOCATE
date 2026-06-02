@@ -23,13 +23,13 @@ type componentSectionLabel struct {
 	label *canvas.Text
 }
 
-func createSectionLabel(text string) componentSectionLabel {
+func createSectionLabel(text string) *componentSectionLabel {
 	label := canvas.NewText(
 		text,
 		theme.Color(theme.ColorNameError),
 	)
 
-	return componentSectionLabel{
+	return &componentSectionLabel{
 		Container: container.NewHBox(label),
 		label:     label,
 	}

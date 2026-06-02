@@ -36,8 +36,8 @@ type componentOutput struct {
 	outputChannel chan log.GuiInfo
 }
 
-func createOutput() componentOutput {
-	co := componentOutput{}
+func createOutput() *componentOutput {
+	co := &componentOutput{}
 
 	// color mapping
 	getColor := func(mode log.InfoLevel) color.Color {
@@ -52,6 +52,10 @@ func createOutput() componentOutput {
 			return purple
 		case log.ErrorLv:
 			return red
+		case log.OutputLv:
+			return gray
+		case log.GuiLv:
+			return pink
 		default:
 			return color.White
 		}

@@ -24,8 +24,8 @@ type componentProgress struct {
 	progressWidget *widget.ProgressBar
 }
 
-func createProgressBar() componentProgress {
-	cms := componentProgress{}
+func createProgressBar() *componentProgress {
+	cms := &componentProgress{}
 
 	cms.progressWidget = widget.NewProgressBar()
 

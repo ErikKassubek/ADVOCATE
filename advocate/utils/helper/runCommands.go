@@ -40,13 +40,21 @@ func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
 	cmd := exec.CommandContext(ctx, name, args...)
 
 	if flags.Output {
-		if osOut != nil {
-			multiOut := io.MultiWriter(os.Stdout, osOut)
+		cw := log.NewChannelWriter()
+		if cw.IsSet() {
+			multiOut := io.MultiWriter(os.Stdout, cw)
 			cmd.Stdout = multiOut
-		}
-		if osErr != nil {
-			multiErr := io.MultiWriter(os.Stderr, osErr)
+			multiErr := io.MultiWriter(os.Stderr, cw)
 			cmd.Stderr = multiErr
+		} else {
+			if osOut != nil {
+				multiOut := io.MultiWriter(os.Stdout, osOut)
+				cmd.Stdout = multiOut
+			}
+			if osErr != nil {
+				multiErr := io.MultiWriter(os.Stderr, osErr)
+				cmd.Stderr = multiErr
+			}
 		}
 	} else {
 		cmd.Stdout = os.Stdout

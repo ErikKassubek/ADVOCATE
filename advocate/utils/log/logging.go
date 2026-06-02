@@ -50,6 +50,7 @@ const (
 	TimeoutLv
 	ErrorLv
 	GuiLv
+	OutputLv
 )
 
 type GuiInfo struct {
@@ -69,7 +70,7 @@ func GetGuiChan() chan GuiInfo {
 // Parameter:
 //   - v ...any: the content of the log
 func Info(v ...any) {
-	if flags.NoInfo {
+	if !flags.Verbose {
 		return
 	}
 
@@ -87,7 +88,7 @@ func Info(v ...any) {
 //   - format string: the format (e.g. "%s")
 //   - v ...any: the content of the log
 func Infof(format string, v ...any) {
-	if flags.NoInfo {
+	if !flags.Verbose {
 		return
 	}
 
@@ -162,7 +163,7 @@ func Debugf(format string, v ...any) {
 //   - v ...any: the content of the log
 func Result(count, confirmed bool, name string, v ...any) {
 	if guiChanSet {
-		guiChan <- GuiInfo{fmt.Sprint(v...), DebugLv}
+		guiChan <- GuiInfo{fmt.Sprint(v...), ResultLv}
 	} else {
 		log.Print(Green, fmt.Sprint(v...), Reset, "\n")
 	}
@@ -189,7 +190,7 @@ func Result(count, confirmed bool, name string, v ...any) {
 //   - v ...any: the content of the log
 func Resultf(count, confirmed bool, name string, format string, v ...any) {
 	if guiChanSet {
-		guiChan <- GuiInfo{fmt.Sprint(v...), DebugLv}
+		guiChan <- GuiInfo{fmt.Sprintf(format, v...), ResultLv}
 	} else {
 		log.Printf(Green+format+Reset, v...)
 	}

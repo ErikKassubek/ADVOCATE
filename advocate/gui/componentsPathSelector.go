@@ -30,21 +30,21 @@ import (
 type componentPathSelector struct {
 	*fyne.Container
 
-	label componentSectionLabel
+	label *componentSectionLabel
 
-	selectProj        *fyne.Container
-	selectedProjLabel *widget.Label
-	openProjButton    *widget.Button
+	selectPath        *fyne.Container
+	selectedPathLabel *widget.Label
+	openPathSelButton *widget.Button
 
 	path string
 }
 
-func createPathSelector(label string, valToSet *string) componentPathSelector {
-	cps := componentPathSelector{}
+func createPathSelector(label string, valToSet *string) *componentPathSelector {
+	cps := &componentPathSelector{}
 
-	cps.selectedProjLabel = widget.NewLabel(fmt.Sprintf("No %s selected", strings.ToLower(label)))
+	cps.selectedPathLabel = widget.NewLabel(fmt.Sprintf("No %s selected", strings.ToLower(label)))
 
-	cps.openProjButton = widget.NewButtonWithIcon(
+	cps.openPathSelButton = widget.NewButtonWithIcon(
 		"Select",
 		theme.FolderOpenIcon(),
 		func() {
@@ -60,7 +60,7 @@ func createPathSelector(label string, valToSet *string) componentPathSelector {
 					}
 
 					path := uri.Path()
-					cps.selectedProjLabel.SetText(filepath.Base(path))
+					cps.selectedPathLabel.SetText(filepath.Base(path))
 
 					cps.path = path
 					*valToSet = path
@@ -77,8 +77,8 @@ func createPathSelector(label string, valToSet *string) componentPathSelector {
 
 	cps.Container = container.NewVBox(
 		cps.label.Container,
-		cps.openProjButton,
-		cps.selectedProjLabel,
+		cps.openPathSelButton,
+		cps.selectedPathLabel,
 	)
 
 	return cps
@@ -131,4 +131,12 @@ func (self *componentPathSelector) getAllTestNames() {
 	sort.Strings(testNames)
 
 	win.settings.components.mainTestSelect.setTestNames(&testNames)
+}
+
+func (self *componentPathSelector) disable() {
+	self.openPathSelButton.Disable()
+}
+
+func (self *componentPathSelector) enable() {
+	self.openPathSelButton.Enable()
 }

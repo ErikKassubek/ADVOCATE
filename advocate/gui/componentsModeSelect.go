@@ -22,7 +22,7 @@ import (
 type componentModeSelect struct {
 	*fyne.Container
 
-	label componentSectionLabel
+	label *componentSectionLabel
 
 	modeSelectWidget *widget.Select
 }
@@ -34,8 +34,8 @@ const (
 	fuzzing  = "Fuzzing"
 )
 
-func createModeSelect() componentModeSelect {
-	cms := componentModeSelect{}
+func createModeSelect() *componentModeSelect {
+	cms := &componentModeSelect{}
 
 	cms.modeSelectWidget = widget.NewSelect(
 		[]string{
@@ -77,4 +77,12 @@ func createModeSelect() componentModeSelect {
 	cms.modeSelectWidget.SetSelected("Record")
 
 	return cms
+}
+
+func (self *componentModeSelect) disable() {
+	self.modeSelectWidget.Disable()
+}
+
+func (self *componentModeSelect) enable() {
+	self.modeSelectWidget.Enable()
 }

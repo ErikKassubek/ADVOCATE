@@ -28,7 +28,7 @@ const (
 type componentMainTestSelect struct {
 	*fyne.Container
 
-	label componentSectionLabel
+	label *componentSectionLabel
 
 	mainTestSel *widget.Select
 	allOneSel   *widget.Select
@@ -42,8 +42,8 @@ type componentMainTestSelect struct {
 	testNames []string
 }
 
-func creatMainTestSelector() componentMainTestSelect {
-	csmt := componentMainTestSelect{}
+func creatMainTestSelector() *componentMainTestSelect {
+	csmt := &componentMainTestSelect{}
 
 	csmt.mainTestSel = widget.NewSelect(
 		[]string{
@@ -145,4 +145,16 @@ func (self *componentMainTestSelect) isReplay(r bool) {
 		self.allOneSel.SetSelected(allTests)
 		self.allOneSel.Show()
 	}
+}
+
+func (self *componentMainTestSelect) disable() {
+	self.mainTestSel.Disable()
+	self.allOneSel.Disable()
+	self.testNameSel.Disable()
+}
+
+func (self *componentMainTestSelect) enable() {
+	self.mainTestSel.Enable()
+	self.allOneSel.Enable()
+	self.testNameSel.Enable()
 }

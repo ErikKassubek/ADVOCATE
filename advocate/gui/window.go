@@ -1,6 +1,6 @@
 // Copyright (c) 2026 Erik Kassubek
 //
-// File: gui.go
+// File: window.go
 // Brief: Create main window
 //
 // Author: Erik Kassubek
@@ -22,11 +22,13 @@ import (
 )
 
 var (
-	red    = color.RGBA{255, 0, 0, 255}
-	green  = color.RGBA{0, 255, 0, 255}
-	blue   = color.RGBA{0, 0, 255, 255}
-	purple = color.RGBA{128, 0, 128, 255}
-	yellow = color.RGBA{255, 255, 0, 255}
+	red    = color.RGBA{255, 99, 99, 255}
+	green  = color.RGBA{80, 220, 120, 255}
+	blue   = color.RGBA{100, 170, 255, 255}
+	purple = color.RGBA{200, 140, 255, 255}
+	yellow = color.RGBA{255, 220, 90, 255}
+	pink   = color.RGBA{255, 120, 200, 255}
+	gray   = color.RGBA{200, 200, 200, 255}
 )
 
 type window struct {
@@ -36,12 +38,15 @@ type window struct {
 	left  *fyne.Container
 	right *fyne.Container
 
-	modeSelect   componentModeSelect
-	projSelector componentPathSelector
-	runButton    componentRunButton
-	output       componentOutput
-	progressBar  componentProgress
-	settings     componentSetting
+	modeSelect   *componentModeSelect
+	projSelector *componentPathSelector
+	runButton    *componentButton
+	cancelButton *componentButton
+	output       *componentOutput
+	progressBar  *componentProgress
+	settings     *componentSetting
+
+	worker *worker
 }
 
 func (self *window) create() {
@@ -66,7 +71,10 @@ func (self *window) build() {
 
 			self.projSelector.Container,
 		),
-		self.runButton.Container,
+		container.NewVBox(
+			self.runButton.Container,
+			self.cancelButton.Container,
+		),
 		nil,
 		nil,
 		container.NewVBox(
@@ -94,11 +102,13 @@ func (self *window) createComponents() {
 
 	self.projSelector = createPathSelector("Project", &flags.ProgPath)
 	self.runButton = createRunButton()
+	self.cancelButton = createCancelButton()
 	self.progressBar = createProgressBar()
 	self.settings = createSettings()
 
 	self.modeSelect = createModeSelect() // must be created last
 
+	self.cancelButton.disable()
 }
 
 func (self *window) showAndRun() {

@@ -39,7 +39,7 @@ var (
 // logging
 var (
 	Output     bool
-	NoInfo     bool
+	Verbose    bool
 	NoProgress bool
 	NoWarning  bool
 )

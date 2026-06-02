@@ -28,11 +28,12 @@ import (
 type textInput struct {
 	*fyne.Container
 
+	label *widget.Label
 	entry *widget.Entry
 	check *widget.Check
 }
 
-func createInputText(labelStr string, valToSet *string, canBeDisabled bool) textInput {
+func createInputText(labelStr string, valToSet *string, canBeDisabled bool) *textInput {
 	entry := widget.NewEntry()
 
 	entry.SetText(*valToSet)
@@ -61,12 +62,12 @@ func createInputText(labelStr string, valToSet *string, canBeDisabled bool) text
 		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
 	}
 
-	row := createSettingField(labelStr, middle, entry)
+	label, row := createSettingField(labelStr, middle, entry)
 
-	return textInput{Container: row, entry: entry, check: check}
+	return &textInput{Container: row, label: label, entry: entry, check: check}
 }
 
-func createInputTextFunc(labelStr string, def string, onSet func(e bool, s string), canBeDisabled, isDisabled bool) textInput {
+func createInputTextFunc(labelStr string, def string, onSet func(e bool, s string), canBeDisabled, isDisabled bool) *textInput {
 	entry := widget.NewEntry()
 
 	entry.SetText("")
@@ -84,6 +85,9 @@ func createInputTextFunc(labelStr string, def string, onSet func(e bool, s strin
 			onSet(b, entry.Text)
 		})
 		check.SetChecked(!isDisabled)
+		if isDisabled {
+			entry.Disable()
+		}
 		middle = container.NewGridWrap(fyne.NewSize(40, 40), check)
 	} else {
 		// empty spacer same size as checkbox
@@ -94,9 +98,27 @@ func createInputTextFunc(labelStr string, def string, onSet func(e bool, s strin
 		onSet(check.Checked, s)
 	}
 
-	row := createSettingField(labelStr, middle, entry)
+	label, row := createSettingField(labelStr, middle, entry)
 
-	return textInput{Container: row, entry: entry, check: check}
+	return &textInput{Container: row, label: label, entry: entry, check: check}
+}
+
+func (self *textInput) disable() {
+	self.entry.Disable()
+	if self.check != nil {
+		self.check.Disable()
+	}
+}
+
+func (self *textInput) enable() {
+	if self.check != nil {
+		self.check.Enable()
+		if self.check.Checked {
+			self.entry.Enable()
+		}
+	} else {
+		self.entry.Enable()
+	}
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -127,7 +149,7 @@ func (e *numericEntry) TypedRune(r rune) {
 	}
 }
 
-func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDisabled bool) textInput {
+func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDisabled bool) *textInput {
 	var zero T
 	entry := NewNumericEntry()
 
@@ -171,7 +193,7 @@ func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDi
 		)
 	}
 
-	row := createSettingField(labelStr, middle, entry)
+	label, row := createSettingField(labelStr, middle, entry)
 
 	entry.OnChanged = func(_ string) {
 		if check.Checked {
@@ -179,8 +201,9 @@ func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDi
 		}
 	}
 
-	return textInput{
+	return &textInput{
 		Container: row,
+		label:     label,
 		entry:     &entry.Entry,
 		check:     check,
 	}
@@ -193,16 +216,34 @@ func createInputNumeric[T math.NumberType](labelStr string, valToSet *T, canBeDi
 type checkInput struct {
 	*fyne.Container
 
+	label *widget.Label
 	check *widget.Check
 }
 
-func createInputCheck(labelStr string, valToSet *bool) checkInput {
-	check := widget.NewCheck("", func(b bool) { *valToSet = b })
-	check.SetChecked(*valToSet)
+func createInputCheck(labelStr string, valToSet *bool, invert bool) *checkInput {
+	check := widget.NewCheck("", func(b bool) {
+		if invert {
+			b = !b
+		}
+		*valToSet = b
+	})
+	if invert {
+		check.SetChecked(!*valToSet)
+	} else {
+		check.SetChecked(*valToSet)
+	}
 
-	row := createSettingField(labelStr, check, nil)
+	label, row := createSettingField(labelStr, check, nil)
 
-	return checkInput{Container: row, check: check}
+	return &checkInput{Container: row, label: label, check: check}
+}
+
+func (self *checkInput) disable() {
+	self.check.Disable()
+}
+
+func (self *checkInput) enable() {
+	self.check.Enable()
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -212,11 +253,12 @@ func createInputCheck(labelStr string, valToSet *bool) checkInput {
 type selectInput struct {
 	*fyne.Container
 
+	label *widget.Label
 	sel   *widget.Select
 	check *widget.Check
 }
 
-func createInputSelect(labelStr string, valToSet *string, values []string, canBeDisabled bool) selectInput {
+func createInputSelect(labelStr string, valToSet *string, values []string, canBeDisabled bool) *selectInput {
 	entry := widget.NewSelect(values, func(s string) {
 		*valToSet = s
 	})
@@ -240,9 +282,27 @@ func createInputSelect(labelStr string, valToSet *string, values []string, canBe
 		middle = container.NewGridWrap(fyne.NewSize(40, 40), widget.NewLabel(""))
 	}
 
-	row := createSettingField(labelStr, middle, entry)
+	label, row := createSettingField(labelStr, middle, entry)
 
-	return selectInput{Container: row, sel: entry, check: check}
+	return &selectInput{Container: row, label: label, sel: entry, check: check}
+}
+
+func (self *selectInput) disable() {
+	self.sel.Disable()
+	if self.check != nil {
+		self.check.Disable()
+	}
+}
+
+func (self *selectInput) enable() {
+	if self.check != nil {
+		self.check.Enable()
+		if self.check.Checked {
+			self.sel.Enable()
+		}
+	} else {
+		self.sel.Enable()
+	}
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -250,18 +310,18 @@ func createInputSelect(labelStr string, valToSet *string, values []string, canBe
 // -------------------------------------------------------------------------------------------------------
 
 const rowHeight float32 = 40
-const labelWidth float32 = 250
+const labelWidth float32 = 260
 const checkWidth float32 = 40
 const inputWidth float32 = labelWidth + checkWidth
 
-func createSettingField(labelStr string, middle fyne.CanvasObject, right fyne.CanvasObject) *fyne.Container {
+func createSettingField(labelStr string, middle fyne.CanvasObject, right fyne.CanvasObject) (*widget.Label, *fyne.Container) {
 	label := widget.NewLabel(labelStr)
 
 	if right == nil {
 		right = widget.NewLabel("")
 	}
 
-	return container.NewHBox(
+	return label, container.NewHBox(
 		container.NewGridWrap(
 			fyne.NewSize(labelWidth, rowHeight),
 			label,

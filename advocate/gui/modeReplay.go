@@ -22,16 +22,9 @@ func (self *window) setReplay() {
 		self.settings.components.tracePath.Container,
 		widget.NewSeparator(),
 		self.settings.components.label.Container,
-		widget.NewLabel("TODO: Replay"),
-		// self.settings.components.toRecord.Container,
-		// self.settings.components.maxNumberElements.Container,
-		// twoCheck(self.settings.components.measureTime.Container, self.settings.components.createStatistics.Container),
-		// twoCheck(self.settings.components.checkForNotExecuted.Container, self.settings.components.ignoreAtomics.Container),
-		// twoCheck(self.settings.components.deleteTrace.Container, self.settings.components.cont.Container),
-		// twoCheck(self.settings.components.noWarning.Container, self.settings.components.noInfo.Container),
-		// twoCheck(self.settings.components.noProgress.Container, self.settings.components.output.Container),
-		// twoCheck(self.settings.components.alwaysPanic.Container, self.settings.components.noMemorySup.Container),
-
+		self.settings.components.toReplay.Container,
+		twoCheck(self.settings.components.measureTime.Container, self.settings.components.createStatistics.Container),
+		twoCheck(self.settings.components.ignoreAtomics.Container, self.settings.components.cont.Container),
 	}
 	self.setSettings(objects)
 }

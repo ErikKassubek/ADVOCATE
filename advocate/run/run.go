@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing"
 	"advocate/fuzzing/baseF"
+	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -21,12 +22,14 @@ import (
 	"advocate/utils/paths"
 	"advocate/utils/settings"
 	"advocate/utils/timer"
+	"context"
 	"fmt"
 	"os"
 )
 
 // Run starts the execution of advocate
-func Run() error {
+func Run(ctx context.Context) error {
+	command.Ctx = ctx
 
 	// If -main is set, the path needs to be the path to the main file
 	// If the given path is to a folder, check if a main.go file exists in this folder
@@ -86,7 +89,7 @@ func Run() error {
 	}
 
 	CheckProg()
-	helper.RunGoModTidy()
+	command.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")

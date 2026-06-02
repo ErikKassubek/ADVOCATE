@@ -17,9 +17,9 @@ import (
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
+	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
-	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"advocate/utils/timer"
@@ -168,6 +168,10 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			nrReplay, anaPassed, err := unitTestFullWorkflow(paths.Advocate,
 				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
+
+			if isErrorCancel(err) {
+				return 0, 0, err
+			}
 
 			timer.UpdateTimeFileDetail(testFunc, nrReplay)
 
@@ -467,6 +471,9 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 		err = unitTestRecord(pkg, file,
 			testName, fuzzing, fuzzingTrace, paths.NameOutput, origStdout, origStderr)
 		if err != nil {
+			if isErrorCancel(err) {
+				return 0, false, err
+			}
 			log.Error("Recording failed: ", err.Error())
 		}
 	}
@@ -485,10 +492,10 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
+		numberReplay, err = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
 	}
 
-	return numberReplay, runAnalysis, nil
+	return numberReplay, runAnalysis, err
 }
 
 // unitTestRun runs a test without recording/replay
@@ -518,9 +525,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, -1, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, -1, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -563,11 +570,14 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	helper.RunCommand(osOut, osErr, paths.Go, "version")
+	command.RunCommand(osOut, osErr, -1, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := command.RunCommand(osOut, osErr, -1, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
+		if isErrorCancel(err) { // canceled
+			return err
+		}
 		if isFuzzing {
 			if checkForTimeout(output) {
 				log.Timeout("Recording timed out")
@@ -639,8 +649,9 @@ func unitTestAnalyzer(pkgPath, traceName string, fuzzing int, testFile, testName
 //
 // Returns:
 //   - int: number of executed replays
+//   - error
 func unitTestReplay(dir, pkg, file,
-	testName, output string, fromAnalysis bool, osOut, osErr *os.File) int {
+	testName, output string, fromAnalysis bool, osOut, osErr *os.File) (int, error) {
 	timer.Start(timer.Replay)
 	defer timer.Stop(timer.Replay)
 
@@ -675,8 +686,16 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
+		err := command.RunCommand(osOut, osErr, -1, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+
+		timer.Stop(timer.Replay)
+
+		if isErrorCancel(err) {
+			os.Unsetenv("GOROOT")
+			return 0, err
+		}
+
+		log.Infof("Finished guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {
 			results.AddBug(bugString, true)
@@ -690,5 +709,5 @@ func unitTestReplay(dir, pkg, file,
 		headerRemoverUnit(file)
 	}
 
-	return len(rewrittenTraces)
+	return len(rewrittenTraces), nil
 }

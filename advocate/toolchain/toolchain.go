@@ -13,8 +13,11 @@ package toolchain
 
 import (
 	"advocate/analysis/baseA"
+	"advocate/utils/command"
 	"advocate/utils/flags"
 	"advocate/utils/paths"
+	"context"
+	"errors"
 	"fmt"
 )
 
@@ -76,4 +79,12 @@ func Run(mode, pathToTest string,
 	default:
 		return 0, 0, fmt.Errorf("Choose one mode from 'main' or 'test'")
 	}
+}
+
+func isErrorCancel(err error) bool {
+	return err != nil && errors.Is(command.Ctx.Err(), context.Canceled)
+}
+
+func isErrorTimeout(err error) bool {
+	return err != nil && errors.Is(command.Ctx.Err(), context.DeadlineExceeded)
 }

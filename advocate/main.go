@@ -15,6 +15,7 @@ import (
 	"advocate/run"
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"context"
 )
 
 // Main function
@@ -29,7 +30,7 @@ func main() {
 	if flags.Mode == "gui" {
 		gui.Run()
 	} else {
-		err := run.Run()
+		err := run.Run(context.Background())
 		if err != nil {
 			log.Error(err)
 		}

@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package helper
+package command
 
 import (
 	"advocate/utils/control"
@@ -32,13 +32,23 @@ import (
 //
 // Returns:
 //   - error
-func RunCommand(osOut, osErr *os.File, name string, args ...string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
+func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string) error {
+
+	var ctx context.Context
+	var cancel context.CancelFunc
+
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(Ctx, time.Duration(timeout)*time.Second)
+	} else {
+		ctx, cancel = context.WithCancel(Ctx)
+	}
+
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)
 
 	cmd := exec.CommandContext(ctx, name, args...)
 
+	// TODO: os.Stdout and osOut is somehow mixed, os.Stdout points to the file, osOut points to the terminal
 	if flags.Output {
 		cw := log.NewChannelWriter()
 		if cw.IsSet() {
@@ -71,7 +81,7 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, "go", "mod", "tidy")
+	RunCommand(nil, nil, -1, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

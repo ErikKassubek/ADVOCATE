@@ -28,12 +28,16 @@ func newWorker() *worker {
 
 }
 
+func (self *worker) IsCanceled() bool {
+	return self.ctx.Err() != nil
+}
+
 func (self *window) startRunMode() {
 	self.settings.disable()
 	win.modeSelect.disable()
 	win.projSelector.disable()
 	win.runButton.disable()
-	// win.cancelButton.enable() // uncomment when cxt cancel is implemented
+	win.cancelButton.enable()
 }
 
 func (self *window) endRunMode() {
@@ -57,14 +61,18 @@ func (self *window) start() {
 			win.WriteGui("Start Run")
 		})
 
-		err := run.Run()
+		err := run.Run(self.worker.ctx)
 		if err != nil {
-			fyne.Do(func() { win.writeErr(err.Error()) })
+			if !self.worker.IsCanceled() {
+				fyne.Do(func() { win.writeErr(err.Error()) })
+			}
 		}
 
 		fyne.Do(func() {
 			win.endRunMode()
-			win.WriteGui("Finish Run")
+			if !self.worker.IsCanceled() {
+				win.WriteGui("Finish Run")
+			}
 		})
 	}()
 }

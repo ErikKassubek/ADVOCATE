@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: cleanup.go
 // Brief: Cleanup traces and files
 //
-// Author: Erik Kassubek
 // Created: 2025-02-28
 //
 // License: BSD-3-Clause

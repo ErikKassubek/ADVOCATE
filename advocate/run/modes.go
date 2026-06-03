@@ -1,9 +1,8 @@
-// Copyright (c) 2026 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: modes.go
 // Brief: controll the different modes
 //
-// Author: Erik Kassubek
 // Created: 2026-05-29
 //
 // License: BSD-3-Clause

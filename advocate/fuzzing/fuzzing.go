@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: fuzzing.go
 // Brief: Main file for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-12-03
 //
 // License: BSD-3-Clause

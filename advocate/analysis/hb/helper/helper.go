@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: helper.go
 // Brief: Helper functions for concurrency used by multiple methods
 //
-// Author: Erik Kassubek
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause

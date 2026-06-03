@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: queue.go
 // Brief: Implementation of a fifo queue
 //
-// Author: Erik Kassubek
 // Created: 2025-10-24
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: helper.go
 // Brief: Utils for memory
 //
-// Author: Erik Kassubek
 // Created: 2025-03-11
 //
 // License: BSD-3-Clause

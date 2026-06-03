@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: /advocate/trace/cond.go
 // Brief: Struct and functions for operations of conditional variables in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-12-25
 //
 // License: BSD-3-Clause

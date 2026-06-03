@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: /advocate/trace/fork.go
 // Brief: Struct and functions for fork operations in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-08-08
 //
 // License: BSD-3-Clause

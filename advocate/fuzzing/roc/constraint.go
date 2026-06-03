@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: constraint.go
 // Brief: Constraints for guided fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2025-10-21
 //
 // License: BSD-3-Clause

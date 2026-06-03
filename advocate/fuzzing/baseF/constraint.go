@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: goPie-sc.go
 // Brief: scheduling Chains for GoPie
 //
-// Author: Erik Kassubek
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause

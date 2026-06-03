@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: paths.go
 // Brief: Operations on paths
 //
-// Author: Erik Kassubek
 // Created: 2026-04-27
 //
 // License: BSD-3-Clause

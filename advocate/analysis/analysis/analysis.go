@@ -1,11 +1,10 @@
 // advocate/analysis/analysis/analysis.go
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysis.go
 // Brief: analysis of traces if performed from here
 //
-// Author: Erik Kassubek, Sebastian Pohsner
 // Created: 2025-01-01
 //
 // License: BSD-3-Clause

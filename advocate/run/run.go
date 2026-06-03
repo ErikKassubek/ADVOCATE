@@ -1,9 +1,8 @@
-// Copyright (c) 2026 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: run.go
 // Brief: start/controll the different modes
 //
-// Author: Erik Kassubek
 // Created: 2026-05-29
 //
 // License: BSD-3-Clause

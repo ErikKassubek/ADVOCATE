@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: /advocate/trace/new.go
 // Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
-// Author: Erik Kassubek
 // Created: 2024-11-29
 //
 // License: BSD-3-Clause

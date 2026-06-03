@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: /advocate/trace/once.go
 // Brief: Struct and functions for once operations in the trace
 //
-// Author: Erik Kassubek
 // Created: 2023-09-25
 //
 // License: BSD-3-Clause

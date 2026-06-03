@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: control.go
 // Brief: Cancel analysis when not enough memory
 //
-// Author: Erik Kassubek
 // Created: 2025-03-03
 //
 // License: BSD-3-Clause

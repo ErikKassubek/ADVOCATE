@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: replay.go
 // Brief: Read the info about the rewrite and replay of the bug
 //
-// Author: Erik Kassubek
 // Created: 2024-06-18
 //
 // License: BSD-3-Clause

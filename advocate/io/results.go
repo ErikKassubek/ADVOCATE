@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: results.go
 // Brief: Read the analysis result file and analyze its content
 //
-// Author: Erik Kassubek
 // Created: 2023-11-30
 //
 // License: BSD-3-Clause

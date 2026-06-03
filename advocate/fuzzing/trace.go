@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: trace.go
 // Brief: Function to parse the trace and get all relevant information
 //
-// Author: Erik Kassubek
 // Created: 2024-11-29
 //
 // License: BSD-3-Clause

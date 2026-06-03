@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: statsTrace.go
 // Brief: Collect statistics about the trace
 //
-// Author: Erik Kassubek
 // Created: 2024-09-20
 //
 // License: BSD-3-Clause

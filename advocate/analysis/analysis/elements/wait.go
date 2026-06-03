@@ -1,10 +1,9 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: vcWait.go
 // Brief: Update functions for happens before info for wait group operations
 //        Some function start analysis functions
 //
-// Author: Erik Kassubek
 // Created: 2023-07-25
 //
 // License: BSD-3-Clause

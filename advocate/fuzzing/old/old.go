@@ -1,9 +1,9 @@
-// // Copyright (c) 2025 Erik Kassubek
+// // Copyright (c) 2026
 // //
 // // File: precomputations.go
 // // Brief: Calculate all required ress for a trace
 // //
-// // Author: Erik Kassubek
+//
 // // Created: 2025-12-04
 // //
 // // License: BSD-3-Clause

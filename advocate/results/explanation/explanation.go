@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: explanation.go
 // Brief: Create an explanation file for a found bug
 //
-// Author: Erik Kassubek
 // Created: 2024-06-14
 //
 // License: BSD-3-Clause

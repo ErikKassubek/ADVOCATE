@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisWaitGroup.go
 // Brief: Trace analysis for possible negative wait group counter
 //
-// Author: Erik Kassubek
 // Created: 2023-11-24
 //
 // License: BSD-3-Clause

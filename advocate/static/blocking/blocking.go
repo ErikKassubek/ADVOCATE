@@ -1,9 +1,8 @@
-// Copyright (c) 2026 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: parseFiles.go
 // Brief: Parse source code file to read access information
 //
-// Author: Erik Kassubek
 // Created: 2026-03-25
 //
 // License: BSD-3-Clause

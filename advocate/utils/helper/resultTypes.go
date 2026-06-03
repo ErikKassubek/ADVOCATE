@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: constants.go
 // Brief: List of global constants
 //
-// Author: Erik Kassubek
 // Created: 2025-04-14
 //
 // License: BSD-3-Clause

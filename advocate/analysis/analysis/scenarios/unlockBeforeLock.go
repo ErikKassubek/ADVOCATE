@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisUnlockBeforeLock.go
 // Brief: Analysis for unlock of not locked mutex
 //
-// Author: Erik Kassubek
 // Created: 2024-09-23
 //
 // License: BSD-3-Clause

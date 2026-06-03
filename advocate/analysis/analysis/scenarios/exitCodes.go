@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: exitCodes.go
 // Brief: Check exit codes
 //
-// Author: Erik Kassubek
 // Created: 2025-07-21
 //
 // License: BSD-3-Clause

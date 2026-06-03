@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: chainMutation.go
 // Brief: Mutations for chains
 //
-// Author: Erik Kassubek
 // Created: 2025-03-21
 //
 // License: BSD-3-Clause

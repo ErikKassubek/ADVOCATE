@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: statsType.go
 // Brief: Constants for stats types
 //
-// Author: Erik Kassubek
 // Created: 2025-11-18
 //
 // License: BSD-3-Clause

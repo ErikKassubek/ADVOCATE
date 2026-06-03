@@ -1,11 +1,10 @@
 // advocate/analysis/baseA/types.go
 
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: types.go
 // Brief: Types used in analysis data
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: paths.go
 // Brief: Important paths
 //
-// Author: Erik Kassubek
 // Created: 2025-09-25
 //
 // License: BSD-3-Clause

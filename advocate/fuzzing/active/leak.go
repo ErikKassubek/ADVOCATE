@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: leak.go
 // Brief: Rewrite trace for leaked channel
 //
-// Author: Erik Kassubek
 // Created: 2024-04-07
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: programParts.go
 // Brief: Read the program code at the positions of the bug
 //
-// Author: Erik Kassubek
 // Created: 2024-06-17
 //
 // License: BSD-3-Clause

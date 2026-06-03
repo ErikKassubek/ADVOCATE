@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: help.go
 // Brief: Function to print help/how to use
 //
-// Author: Erik Kassubek
 // Created: 2025-05-19
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: clock.go
 // Brief: Struct and functions of vector clocks vc
 //
-// Author: Erik Kassubek
 // Created: 2023-07-25
 //
 // License: BSD-3-Clause

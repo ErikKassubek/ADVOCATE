@@ -1,9 +1,8 @@
-// Copyright (c) 2026 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: equivalent.go
 // Brief: Check if an roc is considered equivalent to the trace it is based on
 //
-// Author: Erik Kassubek
 // Created: 2026-01-19
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: results.go
 // Brief: Function for debug results and for results found bugs
 //
-// Author: Erik Kassubek
 // Created: 2023-08-30
 //
 // License: BSD-3-Clause

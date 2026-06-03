@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: stats.go
 // Brief: Create statistics about programs and traces
 //
-// Author: Erik Kassubek
 // Created: 2023-07-13
 //
 // License: BSD-3-Clause

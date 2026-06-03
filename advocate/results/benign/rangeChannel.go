@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: rangeChannel.go
 // Brief: Check if the blocking bug is in a range over channel
 //
-// Author: Erik Kassubek
 // Created: 2025-11-17
 //
 // License: BSD-3-Clause

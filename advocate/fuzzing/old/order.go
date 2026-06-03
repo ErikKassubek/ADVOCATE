@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: graph.go
 // Brief: Create the hb graph for a mutation
 //
-// Author: Erik Kassubek
 // Created: 2025-12-08
 //
 // License: BSD-3-Clause

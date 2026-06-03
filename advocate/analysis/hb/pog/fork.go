@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: addEdges.go
 // Brief: Add edges to the graph
 //
-// Author: Erik Kassubek
 // Created: 2025-07-08
 //
 // License: BSD-3-Clause

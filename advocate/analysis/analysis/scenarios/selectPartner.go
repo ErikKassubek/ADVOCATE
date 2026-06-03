@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisSelectPartner.go
 // Brief: Trace analysis for detection of select cases without any possible partners
 //
-// Author: Erik Kassubek
 // Created: 2024-03-04
 //
 // License: BSD-3-Clause

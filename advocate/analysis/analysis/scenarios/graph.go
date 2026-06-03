@@ -1,10 +1,9 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisGraph.go
 // Brief: Functions to use a graph for analysis. Used fop negative wait group
 //   counter and unlock before lock
 //
-// Author: Erik Kassubek
 // Created: 2024-09-23
 //
 // License: BSD-3-Clause

@@ -1,11 +1,10 @@
 // advocate/analysis/baseA/fuzzing.go
 
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisConcurrentCommunication.go
 // Brief: Data collected during analysis for use in fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2025-07-01
 //
 // License: BSD-3-Clause

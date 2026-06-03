@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: complete.go
 // Brief: Functions to check if all program elements have been executed at least once
 //
-// Author: Erik Kassubek
 // Created: 2024-06-26
 //
 // License: BSD-3-Clause

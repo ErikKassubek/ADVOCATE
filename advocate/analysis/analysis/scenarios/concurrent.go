@@ -1,11 +1,10 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisConcurrentCommunication.go
 // Brief: Find concurrent operations on the same element
 //   For concurrent receive: add panic
 //   For concurrent send, receive, (try)(r)lock, once.Do: store to use in fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-01-27
 //
 // License: BSD-3-Clause

@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: addEdges.go
 // Brief: Functions to add the required edges
 //
-// Author: Erik Kassubek
 // Created: 2025-07-07
 //
 // License: BSD-3-Clause

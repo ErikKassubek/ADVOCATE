@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: analysisLeak.go
 // Brief: Trace analysis for routine leaks
 //
-// Author: Erik Kassubek
 // Created: 2024-01-28
 //
 // License: BSD-3-Clause

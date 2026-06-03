@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: /advocate/trace/utils.go
 // Brief: Collection of utility functiond for trace analysis
 //
-// Author: Erik Kassubek
 // Created: 2024-05-29
 //
 // License: BSD-3-Clause

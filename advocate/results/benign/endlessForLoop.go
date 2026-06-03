@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: falsePos.go
 // Brief: Check for false positives
 //
-// Author: Erik Kassubek
 // Created: 2025-11-17
 //
 // License: BSD-3-Clause

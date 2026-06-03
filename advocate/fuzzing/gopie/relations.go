@@ -1,9 +1,8 @@
-// Copyright (c) 2025 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: goPie-relations.go
 // Brief: Calculate the relation for goPie
 //
-// Author: Erik Kassubek
 // Created: 2025-03-24
 //
 // License: BSD-3-Clause

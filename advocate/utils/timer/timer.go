@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: timeMeasurement.go
 // Brief: Timer to measure the times
 //
-// Author: Erik Kassubek
 // Created: 2024-10-02
 //
 // License: BSD-3-Clause

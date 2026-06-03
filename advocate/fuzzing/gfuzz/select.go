@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: select.go
 // Brief: File for the selects for fuzzing
 //
-// Author: Erik Kassubek
 // Created: 2024-12-04
 //
 // License: BSD-3-Clause

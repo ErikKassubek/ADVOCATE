@@ -1,9 +1,8 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026
 //
 // File: writer.go
 // Brief: Write the internal trace into files
 //
-// Author: Erik Kassubek
 // Created: 2023-12-01
 //
 // License: BSD-3-Clause

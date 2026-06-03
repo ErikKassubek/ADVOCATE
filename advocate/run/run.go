@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/baseA"
 	"advocate/fuzzing"
 	"advocate/fuzzing/baseF"
+	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
@@ -86,7 +87,7 @@ func Run() error {
 	}
 
 	CheckProg()
-	helper.RunGoModTidy()
+	command.RunGoModTidy()
 
 	if flags.ModeMain && flags.ExecName == "" {
 		log.Error("Could not determine executable name from go.mod. Provide with -exec [ExecutableName]")

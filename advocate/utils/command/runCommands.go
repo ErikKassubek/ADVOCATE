@@ -1,14 +1,14 @@
 // Copyright (c) 2024 Erik Kassubek, Mario Occhinegro
 //
 // File: runCommand.go
-// Brief: Function to run commands
+// Brief: Functions to run commands
 //
 // Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
 //
 // License: BSD-3-Clause
 
-package helper
+package command
 
 import (
 	"advocate/utils/comm"
@@ -23,19 +23,32 @@ import (
 	"time"
 )
 
+const (
+	NoTimeout = -1
+	OpenCom   = true
+	NoCom     = false
+)
+
 // RunCommand runs a command line (shell) commands
 //
 // Parameter:
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
 //   - osErr *os.File: file/output to write to not being what os.Stdout points to
+//   - timeout int: timeout in seconds, -1 for no timeout
 //   - openCom bool: open communication to runtime, TODO: not working yet
 //   - name string: main command
 //   - args ...string: command line parameters
 //
 // Returns:
 //   - error
-func RunCommand(osOut, osErr *os.File, openCom bool, name string, args ...string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(flags.TimeoutReplay)*time.Second)
+func RunCommand(osOut, osErr *os.File, timeout int, openCom bool, name string, args ...string) error {
+	var ctx context.Context
+	var cancel context.CancelFunc
+	if timeout > 0 {
+		ctx, cancel = context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
+	} else {
+		ctx, cancel = context.WithCancel(context.Background())
+	}
 	id := control.AddRunningCom(cancel)
 	defer control.RemoveRunningCom(id)
 
@@ -82,7 +95,7 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, false, "go", "mod", "tidy")
+	RunCommand(nil, nil, NoTimeout, false, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

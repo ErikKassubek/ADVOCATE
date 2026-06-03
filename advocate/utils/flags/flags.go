@@ -77,5 +77,5 @@ var (
 	SkipExisting  bool
 	NoRewrite     bool
 	NoSkipRewrite bool
-	KeepTraces    bool
+	DeleteTraces  bool
 )

@@ -79,7 +79,7 @@ var (
 	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
 	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
 	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
-	deleteTrace           = newFlagVal("deleteTrace", "false", "", "If set, the traces will be deleted when they are no longer used. Useful to avoid large result folders in fuzzing.")
+	deleteTrace           = newFlagVal("deleteTrace", "false", "", "If set, the traces are deleted after analysis. Can avoid the need to store all trace files")
 	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
 	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
 )

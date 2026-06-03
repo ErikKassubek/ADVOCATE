@@ -2,7 +2,6 @@ package main
 
 import (
 	"aplas/command"
-	"aplas/data"
 	"aplas/experiments"
 	"os"
 	"os/signal"
@@ -22,6 +21,6 @@ func cleanUp() {
 
 func main() {
 	cleanUp()
-	data.GetTestFuncs()
+	// data.GetTestFuncs()
 	experiments.Run()
 }

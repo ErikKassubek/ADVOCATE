@@ -23,6 +23,7 @@ var defaultSettings = []string{
 	"-maxFuzzingRuns",
 	"20",
 	"-stats",
+	"-deleteTrace",
 }
 
 var maxWorker = 10
@@ -37,8 +38,8 @@ func Run() {
 	}
 
 	base()
-	time.Sleep(time.Second)
-	wg.Wait()
+
+	println("CONT")
 
 	oocLength()
 	time.Sleep(time.Second)

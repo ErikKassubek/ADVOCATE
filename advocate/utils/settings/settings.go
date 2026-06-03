@@ -27,22 +27,22 @@ var (
 	GFuzzFlipP    = 0.99
 	GFuzzFlipPMin = 0.1
 
-	GoPieW1          = 1.0
-	GoPieW2          = 1.0
-	GoPieMaxSCLength = 9
-	ChainMutabound   = 128
+	GoPieW1      = 1.0
+	GoPieW2      = 1.0
+	MaxOOCLength = 9
+	OOCMutabound = 128
 
-	GoPieSCStart = 24
+	OOCStart = 24
 
-	SameElementTypeInSC = false
-	WithoutReplay       = false
+	SameElementTypeInOOC = false
+	WithoutReplay        = false
 )
 
 // SetSettings sets different constants and settings used in the program
 // from the settings flag
 func SetSettings() {
 	if flags.FuzzingMode != "GoPie" {
-		ChainMutabound = 2 * min(int(flags.MaxFuzzingRun/GoPieSCStart), ChainMutabound)
+		OOCMutabound = 2 * min(int(flags.MaxFuzzingRun/OOCStart), OOCMutabound)
 	}
 
 	if flags.Settings == "" {
@@ -81,15 +81,15 @@ func SetSettings() {
 			GoPieW1 = value
 		case "GoPieW2":
 			GoPieW2 = value
-		case "GoPieBound":
-			GoPieMaxSCLength = int(clamp(value, 2.0, math.MaxFloat64))
+		case "MaxOOCLength":
+			MaxOOCLength = int(clamp(value, 2.0, math.MaxFloat64))
 		case "GoPieMutabound":
-			ChainMutabound = int(clamp(value, 1, math.MaxFloat64))
-		case "GoPieSCStart":
-			GoPieSCStart = int(clamp(value, 1, math.MaxFloat64))
-		case "SameElementTypeInSC":
+			OOCMutabound = int(clamp(value, 1, math.MaxFloat64))
+		case "OOCStart":
+			OOCStart = int(clamp(value, 1, math.MaxFloat64))
+		case "SameElementTypeInOOC":
 			if value == 1 {
-				SameElementTypeInSC = true
+				SameElementTypeInOOC = true
 			}
 		case "WithoutReplay":
 			if value == 1 {

@@ -60,7 +60,7 @@ func startConstraint(num, length int) []baseF.Constraint {
 		}
 
 		sameElem := true
-		if concurrent.GetNumberConcurrent(elem, sameElem, settings.SameElementTypeInSC, false) == 0 {
+		if concurrent.GetNumberConcurrent(elem, sameElem, settings.SameElementTypeInOOC, false) == 0 {
 			continue
 		}
 
@@ -96,9 +96,9 @@ func startConstraint(num, length int) []baseF.Constraint {
 		c.Add(e.Elem)
 
 		for i := 0; i < length; i++ {
-			posNext := concurrent.GetConcurrent(c.LastElem(), true, true, settings.SameElementTypeInSC, true)
+			posNext := concurrent.GetConcurrent(c.LastElem(), true, true, settings.SameElementTypeInOOC, true)
 			if len(posNext) == 0 {
-				posNext = concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
+				posNext = concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInOOC, true)
 				if len(posNext) == 0 {
 					break
 				}

@@ -519,8 +519,8 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	log.Info("Run T0")
 	packagePath := paths.MakePathLocal(pkg)
 	var err error
-	if flags.TimeoutRecording != -1 {
-		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
+	if flags.TimeoutExec != -1 {
+		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutExec)
 		err = command.RunCommand(origStdout, origStderr, command.RunCommandNoTimeout, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
 		err = command.RunCommand(origStdout, origStderr, command.RunCommandNoTimeout, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)

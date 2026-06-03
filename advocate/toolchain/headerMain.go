@@ -212,7 +212,7 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.Fuzzing("%s", %d)
   defer advocatego.Fuzzing()
-  // ======= Preamble End =======`, replayPath, flags.TimeoutRecording))
+  // ======= Preamble End =======`, replayPath, flags.TimeoutExec))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitReplay("%s", %d, %s)
@@ -223,12 +223,12 @@ func addMainHeader(fileName string, replay bool, replayNumber string,
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitFuzzing("%s", %d)
   defer advocatego.FinishFuzzing()
-  // ======= Preamble End =======`, fuzzingTrace, flags.TimeoutRecording))
+  // ======= Preamble End =======`, fuzzingTrace, flags.TimeoutExec))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitTracing(%d)
   defer advocatego.FinishTracing()
-  // ======= Preamble End =======`, flags.TimeoutRecording))
+  // ======= Preamble End =======`, flags.TimeoutExec))
 			}
 			fmt.Println("Header added at line:", currentLine)
 			fmt.Printf("Header added at file: %s\n", fileName)

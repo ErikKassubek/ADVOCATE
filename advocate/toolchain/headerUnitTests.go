@@ -166,23 +166,23 @@ func addHeaderUnit(fileName string, testName string, replay bool, fuzzing int, r
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitFuzzing("%s", %d)
   defer advocatego.FinishFuzzing()
-  // ======= Preamble End =======`, replayPath, flags.TimeoutReplay))
+  // ======= Preamble End =======`, replayPath, flags.TimeoutExec))
 				} else {
 					lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitReplay("%s", %d, %s)
   defer advocatego.FinishReplay()
-  // ======= Preamble End =======`, replayPath, flags.TimeoutReplay, atomicReplayStr))
+  // ======= Preamble End =======`, replayPath, flags.TimeoutExec, atomicReplayStr))
 				}
 			} else if fuzzing > 0 {
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitFuzzing("%s", %d)
   defer advocatego.FinishFuzzing()
-  // ======= Preamble End =======`, replayInfo, flags.TimeoutRecording))
+  // ======= Preamble End =======`, replayInfo, flags.TimeoutExec))
 			} else { // recording
 				lines = append(lines, fmt.Sprintf(`	// ======= Preamble Start =======
   advocatego.InitTracing(%d)
   defer advocatego.FinishTracing()
-  // ======= Preamble End =======`, flags.TimeoutRecording))
+  // ======= Preamble End =======`, flags.TimeoutExec))
 			}
 			fmt.Println("Header added at line:", currentLine)
 			fmt.Printf("Header added at file: %s\n", fileName)

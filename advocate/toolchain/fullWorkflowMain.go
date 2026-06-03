@@ -117,7 +117,7 @@ func runWorkflowMain(
 		}
 
 		// Add header
-		if err := headerInserterMain(paths.Prog, false, "1", flags.TimeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
+		if err := headerInserterMain(paths.Prog, false, "1", flags.TimeoutExec, false, fuzzing, fuzzingTrace); err != nil {
 			return 0, 0, fmt.Errorf("Error in adding header: %v", err)
 		}
 
@@ -176,7 +176,7 @@ func runWorkflowMain(
 		for _, trace := range rewrittenTraces {
 			traceNum := extractTraceNum(trace)
 			fmt.Printf("Apply replay header for file f %s and trace %s\n", paths.Prog, traceNum)
-			if err := headerInserterMain(paths.Prog, true, traceNum, flags.TimeoutReplay, false, fuzzing, fuzzingTrace); err != nil {
+			if err := headerInserterMain(paths.Prog, true, traceNum, flags.TimeoutExec, false, fuzzing, fuzzingTrace); err != nil {
 				return 0, 0, err
 			}
 

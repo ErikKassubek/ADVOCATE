@@ -35,12 +35,12 @@ func Mutate(c Constraint, energy int, rel1, rel2 map[trace.Element]map[trace.Ele
 		energy = 100
 	}
 
-	bound := settings.GoPieMaxSCLength
+	bound := settings.MaxOOCLength
 	if flags.FuzzingMode == GoPie {
 		bound = 3
 	}
 
-	mutateBound := settings.ChainMutabound
+	mutateBound := settings.OOCMutabound
 
 	// in the original goPie, the fuzzing bound is 3
 	if flags.FuzzingMode == GoPie {
@@ -227,7 +227,7 @@ func augment(c Constraint, rel2 map[trace.Element]map[trace.Element]struct{}) []
 	res := make([]Constraint, 0)
 
 	if UseHBInfoFuzzing {
-		concurrent := concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInSC, true)
+		concurrent := concurrent.GetConcurrent(c.LastElem(), true, false, settings.SameElementTypeInOOC, true)
 		for _, elem := range concurrent {
 			if c.Contains(elem) {
 				continue

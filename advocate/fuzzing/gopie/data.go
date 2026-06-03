@@ -24,7 +24,7 @@ var (
 	maxGoPieScore = 0
 
 	// number of different starting points for chains in GoPie (in the original: cfg.MaxWorker)
-	maxSCStart = settings.GoPieSCStart
+	maxSCStart = settings.OOCStart
 
 	SchedulingChains []baseF.Constraint
 	CurrentChain     baseF.Constraint

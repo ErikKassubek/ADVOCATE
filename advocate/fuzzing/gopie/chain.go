@@ -52,7 +52,7 @@ func startChains(num int) []baseF.Constraint {
 				continue
 			}
 
-			if concurrent.GetNumberConcurrent(elem, sameElem, settings.SameElementTypeInSC, false) == 0 {
+			if concurrent.GetNumberConcurrent(elem, sameElem, settings.SameElementTypeInOOC, false) == 0 {
 				continue
 			}
 
@@ -84,13 +84,13 @@ func startChains(num int) []baseF.Constraint {
 			return res
 		}
 
-		rounds := settings.GoPieMaxSCLength
+		rounds := settings.MaxOOCLength
 		for i := 0; i < rounds; i++ {
 			if len(res) == 0 {
 				for _, e := range top {
-					posPartner := concurrent.GetConcurrent(e.Elem, true, true, settings.SameElementTypeInSC, true)
+					posPartner := concurrent.GetConcurrent(e.Elem, true, true, settings.SameElementTypeInOOC, true)
 					if len(posPartner) == 0 {
-						posPartner = concurrent.GetConcurrent(e.Elem, true, false, settings.SameElementTypeInSC, true)
+						posPartner = concurrent.GetConcurrent(e.Elem, true, false, settings.SameElementTypeInOOC, true)
 						if len(posPartner) == 0 {
 							continue
 						}
@@ -108,7 +108,7 @@ func startChains(num int) []baseF.Constraint {
 						continue
 					}
 
-					posNext := concurrent.GetConcurrent(lastElem, true, true, settings.SameElementTypeInSC, true)
+					posNext := concurrent.GetConcurrent(lastElem, true, true, settings.SameElementTypeInOOC, true)
 					if len(posNext) == 0 {
 						continue
 					}

@@ -525,9 +525,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = command.RunCommand(origStdout, origStderr, -1, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = command.RunCommand(origStdout, origStderr, -1, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -570,10 +570,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	command.RunCommand(osOut, osErr, -1, paths.Go, "version")
+	command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := command.RunCommand(osOut, osErr, -1, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isErrorCancel(err) { // canceled
 			return err
@@ -686,16 +686,8 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		err := command.RunCommand(osOut, osErr, -1, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
-
-		timer.Stop(timer.Replay)
-
-		if isErrorCancel(err) {
-			os.Unsetenv("GOROOT")
-			return 0, err
-		}
-
-		log.Infof("Finished guided execution %d/%d", i+1, len(rewrittenTraces))
+		command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {
 			results.AddBug(bugString, true)

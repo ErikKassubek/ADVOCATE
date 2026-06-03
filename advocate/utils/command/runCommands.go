@@ -1,7 +1,7 @@
 // Copyright (c) 2026 Erik Kassubek, Mario Occhinegro
 //
-// File: runFullWorkflowMain.go
-// Brief: Function to run commands
+// File: runCommand.go
+// Brief: Functions to run commands
 //
 // Author: Erik Kassubek, Mario Occhinegro
 // Created: 2024-09-18
@@ -27,6 +27,7 @@ import (
 // Parameter:
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
 //   - osErr *os.File: file/output to write to not being what os.Stdout points to
+//   - timeout int: timeout in seconds, -1 for no timeout
 //   - name string: main command
 //   - args ...string: command line parameters
 //
@@ -81,7 +82,7 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, -1, "go", "mod", "tidy")
+	RunCommand(nil, nil, NoTimeout, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

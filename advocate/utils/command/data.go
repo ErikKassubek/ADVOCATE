@@ -12,6 +12,10 @@ package command
 
 import "context"
 
+const (
+	NoTimeout = -1
+)
+
 var (
 	Ctx context.Context
 )

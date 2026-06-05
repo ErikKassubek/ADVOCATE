@@ -56,7 +56,7 @@ func overheadRout() {
 
 		start := time.Now()
 		out := bytes.Buffer{}
-		err = command.RunCommandGo(&out, pathBase, "test", "./...", "-count=1", "timeout", "240s")
+		err = command.RunCommandGo(&out, fmt.Sprintf("base_%s_%d", outputName, i), pathBase, "test", "./...", "-count=1", "timeout", "240s")
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -66,7 +66,7 @@ func overheadRout() {
 
 		start = time.Now()
 		out = bytes.Buffer{}
-		err = command.RunCommandAdvocate(&out, settings...)
+		err = command.RunCommandAdvocate(&out, fmt.Sprintf("%s_%d", outputName, i), settings...)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -112,7 +112,7 @@ func overheadElemSame() {
 
 		start := time.Now()
 		out := bytes.Buffer{}
-		err = command.RunCommandGo(&out, pathBase, "test", "./...", "-count=1", "timeout", "240s")
+		err = command.RunCommandGo(&out, fmt.Sprintf("base_%s_%d", outputName, i), pathBase, "test", "./...", "-count=1", "timeout", "240s")
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -122,7 +122,7 @@ func overheadElemSame() {
 
 		start = time.Now()
 		out = bytes.Buffer{}
-		err = command.RunCommandAdvocate(&out, settings...)
+		err = command.RunCommandAdvocate(&out, fmt.Sprintf("%s_%d", outputName, i), settings...)
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -168,7 +168,7 @@ func overheadElemDiff() {
 
 		start := time.Now()
 		out := bytes.Buffer{}
-		err = command.RunCommandGo(&out, pathBase, "test", "./...", "-count=1", "timeout", "240s")
+		err = command.RunCommandGo(&out, fmt.Sprintf("base_%s_%d", outputName, i), pathBase, "test", "./...", "-count=1", "timeout", "240s")
 		if err != nil {
 			fmt.Println(err.Error())
 		}
@@ -178,7 +178,7 @@ func overheadElemDiff() {
 
 		start = time.Now()
 		out = bytes.Buffer{}
-		err = command.RunCommandAdvocate(&out, settings...)
+		err = command.RunCommandAdvocate(&out, fmt.Sprintf("%s_%d", outputName, i), settings...)
 		if err != nil {
 			fmt.Println(err.Error())
 		}

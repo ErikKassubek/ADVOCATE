@@ -26,7 +26,7 @@ var defaultSettings = []string{
 	"-deleteTrace",
 }
 
-var maxWorker = 6
+var maxWorker = 10
 var wg = sync.WaitGroup{}
 var sem = make(chan struct{}, maxWorker)
 
@@ -67,9 +67,14 @@ func initialize(main bool, name ...string) (string, error) {
 
 	if main {
 		err = os.Mkdir(data.PathStats, 0755)
+		if err != nil {
+			return path, err
+		}
+		err = os.Mkdir(data.PathLog, 0755)
 	} else {
 		err = data.CopyGobench(path)
 	}
+
 	return path, err
 }
 

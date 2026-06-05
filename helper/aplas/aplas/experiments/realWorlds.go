@@ -56,7 +56,7 @@ func rwBase(name, path string) {
 	start := time.Now()
 	out := bytes.Buffer{}
 	absPath, _ := filepath.Abs(path)
-	err := command.RunCommandGo(&out, absPath, "test", "./...", "-count=1", "timeout", "240s")
+	err := command.RunCommandGo(&out, fmt.Sprintf("base_rw_%s", name), absPath, "test", "./...", "-count=1", "timeout", "240s")
 	if err != nil {
 		println(out.String())
 		fmt.Println(err.Error())
@@ -80,7 +80,7 @@ func rwFull(name, path string) {
 		"240",
 	}...)
 
-	err := command.RunCommandAdvocate(&out, settings...)
+	err := command.RunCommandAdvocate(&out, fmt.Sprintf("rw_%s", name), settings...)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

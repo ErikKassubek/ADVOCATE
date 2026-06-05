@@ -47,7 +47,7 @@ func sameElementRun(outputName string, i int) {
 
 	start := time.Now()
 	out := bytes.Buffer{}
-	err = command.RunCommandAdvocate(&out, settings...)
+	err = command.RunCommandAdvocate(&out, fmt.Sprintf("%s_%d", outputName, i), settings...)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

@@ -9,6 +9,7 @@ var (
 	PathRealWorld   = "./../realWorld/"
 	PathStats       = filepath.Join(PathOutput, "stats")
 	PathAdvocate    = "./../../../advocate/"
+	PathLog         = filepath.Join(PathOutput, "log")
 )
 
 var (

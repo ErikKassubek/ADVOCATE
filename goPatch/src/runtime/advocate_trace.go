@@ -130,26 +130,6 @@ func CurrentTraceToString() string {
 	return res
 }
 
-// Return a string representation of a given routine local trace
-//
-// Parameter:
-//   - trace: trace to convert to string
-//
-// Returns:
-//   - string: string representation of the trace
-func traceToString(trace *[]traceElem) string {
-	res := ""
-
-	// if atomic recording is disabled
-	for i, elem := range *trace {
-		if i != 0 {
-			res += "\n"
-		}
-		res += elem.toString()
-	}
-	return res
-}
-
 // Add an operation to the trace
 //
 // Parameter:
@@ -175,14 +155,51 @@ func PrintTrace() {
 // Returns:
 //   - string representation of the trace of the routine
 //   - bool: true if the routine exists, false otherwise
-func TraceToStringByID(id uint64) (string, bool) {
+func TraceToChanByID(id uint64) chan string {
+	println("ADVOTEST 5: ", id)
 	lock(&AdvocateRoutinesLock)
-	defer unlock(&AdvocateRoutinesLock)
+	println("LOCK L: 1", id)
+	println("ADVOTEST 7: ", id)
+	defer println("LOCK U: 1")
 
+	c := make(chan string, 20)
+	println("ADVOTEST A: ", id)
 	if routine, ok := AdvocateRoutines[id]; ok {
-		return traceToString(&routine.Trace), true
+		unlock(&AdvocateRoutinesLock)
+		println("ADVOTEST B: ", id)
+		println("ADVOTEST 6: ", len(routine.Trace))
+
+		go func() {
+			res := ""
+			blockSize := 1000
+			// if atomic recording is disabled
+			for i, elem := range routine.Trace {
+				if i != 0 {
+					res += "\n"
+				}
+				res += elem.toString()
+
+				if i%blockSize == 0 {
+					c <- res
+					res = ""
+				}
+			}
+
+			if res != "" {
+				c <- res
+			}
+
+			close(c)
+		}()
+
+		println("ADVOTEST C: ", id)
+	} else {
+		unlock(&AdvocateRoutinesLock)
 	}
-	return "", false
+
+	println("ADVOTEST 8: ", id)
+
+	return c
 }
 
 // Return whether the trace of a routine' is empty
@@ -193,8 +210,10 @@ func TraceToStringByID(id uint64) (string, bool) {
 // Returns:
 //   - true if the trace is empty, false otherwise
 func TraceIsEmptyByRoutine(routine int) bool {
+	println("LOCK L: 6")
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
+	defer println("LOCK U: 6")
 	if routine, ok := AdvocateRoutines[uint64(routine)]; ok {
 		return len(routine.Trace) == 0
 	}
@@ -239,8 +258,10 @@ func buildTraceElemStringSep(sep string, values ...any) string {
 // Returns:
 //   - number of routines in the trace
 func GetNumberOfRoutines() int {
+	println("LOCK L: 7")
 	lock(&AdvocateRoutinesLock)
 	defer unlock(&AdvocateRoutinesLock)
+	println("LOCK U: 7")
 	return len(AdvocateRoutines)
 }
 
@@ -249,7 +270,9 @@ func GetNumberOfRoutines() int {
 // Make sure to call BlockTrace(), before calling this function
 func DeleteTrace() {
 	lock(&AdvocateRoutinesLock)
+	println("LOCK L: 8")
 	defer unlock(&AdvocateRoutinesLock)
+	defer println("LOCK U: W")
 	for i := range AdvocateRoutines {
 		AdvocateRoutines[i].Trace = AdvocateRoutines[i].Trace[:0]
 	}
@@ -274,7 +297,9 @@ func AdvocateIgnore(file string) bool {
 
 func RemoveActive(id uint64) {
 	lock(&AdvocateRoutinesLock)
+	println("LOCK L: 9")
 	defer unlock(&AdvocateRoutinesLock)
+	defer println("LOCK U: 1")
 
 	delete(AdvocateRoutines, uint64(id))
 }
@@ -288,7 +313,9 @@ func RemoveActive(id uint64) {
 //   - bool: true if not started or written to file
 func IsActive(id int) (bool, bool) {
 	lock(&AdvocateRoutinesLock)
+	println("LOCK L: 10")
 	defer unlock(&AdvocateRoutinesLock)
+	defer println("LOCK U: 10")
 
 	if g, ok := AdvocateRoutines[uint64(id)]; ok {
 		return ok, g.startedWritingToFile
@@ -312,6 +339,10 @@ func AdvocateWriteTraceToFile() {
 	g := currentGoRoutineInfo()
 
 	if g == nil {
+		return
+	}
+
+	if AdvocateIgnore(g.createdAtFile) {
 		return
 	}
 

@@ -324,7 +324,7 @@ func AdvocateWriteTraceToFile() {
 		return
 	}
 
-	if AdvocateIgnore(g.createdAtFile) {
+	if AdvocateIgnore(g.forkFile) {
 		return
 	}
 

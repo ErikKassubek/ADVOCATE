@@ -41,15 +41,13 @@ type AdvocateRoutine struct {
 	Trace                []traceElem
 	replayID             int
 	forkFile             string
-	forkLine             int
+	forkLine             int32
 	parkOn               []unsafe.Pointer
 	parkPos              string
 	parkOp               []Operation
 	parkForeverReplay    bool
 	wokenButTimeout      bool
 	startedWritingToFile bool
-	createdAtFile        string
-	createdAtLine        int32
 }
 
 // Create a new advocate routine
@@ -57,11 +55,11 @@ type AdvocateRoutine struct {
 //   - g: the g struct of the routine
 //   - replayRoutine int: when used in reply, id of the new routine in the replayed trace the replay ids of the routines forked from this routine
 //   - file string: file, where the routine was created
-//   - line int: line, where the routine was created
+//   - line int32: line, where the routine was created
 //
 // Return:
 //   - the new advocate routine
-func newAdvocateRoutine(g *g, replayRoutine int, file string, line int) *AdvocateRoutine {
+func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *AdvocateRoutine {
 	// ignore the internal routines that are run before the main/test function starts
 	if advocateTracingDisabled {
 		return &AdvocateRoutine{
@@ -78,14 +76,14 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int) *Advocat
 	}
 
 	advocateRoutineInfo := &AdvocateRoutine{
-		id:            GetNewAdvocateRoutineID(),
-		maxObjectId:   0,
-		G:             g,
-		Trace:         make([]traceElem, 0),
-		replayID:      replayRoutine,
-		parkOn:        make([]unsafe.Pointer, 0),
-		createdAtFile: caf,
-		createdAtLine: cal,
+		id:          GetNewAdvocateRoutineID(),
+		maxObjectId: 0,
+		G:           g,
+		Trace:       make([]traceElem, 0),
+		replayID:    replayRoutine,
+		parkOn:      make([]unsafe.Pointer, 0),
+		forkFile:    file,
+		forkLine:    line,
 	}
 
 	lock(&AdvocateRoutinesLock)
@@ -144,7 +142,7 @@ func (gi *AdvocateRoutine) getElement(index int) traceElem {
 }
 
 func (gi *AdvocateRoutine) getPosCreated() string {
-	return posToString(gi.createdAtFile, int(gi.createdAtLine))
+	return posToString(gi.forkFile, int(int(gi.forkLine)))
 }
 
 func (gi *AdvocateRoutine) getLastElement() traceElem {
@@ -152,7 +150,7 @@ func (gi *AdvocateRoutine) getLastElement() traceElem {
 }
 
 func (gi *AdvocateRoutine) GetForkPos() string {
-	return posToString(gi.forkFile, gi.forkLine)
+	return posToString(gi.forkFile, int(gi.forkLine))
 }
 
 // Update an element in the trace of the current routine

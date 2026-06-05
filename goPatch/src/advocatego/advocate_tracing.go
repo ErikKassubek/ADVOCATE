@@ -124,7 +124,7 @@ func writeToTraceFiles() {
 	// wait for the currently writing routine to be written
 	for len(currentlyWriting) > 0 {
 		for i := 0; i < len(currentlyWriting); {
-			active, _ := runtime.IsActive(i)
+			active, _ := runtime.IsActive(currentlyWriting[i])
 			if !active {
 				currentlyWriting = append(currentlyWriting[:i], currentlyWriting[i+1:]...)
 			} else {
@@ -158,10 +158,12 @@ func WriteToTraceFile(routine int, fromRuntime bool) bool {
 	}
 	defer file.Close()
 
-	trace, _ := runtime.TraceToStringByID(uint64(routine))
+	c := runtime.TraceToChanByID(uint64(routine))
 
-	if _, err := file.WriteString(trace); err != nil {
-		panic(err)
+	for res := range c {
+		if _, err := file.WriteString(res); err != nil {
+			panic(err)
+		}
 	}
 
 	return true

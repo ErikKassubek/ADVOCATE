@@ -48,6 +48,8 @@ type AdvocateRoutine struct {
 	parkForeverReplay    bool
 	wokenButTimeout      bool
 	startedWritingToFile bool
+	createdAtFile        string
+	createdAtLine        int32
 }
 
 // Create a new advocate routine
@@ -76,12 +78,14 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int) *Advocat
 	}
 
 	advocateRoutineInfo := &AdvocateRoutine{
-		id:          GetNewAdvocateRoutineID(),
-		maxObjectId: 0,
-		G:           g,
-		Trace:       make([]traceElem, 0),
-		replayID:    replayRoutine,
-		parkOn:      make([]unsafe.Pointer, 0),
+		id:            GetNewAdvocateRoutineID(),
+		maxObjectId:   0,
+		G:             g,
+		Trace:         make([]traceElem, 0),
+		replayID:      replayRoutine,
+		parkOn:        make([]unsafe.Pointer, 0),
+		createdAtFile: caf,
+		createdAtLine: cal,
 	}
 
 	lock(&AdvocateRoutinesLock)
@@ -137,6 +141,10 @@ func (gi *AdvocateRoutine) addToTrace(elem traceElem) int {
 
 func (gi *AdvocateRoutine) getElement(index int) traceElem {
 	return gi.Trace[index]
+}
+
+func (gi *AdvocateRoutine) getPosCreated() string {
+	return posToString(gi.createdAtFile, int(gi.createdAtLine))
 }
 
 func (gi *AdvocateRoutine) getLastElement() traceElem {

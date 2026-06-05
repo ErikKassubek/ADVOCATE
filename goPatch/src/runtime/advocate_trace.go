@@ -134,26 +134,6 @@ func CurrentTraceToString() string {
 	return res
 }
 
-// Return a string representation of a given routine local trace
-//
-// Parameter:
-//   - trace: trace to convert to string
-//
-// Returns:
-//   - string: string representation of the trace
-func traceToString(trace *[]traceElem) string {
-	res := ""
-
-	// if atomic recording is disabled
-	for i, elem := range *trace {
-		if i != 0 {
-			res += "\n"
-		}
-		res += elem.toString()
-	}
-	return res
-}
-
 // Add an operation to the trace
 //
 // Parameter:
@@ -177,16 +157,41 @@ func PrintTrace() {
 //   - id: id of the routine
 //
 // Returns:
-//   - string representation of the trace of the routine
-//   - bool: true if the routine exists, false otherwise
-func TraceToStringByID(id uint64) (string, bool) {
+//   - chan: the channel the trace is send over
+func TraceToChanByID(id uint64) chan string {
 	lock(&AdvocateRoutinesLock)
-	defer unlock(&AdvocateRoutinesLock)
 
+	c := make(chan string, 20)
 	if routine, ok := AdvocateRoutines[id]; ok {
-		return traceToString(&routine.Trace), true
+		unlock(&AdvocateRoutinesLock)
+
+		go func() {
+			res := ""
+			blockSize := 1000
+			// if atomic recording is disabled
+			for i, elem := range routine.Trace {
+				if i != 0 {
+					res += "\n"
+				}
+				res += elem.toString()
+
+				if i%blockSize == 0 {
+					c <- res
+					res = ""
+				}
+			}
+
+			if res != "" {
+				c <- res
+			}
+
+			close(c)
+		}()
+	} else {
+		unlock(&AdvocateRoutinesLock)
 	}
-	return "", false
+
+	return c
 }
 
 // Return whether the trace of a routine' is empty
@@ -316,6 +321,10 @@ func AdvocateWriteTraceToFile() {
 	g := currentGoRoutineInfo()
 
 	if g == nil {
+		return
+	}
+
+	if AdvocateIgnore(g.createdAtFile) {
 		return
 	}
 

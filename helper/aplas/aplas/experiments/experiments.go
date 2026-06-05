@@ -26,7 +26,7 @@ var defaultSettings = []string{
 	"-deleteTrace",
 }
 
-var maxWorker = 10
+var maxWorker = 6
 var wg = sync.WaitGroup{}
 var sem = make(chan struct{}, maxWorker)
 
@@ -39,7 +39,7 @@ func Run() {
 
 	base()
 
-	println("CONT")
+	time.Sleep(time.Second)
 
 	oocLength()
 	time.Sleep(time.Second)

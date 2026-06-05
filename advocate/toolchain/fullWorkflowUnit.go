@@ -17,9 +17,9 @@ import (
 	"advocate/results/complete"
 	"advocate/results/results"
 	"advocate/results/stats"
+	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
-	"advocate/utils/helper"
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"advocate/utils/timer"
@@ -197,7 +197,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				stats.CreateStats(testFunc, movedTraces, fuzzing)
 			}
 
-			if !flags.KeepTraces && !flags.CreateStatistics {
+			if flags.DeleteTraces && !flags.CreateStatistics {
 				RemoveTraces(dir)
 			}
 
@@ -522,9 +522,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.RunCommandNoTimeout, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = helper.RunCommand(origStdout, origStderr, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.RunCommandNoTimeout, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -567,10 +567,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	helper.RunCommand(osOut, osErr, paths.Go, "version")
+	command.RunCommand(osOut, osErr, command.RunCommandNoTimeout, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := command.RunCommand(osOut, osErr, command.RunCommandNoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -679,7 +679,7 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		helper.RunCommand(osOut, osErr, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		command.RunCommand(osOut, osErr, command.RunCommandNoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

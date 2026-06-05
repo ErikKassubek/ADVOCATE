@@ -79,7 +79,7 @@ var (
 	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
 	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
 	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
-	keepTrace             = newFlagVal("keepTrace", "false", "", "If set, the traces are not deleted after analysis. Can result in very large output folders")
+	deleteTrace           = newFlagVal("deleteTrace", "false", "", "If set, the traces are deleted after analysis. Can avoid the need to store all trace files")
 	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
 	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
 )
@@ -330,7 +330,7 @@ func printHelpAnalysis() {
 	fmt.Println(ignoreAtomics.toString(false))
 	fmt.Println(replayAll.toString(false))
 	fmt.Println(noRewrite.toString(false))
-	fmt.Println(keepTrace.toString(false))
+	fmt.Println(deleteTrace.toString(false))
 }
 
 // print help for fuzzing mode
@@ -387,7 +387,7 @@ func printHelpFuzzing() {
 	fmt.Println(ignoreAtomics.toString(false))
 	fmt.Println(replayAll.toString(false))
 	fmt.Println(noRewrite.toString(false))
-	fmt.Println(keepTrace.toString(false))
+	fmt.Println(deleteTrace.toString(false))
 	fmt.Println(settings.toString(false))
 	fmt.Println(cancelTestIfFound.toString(false))
 }

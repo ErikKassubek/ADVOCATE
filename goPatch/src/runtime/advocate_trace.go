@@ -320,6 +320,10 @@ func AdvocateWriteTraceToFile() {
 		return
 	}
 
+	if AdvocateIgnore(g.createdAtFile) {
+		return
+	}
+
 	g.startedWritingToFile = true
 	ok := writeTraceToFileFunc(int(g.id), true)
 	if !ok { // writing from finishTracing has already started

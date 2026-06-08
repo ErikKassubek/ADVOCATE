@@ -1,0 +1,3 @@
+TestName,NrMut,NrMutInvalid,ActiveReleased,AllActiveReleased
+TestIstio8967,0,0,1,1
+TestIstio8967,332,246,1,1

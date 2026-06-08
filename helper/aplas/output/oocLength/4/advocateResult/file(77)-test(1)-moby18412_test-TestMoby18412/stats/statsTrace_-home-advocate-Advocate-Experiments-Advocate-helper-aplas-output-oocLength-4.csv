@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestMoby18412,6,4,0,1,1,0,0,0,0
+TestMoby18412,6,4,0,1,1,0,0,0,0

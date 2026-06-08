@@ -1,0 +1,5 @@
+# github.com/miekg/dns
+length_test.go:4:2: package advocatego is not in std (/usr/lib/go-1.26/src/advocatego)
+FAIL	github.com/miekg/dns [setup failed]
+ok  	github.com/miekg/dns/dnsutil	0.003s
+FAIL

@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestHugo3251,185,51,0,0,0,84,51,0,0
+TestHugo3251,185,51,0,0,0,84,51,0,0

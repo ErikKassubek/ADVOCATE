@@ -1,0 +1,3 @@
+TestName,NrMut,NrMutInvalid,ActiveReleased,AllActiveReleased
+TestCockroach10214,0,0,1,1
+TestCockroach10214,703,703,1,1

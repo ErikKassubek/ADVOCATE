@@ -1,0 +1,3 @@
+TestName,NrMut,NrMutInvalid,ActiveReleased,AllActiveReleased
+TestHugo3251,0,0,1,1
+TestHugo3251,657,480,1,1

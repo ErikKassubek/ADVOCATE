@@ -1,0 +1,3 @@
+TestName,NrMut,NrMutInvalid,ActiveReleased,AllActiveReleased
+TestKubernetes6632,0,0,1,1
+TestKubernetes6632,222,95,1,1

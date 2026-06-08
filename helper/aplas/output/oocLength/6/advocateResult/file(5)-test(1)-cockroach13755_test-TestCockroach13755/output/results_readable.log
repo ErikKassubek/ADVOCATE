@@ -1,0 +1,10 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Leak:tp:
+	Blocked: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/1055/cockroach1055_test.go:99@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/1055/cockroach1055_test.go:83@150;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/1055/cockroach1055_test.go:47@190;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/1055/cockroach1055_test.go:83@116;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/13197/cockroach13197_test.go:36@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/13755/cockroach13755_test.go:30@30
+
+
+```

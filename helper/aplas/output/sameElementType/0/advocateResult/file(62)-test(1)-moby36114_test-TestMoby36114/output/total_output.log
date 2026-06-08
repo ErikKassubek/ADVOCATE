@@ -1,0 +1,7 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/moby/36114/moby36114_test.go
+TestName:  TestMoby36114
+Import added at line: 14
+Header added at line: 34
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/moby/36114/moby36114_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestMoby36114

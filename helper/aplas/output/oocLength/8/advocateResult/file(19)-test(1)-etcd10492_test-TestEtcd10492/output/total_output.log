@@ -1,0 +1,32 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/8/blocking/etcd/10492/etcd10492_test.go
+TestName:  TestEtcd10492
+Import added at line: 3
+Header added at line: 39
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/8/blocking/etcd/10492/etcd10492_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestEtcd10492
+HAS:  false
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  6
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	gobench/blocking/etcd/10492	241.103s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail

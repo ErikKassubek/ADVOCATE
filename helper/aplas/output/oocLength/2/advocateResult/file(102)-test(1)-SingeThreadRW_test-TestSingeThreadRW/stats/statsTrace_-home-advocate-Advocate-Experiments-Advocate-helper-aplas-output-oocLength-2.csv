@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestSingeThreadRW,0,0,0,0,0,0,0,0,0
+TestSingeThreadRW,0,0,0,0,0,0,0,0,0

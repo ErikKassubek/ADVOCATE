@@ -1,0 +1,14 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Actual Leak:tp:
+	Blocked: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:83@142;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:83@132;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:47@164;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:99@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:99@904;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:83@836;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:83@900;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:54@820;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/1055/cockroach1055_test.go:49@918;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/13197/cockroach13197_test.go:36@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/13755/cockroach13755_test.go:30@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/18101/cockroach18101_test.go:41@112
+
+
+2 Actual Leak:tp:
+	Blocked: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/10790/cockroach10790_test.go:63@160;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/2448/cockroach2448_test.go:59@402;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/11/blocking/cockroach/2448/cockroach2448_test.go:30@404
+
+
+```

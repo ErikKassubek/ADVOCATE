@@ -40,7 +40,7 @@ func oocLengthRun(outputName string, i int) {
 		"-path",
 		path,
 		"-timeoutExec",
-		"20",
+		"240",
 		"-settings",
 		fmt.Sprintf("MaxOOCLength=%d", i),
 	}...)

@@ -1,0 +1,7 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/etcd/6708/etcd6708_test.go
+TestName:  TestEtcd6708
+Import added at line: 3
+Header added at line: 73
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/etcd/6708/etcd6708_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestEtcd6708

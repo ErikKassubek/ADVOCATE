@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestIstio17860,23,5,0,2,3,8,0,0,0
+TestIstio17860,23,5,0,2,3,8,0,0,0

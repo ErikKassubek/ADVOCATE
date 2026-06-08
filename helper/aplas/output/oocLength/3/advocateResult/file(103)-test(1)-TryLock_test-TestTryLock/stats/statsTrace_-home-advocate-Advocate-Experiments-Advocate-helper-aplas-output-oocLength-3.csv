@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestTryLock,0,0,0,0,0,0,0,0,0
+TestTryLock,0,0,0,0,0,0,0,0,0

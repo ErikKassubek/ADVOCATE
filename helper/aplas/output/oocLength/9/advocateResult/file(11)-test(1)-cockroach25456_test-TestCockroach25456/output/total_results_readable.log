@@ -1,0 +1,18 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Timeout:tp:
+	: 
+
+
+2 Actual Leak:tp:
+	Blocked: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/1055/cockroach1055_test.go:83@146;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/1055/cockroach1055_test.go:47@186;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/1055/cockroach1055_test.go:99@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/1055/cockroach1055_test.go:83@118;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/13197/cockroach13197_test.go:36@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/13755/cockroach13755_test.go:30@30;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/18101/cockroach18101_test.go:41@92;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/24808/cockroach24808_test.go:50@10;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/25456/cockroach25456_test.go:52@4
+
+
+3 Actual Leak:tp:
+	Blocked: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/10790/cockroach10790_test.go:63@178;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/2448/cockroach2448_test.go:59@348;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/blocking/cockroach/2448/cockroach2448_test.go:30@350
+
+
+```

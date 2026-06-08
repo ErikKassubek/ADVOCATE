@@ -1,0 +1,153 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+TestName:  Test10
+Import added at line: 3
+Header added at line: 9
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+go version go1.25.0 linux/amd64
+=== RUN   Test10
+Reading trace from /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/fuzzingTraces/fuzzingTrace_1
+fatal error: all goroutines are asleep - deadlock!
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000f81e0, {0x636287, 0x6}, 0x645368)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2005 +0x93c
+testing.runTests.func1(0xc0000f8000)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2477 +0xa5
+testing.tRunner(0xc0000f8000, 0xc0000e5918)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+testing.runTests(0xc00000e060, {0x767c50, 0x1, 0x1}, {0xc280d39a7b4db094, 0x8bb2cb4307, 0x7728a0})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2475 +0x5d7
+testing.(*M).Run(0xc0000d4210)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2337 +0xb39
+main.main()
+	_testmain.go:45 +0xa5
+
+goroutine 7 [chan receive]:
+sync.(*WaitGroup).Wait(0xc0000161b0)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:211 +0x15c
+gobench.Test10(0xc0000f81e0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:88 +0x425
+testing.tRunner(0xc0000f81e0, 0x645368)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+created by testing.(*T).Run in goroutine 1
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1997 +0x914
+
+goroutine 8 [semacquire]:
+runtime.GC()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/mgc.go:514 +0x3d
+runtime.AdvocateDetectBlocking()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_blocked.go:111 +0x1a7
+advocatego.DetectBlockingGC()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_blockingBug.go:30 +0x34
+runtime.ExitReplayTimeout()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_replay_exit.go:117 +0x1a
+advocatego.startReplay.func2()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_replay.go:118 +0x2a
+created by advocatego.startReplay in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_replay.go:116 +0xc68
+
+goroutine 10 [chan receive]:
+gobench.Test10.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:20 +0x3d
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 11 [chan receive]:
+gobench.Test10.func2()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:27 +0x38
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 12 [chan receive]:
+gobench.Test10.func3()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:34 +0x3d
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 13 [chan receive]:
+gobench.Test10.func4()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:41 +0x38
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 14 [chan receive]:
+gobench.Test10.func5()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:48 +0x3d
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 15 [chan receive]:
+gobench.Test10.func6()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:55 +0x38
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 16 [chan receive]:
+gobench.Test10.func7()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:62 +0x3d
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 17 [chan receive]:
+gobench.Test10.func8()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:69 +0x38
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 18 [chan receive]:
+gobench.Test10.func9()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:76 +0x3d
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 19 [chan receive]:
+gobench.Test10.func10()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go:83 +0x38
+sync.(*WaitGroup).Go.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:330 +0x6c
+created by sync.(*WaitGroup).Go in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 47 [semacquire]:
+fmt.init.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/fmt/print.go:147 +0x25
+sync.(*Pool).Get(0x769180)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/pool.go:155 +0x17b
+fmt.newPrinter()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/fmt/print.go:152 +0x27
+fmt.Sprintf({0x636568, 0x7}, {0xc000649c60, 0x2, 0x2})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/fmt/print.go:238 +0x45
+testing.runningList.func1({0x5fd840, 0xc00002a720}, {0x60c9c0, 0xc00000e0a8})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2691 +0x205
+internal/sync.(*HashTrieMap[...]).iter(0x6583e0, 0xc0000ba280, 0xc000649e78)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/hashtriemap.go:512 +0x202
+internal/sync.(*HashTrieMap[...]).Range(0x6583e0, 0xc000649e78)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/hashtriemap.go:495 +0x92
+sync.(*Map).Range(0x7726c0, 0xc000649e78)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/hashtriemap.go:116 +0x30
+testing.runningList()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2690 +0x65
+testing.(*M).startAlarm.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2673 +0x4a
+created by time.goFunc
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/time/sleep.go:215 +0x38
+FAIL	gobench	600.105s
+FAIL

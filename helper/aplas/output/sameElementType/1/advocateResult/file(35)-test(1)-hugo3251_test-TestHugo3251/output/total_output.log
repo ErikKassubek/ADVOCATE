@@ -1,0 +1,7 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/1/blocking/hugo/3251/hugo3251_test.go
+TestName:  TestHugo3251
+Import added at line: 3
+Header added at line: 43
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/1/blocking/hugo/3251/hugo3251_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestHugo3251

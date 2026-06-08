@@ -1,0 +1,3 @@
+TestName,NrMut,NrMutInvalid,ActiveReleased,AllActiveReleased
+TestReleaseInOtherRoutine,0,0,0,0
+TestReleaseInOtherRoutine,0,0,0,0

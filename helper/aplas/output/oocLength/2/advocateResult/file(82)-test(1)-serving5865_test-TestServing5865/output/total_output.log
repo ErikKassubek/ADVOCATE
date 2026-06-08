@@ -1,0 +1,47 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/2/nonblocking/serving/5865/serving5865_test.go
+TestName:  TestServing5865
+Import added at line: 3
+Header added at line: 45
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/2/nonblocking/serving/5865/serving5865_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestServing5865
+ADVOTEST 5:  2
+LOCK L: 1 2
+ADVOTEST 7:  2
+ADVOTEST A:  2
+ADVOTEST B:  2
+ADVOTEST 6:  2
+ADVOTEST C:  2
+ADVOTEST 8:  2
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+HAS:  false
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  6
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+LOCK L: 10
+LOCK U: 10
+
+Exit Replay with code  30 Send on close
+Exit Message: panic: send on closed channel
+
+FAIL	gobench/nonblocking/serving/5865	1.004s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail
+Bugreport info: 0_6,fail
+Bugreport info: 0_7,fail

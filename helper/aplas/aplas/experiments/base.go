@@ -28,7 +28,7 @@ func base() {
 		start := time.Now()
 		out := bytes.Buffer{}
 		absPath, _ := filepath.Abs(path)
-		err = command.RunCommandGo(&out, outputName, absPath, "test", "./...", "-count=1", "timeout", "20s")
+		err = command.RunCommandGo(&out, outputName, absPath, "test", "./...", "-count=1")
 		if err != nil {
 			fmt.Println(err.Error())
 		}

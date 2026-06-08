@@ -40,7 +40,7 @@ func sameElementRun(outputName string, i int) {
 		"-path",
 		path,
 		"-timeoutExec",
-		"20",
+		"240",
 		"-settings",
 		fmt.Sprintf("SameElementTypeInOOC=%d", i),
 	}...)

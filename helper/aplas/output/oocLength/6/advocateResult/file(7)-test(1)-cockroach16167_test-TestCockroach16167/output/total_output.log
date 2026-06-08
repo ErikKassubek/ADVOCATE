@@ -1,0 +1,37 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/16167/cockroach16167_test.go
+TestName:  TestCockroach16167
+Import added at line: 20
+Header added at line: 97
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/16167/cockroach16167_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestCockroach16167
+ADVOTEST 5:  2
+LOCK L: 1 2
+ADVOTEST 7:  2
+ADVOTEST A:  2
+ADVOTEST B:  2
+ADVOTEST 6:  3
+ADVOTEST C:  2
+ADVOTEST 8:  2
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  4
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+LOCK L: 10
+LOCK U: 10
+--- PASS: TestCockroach16167 (1.00s)
+PASS
+ok  	gobench/blocking/cockroach/16167	1.003s
+Bugreport info: 0_1,fail

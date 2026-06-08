@@ -1,0 +1,3 @@
+TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksTotalTP,NrLeaksTotalFP,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksUniqueTP,NrLeaksUniqueFP,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique
+TestKubernetes5316,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0
+TestKubernetes5316,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0

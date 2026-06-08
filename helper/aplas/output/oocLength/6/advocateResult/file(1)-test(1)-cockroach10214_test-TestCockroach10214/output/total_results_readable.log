@@ -1,0 +1,15 @@
+```
+==================== Summary ====================
+
+-------------------- Critical -------------------
+
+1 Possible cyclic deadlock:tp:
+	stuck: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/10214/cockroach10214_test.go:52@56
+	cycle: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/10214/cockroach10214_test.go:84@20;/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/6/blocking/cockroach/10214/cockroach10214_test.go:52@56
+
+```==================================
+```
+==================== Summary ====================
+
+No bugs found
+```

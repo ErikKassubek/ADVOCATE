@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestGrpc2371,9,4,0,0,0,6,0,0,0
+TestGrpc2371,9,4,0,0,0,6,0,0,0

@@ -1,0 +1,156 @@
+go: downloading github.com/bits-and-blooms/bitset v1.12.0
+go: downloading github.com/blevesearch/stempel v0.2.0
+go: downloading github.com/blevesearch/snowball v0.6.1
+go: downloading github.com/blevesearch/scorch_segment_api/v2 v2.2.16
+go: downloading github.com/blevesearch/goleveldb v1.0.1
+go: downloading github.com/blevesearch/gtreap v0.1.1
+go: downloading github.com/RoaringBitmap/roaring v1.9.3
+go: downloading github.com/blevesearch/go-metrics v0.0.0-20201227073835-cf1acfcdf475
+go: downloading github.com/golang/protobuf v1.3.2
+go: downloading github.com/spf13/cobra v1.7.0
+go: downloading go.etcd.io/bbolt v1.3.7
+go: downloading github.com/couchbase/moss v0.2.0
+go: downloading github.com/blevesearch/vellum v1.0.10
+go: downloading github.com/blevesearch/zapx/v11 v11.3.10
+go: downloading github.com/blevesearch/zapx/v12 v12.3.10
+go: downloading github.com/blevesearch/zapx/v13 v13.3.10
+go: downloading github.com/blevesearch/zapx/v14 v14.3.10
+go: downloading github.com/blevesearch/zapx/v15 v15.3.16
+go: downloading github.com/blevesearch/zapx/v16 v16.1.8-0.20241104164502-f19d5f0cdbcb
+go: downloading github.com/blevesearch/mmap-go v1.0.4
+go: downloading github.com/golang/snappy v0.0.1
+go: downloading github.com/couchbase/ghistogram v0.1.0
+go: downloading golang.org/x/sys v0.13.0
+# github.com/blevesearch/bleve/v2/analysis/lang/ar
+analysis/lang/ar/arabic_normalize_test.go:18:2: package advocatego is not in std (/usr/lib/go-1.26/src/advocatego)
+FAIL	github.com/blevesearch/bleve/v2/analysis/lang/ar [setup failed]
+ok  	github.com/blevesearch/bleve/v2	1.553s
+ok  	github.com/blevesearch/bleve/v2/analysis	0.009s
+?   	github.com/blevesearch/bleve/v2/analysis/analyzer/custom	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/analyzer/keyword	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/analyzer/simple	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/analyzer/standard	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/analyzer/web	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/char/asciifolding	0.022s
+?   	github.com/blevesearch/bleve/v2/analysis/char/html	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/char/regexp	0.016s
+?   	github.com/blevesearch/bleve/v2/analysis/char/zerowidthnonjoiner	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/datetime/flexible	0.009s
+ok  	github.com/blevesearch/bleve/v2/analysis/datetime/iso	0.021s
+?   	github.com/blevesearch/bleve/v2/analysis/datetime/optional	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/datetime/percent	0.016s
+ok  	github.com/blevesearch/bleve/v2/analysis/datetime/sanitized	0.014s
+?   	github.com/blevesearch/bleve/v2/analysis/datetime/timestamp/microseconds	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/datetime/timestamp/milliseconds	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/datetime/timestamp/nanoseconds	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/datetime/timestamp/seconds	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/lang/bg	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/ca	0.007s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/cjk	0.019s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/ckb	0.005s
+?   	github.com/blevesearch/bleve/v2/analysis/lang/cs	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/da	0.006s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/de	0.010s
+?   	github.com/blevesearch/bleve/v2/analysis/lang/el	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/en	0.013s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/es	0.012s
+?   	github.com/blevesearch/bleve/v2/analysis/lang/eu	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/fa	0.012s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/fi	0.007s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/fr	0.013s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/ga	0.013s
+?   	github.com/blevesearch/bleve/v2/analysis/lang/gl	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/hi	0.014s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/hr	0.008s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/hu	0.011s
+?   	github.com/blevesearch/bleve/v2/analysis/lang/hy	[no test files]
+?   	github.com/blevesearch/bleve/v2/analysis/lang/id	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/in	0.016s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/it	0.006s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/nl	0.008s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/no	0.007s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/pl	0.189s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/pl/stempel	0.738s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/pl/stempel/javadata	0.006s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/pt	0.005s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/ro	0.010s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/ru	0.023s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/sv	0.013s
+ok  	github.com/blevesearch/bleve/v2/analysis/lang/tr	0.005s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/apostrophe	0.007s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/camelcase	0.010s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/compound	0.005s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/edgengram	0.004s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/elision	0.009s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/hierarchy	0.003s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/keyword	0.011s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/length	0.009s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/lowercase	0.018s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/ngram	0.008s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/porter	0.008s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/reverse	0.007s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/shingle	0.005s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/snowball	0.015s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/stop	0.014s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/truncate	0.013s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/unicodenorm	0.016s
+ok  	github.com/blevesearch/bleve/v2/analysis/token/unique	0.014s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/character	0.012s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/exception	0.004s
+?   	github.com/blevesearch/bleve/v2/analysis/tokenizer/letter	[no test files]
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/regexp	0.005s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/single	0.014s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/unicode	0.012s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/web	0.013s
+ok  	github.com/blevesearch/bleve/v2/analysis/tokenizer/whitespace	0.009s
+?   	github.com/blevesearch/bleve/v2/analysis/tokenmap	[no test files]
+?   	github.com/blevesearch/bleve/v2/cmd/bleve	[no test files]
+?   	github.com/blevesearch/bleve/v2/cmd/bleve/cmd	[no test files]
+?   	github.com/blevesearch/bleve/v2/cmd/bleve/cmd/scorch	[no test files]
+?   	github.com/blevesearch/bleve/v2/config	[no test files]
+ok  	github.com/blevesearch/bleve/v2/document	0.011s
+ok  	github.com/blevesearch/bleve/v2/geo	0.014s
+ok  	github.com/blevesearch/bleve/v2/http	0.169s
+ok  	github.com/blevesearch/bleve/v2/index/scorch	1.084s
+ok  	github.com/blevesearch/bleve/v2/index/scorch/mergeplan	0.016s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown	0.734s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/boltdb	0.309s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/goleveldb	0.323s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/gtreap	0.012s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/metrics	0.022s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/moss	0.014s
+ok  	github.com/blevesearch/bleve/v2/index/upsidedown/store/null	0.014s
+ok  	github.com/blevesearch/bleve/v2/mapping	0.021s
+ok  	github.com/blevesearch/bleve/v2/numeric	0.010s
+?   	github.com/blevesearch/bleve/v2/registry	[no test files]
+ok  	github.com/blevesearch/bleve/v2/search	0.007s
+ok  	github.com/blevesearch/bleve/v2/search/collector	0.013s
+ok  	github.com/blevesearch/bleve/v2/search/facet	0.066s [no tests to run]
+ok  	github.com/blevesearch/bleve/v2/search/highlight	0.008s
+?   	github.com/blevesearch/bleve/v2/search/highlight/format/ansi	[no test files]
+ok  	github.com/blevesearch/bleve/v2/search/highlight/format/html	0.006s
+ok  	github.com/blevesearch/bleve/v2/search/highlight/format/plain	0.006s
+ok  	github.com/blevesearch/bleve/v2/search/highlight/fragmenter/simple	0.014s
+?   	github.com/blevesearch/bleve/v2/search/highlight/highlighter/ansi	[no test files]
+?   	github.com/blevesearch/bleve/v2/search/highlight/highlighter/html	[no test files]
+ok  	github.com/blevesearch/bleve/v2/search/highlight/highlighter/simple	0.013s
+ok  	github.com/blevesearch/bleve/v2/search/query	0.026s
+ok  	github.com/blevesearch/bleve/v2/search/scorer	0.010s
+ok  	github.com/blevesearch/bleve/v2/search/searcher	1.668s
+?   	github.com/blevesearch/bleve/v2/size	[no test files]
+--- FAIL: TestIntegration (1.28s)
+    integration_test.go:48: using index type scorch and kv type boltdb
+    integration_test.go:76: Running test: alias
+    integration_test.go:115: error loading dataset: error loading dataset: error creating new index: cannot create new index, path already exists
+    integration_test.go:76: Running test: basic
+    integration_test.go:76: Running test: employee
+    integration_test.go:76: Running test: facet
+    integration_test.go:76: Running test: fosdem
+    integration_test.go:76: Running test: geo
+    integration_test.go:76: Running test: geoshapes
+    integration_test.go:76: Running test: phrase
+    integration_test.go:76: Running test: sort
+FAIL
+FAIL	github.com/blevesearch/bleve/v2/test	5.160s
+?   	github.com/blevesearch/bleve/v2/util	[no test files]
+FAIL

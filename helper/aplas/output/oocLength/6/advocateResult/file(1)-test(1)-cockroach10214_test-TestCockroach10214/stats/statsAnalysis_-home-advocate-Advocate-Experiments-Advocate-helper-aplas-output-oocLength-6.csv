@@ -1,0 +1,5 @@
+TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksTotalTP,NrLeaksTotalFP,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksUniqueTP,NrLeaksUniqueFP,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique
+TestCockroach10214,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0
+TestCockroach10214,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0
+TestCockroach10214,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+TestCockroach10214,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

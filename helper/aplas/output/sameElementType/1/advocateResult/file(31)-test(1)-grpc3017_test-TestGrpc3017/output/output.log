@@ -1,0 +1,7 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/1/blocking/grpc/3017/grpc3017_test.go
+TestName:  TestGrpc3017
+Import added at line: 3
+Header added at line: 78
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/1/blocking/grpc/3017/grpc3017_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestGrpc3017

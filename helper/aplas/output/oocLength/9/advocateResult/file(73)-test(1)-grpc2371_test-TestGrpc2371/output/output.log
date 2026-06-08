@@ -1,0 +1,122 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/nonblocking/grpc/2371/grpc2371_test.go
+TestName:  TestGrpc2371
+Import added at line: 3
+Header added at line: 83
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/9/nonblocking/grpc/2371/grpc2371_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestGrpc2371
+ADVOTEST 5:  21
+LOCK L: 1 21
+ADVOTEST 7:  21
+ADVOTEST A:  21
+ADVOTEST B:  21
+ADVOTEST 6:  3
+ADVOTEST C:  21
+ADVOTEST 8:  21
+LOCK U: 1
+ADVOTEST 5:  10
+LOCK L: 1 10
+ADVOTEST 7:  10
+ADVOTEST A:  10
+ADVOTEST B:  10
+ADVOTEST 6:  5
+ADVOTEST 5:  15
+LOCK L: 1 15
+ADVOTEST 7:  15
+ADVOTEST C:  10
+ADVOTEST 8:  10
+LOCK U: 1
+ADVOTEST A:  15
+ADVOTEST B:  15
+ADVOTEST 6:  3
+LOCK L: 9
+LOCK U: 1
+ADVOTEST C:  15
+ADVOTEST 8:  15
+LOCK U: 1
+ADVOTEST 5:  18
+LOCK L: 1 18
+ADVOTEST 7:  18
+ADVOTEST A:  18
+ADVOTEST B:  18
+ADVOTEST 6:  5
+ADVOTEST 5:  19
+LOCK L: 1 19
+ADVOTEST 7:  19
+ADVOTEST C:  18
+ADVOTEST 8:  18
+LOCK U: 1
+ADVOTEST A:  19
+ADVOTEST B:  19
+ADVOTEST 6:  3
+ADVOTEST C:  19
+ADVOTEST 8:  19
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+HAS:  false
+ADVOTEST 5:  12
+ADVOTEST 5:  6
+LOCK L: 1 12
+ADVOTEST 7:  12
+ADVOTEST 5:  13
+ADVOTEST A:  12
+ADVOTEST B:  12
+ADVOTEST 6:  5
+LOCK L: 9
+LOCK U: 1
+LOCK L: 1 13
+ADVOTEST 7:  13
+ADVOTEST A:  13
+ADVOTEST 5:  5
+ADVOTEST C:  12
+ADVOTEST 8:  12
+LOCK U: 1
+ADVOTEST B:  13
+ADVOTEST 6:  3
+LOCK L: 1 5
+ADVOTEST 7:  5
+ADVOTEST A:  5
+ADVOTEST B:  5
+ADVOTEST 6:  3
+ADVOTEST 5:  16
+LOCK L: 1 16
+ADVOTEST 7:  16
+ADVOTEST C:  13
+ADVOTEST A:  16
+ADVOTEST B:  16
+ADVOTEST 6:  5
+ADVOTEST C:  16
+ADVOTEST 8:  16
+LOCK U: 1
+ADVOTEST 8:  13
+LOCK U: 1
+ADVOTEST C:  5
+ADVOTEST 8:  5
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+ADVOTEST 5:  2
+LOCK U: 1
+LOCK L: 1 2
+ADVOTEST 7:  2
+panic: HAS:  true
+runtime error: invalid memory address or nil pointer dereference
+FAIL	gobench/nonblocking/grpc/2371	0.002s
+FAIL
+DEBUG: CS lock for T10 chan: lock=10000000001, tPre=64
+DEBUG: CS lock for T18 chan: lock=18000000001, tPre=138
+DEBUG: CS lock for T12 chan: lock=12000000001, tPre=260
+DEBUG: CS lock for T16 chan: lock=16000000001, tPre=618
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail

@@ -1,0 +1,31 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/10/blocking/cockroach/25456/cockroach25456_test.go
+TestName:  TestCockroach25456
+Import added at line: 3
+Header added at line: 71
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/10/blocking/cockroach/25456/cockroach25456_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestCockroach25456
+HAS:  false
+LEAK_GC@1@/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/10/blocking/cockroach/25456/cockroach25456_test.go#52@chan:revc
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  2
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+
+Exit Replay with code  10 Timeout
+Exit Message: panic: Timeout
+
+FAIL	gobench/blocking/cockroach/25456	241.066s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail

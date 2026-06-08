@@ -1,0 +1,156 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go
+TestName:  TestCockroach10214
+Import added at line: 13
+Header added at line: 91
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestCockroach10214
+ADVOTEST 5:  3
+LOCK L: 1 3
+ADVOTEST 7:  3
+ADVOTEST A:  3
+ADVOTEST B:  3
+ADVOTEST 6:  9
+ADVOTEST C:  3
+ADVOTEST 8:  3
+LOCK U: 1
+ADVOTEST 5:  2
+LOCK L: 1 2
+ADVOTEST 7:  2
+ADVOTEST A:  2
+ADVOTEST B:  2
+ADVOTEST 6:  11
+ADVOTEST C:  2
+ADVOTEST 8:  2
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  3
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+LOCK L: 10
+LOCK U: 10
+LOCK L: 10
+LOCK U: 10
+--- PASS: TestCockroach10214 (1.00s)
+PASS
+ok  	gobench/blocking/cockroach/10214	1.003s
+Bugreport info: 0_1,fail
+==================================
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go
+TestName:  TestCockroach10214
+Import added at line: 13
+Header added at line: 91
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestCockroach10214
+Reading trace from /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/fuzzingTraces/fuzzingTrace_1
+panic: test timed out after 10m0s
+	running tests:
+		TestCockroach10214 (10m0s)
+
+goroutine 16 [running]:
+testing.(*M).startAlarm.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2682 +0x285
+created by time.goFunc
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/time/sleep.go:215 +0x38
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0000f01e0, {0x6381e2, 0x12}, 0x643820)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2005 +0x93c
+testing.runTests.func1(0xc0000f0000)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2477 +0xa5
+testing.tRunner(0xc0000f0000, 0xc0000e5918)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+testing.runTests(0xc00000e060, {0x764c70, 0x1, 0x1}, {0xc280cdf7c1afa8f5, 0x8bb2cbef80, 0x76f8c0})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2475 +0x5d7
+testing.(*M).Run(0xc0000d4210)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2337 +0xb39
+main.main()
+	_testmain.go:45 +0xa5
+
+goroutine 7 [semacquire]:
+runtime.AdvocateDetectBlocking()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_blocked.go:106 +0x145
+advocatego.DetectBlockingGC()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_blockingBug.go:30 +0x34
+advocatego.FinishTracing()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:92 +0x65
+advocatego.FinishFuzzing()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_fuzzing.go:67 +0x45
+gobench/blocking/cockroach/10214.TestCockroach10214(0xc0000f01e0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:118 +0x3ec
+testing.tRunner(0xc0000f01e0, 0x643820)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+created by testing.(*T).Run in goroutine 1
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1997 +0x914
+
+goroutine 8 [semacquire]:
+runtime.GC()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/mgc.go:514 +0x3d
+runtime.AdvocateDetectBlocking()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_blocked.go:111 +0x1a7
+advocatego.DetectBlockingGC()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_blockingBug.go:30 +0x34
+runtime.ExitReplayTimeout()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_replay_exit.go:117 +0x1a
+advocatego.startReplay.func2()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_replay.go:118 +0x2a
+created by advocatego.startReplay in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_replay.go:116 +0xc68
+
+goroutine 10 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0xc00008cc60?, 0x1?, 0x2?)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/mutex.go:149 +0x245
+internal/sync.(*Mutex).Lock(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/mutex.go:70 +0x45
+sync.(*Mutex).Lock(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/mutex.go:92 +0x2b6
+gobench/blocking/cockroach/10214.(*Replica).reportUnreachable(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:52 +0x1f
+gobench/blocking/cockroach/10214.(*Store).sendQueuedHeartbeatsToNode(0xc00008cc00)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:41 +0x79
+gobench/blocking/cockroach/10214.(*Store).sendQueuedHeartbeats(0xc00008cc00)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:34 +0xab
+gobench/blocking/cockroach/10214.TestCockroach10214.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:112 +0x1c
+created by gobench/blocking/cockroach/10214.TestCockroach10214 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:111 +0x38f
+
+goroutine 17 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0xc00008cc00?, 0x1?, 0x2?)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0xc00008cc00)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/mutex.go:149 +0x245
+internal/sync.(*Mutex).Lock(0xc00008cc00)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/sync/mutex.go:70 +0x45
+sync.(*Mutex).Lock(0xc00008cc00)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/mutex.go:92 +0x2b6
+gobench/blocking/cockroach/10214.(*Replica).maybeCoalesceHeartbeat(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:84 +0x65
+gobench/blocking/cockroach/10214.(*Replica).maybeQuiesceLocked(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:74 +0x37
+gobench/blocking/cockroach/10214.(*Replica).tickRaftMuLocked(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:68 +0x78
+gobench/blocking/cockroach/10214.(*Replica).tick(0xc00008cc60)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:61 +0x72
+gobench/blocking/cockroach/10214.TestCockroach10214.func2()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:116 +0x1c
+created by gobench/blocking/cockroach/10214.TestCockroach10214 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/7/blocking/cockroach/10214/cockroach10214_test.go:115 +0x3e7
+FAIL	gobench/blocking/cockroach/10214	600.104s
+FAIL

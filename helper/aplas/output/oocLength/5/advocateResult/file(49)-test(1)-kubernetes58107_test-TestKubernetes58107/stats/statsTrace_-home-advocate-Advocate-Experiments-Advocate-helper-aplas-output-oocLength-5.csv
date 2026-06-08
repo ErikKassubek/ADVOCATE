@@ -1,0 +1,3 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+TestKubernetes58107,395022,30,0,0,0,195009,0,200002,0
+TestKubernetes58107,395022,30,0,0,0,195009,0,200002,0

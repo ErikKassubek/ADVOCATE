@@ -1,0 +1,272 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go
+TestName:  TestGrpc2371
+Import added at line: 3
+Header added at line: 83
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestGrpc2371
+ADVOTEST 5:  3
+LOCK L: 1 3
+ADVOTEST 7:  3
+ADVOTEST A:  3
+ADVOTEST B:  3
+ADVOTEST 6:  3
+ADVOTEST 5:  9
+LOCK L: 1 9
+ADVOTEST 7:  9
+ADVOTEST C:  3
+ADVOTEST 8:  3
+LOCK U: 1
+ADVOTEST 5:  21
+HAS:  false
+ADVOTEST A:  9
+ADVOTEST B:  9
+ADVOTEST 6:  3
+LOCK L: 1 21
+ADVOTEST 7:  21
+panic: runtime error: invalid memory address or nil pointer dereference
+
+ADVOTEST A:  21
+ADVOTEST B:  21
+ADVOTEST 6:  3
+ADVOTEST C:  9
+ADVOTEST 8:  9
+LOCK U: 1
+ADVOTEST C:  21
+ADVOTEST 8:  21
+LOCK U: 1
+goroutine 21 [running]:
+runtime.SetExitCodeFromPanicMsg({0x5f6320?, 0x74ea20?})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_exit.go:71 +0x374
+runtime.AdvocatePanic({0x5f6320, 0x74ea20})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_replay_exit.go:89 +0x8d
+panic({0x5f6320, 0x74ea20})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/panic.go:736 +0x51
+gobench/nonblocking/grpc/2371.(*ccBalancerWrapper).handleResolvedAddrs(0x0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:17 +0x13
+gobench/nonblocking/grpc/2371.(*ClientConn).handleServiceConfig(0xc000116cc0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:58 +0x34
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).watcher(0xc0001200d0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:40 +0x25
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0xc0001701e0, {0x625f9b, 0xc}, 0x633120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2005 +0x93c
+testing.runTests.func1(0xc000170000)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2477 +0xa5
+testing.tRunner(0xc000170000, 0xc000167918)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+testing.runTests(0xc000134048, {0x74ec70, 0x1, 0x1}, {0xc280d3851b218018, 0x8bb2cb95ac, 0x7598a0})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2475 +0x5d7
+testing.(*M).Run(0xc00014a210)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:2337 +0xb39
+main.main()
+	_testmain.go:45 +0xa5
+
+goroutine 19 [sleep]:
+time.Sleep(0x5f5e100)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/time.go:363 +0x13c
+gobench/nonblocking/grpc/2371.TestGrpc2371(0xc0001701e0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:96 +0xcf
+testing.tRunner(0xc0001701e0, 0x633120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1934 +0x18e
+created by testing.(*T).Run in goroutine 1
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/testing/testing.go:1997 +0x914
+
+goroutine 20 [sleep]:
+time.Sleep(0x37e11d6000)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/time.go:363 +0x13c
+advocatego.InitTracing.func1()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:60 +0x25
+created by advocatego.InitTracing in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:59 +0x1ab
+
+goroutine 22 [runnable]:
+runtime.CallersFrames({0xc000010330, 0x1, 0x1})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/symtab.go:81 +0x29
+runtime.Caller(0x2)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/extern.go:321 +0x8e
+sync/atomic.LoadUint64(0xc000012120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/sync/atomic/advocate_atomic.go:266 +0x153
+internal/poll.(*fdMutex).increfAndClose(0xc000012120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/poll/fd_mutex.go:73 +0x33
+internal/poll.(*FD).Close(0xc000012120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/internal/poll/fd_unix.go:92 +0x2e
+os.(*file).close(0xc000012120)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/os/file_unix.go:314 +0x85
+os.(*File).Close(0xc000080030)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/os/file_posix.go:23 +0x38
+advocatego.WriteToTraceFile(0x3, 0x1)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:170 +0x38f
+runtime.AdvocateWriteTraceToFile()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_trace.go:350 +0x62
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 23 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 24 [runnable]:
+os.newFile(0x8, {0xc0002ae000, 0x19}, 0x1, 0x0)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/os/file_unix.go:144 +0x7b
+os.openFileNolog({0xc0002ae000, 0x19}, 0x441, 0x1a4)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/os/file_unix.go:278 +0x29a
+os.OpenFile({0xc0002ae000, 0x19}, 0x441, 0x1a4)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/os/file.go:412 +0x8d
+advocatego.WriteToTraceFile(0x5, 0x1)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:155 +0x1a9
+runtime.AdvocateWriteTraceToFile()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_trace.go:350 +0x62
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 25 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 26 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 27 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 28 [runnable]:
+advocatego.WriteToTraceFile(0x9, 0x1)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:163 +0x2d7
+runtime.AdvocateWriteTraceToFile()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_trace.go:350 +0x62
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 29 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 30 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 31 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 32 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 33 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 34 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 35 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 36 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 37 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 38 [runnable]:
+gobench/nonblocking/grpc/2371.TestGrpc2371.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+goroutine 39 [runnable]:
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start.gowrap1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36
+runtime.goexit({})
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/asm_amd64.s:1693 +0x1
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:36 +0x66
+
+goroutine 40 [runnable]:
+advocatego.WriteToTraceFile(0x15, 0x1)
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/advocatego/advocate_tracing.go:163 +0x2d7
+runtime.AdvocateWriteTraceToFile()
+	/home/advocate/Advocate/Experiments/Advocate/goPatch/src/runtime/advocate_trace.go:350 +0x62
+created by gobench/nonblocking/grpc/2371.TestGrpc2371 in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/4/nonblocking/grpc/2371/grpc2371_test.go:93 +0xbc
+
+ADVOTEST 5:  5
+LOCK L: 1 5
+ADVOTEST 7:  5
+ADVOTEST A:  5
+ADVOTEST B:  5
+ADVOTEST 6:  3
+HAS:  true
+ADVOTEST C:  5
+FAIL	gobench/nonblocking/grpc/2371	0.002s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail

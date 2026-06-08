@@ -1,0 +1,1871 @@
+?   	gobench	[no test files]
+ok  	gobench/blocking/cockroach/10214	0.004s
+ok  	gobench/blocking/cockroach/1055	0.002s
+ok  	gobench/blocking/cockroach/10790	0.001s
+ok  	gobench/blocking/cockroach/13197	0.004s
+ok  	gobench/blocking/cockroach/13755	0.005s
+ok  	gobench/blocking/cockroach/1462	0.005s
+ok  	gobench/blocking/cockroach/16167	0.001s
+ok  	gobench/blocking/cockroach/18101	0.008s
+ok  	gobench/blocking/cockroach/2448	0.002s
+panic: test timed out after 10m0s
+	running tests:
+		TestCockroach24808 (10m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x25b346038008, {0x588b5b?, 0x25b34600cb30?}, 0x593420)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x25b346038008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x25b346038008, 0x25b34600cc58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x5859a1, 0x7}, {0x58cdd8, 0x20}, 0x25b345ece0a8, {0x6cc320, 0x1, 0x1}, {0xc280cdf720b661eb, 0x8bb2caf005, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x25b346010140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan send]:
+gobench/blocking/cockroach/24808.(*Compactor).Start(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/24808/cockroach24808_test.go:49
+gobench/blocking/cockroach/24808.TestCockroach24808(0x25b346038248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/24808/cockroach24808_test.go:68 +0xf0
+testing.tRunner(0x25b346038248, 0x593420)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/cockroach/24808	600.106s
+panic: test timed out after 10m0s
+	running tests:
+		TestCockroach25456 (10m0s)
+
+goroutine 5 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x35c0f5864008, {0x58895b?, 0x35c0f5822b30?}, 0x593150)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x35c0f5864008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x35c0f5864008, 0x35c0f5822c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x5857a1, 0x7}, {0x58cbd8, 0x20}, 0x35c0f5828090, {0x6cb320, 0x1, 0x1}, {0xc280cdf7209bbd55, 0x8bb2cb3cc0, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x35c0f5826280)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 19 [chan receive]:
+gobench/blocking/cockroach/25456.(*consistencyQueue).process(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/25456/cockroach25456_test.go:51
+gobench/blocking/cockroach/25456.TestCockroach25456(0x35c0f5864248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/25456/cockroach25456_test.go:77 +0xee
+testing.tRunner(0x35c0f5864248, 0x593150)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/cockroach/25456	600.061s
+panic: test timed out after 10m0s
+	running tests:
+		TestCockroach35073 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x389d498cc008, {0x588dbb?, 0x389d498a0b30?}, 0x5936c0)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x389d498cc008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x389d498cc008, 0x389d498a0c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585c01, 0x7}, {0x58d038, 0x20}, 0x389d497e20a8, {0x6cc320, 0x1, 0x1}, {0xc280cdf72266e474, 0x8bb2ca895d, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x389d498a4280)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan send]:
+gobench/blocking/cockroach/35073.(*RowChannel).Push(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35073/cockroach35073_test.go:48
+gobench/blocking/cockroach/35073.TestCockroach35073(0x389d498cc248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35073/cockroach35073_test.go:108 +0x165
+testing.tRunner(0x389d498cc248, 0x5936c0)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [chan send]:
+gobench/blocking/cockroach/35073.(*RowChannel).Push(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35073/cockroach35073_test.go:48
+gobench/blocking/cockroach/35073.TestCockroach35073.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35073/cockroach35073_test.go:101 +0x32
+created by gobench/blocking/cockroach/35073.TestCockroach35073 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35073/cockroach35073_test.go:100 +0x127
+FAIL	gobench/blocking/cockroach/35073	600.103s
+panic: test timed out after 10m0s
+	running tests:
+		TestCockroach35931 (10m0s)
+
+goroutine 33 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x2855cf3d2008, {0x5892bb?, 0x2855cf390b30?}, 0x593ab0)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x2855cf3d2008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x2855cf3d2008, 0x2855cf390c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x586101, 0x7}, {0x58d538, 0x20}, 0x2855cf396090, {0x6cc320, 0x1, 0x1}, {0xc280cdf7227fdab9, 0x8bb2cae449, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x2855cf3941e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 19 [chan send]:
+gobench/blocking/cockroach/35931.(*RowChannel).Push(0x2855cf3d8090?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35931/cockroach35931_test.go:21 +0x1d
+gobench/blocking/cockroach/35931.(*Flow).cancel(0x2855cf396108)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35931/cockroach35931_test.go:68 +0x211
+gobench/blocking/cockroach/35931.TestCockroach35931(0x2855cf3d2248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/cockroach/35931/cockroach35931_test.go:111 +0x2f4
+testing.tRunner(0x2855cf3d2248, 0x593ab0)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/cockroach/35931	600.029s
+ok  	gobench/blocking/cockroach/3710	0.001s
+ok  	gobench/blocking/cockroach/584	0.002s
+ok  	gobench/blocking/cockroach/6181	0.001s
+ok  	gobench/blocking/cockroach/7504	0.002s
+ok  	gobench/blocking/cockroach/9935	0.001s
+panic: test timed out after 10m0s
+	running tests:
+		TestEtcd10492 (10m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x8cff3674008, {0x586fdd?, 0x8cff3648b30?}, 0x593008)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x8cff3674008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x8cff3674008, 0x8cff3648c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585661, 0x7}, {0x58b0f5, 0x1b}, 0x8cff358a0a8, {0x6cb320, 0x1, 0x1}, {0xc280cdf723e578ad, 0x8bb2ca9d26, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x8cff364c1e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0xf?, 0x95?, 0x27?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x8cff364e720)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x754?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/etcd/10492.(*lessor).Checkpoint(0x8cff364e720)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/10492/etcd10492_test.go:19 +0x26
+gobench/blocking/etcd/10492.TestEtcd10492.func1({0x8cff364e720?, 0x8cff3618f38?})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/10492/etcd10492_test.go:44 +0x17
+gobench/blocking/etcd/10492.(*lessor).Renew(0x8cff364e720)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/10492/etcd10492_test.go:36 +0x82
+gobench/blocking/etcd/10492.TestEtcd10492(0x8cff3674248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/10492/etcd10492_test.go:49 +0x85
+testing.tRunner(0x8cff3674248, 0x593008)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/etcd/10492	600.103s
+ok  	gobench/blocking/etcd/5509	0.002s
+panic: test timed out after 10m0s
+	running tests:
+		TestEtcd6708 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x34549082008, {0x586d25?, 0x34548fd6b30?}, 0x5931e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x34549082008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x34549082008, 0x34548fd6c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585841, 0x7}, {0x58af2c, 0x1a}, 0x34548f180a8, {0x6cb320, 0x1, 0x1}, {0xc280cdf723f1933b, 0x8bb2caa00c, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x34548fda140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.RWMutex.RLock]:
+sync.runtime_SemacquireRWMutexR(0x100004ea1a0?, 0xe0?, 0x78c944303108?)
+	/usr/lib/go-1.26/src/runtime/sema.go:100 +0x25
+sync.(*RWMutex).RLock(...)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:74
+gobench/blocking/etcd/6708.(*httpClusterClient).Do(0x34548f24140, {0x576ea0?, 0x481f8c?})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:49 +0x31
+gobench/blocking/etcd/6708.(*httpMembersAPI).Leader(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:65
+gobench/blocking/etcd/6708.(*httpClusterClient).getLeaderEndpoint(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:37
+gobench/blocking/etcd/6708.(*httpClusterClient).SetEndpoints(0x34548f24140?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:44 +0xb2
+gobench/blocking/etcd/6708.(*httpClusterClient).Sync(0x34548f24140, {0x4e9e93?, 0x4a3833?})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:57 +0x50
+gobench/blocking/etcd/6708.TestEtcd6708(0x34549082248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/etcd/6708/etcd6708_test.go:77 +0x35
+testing.tRunner(0x34549082248, 0x5931e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/etcd/6708	600.004s
+ok  	gobench/blocking/etcd/6857	0.002s
+ok  	gobench/blocking/etcd/6873	0.001s
+ok  	gobench/blocking/etcd/7443	0.004s
+ok  	gobench/blocking/etcd/7492	0.001s
+ok  	gobench/blocking/etcd/7902	0.004s
+ok  	gobench/blocking/grpc/1275	0.004s
+ok  	gobench/blocking/grpc/1353	0.001s
+ok  	gobench/blocking/grpc/1424	0.001s
+ok  	gobench/blocking/grpc/1460	0.001s
+panic: test timed out after 10m0s
+	running tests:
+		TestGrpc3017 (10m0s)
+
+goroutine 9 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x3b0e00f5a008, {0x587645?, 0x3b0e00f2eb30?}, 0x593b00)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x3b0e00f5a008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x3b0e00f5a008, 0x3b0e00f2ec58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x586161, 0x7}, {0x58b84c, 0x1a}, 0x3b0e00e700a8, {0x6cc320, 0x1, 0x1}, {0xc280cdf725744175, 0x8bb2caf825, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x3b0e00f32140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan receive]:
+gobench/blocking/grpc/3017.TestGrpc3017(0x3b0e00f5a248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/3017/grpc3017_test.go:95 +0x131
+testing.tRunner(0x3b0e00f5a248, 0x593b00)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x487245?, 0x38?, 0x92bb4ed134a1?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x3b0e00f1c160)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/grpc/3017.(*lbCacheClientConn).RemoveSubConn(0x3b0e00f1c160, 0x1)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/3017/grpc3017_test.go:43 +0x47
+gobench/blocking/grpc/3017.TestGrpc3017.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/3017/grpc3017_test.go:90 +0x45
+created by gobench/blocking/grpc/3017.TestGrpc3017 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/3017/grpc3017_test.go:88 +0x125
+FAIL	gobench/blocking/grpc/3017	600.102s
+ok  	gobench/blocking/grpc/660	0.001s
+panic: test timed out after 10m0s
+	running tests:
+		TestGrpc795 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x12e1b57d8008, {0x5865f9?, 0x12e1b57acb30?}, 0x592f00)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x12e1b57d8008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x12e1b57d8008, 0x12e1b57acc58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585561, 0x7}, {0x58a7e6, 0x19}, 0x12e1b56ee0a8, {0x6cb320, 0x1, 0x1}, {0xc280cdf7263a011e, 0x8bb2cad1a0, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x12e1b57b0140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x12e1b577cf00?, 0x3f?, 0x12e1b577cee0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x12e1b56f0160)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/grpc/795.(*Server).GracefulStop(0x12e1b577cf48?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/795/grpc795_test.go:14 +0x32
+gobench/blocking/grpc/795.testServerGracefulStopIdempotent()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/795/grpc795_test.go:51 +0x38
+gobench/blocking/grpc/795.TestGrpc795(0x12e1b57d8248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/795/grpc795_test.go:56 +0xf
+testing.tRunner(0x12e1b57d8248, 0x592f00)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x12e1b56f0160)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/grpc/795.(*Server).Serve(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/795/grpc795_test.go:23 +0x32
+created by gobench/blocking/grpc/795.(*test).startServer in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/grpc/795/grpc795_test.go:38 +0x88
+FAIL	gobench/blocking/grpc/795	600.019s
+ok  	gobench/blocking/grpc/862	1.003s
+panic: test timed out after 10m0s
+	running tests:
+		TestHugo3251 (10m0s)
+
+goroutine 65 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x243010978008, {0x586e85?, 0x24301094cb30?}, 0x593490)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x243010978008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x243010978008, 0x24301094cc58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x5859a1, 0x7}, {0x58b08c, 0x1a}, 0x24301088e0a8, {0x6cc340, 0x1, 0x1}, {0xc280cdf726a36b40, 0x8bb2cae520, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x2430109501e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.WaitGroup.Wait]:
+sync.runtime_SemacquireWaitGroup(0x24301088e5b8?, 0x60?)
+	/usr/lib/go-1.26/src/runtime/sema.go:114 +0x2e
+sync.(*WaitGroup).Wait(0x243010890160)
+	/usr/lib/go-1.26/src/sync/waitgroup.go:206 +0x85
+gobench/blocking/hugo/3251.TestHugo3251(0x243010978248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:60 +0x1b
+testing.tRunner(0x243010978248, 0x593490)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 9 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 10 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 11 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 12 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 13 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 14 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 15 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 16 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 17 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 18 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 19 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 20 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41ee6f?, 0x68?, 0x10?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a076d8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 21 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 22 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 23 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 24 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 25 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 26 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 27 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 28 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 29 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 30 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 31 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 32 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41ee6f?, 0x58?, 0x243010a05610?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a056d8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 33 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 34 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 35 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 36 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 37 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 38 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 39 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 40 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 41 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 42 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 43 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 44 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41ee6f?, 0x8?, 0x243010a80000?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a0d6d8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 45 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x92bb50013602?, 0x0?, 0x243010a0dea0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x243010890158)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:24 +0xe5
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 46 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41edb4?, 0xc0?, 0x1a?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a0e6d8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 47 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41edb4?, 0xc0?, 0x1a?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a0eed8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 48 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x41edb4?, 0xc0?, 0x1a?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x243010a0f6d8?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 49 [sync.RWMutex.RLock]:
+sync.runtime_SemacquireRWMutexR(0x48fbd2?, 0xd2?, 0x6d6760?)
+	/usr/lib/go-1.26/src/runtime/sema.go:100 +0x25
+sync.(*RWMutex).RLock(...)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:74
+gobench/blocking/hugo/3251.(*remoteLock).URLUnlock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:29 +0x50
+gobench/blocking/hugo/3251.resGetRemote.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:38 +0x25
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:40 +0x84
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 50 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 51 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 52 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 53 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 54 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 55 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+
+goroutine 56 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x0?, 0x0?, 0x0?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x6d6760)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*RWMutex).Lock(0x0?)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:150 +0x32
+gobench/blocking/hugo/3251.(*remoteLock).URLLock(0x6d6760, {0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:20 +0x28
+gobench/blocking/hugo/3251.resGetRemote({0x58b0c0, 0x1a})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:37 +0x45
+gobench/blocking/hugo/3251.TestHugo3251.func1(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:52 +0x87
+created by gobench/blocking/hugo/3251.TestHugo3251 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/3251/hugo3251_test.go:49 +0x59
+FAIL	gobench/blocking/hugo/3251	600.104s
+panic: test timed out after 10m0s
+	running tests:
+		TestHugo5379 (10m0s)
+
+goroutine 18 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x17cf02c9e008, {0x58c3e7?, 0x17cf02bf2b30?}, 0x598a28)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x17cf02c9e008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x17cf02c9e008, 0x17cf02bf2c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x58af03, 0x7}, {0x590615, 0x1a}, 0x17cf02b340a8, {0x6d5350, 0x1, 0x1}, {0xc280cdf726b70b02, 0x8bb2cad328, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x17cf02bf61e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.WaitGroup.Wait]:
+sync.runtime_SemacquireWaitGroup(0x17cf02b34168?, 0x60?)
+	/usr/lib/go-1.26/src/runtime/sema.go:114 +0x2e
+sync.(*WaitGroup).Wait(0x17cf02b36170)
+	/usr/lib/go-1.26/src/sync/waitgroup.go:206 +0x85
+gobench/blocking/hugo/5379.(*Site).renderPages(0x17cf02b26088)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:183 +0xa7
+gobench/blocking/hugo/5379.(*HugoSites).render(0x17cf02b34138)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:139 +0x34
+gobench/blocking/hugo/5379.(*HugoSites).Build(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:144
+gobench/blocking/hugo/5379.(*sitesBuilder).build(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:195
+gobench/blocking/hugo/5379.(*sitesBuilder).Build(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:191
+gobench/blocking/hugo/5379.TestHugo5379(0x17cf02c9e248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:297 +0x27b
+testing.tRunner(0x17cf02c9e248, 0x598a28)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x48ea77?, 0x0?, 0x1?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x17cf02b3c1a8)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*Once).doSlow(0x531ab6?, 0x17cf02beef28)
+	/usr/lib/go-1.26/src/sync/once.go:74 +0x49
+sync.(*Once).Do(...)
+	/usr/lib/go-1.26/src/sync/once.go:69
+gobench/blocking/hugo/5379.(*Page).initPlain(0x17cf02b26090?, 0x38?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:64 +0x3e
+gobench/blocking/hugo/5379.(*Page).initContentPlainAndMeta(0x17cf02b38a00)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:60 +0x27
+gobench/blocking/hugo/5379.(*Page).WordCount(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:55
+gobench/blocking/hugo/5379.(*Site).renderForLayouts(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:166
+gobench/blocking/hugo/5379.(*Site).renderAndWritePage(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:171
+gobench/blocking/hugo/5379.pageRenderer(0x17cf02c9e248?, 0x598a28?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:280 +0x67
+created by gobench/blocking/hugo/5379.(*Site).renderPages in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:180 +0x3b
+
+goroutine 9 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x6e7360?, 0x70?, 0x17cf02b38a20?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x17cf02b38a24)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/hugo/5379.(*Page).initPlain.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:66 +0x4a
+sync.(*Once).doSlow(0x531ab6?, 0x0?)
+	/usr/lib/go-1.26/src/sync/once.go:78 +0xac
+sync.(*Once).Do(...)
+	/usr/lib/go-1.26/src/sync/once.go:69
+gobench/blocking/hugo/5379.(*Page).initPlain(0x0?, 0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:64 +0x3e
+gobench/blocking/hugo/5379.(*Page).initContentPlainAndMeta(0x17cf02b38a00)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:60 +0x27
+gobench/blocking/hugo/5379.(*Page).WordCount(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:55
+gobench/blocking/hugo/5379.(*Site).renderForLayouts(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:166
+gobench/blocking/hugo/5379.(*Site).renderAndWritePage(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:171
+gobench/blocking/hugo/5379.pageRenderer(0x0?, 0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:280 +0x67
+created by gobench/blocking/hugo/5379.(*Site).renderPages in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:180 +0x3b
+
+goroutine 10 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x17cf02bc35d0?, 0x7b?, 0x6dfb00?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x17cf02b3c1a8)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+sync.(*Once).doSlow(0x531ab6?, 0x17cf02bc3660)
+	/usr/lib/go-1.26/src/sync/once.go:74 +0x49
+sync.(*Once).Do(...)
+	/usr/lib/go-1.26/src/sync/once.go:69
+gobench/blocking/hugo/5379.(*Page).initPlain(0x40e2e5?, 0xff?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:64 +0x3e
+gobench/blocking/hugo/5379.(*Page).initContentPlainAndMeta(0x17cf02b38a00)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:60 +0x27
+gobench/blocking/hugo/5379.(*Page).WordCount(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:55
+gobench/blocking/hugo/5379.renderShortcodeWithPage(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:258
+gobench/blocking/hugo/5379.renderShortcode(0x17cf02bf8810?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:253 +0x16
+gobench/blocking/hugo/5379.(*shortcodeHandler).updateDelta.func1.createShortcodeRenderers.prepareShortcodeForPage.1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:247 +0x17
+gobench/blocking/hugo/5379.(*shortcodeHandler).executeShortcodesForDelta(0x17cf02bf87b0, 0x532227?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:22 +0x71
+gobench/blocking/hugo/5379.handleShortcodes(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:275
+gobench/blocking/hugo/5379.(*Page).prepareForRender(0x0?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:81 +0x25
+gobench/blocking/hugo/5379.(*Page).initContent.func1.1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:102 +0x7e
+created by gobench/blocking/hugo/5379.(*Page).initContent.func1 in goroutine 9
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/hugo/5379/hugo5379_test.go:97 +0xc7
+FAIL	gobench/blocking/hugo/5379	600.057s
+panic: test timed out after 10m0s
+	running tests:
+		TestIstio16224 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x1a999d59c008, {0x587a36?, 0x1a999d4f0b30?}, 0x5935a8)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x1a999d59c008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x1a999d59c008, 0x1a999d4f0c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585c01, 0x7}, {0x58bc12, 0x1c}, 0x1a999d4320a8, {0x6cc320, 0x1, 0x1}, {0xc280cdf727d22ea7, 0x8bb2ca90b1, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x1a999d4f4140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.Mutex.Lock]:
+internal/sync.runtime_SemacquireMutex(0x1a999d44a2a0?, 0x28?, 0x458a01?)
+	/usr/lib/go-1.26/src/runtime/sema.go:95 +0x25
+internal/sync.(*Mutex).lockSlow(0x1a999d434158)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:149 +0x15d
+internal/sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/internal/sync/mutex.go:70
+sync.(*Mutex).Lock(...)
+	/usr/lib/go-1.26/src/sync/mutex.go:46
+gobench/blocking/istio/16224.TestIstio16224(0x1a999d59c248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:101 +0x1bb
+testing.tRunner(0x1a999d59c248, 0x5935a8)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [chan send]:
+gobench/blocking/istio/16224.TestIstio16224.func1(0x1a999d4c1790?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:93 +0x87
+gobench/blocking/istio/16224.(*configstoreMonitor).applyHandlers(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:48
+gobench/blocking/istio/16224.(*configstoreMonitor).processConfigEvent(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:39
+gobench/blocking/istio/16224.(*configstoreMonitor).Run(0x1a999d4de160, 0x1a999d44a380)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:32 +0xfc
+gobench/blocking/istio/16224.(*controller).Run(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:70
+created by gobench/blocking/istio/16224.TestIstio16224 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/istio/16224/istio16224_test.go:97 +0x185
+FAIL	gobench/blocking/istio/16224	600.018s
+ok  	gobench/blocking/istio/17860	0.007s
+ok  	gobench/blocking/istio/18454	0.002s
+ok  	gobench/blocking/kubernetes/10182	0.001s
+ok  	gobench/blocking/kubernetes/11298	0.002s
+ok  	gobench/blocking/kubernetes/13135	0.001s
+ok  	gobench/blocking/kubernetes/1321	0.001s
+ok  	gobench/blocking/kubernetes/25331	0.001s
+ok  	gobench/blocking/kubernetes/26980	0.001s
+ok  	gobench/blocking/kubernetes/30872	0.001s
+ok  	gobench/blocking/kubernetes/38669	0.001s
+ok  	gobench/blocking/kubernetes/5316	0.001s
+ok  	gobench/blocking/kubernetes/58107	0.002s
+ok  	gobench/blocking/kubernetes/62464	0.002s
+ok  	gobench/blocking/kubernetes/6632	0.001s
+panic: test timed out after 10m0s
+	running tests:
+		TestKubernetes70277 (10m0s)
+
+goroutine 9 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x2209fedd4008, {0x588af7?, 0x2209feda8b30?}, 0x592eb8)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x2209fedd4008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x2209fedd4008, 0x2209feda8c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x5854e1, 0x7}, {0x58cdb9, 0x21}, 0x2209fecea0a8, {0x6cb320, 0x1, 0x1}, {0xc280cdf729d2e972, 0x8bb2caea2d, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x2209fedac1e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan receive]:
+gobench/blocking/kubernetes/70277.TestKubernetes70277(0x2209fedd4248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/kubernetes/70277/kubernetes70277_test.go:79 +0x98
+testing.tRunner(0x2209fedd4248, 0x592eb8)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/kubernetes/70277	600.103s
+ok  	gobench/blocking/moby/17176	0.003s
+ok  	gobench/blocking/moby/21233	0.002s
+ok  	gobench/blocking/moby/25384	0.002s
+ok  	gobench/blocking/moby/27782	0.002s
+ok  	gobench/blocking/moby/28462	0.002s
+panic: test timed out after 10m0s
+	running tests:
+		TestMoby29733 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x27dc75c0c008, {0x58761d?, 0x27dc75b60b30?}, 0x593658)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x27dc75c0c008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x27dc75c0c008, 0x27dc75b60c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585ca1, 0x7}, {0x58b748, 0x1b}, 0x27dc75aa20a8, {0x6cc340, 0x1, 0x1}, {0xc280cdf72c4ba14b, 0x8bb2cb0c4a, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x27dc75b64140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan receive]:
+gobench/blocking/moby/29733.testActive(0x27dc75abe260)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/29733/moby29733_test.go:50 +0x85
+gobench/blocking/moby/29733.TestMoby29733(0x27dc75c0c248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/29733/moby29733_test.go:57 +0xdc
+testing.tRunner(0x27dc75c0c248, 0x593658)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [sync.Cond.Wait]:
+sync.runtime_notifyListWait(0x27dc75aa6a10, 0x0)
+	/usr/lib/go-1.26/src/runtime/sema.go:617 +0x1b3
+sync.(*Cond).Wait(0x0?)
+	/usr/lib/go-1.26/src/sync/cond.go:71 +0x73
+gobench/blocking/moby/29733.(*Plugin).waitActive(0x27dc75abe260)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/29733/moby29733_test.go:21 +0x2f
+gobench/blocking/moby/29733.testActive.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/29733/moby29733_test.go:47 +0x25
+created by gobench/blocking/moby/29733.testActive in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/29733/moby29733_test.go:46 +0x78
+FAIL	gobench/blocking/moby/29733	600.062s
+panic: test timed out after 10m0s
+	running tests:
+		TestMoby30408 (10m0s)
+
+goroutine 17 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x2a9083698008, {0x58745d?, 0x2a90835ecb30?}, 0x5934a8)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x2a9083698008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x2a9083698008, 0x2a90835ecc58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585ae1, 0x7}, {0x58b59a, 0x1b}, 0x2a908352e0a8, {0x6cc320, 0x1, 0x1}, {0xc280cdf72ca60159, 0x8bb2cac4a0, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x2a90835f01e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [chan receive]:
+gobench/blocking/moby/30408.testActive(0x2a90835da160)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/30408/moby30408_test.go:38 +0x85
+gobench/blocking/moby/30408.TestMoby30408(0x2a9083698248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/30408/moby30408_test.go:44 +0xec
+testing.tRunner(0x2a9083698248, 0x5934a8)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 8 [sync.Cond.Wait]:
+sync.runtime_notifyListWait(0x2a9083532a10, 0x0)
+	/usr/lib/go-1.26/src/runtime/sema.go:617 +0x1b3
+sync.(*Cond).Wait(0x0?)
+	/usr/lib/go-1.26/src/sync/cond.go:71 +0x73
+gobench/blocking/moby/30408.(*Plugin).waitActive(0x2a90835da160)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/30408/moby30408_test.go:22 +0x2d
+gobench/blocking/moby/30408.testActive.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/30408/moby30408_test.go:35 +0x25
+created by gobench/blocking/moby/30408.testActive in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/moby/30408/moby30408_test.go:34 +0x78
+FAIL	gobench/blocking/moby/30408	600.103s
+ok  	gobench/blocking/moby/33293	0.003s
+ok  	gobench/blocking/moby/33781	0.001s
+ok  	gobench/blocking/moby/36114	0.001s
+ok  	gobench/blocking/moby/4395	0.001s
+ok  	gobench/blocking/moby/4951	0.001s
+ok  	gobench/blocking/moby/7559	0.002s
+ok  	gobench/blocking/serving/2137	0.002s
+panic: test timed out after 10m0s
+	running tests:
+		TestSyncthing4829 (10m0s)
+
+goroutine 8 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x11112f33c008, {0x588638?, 0x11112f310b30?}, 0x5933f0)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x11112f33c008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x11112f33c008, 0x11112f310c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585a45, 0x7}, {0x58c9a3, 0x1f}, 0x11112f2520a8, {0x6cb320, 0x1, 0x1}, {0xc280cdf72ec62a4f, 0x8bb2cab997, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x11112f314140)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 7 [sync.RWMutex.RLock]:
+sync.runtime_SemacquireRWMutexR(0x11112f2e0dc8?, 0xb3?, 0x11112f2e0e70?)
+	/usr/lib/go-1.26/src/runtime/sema.go:100 +0x25
+sync.(*RWMutex).RLock(...)
+	/usr/lib/go-1.26/src/sync/rwmutex.go:74
+gobench/blocking/syncthing/4829.(*Mapping).notify(0x11112f2fe160, {0x11112f2e0e40?, 0x585445?, 0x4?}, {0x48219e?, 0xc8?, 0x5626a0?})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/4829/syncthing4829_test.go:30 +0x31
+gobench/blocking/syncthing/4829.(*Mapping).clearAddresses(0x11112f2fe160)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/4829/syncthing4829_test.go:24 +0x1a5
+gobench/blocking/syncthing/4829.(*Service).RemoveMapping(0x11112f316720, 0x11112f2fe160)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/4829/syncthing4829_test.go:55 +0x92
+gobench/blocking/syncthing/4829.TestSyncthing4829(0x11112f33c248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/4829/syncthing4829_test.go:69 +0x5c
+testing.tRunner(0x11112f33c248, 0x5933f0)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/blocking/syncthing/4829	600.012s
+panic: test timed out after 10m0s
+	running tests:
+		TestSyncthing5795 (10m0s)
+
+goroutine 5 [running]:
+testing.(*M).startAlarm.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:2802 +0x34b
+created by time.goFunc
+	/usr/lib/go-1.26/src/time/sleep.go:215 +0x2d
+
+goroutine 1 [chan receive]:
+testing.(*T).Run(0x2e2e4b052008, {0x588674?, 0x2e2e4b010b30?}, 0x593430)
+	/usr/lib/go-1.26/src/testing/testing.go:2109 +0x4e5
+testing.runTests.func1(0x2e2e4b052008)
+	/usr/lib/go-1.26/src/testing/testing.go:2585 +0x37
+testing.tRunner(0x2e2e4b052008, 0x2e2e4b010c58)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+testing.runTests({0x585a81, 0x7}, {0x58c9df, 0x1f}, 0x2e2e4b016090, {0x6cc320, 0x1, 0x1}, {0xc280cdf72f0e9598, 0x8bb2cacadd, ...})
+	/usr/lib/go-1.26/src/testing/testing.go:2583 +0x505
+testing.(*M).Run(0x2e2e4b0141e0)
+	/usr/lib/go-1.26/src/testing/testing.go:2443 +0x6ac
+main.main()
+	_testmain.go:46 +0x9b
+
+goroutine 19 [chan receive]:
+gobench/blocking/syncthing/5795_test.TestSyncthing5795(0x2e2e4b052248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:109 +0x165
+testing.tRunner(0x2e2e4b052248, 0x593430)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+
+goroutine 21 [chan receive]:
+gobench/blocking/syncthing/5795_test.(*rawConnection).internalClose.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:82 +0x35
+sync.(*Once).doSlow(0x0?, 0x0?)
+	/usr/lib/go-1.26/src/sync/once.go:78 +0xac
+sync.(*Once).Do(...)
+	/usr/lib/go-1.26/src/sync/once.go:69
+gobench/blocking/syncthing/5795_test.(*rawConnection).internalClose(0x2e2e4af01f6c?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:80 +0x36
+gobench/blocking/syncthing/5795_test.(*rawConnection).Close(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:87
+gobench/blocking/syncthing/5795_test.TestSyncthing5795.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:103 +0x18
+gobench/blocking/syncthing/5795_test.(*TestModel).ClusterConfig(0x2e2e4af01f80?, {0x2e2e4af01f68?, 0x0?})
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:22 +0x17
+gobench/blocking/syncthing/5795_test.(*rawConnection).dispatcherLoop(0x2e2e4b0049c0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:72 +0x74
+gobench/blocking/syncthing/5795_test.(*rawConnection).Start.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:47 +0x17
+created by gobench/blocking/syncthing/5795_test.(*rawConnection).Start in goroutine 19
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/blocking/syncthing/5795/syncthing5795_test.go:46 +0x96
+FAIL	gobench/blocking/syncthing/5795	600.104s
+ok  	gobench/nonblocking/cockroach/35501	0.001s
+ok  	gobench/nonblocking/cockroach/4407	0.002s
+ok  	gobench/nonblocking/etcd/3077	0.011s
+panic: send on closed channel
+
+goroutine 8 [running]:
+gobench/nonblocking/grpc/1687.(*serverHandlerTransport).do(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/1687/grpc1687_test.go:28
+gobench/nonblocking/grpc/1687.(*serverHandlerTransport).Write(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/1687/grpc1687_test.go:43
+gobench/nonblocking/grpc/1687.TestGrpc1687.func1(0x35afe4bea270)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/1687/grpc1687_test.go:104 +0x125
+created by gobench/nonblocking/grpc/1687.testHandlerTransportHandleStreams.func1 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/1687/grpc1687_test.go:98 +0x6e
+FAIL	gobench/nonblocking/grpc/1687	0.004s
+panic: runtime error: invalid memory address or nil pointer dereference
+[signal SIGSEGV: segmentation violation code=0x1 addr=0x8 pc=0x52da48]
+
+goroutine 26 [running]:
+gobench/nonblocking/grpc/2371.(*ccBalancerWrapper).handleResolvedAddrs(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/2371/grpc2371_test.go:16
+gobench/nonblocking/grpc/2371.(*ClientConn).handleServiceConfig(0x20bd395aa8d0)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/2371/grpc2371_test.go:57 +0x28
+gobench/nonblocking/grpc/2371.(*ccResolverWrapper).watcher(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/2371/grpc2371_test.go:39
+created by gobench/nonblocking/grpc/2371.(*ccResolverWrapper).start in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/grpc/2371/grpc2371_test.go:35 +0x4f
+FAIL	gobench/nonblocking/grpc/2371	0.004s
+ok  	gobench/nonblocking/istio/8967	0.007s
+ok  	gobench/nonblocking/kubernetes/13058	0.023s
+ok  	gobench/nonblocking/kubernetes/70892	0.002s
+ok  	gobench/nonblocking/moby/18412	0.103s
+ok  	gobench/nonblocking/moby/22941	0.012s
+ok  	gobench/nonblocking/moby/27037	0.001s
+panic: send on closed channel
+
+goroutine 9 [running]:
+gobench/nonblocking/serving/3068.(*impl).Go(0x71a8981e750, 0x71a89776280)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/3068/serving3068_test.go:44 +0x38
+gobench/nonblocking/serving/3068.TestServing3068.func1()
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/3068/serving3068_test.go:65 +0x51
+created by gobench/nonblocking/serving/3068.TestServing3068 in goroutine 7
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/3068/serving3068_test.go:63 +0xd0
+FAIL	gobench/nonblocking/serving/3068	0.003s
+ok  	gobench/nonblocking/serving/4908	0.001s
+--- FAIL: TestServing5865 (0.00s)
+panic: send on closed channel [recovered, repanicked]
+
+goroutine 7 [running]:
+testing.tRunner.func1.2({0x55a8e0, 0x5947e0})
+	/usr/lib/go-1.26/src/testing/testing.go:1974 +0x232
+testing.tRunner.func1()
+	/usr/lib/go-1.26/src/testing/testing.go:1977 +0x349
+panic({0x55a8e0?, 0x5947e0?})
+	/usr/lib/go-1.26/src/runtime/panic.go:860 +0x13a
+gobench/nonblocking/serving/5865.(*revisionBackendsManager).endpointsUpdated(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/5865/serving5865_test.go:26
+gobench/nonblocking/serving/5865.TestServing5865.func1(...)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/5865/serving5865_test.go:50
+gobench/nonblocking/serving/5865.TestServing5865(0xdaad7098248?)
+	/home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/base/nonblocking/serving/5865/serving5865_test.go:51 +0x34
+testing.tRunner(0xdaad7098248, 0x593070)
+	/usr/lib/go-1.26/src/testing/testing.go:2036 +0xea
+created by testing.(*T).Run in goroutine 1
+	/usr/lib/go-1.26/src/testing/testing.go:2101 +0x4c5
+FAIL	gobench/nonblocking/serving/5865	0.004s
+ok  	gobench/nonblocking/serving/6171	0.002s
+FAIL

@@ -43,15 +43,12 @@ func Run() {
 
 	oocLength()
 	time.Sleep(time.Second)
-	wg.Wait()
 
 	sameElement()
 	time.Sleep(time.Second)
-	wg.Wait()
 
 	overhead()
 	time.Sleep(time.Second)
-	wg.Wait()
 
 	realWorld()
 

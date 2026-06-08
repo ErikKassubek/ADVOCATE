@@ -1,0 +1,54 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/2/nonblocking/grpc/2371/grpc2371_test.go
+TestName:  TestGrpc2371
+Import added at line: 3
+Header added at line: 83
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/oocLength/2/nonblocking/grpc/2371/grpc2371_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestGrpc2371
+ADVOTEST 5:  21
+LOCK L: 1 21
+ADVOTEST 7:  21
+ADVOTEST A:  21
+ADVOTEST B:  21
+ADVOTEST 6:  3
+ADVOTEST C:  21
+ADVOTEST 8:  21
+LOCK U: 1
+LOCK L: 9
+ADVOTEST 5:  9
+LOCK U: 1
+LOCK L: 1 9
+ADVOTEST 7:  9
+ADVOTEST A:  9
+ADVOTEST B:  9
+ADVOTEST 6:  3
+ADVOTEST C:  9
+ADVOTEST 8:  9
+LOCK U: 1
+ADVOTEST 5:  19
+LOCK L: 1 19
+ADVOTEST 7:  19
+ADVOTEST A:  19
+ADVOTEST B:  19
+ADVOTEST 6:  3
+ADVOTEST C:  19
+ADVOTEST 8:  19
+LOCK U: 1
+HAS:  false
+panic: runtime error: invalid memory address or nil pointer dereference
+
+LOCK L: 9
+LOCK U: 1
+LOCK L: 9
+LOCK U: 1
+ADVOTEST 5:  15
+LOCK L: 1 15
+ADVOTEST 7:  15
+HAS:  true
+FAIL	gobench/nonblocking/grpc/2371	0.003s
+FAIL
+Bugreport info: 0_1,fail
+Bugreport info: 0_2,fail
+Bugreport info: 0_3,fail
+Bugreport info: 0_4,fail
+Bugreport info: 0_5,fail

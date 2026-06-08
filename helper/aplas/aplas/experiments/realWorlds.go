@@ -77,7 +77,7 @@ func rwFull(name, path string) {
 		"-path",
 		path,
 		"-timeoutExec",
-		"240",
+		"300",
 	}...)
 
 	err := command.RunCommandAdvocate(&out, fmt.Sprintf("rw_%s", name), settings...)

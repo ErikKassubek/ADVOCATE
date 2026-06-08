@@ -1,0 +1,7 @@
+FileName:  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/istio/16224/istio16224_test.go
+TestName:  TestIstio16224
+Import added at line: 3
+Header added at line: 86
+Header added at file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/sameElementType/0/blocking/istio/16224/istio16224_test.go
+go version go1.25.0 linux/amd64
+=== RUN   TestIstio16224

@@ -163,7 +163,7 @@ func overheadElemDiff() {
 			"-path",
 			pathBase,
 			"-timeoutExec",
-			"240",
+			"600",
 		}...)
 
 		start := time.Now()

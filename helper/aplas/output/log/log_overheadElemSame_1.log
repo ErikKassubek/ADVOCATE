@@ -1,0 +1,64 @@
+2026/06/05 15:52:15 Run go mod tidy
+2026/06/05 15:52:15 Start fuzzing in mode GoCRHB
+2026/06/05 15:52:15 Run fuzzing on all tests
+2026/06/05 15:52:15 Found 1 test files
+2026/06/05 15:52:15 Processing file: /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+2026/06/05 15:52:15 Fuzzing Run:  1
+2026/06/05 15:52:15 Create  /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/advocateResult/file(1)-test(1)-Rout_test-Test10
+2026/06/05 15:52:15 Execute Test
+2026/06/05 15:52:17 Text executed
+2026/06/05 15:52:17 Run the analyzer for /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/advocateTrace
+2026/06/05 15:52:17 Read trace with 113 elements in 11 routines
+2026/06/05 15:52:17 Start Analysis
+2026/06/05 15:52:17 Finished HB analysis
+2026/06/05 15:52:17 Analysis finished
+2026/06/05 15:52:17 Finished Rewrite
+2026/06/05 15:52:17 Number Results:  0
+2026/06/05 15:52:17 Successfully rewrites:  0
+2026/06/05 15:52:17 No need/not possible to rewrite:  0
+2026/06/05 15:52:17 Failed rewrites:  0
+2026/06/05 15:52:17 Start guided execution
+2026/06/05 15:52:17 Found 0 rewritten traces
+2026/06/05 15:52:17 Create bug reports
+2026/06/05 15:52:17 Create statistics
+2026/06/05 15:52:17 Finished run for Test10
+2026/06/05 15:52:17 Parse recorded trace for fuzzing information
+2026/06/05 15:52:17 Create mutations
+2026/06/05 15:52:17 Create GoPie mutations
+2026/06/05 15:52:17 Mutate 24 scheduling chains
+2026/06/05 15:52:17 Write 20 mutations to file
+2026/06/05 15:52:17 Create statistics
+2026/06/05 15:52:17 Current fuzzing queue size: 20
+2026/06/05 15:52:17 Remaining fuzzing time: 9:57 min
+2026/06/05 15:52:17 Fuzzing Run:  2
+2026/06/05 15:52:17 Execute Test
+2026/06/05 16:02:18 Text executed
+2026/06/05 16:02:18 Run the analyzer for /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/advocateTrace
+2026/06/05 16:02:18 Trace at /home/advocate/Advocate/Experiments/Advocate/helper/aplas/output/overheadElemSame/prog/advocateTrace does not contain any elements
+2026/06/05 16:02:18 Read trace with 0 elements in 0 routines
+2026/06/05 16:02:18 Start Analysis
+2026/06/05 16:02:18 Finished HB analysis
+2026/06/05 16:02:18 Analysis finished
+2026/06/05 16:02:18 Finished Rewrite
+2026/06/05 16:02:18 Number Results:  0
+2026/06/05 16:02:18 Successfully rewrites:  0
+2026/06/05 16:02:18 No need/not possible to rewrite:  0
+2026/06/05 16:02:18 Failed rewrites:  0
+2026/06/05 16:02:18 Start guided execution
+2026/06/05 16:02:18 Found 0 rewritten traces
+2026/06/05 16:02:18 Create bug reports
+2026/06/05 16:02:18 Create statistics
+2026/06/05 16:02:18 Finished run for Test10
+2026/06/05 16:02:18 Parse recorded trace for fuzzing information
+2026/06/05 16:02:18 Create mutations
+2026/06/05 16:02:18 Create GoPie mutations
+2026/06/05 16:02:18 Mutate 0 scheduling chains
+2026/06/05 16:02:18 Write 0 mutations to file
+2026/06/05 16:02:18 Create statistics
+2026/06/05 16:02:18 Current fuzzing queue size: 0
+2026/06/05 16:02:18 Finish fuzzing because maximum runtime for fuzzing (10 min) has been reached
+2026/06/05 16:02:18 Create fuzzing statistics
+2026/06/05 16:02:18 Create program statistics
+2026/06/05 16:02:18 Finished with 0 errors
+2026/06/05 16:02:18 No internal replay timeouts occurred
+2026/06/05 16:02:18 No bugs have been found/indicated

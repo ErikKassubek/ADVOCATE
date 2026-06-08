@@ -1,0 +1,192 @@
+go: downloading github.com/MiniProfiler/go v0.0.0-20160719195834-3296d396d472
+go: downloading github.com/bradfitz/slice v0.0.0-20140430145140-a665b5dbaad5
+go: downloading github.com/kylebrandt/boolq v0.0.0-20160608164548-f869a7265c7e
+go: downloading github.com/olivere/elastic v6.1.23-0.20180523141205-33ad30f61610+incompatible
+go: downloading github.com/ryanuber/go-glob v0.0.0-20160226084822-572520ed46db
+go: downloading github.com/olivere/elastic/v7 v7.0.17
+go: downloading golang.org/x/net v0.23.0
+go: downloading gopkg.in/olivere/elastic.v3 v3.0.56
+go: downloading github.com/vdobler/chart v0.0.0-20150914065344-293b01f8b75d
+go: downloading gopkg.in/olivere/elastic.v5 v5.0.48
+go: downloading github.com/ajstarks/svgo v0.0.0-20151117013546-fd2151ebabde
+go: downloading github.com/jmoiron/jsonq v0.0.0-20150511023944-e874b168d07e
+go: downloading github.com/NYTimes/gziphandler v0.0.0-20160419202541-63027b26b87e
+go: downloading github.com/captncraig/easyauth v0.0.0-20171013131059-c6de284138cf
+go: downloading github.com/gorilla/mux v0.0.0-20160920230813-757bef944d0f
+go: downloading github.com/justinas/alice v0.0.0-20160910103822-1051eaf52fca
+go: downloading github.com/mjibson/esc v0.1.0
+go: downloading github.com/BurntSushi/toml v0.3.1
+go: downloading github.com/facebookgo/httpcontrol v0.0.0-20150708234001-ccde4420e1fe
+go: downloading github.com/golang/groupcache v0.0.0-20190702054246-869f871628b6
+go: downloading github.com/StackExchange/httpunit v0.0.0-20190320172535-088c22a5342e
+go: downloading github.com/aws/aws-sdk-go v1.31.12
+go: downloading github.com/bosun-monitor/statusio v0.0.0-20160516160816-ab1583139762
+go: downloading github.com/coreos/go-systemd v0.0.0-20160202211425-7b2428fec400
+go: downloading github.com/garyburd/redigo v0.0.0-20151219232044-836b6e58b335
+go: downloading github.com/google/cadvisor v0.21.1-0.20160212224345-e9739af18411
+go: downloading github.com/google/go-github v0.0.0-20151126072848-44b1ede22d71
+go: downloading github.com/kylebrandt/gohop v0.0.0-20160712175359-f6dbeb38f6df
+go: downloading github.com/mhenderson-so/azure-ea-billing v0.0.0-20160829175629-4fd1a790460c
+go: downloading github.com/tatsushid/go-fastping v0.0.0-20150818125950-06cac0fecdc2
+go: downloading github.com/vmware/govmomi v0.16.1-0.20180228032728-a2138329bbd1
+go: downloading golang.org/x/oauth2 v0.0.0-20180821212333-d2e6202438be
+go: downloading google.golang.org/api v0.0.0-20180506000402-20530fd5d65a
+go: downloading gopkg.in/yaml.v1 v1.0.0-20140924161607-9f9df34309c0
+go: downloading github.com/GROpenSourceDev/go-ntlm-auth v0.0.0-20160519083535-6314d66e1d8f
+go: downloading github.com/stretchr/testify v1.5.1
+go: downloading github.com/Azure/azure-sdk-for-go v21.1.0+incompatible
+go: downloading github.com/GaryBoone/GoStats v0.0.0-20130122001700-1993eafbef57
+go: downloading github.com/influxdata/influxdb v1.7.6
+go: downloading github.com/influxdata/influxql v0.0.0-20180823200743-a7267bff5327
+go: downloading github.com/jinzhu/now v0.0.0-20151001141511-ce80572eb55a
+go: downloading github.com/prometheus/client_golang v0.9.3-0.20190106165022-d2ead2588477
+go: downloading github.com/prometheus/common v0.1.0
+go: downloading github.com/prometheus/prometheus v1.8.2-0.20190115164134-b639fe140c1f
+go: downloading github.com/twinj/uuid v0.0.0-20151029044442-89173bcdda19
+go: downloading github.com/aymerick/douceur v0.2.1-0.20150827151352-7176f1467381
+go: downloading github.com/siddontang/ledisdb v0.0.0-20190202134119-8ceb77e66a92
+go: downloading github.com/Azure/go-autorest v11.1.0+incompatible
+go: downloading github.com/jordan-wright/email v0.0.0-20151016173557-f61123ea07e1
+go: downloading gopkg.in/fsnotify.v1 v1.4.7
+go: downloading github.com/kardianos/osext v0.0.0-20160811001526-c2c54e542fb7
+go: downloading github.com/gorilla/securecookie v0.0.0-20161003051601-fa5329f91370
+go: downloading gopkg.in/ldap.v1 v1.0.0-20150224155422-0041a4127039
+go: downloading github.com/godbus/dbus v4.0.1-0.20160727174541-7a8c533d28e8+incompatible
+go: downloading github.com/gocarina/gocsv v0.0.0-20190927101021-3ecffd272576
+go: downloading github.com/mailru/easyjson v0.7.1
+go: downloading github.com/google/go-querystring v0.0.0-20151028211038-2a60fc2ba6c1
+go: downloading cloud.google.com/go v0.26.0
+go: downloading gopkg.in/yaml.v2 v2.2.4
+go: downloading github.com/golang/freetype v0.0.0-20150924013838-f29eb116deb3
+go: downloading github.com/llgcode/draw2d v0.0.0-20151105134336-9ffe0e7eb54c
+go: downloading golang.org/x/image v0.0.0-20150916112557-baddd3465a05
+go: downloading github.com/gogo/protobuf v1.1.1
+go: downloading github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+go: downloading github.com/PuerkitoBio/goquery v0.3.3-0.20150927202820-417cce822c7b
+go: downloading github.com/pelletier/go-toml v1.6.0
+go: downloading github.com/siddontang/go v0.0.0-20150505004501-b151716326d7
+go: downloading github.com/glendc/gopher-json v0.0.0-20170414221815-dc4743023d0c
+go: downloading github.com/siddontang/goredis v0.0.0-20150324035039-760763f78400
+go: downloading github.com/ugorji/go v0.0.0-20151120143108-ea9cd21fa0bc
+go: downloading github.com/yuin/gopher-lua v0.0.0-20190514113301-1cd887cd7036
+go: downloading github.com/dimchansky/utfbom v1.0.0
+go: downloading golang.org/x/crypto v0.21.0
+go: downloading golang.org/x/sys v0.18.0
+go: downloading github.com/go-kit/kit v0.8.0
+go: downloading github.com/opentracing/opentracing-go v1.1.0
+go: downloading gopkg.in/asn1-ber.v1 v1.0.0-20141119150059-9eae18c3681a
+go: downloading github.com/gorilla/css v0.0.0-20150317222238-a80e24ada269
+go: downloading github.com/andybalholm/cascadia v0.0.0-20150730174459-3ad29d1ad1c4
+go: downloading github.com/siddontang/rdb v0.0.0-20150307021120-fc89ed2e418d
+go: downloading github.com/edsrzf/mmap-go v0.0.0-20151128182504-903d080718bd
+go: downloading github.com/syndtr/goleveldb v0.0.0-20150819051622-1a9d62f03ea9
+go: downloading github.com/dgrijalva/jwt-go v3.2.0+incompatible
+go: downloading github.com/mitchellh/go-homedir v1.0.0
+go: downloading github.com/beorn7/perks v0.0.0-20180321164747-3a771d992973
+go: downloading github.com/golang/protobuf v1.3.1
+go: downloading github.com/prometheus/client_model v0.0.0-20180712105110-5c3871d89910
+go: downloading github.com/prometheus/procfs v0.0.0-20181204211112-1dc9a6cbc91a
+go: downloading github.com/go-logfmt/logfmt v0.3.0
+go: downloading github.com/cupcake/rdb v0.0.0-20130607152045-3454dcabd33c
+go: downloading github.com/matttproud/golang_protobuf_extensions v1.0.1
+go: downloading github.com/prometheus/tsdb v0.3.1
+go: downloading github.com/golang/snappy v0.0.0-20160529050041-d9eb7a3d35ec
+go: downloading github.com/jmespath/go-jmespath v0.3.0
+go: downloading golang.org/x/sync v0.1.0
+?   	bosun.org/annotate	[no test files]
+?   	bosun.org/annotate/backend	[no test files]
+?   	bosun.org/annotate/cmd/annotate	[no test files]
+?   	bosun.org/annotate/web	[no test files]
+?   	bosun.org/build	[no test files]
+?   	bosun.org/build/generate	[no test files]
+?   	bosun.org/build/release	[no test files]
+?   	bosun.org/build/syncTokens	[no test files]
+ok  	bosun.org/cloudwatch	3.007s
+?   	bosun.org/cmd/backfill	[no test files]
+?   	bosun.org/cmd/bosun	[no test files]
+?   	bosun.org/cmd/bosun/cache	[no test files]
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/conf	0.008s
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/conf/rule	0.008s
+ok  	bosun.org/cmd/bosun/conf/rule/parse	0.013s
+?   	bosun.org/cmd/bosun/conf/template	[no test files]
+?   	bosun.org/cmd/bosun/database	[no test files]
+?   	bosun.org/cmd/bosun/database/sentinel	[no test files]
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/database/test	0.008s
+?   	bosun.org/cmd/bosun/database/test/util	[no test files]
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/expr	0.008s
+ok  	bosun.org/cmd/bosun/expr/parse	0.003s
+?   	bosun.org/cmd/bosun/ping	[no test files]
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/sched	0.009s
+?   	bosun.org/cmd/bosun/sched/slack	[no test files]
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/search	0.006s
+panic: encoding alphabet includes duplicate symbols
+
+goroutine 1 [running]:
+encoding/base64.NewEncoding(...)
+	/usr/lib/go-1.26/src/encoding/base64/base64.go:82
+github.com/ugorji/go/codec.init()
+	/home/advocate/go/pkg/mod/github.com/ugorji/go@v0.0.0-20151120143108-ea9cd21fa0bc/codec/gen.go:125 +0xa4b
+FAIL	bosun.org/cmd/bosun/web	0.009s
+?   	bosun.org/cmd/scollector	[no test files]
+ok  	bosun.org/cmd/scollector/collectors	0.008s
+?   	bosun.org/cmd/scollector/conf	[no test files]
+?   	bosun.org/cmd/silence	[no test files]
+?   	bosun.org/cmd/snmpTester	[no test files]
+?   	bosun.org/cmd/tsdbrelay	[no test files]
+ok  	bosun.org/cmd/tsdbrelay/denormalize	0.002s
+?   	bosun.org/cmd/tsdbrelay/integrationTest	[no test files]
+?   	bosun.org/collect	[no test files]
+ok  	bosun.org/graphite	0.002s
+ok  	bosun.org/host	0.003s
+?   	bosun.org/metadata	[no test files]
+?   	bosun.org/models	[no test files]
+ok  	bosun.org/name	0.002s
+ok  	bosun.org/opentsdb	0.002s
+?   	bosun.org/slog	[no test files]
+?   	bosun.org/snmp	[no test files]
+ok  	bosun.org/snmp/asn1	0.002s
+?   	bosun.org/snmp/mib	[no test files]
+ok  	bosun.org/util	0.002s
+FAIL

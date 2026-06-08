@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_fuzzing.go
+// File: oosc_fuzzing.go
 // Brief: Fuzzing
 //
 // Author: Erik Kassubek
@@ -16,14 +16,14 @@ const (
 )
 
 var (
-	advocateFuzzingEnabled       = false
-	advocateFuzzingDelayEnabled  = false
-	advocateFuzzingReplayEnabled = false
-	fuzzingSelectData            = make(map[string][]int)
-	fuzzingSelectDataIndex       = make(map[string]int)
-	fuzzingFlowData              = make(map[string][]int)
-	fuzzingFlowCounter           = make(map[string]int)
-	fuzzingFlowDataCounter       = make(map[string]int)
+	ooscFuzzingEnabled       = false
+	ooscFuzzingDelayEnabled  = false
+	ooscFuzzingReplayEnabled = false
+	fuzzingSelectData        = make(map[string][]int)
+	fuzzingSelectDataIndex   = make(map[string]int)
+	fuzzingFlowData          = make(map[string][]int)
+	fuzzingFlowCounter       = make(map[string]int)
+	fuzzingFlowDataCounter   = make(map[string]int)
 
 	finishFuzzingFunc func()
 )
@@ -48,26 +48,26 @@ func InitFuzzingDelay(selectData map[string][]int, fuzzingFlow map[string][]int,
 		fuzzingFlowDataCounter[key] = 0
 	}
 
-	advocateFuzzingEnabled = true
-	advocateFuzzingDelayEnabled = true
+	ooscFuzzingEnabled = true
+	ooscFuzzingDelayEnabled = true
 }
 
 // InitFuzzingReplay initializes fuzzing based on full replay
 //
 // Parameter:
-//   - finishFuzzing func(): advocate.FinishFuzzing function
+//   - finishFuzzing func(): oosc.FinishFuzzing function
 func InitFuzzingReplay(finishFuzzing func()) {
 	finishFuzzingFunc = finishFuzzing
-	advocateFuzzingEnabled = true
-	advocateFuzzingReplayEnabled = true
+	ooscFuzzingEnabled = true
+	ooscFuzzingReplayEnabled = true
 }
 
 // Get if fuzzing is enables
 //
 // Returns:
 //   - bool: true if fuzzing is enabled, false otherwise
-func IsAdvocateFuzzingEnabled() bool {
-	return advocateFuzzingEnabled
+func IsOoscFuzzingEnabled() bool {
+	return ooscFuzzingEnabled
 }
 
 // Get the preferred case for the specified select
@@ -78,15 +78,15 @@ func IsAdvocateFuzzingEnabled() bool {
 // Returns:
 //   - bool: true if a preferred case exists, false otherwise
 //   - int: preferred case, -1 for default
-func AdvocateFuzzingGetPreferredCase(skip int) (bool, int) {
-	if !advocateFuzzingEnabled {
+func OoscFuzzingGetPreferredCase(skip int) (bool, int) {
+	if !ooscFuzzingEnabled {
 		return false, 0
 	}
 
 	routine := GetReplayRoutineID()
 
 	_, file, line, _ := Caller(skip)
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return false, 0
 	}
 	key := BuildReplayKey(routine, file, line)
@@ -110,14 +110,14 @@ func AdvocateFuzzingGetPreferredCase(skip int) (bool, int) {
 // Parameter:
 //   - skip int: skip for runtime.Caller
 func FuzzingFlowWait(skip int) {
-	if !advocateFuzzingDelayEnabled {
+	if !ooscFuzzingDelayEnabled {
 		return
 	}
 
 	routine := GetReplayRoutineID()
 
 	_, file, line, _ := Caller(skip)
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return
 	}
 

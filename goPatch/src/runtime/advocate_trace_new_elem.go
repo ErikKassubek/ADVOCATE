@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_new_elem.go
+// File: oosc_trace_new_elem.go
 // Brief: Functionality to record a make
 //
 // Author: Erik Kassubek
@@ -23,7 +23,7 @@ package runtime
 //     for channel: qSize
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceNewElem struct {
+type OoscTraceNewElem struct {
 	tPost    int64
 	id       uint64
 	elemType string
@@ -34,15 +34,15 @@ type AdvocateTraceNewElem struct {
 }
 
 /*
- * AdvocateChanMake adds a channel make to the trace.
+ * OoscChanMake adds a channel make to the trace.
  * Args:
  * 	id: id of the channel
  * 	qSize: size of the channel
  * Return:
  * 	(int): id for the channel
  */
-func AdvocateChanMake(qSize int) uint64 {
-	if advocateTracingDisabled {
+func OoscChanMake(qSize int) uint64 {
+	if ooscTracingDisabled {
 		return 0
 	}
 
@@ -50,13 +50,13 @@ func AdvocateChanMake(qSize int) uint64 {
 
 	_, file, line, _ := Caller(2)
 
-	id := GetAdvocateObjectID()
+	id := GetOoscObjectID()
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return id
 	}
 
-	elem := AdvocateTraceNewElem{
+	elem := OoscTraceNewElem{
 		tPost:    timer,
 		id:       id,
 		elemType: "NC",
@@ -75,7 +75,7 @@ func AdvocateChanMake(qSize int) uint64 {
 //
 // Returns:
 //   - string: the string representation
-func (elem AdvocateTraceNewElem) toString() string {
+func (elem OoscTraceNewElem) toString() string {
 	operationType := "NC"
 	return buildTraceElemString("N", elem.tPost, elem.id, operationType, elem.num, posToString(elem.file, elem.line))
 }
@@ -85,7 +85,7 @@ func (elem AdvocateTraceNewElem) toString() string {
 //
 // Returns:
 //   - string representation of the primitive type
-func (elem AdvocateTraceNewElem) getOpStr() string {
+func (elem OoscTraceNewElem) getOpStr() string {
 	return "NC"
 }
 
@@ -93,6 +93,6 @@ func (elem AdvocateTraceNewElem) getOpStr() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceNewElem) getOperation() Operation {
+func (elem OoscTraceNewElem) getOperation() Operation {
 	return elem.op
 }

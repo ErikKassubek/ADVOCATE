@@ -1,0 +1,343 @@
+2026/06/08 16:45:32 [31mNot enough RAM[0m
+2026/06/08 16:45:32 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [syscall]:
+syscall.Syscall6(0x101, 0xffffffffffffff9c, 0xc00014a550, 0x80241, 0x1a4, 0x0, 0x0)
+	/usr/local/go/src/syscall/syscall_linux.go:96 +0x39
+syscall.openat(0xffffffffffffff9c, {0xc00014a4b0?, 0x9a5250?}, 0x80241, 0x1a4)
+	/usr/local/go/src/syscall/zsyscall_linux_amd64.go:98 +0x8e
+syscall.Open(...)
+	/usr/local/go/src/syscall/syscall_linux.go:280
+os.open({0xc00014a4b0?, 0xc000104be8?}, 0x45d01b?, 0x104c20?)
+	/usr/local/go/src/os/file_open_unix.go:15 +0x2b
+os.openFileNolog.func1(...)
+	/usr/local/go/src/os/file_unix.go:260
+os.ignoringEINTR(...)
+	/usr/local/go/src/os/file_posix.go:256
+os.openFileNolog({0xc00014a4b0, 0x47}, 0x241, 0x1a4)
+	/usr/local/go/src/os/file_unix.go:259 +0x94
+os.OpenFile({0xc00014a4b0, 0x47}, 0x241, 0x1a4)
+	/usr/local/go/src/os/file.go:412 +0x3e
+os.WriteFile({0xc00014a4b0?, 0xc0000182d0?}, {0xc000104c78, 0x18, 0x20}, 0x473201?)
+	/usr/local/go/src/os/file.go:936 +0x33
+advocate/run.CheckProg()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/check.go:135 +0xa5d
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:88 +0x450
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:45:32 Run go mod tidy
+2026/06/08 16:45:32 Start fuzzing in mode GoCRHB
+2026/06/08 16:45:32 Run fuzzing on all tests
+2026/06/08 16:45:32 Found 1 test files
+2026/06/08 16:45:32 Processing file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+2026/06/08 16:45:32 [31mWait RAM[0m
+2026/06/08 16:45:38 [31mWait RAM[0m
+2026/06/08 16:45:39 [31mNot enough RAM[0m
+2026/06/08 16:45:39 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:45:44 [31mWait RAM[0m
+2026/06/08 16:45:46 [31mNot enough RAM[0m
+2026/06/08 16:45:46 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:45:50 [31mWait RAM[0m
+2026/06/08 16:45:53 [31mNot enough RAM[0m
+2026/06/08 16:45:53 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:45:56 [31mWait RAM[0m
+2026/06/08 16:46:00 [31mNot enough RAM[0m
+2026/06/08 16:46:00 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:02 [31mWait RAM[0m
+2026/06/08 16:46:07 [31mNot enough RAM[0m
+2026/06/08 16:46:07 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:08 [31mWait RAM[0m
+2026/06/08 16:46:14 [31mNot enough RAM[0m
+2026/06/08 16:46:14 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:14 [31mWait RAM[0m
+2026/06/08 16:46:20 [31mWait RAM[0m
+2026/06/08 16:46:21 [31mNot enough RAM[0m
+2026/06/08 16:46:21 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:26 [31mWait RAM[0m
+2026/06/08 16:46:28 [31mNot enough RAM[0m
+2026/06/08 16:46:28 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:32 [31mWait RAM[0m
+2026/06/08 16:46:35 [31mNot enough RAM[0m
+2026/06/08 16:46:35 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:38 [31mWait RAM[0m
+2026/06/08 16:46:42 [31mNot enough RAM[0m
+2026/06/08 16:46:42 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:44 [31mWait RAM[0m
+2026/06/08 16:46:49 [31mNot enough RAM[0m
+2026/06/08 16:46:49 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:46:50 [31mWait RAM[0m
+2026/06/08 16:46:56 [31mWait RAM[0m
+2026/06/08 16:46:57 [31mNot enough RAM[0m
+2026/06/08 16:46:57 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+2026/06/08 16:47:02 [31mWait RAM[0m
+2026/06/08 16:47:04 [31mNot enough RAM[0m
+2026/06/08 16:47:05 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [sleep]:
+time.Sleep(0x165a0bc00)
+	/usr/local/go/src/runtime/time.go:363 +0x165
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:122 +0x10ce
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c

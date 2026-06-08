@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_once.go
+// File: oosc_trace_once.go
 // Brief: Functionality for once
 //
 // Author: Erik Kassubek
@@ -21,7 +21,7 @@ package runtime
 //   - suc bool: true if the func in the Do was executed, false otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceOnce struct {
+type OoscTraceOnce struct {
 	tPre  int64
 	tPost int64
 	id    uint64
@@ -30,15 +30,15 @@ type AdvocateTraceOnce struct {
 	line  int
 }
 
-// AdvocateOncePre adds a once to the trace
+// OoscOncePre adds a once to the trace
 //
 // Parameter:
 //   - id uint64: id of the once
 //
 // Returns:
 //   - int: index of the operation in the trace
-func AdvocateOncePre(id uint64) int {
-	if advocateTracingDisabled {
+func OoscOncePre(id uint64) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
@@ -46,11 +46,11 @@ func AdvocateOncePre(id uint64) int {
 
 	_, file, line, _ := Caller(2)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceOnce{
+	elem := OoscTraceOnce{
 		tPre: timer,
 		id:   id,
 		file: file,
@@ -65,8 +65,8 @@ func AdvocateOncePre(id uint64) int {
 // Parameter:
 //   - index int: index of the operation in the trace
 //   - suc bool: true if the do on the once was called for the first time, false otherwise
-func AdvocateOncePost(index int, suc bool) {
-	if advocateTracingDisabled {
+func OoscOncePost(index int, suc bool) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -75,7 +75,7 @@ func AdvocateOncePost(index int, suc bool) {
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceOnce)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceOnce)
 
 	elem.tPost = timer
 	elem.suc = suc
@@ -88,7 +88,7 @@ func AdvocateOncePost(index int, suc bool) {
 // Returns:
 //   - string: the string representation of the form
 //     O,[tPre],[tPost],[id],[suc],[file],[line]
-func (elem AdvocateTraceOnce) toString() string {
+func (elem OoscTraceOnce) toString() string {
 	return buildTraceElemString("O", elem.tPre, elem.tPost, elem.id, elem.suc, posToString(elem.file, elem.line))
 }
 
@@ -96,6 +96,6 @@ func (elem AdvocateTraceOnce) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elen AdvocateTraceOnce) getOperation() Operation {
+func (elen OoscTraceOnce) getOperation() Operation {
 	return OperationOnceDo
 }

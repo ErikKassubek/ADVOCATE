@@ -1,0 +1,107 @@
+2026/06/08 16:38:19 Run go mod tidy
+2026/06/08 16:38:19 Start fuzzing in mode GoCRHB
+2026/06/08 16:38:19 Run fuzzing on all tests
+2026/06/08 16:38:19 Found 1 test files
+2026/06/08 16:38:19 Processing file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+2026/06/08 16:38:19 Fuzzing Run:  1
+2026/06/08 16:38:19 Create  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/advocateResult/file(1)-test(1)-Rout_test-Test53
+2026/06/08 16:38:19 Execute Test
+2026/06/08 16:38:20 Text executed
+2026/06/08 16:38:20 Run the analyzer for /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/advocateTrace
+2026/06/08 16:38:20 Read trace with 163 elements in 3 routines
+2026/06/08 16:38:20 Start Analysis
+2026/06/08 16:38:20 Finished HB analysis
+2026/06/08 16:38:20 Analysis finished
+2026/06/08 16:38:20 Finished Rewrite
+2026/06/08 16:38:20 Number Results:  0
+2026/06/08 16:38:20 Successfully rewrites:  0
+2026/06/08 16:38:20 No need/not possible to rewrite:  0
+2026/06/08 16:38:20 Failed rewrites:  0
+2026/06/08 16:38:20 Start guided execution
+2026/06/08 16:38:20 Found 0 rewritten traces
+2026/06/08 16:38:20 Create bug reports
+2026/06/08 16:38:20 Create statistics
+2026/06/08 16:38:20 Finished run for Test53
+2026/06/08 16:38:20 Parse recorded trace for fuzzing information
+2026/06/08 16:38:20 Create mutations
+2026/06/08 16:38:20 Create GoPie mutations
+2026/06/08 16:38:20 Mutate 24 scheduling chains
+2026/06/08 16:38:20 Write 20 mutations to file
+2026/06/08 16:38:20 Create statistics
+2026/06/08 16:38:20 Current fuzzing queue size: 20
+2026/06/08 16:38:20 Remaining fuzzing time: 9:58 min
+2026/06/08 16:38:20 Fuzzing Run:  2
+2026/06/08 16:38:20 Execute Test
+2026/06/08 16:45:30 [31mNot enough RAM[0m
+2026/06/08 16:45:30 goroutine 8 [running]:
+advocate/utils/control.printAllGoroutines()
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/utils.go:20 +0x3d
+advocate/utils/control.cancelRAM(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:109 +0x6e
+advocate/utils/control.Supervisor(0x775178, 0x775170, 0x775180)
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/control/memory.go:79 +0x12f
+created by advocate/run.Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:63 +0x26f
+
+goroutine 1 [syscall, 7 minutes]:
+syscall.Syscall6(0xf7, 0x3, 0x9, 0xc000157260, 0x4, 0xc000136ab0, 0x0)
+	/usr/local/go/src/syscall/syscall_linux.go:96 +0x39
+internal/syscall/unix.Waitid(0x4f0f75?, 0xc00001a2a0?, 0x0?, 0xc000130230?, 0x7?)
+	/usr/local/go/src/internal/syscall/unix/waitid_linux.go:18 +0x39
+os.(*Process).pidfdWait.func1(...)
+	/usr/local/go/src/os/pidfd_linux.go:109
+os.ignoringEINTR(...)
+	/usr/local/go/src/os/file_posix.go:256
+os.(*Process).pidfdWait(0xc000031300)
+	/usr/local/go/src/os/pidfd_linux.go:108 +0x1a9
+os.(*Process).wait(0x4f12a0?)
+	/usr/local/go/src/os/exec_unix.go:25 +0x1a
+os.(*Process).Wait(...)
+	/usr/local/go/src/os/exec.go:340
+os/exec.(*Cmd).Wait(0xc00012e300)
+	/usr/local/go/src/os/exec/exec.go:922 +0x45
+os/exec.(*Cmd).Run(0xc00012e300)
+	/usr/local/go/src/os/exec/exec.go:626 +0x2d
+advocate/utils/command.RunCommand(0xc000052040, 0xc000052048, 0xc00001a270?, {0xc00001a2a0, 0x29}, {0xc0001575c8, 0x6, 0x6})
+	/home/erik/Arbeit/ADVOCATE/advocate/utils/command/runCommands.go:66 +0x215
+advocate/toolchain.unitTestRecord({0x755b4a, 0x1}, {0xc0002304b0, 0x4d}, {0xc000161530, 0x6}, 0x1, {0xc00022fb00, 0x5d}, {0x757c36, ...}, ...)
+	/home/erik/Arbeit/ADVOCATE/advocate/toolchain/fullWorkflowUnit.go:572 +0x4ea
+advocate/toolchain.unitTestFullWorkflow({0xc00001a240?, 0x1a}, {0x7ffe2cd040da, 0x40}, 0x1, 0x1, 0x1, {0xc000161530, 0x6}, {0x755b4a, ...}, ...)
+	/home/erik/Arbeit/ADVOCATE/advocate/toolchain/fullWorkflowUnit.go:470 +0x4ba
+advocate/toolchain.runWorkflowUnit({0x7ffe2cd040da, 0x40}, 0x1, 0x1, 0x1, {0xc00014a640, 0x4d}, 0x1, {0xc00022fb00, 0x5d}, ...)
+	/home/erik/Arbeit/ADVOCATE/advocate/toolchain/fullWorkflowUnit.go:171 +0x1085
+advocate/toolchain.Run({0x755efd, 0x4}, {0xc00014a640, 0x4d}, 0x1, 0x1, 0x1, 0x1, {0xc00022fb00, 0x5d}, ...)
+	/home/erik/Arbeit/ADVOCATE/advocate/toolchain/toolchain.go:72 +0x2f5
+advocate/fuzzing.runFuzzing({0xc00014a640, 0x4d}, 0x1, 0x1, 0x1)
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:217 +0x57f
+advocate/fuzzing.Fuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/fuzzing/fuzzing.go:135 +0xdd8
+advocate/run.modeFuzzing()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/modes.go:34 +0x5e
+advocate/run.Run()
+	/home/erik/Arbeit/ADVOCATE/advocate/run/run.go:100 +0x595
+main.main()
+	/home/erik/Arbeit/ADVOCATE/advocate/main.go:28 +0x1c
+
+goroutine 105 [select, 7 minutes]:
+os/exec.(*Cmd).watchCtx(0xc00012e300, 0xc000382000)
+	/usr/local/go/src/os/exec/exec.go:789 +0xb2
+created by os/exec.(*Cmd).Start in goroutine 1
+	/usr/local/go/src/os/exec/exec.go:775 +0x8fd
+2026/06/08 16:45:30 Text executed
+2026/06/08 16:45:30 Run the analyzer for /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/advocateTrace
+2026/06/08 16:45:30 Trace at /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/advocateTrace does not contain any elements
+2026/06/08 16:45:30 Read trace with 0 elements in 0 routines
+2026/06/08 16:45:30 Start Analysis
+2026/06/08 16:45:30 Finished HB analysis
+2026/06/08 16:45:30 [31mAnalysis was canceled due to insufficient RAM[0m
+2026/06/08 16:45:30 Create statistics
+2026/06/08 16:45:30 Finished run for Test53
+2026/06/08 16:45:30 Parse recorded trace for fuzzing information
+2026/06/08 16:45:30 [31mFuzzing run was canceled due to memory[0m
+2026/06/08 16:45:30 Finish fuzzing after 1 runs
+2026/06/08 16:45:30 Create fuzzing statistics
+2026/06/08 16:45:30 Create program statistics
+2026/06/08 16:45:30 [31mFinished with 3 errors[0m
+2026/06/08 16:45:30 No internal replay timeouts occurred
+2026/06/08 16:45:30 No bugs have been found/indicated

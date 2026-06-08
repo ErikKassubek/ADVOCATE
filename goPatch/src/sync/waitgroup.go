@@ -10,9 +10,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// OOSC-START
 	"runtime"
-	// ADVOCATE-END
+	// OOSC-END
 )
 
 // A WaitGroup is a counting semaphore typically used to wait
@@ -59,9 +59,9 @@ type WaitGroup struct {
 	state atomic.Uint64
 	sema  uint32
 
-	// ADVOCATE-START
+	// OOSC-START
 	id uint64 // id for the waitgroup
-	// ADVOCATE-END
+	// OOSC-END
 }
 
 // waitGroupBubbleFlag indicates that a WaitGroup is associated with a synctest bubble.
@@ -83,7 +83,7 @@ const waitGroupBubbleFlag = 0x8000_0000
 // new Add calls must happen after all previous Wait calls have returned.
 // See the WaitGroup example.
 func (wg *WaitGroup) Add(delta int) {
-	// ADVOCATE-START
+	// OOSC-START
 	skip := runtime.CallerSkipWaitGroupDone
 	if delta > 0 {
 		skip = runtime.CallerSkipWaitGroupAddWait
@@ -93,7 +93,7 @@ func (wg *WaitGroup) Add(delta int) {
 		defer func() { chAck <- struct{}{} }()
 		<-ch
 	}
-	// ADVOCATE-END
+	// OOSC-END
 
 	if race.Enabled {
 		if delta < 0 {
@@ -129,13 +129,13 @@ func (wg *WaitGroup) Add(delta int) {
 	v := int32(state >> 32)
 	w := uint32(state & 0x7fffffff)
 
-	// ADVOCATE-START
+	// OOSC-START
 	// Waitgroups don't need to be initialized in default go code. Because
 	// go does not have constructors, the only way to initialize a wg
 	// is directly in it's functions. If the id of the wg is the default
 	// value, it is set to a new, unique object id
 	if wg.id == 0 {
-		wg.id = runtime.GetAdvocateObjectID()
+		wg.id = runtime.GetOoscObjectID()
 	}
 	// Record the add or done of a wait group in the routine's trace.
 	// If delta > 0, it is an add, if it's -1, it's a done.
@@ -143,8 +143,8 @@ func (wg *WaitGroup) Add(delta int) {
 	// do not block the program. Therefore it is not possible, that it is
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
-	index := runtime.AdvocateWaitGroupAdd(wg.id, delta, v)
-	// ADVOCATE-END
+	index := runtime.OoscWaitGroupAdd(wg.id, delta, v)
+	// OOSC-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
 		// The first increment must be synchronized with Wait.
@@ -159,9 +159,9 @@ func (wg *WaitGroup) Add(delta int) {
 		panic("sync: WaitGroup misuse: Add called concurrently with Wait")
 	}
 	if v > 0 || w == 0 {
-		// ADVOCATE-START
-		runtime.AdvocateWaitGroupPost(index)
-		// ADVOCATE-END
+		// OOSC-START
+		runtime.OoscWaitGroupPost(index)
+		// OOSC-END
 		return
 	}
 	// This goroutine has set counter to 0 when waiters > 0.
@@ -183,9 +183,9 @@ func (wg *WaitGroup) Add(delta int) {
 		runtime_Semrelease(&wg.sema, false, 0)
 	}
 
-	// ADVOCATE-START
-	runtime.AdvocateWaitGroupPost(index)
-	// ADVOCATE-END
+	// OOSC-START
+	runtime.OoscWaitGroupPost(index)
+	// OOSC-END
 }
 
 // Done decrements the [WaitGroup] task counter by one.
@@ -198,22 +198,22 @@ func (wg *WaitGroup) Add(delta int) {
 //
 // [the Go memory model]: https://go.dev/ref/mem
 func (wg *WaitGroup) Done() {
-	// ADVOCATE-NOTE: is recorded in wg.Adds
+	// OOSC-NOTE: is recorded in wg.Adds
 	wg.Add(-1)
 }
 
 // Wait blocks until the [WaitGroup] task counter is zero.
 func (wg *WaitGroup) Wait() {
-	// ADVOCATE-START
+	// OOSC-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationWaitgroupWait, 2, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if wg.id == 0 {
-				wg.id = runtime.GetAdvocateObjectID()
+				wg.id = runtime.GetOoscObjectID()
 			}
-			_ = runtime.AdvocateWaitGroupWait(wg.id)
+			_ = runtime.OoscWaitGroupWait(wg.id)
 			runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, true)
 			runtime.BlockForever()
 		}
@@ -224,23 +224,23 @@ func (wg *WaitGroup) Wait() {
 	// is directly in it's functions. If the id of the wg is the default
 	// value, it is set to a new, unique object id
 	if wg.id == 0 {
-		wg.id = runtime.GetAdvocateObjectID()
+		wg.id = runtime.GetOoscObjectID()
 	}
 
 	// Record the wait of a wait group in the routine's trace.
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	advocateIndex := runtime.AdvocateWaitGroupWait(wg.id)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscWaitGroupWait(wg.id)
+	// OOSC-END
 
 	if race.Enabled {
 		race.Disable()
 	}
 
-	// ADVOCATE-START
+	// OOSC-START
 	runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, false)
-	// ADVOCATE-END
+	// OOSC-END
 
 	for {
 		state := wg.state.Load()
@@ -260,9 +260,9 @@ func (wg *WaitGroup) Wait() {
 				}
 			}
 
-			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			// OOSC-START
+			runtime.OoscWaitGroupPost(ooscIndex)
+			//OOSC-END
 
 			return
 		}
@@ -298,9 +298,9 @@ func (wg *WaitGroup) Wait() {
 				race.Acquire(unsafe.Pointer(wg))
 			}
 
-			// ADVOCATE-START
-			runtime.AdvocateWaitGroupPost(advocateIndex)
-			//ADVOCATE-END
+			// OOSC-START
+			runtime.OoscWaitGroupPost(ooscIndex)
+			//OOSC-END
 
 			return
 		}

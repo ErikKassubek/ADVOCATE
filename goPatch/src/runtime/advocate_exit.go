@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_exit.go
+// File: oosc_exit.go
 // Brief: Functionality for the exit codes
 //
 // Author: Erik Kassubek
@@ -12,8 +12,8 @@
 
 package runtime
 
-var advocateExitCode = 0
-var advocateExitCodePos = ""
+var ooscExitCode = 0
+var ooscExitCodePos = ""
 
 // GetExitCode returns the exit code and exit position
 //
@@ -21,7 +21,7 @@ var advocateExitCodePos = ""
 //   - int: exit code
 //   - string: exit position
 func GetExitCode() (int, string) {
-	return advocateExitCode, advocateExitCodePos
+	return ooscExitCode, ooscExitCodePos
 }
 
 // SetExitCodeFromPanicMsg sets the panic info from the panic message
@@ -34,32 +34,32 @@ func SetExitCodeFromPanicMsg(msg any) {
 	switch m := msg.(type) {
 	case plainError:
 		if m.Error() == "send on closed channel" {
-			advocateExitCode = ExitCodeSendClose
+			ooscExitCode = ExitCodeSendClose
 			skip = 5
 		} else if m.Error() == "close of closed channel" {
-			advocateExitCode = ExitCodeCloseClose
+			ooscExitCode = ExitCodeCloseClose
 			skip = 4
 		} else if m.Error() == "close of nil channel" {
-			advocateExitCode = ExitCodeCloseNil
+			ooscExitCode = ExitCodeCloseNil
 			skip = 4
 		}
 	case string:
 		if m == "sync: negative WaitGroup counter" {
-			advocateExitCode = ExitCodeNegativeWG
+			ooscExitCode = ExitCodeNegativeWG
 			skip = 5
 		} else if hasPrefix(m, "test timed out") || hasPrefix(m, "Timeout") {
-			advocateExitCode = ExitCodeTimeout
+			ooscExitCode = ExitCodeTimeout
 		} else if m == "sync: unlock of unlocked mutex" {
-			advocateExitCode = ExitCodeUnlockBeforeLock
+			ooscExitCode = ExitCodeUnlockBeforeLock
 			skip = 6
 		} else if m == "sync: Unlock of unlocked RWMutex" {
-			advocateExitCode = ExitCodeUnlockBeforeLock
+			ooscExitCode = ExitCodeUnlockBeforeLock
 			skip = 4
 		} else if m == "sync: RUnlock of unlocked RWMutex" {
-			advocateExitCode = ExitCodeUnlockBeforeLock
+			ooscExitCode = ExitCodeUnlockBeforeLock
 			skip = 5
 		} else if m == "Timeout" {
-			advocateExitCode = ExitCodeTimeout
+			ooscExitCode = ExitCodeTimeout
 			skip = 0
 		}
 	default:
@@ -72,12 +72,12 @@ func SetExitCodeFromPanicMsg(msg any) {
 	}
 
 	_, file, line, _ := Caller(skip)
-	advocateExitCodePos = file + posSep + intToString(line)
+	ooscExitCodePos = file + posSep + intToString(line)
 	if printDebug {
-		println("AECP: ", advocateExitCodePos, " ", advocateExitCode)
+		println("AECP: ", ooscExitCodePos, " ", ooscExitCode)
 	}
 
-	if advocateExitCode == 0 {
-		advocateExitCode = ExitCodePanic
+	if ooscExitCode == 0 {
+		ooscExitCode = ExitCodePanic
 	}
 }

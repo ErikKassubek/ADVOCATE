@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_atomic.go
+// File: oosc_trace_atomic.go
 // Brief: Functionality for atomics
 //
 // Author: Erik Kassubek
@@ -20,7 +20,7 @@ package runtime
 //   - op Operation: operation type
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceAtomic struct {
+type OoscTraceAtomic struct {
 	timer int64
 	id    string
 	op    Operation
@@ -33,8 +33,8 @@ type AdvocateTraceAtomic struct {
 //   - addr *T: memory address of the atomic
 //   - op Operation: the operation type
 //   - skip iny: skip for Caller
-func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
-	if advocateTracingDisabled {
+func OoscAtomic[T any](addr *T, op Operation, skip int) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -42,13 +42,13 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 
 	_, file, line, _ := Caller(skip)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return
 	}
 
 	id := pointerAddressAsString(addr, true)
 
-	elem := AdvocateTraceAtomic{
+	elem := OoscTraceAtomic{
 		timer: timer,
 		id:    id,
 		op:    op,
@@ -64,7 +64,7 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 // Returns:
 //   - string: the string representation of the form
 //     U,[timer],[id],[operation],[file],[line]
-func (elem AdvocateTraceAtomic) toString() string {
+func (elem OoscTraceAtomic) toString() string {
 	opStr := "U"
 	switch elem.op {
 	case OperationAtomicLoad:
@@ -90,6 +90,6 @@ func (elem AdvocateTraceAtomic) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceAtomic) getOperation() Operation {
+func (elem OoscTraceAtomic) getOperation() Operation {
 	return elem.op
 }

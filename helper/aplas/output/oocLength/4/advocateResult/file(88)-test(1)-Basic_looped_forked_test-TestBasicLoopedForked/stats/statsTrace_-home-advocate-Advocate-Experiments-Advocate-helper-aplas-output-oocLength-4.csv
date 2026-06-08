@@ -1,3 +1,0 @@
-TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
-TestBasicLoopedForked,0,0,0,0,0,0,0,0,0
-TestBasicLoopedForked,0,0,0,0,0,0,0,0,0

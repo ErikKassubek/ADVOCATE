@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// OOSC-START
 	"runtime"
-	// ADVOCATE-END
+	// OOSC-END
 )
 
 // Once is an object that will perform exactly one action.
@@ -33,9 +33,9 @@ type Once struct {
 	done atomic.Bool
 	m    Mutex
 
-	// ADVOCATE-START
+	// OOSC-START
 	id uint64 // id of the once
-	// ADVOCATE-END
+	// OOSC-END
 }
 
 // Do calls the function f if and only if Do is being called for the
@@ -73,15 +73,15 @@ func (o *Once) Do(f func()) {
 	// This is why the slow path falls back to a mutex, and why
 	// the o.done.Store must be delayed until after f returns.
 
-	// ADVOCATE-START
+	// OOSC-START
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationOnceDo, runtime.CallerSkipOne, false)
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if o.id == 0 {
-				o.id = runtime.GetAdvocateObjectID()
+				o.id = runtime.GetOoscObjectID()
 			}
-			_ = runtime.AdvocateOncePre(o.id)
+			_ = runtime.OoscOncePre(o.id)
 			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true)
 			runtime.BlockForever()
 		}
@@ -90,24 +90,24 @@ func (o *Once) Do(f func()) {
 	runtime.FuzzingFlowWait(2)
 
 	if o.id == 0 {
-		o.id = runtime.GetAdvocateObjectID()
+		o.id = runtime.GetOoscObjectID()
 	}
-	index := runtime.AdvocateOncePre(o.id)
+	index := runtime.OoscOncePre(o.id)
 	res := false
-	// ADVOCATE-END
+	// OOSC-END
 
 	if !o.done.Load() {
 		// Outlined slow-path to allow inlining of the fast-path.
-		// ADVOCATE-START
+		// OOSC-START
 		res = o.doSlow(f)
-		// ADVOCATE-END
+		// OOSC-END
 	}
-	// ADVOCATE-START
-	runtime.AdvocateOncePost(index, res)
-	// ADVOCATE-END
+	// OOSC-START
+	runtime.OoscOncePost(index, res)
+	// OOSC-END
 }
 
-// ADVOCATE-START
+// OOSC-START
 func (o *Once) doSlow(f func()) bool {
 	o.m.Lock()
 	defer o.m.Unlock()
@@ -119,4 +119,4 @@ func (o *Once) doSlow(f func()) bool {
 	return false
 }
 
-// ADVOCATE-END
+// OOSC-END

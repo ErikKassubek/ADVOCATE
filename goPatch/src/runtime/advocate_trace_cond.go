@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_cond.go
+// File: oosc_trace_cond.go
 // Brief: Functionality for the conditional variables
 //
 // Author: Erik Kassubek
@@ -21,7 +21,7 @@ package runtime
 //   - op Operation: operation type
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceCond struct {
+type OoscTraceCond struct {
 	tPre  int64
 	tPost int64
 	id    uint64
@@ -31,26 +31,26 @@ type AdvocateTraceCond struct {
 }
 
 /*
- * AdvocateCondPre adds a cond wait to the trace
+ * OoscCondPre adds a cond wait to the trace
  * Args:
  * 	id: id of the cond
  * 	op: Operation
  * Return:
  * 	index of the operation in the trace
  */
-func AdvocateCondPre(id uint64, op Operation) int {
-	if advocateTracingDisabled {
+func OoscCondPre(id uint64, op Operation) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 	_, file, line, _ := Caller(CallerSkipCond)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceCond{
+	elem := OoscTraceCond{
 		tPre: timer,
 		id:   id,
 		op:   op,
@@ -62,12 +62,12 @@ func AdvocateCondPre(id uint64, op Operation) int {
 }
 
 /*
- * AdvocateCondPost adds the end counter to an operation of the trace
+ * OoscCondPost adds the end counter to an operation of the trace
  * Args:
  * 	index: index of the operation in the trace
  */
-func AdvocateCondPost(index int) {
-	if advocateTracingDisabled {
+func OoscCondPost(index int) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -75,7 +75,7 @@ func AdvocateCondPost(index int) {
 	if index == -1 {
 		return
 	}
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceCond)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceCond)
 
 	elem.tPost = timer
 
@@ -86,7 +86,7 @@ func AdvocateCondPost(index int) {
 //
 // Returns:
 //   - string: the string representation
-func (elem AdvocateTraceCond) toString() string {
+func (elem OoscTraceCond) toString() string {
 	var opC string
 	switch elem.op {
 	case OperationCondWait:
@@ -104,6 +104,6 @@ func (elem AdvocateTraceCond) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceCond) getOperation() Operation {
+func (elem OoscTraceCond) getOperation() Operation {
 	return elem.op
 }

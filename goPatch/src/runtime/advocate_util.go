@@ -1,8 +1,8 @@
-// ADVOCATE-FILE-START
+// OOSC-FILE-START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_util.go
+// File: oosc_util.go
 // Brief: Helper functions
 //
 // Author: Erik Kassubek
@@ -383,4 +383,4 @@ func printAllGoroutines() {
 	println(string(buf[:n]))
 }
 
-// ADVOCATE-FILE-END
+// OOSC-FILE-END

@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_wait.go
+// File: oosc_replay_wait.go
 // Brief: Wait for replay
 //
 // Author: Erik Kassubek
@@ -73,7 +73,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		return false, nil, nil, false
 	}
 
-	if AdvocateIgnoreReplay(op, file) {
+	if OoscIgnoreReplay(op, file) {
 		return false, nil, nil, false
 	}
 

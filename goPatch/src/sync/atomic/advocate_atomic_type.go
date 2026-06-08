@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_atomic.go
+// File: oosc_atomic.go
 // Brief: Copies to use from the sync/atomic/type.go
 // 	They are identical to the others except for the WaitForReplay skip counter
 //
@@ -16,352 +16,352 @@ import "runtime"
 // Copies to use from the sync/atomic/type.go
 // They are identical to the others except for the WaitForReplay skip counter
 
-func SwapInt32AdvocateType(addr *int32, new int32) (old int32) {
+func SwapInt32OoscType(addr *int32, new int32) (old int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
-	return SwapInt32Advocate(addr, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
+	return SwapInt32Oosc(addr, new)
 }
 
-func SwapInt64AdvocateType(addr *int64, new int64) (old int64) {
+func SwapInt64OoscType(addr *int64, new int64) (old int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
-	return SwapInt64Advocate(addr, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
+	return SwapInt64Oosc(addr, new)
 }
 
-func SwapUint32AdvocateType(addr *uint32, new uint32) (old uint32) {
+func SwapUint32OoscType(addr *uint32, new uint32) (old uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
-	return SwapUint32Advocate(addr, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
+	return SwapUint32Oosc(addr, new)
 }
 
-func SwapUint64AdvocateType(addr *uint64, new uint64) (old uint64) {
+func SwapUint64OoscType(addr *uint64, new uint64) (old uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
-	return SwapUint64Advocate(addr, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
+	return SwapUint64Oosc(addr, new)
 }
 
-func SwapUintptrAdvocateType(addr *uintptr, new uintptr) (old uintptr) {
+func SwapUintptrOoscType(addr *uintptr, new uintptr) (old uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
-	return SwapUintptrAdvocate(addr, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicSwap, runtime.CallerSkipAtomicType)
+	return SwapUintptrOosc(addr, new)
 }
 
-func CompareAndSwapInt32AdvocateType(addr *int32, old, new int32) (swapped bool) {
+func CompareAndSwapInt32OoscType(addr *int32, old, new int32) (swapped bool) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
-	return CompareAndSwapInt32Advocate(addr, old, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
+	return CompareAndSwapInt32Oosc(addr, old, new)
 }
 
-func CompareAndSwapInt64AdvocateType(addr *int64, old, new int64) (swapped bool) {
+func CompareAndSwapInt64OoscType(addr *int64, old, new int64) (swapped bool) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
-	return CompareAndSwapInt64Advocate(addr, old, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
+	return CompareAndSwapInt64Oosc(addr, old, new)
 }
 
-func CompareAndSwapUint32AdvocateType(addr *uint32, old, new uint32) (swapped bool) {
+func CompareAndSwapUint32OoscType(addr *uint32, old, new uint32) (swapped bool) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
-	return CompareAndSwapUint32Advocate(addr, old, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
+	return CompareAndSwapUint32Oosc(addr, old, new)
 }
 
-func CompareAndSwapUint64AdvocateType(addr *uint64, old, new uint64) (swapped bool) {
+func CompareAndSwapUint64OoscType(addr *uint64, old, new uint64) (swapped bool) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
-	return CompareAndSwapUint64Advocate(addr, old, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
+	return CompareAndSwapUint64Oosc(addr, old, new)
 }
 
-func CompareAndSwapUintptrAdvocateType(addr *uintptr, old, new uintptr) (swapped bool) {
+func CompareAndSwapUintptrOoscType(addr *uintptr, old, new uintptr) (swapped bool) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
-	return CompareAndSwapUintptrAdvocate(addr, old, new)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicCompareAndSwap, runtime.CallerSkipAtomicType)
+	return CompareAndSwapUintptrOosc(addr, old, new)
 }
 
-func AddInt32AdvocateType(addr *int32, delta int32) (new int32) {
+func AddInt32OoscType(addr *int32, delta int32) (new int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
-	return AddInt32Advocate(addr, delta)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
+	return AddInt32Oosc(addr, delta)
 }
 
-func AddUint32AdvocateType(addr *uint32, delta uint32) (new uint32) {
+func AddUint32OoscType(addr *uint32, delta uint32) (new uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
-	return AddUint32Advocate(addr, delta)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
+	return AddUint32Oosc(addr, delta)
 }
 
-func AddInt64AdvocateType(addr *int64, delta int64) (new int64) {
+func AddInt64OoscType(addr *int64, delta int64) (new int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
-	return AddInt64Advocate(addr, delta)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
+	return AddInt64Oosc(addr, delta)
 }
 
-func AddUint64AdvocateType(addr *uint64, delta uint64) (new uint64) {
+func AddUint64OoscType(addr *uint64, delta uint64) (new uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
-	return AddUint64Advocate(addr, delta)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
+	return AddUint64Oosc(addr, delta)
 }
 
-func AddUintptrAdvocateType(addr *uintptr, delta uintptr) (new uintptr) {
+func AddUintptrOoscType(addr *uintptr, delta uintptr) (new uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
-	return AddUintptrAdvocate(addr, delta)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAdd, runtime.CallerSkipAtomicType)
+	return AddUintptrOosc(addr, delta)
 }
 
-func LoadInt32AdvocateType(addr *int32) (val int32) {
+func LoadInt32OoscType(addr *int32) (val int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
-	return LoadInt32Advocate(addr)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
+	return LoadInt32Oosc(addr)
 }
 
-func LoadInt64AdvocateType(addr *int64) (val int64) {
+func LoadInt64OoscType(addr *int64) (val int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
-	return LoadInt64Advocate(addr)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
+	return LoadInt64Oosc(addr)
 }
 
-func LoadUint32AdvocateType(addr *uint32) (val uint32) {
+func LoadUint32OoscType(addr *uint32) (val uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
-	return LoadUint32Advocate(addr)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
+	return LoadUint32Oosc(addr)
 }
 
-func LoadUint64AdvocateType(addr *uint64) (val uint64) {
+func LoadUint64OoscType(addr *uint64) (val uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
-	return LoadUint64Advocate(addr)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
+	return LoadUint64Oosc(addr)
 }
 
-func LoadUintptrAdvocateType(addr *uintptr) (val uintptr) {
+func LoadUintptrOoscType(addr *uintptr) (val uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
-	return LoadUintptrAdvocate(addr)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicLoad, runtime.CallerSkipAtomicType)
+	return LoadUintptrOosc(addr)
 }
 
-func StoreInt32AdvocateType(addr *int32, val int32) {
+func StoreInt32OoscType(addr *int32, val int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
-	StoreInt32Advocate(addr, val)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
+	StoreInt32Oosc(addr, val)
 }
 
-func StoreInt64AdvocateType(addr *int64, val int64) {
+func StoreInt64OoscType(addr *int64, val int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
-	StoreInt64Advocate(addr, val)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
+	StoreInt64Oosc(addr, val)
 }
 
-func StoreUint32AdvocateType(addr *uint32, val uint32) {
+func StoreUint32OoscType(addr *uint32, val uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
-	StoreUint32Advocate(addr, val)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
+	StoreUint32Oosc(addr, val)
 }
 
-func StoreUint64AdvocateType(addr *uint64, val uint64) {
+func StoreUint64OoscType(addr *uint64, val uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
-	StoreUint64Advocate(addr, val)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
+	StoreUint64Oosc(addr, val)
 }
 
-func StoreUintptrAdvocateType(addr *uintptr, val uintptr) {
+func StoreUintptrOoscType(addr *uintptr, val uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicStore, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
-	StoreUintptrAdvocate(addr, val)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicStore, runtime.CallerSkipAtomicType)
+	StoreUintptrOosc(addr, val)
 }
 
-func AndInt64AdvocateType(addr *int64, mask int64) (old int64) {
+func AndInt64OoscType(addr *int64, mask int64) (old int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
-	return AndInt64Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
+	return AndInt64Oosc(addr, mask)
 }
 
-func AndUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
+func AndUint64OoscType(addr *uint64, mask uint64) (old uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
-	return AndUint64Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
+	return AndUint64Oosc(addr, mask)
 }
 
-func AndInt32AdvocateType(addr *int32, mask int32) (old int32) {
+func AndInt32OoscType(addr *int32, mask int32) (old int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
-	return AndInt32Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
+	return AndInt32Oosc(addr, mask)
 }
 
-func AndUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
+func AndUint32OoscType(addr *uint32, mask uint32) (old uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
-	return AndUint32Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
+	return AndUint32Oosc(addr, mask)
 }
 
-func AndUintptrAdvocateType(addr *uintptr, mask uintptr) (old uintptr) {
+func AndUintptrOoscType(addr *uintptr, mask uintptr) (old uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
-	return AndUintptrAdvocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicAnd, runtime.CallerSkipAtomicType)
+	return AndUintptrOosc(addr, mask)
 }
 
-func OrInt64AdvocateType(addr *int64, mask int64) (old int64) {
+func OrInt64OoscType(addr *int64, mask int64) (old int64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
-	return OrInt64Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
+	return OrInt64Oosc(addr, mask)
 }
 
-func OrUint64AdvocateType(addr *uint64, mask uint64) (old uint64) {
+func OrUint64OoscType(addr *uint64, mask uint64) (old uint64) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
-	return OrUint64Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
+	return OrUint64Oosc(addr, mask)
 }
 
-func OrInt32AdvocateType(addr *int32, mask int32) (old int32) {
+func OrInt32OoscType(addr *int32, mask int32) (old int32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
-	return OrInt32Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
+	return OrInt32Oosc(addr, mask)
 }
 
-func OrUint32AdvocateType(addr *uint32, mask uint32) (old uint32) {
+func OrUint32OoscType(addr *uint32, mask uint32) (old uint32) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
-	return OrUint32Advocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
+	return OrUint32Oosc(addr, mask)
 }
 
-func OrUintptrAdvocateType(addr *uintptr, mask uintptr) (old uintptr) {
+func OrUintptrOoscType(addr *uintptr, mask uintptr) (old uintptr) {
 	wait, chWait, chAck, _ := runtime.WaitForReplay(runtime.OperationAtomicOr, runtime.CallerSkipAtomicType, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		<-chWait
 	}
-	runtime.AdvocateAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
-	return OrUintptrAdvocate(addr, mask)
+	runtime.OoscAtomic(addr, runtime.OperationAtomicOr, runtime.CallerSkipAtomicType)
+	return OrUintptrOosc(addr, mask)
 }

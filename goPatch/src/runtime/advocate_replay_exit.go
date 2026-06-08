@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_exit.go
+// File: oosc_replay_exit.go
 // Brief: Replay exit and exit codes
 //
 // Author: Erik Kassubek
@@ -77,7 +77,7 @@ var hasPanicked = false
 //
 // Parameter:
 //   - msg: the panic message
-func AdvocatePanic(msg any) {
+func OoscPanic(msg any) {
 	println("HAS: ", hasPanicked)
 	if hasPanicked {
 		exit(1)
@@ -88,7 +88,7 @@ func AdvocatePanic(msg any) {
 
 	SetExitCodeFromPanicMsg(msg)
 
-	if IsAdvocateFuzzingEnabled() {
+	if IsOoscFuzzingEnabled() {
 		finishFuzzingFunc()
 	} else if IsTracingEnabled() {
 		finishTracingFunc()
@@ -98,7 +98,7 @@ func AdvocatePanic(msg any) {
 	// 	return
 	// }
 
-	ExitReplayWithCode(advocateExitCode, msg)
+	ExitReplayWithCode(ooscExitCode, msg)
 }
 
 // ExitReplayTimeout exits the program, when a timeout in tracing or replay
@@ -116,6 +116,6 @@ func ExitReplayTimeout() {
 
 	detectBlockingGC()
 
-	advocateExitCode = ExitCodeTimeout
-	AdvocatePanic("Timeout")
+	ooscExitCode = ExitCodeTimeout
+	OoscPanic("Timeout")
 }

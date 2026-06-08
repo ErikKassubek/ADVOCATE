@@ -1,3 +1,0 @@
-TestName,NumberActualBugTotal,NrLeaksTotal,NrLeaksTotalTP,NrLeaksTotalFP,NrLeaksWithRewriteTotal,NrLeaksResolvedViaReplayTotal,NrPanicsTotal,NrPanicsVerifiedViaReplayTotal,NrUnexpectedPanicsInReplayTotal,NrProbInRecordingTotal,NumberActualBugUnique,NrLeaksUnique,NrLeaksUniqueTP,NrLeaksUniqueFP,NrLeaksWithRewriteUnique,NrLeaksResolvedViaReplayUnique,NrPanicsUnique,NrPanicsVerifiedViaReplayUnique,NrUnexpectedPanicsInReplayUnique
-TestInInfeasible,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-TestInInfeasible,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

@@ -12,14 +12,14 @@ import (
 	"time"
 )
 
-var maxElem = 1
+var maxElem = 10
 
 func overhead() {
 	wg.Add(1)
 	defer wg.Done()
 	go overheadRout()
-	go overheadElemDiff()
-	go overheadElemSame()
+	// go overheadElemDiff()
+	// go overheadElemSame()
 }
 
 func overheadRout() {
@@ -43,6 +43,7 @@ func overheadRout() {
 	data.CopyConstructed(pathBase)
 
 	for i := 0; i <= maxElem; i++ {
+		fmt.Println("OverheadRout: ", i)
 		r := max(2, int(math.Pow(10, math.Sqrt(float64(i)))))
 		d := createProgRout(path, r)
 		writeCreatedProg(pathBase, fmt.Sprintf("%d", r), d)
@@ -99,6 +100,7 @@ func overheadElemSame() {
 	data.CopyConstructed(pathBase)
 
 	for i := 0; i <= maxElem; i++ {
+		fmt.Println("overheadElemSame: ", i)
 		r := max(2, int(math.Pow(10, math.Sqrt(float64(i)))))
 		d := createProgElemSame(path, r)
 		writeCreatedProg(pathBase, fmt.Sprintf("%d", r), d)
@@ -155,6 +157,7 @@ func overheadElemDiff() {
 	data.CopyConstructed(pathBase)
 
 	for i := 0; i <= maxElem; i++ {
+		fmt.Println("overheadElemDiff: ", i)
 		r := max(2, int(math.Pow(10, math.Sqrt(float64(i)))))
 		d := createProgElemDiff(path, r)
 		writeCreatedProg(pathBase, fmt.Sprintf("%d", r), d)
@@ -191,11 +194,11 @@ func overheadElemDiff() {
 }
 
 func createProgRout(path string, elem int) string {
-	numElemPerRout := int(math.Pow(10, float64(maxElem)) / float64(elem))
-	prog := fmt.Sprintf("package main\n\nimport (\n\"time\"\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nc := make(chan int, 10)\nwg := sync.WaitGroup{}\n\n", elem)
+	numElemPerRout := int(math.Pow(10, math.Sqrt(float64(maxElem))/float64(elem)))
+	prog := fmt.Sprintf("package main\n\nimport (\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nc := make(chan int, 10)\nwg := sync.WaitGroup{}\n\n", elem)
 
-	routSend := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\nc <- 1\ntime.Sleep(100 * time.Millisecond)\n}\n})\n\n", numElemPerRout)
-	routRecv := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\n<-c\ntime.Sleep(100 * time.Millisecond)\n}\n})\n\n", numElemPerRout)
+	routSend := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\nc <- 1 }\n})\n\n", numElemPerRout)
+	routRecv := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\n<-c }\n})\n\n", numElemPerRout)
 
 	for i := 0; i < elem/2; i++ {
 		prog += routSend
@@ -208,10 +211,10 @@ func createProgRout(path string, elem int) string {
 }
 
 func createProgElemSame(path string, elem int) string {
-	prog := fmt.Sprintf("package main\n\nimport (\n\"time\"\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nc := make(chan int, 10)\nwg := sync.WaitGroup{}\n\n", elem)
+	prog := fmt.Sprintf("package main\n\nimport (\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nc := make(chan int, 10)\nwg := sync.WaitGroup{}\n\n", elem)
 
-	routSend := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\nc <- 1\ntime.Sleep(100 * time.Millisecond)\n}\n})\n\n", elem)
-	routRecv := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\n<-c\ntime.Sleep(100 * time.Millisecond)\n}\n})\n\n", elem)
+	routSend := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\nc <- 1\n}\n})\n\n", elem)
+	routRecv := fmt.Sprintf("wg.Go(func() {\nfor i := 0; i < %d; i++ {\n<-c \n}\n})\n\n", elem)
 
 	for i := 0; i < 5; i++ {
 		prog += routSend
@@ -224,7 +227,7 @@ func createProgElemSame(path string, elem int) string {
 }
 
 func createProgElemDiff(path string, elem int) string {
-	prog := fmt.Sprintf("package main\n\nimport (\n\"time\"\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nwg := sync.WaitGroup{}\n\n", elem)
+	prog := fmt.Sprintf("package main\n\nimport (\n\"sync\"\n\"testing\"\n)\n\nfunc Test%d(t *testing.T) {\nwg := sync.WaitGroup{}\n\n", elem)
 
 	for i := 0; i < elem; i++ {
 		prog += fmt.Sprintf("c%d := make(chan int, 10)\n", i)
@@ -232,12 +235,12 @@ func createProgElemDiff(path string, elem int) string {
 
 	routSend := "wg.Go(func() {\n"
 	for i := 0; i < elem; i++ {
-		routSend += fmt.Sprintf("c%d <- 1\ntime.Sleep(100 * time.Millisecond)\n\n", i)
+		routSend += fmt.Sprintf("c%d <- 1\n\n", i)
 	}
 	routSend += "\n})\n\n"
 	routRecv := "wg.Go(func() {\n"
 	for i := 0; i < elem; i++ {
-		routRecv += fmt.Sprintf("<-c%d\ntime.Sleep(100 * time.Millisecond)\n\n", i)
+		routRecv += fmt.Sprintf("<-c%d\n\n", i)
 	}
 	routRecv += "\n})\n\n"
 

@@ -1,3 +1,0 @@
-TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
-TestGuard,0,0,0,0,0,0,0,0,0
-TestGuard,0,0,0,0,0,0,0,0,0

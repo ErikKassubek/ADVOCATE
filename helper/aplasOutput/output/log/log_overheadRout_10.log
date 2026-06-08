@@ -1,0 +1,38 @@
+2026/06/08 17:00:35 Run go mod tidy
+2026/06/08 17:00:35 Start fuzzing in mode GoCRHB
+2026/06/08 17:00:35 Run fuzzing on all tests
+2026/06/08 17:00:35 Found 1 test files
+2026/06/08 17:00:35 Processing file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadRout/prog/Rout_test.go
+2026/06/08 17:00:35 Fuzzing Run:  1
+2026/06/08 17:00:35 Create  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadRout/prog/advocateResult/file(1)-test(1)-Rout_test-Test1453
+2026/06/08 17:00:35 Execute Test
+2026/06/08 17:00:37 Text executed
+2026/06/08 17:00:37 Run the analyzer for /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadRout/prog/advocateTrace
+2026/06/08 17:00:37 Read trace with 2907 elements in 1453 routines
+2026/06/08 17:00:37 Start Analysis
+2026/06/08 17:00:41 Finished HB analysis
+2026/06/08 17:00:41 Analysis finished
+2026/06/08 17:00:41 Finished Rewrite
+2026/06/08 17:00:41 Number Results:  0
+2026/06/08 17:00:41 Successfully rewrites:  0
+2026/06/08 17:00:41 No need/not possible to rewrite:  0
+2026/06/08 17:00:41 Failed rewrites:  0
+2026/06/08 17:00:41 Start guided execution
+2026/06/08 17:00:41 Found 0 rewritten traces
+2026/06/08 17:00:41 Create bug reports
+2026/06/08 17:00:41 Create statistics
+2026/06/08 17:00:41 Finished run for Test1453
+2026/06/08 17:00:41 Parse recorded trace for fuzzing information
+2026/06/08 17:00:41 Create mutations
+2026/06/08 17:00:41 Create GoPie mutations
+2026/06/08 17:00:45 Mutate 0 scheduling chains
+2026/06/08 17:00:45 Write 0 mutations to file
+2026/06/08 17:00:45 Create statistics
+2026/06/08 17:00:45 Current fuzzing queue size: 0
+2026/06/08 17:00:45 Remaining fuzzing time: 9:49 min
+2026/06/08 17:00:45 Finish fuzzing after 1 runs
+2026/06/08 17:00:45 Create fuzzing statistics
+2026/06/08 17:00:45 Create program statistics
+2026/06/08 17:00:46 Finished with 0 errors
+2026/06/08 17:00:46 No internal replay timeouts occurred
+2026/06/08 17:00:46 No bugs have been found/indicated

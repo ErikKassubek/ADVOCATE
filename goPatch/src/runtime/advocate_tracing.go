@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace.go
+// File: oosc_trace.go
 // Brief: Functionality for tracing
 //
 // Author: Erik Kassubek
@@ -20,9 +20,9 @@ var tracingStartNano int64
 // InitTracing enables the collection of the trace
 //
 // Parameter:
-//   - finishFuzzing func(): function injection for the advocate.FinishFuzzing function
+//   - finishFuzzing func(): function injection for the oosc.FinishFuzzing function
 func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool) {
-	advocateTracingDisabled = false
+	ooscTracingDisabled = false
 	finishTracingFunc = finishFuzzing
 	writeTraceToFileFunc = writeToTraceFile
 	setCurrentRoutineToActive()
@@ -34,7 +34,7 @@ func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool
 
 // DisableTracing disables the trace recording
 func DisableTracing() {
-	advocateTracingDisabled = true
+	ooscTracingDisabled = true
 }
 
 // IsTracingEnabled returns whether tracing is enabled
@@ -42,5 +42,5 @@ func DisableTracing() {
 // Returns:
 //   - true if enabled, false otherwise
 func IsTracingEnabled() bool {
-	return !advocateTracingDisabled
+	return !ooscTracingDisabled
 }

@@ -1,6 +1,6 @@
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_replay.go
+// File: oosc_replay.go
 // Brief: Functions for the replay
 //
 // Author: Erik Kassubek
@@ -166,7 +166,7 @@ var (
 	waitDeadlockDetectLock mutex
 
 	// replay info
-	replayData            = make(AdvocateReplayTrace, 0)
+	replayData            = make(OoscReplayTrace, 0)
 	numberElementsInTrace int
 	active                map[string][]int
 	startTimeActive       = -1

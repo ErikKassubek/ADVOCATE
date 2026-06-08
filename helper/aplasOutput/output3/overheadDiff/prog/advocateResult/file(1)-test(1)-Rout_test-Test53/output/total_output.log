@@ -1,0 +1,54 @@
+FileName:  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+TestName:  Test53
+Import added at line: 3
+Header added at line: 8
+Header added at file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+go version go1.25.0 linux/amd64
+=== RUN   Test53
+LOCK L: 7
+LOCK U: 7
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  1
+LOCK L: 1 1
+ADVOTEST 7:  1
+ADVOTEST A:  1
+ADVOTEST B:  1
+ADVOTEST 6:  55
+ADVOTEST C:  1
+ADVOTEST 8:  1
+LOCK U: 1
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  2
+LOCK L: 1 2
+ADVOTEST 7:  2
+ADVOTEST A:  2
+ADVOTEST B:  2
+ADVOTEST 6:  54
+ADVOTEST C:  2
+ADVOTEST 8:  2
+LOCK U: 1
+LOCK L: 10
+LOCK U: 10
+ADVOTEST 5:  3
+LOCK L: 1 3
+ADVOTEST 7:  3
+ADVOTEST A:  3
+ADVOTEST B:  3
+ADVOTEST 6:  54
+ADVOTEST C:  3
+ADVOTEST 8:  3
+LOCK U: 1
+--- PASS: Test53 (1.01s)
+PASS
+ok  	gobench	1.007s
+==================================
+FileName:  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+TestName:  Test53
+Import added at line: 3
+Header added at line: 8
+Header added at file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/Rout_test.go
+go version go1.25.0 linux/amd64
+=== RUN   Test53
+Reading trace from /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadDiff/prog/fuzzingTraces/fuzzingTrace_1

@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_mutex.go
+// File: oosc_trace_mutex.go
 // Brief: Functionality for mutex
 //
 // Author: Erik Kassubek
@@ -22,7 +22,7 @@ package runtime
 //   - suc bool: false if a trymutex did not manage to lock the mutex, true otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceMutex struct {
+type OoscTraceMutex struct {
 	tPre  int64
 	tPost int64
 	id    uint64
@@ -35,7 +35,7 @@ type AdvocateTraceMutex struct {
 var lastRWOp = make(map[uint64]int64) // routine -> tPost
 var lastRWOpLock mutex
 
-// AdvocateMutexPre adds a mutex lock to the trace
+// OoscMutexPre adds a mutex lock to the trace
 //
 // Parameter:
 //   - id uint64: id of the mutex
@@ -43,8 +43,8 @@ var lastRWOpLock mutex
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateMutexPre(id uint64, op Operation) int {
-	if advocateTracingDisabled {
+func OoscMutexPre(id uint64, op Operation) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
@@ -52,11 +52,11 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 
 	_, file, line, _ := Caller(CallerSkipMutex)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceMutex{
+	elem := OoscTraceMutex{
 		tPre: timer,
 		id:   id,
 		op:   op,
@@ -68,14 +68,14 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateMutexPost adds the end counter to an operation of the trace.
-// For try use AdvocateMutexTryPost.
+// OoscMutexPost adds the end counter to an operation of the trace.
+// For try use OoscMutexTryPost.
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - suc: wether the lock was successfull for try, otherwise true
-func AdvocateMutexPost(index int, suc bool) {
-	if advocateTracingDisabled {
+func OoscMutexPost(index int, suc bool) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -92,7 +92,7 @@ func AdvocateMutexPost(index int, suc bool) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceMutex)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceMutex)
 	routine := currentGoRoutineInfo().id
 
 	lock(&lastRWOpLock)
@@ -117,7 +117,7 @@ func AdvocateMutexPost(index int, suc bool) {
 //
 // Returns:
 //   - bool: true if it is a rwMutex, false otherwise
-func (elem AdvocateTraceMutex) isRw() bool {
+func (elem OoscTraceMutex) isRw() bool {
 	if elem.op == OperationMutexLock || elem.op == OperationMutexUnlock || elem.op == OperationMutexTryLock {
 		return false
 	}
@@ -128,7 +128,7 @@ func (elem AdvocateTraceMutex) isRw() bool {
 //
 // Returns:
 //   - string: the string representation
-func (elem AdvocateTraceMutex) toString() string {
+func (elem OoscTraceMutex) toString() string {
 	opStr, rw := elem.opRwToString()
 
 	return buildTraceElemString("M", elem.tPre, elem.tPost, elem.id, rw, opStr, elem.suc, posToString(elem.file, elem.line))
@@ -139,7 +139,7 @@ func (elem AdvocateTraceMutex) toString() string {
 // Returns:
 //   - string: the operation string representation
 //   - string: the rw string representation
-func (elem AdvocateTraceMutex) opRwToString() (string, string) {
+func (elem OoscTraceMutex) opRwToString() (string, string) {
 	opStr := ""
 	rw := "f"
 	switch elem.op {
@@ -176,6 +176,6 @@ func (elem AdvocateTraceMutex) opRwToString() (string, string) {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceMutex) getOperation() Operation {
+func (elem OoscTraceMutex) getOperation() Operation {
 	return elem.op
 }

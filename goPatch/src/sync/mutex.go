@@ -14,9 +14,9 @@ import (
 	isync "internal/sync"
 	"unsafe"
 
-	// ADVOCATE-START
+	// OOSC-START
 	"runtime"
-	// ADVOCATE-END
+	// OOSC-END
 )
 
 // A Mutex is a mutual exclusion lock.
@@ -37,9 +37,9 @@ type Mutex struct {
 
 	mu isync.Mutex
 
-	// ADVOCATE-START
+	// OOSC-START
 	id uint64 // id for the mutex
-	// ADVOCATE-END
+	// OOSC-END
 }
 
 // A Locker represents an object that can be locked and unlocked.
@@ -52,16 +52,16 @@ type Locker interface {
 // If the lock is already in use, the calling goroutine
 // blocks until the mutex is available.
 func (m *Mutex) Lock() {
-	// ADVOCATE-START
+	// OOSC-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexLock, runtime.CallerSkipMutex, false)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if m.id == 0 {
-			m.id = runtime.GetAdvocateObjectID()
+			m.id = runtime.GetOoscObjectID()
 		}
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
+			_ = runtime.OoscMutexPre(m.id, runtime.OperationMutexLock)
 			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
@@ -74,26 +74,26 @@ func (m *Mutex) Lock() {
 	// is directly in the lock function. If the id of the channel is the default
 	// value, it is set to a new, unique object id.
 	if m.id == 0 {
-		m.id = runtime.GetAdvocateObjectID()
+		m.id = runtime.GetOoscObjectID()
 	}
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
-	// AdvocatePost is called, if the mutex was locked successfully.
+	// OoscMutexPre records, that a routine tries to lock a mutex.
+	// OoscPost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
-	// this information. advocateIndex is used for AdvocatePost to find the
+	// this information. ooscIndex is used for OoscPost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscMutexPre(m.id, runtime.OperationMutexLock)
+	// OOSC-END
 
-	// ADVOCATE-START
+	// OOSC-START
 	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false)
-	// ADVOCATE-END
+	// OOSC-END
 
 	m.mu.Lock()
 
-	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
-	//ADVOCATE-END
+	// OOSC-START
+	runtime.OoscMutexPost(ooscIndex, true)
+	//OOSC-END
 }
 
 // TryLock tries to lock m and reports whether it succeeded.
@@ -102,16 +102,16 @@ func (m *Mutex) Lock() {
 // and use of TryLock is often a sign of a deeper problem
 // in a particular use of mutexes.
 func (m *Mutex) TryLock() bool {
-	// ADVOCATE-START
+	// OOSC-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexTryLock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {
-				m.id = runtime.GetAdvocateObjectID()
+				m.id = runtime.GetOoscObjectID()
 			}
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+			_ = runtime.OoscMutexPre(m.id, runtime.OperationMutexTryLock)
 			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
@@ -124,20 +124,20 @@ func (m *Mutex) TryLock() bool {
 	// is directly in the lock function. If the id of the channel is the default
 	// value, it is set to a new, unique object id
 	if m.id == 0 {
-		m.id = runtime.GetAdvocateObjectID()
+		m.id = runtime.GetOoscObjectID()
 	}
 
-	// AdvocateMutexPre records, that a routine tries to lock a mutex.
-	// advocateIndex is used for AdvocateMutexPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-	// ADVOCATE-END
+	// OoscMutexPre records, that a routine tries to lock a mutex.
+	// ooscIndex is used for OoscMutexPost to find the pre event.
+	ooscIndex := runtime.OoscMutexPre(m.id, runtime.OperationMutexTryLock)
+	// OOSC-END
 
 	res := m.mu.TryLock()
 
-	runtime.AdvocateMutexPost(advocateIndex, res)
+	runtime.OoscMutexPost(ooscIndex, res)
 
 	return res
-	// ADVOCATE-END
+	// OOSC-END
 }
 
 // Unlock unlocks m.
@@ -147,22 +147,22 @@ func (m *Mutex) TryLock() bool {
 // It is allowed for one goroutine to lock a Mutex and then
 // arrange for another goroutine to unlock it.
 func (m *Mutex) Unlock() {
-	// ADVOCATE-START
+	// OOSC-START
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationMutexUnlock, runtime.CallerSkipMutex, true)
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
 			if m.id == 0 {
-				m.id = runtime.GetAdvocateObjectID()
+				m.id = runtime.GetOoscObjectID()
 			}
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
+			_ = runtime.OoscMutexPre(m.id, runtime.OperationMutexUnlock)
 			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true)
 			runtime.BlockForever()
 		}
 	}
-	// AdvocateMutexPre is used to record the unlocking of a mutex.
-	// AdvocatePost records the successful unlocking of a mutex.
+	// OoscMutexPre is used to record the unlocking of a mutex.
+	// OoscPost records the successful unlocking of a mutex.
 	// For non rw mutexe, the unlock cannot fail. Therefore it is not
 	// strictly necessary to record the post for the unlocking of a mutex.
 	// For rw mutexes, the unlock can fail (e.g. unlock after rlock). Therefore
@@ -170,12 +170,12 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscMutexPre(m.id, runtime.OperationMutexUnlock)
+	// OOSC-END
 
 	m.mu.Unlock()
 
-	// ADVOCATE-START
-	runtime.AdvocateMutexPost(advocateIndex, true)
-	// ADVOCATE-END
+	// OOSC-START
+	runtime.OoscMutexPost(ooscIndex, true)
+	// OOSC-END
 }

@@ -37,22 +37,22 @@ func Run() {
 		return
 	}
 
-	base()
+	// base()
 
-	time.Sleep(time.Second)
+	// time.Sleep(time.Second)
 
-	oocLength()
-	time.Sleep(time.Second)
+	// oocLength()
+	// time.Sleep(time.Second)
 
-	sameElement()
-	time.Sleep(time.Second)
+	// sameElement()
+	// time.Sleep(time.Second)
 
 	overhead()
 	time.Sleep(time.Second)
 
-	realWorld()
+	// realWorld()
 
-	time.Sleep(time.Second)
+	// time.Sleep(time.Second)
 	wg.Wait()
 }
 

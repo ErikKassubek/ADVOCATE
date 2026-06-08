@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_constraints.go
+// File: oosc_constraints.go
 // Brief: Enforce constraints for replay
 //
 // Author: Erik Kassubek

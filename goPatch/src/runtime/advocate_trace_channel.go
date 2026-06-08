@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_channel.go
+// File: oosc_trace_channel.go
 // Brief: Functionality for the channel
 //
 // Author: Erik Kassubek
@@ -31,7 +31,7 @@ var unbufferedChannelComRecvMutex mutex
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 //   - isNil bool: true if the channel is nil
-type AdvocateTraceChannel struct {
+type OoscTraceChannel struct {
 	tPre   int64
 	tPost  int64
 	id     uint64
@@ -45,7 +45,7 @@ type AdvocateTraceChannel struct {
 	isNil  bool
 }
 
-// AdvocateChanPre adds a channel send/receive to the trace.
+// OoscChanPre adds a channel send/receive to the trace.
 //
 // Parameters:
 //   - id uint64: id of the channel
@@ -55,8 +55,8 @@ type AdvocateTraceChannel struct {
 //
 // Returns:
 //   - int: index of the operation in the trace, return -1 if it is a atomic operation
-func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
-	if advocateTracingDisabled {
+func OoscChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
@@ -64,11 +64,11 @@ func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 
 	_, file, line, _ := Caller(CallerSkipChanSendRecv)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceChannel{
+	elem := OoscTraceChannel{
 		tPre:  timer,
 		id:    id,
 		op:    op,
@@ -82,7 +82,7 @@ func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateChanClose adds a channel close to the trace
+// OoscChanClose adds a channel close to the trace
 //
 // Parameter:
 //   - id uint64: id of the channel
@@ -91,19 +91,19 @@ func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
-	if advocateTracingDisabled {
+func OoscChanClose(id uint64, qSize uint, qCount uint) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(CallerSkipChanClose)
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceChannel{
+	elem := OoscTraceChannel{
 		tPre:   timer,
 		tPost:  timer,
 		id:     id,
@@ -117,14 +117,14 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateChanPost sets the operation as successfully finished
+// OoscChanPost sets the operation as successfully finished
 //
 // Parameters:
 //   - index: index of the operation in the trace
 //   - c: the channel
 //   - op: the operation
-func AdvocateChanPost(index int, c *hchan, op Operation) {
-	if advocateTracingDisabled {
+func OoscChanPost(index int, c *hchan, op Operation) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -134,7 +134,7 @@ func AdvocateChanPost(index int, c *hchan, op Operation) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceChannel)
 
 	set := false
 
@@ -184,11 +184,11 @@ func AdvocateChanPost(index int, c *hchan, op Operation) {
 	currentGoRoutineInfo().updateElement(index, elem)
 }
 
-// AdvocateChanPostCausedByClose sets the operation as successfully finished
+// OoscChanPostCausedByClose sets the operation as successfully finished
 // Args:
 //   - index: index of the operation in the trace
-func AdvocateChanPostCausedByClose(index int) {
-	if advocateTracingDisabled {
+func OoscChanPostCausedByClose(index int) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -198,7 +198,7 @@ func AdvocateChanPostCausedByClose(index int) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceChannel)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceChannel)
 
 	elem.tPost = time
 	elem.cl = true
@@ -211,7 +211,7 @@ func AdvocateChanPostCausedByClose(index int) {
 // Returns:
 //   - string: the string representation of the form
 //     C,[tPre],[tPost],[id],[operation],[cl],[oId],[qSize],[qCount],[file],[line]
-func (elem AdvocateTraceChannel) toString() string {
+func (elem OoscTraceChannel) toString() string {
 	opStr := ""
 	switch elem.op {
 	case OperationChannelSend:
@@ -235,7 +235,7 @@ func (elem AdvocateTraceChannel) toString() string {
 // Returns:
 //   - string: the string representation of the form
 //     C,[id].[operation].[cl].[oId].[qSize].[qCount]
-func (elem AdvocateTraceChannel) toStringForSelect() string {
+func (elem OoscTraceChannel) toStringForSelect() string {
 	opStr := ""
 	switch elem.op {
 	case OperationChannelSend:
@@ -258,6 +258,6 @@ func (elem AdvocateTraceChannel) toStringForSelect() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceChannel) getOperation() Operation {
+func (elem OoscTraceChannel) getOperation() Operation {
 	return elem.op
 }

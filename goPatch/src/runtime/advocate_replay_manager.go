@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_manager.go
+// File: oosc_replay_manager.go
 // Brief: Replay manager
 //
 // Author: Erik Kassubek
@@ -68,7 +68,7 @@ func ReplayManager() {
 		// 	DisableReplay()
 		// }
 
-		if AdvocateIgnoreReplay(replayElem.Op, replayElem.File) {
+		if OoscIgnoreReplay(replayElem.Op, replayElem.File) {
 			foundReplayElement()
 			continue
 		}

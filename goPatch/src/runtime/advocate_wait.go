@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_time.go
+// File: oosc_time.go
 // Brief: Set of functions using time
 //
 // Author: Erik Kassubek
@@ -139,4 +139,4 @@ func SleepBusy(dInSec int) {
 	}
 }
 
-// ADVOCATE-FILE-END
+// OOSC-FILE-END

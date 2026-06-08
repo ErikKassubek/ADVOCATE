@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_stuck.go
+// File: oosc_replay_stuck.go
 // Brief: Stuck replay
 //
 // Author: Erik Kassubek
@@ -21,22 +21,22 @@ var alreadyExecutedAsOldest = make(map[string]int)
 func checkForStuckRoutines(checkStuckTime float64, checkStuckIterations int) map[uint64]waitReason {
 	stuckRoutines := make(map[uint64]waitReason)
 
-	lock(&AdvocateRoutinesLock)
-	for id, routine := range AdvocateRoutines {
+	lock(&OoscRoutinesLock)
+	for id, routine := range OoscRoutines {
 		stuckRoutines[id] = routine.G.waitreason
 	}
-	unlock(&AdvocateRoutinesLock)
+	unlock(&OoscRoutinesLock)
 
 	// Repeatedly check if wait reason has changed
 	for i := 0; i < checkStuckIterations; i++ {
 		sleep(checkStuckTime / float64(checkStuckIterations))
-		lock(&AdvocateRoutinesLock)
-		for id, routine := range AdvocateRoutines {
+		lock(&OoscRoutinesLock)
+		for id, routine := range OoscRoutines {
 			if _, ok := stuckRoutines[id]; ok && routine.G.waitreason != stuckRoutines[id] {
 				delete(stuckRoutines, id)
 			}
 		}
-		unlock(&AdvocateRoutinesLock)
+		unlock(&OoscRoutinesLock)
 	}
 	return stuckRoutines
 }

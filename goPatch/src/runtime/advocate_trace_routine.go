@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_routine.go
+// File: oosc_trace_routine.go
 // Brief: Functionality for routines
 //
 // Author: Erik Kassubek
@@ -19,7 +19,7 @@ package runtime
 //   - newID uint64: id of new routine
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceSpawn struct {
+type OoscTraceSpawn struct {
 	tPost int64
 	newID uint64
 	file  string
@@ -30,30 +30,30 @@ type AdvocateTraceSpawn struct {
 //
 // Fields
 //   - tPost int64: time when the routine finished
-type AdvocateTraceRoutineExit struct {
+type OoscTraceRoutineExit struct {
 	tPost int64
 }
 
-// AdvocateSpawnCaller adds a routine spawn to the trace
+// OoscSpawnCaller adds a routine spawn to the trace
 //
 // Parameter:
-//   - callerRoutine *AdvocateRoutine: routine that created the new routine
+//   - callerRoutine *OoscRoutine: routine that created the new routine
 //   - newID uint64: id of the new routine
 //   - file string: file where the routine was created
 //   - line int32: line where the routine was created
-func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file string,
+func OoscSpawnCaller(callerRoutine *OoscRoutine, newID uint64, file string,
 	line int32) {
-	if advocateTracingDisabled {
+	if ooscTracingDisabled {
 		return
 	}
 
 	timer := GetNextTimeStep()
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return
 	}
 
-	elem := AdvocateTraceSpawn{
+	elem := OoscTraceSpawn{
 		tPost: timer,
 		newID: newID,
 		file:  file,
@@ -65,12 +65,12 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 
 // Record the finish of a routine
 func AdvocatRoutineExit() {
-	if advocateTracingDisabled {
+	if ooscTracingDisabled {
 		return
 	}
 
 	timer := GetNextTimeStep()
-	elem := AdvocateTraceRoutineExit{
+	elem := OoscTraceRoutineExit{
 		tPost: timer,
 	}
 	insertIntoTrace(elem)
@@ -81,7 +81,7 @@ func AdvocatRoutineExit() {
 // Returns:
 //   - string: the string representation of the form
 //     G,[tPost],[newID],[file],[line]
-func (elem AdvocateTraceSpawn) toString() string {
+func (elem OoscTraceSpawn) toString() string {
 	return buildTraceElemString("G", elem.tPost, elem.newID, posToString(elem.file, elem.line))
 }
 
@@ -90,7 +90,7 @@ func (elem AdvocateTraceSpawn) toString() string {
 // Returns:
 //   - string: the string representation of the form
 //     E,[tPost]
-func (elem AdvocateTraceRoutineExit) toString() string {
+func (elem OoscTraceRoutineExit) toString() string {
 	return buildTraceElemString("E", elem.tPost)
 }
 
@@ -98,7 +98,7 @@ func (elem AdvocateTraceRoutineExit) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceSpawn) getOperation() Operation {
+func (elem OoscTraceSpawn) getOperation() Operation {
 	return OperationSpawn
 }
 
@@ -106,7 +106,7 @@ func (elem AdvocateTraceSpawn) getOperation() Operation {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceRoutineExit) getOperation() Operation {
+func (elem OoscTraceRoutineExit) getOperation() Operation {
 	return OperationRoutineExit
 }
 
@@ -114,7 +114,7 @@ func (elem AdvocateTraceRoutineExit) getOperation() Operation {
 //
 // Returns:
 //   - bool: true if its finished, false otherwise
-func (elem AdvocateTraceSpawn) hasFinished() bool {
+func (elem OoscTraceSpawn) hasFinished() bool {
 	return true
 }
 
@@ -122,6 +122,6 @@ func (elem AdvocateTraceSpawn) hasFinished() bool {
 //
 // Returns:
 //   - bool: true if its finished, false otherwise
-func (elem AdvocateTraceRoutineExit) hasFinished() bool {
+func (elem OoscTraceRoutineExit) hasFinished() bool {
 	return true
 }

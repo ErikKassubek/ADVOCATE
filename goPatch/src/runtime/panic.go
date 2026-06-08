@@ -731,11 +731,11 @@ var panicnil = &godebugInc{name: "panicnil"}
 //
 //go:linkname gopanic
 func gopanic(e any) {
-	// ADVOCATE-START
+	// OOSC-START
 	if IsTracingEnabled() || replayEnabled {
-		AdvocatePanic(e)
+		OoscPanic(e)
 	}
-	// ADVOCATE-END
+	// OOSC-END
 	if e == nil {
 		if debug.panicnil.Load() != 1 {
 			e = new(PanicNilError)

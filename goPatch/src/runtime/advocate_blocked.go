@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_partial_deadlock.go
+// File: oosc_partial_deadlock.go
 // Brief: Detect partial deadlocks while running
 //
 // Author: Erik Kassubek
@@ -46,7 +46,7 @@ var alreadyReportedPartialDeadlock = make(map[uint64]struct{})
 var collectPartialDeadlockInfo = false
 var routineStatusInfo = make(map[uint64]routineStatus)
 var routinesWithRef = make(map[uintptr][]uint64)
-var AdvocatePDDetectionStopped = false
+var OoscPDDetectionStopped = false
 
 // StorePark stores in a routine, a pointer to the last concurrency element,
 // on which the routine parked
@@ -85,7 +85,7 @@ func StoreParkSelect(cas0 *scase, order0 *uint16, ncases int, skip int) {
 
 // detectPD checks, if the currently running program
 // contains a deadlock. Is this the case it print a corresponding info.
-func AdvocateDetectBlocking() []string {
+func OoscDetectBlocking() []string {
 	currentParkedToRoutine = make(map[uintptr][]uint64)
 	parkedOpsPerRoutine = make(map[uint64][]uintptr)
 	routinesByID = make(map[uint64]*g)
@@ -153,7 +153,7 @@ func getWaitingRoutines() (int, int, uint64) {
 			return
 		}
 
-		if gp.advocateRoutineInfo.parkOn == nil {
+		if gp.ooscRoutineInfo.parkOn == nil {
 			return
 		}
 
@@ -162,7 +162,7 @@ func getWaitingRoutines() (int, int, uint64) {
 			routineStatusInfo[id] = waiting
 		}
 
-		for _, p := range gp.advocateRoutineInfo.parkOn {
+		for _, p := range gp.ooscRoutineInfo.parkOn {
 			parkOn := uintptr(p)
 			currentParkedToRoutine[parkOn] = append(currentParkedToRoutine[parkOn], id)
 			parkedOpsPerRoutine[id] = append(parkedOpsPerRoutine[id], uintptr(p))
@@ -374,11 +374,11 @@ func reportDeadlock(routineID uint64, deadlock bool) string {
 
 	g := routinesByID[routineID]
 
-	if g.advocateRoutineInfo.parkForeverReplay {
+	if g.ooscRoutineInfo.parkForeverReplay {
 		return ""
 	}
 
-	if AdvocateIgnore(g.advocateRoutineInfo.parkPos) {
+	if OoscIgnore(g.ooscRoutineInfo.parkPos) {
 		return ""
 	}
 
@@ -389,14 +389,14 @@ func reportDeadlock(routineID uint64, deadlock bool) string {
 		header = "DEADLOCK_GC"
 	}
 
-	if g.advocateRoutineInfo.parkPos == "" {
-		g.advocateRoutineInfo.parkPos = "-"
+	if g.ooscRoutineInfo.parkPos == "" {
+		g.ooscRoutineInfo.parkPos = "-"
 	}
-	if g.advocateRoutineInfo.id != 0 {
-		res = header + "@" + uint64ToString(g.advocateRoutineInfo.id) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+	if g.ooscRoutineInfo.id != 0 {
+		res = header + "@" + uint64ToString(g.ooscRoutineInfo.id) + "@" + g.ooscRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	} else {
-		res = header + "@" + uint64ToString(g.goid) + "@" + g.advocateRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
+		res = header + "@" + uint64ToString(g.goid) + "@" + g.ooscRoutineInfo.parkPos + "@" + getWaitingReasonString(g.waitreason)
 		print(res, "\n")
 	}
 
@@ -473,7 +473,7 @@ func getWaitingReasonString(wr waitReason) string {
 // 			continue
 // 		}
 
-// 		for _, r := range g.advocateRoutineInfo.parkOn {
+// 		for _, r := range g.ooscRoutineInfo.parkOn {
 // 			if len(aliveRef[uintptr(r)]) > 0 {
 // 				return true
 // 			}

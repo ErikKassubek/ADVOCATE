@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_trace.go
+// File: oosc_replay_trace.go
 // Brief: Replay trace
 //
 // Author: Erik Kassubek
@@ -10,7 +10,7 @@
 
 package runtime
 
-type AdvocateReplayTrace []ReplayElement
+type OoscReplayTrace []ReplayElement
 
 // Add a routine local replay trace to the replay data.
 //
@@ -18,12 +18,12 @@ type AdvocateReplayTrace []ReplayElement
 //   - trace trace: the replay trace
 //   - map[int][]int: for each routine replay id store the replay ids of all spawns
 //   - map[string][]ReplayElement: for each routPath with a select, store the replay elements
-func GetReplayTrace() (*AdvocateReplayTrace, *map[int][]int, *map[string][]ReplayElement) {
+func GetReplayTrace() (*OoscReplayTrace, *map[int][]int, *map[string][]ReplayElement) {
 	return &replayData, &spawns, &selects
 }
 
 // Print the replay trace for one routine.
-func (t AdvocateReplayTrace) Print() {
+func (t OoscReplayTrace) Print() {
 	for _, e := range t {
 		println(e.Op.ToString(), e.Time, e.File, e.Line, e.Blocked, e.Suc)
 	}
@@ -81,7 +81,7 @@ func getNextReplayElement() (int, ReplayElement) {
 	return elem.Routine, elem
 }
 
-// AdvocateIgnoreReplay decides if an operation should be ignored for replay.
+// OoscIgnoreReplay decides if an operation should be ignored for replay.
 // Ignored means it is just executed when called without waiting.
 // All internal operations are ignored
 // Atomic operations are ignored if the corresponding variable is set
@@ -92,7 +92,7 @@ func getNextReplayElement() (int, ReplayElement) {
 //
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
-func AdvocateIgnoreReplay(operation Operation, file string) bool {
+func OoscIgnoreReplay(operation Operation, file string) bool {
 	if ignoreAtomicsReplay && getOperationObjectString(operation) == "Atomic" {
 		return true
 	}
@@ -101,7 +101,7 @@ func AdvocateIgnoreReplay(operation Operation, file string) bool {
 		return true
 	}
 
-	return AdvocateIgnore(file)
+	return OoscIgnore(file)
 }
 
 // foundReplayElement is executed if an operation has been executed.

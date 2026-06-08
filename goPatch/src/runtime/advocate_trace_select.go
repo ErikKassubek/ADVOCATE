@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_select.go
+// File: oosc_trace_select.go
 // Brief: Functionality for selects
 //
 // Author: Erik Kassubek
@@ -18,7 +18,7 @@ package runtime
 //   - tPre int64: time when the operation started
 //   - tPost int64: time when the operation finished
 //   - id uint64: id of the select
-//   - cases []AdvocateTraceChannel: the operation for each of the non default cases
+//   - cases []OoscTraceChannel: the operation for each of the non default cases
 //     The elements are sorted the same as the internal sorting in the select,
 //     first all send, then all recv
 //   - selIndex int: The index of the operation in cases that was executed,
@@ -26,18 +26,18 @@ package runtime
 //   - hasDef bool: true if the select has a default case, false otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceSelect struct {
+type OoscTraceSelect struct {
 	tPre     int64
 	tPost    int64
 	id       uint64
-	cases    []AdvocateTraceChannel
+	cases    []OoscTraceChannel
 	selIndex int
 	hasDef   bool
 	file     string
 	line     int
 }
 
-// AdvocateSelectPre adds a select to the trace
+// OoscSelectPre adds a select to the trace
 //
 // Parameter:
 //   - cases: cases of the select
@@ -48,20 +48,20 @@ type AdvocateTraceSelect struct {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
-	if advocateTracingDisabled || cases == nil {
+func OoscSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
+	if ooscTracingDisabled || cases == nil {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
 	_, file, line, _ := Caller(CallerSkipSelect)
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	id := GetAdvocateObjectID()
-	caseElements := make([]AdvocateTraceChannel, ncases)
+	id := GetOoscObjectID()
+	caseElements := make([]OoscTraceChannel, ncases)
 
 	for casi := 0; casi < ncases; casi++ {
 		cas := (*cases)[casi]
@@ -73,13 +73,13 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 		}
 
 		if c == nil { // ignore nil cases
-			caseElements[casi] = AdvocateTraceChannel{
+			caseElements[casi] = OoscTraceChannel{
 				tPre:  timer,
 				op:    chanOp,
 				isNil: true,
 			}
 		} else {
-			caseElements[casi] = AdvocateTraceChannel{
+			caseElements[casi] = OoscTraceChannel{
 				tPre:  timer,
 				op:    chanOp,
 				id:    c.id,
@@ -88,7 +88,7 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 		}
 	}
 
-	elem := AdvocateTraceSelect{
+	elem := OoscTraceSelect{
 		tPre:  timer,
 		id:    id,
 		cases: caseElements,
@@ -103,15 +103,15 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateSelectPost adds a post event for select in case of an non-default case
+// OoscSelectPost adds a post event for select in case of an non-default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - c: channel of the chosen case
 //   - selIndex: index of the chosen case in the select
 //   - rClosed: true if the channel was closed at another routine
-func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
-	if advocateTracingDisabled {
+func OoscSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -121,7 +121,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceSelect)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceSelect)
 	elem.tPost = timer
 	elem.selIndex = selIndex
 
@@ -149,7 +149,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 	currentGoRoutineInfo().updateElement(index, elem)
 }
 
-// AdvocateSelectPreOneNonDef adds a new select element to the trace if the
+// OoscSelectPreOneNonDef adds a new select element to the trace if the
 // select has exactly one non-default case and a default case
 //
 // Parameter:
@@ -158,48 +158,48 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
-	if advocateTracingDisabled {
+func OoscSelectPreOneNonDef(c *hchan, send bool) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
 	timer := GetNextTimeStep()
 
-	id := GetAdvocateObjectID()
+	id := GetOoscObjectID()
 
 	opChan := OperationChannelRecv
 	if send {
 		opChan = OperationChannelSend
 	}
 
-	var caseElem AdvocateTraceChannel
+	var caseElem OoscTraceChannel
 
 	if c != nil {
 		if c.id == 0 {
-			c.id = AdvocateChanMake(int(c.dataqsiz))
+			c.id = OoscChanMake(int(c.dataqsiz))
 		}
-		caseElem = AdvocateTraceChannel{
+		caseElem = OoscTraceChannel{
 			tPre:  timer,
 			id:    c.id,
 			op:    opChan,
 			qSize: c.dataqsiz,
 		}
 	} else {
-		caseElem = AdvocateTraceChannel{
+		caseElem = OoscTraceChannel{
 			tPre: timer,
 			op:   opChan,
 		}
 	}
 
 	_, file, line, _ := Caller(CallerSkipSelectOneDef)
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	cases := make([]AdvocateTraceChannel, 1)
+	cases := make([]OoscTraceChannel, 1)
 	cases[0] = caseElem
 
-	elem := AdvocateTraceSelect{
+	elem := OoscTraceSelect{
 		tPre:   timer,
 		id:     id,
 		cases:  cases,
@@ -211,15 +211,15 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateSelectPostOneNonDef adds the selected case for a select with one
+// OoscSelectPostOneNonDef adds the selected case for a select with one
 // non-default and one default case
 //
 // Parameter:
 //   - index: index of the operation in the trace
 //   - res: true for channel, false for default
 //   - c *hchan: the channel in the select cases
-func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
-	if advocateTracingDisabled {
+func OoscSelectPostOneNonDef(index int, res bool, c *hchan) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -229,7 +229,7 @@ func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceSelect)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceSelect)
 
 	elem.tPost = timer
 
@@ -258,8 +258,8 @@ func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
 //     [S],[tPre],[tPost],[id],[cases],[selIndex],[file],[line]
 //     where cases consists of the form [case]~[case]~..., followed by a d
 //     if the select has a default that was not executed, or D if it was executed.
-//     The [case] is build using AdvocateTraceChannel.toStringForSelect()
-func (elem AdvocateTraceSelect) toString() string {
+//     The [case] is build using OoscTraceChannel.toStringForSelect()
+func (elem OoscTraceSelect) toString() string {
 	p1 := buildTraceElemString("S", elem.tPre, elem.tPost, elem.id)
 	p2 := buildTraceElemString(elem.selIndex, posToString(elem.file, elem.line))
 	cases := ""
@@ -287,7 +287,7 @@ func (elem AdvocateTraceSelect) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceSelect) getOperation() Operation {
+func (elem OoscTraceSelect) getOperation() Operation {
 	if elem.selIndex == -1 {
 		return OperationSelectDefault
 	}

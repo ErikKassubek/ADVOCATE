@@ -1,0 +1,446 @@
+FileName:  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+TestName:  Test1453
+Import added at line: 3
+Header added at line: 8
+Header added at file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+go version go1.25.0 linux/amd64
+=== RUN   Test1453
+Reading trace from /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/fuzzingTraces/fuzzingTrace_1
+REL4
+fatal error: index out of range
+
+goroutine 21 gp=0xc000102a80 m=4 mp=0xc000100008 [running]:
+runtime.throw({0x639e13?, 0xc0002bfa58?})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/panic.go:1099 +0x48 fp=0xc00006ab78 sp=0xc00006ab48 pc=0x492488
+runtime.panicCheck1(0x1?, {0x639e13, 0x12})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/panic.go:59 +0x7b fp=0xc00006aba8 sp=0xc00006ab78 pc=0x45587b
+runtime.goPanicIndex(0x2, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/panic.go:114 +0x2e fp=0xc00006abe8 sp=0xc00006aba8 pc=0x45594e
+runtime.replayElemFromKey({0xc000184360?, 0x4788a7?})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/advocate_replay_element.go:72 +0xef fp=0xc00006ac28 sp=0xc00006abe8 pc=0x414d2f
+runtime.replayTimeout({0x4, 0x4, 0x44, 0x32, {0xc00020d99e, 0x51}, 0x1f, 0x0, 0x1, 0x0})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/advocate_replay_manager.go:209 +0x23a fp=0xc00006ada8 sp=0xc00006ac28 pc=0x415e1a
+runtime.ReplayManager()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/advocate_replay_manager.go:60 +0x4b7 fp=0xc00006afe0 sp=0xc00006ada8 pc=0x4155d7
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00006afe8 sp=0xc00006afe0 pc=0x499661
+created by runtime.EnableReplay in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/advocate_replay.go:211 +0xb1
+
+goroutine 1 gp=0xc000002380 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc00017a108, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0001672e8 sp=0xc0001672b8 pc=0x4925d1
+runtime.chanrecv(0xc00017a0a0, 0xc000167476, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000167408 sp=0xc0001672e8 pc=0x420b45
+runtime.chanrecv1(0xc0001340a8?, 0x5fd840?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000167430 sp=0xc000167408 pc=0x420594
+testing.(*T).Run(0xc00017c1e0, {0x636921, 0x8}, 0x645358)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:2005 +0x93c fp=0xc0001676a8 sp=0xc000167430 pc=0x5595dc
+testing.runTests.func1(0xc00017c000)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:2477 +0xa5 fp=0xc000167740 sp=0xc0001676a8 pc=0x55d205
+testing.tRunner(0xc00017c000, 0xc000167918)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:1934 +0x18e fp=0xc000167828 sp=0xc000167740 pc=0x557a2e
+testing.runTests(0xc000134048, {0x765c50, 0x1, 0x1}, {0xc281d37e84546941, 0x8bb2cc1f8e, 0x7708a0})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:2475 +0x5d7 fp=0xc0001679b0 sp=0xc000167828 pc=0x55d037
+testing.(*M).Run(0xc00014c210)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:2337 +0xb39 fp=0xc000167ee8 sp=0xc0001679b0 pc=0x55a9b9
+main.main()
+	_testmain.go:45 +0xa5 fp=0xc000167f78 sp=0xc000167ee8 pc=0x5ce305
+runtime.main()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:285 +0x252 fp=0xc000167fe0 sp=0xc000167f78 pc=0x45ac12
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000167fe8 sp=0xc000167fe0 pc=0x499661
+
+goroutine 2 gp=0xc0000028c0 m=nil [force gc (idle)]:
+runtime.gopark(0x645878, 0x770260, 0x11, 0xa, 0x1)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000052780 sp=0xc000052750 pc=0x4925d1
+runtime.goparkunlock(0x770260?, 0x0?, 0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:519 +0x25 fp=0xc0000527b0 sp=0xc000052780 pc=0x45b345
+runtime.forcegchelper()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:373 +0xb5 fp=0xc0000527e0 sp=0xc0000527b0 pc=0x45af75
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0000527e8 sp=0xc0000527e0 pc=0x499661
+created by runtime.init.7 in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:361 +0x1a
+
+goroutine 3 gp=0xc000002e00 m=nil [GC sweep wait]:
+runtime.gopark(0x645878, 0x770540, 0xc, 0x9, 0x1)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000052f58 sp=0xc000052f28 pc=0x4925d1
+runtime.goparkunlock(0x770540?, 0x0?, 0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:519 +0x25 fp=0xc000052f88 sp=0xc000052f58 pc=0x45b345
+runtime.bgsweep(0xc000020140)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgcsweep.go:323 +0xe5 fp=0xc000052fc8 sp=0xc000052f88 pc=0x440905
+runtime.gcenable.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:212 +0x25 fp=0xc000052fe0 sp=0xc000052fc8 pc=0x4338c5
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000052fe8 sp=0xc000052fe0 pc=0x499661
+created by runtime.gcenable in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:212 +0x66
+
+goroutine 4 gp=0xc000002fc0 m=nil [sleep]:
+runtime.gopark(0x645878, 0x7709a0, 0x14, 0xe, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000054f18 sp=0xc000054ee8 pc=0x4925d1
+runtime.goparkunlock(0x7709a0?, 0x0?, 0x0?, 0xaeb908?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:519 +0x25 fp=0xc000054f48 sp=0xc000054f18 pc=0x45b345
+runtime.(*scavengerState).sleep(0x7709a0, 0x40e43f0000000000)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgcscavenge.go:504 +0xd0 fp=0xc000054fa0 sp=0xc000054f48 pc=0x43df90
+runtime.bgscavenge(0xc000020140)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgcscavenge.go:662 +0x8e fp=0xc000054fc8 sp=0xc000054fa0 pc=0x43e36e
+runtime.gcenable.gowrap2()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:213 +0x25 fp=0xc000054fe0 sp=0xc000054fc8 pc=0x433865
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000054fe8 sp=0xc000054fe0 pc=0x499661
+created by runtime.gcenable in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:213 +0xa5
+
+goroutine 17 gp=0xc000102380 m=nil [GOMAXPROCS updater (idle)]:
+runtime.gopark(0x645878, 0x7701c0, 0x12, 0xa, 0x1)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc00004e758 sp=0xc00004e728 pc=0x4925d1
+runtime.goparkunlock(0x7701c0?, 0x0?, 0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:519 +0x25 fp=0xc00004e788 sp=0xc00004e758 pc=0x45b345
+runtime.updateMaxProcsGoroutine()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:6815 +0xea fp=0xc00004e7e0 sp=0xc00004e788 pc=0x4681ca
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00004e7e8 sp=0xc00004e7e0 pc=0x499661
+created by runtime.defaultGOMAXPROCSUpdateEnable in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:6803 +0x37
+
+goroutine 18 gp=0xc000102540 m=nil [finalizer wait]:
+runtime.gopark(0x6455b8, 0x790ab8, 0x10, 0xa, 0x1)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc00039de20 sp=0xc00039ddf0 pc=0x4925d1
+runtime.runFinalizers()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mfinal.go:210 +0x107 fp=0xc00039dfe0 sp=0xc00039de20 pc=0x4327e7
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00039dfe8 sp=0xc00039dfe0 pc=0x499661
+created by runtime.createfing in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mfinal.go:172 +0x45
+
+goroutine 19 gp=0xc000102700 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000180188, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000169b38 sp=0xc000169b08 pc=0x4925d1
+runtime.chanrecv(0xc000180120, 0xc000169da8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000169c58 sp=0xc000169b38 pc=0x420b45
+runtime.chanrecv1(0x12?, 0x2?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000169c80 sp=0xc000169c58 pc=0x420594
+sync.(*WaitGroup).Wait(0xc000192018)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:211 +0x15c fp=0xc000169e10 sp=0xc000169c80 pc=0x4a83bc
+gobench.Test1453(0xc00017c1e0)
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:77 +0x425 fp=0xc000169ec8 sp=0xc000169e10 pc=0x5cde05
+testing.tRunner(0xc00017c1e0, 0x645358)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:1934 +0x18e fp=0xc000169fb0 sp=0xc000169ec8 pc=0x557a2e
+testing.(*T).Run.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:1997 +0x33 fp=0xc000169fe0 sp=0xc000169fb0 pc=0x559833
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000169fe8 sp=0xc000169fe0 pc=0x499661
+created by testing.(*T).Run in goroutine 1
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/testing/testing.go:1997 +0x914
+
+goroutine 20 gp=0xc0001028c0 m=nil [sleep]:
+runtime.gopark(0x6458c0, 0x0, 0x14, 0xe, 0x1)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc00004f780 sp=0xc00004f750 pc=0x4925d1
+time.Sleep(0x37e11d6000)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/time.go:363 +0x13c fp=0xc00004f7c0 sp=0xc00004f780 pc=0x495c1c
+advocatego.startReplay.func2()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/advocatego/advocate_replay.go:117 +0x25 fp=0xc00004f7e0 sp=0xc00004f7c0 pc=0x5c86c5
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00004f7e8 sp=0xc00004f7e0 pc=0x499661
+created by advocatego.startReplay in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/advocatego/advocate_replay.go:116 +0xc68
+
+goroutine 22 gp=0xc000102c40 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc00008e068, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000069ca0 sp=0xc000069c70 pc=0x4925d1
+runtime.chanrecv(0xc00008e000, 0xc000069ea8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000069dc0 sp=0xc000069ca0 pc=0x420b45
+runtime.chanrecv1(0x4?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000069de8 sp=0xc000069dc0 pc=0x420594
+runtime.chansend(0xc000288000, 0x652b28, 0x1, 0x0?, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:232 +0x125 fp=0xc000069f00 sp=0xc000069de8 pc=0x41f6a5
+runtime.chansend1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:182 +0x19 fp=0xc000069f38 sp=0xc000069f00 pc=0x41f579
+gobench.Test1453.func1()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:19 +0x45 fp=0xc000069f68 sp=0xc000069f38 pc=0x5ce1e5
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000069fe0 sp=0xc000069f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000069fe8 sp=0xc000069fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 23 gp=0xc000102e00 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc0001802a8, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000064ca8 sp=0xc000064c78 pc=0x4925d1
+runtime.chanrecv(0xc000180240, 0xc000064eb8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000064dc8 sp=0xc000064ca8 pc=0x420b45
+runtime.chanrecv1(0x5?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000064df0 sp=0xc000064dc8 pc=0x420594
+runtime.chanrecv(0xc000288000, 0x0, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:692 +0x15c fp=0xc000064f10 sp=0xc000064df0 pc=0x42071c
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000064f38 sp=0xc000064f10 pc=0x420594
+gobench.Test1453.func2()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:25 +0x3b fp=0xc000064f68 sp=0xc000064f38 pc=0x5ce17b
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000064fe0 sp=0xc000064f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000064fe8 sp=0xc000064fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 24 gp=0xc000102fc0 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000180338, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000065ca0 sp=0xc000065c70 pc=0x4925d1
+runtime.chanrecv(0xc0001802d0, 0xc000065ea8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000065dc0 sp=0xc000065ca0 pc=0x420b45
+runtime.chanrecv1(0x4?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000065de8 sp=0xc000065dc0 pc=0x420594
+runtime.chansend(0xc000288000, 0x652b28, 0x1, 0x0?, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:232 +0x125 fp=0xc000065f00 sp=0xc000065de8 pc=0x41f6a5
+runtime.chansend1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:182 +0x19 fp=0xc000065f38 sp=0xc000065f00 pc=0x41f579
+gobench.Test1453.func3()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:31 +0x45 fp=0xc000065f68 sp=0xc000065f38 pc=0x5ce125
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000065fe0 sp=0xc000065f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000065fe8 sp=0xc000065fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 25 gp=0xc000103180 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc0001804e8, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000312ca8 sp=0xc000312c78 pc=0x4925d1
+runtime.chanrecv(0xc000180480, 0xc000312eb8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000312dc8 sp=0xc000312ca8 pc=0x420b45
+runtime.chanrecv1(0x5?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000312df0 sp=0xc000312dc8 pc=0x420594
+runtime.chanrecv(0xc000288000, 0x0, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:692 +0x15c fp=0xc000312f10 sp=0xc000312df0 pc=0x42071c
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000312f38 sp=0xc000312f10 pc=0x420594
+gobench.Test1453.func4()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:37 +0x3b fp=0xc000312f68 sp=0xc000312f38 pc=0x5ce0bb
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000312fe0 sp=0xc000312f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000312fe8 sp=0xc000312fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 26 gp=0xc000103340 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000406068, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000396ca0 sp=0xc000396c70 pc=0x4925d1
+runtime.chanrecv(0xc000406000, 0xc000396ea8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000396dc0 sp=0xc000396ca0 pc=0x420b45
+runtime.chanrecv1(0x4?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000396de8 sp=0xc000396dc0 pc=0x420594
+runtime.chansend(0xc000288000, 0x652b28, 0x1, 0x0?, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:232 +0x125 fp=0xc000396f00 sp=0xc000396de8 pc=0x41f6a5
+runtime.chansend1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:182 +0x19 fp=0xc000396f38 sp=0xc000396f00 pc=0x41f579
+gobench.Test1453.func5()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:43 +0x45 fp=0xc000396f68 sp=0xc000396f38 pc=0x5ce065
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000396fe0 sp=0xc000396f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000396fe8 sp=0xc000396fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 27 gp=0xc000103500 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc0003a4068, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc00039aca8 sp=0xc00039ac78 pc=0x4925d1
+runtime.chanrecv(0xc0003a4000, 0xc00039aeb8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc00039adc8 sp=0xc00039aca8 pc=0x420b45
+runtime.chanrecv1(0x5?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc00039adf0 sp=0xc00039adc8 pc=0x420594
+runtime.chanrecv(0xc000288000, 0x0, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:692 +0x15c fp=0xc00039af10 sp=0xc00039adf0 pc=0x42071c
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc00039af38 sp=0xc00039af10 pc=0x420594
+gobench.Test1453.func6()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:49 +0x3b fp=0xc00039af68 sp=0xc00039af38 pc=0x5cdffb
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc00039afe0 sp=0xc00039af68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00039afe8 sp=0xc00039afe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 28 gp=0xc0001036c0 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000180458, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000067ca0 sp=0xc000067c70 pc=0x4925d1
+runtime.chanrecv(0xc0001803f0, 0xc000067ea8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000067dc0 sp=0xc000067ca0 pc=0x420b45
+runtime.chanrecv1(0x4?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000067de8 sp=0xc000067dc0 pc=0x420594
+runtime.chansend(0xc000288000, 0x652b28, 0x1, 0x0?, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:232 +0x125 fp=0xc000067f00 sp=0xc000067de8 pc=0x41f6a5
+runtime.chansend1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:182 +0x19 fp=0xc000067f38 sp=0xc000067f00 pc=0x41f579
+gobench.Test1453.func7()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:55 +0x45 fp=0xc000067f68 sp=0xc000067f38 pc=0x5cdfa5
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000067fe0 sp=0xc000067f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000067fe8 sp=0xc000067fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 29 gp=0xc000103880 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000320068, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000316ca8 sp=0xc000316c78 pc=0x4925d1
+runtime.chanrecv(0xc000320000, 0xc000316eb8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000316dc8 sp=0xc000316ca8 pc=0x420b45
+runtime.chanrecv1(0x5?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000316df0 sp=0xc000316dc8 pc=0x420594
+runtime.chanrecv(0xc000288000, 0x0, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:692 +0x15c fp=0xc000316f10 sp=0xc000316df0 pc=0x42071c
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000316f38 sp=0xc000316f10 pc=0x420594
+gobench.Test1453.func8()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:61 +0x3b fp=0xc000316f68 sp=0xc000316f38 pc=0x5cdf3b
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000316fe0 sp=0xc000316f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000316fe8 sp=0xc000316fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 30 gp=0xc000103a40 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc0001803c8, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000066ca0 sp=0xc000066c70 pc=0x4925d1
+runtime.chanrecv(0xc000180360, 0xc000066ea8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000066dc0 sp=0xc000066ca0 pc=0x420b45
+runtime.chanrecv1(0x4?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000066de8 sp=0xc000066dc0 pc=0x420594
+runtime.chansend(0xc000288000, 0x652b28, 0x1, 0x0?, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:232 +0x125 fp=0xc000066f00 sp=0xc000066de8 pc=0x41f6a5
+runtime.chansend1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:182 +0x19 fp=0xc000066f38 sp=0xc000066f00 pc=0x41f579
+gobench.Test1453.func9()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:67 +0x45 fp=0xc000066f68 sp=0xc000066f38 pc=0x5cdee5
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000066fe0 sp=0xc000066f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000066fe8 sp=0xc000066fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 31 gp=0xc000103c00 m=nil [chan receive]:
+runtime.gopark(0x645560, 0xc000180218, 0xe, 0x7, 0x2)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc000068ca8 sp=0xc000068c78 pc=0x4925d1
+runtime.chanrecv(0xc0001801b0, 0xc000068eb8, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:872 +0x585 fp=0xc000068dc8 sp=0xc000068ca8 pc=0x420b45
+runtime.chanrecv1(0x5?, 0x3?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000068df0 sp=0xc000068dc8 pc=0x420594
+runtime.chanrecv(0xc000288000, 0x0, 0x1, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:692 +0x15c fp=0xc000068f10 sp=0xc000068df0 pc=0x42071c
+runtime.chanrecv1(0x0?, 0x0?)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/chan.go:638 +0x14 fp=0xc000068f38 sp=0xc000068f10 pc=0x420594
+gobench.Test1453.func10()
+	/home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go:73 +0x3b fp=0xc000068f68 sp=0xc000068f38 pc=0x5cde7b
+sync.(*WaitGroup).Go.func1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:330 +0x6c fp=0xc000068fe0 sp=0xc000068f68 pc=0x4a88ac
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc000068fe8 sp=0xc000068fe0 pc=0x499661
+created by sync.(*WaitGroup).Go in goroutine 19
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/sync/waitgroup.go:328 +0xa5
+
+goroutine 5 gp=0xc000003500 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6000, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc00006bf30 sp=0xc00006bf00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc00006bfc8 sp=0xc00006bf30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc00006bfe0 sp=0xc00006bfc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc00006bfe8 sp=0xc00006bfe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 6 gp=0xc0000036c0 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6200, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005def30 sp=0xc0005def00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005defc8 sp=0xc0005def30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005defe0 sp=0xc0005defc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005defe8 sp=0xc0005defe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 7 gp=0xc000003880 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6400, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005dff30 sp=0xc0005dff00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005dffc8 sp=0xc0005dff30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005dffe0 sp=0xc0005dffc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005dffe8 sp=0xc0005dffe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 8 gp=0xc000003a40 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6600, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005e0f30 sp=0xc0005e0f00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005e0fc8 sp=0xc0005e0f30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005e0fe0 sp=0xc0005e0fc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005e0fe8 sp=0xc0005e0fe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 9 gp=0xc000003c00 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6800, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005e1f30 sp=0xc0005e1f00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005e1fc8 sp=0xc0005e1f30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005e1fe0 sp=0xc0005e1fc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005e1fe8 sp=0xc0005e1fe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 10 gp=0xc000003dc0 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6a00, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005daf30 sp=0xc0005daf00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005dafc8 sp=0xc0005daf30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005dafe0 sp=0xc0005dafc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005dafe8 sp=0xc0005dafe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 11 gp=0xc0005e4000 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6c00, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005dbf30 sp=0xc0005dbf00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005dbfc8 sp=0xc0005dbf30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005dbfe0 sp=0xc0005dbfc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005dbfe8 sp=0xc0005dbfe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+
+goroutine 12 gp=0xc0005e41c0 m=nil [GC worker (idle)]:
+runtime.gopark(0x6455d8, 0xc0005d6e00, 0x1c, 0xa, 0x0)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/proc.go:460 +0xf1 fp=0xc0005dcf30 sp=0xc0005dcf00 pc=0x4925d1
+runtime.gcBgMarkWorker(0xc000092090)
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1463 +0xfc fp=0xc0005dcfc8 sp=0xc0005dcf30 pc=0x43595c
+runtime.gcBgMarkStartWorkers.gowrap1()
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x25 fp=0xc0005dcfe0 sp=0xc0005dcfc8 pc=0x435805
+runtime.goexit({})
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/asm_amd64.s:1693 +0x1 fp=0xc0005dcfe8 sp=0xc0005dcfe0 pc=0x499661
+created by runtime.gcBgMarkStartWorkers in goroutine 21
+	/home/erik/Arbeit/ADVOCATE/goPatch/src/runtime/mgc.go:1373 +0x65
+FAIL	gobench	6.008s
+FAIL

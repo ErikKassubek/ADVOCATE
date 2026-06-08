@@ -1,0 +1,65 @@
+2026/06/08 16:38:10 Run go mod tidy
+2026/06/08 16:38:10 Start fuzzing in mode GoCRHB
+2026/06/08 16:38:10 Run fuzzing on all tests
+2026/06/08 16:38:10 Found 1 test files
+2026/06/08 16:38:10 Processing file: /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/Rout_test.go
+2026/06/08 16:38:10 Fuzzing Run:  1
+2026/06/08 16:38:10 Create  /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/advocateResult/file(1)-test(1)-Rout_test-Test10
+2026/06/08 16:38:10 Execute Test
+2026/06/08 16:38:11 Text executed
+2026/06/08 16:38:11 Run the analyzer for /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/advocateTrace
+2026/06/08 16:38:11 Read trace with 113 elements in 11 routines
+2026/06/08 16:38:11 Start Analysis
+2026/06/08 16:38:11 Finished HB analysis
+2026/06/08 16:38:11 Analysis finished
+2026/06/08 16:38:11 Finished Rewrite
+2026/06/08 16:38:11 Number Results:  0
+2026/06/08 16:38:11 Successfully rewrites:  0
+2026/06/08 16:38:11 No need/not possible to rewrite:  0
+2026/06/08 16:38:11 Failed rewrites:  0
+2026/06/08 16:38:11 Start guided execution
+2026/06/08 16:38:11 Found 0 rewritten traces
+2026/06/08 16:38:11 Create bug reports
+2026/06/08 16:38:11 Create statistics
+2026/06/08 16:38:11 Finished run for Test10
+2026/06/08 16:38:11 Parse recorded trace for fuzzing information
+2026/06/08 16:38:11 Create mutations
+2026/06/08 16:38:11 Create GoPie mutations
+2026/06/08 16:38:11 Mutate 24 scheduling chains
+2026/06/08 16:38:11 Write 20 mutations to file
+2026/06/08 16:38:11 Create statistics
+2026/06/08 16:38:11 Current fuzzing queue size: 20
+2026/06/08 16:38:11 Remaining fuzzing time: 9:58 min
+2026/06/08 16:38:11 Fuzzing Run:  2
+2026/06/08 16:38:11 Execute Test
+2026/06/08 16:38:17 Text executed
+2026/06/08 16:38:17 Run the analyzer for /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/advocateTrace
+2026/06/08 16:38:17 Trace at /home/erik/Arbeit/ADVOCATE/helper/aplas/output/overheadElemSame/prog/advocateTrace does not contain any elements
+2026/06/08 16:38:17 Read trace with 0 elements in 0 routines
+2026/06/08 16:38:17 Start Analysis
+2026/06/08 16:38:17 Finished HB analysis
+2026/06/08 16:38:17 Analysis finished
+2026/06/08 16:38:17 Finished Rewrite
+2026/06/08 16:38:17 Number Results:  0
+2026/06/08 16:38:17 Successfully rewrites:  0
+2026/06/08 16:38:17 No need/not possible to rewrite:  0
+2026/06/08 16:38:17 Failed rewrites:  0
+2026/06/08 16:38:17 Start guided execution
+2026/06/08 16:38:17 Found 0 rewritten traces
+2026/06/08 16:38:17 Create bug reports
+2026/06/08 16:38:17 Create statistics
+2026/06/08 16:38:17 Finished run for Test10
+2026/06/08 16:38:17 Parse recorded trace for fuzzing information
+2026/06/08 16:38:17 Create mutations
+2026/06/08 16:38:17 Create GoPie mutations
+2026/06/08 16:38:17 Mutate 0 scheduling chains
+2026/06/08 16:38:17 Write 0 mutations to file
+2026/06/08 16:38:17 Create statistics
+2026/06/08 16:38:17 Current fuzzing queue size: 0
+2026/06/08 16:38:17 Remaining fuzzing time: 9:52 min
+2026/06/08 16:38:17 Finish fuzzing after 2 runs
+2026/06/08 16:38:17 Create fuzzing statistics
+2026/06/08 16:38:17 Create program statistics
+2026/06/08 16:38:17 Finished with 0 errors
+2026/06/08 16:38:17 No internal replay timeouts occurred
+2026/06/08 16:38:17 No bugs have been found/indicated

@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace_waitgroup.go
+// File: oosc_trace_waitgroup.go
 // Brief: Functionality for wait groups
 //
 // Author: Erik Kassubek
@@ -24,7 +24,7 @@ package runtime
 //   - val int32: value of the internal counter after the operation was executed
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
-type AdvocateTraceWaitGroup struct {
+type OoscTraceWaitGroup struct {
 	tPre  int64
 	tPost int64
 	id    uint64
@@ -35,7 +35,7 @@ type AdvocateTraceWaitGroup struct {
 	line  int
 }
 
-// AdvocateWaitGroupAdd adds a waitgroup add or done to the trace
+// OoscWaitGroupAdd adds a waitgroup add or done to the trace
 //
 // Parameter:
 //   - id: id of the waitgroup
@@ -44,8 +44,8 @@ type AdvocateTraceWaitGroup struct {
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
-	if advocateTracingDisabled {
+func OoscWaitGroupAdd(id uint64, delta int, val int32) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
@@ -59,11 +59,11 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 		_, file, line, _ = Caller(CallerSkipWaitGroupDone)
 	}
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceWaitGroup{
+	elem := OoscTraceWaitGroup{
 		tPre:  timer,
 		id:    id,
 		op:    OperationWaitgroupAddDone,
@@ -76,15 +76,15 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateWaitGroupWait adds a waitgroup wait to the trace
+// OoscWaitGroupWait adds a waitgroup wait to the trace
 //
 // Parameter:
 //   - id: id of the waitgroup
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateWaitGroupWait(id uint64) int {
-	if advocateTracingDisabled {
+func OoscWaitGroupWait(id uint64) int {
+	if ooscTracingDisabled {
 		return -1
 	}
 
@@ -92,11 +92,11 @@ func AdvocateWaitGroupWait(id uint64) int {
 
 	_, file, line, _ := Caller(CallerSkipWaitGroupAddWait)
 
-	if AdvocateIgnore(file) {
+	if OoscIgnore(file) {
 		return -1
 	}
 
-	elem := AdvocateTraceWaitGroup{
+	elem := OoscTraceWaitGroup{
 		tPre: timer,
 		id:   id,
 		op:   OperationWaitgroupWait,
@@ -107,13 +107,13 @@ func AdvocateWaitGroupWait(id uint64) int {
 	return insertIntoTrace(elem)
 }
 
-// AdvocateWaitGroupWaitPost adds the end counter to an operation of the trace
+// OoscWaitGroupWaitPost adds the end counter to an operation of the trace
 // Wait Post
 //
 // Parameter:
 //   - index: index of the operation in the trace
-func AdvocateWaitGroupPost(index int) {
-	if advocateTracingDisabled {
+func OoscWaitGroupPost(index int) {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -130,7 +130,7 @@ func AdvocateWaitGroupPost(index int) {
 		return
 	}
 
-	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceWaitGroup)
+	elem := currentGoRoutineInfo().getElement(index).(OoscTraceWaitGroup)
 
 	elem.tPost = timer
 
@@ -142,7 +142,7 @@ func AdvocateWaitGroupPost(index int) {
 // Returns:
 //   - string: the string representation of the form
 //     W,[tPre],[tPost],[id],[op],[delta],[val],[file],[line]
-func (elem AdvocateTraceWaitGroup) toString() string {
+func (elem OoscTraceWaitGroup) toString() string {
 	opStr := "A"
 	if elem.op == OperationWaitgroupWait {
 		opStr = "W"
@@ -155,6 +155,6 @@ func (elem AdvocateTraceWaitGroup) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceWaitGroup) getOperation() Operation {
+func (elem OoscTraceWaitGroup) getOperation() Operation {
 	return elem.op
 }

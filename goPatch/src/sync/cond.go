@@ -8,9 +8,9 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	// ADVOCATE-START
+	// OOSC-START
 	"runtime"
-	// ADVOCATE-END
+	// OOSC-END
 )
 
 // Cond implements a condition variable, a rendezvous point
@@ -47,9 +47,9 @@ type Cond struct {
 	notify  notifyList
 	checker copyChecker
 
-	// ADVOCATE-START
+	// OOSC-START
 	id uint64
-	// ADVOCATE-END
+	// OOSC-END
 }
 
 // NewCond returns a new Cond with Locker l.
@@ -73,9 +73,9 @@ func NewCond(l Locker) *Cond {
 //	... make use of condition ...
 //	c.L.Unlock()
 func (c *Cond) Wait() {
-	// ADVOCATE-START
+	// OOSC-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetOoscObjectID()
 	}
 
 	// replay
@@ -85,13 +85,13 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondWait)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscCondPre(c.id, runtime.OperationCondWait)
+	defer runtime.OoscCondPost(ooscIndex)
+	// OOSC-END
 
-	// ADVOCATE-START
+	// OOSC-START
 	runtime.StorePark(unsafe.Pointer(c), runtime.CallerSkipCond, false)
-	// ADVOCATE-END
+	// OOSC-END
 
 	c.checker.check()
 	t := runtime_notifyListAdd(&c.notify)
@@ -108,9 +108,9 @@ func (c *Cond) Wait() {
 // Signal() does not affect goroutine scheduling priority; if other goroutines
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
-	// ADVOCATE-START
+	// OOSC-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetOoscObjectID()
 	}
 
 	// replay
@@ -121,9 +121,9 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondSignal)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscCondPre(c.id, runtime.OperationCondSignal)
+	defer runtime.OoscCondPost(ooscIndex)
+	// OOSC-END
 
 	c.checker.check()
 	runtime_notifyListNotifyOne(&c.notify)
@@ -134,9 +134,9 @@ func (c *Cond) Signal() {
 // It is allowed but not required for the caller to hold c.L
 // during the call.
 func (c *Cond) Broadcast() {
-	// ADVOCATE-START
+	// OOSC-START
 	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
+		c.id = runtime.GetOoscObjectID()
 	}
 
 	// replay
@@ -147,9 +147,9 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondBroadcast)
-	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
+	ooscIndex := runtime.OoscCondPre(c.id, runtime.OperationCondBroadcast)
+	defer runtime.OoscCondPost(ooscIndex)
+	// OOSC-END
 
 	c.checker.check()
 	runtime_notifyListNotifyAll(&c.notify)

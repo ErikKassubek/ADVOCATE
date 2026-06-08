@@ -1,8 +1,8 @@
-// ADVOCATE-FILE_START
+// OOSC-FILE_START
 
 // Copyright (c) 2024 Erik Kassubek
 //
-// File: advocate_trace.go
+// File: oosc_trace.go
 // Brief: Functionality for the trace
 //
 // Author: Erik Kassubek
@@ -69,9 +69,9 @@ const (
 	none
 )
 
-var advocateTracingDisabled = true
+var ooscTracingDisabled = true
 
-// var advocateTraceWritingDisabled = false
+// var ooscTraceWritingDisabled = false
 
 // Given an Operation enum, return a string representation
 //
@@ -157,15 +157,15 @@ func PrintTrace() {
 //   - bool: true if the routine exists, false otherwise
 func TraceToChanByID(id uint64) chan string {
 	println("ADVOTEST 5: ", id)
-	lock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
 	println("LOCK L: 1", id)
 	println("ADVOTEST 7: ", id)
 	defer println("LOCK U: 1")
 
 	c := make(chan string, 20)
 	println("ADVOTEST A: ", id)
-	if routine, ok := AdvocateRoutines[id]; ok {
-		unlock(&AdvocateRoutinesLock)
+	if routine, ok := OoscRoutines[id]; ok {
+		unlock(&OoscRoutinesLock)
 		println("ADVOTEST B: ", id)
 		println("ADVOTEST 6: ", len(routine.Trace))
 
@@ -194,7 +194,7 @@ func TraceToChanByID(id uint64) chan string {
 
 		println("ADVOTEST C: ", id)
 	} else {
-		unlock(&AdvocateRoutinesLock)
+		unlock(&OoscRoutinesLock)
 	}
 
 	println("ADVOTEST 8: ", id)
@@ -211,10 +211,10 @@ func TraceToChanByID(id uint64) chan string {
 //   - true if the trace is empty, false otherwise
 func TraceIsEmptyByRoutine(routine int) bool {
 	println("LOCK L: 6")
-	lock(&AdvocateRoutinesLock)
-	defer unlock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
+	defer unlock(&OoscRoutinesLock)
 	defer println("LOCK U: 6")
-	if routine, ok := AdvocateRoutines[uint64(routine)]; ok {
+	if routine, ok := OoscRoutines[uint64(routine)]; ok {
 		return len(routine.Trace) == 0
 	}
 	return true
@@ -259,22 +259,22 @@ func buildTraceElemStringSep(sep string, values ...any) string {
 //   - number of routines in the trace
 func GetNumberOfRoutines() int {
 	println("LOCK L: 7")
-	lock(&AdvocateRoutinesLock)
-	defer unlock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
+	defer unlock(&OoscRoutinesLock)
 	println("LOCK U: 7")
-	return len(AdvocateRoutines)
+	return len(OoscRoutines)
 }
 
 // DeleteTrace removes all trace elements from the trace
 // It does not remove the routine objects them self
 // Make sure to call BlockTrace(), before calling this function
 func DeleteTrace() {
-	lock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
 	println("LOCK L: 8")
-	defer unlock(&AdvocateRoutinesLock)
+	defer unlock(&OoscRoutinesLock)
 	defer println("LOCK U: W")
-	for i := range AdvocateRoutines {
-		AdvocateRoutines[i].Trace = AdvocateRoutines[i].Trace[:0]
+	for i := range OoscRoutines {
+		OoscRoutines[i].Trace = OoscRoutines[i].Trace[:0]
 	}
 }
 
@@ -289,19 +289,19 @@ func DeleteTrace() {
 //
 // Returns:
 //   - bool: true if the operation should be ignored, false otherwise
-func AdvocateIgnore(file string) bool {
+func OoscIgnore(file string) bool {
 	return (containsStr(file, "goPatch/src/") || containsStr(file, "go/pkg/mod")) &&
 		!containsStr(file, "goPatch/src/time/tick.go") &&
 		!containsStr(file, "goPatch/src/context/context.go")
 }
 
 func RemoveActive(id uint64) {
-	lock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
 	println("LOCK L: 9")
-	defer unlock(&AdvocateRoutinesLock)
+	defer unlock(&OoscRoutinesLock)
 	defer println("LOCK U: 1")
 
-	delete(AdvocateRoutines, uint64(id))
+	delete(OoscRoutines, uint64(id))
 }
 
 // IsActive returns if a routine of the given id has been created/started but not yet been written to file, and if it exists, if the writing of the trace has started
@@ -312,12 +312,12 @@ func RemoveActive(id uint64) {
 // Returns:
 //   - bool: true if not started or written to file
 func IsActive(id int) (bool, bool) {
-	lock(&AdvocateRoutinesLock)
+	lock(&OoscRoutinesLock)
 	println("LOCK L: 10")
-	defer unlock(&AdvocateRoutinesLock)
+	defer unlock(&OoscRoutinesLock)
 	defer println("LOCK U: 10")
 
-	if g, ok := AdvocateRoutines[uint64(id)]; ok {
+	if g, ok := OoscRoutines[uint64(id)]; ok {
 		return ok, g.startedWritingToFile
 	}
 
@@ -331,8 +331,8 @@ func IsActive(id int) (bool, bool) {
 //
 // Returns:
 //   - bool: true if not started or written to file
-func AdvocateWriteTraceToFile() {
-	if advocateTracingDisabled {
+func OoscWriteTraceToFile() {
+	if ooscTracingDisabled {
 		return
 	}
 
@@ -342,7 +342,7 @@ func AdvocateWriteTraceToFile() {
 		return
 	}
 
-	if AdvocateIgnore(g.createdAtFile) {
+	if OoscIgnore(g.createdAtFile) {
 		return
 	}
 
@@ -355,4 +355,4 @@ func AdvocateWriteTraceToFile() {
 	RemoveActive(g.id)
 }
 
-// ADVOCATE-FILE-END
+// OOSC-FILE-END

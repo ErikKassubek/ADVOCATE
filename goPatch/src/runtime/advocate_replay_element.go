@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_element.go
+// File: oosc_replay_element.go
 // Brief: Replay element
 //
 // Author: Erik Kassubek

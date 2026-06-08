@@ -1,6 +1,6 @@
 // Copyright (c) 2025 Erik Kassubek
 //
-// File: advocate_replay_partial.go
+// File: oosc_replay_partial.go
 // Brief: Partial replay
 //
 // Author: Erik Kassubek

@@ -1,0 +1,4 @@
+TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
+Test53,163,3,0,106,0,0,1,0,0
+Test53,163,3,0,106,0,0,1,0,0
+Test53,0,0,0,0,0,0,0,0,0

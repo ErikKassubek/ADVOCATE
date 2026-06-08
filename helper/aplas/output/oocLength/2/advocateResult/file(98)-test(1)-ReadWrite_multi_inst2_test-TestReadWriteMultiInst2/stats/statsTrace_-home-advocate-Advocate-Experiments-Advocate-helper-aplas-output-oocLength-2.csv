@@ -1,3 +1,0 @@
-TestName,NrEvents,NrGoroutines,NrAtomicEvents,NrChannelEvents,NrSelectEvents,NrMutexEvents,NrWaitgroupEvents,NrCondVariablesEvents,NrOnceOperations
-TestReadWriteMultiInst2,0,0,0,0,0,0,0,0,0
-TestReadWriteMultiInst2,0,0,0,0,0,0,0,0,0

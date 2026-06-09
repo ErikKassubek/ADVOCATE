@@ -108,7 +108,7 @@ func Run(ctx context.Context) error {
 		err = modeToolchain(modeMainTest, false, false, true)
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
-		log.Error("Select one mode from  'analysmodesis', 'fuzzing' or 'record'")
+		log.Error("Select one mode from 'gui, 'analysis', 'fuzzing', 'record' or 'replay'")
 		err = fmt.Errorf("Unknown mode %s", os.Args[1])
 		helper.PrintHelp()
 	}

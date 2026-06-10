@@ -30,7 +30,6 @@ var (
 	FuzzingModeGFuzz      = false
 	FuzzingModeGoPie      = false
 	FuzzingModeGoCRHBPlus = false
-	FuzzingModeFlow       = false
 	FuzzingModeGuided     = false
 	FuzzingHbAnalysis     = true
 

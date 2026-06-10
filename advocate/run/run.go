@@ -94,8 +94,8 @@ func Run() error {
 	}
 
 	switch flags.Mode {
-	case "analysis":
-		err = modeToolchain(modeMainTest, true, true, true)
+	// case "analysis":
+	// 	err = modeToolchain(modeMainTest, true, true, true)
 	case "fuzzing":
 		err = modeFuzzing()
 	case "record", "recording":

@@ -11,15 +11,13 @@ package baseF
 
 // Possible values for fuzzing mode
 const (
-	Default     = ""            // not set
-	GFuzz       = "GFuzz"       // only GFuzz
-	GFuzzHB     = "GFuzzHB"     // GFuzz with use of hb info
-	GFuzzHBFlow = "GFuzzHBFlow" // GFuzz with use of hb info and flow mutation
-	Flow        = "Flow"        // only flow mutation
-	GoPie       = "GoPie"       // only goPie
-	GoCR        = "GoCR"        // improved goPie without predictive analysis
-	GoCRHB      = "GoCRHB"      // improved goPie with predictive analysis
-	Guided      = "Guided"      // hb guided fuzzing
+	Default = ""         // not set
+	GFuzz   = "GFuzz"    // only GFuzz
+	GFuzzHB = "GFuzzHB"  // GFuzz with use of hb info
+	GoPie   = "GoPie"    // only goPie
+	GoCR    = "GoCRNoHb" // improved goPie without predictive analysis
+	GoCRHB  = "GoCR"     // improved goPie with predictive analysis
+	Guided  = "Guided"   // hb guided fuzzing
 )
 
 // Possible mut types

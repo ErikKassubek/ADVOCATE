@@ -1,8 +1,8 @@
 package main
 
 import (
-	"aplas/command"
-	"aplas/experiments"
+	"advocate/command"
+	"advocate/experiments"
 	"os"
 	"os/signal"
 	"syscall"

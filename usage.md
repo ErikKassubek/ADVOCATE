@@ -90,7 +90,6 @@ program. This program implements multiple modes:
 
 - [Recording](#mode-recording)
 - [Replay](#mode-replay)
-- [Analysis](#mode-analysis)
 - [Fuzzing](#mode-fuzzing)
 
 ### Help
@@ -209,126 +208,10 @@ Please note, that the replay relies on the program code not being altered
 between recording and replay. Each change, even on non-concurrency elements
 can cause the replay to fail.\
 Additionally, all non-concurrency indeterminism, like random numbers
-or unpredictable api calls can cause the replay to get stuck. For more info
-see [here](./replay.md#things-that-can-go-wrong).
-
-### Mode: analysis
-
-The analysis mode is the main mode to analyzer tests. It will run the program
-or test, [record](./recording.md) the trace, [analyze](./analysis.md) and analyze
-it. It a potential bug was found and it is possible, the mode will [rewrite](./rewrite.md)
-the trace in such a way, that it should contain the potential bug and
-[replay](./replay.md) it, trying to trigger the bug.
-
-For the (specified) tests or the main function, it will run the program and
-record the trace, analyze the trace and, if something was found,
-create a trace that should trigger the found bug and replay this trace,
-to confirm the bug.
-
-It can be run with
-
-```
-./advocate analysis [args]
-```
-
-The arguments for `-path` and if necessary `-main` are required. They are
-defined the same way as in for the [recording](#mode-recording) and [replay](#mode-replay)
-modes.
-
-The default behavior is to run all analysis scenarios. You can select to run
-only certain scenarios to by setting
-
-- `-scen [scenarios]`
-
-with the following possible scenarios:
-
-- `s`: Send on closed channel
-- `r`: Receive on closed channel
-- `w`: Done before add on waitGroup
-- `n`: Close of closed channel
-- `b`: Concurrent receive on channel
-- `l`: Leaking routine
-- `u`: Unlock of unlocked mutex
-- `c`: Cyclic deadlock (resource deadlocks)
-
-To select multiple by adding them together, e.g.
-
-```
-  -scen sc
-```
-
-to run the analysis for send on closed and cyclic (resource) deadlocks.\
-If `-scen` is not set, all scenarios will be searched for.
-
-While running, the analyzer will create a `advocateResult` folder. In it, it will create on
-folder for each of the analyzed tests. In this folder it will create a file
-for the output of the program runs, as well as two files showing an
-overview over all detected bugs. Additionally, it will create a bug folder.
-This folder contains one file for each of the found bugs, detailing the
-type and position of the bug and information about the replay (if performed).
-
-An example command would be
-
-```
-./advocate analysis -path ~/pathToProg/progDir/main.go -prog progName -main
-```
-
-to run the analysis on the main function of a program, or
-
-```
-./advocate analysis -path ~/pathToProg/progDir/ -prog progName -scen c -exec TestOne
-```
-
-to analyze the test `TestOne` in the given path, only checking for cyclic (resource) deadlocks.
-
-The analysis will try to find the following situations:
-
-- A01: "Actual Send on Closed Channel",
-- A02: "Actual Receive on Closed Channel",
-- A03: "Actual Close on Closed Channel",
-- A04: "Actual Close on Nil Channel",
-- A05: "Actual Negative Wait Group",
-- A06: "Actual Unlock of Not Locked Mutex",
-- A07: "Actual Non-Cyclic Blocking Bug",
-- A08: "Actual Cyclic Deadlock with Mutex",
-- A09: "Actual Concurrent Receive on Same Channel",
-- A10: "Actual Cyclic Deadlock with Mutex and Channel
-- P01: "Possible Send on Closed Channel",
-- P02: "Possible Receive on Closed Channel",
-- P03: "Possible Negative WaitGroup cCounter",
-- P04: "Possible unlock of not locked mutex",
-- P05: "Possible Cyclic Deadlock with Mutex",
-- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
-- L..: "Leak" (Blocked but not necessarily finally blocked routine),
-
-Some of them are only considered warnings. To ignore them, you can set `-noWarning`.
-
-The analysis will try to rewrite and replay found potential bugs. To disable this,
-you can set `-noRewrite`.\
-The default behavior is to not replay bugs that have already been replayed successfully.
-To still replay them, you can set `-replayAll`.
-
-The traces can become very large. When using advocate for many tests, or multiple
-times, this can lead to a large amount of data being stored in the trace files.
-For this reason, advocate can delete the trace files, as soon as the analysis
-has finished. To activate this, you can set `-deleteTrace`.
-
-The [Go Memory-Model](https://go.dev/ref/mem#chan) does not specify, that
-channels behave as a FIFO queue. Since in practice they are implemented as such,
-the analysis assumes that they behave this way. If you do not want to use this
-assumption, you can disable it using `-ignCritSec`.
-
-Additionally, the used happens-before modes assumes, that critical sections
-(mutex) conform to a happens before relation, meaning they cannot be reordered.
-This may be too strong of an assumption in some case. To ignore this relation
-you can set `-ignCritSec`.
-
-If you do not want to perform the happens-before analysis, but only check
-for actually occurring panics or leaks, you can set the `-onlyActual` flag.
-
+or unpredictable api calls can cause the replay to get stuck. 
 ### Mode: fuzzing
 
-To run the fuzzing as described [here](doc/fuzzing.md), the following command can be used:
+To run the fuzzing, the following command can be used:
 
 ```
 ./advocate fuzzing [args]
@@ -337,13 +220,12 @@ To run the fuzzing as described [here](doc/fuzzing.md), the following command ca
 To use the fuzzing, you need to apply a fuzzing mode with `-fuzzingMode [mode]`.
 The available modes are:
 
-- `GFuzz`: Run the [GFuzz](doc/fuzzing/GFuzz.md) based fuzzing
-- `GFuzzHB`: Run the improved [GFuzz](doc/fuzzing/GFuzz.md#improvement-over-original-gfuzz) based fuzzing using happens-before information
-- `Flow`: Run the [Flow](doc/fuzzing/Flow.md) based fuzzing
-- `GFuzzHBFlow`: Run a combination of [GFuzzHB](doc/fuzzing/GFuzz.md) and the [Flow](doc/fuzzing/Flow.md) based fuzzing
-- `GoPie`: Run the [GoPie](doc/fuzzing/GoPie.md#gopie) based fuzzing
-- `GoCR`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopie-1) based fuzzing
-- `GoPieHB`: Run an improved [GoPie](doc/fuzzing/GoPie.md#gopiehb) based fuzzing using happens-before information
+- `Guided` (default): run the SC based fuzzing
+- `GFuzz`: Run the GFuzz based fuzzing
+- `GFuzzHB`: Run the improved GFuzz based fuzzing using happens-before information
+- `GoPie`: Run the GoPie based fuzzing
+- `GoCR`: Run an improved GoPie based fuzzing
+- `GoPieHB`: Run an improved GoPie based fuzzing using happens-before information
 
 All other required and additional args as well as the output files are the same as for the analysis mode.
 
@@ -362,8 +244,8 @@ An example command would therefore be
 
 To set timeouts, you can set
 
-- `-timeoutRec [to in s]`: Timeout for the recording in seconds (Default: 10 min)
-- `-timeoutRep [to in s]`: Timeout for the replay (Default: 500 \* recording time)
+- `-timeoutExec`: Timeout for one execution of one prog/test in seconds 
+- `-timeoutFuz`:  Timeout for one prog/test in seconds 
 
 To get additional information, the following tags can also be set:
 
@@ -421,16 +303,7 @@ The following values can be changed:
 
 | name           | default value | range                       | description                                                                                                            |
 | -------------- | ------------- | --------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| GFuzzW1        | 10            | $\mathbb{Q}$                | w1 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW2        | 10            | $\mathbb{Q}$                | w2 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW3        | 10            | $\mathbb{Q}$                | w3 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzW4        | 10            | $\mathbb{Q}$                | w4 weight for score in GFuzz as described [here](./fuzzing/GFuzz.md#determine-the-score)                               |
-| GFuzzFlipP     | 0.99          | $\mathbb{Q}, 0 <= val <= 1$ | probability of at least one of the selects to flip as described [here](./fuzzing/GFuzz.md#flip-probability)            |
-| GFuzzFlipPMin  | 0.1           | $\mathbb{Q}, 0 <= val <= 1$ | minimum probability for each individual select to get flipped as described [here](./fuzzing/GFuzz.md#flip-probability) |
-| GoPieW1        | 1             | $\mathbb{Q}$                | w1 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
-| GoPieW2        | 1             | $\mathbb{Q}$                | w2 weight for score in GoPie as described [here](./fuzzing/GoPie.md#mutation)                                          |
-| MaxOOCLength     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of constraint (BOUND) as described [here](./fuzzing/GoPie.md#mutation)                            |
+| MaxOOCLength     | 3             | $\mathbb{N}, val \geq 2$    | Maximum length of constraint                            |
 | GoPieMutabound | 9             | $\mathbb{N}_{\neq 0}$       | Mutabound as described [here](./fuzzing/GoPie.md#mutation)                                                             |
-| OOCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for constraint as described [here](./fuzzing/GoPie.md#mutation)                        |
+| OOCStart   | 5             | $\mathbb{N}_{\neq 0}$       | Number of starting point for constraints                         |
 | SameElementTypeInOOC | 0 (false) | $\{0,1\}$ | Only allow elements of the same type in a SC |
-| WithoutReplay | 0 (false) | $\{0,1\}$ | Disable replay for goPie+ fuzzing runs |

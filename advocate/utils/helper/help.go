@@ -43,7 +43,7 @@ var (
 		"\tu: Unlock of unlocked mutex",
 		"\tc: Cyclic deadlock")
 	noWarning = newFlagVal("noWarning", "false", "", "Only show critical bugs")
-	onlyA     = newFlagVal("onlyActual", "false", "", "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
+	// onlyA     = newFlagVal("onlyActual", "false", "", "only test for actual bugs leading to panic and actual leaks. This will overwrite `scen`")
 
 	// timeout
 	timeoutExec   = newFlagVal("timeoutExec", "900", "", "Set a timeout in seconds per execution. To disable set to -1")
@@ -72,14 +72,14 @@ var (
 	alwaysPanic = newFlagVal("panic", "false", "", "Panic if the analysis panics")
 
 	// settings
-	noFifo                = newFlagVal("ignoreFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
-	ignoreCriticalSection = newFlagVal("ignoreCritSec", "false", "", "Ignore happens before relations of critical sections")
-	ignoreAtomics         = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
-	replayAll             = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
-	noRewrite             = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
-	deleteTrace           = newFlagVal("deleteTrace", "false", "", "If set, the traces are deleted after analysis. Can avoid the need to store all trace files")
-	settings              = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
-	cancelTestIfFound     = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
+	// noFifo                = newFlagVal("ignoreFifo", "false", "", "Do not assume a FIFO ordering for buffered channels")
+	// ignoreCriticalSection = newFlagVal("ignoreCritSec", "false", "", "Ignore happens before relations of critical sections")
+	ignoreAtomics     = newFlagVal("ignoreAtomics", "false", "", "Ignore atomic operations. Use to reduce memory required for large traces")
+	replayAll         = newFlagVal("replayAll", "false", "", "Replay a bug even if it has already been confirmed")
+	noRewrite         = newFlagVal("noRewrite", "true", "", "Do not rewrite/replay the trace file")
+	deleteTrace       = newFlagVal("deleteTrace", "false", "", "If set, the traces are deleted after analysis. Can avoid the need to store all trace files")
+	settings          = newFlagVal("settings", "", "", "Set some internal settings. For more info, see ../doc/usage.md")
+	cancelTestIfFound = newFlagVal("cancelTestIfBugFound", "", "false", "Skip further fuzzing runs of a test if one bug has been found. Mostly used for benchmarks")
 )
 
 // flagValue is a struct to store one flag value and its description
@@ -154,8 +154,8 @@ func PrintHelp() {
 //   - mode string: the mode
 func PrintHelpMode(mode string) {
 	switch mode {
-	case "analysis":
-		printHelpAnalysis()
+	// case "analysis":
+	// 	printHelpAnalysis()
 	case "fuzzing":
 		printHelpFuzzing()
 	case "record", "recording":
@@ -173,15 +173,15 @@ func PrintHelpMode(mode string) {
 func printHeader() {
 	fmt.Println("Usage: ./advocate [mode] [args]")
 	fmt.Println("")
-	fmt.Println("Advocate contains four different mode. These are:")
+	fmt.Println("Advocate contains three different mode. These are:")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
-	fmt.Println("\tanalysis")
+	// fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
 	fmt.Println("")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
 	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
-	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
+	// fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
 	fmt.Println("With 'fuzzing', different fuzzing approaches can be run on a program or test.")
 	fmt.Print("\n\n")
 	fmt.Println("For more information about the mode and there functionality, see the doc folder in the repository.")
@@ -295,7 +295,7 @@ func printHelpAnalysis() {
 	// scenarios
 	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
-	fmt.Println(onlyA.toString(false))
+	// fmt.Println(onlyA.toString(false))
 
 	// timeout
 	fmt.Println(timeoutExec.toString(false))
@@ -322,8 +322,8 @@ func printHelpAnalysis() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
+	// fmt.Println(noFifo.toString(false))
+	// fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
 	fmt.Println(replayAll.toString(false))
 	fmt.Println(noRewrite.toString(false))
@@ -353,7 +353,7 @@ func printHelpFuzzing() {
 	// scenarios
 	fmt.Println(scenarios.toString(false))
 	fmt.Println(noWarning.toString(false))
-	fmt.Println(onlyA.toString(false))
+	// fmt.Println(onlyA.toString(false))
 
 	// timeout
 	fmt.Println(timeoutExec.toString(false))
@@ -378,8 +378,8 @@ func printHelpFuzzing() {
 	fmt.Println(alwaysPanic.toString(false))
 
 	// settings
-	fmt.Println(noFifo.toString(false))
-	fmt.Println(ignoreCriticalSection.toString(false))
+	// fmt.Println(noFifo.toString(false))
+	// fmt.Println(ignoreCriticalSection.toString(false))
 	fmt.Println(ignoreAtomics.toString(false))
 	fmt.Println(replayAll.toString(false))
 	fmt.Println(noRewrite.toString(false))

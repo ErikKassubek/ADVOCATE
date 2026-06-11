@@ -34,8 +34,9 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	ast    []*ast.File                    // flattened list
 	npm    map[ast.Node]*packages.Package // node packages map
 
-	ssa     *ssa.Program // static single assignment (intermediate program representation where each variable is assigned exactly once)
-	ssaPkgs []*ssa.Package
+	ssa      *ssa.Program // static single assignment (intermediate program representation where each variable is assigned exactly once)
+	ssaPkgs  []*ssa.Package
+	ssaMains []*ssa.Package
 
 	// TODO: do we even need this?. Is there any more information in callGraph than in funcPerFunc?
 	callGraph *callgraph.Graph

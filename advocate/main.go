@@ -12,6 +12,7 @@ package main
 
 import (
 	"advocate/run"
+	"advocate/static/blockingStatic"
 	"advocate/utils/log"
 )
 
@@ -21,6 +22,9 @@ var (
 
 // Main function
 func main() {
+	blockingStatic.Test() // TODO: remove this
+	return
+
 	cont := run.CommandLine()
 	if !cont {
 		return

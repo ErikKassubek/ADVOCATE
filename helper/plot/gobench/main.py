@@ -120,5 +120,5 @@ def plotGraph2():
 
 if __name__ == "__main__":
     # print(buildVal())
-    plotGraph1()
-    # plotGraph2()
+    # plotGraph1()
+    plotGraph2()

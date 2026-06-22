@@ -22,13 +22,14 @@ var (
 
 // Main function
 func main() {
-	blockingStatic.Test() // TODO: remove this
-	return
 
 	cont := run.CommandLine()
 	if !cont {
 		return
 	}
+
+	blockingStatic.Test() // TODO: remove this
+	return
 
 	err := run.Run()
 	if err != nil {

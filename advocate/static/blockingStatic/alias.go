@@ -49,7 +49,9 @@ func (self *staticData) buildSsa() {
 	self.ssaMains = ssautil.MainPackages(self.ssaPkgs)
 }
 
+// TODO: internal panic T
 func (self *staticData) runPointerAnalysis() error {
+	return nil // TODO: remove if function is fixed
 	config := &pointer.Config{
 		Mains: self.ssaMains,
 	}

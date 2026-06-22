@@ -34,8 +34,13 @@ func (self *staticData) detOpsInFile(file *ast.File) {
 }
 
 func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
+	self.opsPerFunk[fdecl] = make(map[*ast.Expr]map[funcName]struct{})
+	self.funcsPerFunc[fdecl] = make([]funcCall, 0)
+
 	ast.Inspect(fdecl, func(n ast.Node) bool {
 		switch x := n.(type) {
+		case *ast.FuncDecl:
+			self.funcDeclMap[x.Name.Pos()] = x
 		case *ast.GoStmt: // new routine
 			self.recordGoStatement(fdecl, x)
 		case *ast.SendStmt: // channel send
@@ -46,7 +51,7 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 			}
 		case *ast.CallExpr:
 			// all functions
-			self.recordFunctionCall(fdecl, x.Fun)
+			self.recordFunctionCall(fdecl, x)
 
 			// channel close
 			if ident, ok := x.Fun.(*ast.Ident); ok && ident.Name == "close" {
@@ -54,7 +59,7 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 			}
 
 			if sel, ok := x.Fun.(*ast.SelectorExpr); ok { // a.x()
-				if self.isMutex(sel.Sel) {
+				if self.isMutex(x) {
 					switch sel.Sel.Name {
 					case "Lock":
 						self.recordOperation(fdecl, &sel.X, mutexLock)
@@ -66,8 +71,10 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 						self.recordOperation(fdecl, &sel.X, mutexRLock)
 					case "Unlock":
 						self.recordOperation(fdecl, &sel.X, mutexUnlock)
+					case "RUnlock":
+						self.recordOperation(fdecl, &sel.X, mutexRUnlock)
 					}
-				} else if self.isCondVar(sel.Sel) {
+				} else if self.isCondVar(x) {
 					switch sel.Sel.Name {
 					case "Wait":
 						self.recordOperation(fdecl, &sel.X, condWait)
@@ -76,7 +83,7 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 					case "Broadcast":
 						self.recordOperation(fdecl, &sel.X, condBroadcast)
 					}
-				} else if self.isWaitGroup(sel.Sel) {
+				} else if self.isWaitGroup(x) {
 					switch sel.Sel.Name {
 					case "Wait":
 						self.recordOperation(fdecl, &sel.X, wgWait)
@@ -96,10 +103,6 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 }
 
 func (self *staticData) recordOperation(fdecl *ast.FuncDecl, variable *ast.Expr, f funcName) {
-	if _, ok := self.opsPerFunk[fdecl]; !ok {
-		self.opsPerFunk[fdecl] = make(map[*ast.Expr]map[funcName]struct{})
-	}
-
 	if _, ok := self.opsPerFunk[fdecl][variable]; !ok {
 		self.opsPerFunk[fdecl][variable] = make(map[funcName]struct{})
 	}
@@ -107,12 +110,9 @@ func (self *staticData) recordOperation(fdecl *ast.FuncDecl, variable *ast.Expr,
 	self.opsPerFunk[fdecl][variable][f] = struct{}{}
 }
 
-func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, f ast.Expr) {
-	if _, ok := self.funcsPerFunc[fdecl]; !ok {
-		self.funcsPerFunc[fdecl] = make([]ast.Expr, 0)
-	}
-
-	self.funcsPerFunc[fdecl] = append(self.funcsPerFunc[fdecl], f)
+func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, f *ast.CallExpr) {
+	funcDecl := self.getFuncDecl(f) // TODO: does not handle anonymous functions
+	self.funcsPerFunc[fdecl] = append(self.funcsPerFunc[fdecl], funcCall{f, funcDecl})
 }
 
 func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, f *ast.GoStmt) {

@@ -16,10 +16,14 @@ import (
 	"go/token"
 	"go/types"
 
-	"golang.org/x/tools/go/callgraph"
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 )
+
+type funcCall struct {
+	call *ast.CallExpr
+	decl *ast.FuncDecl
+}
 
 type staticData struct { // always use buildStaticData, never staticData{}
 	dir string // path to analyzed program
@@ -28,7 +32,9 @@ type staticData struct { // always use buildStaticData, never staticData{}
 
 	fst *token.FileSet
 
-	typeInfo *types.Info
+	pkgInfo map[*packages.Package]*types.Info
+	uses    map[*ast.Ident]types.Object
+	defs    map[*ast.Ident]types.Object
 
 	astMap map[string][]*ast.File         // pkg path -> files
 	ast    []*ast.File                    // flattened list
@@ -38,8 +44,7 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	ssaPkgs  []*ssa.Package
 	ssaMains []*ssa.Package
 
-	// TODO: do we even need this?. Is there any more information in callGraph than in funcPerFunc?
-	callGraph *callgraph.Graph
+	funcDeclMap map[token.Pos]*ast.FuncDecl
 
 	// operations per function: func -> vartiable id (TODO: change to point to variable and not expression) -> funcs
 	opsPerFunk map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}
@@ -48,7 +53,7 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	// ast.Expr.(type) -> *ast.Ident: direct function (foo())
 	// ast.Expr.(type) -> *ast.SelectorExpr: methodCall (obj.Method())
 	// ast.Expr.(type) -> *ast.FuncLit: function literal (func() {...}())
-	funcsPerFunc map[*ast.FuncDecl][]ast.Expr
+	funcsPerFunc map[*ast.FuncDecl][]funcCall
 
 	// routine spawns from functions
 	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
@@ -66,8 +71,9 @@ func buildStaticData(dir string) (*staticData, error) {
 		ast:    make([]*ast.File, 0),
 		npm:    make(map[ast.Node]*packages.Package),
 
+		funcDeclMap:        make(map[token.Pos]*ast.FuncDecl),
 		opsPerFunk:         make(map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}),
-		funcsPerFunc:       make(map[*ast.FuncDecl][]ast.Expr),
+		funcsPerFunc:       make(map[*ast.FuncDecl][]funcCall),
 		goStatementPerFunc: make(map[*ast.FuncDecl][]*ast.GoStmt),
 	}
 	err := data.loadPackages()
@@ -75,11 +81,22 @@ func buildStaticData(dir string) (*staticData, error) {
 		log.Error(err.Error())
 		return data, err
 	}
+	data.buildTypeInfo()
 	data.buildAst()
 	// must be called afer load packages
 	data.buildSsa()
-	data.runPointerAnalysis()
-	data.buildCallGraph()
+	// data.runPointerAnalysis()
 
 	return data, nil
+}
+
+func (self staticData) callName(call funcCall) string {
+	res := self.getName(call.call) + ":"
+	if call.decl == nil {
+		res += self.getConcFuncName(call.call)
+	} else {
+		res += self.getName(call.decl.Name)
+	}
+
+	return res
 }

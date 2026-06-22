@@ -10,12 +10,14 @@
 
 package blockingStatic
 
-import "go/ast"
+import (
+	"go/ast"
+)
 
 type funcName int
 
 const (
-	unknown = iota
+	unknownFunc funcName = iota
 
 	chanSend
 	chanRecv
@@ -38,6 +40,17 @@ const (
 	wgGo
 
 	// TODO: list all
+)
+
+type objName int
+
+const (
+	unknownObj objName = iota
+
+	mutex
+	channel
+	condVar
+	wg
 )
 
 func isCompatibleFunc(a, b funcName) bool {
@@ -64,21 +77,19 @@ func isCompatibleFunc(a, b funcName) bool {
 	return false
 }
 
-func (self *staticData) isMutex(id *ast.Ident) bool {
-	named, ok := self.getNamed(id)
+func (self *staticData) getName(id ast.Expr) string {
+	if id == nil {
+		return "NIL"
+	}
 
-	return ok && named.Obj().Pkg().Path() == "sync" &&
-		(named.Obj().Name() == "Mutex" || named.Obj().Name() == "RWMutex")
-}
-
-func (self *staticData) isCondVar(id *ast.Ident) bool {
-	named, ok := self.getNamed(id)
-
-	return ok && named.Obj().Pkg().Path() == "sync" && named.Obj().Name() == "Cond"
-}
-
-func (self *staticData) isWaitGroup(id *ast.Ident) bool {
-	named, ok := self.getNamed(id)
-
-	return ok && named.Obj().Pkg().Path() == "sync" && named.Obj().Name() == "WaitGroup"
+	switch e := id.(type) {
+	case *ast.Ident:
+		return e.Name
+	case *ast.SelectorExpr:
+		return self.getName(e.X) + "." + e.Sel.Name
+	case *ast.FuncLit:
+		return "FuncLit"
+	default:
+		panic("Unknown expr type")
+	}
 }

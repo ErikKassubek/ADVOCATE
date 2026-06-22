@@ -33,6 +33,14 @@ func RunStaticBlockingAnalysis(dir string) error {
 	}
 
 	data.collectOperations()
+	for p, c := range data.funcsPerFunc {
+		fmt.Println(data.getName(p.Name), ": ")
+		for _, ch := range c {
+			fmt.Println("  ", data.callName(ch), " - ", data.isMutex(ch.call))
+		}
+
+		fmt.Println()
+	}
 	data.runAliasAnalysis()
 	return nil
 }
@@ -49,7 +57,7 @@ func (self *staticData) loadPackages() error {
 			packages.NeedSyntax |
 			packages.NeedTypes |
 			packages.NeedTypesInfo |
-			packages.LoadAllSyntax,
+			packages.NeedImports,
 		Dir: self.dir,
 	}
 

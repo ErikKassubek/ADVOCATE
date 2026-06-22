@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import random
 import math
+import numpy as np
 
 base = 600505
 num = 83
@@ -80,43 +81,37 @@ def plotGraph2():
         'legend.title_fontsize': 20,
     })
 
-    x = [2] + [15 * max(1, int(math.pow(10, math.sqrt(x)))) for x in range(10)]
+    # x-axis (approx. from figure)
+    x = np.array([0, 0.05, 0.1, 0.2, 0.4, 0.7, 1.1, 1.6])
 
-    elemSameOver  = [4.88, 4.90, 4.96, 5.18, 5.34, 5.44, 5.62, 6.08, 6.54, 7.03, 7.71]
-    elemDiffOver  = [4.85, 4.96, 5.01, 5.11, 5.29, 5.38, 5.46, 6.24, 6.88, 7.52, 8.01]
-    routOver      = [5.19, 5.28, 5.45, 5.73, 6.14, 6.30, 6.64, 7.17, 8.02, 9.12, 9.82]
+    # Upper curves (solid lines)
+    ops_upper = [4.9, 5.0, 5.1, 5.5, 6.2, 7.0, 8.2, 9.8]
+    routines_upper = [4.8, 4.9, 5.0, 5.4, 5.7, 6.4, 7.1, 8.2]
 
-    elemSameOver2 = [2.47, 2.48, 2.51, 2.71, 2.98, 2.94, 3.24, 3.45, 4.07, 4.40, 4.63]
-    elemDiffOver2 = [2.43, 2.50, 2.66, 2.93, 3.23, 3.41, 3.49, 3.61, 3.94, 4.25, 4.72]
-    routOver2     = [2.48, 2.51, 2.78, 2.94, 3.29, 3.49, 3.70, 4.33, 5.10, 5.78, 6.41]
+    # Lower curves (dashed lines)
+    ops_lower = [2.1, 2.2, 2.3, 2.5, 2.9, 3.4, 4.1, 5.1]
+    routines_lower = [2.3, 2.35, 2.4, 2.6, 2.8, 3.2, 3.5, 4.1]
 
+    # Plot
+    fig, ax = plt.subplots(figsize=(10, 5))
 
+    # Solid lines (upper)
+    ax.plot(x, ops_upper, 'bo-', label='Operations')
+    ax.plot(x, routines_upper, 'g*-', label='Routines')
 
-    
+    # Dashed lines (lower)
+    ax.plot(x, ops_lower, 'b--o')
+    ax.plot(x, routines_lower, 'g--*')
 
-    # Create figure and first axis
+    # Labels
+    ax.set_ylabel('Overhead')
+    ax.set_xlabel('Nr. Ops [M], Routines [0.1M]')
 
-    if True:
-        fig, ax1 = plt.subplots(figsize=(10, 6))
-        l1, = ax1.plot(x, elemSameOver, 'b^-', label="Elements (Same)")
-        l2, = ax1.plot(x, elemDiffOver, 'ro-', label="Elements (Different)")
-        l3, = ax1.plot(x, routOver, 'gx-', label="Routines")
+    # Legend
+    ax.legend(loc='upper left')
 
-        l4, = ax1.plot(x, elemSameOver2, 'b^--')
-        l5, = ax1.plot(x, elemDiffOver2, 'ro--')
-        l6, = ax1.plot(x, routOver2, 'gx--')
-
-        ax1.set_xlabel('Nr.')
-        ax1.set_ylabel('Runtime overhead')
-        ax1.tick_params(axis='y')
-        ax1.set_ylim(1, 12)
-
-    ax1.legend(loc='upper left')
-
-    
     plt.tight_layout()
     plt.show()
-
 
 if __name__ == "__main__":
     # print(buildVal())

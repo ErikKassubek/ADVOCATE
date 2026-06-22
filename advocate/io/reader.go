@@ -36,7 +36,7 @@ import (
 //   - int: The number of routines
 //   - int: The number of elements
 //   - error: An error if the trace could not be created
-func CreateTraceFromFiles(folderPath string) (int, int, error) {
+func CreateTraceFromFiles(folderPath string) (int, int, *trace.Trace, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -44,7 +44,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 	// traverse all files in the folder
 	files, err := os.ReadDir(folderPath)
 	if err != nil {
-		return 0, 0, err
+		return 0, 0, nil, err
 	}
 
 	tr := trace.NewTrace()
@@ -72,24 +72,22 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 
 		numberElems, err := createTraceFromFile(&tr, filePath, routine)
 		if err != nil {
-			return 0, elemCounter, err
+			return 0, elemCounter, nil, err
 		}
 		elemCounter += numberElems
 		numberRoutines++
 
 		if elemCounter > flags.MaxNumberElements {
-			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
+			return numberRoutines, elemCounter, nil, fmt.Errorf("To many elements")
 		}
 
 		if control.WasCanceled() {
-			return numberRoutines, elemCounter, fmt.Errorf("Canceled by memory")
+			return numberRoutines, elemCounter, nil, fmt.Errorf("Canceled by memory")
 		}
 	}
 
 	tr.Sort()
-	baseA.SetMainTrace(&tr)
-
-	return numberRoutines, elemCounter, nil
+	return numberRoutines, elemCounter, &tr, nil
 }
 
 // getTraceInfoFromFile reads in the information from a the trace_info.log file

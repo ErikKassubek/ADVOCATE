@@ -219,7 +219,7 @@ func getSpecialMuts() map[string]baseF.Constraint {
 	for id, dones := range baseA.WgDoneData {
 		for _, done := range dones {
 			for _, add := range baseA.WGAddData[id] {
-				if add.GetTPost() > done.GetTPost() {
+				if add.GetTCom() > done.GetTCom() {
 					continue
 				}
 

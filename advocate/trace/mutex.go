@@ -40,6 +40,7 @@ import (
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 type ElementMutex struct {
 	id                       int
 	index                    int
@@ -58,6 +59,7 @@ type ElementMutex struct {
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
+	request                  bool
 }
 
 // AddTraceElementMutex adds a new mutex element to the main trace
@@ -161,19 +163,19 @@ func (this *ElementMutex) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element.
+// GetTReq returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementMutex) GetTPre() int {
+func (this *ElementMutex) GetTReq() int {
 	return this.tPre
 }
 
-// GetTPost returns the tPost of the element.
+// GetTCom returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementMutex) GetTPost() int {
+func (this *ElementMutex) GetTCom() int {
 	return this.tPost
 }
 
@@ -182,6 +184,9 @@ func (this *ElementMutex) GetTPost() int {
 // Returns:
 //   - int: The timer of the element
 func (this *ElementMutex) GetTSort() int {
+	if this.request {
+		return this.tPre
+	}
 	if this.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -418,6 +423,27 @@ func (this *ElementMutex) GetID() int {
 //   - ID int: the trace id
 func (this *ElementMutex) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementMutex) IsRequest() bool {
+	return this.request
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementMutex) CanBeRequest() bool {
+	return true
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementMutex) SetRequest(req bool) {
+	this.request = req
 }
 
 // Copy the element

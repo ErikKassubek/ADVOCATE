@@ -61,7 +61,7 @@ func ParseTrace(tr *trace.Trace) {
 				gopie.CalculateRelRule2AddElem(elem)
 			}
 
-			if elem.GetTPost() == 0 {
+			if elem.GetTCom() == 0 {
 				continue
 			}
 
@@ -147,7 +147,7 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			gfuzz.ChannelInfoTrace[elem.GetObjId()] = e
 			gfuzz.NumberClose++
 		case trace.ChannelSend:
-			if elem.GetTPost() == 0 {
+			if elem.GetTCom() == 0 {
 				return
 			}
 

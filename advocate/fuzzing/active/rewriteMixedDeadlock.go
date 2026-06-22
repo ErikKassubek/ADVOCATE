@@ -48,31 +48,31 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	//fmt.Printf("rewriteMixedDeadlock: main=R%d, holder=R%d (lock=%d, chan=%d), waiter=R%d (lock=%d)\n",
 	//	mainRout, holderRout, lockHolder.GetTPre(), cdHolder.GetTPre(), waiterRout, lockWaiter.GetTPre())
 
-	lastTime := max(lockHolder.GetTPost(), lockWaiter.GetTPost())
+	lastTime := max(lockHolder.GetTCom(), lockWaiter.GetTCom())
 	if mainTrace := tr.GetRoutineTrace(mainRout); len(mainTrace) > 0 {
-		if lastElem := mainTrace[len(mainTrace)-1]; lastElem.GetTPost() > lastTime {
-			lastTime = lastElem.GetTPost()
+		if lastElem := mainTrace[len(mainTrace)-1]; lastElem.GetTCom() > lastTime {
+			lastTime = lastElem.GetTCom()
 		}
 	}
 	tr.ShortenTrace(lastTime, true)
 
-	tr.ShortenRoutine(holderRout, cdHolder.GetTPost()+1)
-	tr.ShortenRoutine(waiterRout, lockWaiter.GetTPost()+1)
+	tr.ShortenRoutine(holderRout, cdHolder.GetTCom()+1)
+	tr.ShortenRoutine(waiterRout, lockWaiter.GetTCom()+1)
 
 	//fmt.Printf("rewriteMixedDeadlock: holder R%d kept to t=%d, waiter R%d kept to t=%d\n",
 	//	holderRout, cdHolder.GetTPost(), waiterRout, lockWaiter.GetTPost())
 
 	// Reorder
-	if lockWaiter.GetTPre() < lockHolder.GetTPre() {
-		targetTPre := lockHolder.GetTPost() + 1
-		shift := targetTPre - lockWaiter.GetTPre()
+	if lockWaiter.GetTReq() < lockHolder.GetTReq() {
+		targetTPre := lockHolder.GetTCom() + 1
+		shift := targetTPre - lockWaiter.GetTReq()
 		if shift > 0 {
 			waiterTrace := tr.GetRoutineTrace(waiterRout)
 			if len(waiterTrace) == 0 {
 				return fmt.Errorf("rewriteMixedDeadlock: waiter R%d has no trace", waiterRout)
 			}
 			startElem := waiterTrace[0]
-			startTPre := startElem.GetTPre()
+			startTPre := startElem.GetTReq()
 			//fmt.Printf("rewriteMixedDeadlock: shifting waiter R%d by %d\n", waiterRout, shift)
 			tr.ShiftRoutine(waiterRout, startTPre, shift)
 			tr.ShiftConcurrentOrAfterToAfter(lockWaiter)
@@ -80,8 +80,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	}
 
 	// Ensure holder's channel op is after lock acquire
-	if cdHolder.GetTPre() <= lockHolder.GetTPre() {
-		newTPre := lockHolder.GetTPost() + 1
+	if cdHolder.GetTReq() <= lockHolder.GetTReq() {
+		newTPre := lockHolder.GetTCom() + 1
 		cdHolder.SetTPre(newTPre)
 		cdHolder.SetTPost(newTPre)
 	}
@@ -121,7 +121,7 @@ func max(a, b int) int {
 
 // blockElement to force an element to block (tPost=0) while preserving tPre
 func blockElement(elem trace.Element) {
-	savedTPre := elem.GetTPre()
+	savedTPre := elem.GetTReq()
 	// SetTWithoutNotExecuted sets tPost=0 ONLY if the original tPost was non-zero
 	// element will be marked as "never completed"
 	elem.SetTWithoutNotExecuted(0)

@@ -44,6 +44,10 @@ func createCancelButton() *componentButton {
 	return createButton("Cancel", func() { win.WriteGui("Cancel..."); win.worker.cancel() })
 }
 
+func createTraceButton() *componentButton {
+	return createButton("Trace Viewer", win.openTraceViewer)
+}
+
 func (self *componentButton) disable() {
 	self.runButton.Disable()
 }

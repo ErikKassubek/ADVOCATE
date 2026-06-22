@@ -152,7 +152,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *clock.VectorClock) {
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: routine, ObjID: id, TPre: ch.GetTPre(), ObjType: opC, File: ch.GetFile(), Line: ch.GetLine()}
+		RoutineID: routine, ObjID: id, TPre: ch.GetTReq(), ObjType: opC, File: ch.GetFile(), Line: ch.GetLine()}
 
 	if id == -1 {
 		leaks[routine] = TERLeak{helper.LNilChan,
@@ -225,7 +225,7 @@ func CheckForLeak() {
 				elem2 := partner.Elem.Elem
 				file2 := elem2.GetFile()
 				line2 := elem2.GetLine()
-				tPre2 := elem2.GetTPre()
+				tPre2 := elem2.GetTReq()
 
 				if vcTID.Sel {
 					arg1 := results.TraceElementResult{ // select
@@ -354,7 +354,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 
 	routine := se.GetRoutine()
 	id := se.GetObjId()
-	tPre := se.GetTPre()
+	tPre := se.GetTReq()
 
 	if len(ids) == 0 {
 		file, line, _, err := trace.InfoFromTID(se.GetTID())
@@ -533,7 +533,7 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 
 	elem := baseA.MostRecentAcquireTotal[id].Elem
 
-	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
+	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTReq()
 
 	switch opM {
 	case trace.MutexLock, trace.MutexRLock:
@@ -549,7 +549,7 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: mu.GetRoutine(), ObjID: id, TPre: mu.GetTPre(), ObjType: opM, File: mu.GetFile(), Line: mu.GetLine()}
+		RoutineID: mu.GetRoutine(), ObjID: id, TPre: mu.GetTReq(), ObjType: opM, File: mu.GetFile(), Line: mu.GetLine()}
 
 	arg2 := results.TraceElementResult{
 		RoutineID: elem.GetRoutine(), ObjID: id, TPre: tPre2, ObjType: objType2, File: file2, Line: line2}
@@ -645,7 +645,7 @@ func CheckForStuckRoutine(simple bool) bool {
 			continue
 		}
 
-		lastTPost := lastElem.GetTPost()
+		lastTPost := lastElem.GetTCom()
 
 		leakType := helper.LUnknown
 		objectType := trace.None
@@ -687,7 +687,7 @@ func CheckForStuckRoutine(simple bool) bool {
 		}
 
 		arg := results.TraceElementResult{
-			RoutineID: routine, ObjID: lastElem.GetObjId(), TPre: lastElem.GetTPre(),
+			RoutineID: routine, ObjID: lastElem.GetObjId(), TPre: lastElem.GetTReq(),
 			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 

@@ -63,7 +63,7 @@ func Change(graph *PoGraph, wa *trace.ElementWait) {
 //   - wa *TraceElementWait: The trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func Wait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
-	if recorded && wa.GetTPost() == 0 {
+	if recorded && wa.GetTCom() == 0 {
 		return
 	}
 

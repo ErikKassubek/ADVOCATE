@@ -139,19 +139,19 @@ func (this *ElementAtomic) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
+// GetTReq returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementAtomic) GetTPre() int {
+func (this *ElementAtomic) GetTReq() int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
+// GetTCom returns the tPost of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementAtomic) GetTPost() int {
+func (this *ElementAtomic) GetTCom() int {
 	return this.tPost
 }
 
@@ -346,6 +346,27 @@ func (this *ElementAtomic) GetID() int {
 //   - ID int: the trace id
 func (this *ElementAtomic) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementAtomic) IsRequest() bool {
+	return false
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementAtomic) CanBeRequest() bool {
+	return false
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementAtomic) SetRequest(_ bool) {
+	return
 }
 
 // Copy the atomic element

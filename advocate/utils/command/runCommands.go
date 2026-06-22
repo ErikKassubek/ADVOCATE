@@ -19,6 +19,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 )
 
@@ -28,12 +29,13 @@ import (
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
 //   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //   - timeout int: timeout in seconds, -1 for no timeout
+//   - dir string: dir where the command should be executed. "" to not set
 //   - name string: main command
 //   - args ...string: command line parameters
 //
 // Returns:
 //   - error
-func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string) error {
+func RunCommand(osOut, osErr *os.File, timeout int, dir string, name string, args ...string) error {
 
 	var ctx context.Context
 	var cancel context.CancelFunc
@@ -48,6 +50,10 @@ func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string)
 	defer control.RemoveRunningCom(id)
 
 	cmd := exec.CommandContext(ctx, name, args...)
+
+	if dir != "" {
+		cmd.Dir = dir
+	}
 
 	// TODO: os.Stdout and osOut is somehow mixed, os.Stdout points to the file, osOut points to the terminal
 	if flags.Output {
@@ -82,7 +88,14 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, NoTimeout, "go", "mod", "tidy")
+	RunCommand(nil, nil, NoTimeout, NoDir, "go", "mod", "tidy")
+}
+
+func BuildRuntime() error {
+	log.Info("Build Runtime")
+	pathMake := filepath.Join(paths.GoPatch, "src")
+
+	return RunCommand(nil, nil, NoTimeout, pathMake, "./make.bash")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

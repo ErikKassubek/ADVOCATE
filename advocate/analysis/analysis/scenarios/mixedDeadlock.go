@@ -250,7 +250,7 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		if stack, ok := t.ActiveRDs[lockID]; ok && len(stack) > 0 {
 			topRD := stack[len(stack)-1]
 			fmt.Printf("DEBUG: CS lock for T%d chan: lock=%d, tPre=%d\n",
-				tid, lockID.ID, topRD.Elem.GetTPre())
+				tid, lockID.ID, topRD.Elem.GetTReq())
 			assocRDs = append(assocRDs, mdLockRef{LockID: lockID, IsCS: true, RD: topRD})
 		}
 	}
@@ -487,10 +487,10 @@ func mdDetermineRoles(
 	// Tie-break: larger tPre = acquired later = holder
 	tPreA, tPreB := 0, 0
 	if refA.RD.Elem != nil {
-		tPreA = refA.RD.Elem.GetTPre()
+		tPreA = refA.RD.Elem.GetTReq()
 	}
 	if refB.RD.Elem != nil {
-		tPreB = refB.RD.Elem.GetTPre()
+		tPreB = refB.RD.Elem.GetTReq()
 	}
 	if tPreA >= tPreB {
 		return cdA, refA, cdB, refB
@@ -597,7 +597,7 @@ func mdReportCandidate(
 
 // mdPairKey returns a canonical key for a channel-element pair (de-duplication)
 func mdPairKey(a, b *trace.ElementChannel) [2]*trace.ElementChannel {
-	if a.GetTPre() <= b.GetTPre() {
+	if a.GetTReq() <= b.GetTReq() {
 		return [2]*trace.ElementChannel{a, b}
 	}
 	return [2]*trace.ElementChannel{b, a}

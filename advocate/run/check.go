@@ -11,6 +11,7 @@
 package run
 
 import (
+	"advocate/utils/command"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -24,8 +25,13 @@ import (
 func CheckBin() error {
 	path := filepath.Join(paths.GoPatch, "bin", "go")
 	if _, err := os.Stat(path); err != nil && os.IsNotExist(err) {
-		pathMake := filepath.Join(paths.GoPatch, "src")
-		return fmt.Errorf("Could not find %s. Run make.bash or make.bat in %s before running advocate.", path, pathMake)
+		log.Importantf("Could not find %s. Build patched go runtime ...", path)
+		err = command.BuildRuntime()
+		if err != nil {
+			log.Error("Failed to build runtime")
+			return err
+		}
+		log.Important("Finished building patched runtime.")
 	}
 
 	return nil

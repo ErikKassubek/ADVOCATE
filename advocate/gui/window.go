@@ -32,8 +32,8 @@ var (
 )
 
 type window struct {
-	a fyne.App
-	w fyne.Window
+	app    fyne.App
+	window fyne.Window
 
 	left  *fyne.Container
 	right *fyne.Container
@@ -42,6 +42,7 @@ type window struct {
 	projSelector *componentPathSelector
 	runButton    *componentButton
 	cancelButton *componentButton
+	traceButton  *componentButton
 	output       *componentOutput
 	progressBar  *componentProgress
 	settings     *componentSetting
@@ -50,12 +51,12 @@ type window struct {
 }
 
 func (self *window) create() {
-	self.a = app.New()
-	self.w = self.a.NewWindow("Advocate")
+	self.app = app.New()
+	self.window = self.app.NewWindow("Advocate")
 
 	// self.w.Resize(fyne.NewSize(800, 500))
-	self.w.Resize(fyne.NewSize(1920, 1080))
-	self.w.CenterOnScreen()
+	self.window.Resize(fyne.NewSize(1920, 1080))
+	self.window.CenterOnScreen()
 
 	self.handleClose()
 
@@ -74,6 +75,7 @@ func (self *window) build() {
 		container.NewVBox(
 			self.runButton.Container,
 			self.cancelButton.Container,
+			self.traceButton.Container,
 		),
 		nil,
 		nil,
@@ -94,15 +96,16 @@ func (self *window) build() {
 	content := container.NewHSplit(self.left, self.right)
 	content.SetOffset(0.33)
 
-	self.w.SetContent(content)
+	self.window.SetContent(content)
 }
 
 func (self *window) createComponents() {
 	self.output = createOutput()
 
-	self.projSelector = createPathSelector("Project", &flags.ProgPath)
+	self.projSelector = createPathSelector("Project", &flags.ProgPath, getAllTestNames, win.window)
 	self.runButton = createRunButton()
 	self.cancelButton = createCancelButton()
+	self.traceButton = createTraceButton()
 	self.progressBar = createProgressBar()
 	self.settings = createSettings()
 
@@ -112,13 +115,13 @@ func (self *window) createComponents() {
 }
 
 func (self *window) showAndRun() {
-	self.w.ShowAndRun()
+	self.window.ShowAndRun()
 }
 
 func (self *window) handleClose() {
-	self.w.SetCloseIntercept(func() {
+	self.window.SetCloseIntercept(func() {
 		self.WriteGui("Application shutting down...")
-		self.w.Close()
+		self.window.Close()
 		os.Exit(0)
 	})
 }

@@ -46,6 +46,7 @@ import (
 //   - numberConcurrentWeak int: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 type ElementChannel struct {
 	id                       int
 	index                    int
@@ -69,6 +70,7 @@ type ElementChannel struct {
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
+	request                  bool
 }
 
 func (this *ElementChannel) IsValid() bool {
@@ -202,11 +204,11 @@ func (this *ElementChannel) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element
+// GetTReq returns the tPre of the element
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementChannel) GetTPre() int {
+func (this *ElementChannel) GetTReq() int {
 	return this.tPre
 }
 
@@ -215,6 +217,9 @@ func (this *ElementChannel) GetTPre() int {
 // Returns:
 //   - float32: The time of the element
 func (this *ElementChannel) GetTSort() int {
+	if this.request {
+		return this.tPre
+	}
 	if this.tPost == 0 {
 		return math.MaxInt
 	}
@@ -315,11 +320,11 @@ func (this *ElementChannel) GetWVC() *clock.VectorClock {
 	return this.wCl
 }
 
-// GetTPost returns the tPost of the element
+// GetTCom returns the tPost of the element
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementChannel) GetTPost() int {
+func (this *ElementChannel) GetTCom() int {
 	return this.tPost
 }
 
@@ -576,7 +581,7 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	timeString := ""
 	posStr := ""
 	if !sel {
-		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTPre(), sep, this.GetTPost())
+		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTReq(), sep, this.GetTCom())
 		posStr = sep + this.GetPos()
 	}
 
@@ -597,6 +602,27 @@ func (this *ElementChannel) GetID() int {
 //   - ID int: the trace id
 func (this *ElementChannel) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementChannel) IsRequest() bool {
+	return this.request
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementChannel) CanBeRequest() bool {
+	return true
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementChannel) SetRequest(req bool) {
+	this.request = req
 }
 
 // Copy creates a copy of the channel element
@@ -708,7 +734,7 @@ func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	oID := this.GetOID()
 
 	// return -1 if closed by channel
-	if this.GetClosed() || this.GetTPost() == 0 {
+	if this.GetClosed() || this.GetTCom() == 0 {
 		return nil
 	}
 

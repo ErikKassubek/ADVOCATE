@@ -27,7 +27,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 	ch.SetVc(CurrentVC[routine])
 	ch.SetWVc(CurrentWVC[routine])
 
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 
@@ -97,7 +97,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 // Parameter:
 //   - se *trace.TraceElementSelect: the select element
 func UpdateHBSelect(se *trace.ElementSelect) {
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
+	noChannel := se.GetChosenDefault() || se.GetTCom() == 0
 
 	routine := se.GetRoutine()
 
@@ -131,7 +131,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.GetTCom() != 0 && recv.GetTCom() != 0 {
 		CurrentVC[recv.GetRoutine()].Sync(CurrentVC[sender.GetRoutine()])
 		CurrentVC[sender.GetRoutine()] = CurrentVC[recv.GetRoutine()].Copy()
 		CurrentVC[sender.GetRoutine()].Inc(sender.GetRoutine())
@@ -151,7 +151,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 func Send(ch *trace.ElementChannel) {
 	routine := ch.GetRoutine()
 
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		CurrentVC[routine].Inc(routine)
 		CurrentWVC[routine].Inc(routine)
 		return
@@ -214,7 +214,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*clock.VectorClock) {
 	routine := ch.GetRoutine()
 	qSize := ch.GetQSize()
 
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		vc[routine].Inc(routine)
 		wVc[routine].Inc(routine)
 		return
@@ -255,7 +255,7 @@ func StuckChan(routine int) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Close(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 
@@ -271,7 +271,7 @@ func Close(ch *trace.ElementChannel) {
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
 func RecvC(ch *trace.ElementChannel, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 

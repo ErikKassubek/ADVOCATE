@@ -138,7 +138,7 @@ func createSettingComponents() *settingComponents {
 				}
 				flags.ParseAnalysisCases()
 			}, true, true),
-		tracePath: createPathSelector("Trace", &flags.TracePath),
+		tracePath: createPathSelector("Trace", &flags.TracePath, getAllTestNames, win.window),
 	}
 
 	return &to

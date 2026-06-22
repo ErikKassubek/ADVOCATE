@@ -23,7 +23,7 @@ import (
 func AddFuzzingSelect(e *trace.ElementSelect) {
 	fs := baseF.FuzzingSelect{
 		ID:              e.GetReplayID(),
-		T:               e.GetTPost(),
+		T:               e.GetTCom(),
 		ChosenCase:      e.GetChosenIndex(),
 		NumberCases:     len(e.GetCases()),
 		ContainsDefault: e.GetContainsDefault(),

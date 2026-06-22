@@ -79,7 +79,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 						// If yes, make sure the unlock happens before the final lock attempts!
 						if (*unlock).GetObjId() == lockElem.GetObjId() {
 							// Do nothing if the unlock already happens before the lockset element
-							if (*unlock).GetTPre() < lockElem.GetTPre() {
+							if (*unlock).GetTReq() < lockElem.GetTReq() {
 								break
 							}
 
@@ -99,9 +99,9 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							}
 
 							routineEndElem := tr.GetRoutineTrace(lockElem.GetRoutine())[len(tr.GetRoutineTrace(lockElem.GetRoutine()))-1]
-							tr.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTPre(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
-							if routineEndElem.GetTPost() > lastTime {
-								lastTime = routineEndElem.GetTPost()
+							tr.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTReq(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
+							if routineEndElem.GetTCom() > lastTime {
+								lastTime = routineEndElem.GetTCom()
 							}
 							tr.ShiftConcurrentOrAfterToAfter(unlock)
 						}
@@ -117,7 +117,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	// analysis.PrintTrace()
 
 	for _, elem := range bug.TraceElement2 {
-		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetObjId())
+		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTReq(), elem.GetTCom(), elem.GetObjId())
 	}
 
 	return nil

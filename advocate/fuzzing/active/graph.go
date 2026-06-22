@@ -39,11 +39,11 @@ func rewriteGraph(tr *trace.Trace, bug bugs.Bug, expectedErrorCode int) error {
 
 		tr.ShiftConcurrentOrAfterToAfter(elem1)
 
-		if minTime == -1 || elem1.GetTPre() < minTime {
-			minTime = elem1.GetTPre()
+		if minTime == -1 || elem1.GetTReq() < minTime {
+			minTime = elem1.GetTReq()
 		}
-		if maxTime == -1 || elem1.GetTPre() > maxTime {
-			maxTime = elem1.GetTPre()
+		if maxTime == -1 || elem1.GetTReq() > maxTime {
+			maxTime = elem1.GetTReq()
 		}
 
 	}

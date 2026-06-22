@@ -147,7 +147,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	arg1 := results.TraceElementResult{ // send
 		RoutineID: elem.GetRoutine(),
 		ObjID:     id,
-		TPre:      elem.GetTPre(),
+		TPre:      elem.GetTReq(),
 		ObjType:   "CS",
 		File:      fileSend,
 		Line:      elem.GetLine(),
@@ -156,7 +156,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	arg2 := results.TraceElementResult{ // close
 		RoutineID: baseA.CloseData[id].GetRoutine(),
 		ObjID:     id,
-		TPre:      closeElem.GetTPre(),
+		TPre:      closeElem.GetTReq(),
 		ObjType:   "CC",
 		File:      closeElem.GetFile(),
 		Line:      closeElem.GetLine(),

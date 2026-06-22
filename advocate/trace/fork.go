@@ -32,6 +32,7 @@ import (
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 type ElementFork struct {
 	id                       int
 	index                    int
@@ -114,19 +115,19 @@ func (this *ElementFork) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
+// GetTReq returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementFork) GetTPre() int {
+func (this *ElementFork) GetTReq() int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
+// GetTCom returns the tPost of the element. For atomic elements, tPre and tPost are the same
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementFork) GetTPost() int {
+func (this *ElementFork) GetTCom() int {
 	return this.tPost
 }
 
@@ -318,6 +319,27 @@ func (this *ElementFork) GetID() int {
 //   - ID int: the trace id
 func (this *ElementFork) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementFork) IsRequest() bool {
+	return false
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementFork) CanBeRequest() bool {
+	return false
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementFork) SetRequest(_ bool) {
+	return
 }
 
 // Copy the element

@@ -468,10 +468,10 @@ func rewriteMutexLeak(tr *trace.Trace, bug bugs.Bug) error {
 	tr.RemoveConcurrent(bug.TraceElement1[0], 0)
 
 	// set tPost of l to non zero
-	lockOp.SetT(lockOp.GetTPre())
+	lockOp.SetT(lockOp.GetTReq())
 
 	// add the start and stop signal after l -> T_1' + T_2' + [X_s, l, X_e]
-	tr.AddTraceElementReplay(lockOp.GetTPre()+1, helper.ExitCodeLeakMutex)
+	tr.AddTraceElementReplay(lockOp.GetTReq()+1, helper.ExitCodeLeakMutex)
 
 	return nil
 }
@@ -497,7 +497,7 @@ func rewriteWaitGroupLeak(tr *trace.Trace, bug bugs.Bug) error {
 
 	tr.ShiftConcurrentOrAfterToAfter(wait)
 
-	tr.AddTraceElementReplay(wait.GetTPre()+1, helper.ExitCodeLeakWG)
+	tr.AddTraceElementReplay(wait.GetTReq()+1, helper.ExitCodeLeakWG)
 
 	nrAdd, nrDone := tr.GetNrAddDoneBeforeTime(wait.GetObjId(), wait.GetTSort())
 
@@ -531,7 +531,7 @@ func rewriteCondLeak(tr *trace.Trace, bug bugs.Bug) error {
 	if len(res["signal"]) > 0 {
 		couldRewrite = true
 
-		wait.SetT(wait.GetTPre())
+		wait.SetT(wait.GetTReq())
 
 		// move the signal after the wait
 		tr.ShiftConcurrentOrAfterToAfter(wait)
@@ -543,12 +543,12 @@ func rewriteCondLeak(tr *trace.Trace, bug bugs.Bug) error {
 		tr.ShiftConcurrentToBefore(broad)
 	}
 
-	wait.SetT(wait.GetTPre())
+	wait.SetT(wait.GetTReq())
 
 	if len(bug.TraceElement2) == 0 {
-		tr.AddTraceElementReplay(wait.GetTPre()+1, helper.ExitCodeLeakCond)
+		tr.AddTraceElementReplay(wait.GetTReq()+1, helper.ExitCodeLeakCond)
 	} else {
-		tr.AddTraceElementReplay(wait.GetTPre()+1, helper.ExitCodeLeakCond)
+		tr.AddTraceElementReplay(wait.GetTReq()+1, helper.ExitCodeLeakCond)
 	}
 
 	if couldRewrite {

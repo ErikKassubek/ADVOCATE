@@ -126,19 +126,19 @@ func (this *ElementOnce) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element.
+// GetTReq returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementOnce) GetTPre() int {
+func (this *ElementOnce) GetTReq() int {
 	return this.tPre
 }
 
-// GetTPost returns the tPost of the element.
+// GetTCom returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementOnce) GetTPost() int {
+func (this *ElementOnce) GetTCom() int {
 	return this.tPost
 }
 
@@ -370,6 +370,27 @@ func (this *ElementOnce) GetID() int {
 //   - ID int: the trace id
 func (this *ElementOnce) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementOnce) IsRequest() bool {
+	return false
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementOnce) CanBeRequest() bool {
+	return false
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementOnce) SetRequest(_ bool) {
+	return
 }
 
 // Copy the element

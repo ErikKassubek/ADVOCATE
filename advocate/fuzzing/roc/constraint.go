@@ -51,10 +51,10 @@ func startConstraint(num, length int) []baseF.Constraint {
 		ind := rand.Intn(len(trace))
 		elem := trace[ind]
 
-		if _, ok := alreadyAdded[elem.GetTPost()]; ok {
+		if _, ok := alreadyAdded[elem.GetTCom()]; ok {
 			continue
 		}
-		alreadyAdded[elem.GetTPost()] = struct{}{}
+		alreadyAdded[elem.GetTCom()] = struct{}{}
 
 		if !baseF.CanBeAddedToConstraint(elem) {
 			continue

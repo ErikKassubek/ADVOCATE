@@ -30,12 +30,14 @@ import (
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
+//   - request bool: if true, requests and commits are separate elements, otherwise they are the same
 type Trace struct {
 	traces                map[int][]Element
 	hbWasCalc             bool
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
+	request               bool
 }
 
 // NewTrace creates a new empty trace structure
@@ -209,14 +211,14 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 	}
 
 	for index, elem := range this.traces[routine] {
-		if elem.GetTPre() == tPre {
+		if elem.GetTReq() == tPre {
 			return this.traces[routine][index], nil
 		}
 	}
 
 	for routine, trace := range this.traces {
 		for index, elem := range trace {
-			if elem.GetTPre() == tPre {
+			if elem.GetTReq() == tPre {
 				return this.traces[routine][index], nil
 			}
 		}
@@ -393,7 +395,7 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 			switch e := elem.(type) {
 			case *ElementWait:
 				if e.GetObjId() == wgID {
-					if e.GetTPre() < waitTime {
+					if e.GetTReq() < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {
 							nrAdd++
@@ -422,7 +424,7 @@ func (this *Trace) ShiftTrace(startTPre int, shift int) bool {
 
 	for routine, trace := range this.traces {
 		for index, elem := range trace {
-			if elem.GetTPre() >= startTPre {
+			if elem.GetTReq() >= startTPre {
 				this.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 			}
 		}
@@ -449,17 +451,17 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 
 			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetTPre() < minTime {
-					minTime = elem.GetTPre()
+				if minTime == -1 || elem.GetTReq() < minTime {
+					minTime = elem.GetTReq()
 				}
 			}
 		}
 	}
 
-	distance := element.GetTPre() - minTime + 1
+	distance := element.GetTReq() - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetTPre()
+		tSort := elem.GetTReq()
 		elem.SetT(tSort + distance)
 	}
 }
@@ -484,30 +486,30 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 			}
 
 			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
-				if elem.GetTPre() <= start {
+				if elem.GetTReq() <= start {
 					continue
 				}
 
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetTPre() < minTime {
-					minTime = elem.GetTPre()
+				if minTime == -1 || elem.GetTReq() < minTime {
+					minTime = elem.GetTReq()
 				}
 			} else {
-				if maxNotMoved == 0 || elem.GetTPre() > maxNotMoved {
-					maxNotMoved = elem.GetTPre()
+				if maxNotMoved == 0 || elem.GetTReq() > maxNotMoved {
+					maxNotMoved = elem.GetTReq()
 				}
 			}
 		}
 	}
 
-	if element.GetTPost() == 0 {
+	if element.GetTCom() == 0 {
 		element.SetT(maxNotMoved + 1)
 	}
 
-	distance := element.GetTPre() - minTime + 1
+	distance := element.GetTReq() - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetTPre()
+		tSort := elem.GetTReq()
 		elem.SetT(tSort + distance)
 	}
 
@@ -608,7 +610,7 @@ func (this *Trace) RemoveLater(tPost int) {
 	for routine, trace := range this.traces {
 		newElems := make([]Element, 0)
 		for _, elem := range trace {
-			if elem.GetTPost() > tPost {
+			if elem.GetTCom() > tPost {
 				newElems = append(newElems, elem.Copy(mapping, true))
 			}
 		}
@@ -632,7 +634,7 @@ func (this *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 	}
 
 	for index, elem := range this.traces[routine] {
-		if elem.GetTPre() >= startTSort {
+		if elem.GetTReq() >= startTSort {
 			this.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 		}
 	}
@@ -723,7 +725,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					thread int
 					vc     *clock.VectorClock
 					wVc    *clock.VectorClock
-				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
+				}{elemStr, elem.GetTCom(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
 			}
 		}
 	}
@@ -856,6 +858,46 @@ func (this *Trace) GetTraceSection(start, end int) []Element {
 	return res
 }
 
+// split all blocking elements into request and commit
+func (this *Trace) AsRequestCommit() {
+	this.request = true
+
+	mapping := make(map[string]Element)
+
+	newTr := make(map[int][]Element)
+
+	for rout, tr := range this.traces {
+		newRout := make([]Element, 0)
+		for _, elem := range tr {
+			if elem.CanBeRequest() {
+				newElem := elem.Copy(mapping, true)
+				newElem.SetRequest(true)
+				newRout = append(newRout, newElem)
+				newRout = append(newRout, elem)
+			}
+
+		}
+		newTr[rout] = newRout
+	}
+
+	this.traces = newTr
+}
+
+// Make the times consecutive. Only works if trace is request commit trace
+func (this *Trace) NormalizeRequestCommit() {
+	if !this.request {
+		return
+	}
+
+	traceIter := this.AsIterator()
+	i := 0
+
+	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
+		elem.SetT(i)
+		i++
+	}
+}
+
 // Next returns the next element from the iterator. If all elements have been returned
 // already, return nul
 //
@@ -878,13 +920,18 @@ func (this *Iterator) Next() Element {
 			continue
 		}
 
-		// ignore non executed operations
-		tSort := trace[this.currentIndex[routine]].GetTSort()
+		elem := trace[this.currentIndex[routine]]
+		tSort := elem.GetTSort()
+
+		if req := elem.IsRequest(); req {
+			elem.GetTReq()
+		}
+
 		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
-		if minTSort == -1 || trace[this.currentIndex[routine]].GetTSort() < minTSort {
-			minTSort = trace[this.currentIndex[routine]].GetTSort()
+		if minTSort == -1 || tSort < minTSort {
+			minTSort = tSort
 			minRoutine = routine
 		}
 	}

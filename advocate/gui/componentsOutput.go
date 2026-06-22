@@ -111,8 +111,8 @@ func (self *componentOutput) write(lv log.InfoLevel, text string) {
 	self.outputList.ScrollToBottom()
 }
 
-func (self *window) write(lv log.InfoLevel, msg string) {
-	self.output.write(lv, msg)
+func (self *window) write(lv log.InfoLevel, msg ...any) {
+	self.output.write(lv, fmt.Sprint(msg))
 }
 
 func (self *window) writef(lv log.InfoLevel, format string, a ...any) {
@@ -120,8 +120,8 @@ func (self *window) writef(lv log.InfoLevel, format string, a ...any) {
 	self.output.write(lv, msg)
 }
 
-func (self *window) WriteGui(msg string) {
-	self.output.write(log.GuiLv, msg)
+func (self *window) WriteGui(msg ...any) {
+	self.output.write(log.GuiLv, fmt.Sprint(msg))
 }
 
 func (self *window) writeGuif(format string, a ...any) {
@@ -129,8 +129,8 @@ func (self *window) writeGuif(format string, a ...any) {
 	self.output.write(log.GuiLv, msg)
 }
 
-func (self *window) writeErr(msg string) {
-	self.output.write(log.ErrorLv, msg)
+func (self *window) writeErr(msg ...any) {
+	self.output.write(log.ErrorLv, fmt.Sprint(msg))
 }
 
 func (self *window) writeErrf(format string, a ...any) {

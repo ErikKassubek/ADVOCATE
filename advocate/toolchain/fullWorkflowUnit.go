@@ -525,9 +525,9 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	var err error
 	if flags.TimeoutRecording != -1 {
 		timeoutRecString := fmt.Sprintf("%ds", flags.TimeoutRecording)
-		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, command.NoDir, "go", "test", "-v", "-timeout", timeoutRecString, "-count=1", "-run="+testName, packagePath)
 	} else {
-		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
+		err = command.RunCommand(origStdout, origStderr, command.NoTimeout, command.NoDir, "go", "test", "-v", "-count=1", "-run="+testName, packagePath)
 	}
 
 	return err
@@ -570,10 +570,10 @@ func unitTestRecord(pkg, file, testName string,
 	// Set GOROOT
 	os.Setenv("GOROOT", paths.GoPatch)
 
-	command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "version")
+	command.RunCommand(osOut, osErr, command.NoTimeout, command.NoDir, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := command.RunCommand(osOut, osErr, command.NoTimeout, command.NoDir, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isErrorCancel(err) { // canceled
 			return err
@@ -686,7 +686,7 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		command.RunCommand(osOut, osErr, command.NoTimeout, command.NoDir, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

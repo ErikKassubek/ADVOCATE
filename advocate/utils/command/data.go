@@ -14,6 +14,7 @@ import "context"
 
 const (
 	NoTimeout = -1
+	NoDir     = ""
 )
 
 var (

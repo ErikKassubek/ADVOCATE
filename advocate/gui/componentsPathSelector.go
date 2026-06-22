@@ -12,12 +12,7 @@ package gui
 
 import (
 	"fmt"
-	"go/ast"
-	"go/parser"
-	"go/token"
-	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"fyne.io/fyne/v2"
@@ -39,7 +34,7 @@ type componentPathSelector struct {
 	path string
 }
 
-func createPathSelector(label string, valToSet *string) *componentPathSelector {
+func createPathSelector(label string, valToSet *string, onChange func(path string), parent fyne.Window) *componentPathSelector {
 	cps := &componentPathSelector{}
 
 	cps.selectedPathLabel = widget.NewLabel(fmt.Sprintf("No %s selected", strings.ToLower(label)))
@@ -63,10 +58,14 @@ func createPathSelector(label string, valToSet *string) *componentPathSelector {
 					cps.selectedPathLabel.SetText(filepath.Base(path))
 
 					cps.path = path
-					*valToSet = path
-					cps.getAllTestNames()
+					if valToSet != nil {
+						*valToSet = path
+					}
+					if onChange != nil {
+						onChange(path)
+					}
 				},
-				win.w,
+				parent,
 			)
 
 			fileDialog.Show()
@@ -84,53 +83,8 @@ func createPathSelector(label string, valToSet *string) *componentPathSelector {
 	return cps
 }
 
-func (self *componentPathSelector) getAllTestNames() {
-	if self.path == "" {
-		return
-	}
-
-	var testNames []string
-
-	err := filepath.Walk(self.path, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		if info.IsDir() {
-			return nil
-		}
-
-		if !strings.HasSuffix(path, "_test.go") {
-			return nil
-		}
-
-		fset := token.NewFileSet()
-		file, err := parser.ParseFile(fset, path, nil, 0)
-		if err != nil {
-			return err
-		}
-
-		for _, decl := range file.Decls {
-			fn, ok := decl.(*ast.FuncDecl)
-			if !ok || fn.Recv != nil {
-				continue
-			}
-
-			if strings.HasPrefix(fn.Name.Name, "Test") {
-				testNames = append(testNames, fn.Name.Name)
-			}
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		win.writeErr(err.Error())
-	}
-
-	sort.Strings(testNames)
-
-	win.settings.components.mainTestSelect.setTestNames(&testNames)
+func (self *componentPathSelector) getPath() string {
+	return self.path
 }
 
 func (self *componentPathSelector) disable() {

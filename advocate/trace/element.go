@@ -118,9 +118,9 @@ type Element interface {
 	setID(ID int)
 	GetID() int
 	GetObjId() int
-	GetTPre() int
+	GetTReq() int
 	GetTSort() int
-	GetTPost() int
+	GetTCom() int
 	GetPos() string
 	GetFile() string
 	GetLine() int
@@ -144,6 +144,9 @@ type Element interface {
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
 	IsValid() bool
+	IsRequest() bool
+	CanBeRequest() bool
+	SetRequest(req bool)
 }
 
 func IsOp(elem Element) bool {

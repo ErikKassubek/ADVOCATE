@@ -23,7 +23,7 @@ import (
 //   - ch *trace.TraceElementChannel: the channel element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
-	if recorded && ch.GetTPost() == 0 {
+	if recorded && ch.GetTCom() == 0 {
 		return
 	}
 
@@ -81,7 +81,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 //   - se *trace.TraceElementSelect: the select element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
+	noChannel := se.GetChosenDefault() || se.GetTCom() == 0
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
@@ -99,7 +99,7 @@ func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
 //   - sender trace.Element: sender node
 //   - recv trace.Element: receiver node
 func Unbuffered(graph *PoGraph, sender trace.Element, recv trace.Element) {
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.GetTCom() != 0 && recv.GetTCom() != 0 {
 		if graph != nil {
 			graph.AddEdge(sender, recv)
 		} else {
@@ -114,7 +114,7 @@ func Unbuffered(graph *PoGraph, sender trace.Element, recv trace.Element) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Send(graph *PoGraph, ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 
@@ -170,7 +170,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Recv(graph *PoGraph, ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 
@@ -207,7 +207,7 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
 func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if ch.GetTCom() == 0 {
 		return
 	}
 

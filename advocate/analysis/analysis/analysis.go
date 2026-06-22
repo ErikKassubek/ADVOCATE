@@ -204,7 +204,7 @@ func RunHBAnalysis(fuzzing bool) {
 		}
 
 		// check for leak
-		if baseA.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
+		if baseA.AnalysisCasesMap[flags.Leak] && elem.GetTCom() == 0 {
 			checkLeak(elem)
 		}
 

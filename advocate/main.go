@@ -15,6 +15,8 @@ import (
 	"advocate/run"
 	"advocate/utils/flags"
 	"advocate/utils/log"
+	"advocate/utils/paths"
+	"advocate/utils/timer"
 	"context"
 )
 
@@ -25,7 +27,9 @@ func main() {
 		return
 	}
 
-	gui.Run()
+	// gui.Run()
+
+	initialize()
 
 	if flags.Mode == "gui" {
 		gui.Run()
@@ -35,4 +39,9 @@ func main() {
 			log.Error(err)
 		}
 	}
+}
+
+func initialize() {
+	progPathDir := paths.GetDirectory(flags.ProgPath)
+	timer.Init(progPathDir)
 }

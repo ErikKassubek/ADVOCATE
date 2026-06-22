@@ -57,7 +57,8 @@ func runAnalyzer(pathTrace string,
 
 	results.InitResults(outReadable, outMachine)
 
-	numberOfRoutines, numberElems, err := io.CreateTraceFromFiles(pathTrace)
+	numberOfRoutines, numberElems, tr, err := io.CreateTraceFromFiles(pathTrace)
+	baseA.SetMainTrace(tr)
 
 	if err != nil && fuzzingRun <= 0 {
 		if strings.HasSuffix(err.Error(), "no such file or directory") {

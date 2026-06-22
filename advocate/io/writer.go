@@ -69,14 +69,14 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 
 			// sort trace by tPre
 			sort.Slice(trace, func(i, j int) bool {
-				return trace[i].GetTPre() < trace[j].GetTPre()
+				return trace[i].GetTReq() < trace[j].GetTReq()
 			})
 
 			for index, element := range trace {
 				if !replay || !isReplay(element) {
 					continue
 				}
-				if element.GetTPost() == 0 {
+				if element.GetTCom() == 0 {
 					element.SetTSort(math.MaxInt)
 				}
 				elementString := element.ToString()

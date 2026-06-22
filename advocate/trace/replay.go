@@ -61,18 +61,18 @@ func (this *ElementReplay) GetRoutine() int {
 	return 1
 }
 
-// GetTPre returns the tPre of the element.
+// GetTReq returns the tPre of the element.
 //
 //   - int: The tPost of the element
-func (this *ElementReplay) GetTPre() int {
+func (this *ElementReplay) GetTReq() int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element.
+// GetTCom returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementReplay) GetTPost() int {
+func (this *ElementReplay) GetTCom() int {
 	return this.tPost
 }
 
@@ -265,6 +265,27 @@ func (this *ElementReplay) GetID() int {
 //   - ID int: the trace id
 func (this *ElementReplay) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementReplay) IsRequest() bool {
+	return false
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementReplay) CanBeRequest() bool {
+	return false
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementReplay) SetRequest(_ bool) {
+	return
 }
 
 // Copy creates a copy of the element

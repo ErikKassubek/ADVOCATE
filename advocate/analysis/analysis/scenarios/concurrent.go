@@ -40,7 +40,7 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 
 	IncFuzzingCounter(sender)
 
-	if sender.GetTPost() != 0 {
+	if sender.GetTCom() != 0 {
 		return
 	}
 
@@ -60,7 +60,7 @@ func GetConcurrentSendForFuzzing(sender *trace.ElementChannel) {
 		}
 	}
 
-	if sender.GetTPost() != 0 {
+	if sender.GetTCom() != 0 {
 		if _, ok := baseA.LastSendRoutine[routine]; !ok {
 			baseA.LastSendRoutine[routine] = make(map[int]baseA.ElemWithVc)
 		}
@@ -103,7 +103,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 			elem2 := elem[id].Elem
 
 			if baseA.AnalysisFuzzingFlow {
-				if ch.GetTPost() == 0 {
+				if ch.GetTCom() == 0 {
 					baseA.FuzzingFlowRecv = append(baseA.FuzzingFlowRecv, baseA.ConcurrentEntry{Elem: elem2, Counter: getFuzzingCounter(elem2), Type: baseA.CERecv})
 				}
 			}
@@ -112,7 +112,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 				arg1 := results.TraceElementResult{
 					RoutineID: routine,
 					ObjID:     id,
-					TPre:      ch.GetTPre(),
+					TPre:      ch.GetTReq(),
 					ObjType:   "CR",
 					File:      ch.GetFile(),
 					Line:      ch.GetLine(),
@@ -121,7 +121,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 				arg2 := results.TraceElementResult{
 					RoutineID: r,
 					ObjID:     id,
-					TPre:      elem2.GetTPre(),
+					TPre:      elem2.GetTReq(),
 					ObjType:   "CR",
 					File:      elem2.GetFile(),
 					Line:      elem2.GetLine(),
@@ -133,7 +133,7 @@ func CheckForConcurrentRecv(ch *trace.ElementChannel, vc map[int]*clock.VectorCl
 		}
 	}
 
-	if ch.GetTPost() != 0 {
+	if ch.GetTCom() != 0 {
 		if _, ok := baseA.LastRecvRoutine[routine]; !ok {
 			baseA.LastRecvRoutine[routine] = make(map[int]baseA.ElemWithVc)
 		}

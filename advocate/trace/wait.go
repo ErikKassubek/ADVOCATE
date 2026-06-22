@@ -41,6 +41,7 @@ type OpWait int
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 type ElementWait struct {
 	id                       int
 	index                    int
@@ -59,6 +60,7 @@ type ElementWait struct {
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
+	request                  bool
 }
 
 // AddTraceElementWait adds a new wait group element to the main trace
@@ -167,19 +169,19 @@ func (this *ElementWait) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the timestamp at the start of the event
+// GetTReq returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the start of the event
-func (this *ElementWait) GetTPre() int {
+func (this *ElementWait) GetTReq() int {
 	return this.tPre
 }
 
-// GetTPost returns the timestamp at the start of the event
+// GetTCom returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the end of the event
-func (this *ElementWait) GetTPost() int {
+func (this *ElementWait) GetTCom() int {
 	return this.tPost
 }
 
@@ -188,6 +190,10 @@ func (this *ElementWait) GetTPost() int {
 // Returns:
 //   - int: The timer of the element
 func (this *ElementWait) GetTSort() int {
+	if this.request {
+		return this.tPre
+	}
+
 	if this.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -424,6 +430,27 @@ func (this *ElementWait) setID(ID int) {
 
 func (this *ElementWait) IsValid() bool {
 	return this != nil
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementWait) IsRequest() bool {
+	return this.request
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementWait) CanBeRequest() bool {
+	return true
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementWait) SetRequest(req bool) {
+	this.request = req
 }
 
 // Copy the element

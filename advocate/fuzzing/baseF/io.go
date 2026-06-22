@@ -46,7 +46,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 
 	t1 := -1
 	for _, elem := range mut.Elems {
-		tPost := elem.GetTPost()
+		tPost := elem.GetTCom()
 		if t1 == -1 || tPost < t1 {
 			t1 = tPost
 		}
@@ -79,7 +79,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
 		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTPost())
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTCom())
 	}
 
 	traceCopy.Clear()

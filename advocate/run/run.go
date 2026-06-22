@@ -53,11 +53,6 @@ func Run(ctx context.Context) error {
 		return err
 	}
 
-	progPathDir := paths.GetDirectory(flags.ProgPath)
-	if err != nil {
-		return err
-	}
-	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
 

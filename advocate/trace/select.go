@@ -43,6 +43,7 @@ import (
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 type ElementSelect struct {
 	id                       int
 	index                    int
@@ -64,6 +65,7 @@ type ElementSelect struct {
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
 	numberConcurrentWeakSame int
+	request                  bool
 }
 
 // AddTraceElementSelect adds a new select statement element to the main trace
@@ -233,19 +235,19 @@ func (this *ElementSelect) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the timestamp at the start of the event
+// GetTReq returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the start of the event
-func (this *ElementSelect) GetTPre() int {
+func (this *ElementSelect) GetTReq() int {
 	return this.tPre
 }
 
-// GetTPost returns the timestamp at the start of the event
+// GetTCom returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the end of the event
-func (this *ElementSelect) GetTPost() int {
+func (this *ElementSelect) GetTCom() int {
 	return this.tPost
 }
 
@@ -254,6 +256,9 @@ func (this *ElementSelect) GetTPost() int {
 // Returns:
 //   - int: The timer of the element
 func (this *ElementSelect) GetTSort() int {
+	if this.request {
+		return this.tPre
+	}
 	if this.tPost == 0 {
 		// add at the end of the trace
 		return math.MaxInt
@@ -596,7 +601,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 		return nil
 	}
 
-	this.cases[index].SetTPost(this.GetTPost())
+	this.cases[index].SetTPost(this.GetTCom())
 	this.chosenIndex = index
 	this.chosenDefault = false
 	return nil
@@ -627,7 +632,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	found := false
 	for i, c := range this.cases {
 		if c.objId == chanID && c.op == op {
-			tPost := this.GetTPost()
+			tPost := this.GetTCom()
 			if !this.chosenDefault {
 				this.cases[this.chosenIndex].SetTPost(0)
 			} else {
@@ -696,6 +701,27 @@ func (this *ElementSelect) GetID() int {
 //   - ID int: the trace id
 func (this *ElementSelect) setID(ID int) {
 	this.id = ID
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementSelect) IsRequest() bool {
+	return this.request
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementSelect) CanBeRequest() bool {
+	return true
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementSelect) SetRequest(req bool) {
+	this.request = req
 }
 
 // Copy the element

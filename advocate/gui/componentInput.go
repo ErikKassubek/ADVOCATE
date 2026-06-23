@@ -103,21 +103,21 @@ func createInputTextFunc(labelStr string, def string, onSet func(e bool, s strin
 	return &textInput{Container: row, label: label, entry: entry, check: check}
 }
 
-func (self *textInput) disable() {
-	self.entry.Disable()
-	if self.check != nil {
-		self.check.Disable()
+func (this *textInput) disable() {
+	this.entry.Disable()
+	if this.check != nil {
+		this.check.Disable()
 	}
 }
 
-func (self *textInput) enable() {
-	if self.check != nil {
-		self.check.Enable()
-		if self.check.Checked {
-			self.entry.Enable()
+func (this *textInput) enable() {
+	if this.check != nil {
+		this.check.Enable()
+		if this.check.Checked {
+			this.entry.Enable()
 		}
 	} else {
-		self.entry.Enable()
+		this.entry.Enable()
 	}
 }
 
@@ -238,12 +238,12 @@ func createInputCheck(labelStr string, valToSet *bool, invert bool) *checkInput 
 	return &checkInput{Container: row, label: label, check: check}
 }
 
-func (self *checkInput) disable() {
-	self.check.Disable()
+func (this *checkInput) disable() {
+	this.check.Disable()
 }
 
-func (self *checkInput) enable() {
-	self.check.Enable()
+func (this *checkInput) enable() {
+	this.check.Enable()
 }
 
 // -------------------------------------------------------------------------------------------------------
@@ -287,21 +287,21 @@ func createInputSelect(labelStr string, valToSet *string, values []string, canBe
 	return &selectInput{Container: row, label: label, sel: entry, check: check}
 }
 
-func (self *selectInput) disable() {
-	self.sel.Disable()
-	if self.check != nil {
-		self.check.Disable()
+func (this *selectInput) disable() {
+	this.sel.Disable()
+	if this.check != nil {
+		this.check.Disable()
 	}
 }
 
-func (self *selectInput) enable() {
-	if self.check != nil {
-		self.check.Enable()
-		if self.check.Checked {
-			self.sel.Enable()
+func (this *selectInput) enable() {
+	if this.check != nil {
+		this.check.Enable()
+		if this.check.Checked {
+			this.sel.Enable()
 		}
 	} else {
-		self.sel.Enable()
+		this.sel.Enable()
 	}
 }
 

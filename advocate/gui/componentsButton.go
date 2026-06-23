@@ -48,12 +48,12 @@ func createTraceButton() *componentButton {
 	return createButton("Trace Viewer", win.openTraceViewer)
 }
 
-func (self *componentButton) disable() {
-	self.runButton.Disable()
+func (this *componentButton) disable() {
+	this.runButton.Disable()
 }
 
-func (self *componentButton) enable() {
-	self.runButton.Enable()
+func (this *componentButton) enable() {
+	this.runButton.Enable()
 }
 
 func validInput() bool {

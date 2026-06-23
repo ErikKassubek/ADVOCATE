@@ -85,12 +85,12 @@ func createModeSelect() *componentModeSelect {
 	return cms
 }
 
-func (self *componentModeSelect) disable() {
-	self.modeSelectWidget.Disable()
+func (this *componentModeSelect) disable() {
+	this.modeSelectWidget.Disable()
 }
 
-func (self *componentModeSelect) enable() {
-	self.modeSelectWidget.Enable()
+func (this *componentModeSelect) enable() {
+	this.modeSelectWidget.Enable()
 }
 
 func getAllTestNames(path string) {

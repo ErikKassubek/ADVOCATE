@@ -15,10 +15,12 @@ import (
 	"advocate/analysis/hb/clock"
 	"advocate/utils/control"
 	"advocate/utils/log"
+	"advocate/utils/paths"
 	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"math"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
@@ -31,6 +33,8 @@ import (
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
 //   - request bool: if true, requests and commits are separate elements, otherwise they are the same
+//   - detCommonPrefix bool: if true, the common prefix of paths is determined
+//   - commonPos string: the current common path prefix
 type Trace struct {
 	traces                map[int][]Element
 	hbWasCalc             bool
@@ -38,6 +42,12 @@ type Trace struct {
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
 	request               bool
+
+	shortInfo        bool
+	commonPathPrefix string
+	minObjID         int
+	objIDMap         map[int]int
+	createdRoutines  map[int]*ElementFork
 }
 
 // NewTrace creates a new empty trace structure
@@ -50,6 +60,8 @@ func NewTrace() Trace {
 		hbWasCalc:             false,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
+		objIDMap:              make(map[int]int),
+		createdRoutines:       map[int]*ElementFork{1: nil},
 	}
 }
 
@@ -58,6 +70,80 @@ func (this *Trace) Clear() {
 	this.traces = make(map[int][]Element)
 	this.hbWasCalc = false
 	this.minTraceID = 0
+}
+
+// Shorten trace paths and object ids
+func (this *Trace) ShortInfo(sp bool) {
+	this.shortInfo = sp
+}
+
+func (this *Trace) ShortenInfo() int {
+	if !this.shortInfo {
+		panic("trace.ShortenFiles has been called without previous trace.ShortFile(true)")
+	}
+
+	if strings.HasSuffix(this.commonPathPrefix, ".go") {
+		this.commonPathPrefix = filepath.Dir(this.commonPathPrefix)
+	}
+
+	if !strings.HasSuffix(this.commonPathPrefix, paths.PathSep) {
+		this.commonPathPrefix += paths.PathSep
+	}
+
+	// shorten file paths
+	for _, tr := range this.traces {
+		for _, elem := range tr {
+			file := elem.GetFile()
+			file = strings.TrimPrefix(file, this.commonPathPrefix)
+			elem.setFile(file)
+		}
+	}
+
+	// remove internal routines
+	return this.ReindexRoutines()
+}
+
+func (this *Trace) ReindexRoutines() int {
+	// Collect keys in original order
+	keys := make([]int, 0, len(this.traces))
+	for k := range this.traces {
+		keys = append(keys, k)
+	}
+
+	// Map iteration order is random, so sort if "order" means key order
+	sort.Ints(keys)
+
+	newT := make(map[int][]Element)
+
+	newID := 1
+	for _, oldID := range keys {
+		obj, _ := this.traces[oldID]
+
+		// Remove entries not in self.cr
+		if _, exists := this.createdRoutines[oldID]; oldID != 1 && !exists {
+			continue
+		}
+
+		// Change key oldID -> newID
+		value := this.createdRoutines[oldID]
+		if value != nil { // routine 1
+			delete(this.createdRoutines, oldID)
+			value.setObjId(newID)
+			this.createdRoutines[newID] = value
+		}
+
+		newT[newID] = obj
+
+		for _, elem := range newT[newID] {
+			elem.SetRoutine(newID)
+		}
+
+		newID++
+	}
+
+	this.traces = newT
+
+	return len(this.traces)
 }
 
 // AddElement adds an element to the trace
@@ -70,7 +156,40 @@ func (this *Trace) AddElement(elem Element) {
 	this.minTraceID++
 	elem.setID(this.minTraceID)
 
+	if this.shortInfo {
+		// store created ids
+		if e, ok := elem.(*ElementFork); ok {
+			this.createdRoutines[elem.GetObjId()] = e
+		} else {
+			// shorten object id
+			objId := elem.GetObjId()
+			var id int
+			var ok bool
+			if id, ok = this.objIDMap[objId]; !ok {
+				this.minObjID++
+				id = this.minObjID
+				this.objIDMap[objId] = id
+			}
+			elem.setObjId(id)
+		}
+
+	}
+
 	this.traces[routine] = append(this.traces[routine], elem)
+
+	if this.shortInfo {
+		file := elem.GetFile()
+		if this.commonPathPrefix == "" {
+			this.commonPathPrefix = file
+			return
+		}
+		i := 0
+		for i < len(this.commonPathPrefix) && i < len(file) &&
+			this.commonPathPrefix[i] == file[i] {
+			i++
+		}
+		this.commonPathPrefix = this.commonPathPrefix[:i]
+	}
 }
 
 // AddRoutine adds an empty routine if not exists
@@ -859,12 +978,14 @@ func (this *Trace) GetTraceSection(start, end int) []Element {
 }
 
 // split all blocking elements into request and commit
-func (this *Trace) AsRequestCommit() {
+func (this *Trace) AsRequestCommit() int {
 	this.request = true
 
 	mapping := make(map[string]Element)
 
 	newTr := make(map[int][]Element)
+
+	elemCounter := 0
 
 	for rout, tr := range this.traces {
 		newRout := make([]Element, 0)
@@ -873,14 +994,21 @@ func (this *Trace) AsRequestCommit() {
 				newElem := elem.Copy(mapping, true)
 				newElem.SetRequest(true)
 				newRout = append(newRout, newElem)
-				newRout = append(newRout, elem)
+				elemCounter++
 			}
-
+			if !elem.CanBeRequest() || elem.GetTCom() != 0 {
+				newRout = append(newRout, elem)
+				elemCounter++
+			} else {
+				println("SKIP: ", elem.ToStringGui())
+			}
 		}
 		newTr[rout] = newRout
 	}
 
 	this.traces = newTr
+
+	return elemCounter
 }
 
 // Make the times consecutive. Only works if trace is request commit trace
@@ -922,10 +1050,6 @@ func (this *Iterator) Next() Element {
 
 		elem := trace[this.currentIndex[routine]]
 		tSort := elem.GetTSort()
-
-		if req := elem.IsRequest(); req {
-			elem.GetTReq()
-		}
 
 		if tSort == 0 || tSort == math.MaxInt {
 			continue

@@ -262,6 +262,14 @@ func (this *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(this.tPost)
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementRoutineEnd) ToStringGui() string {
+	return "E"
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -276,6 +284,27 @@ func (this *ElementRoutineEnd) GetID() int {
 //   - ID int: the trace id
 func (this *ElementRoutineEnd) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file. Dummy function to implement Element interface
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementRoutineEnd) setFile(_ string) {
+}
+
+// setObjId sets the object id. Dummy function to implement Element interface
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementRoutineEnd) setObjId(_ int) {
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementRoutineEnd) SetRoutine(id int) {
+	this.routine = id
 }
 
 // IsRequest determines if the element is a request

@@ -135,7 +135,11 @@ type Element interface {
 	SetTSort(tSort int)
 	SetTWithoutNotExecuted(tSort int)
 	SetT(time int)
+	SetRoutine(id int)
+	setFile(f string)
+	setObjId(id int)
 	ToString() string
+	ToStringGui() string
 	SetVc(vc *clock.VectorClock)
 	SetWVc(vc *clock.VectorClock)
 	GetVC() *clock.VectorClock
@@ -156,4 +160,11 @@ func IsOp(elem Element) bool {
 	}
 
 	return true
+}
+
+func isReqStr(elem Element) string {
+	if elem.IsRequest() {
+		return "R"
+	}
+	return "C"
 }

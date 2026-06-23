@@ -359,6 +359,16 @@ func (this *ElementCond) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementCond) ToStringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("D,%d,%s,%s", this.objId, opString, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -373,6 +383,29 @@ func (this *ElementCond) GetID() int {
 //   - ID int: the trace id
 func (this *ElementCond) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementCond) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementCond) setObjId(id int) {
+	this.objId = id
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementCond) SetRoutine(id int) {
+	this.routine = id
 }
 
 // IsRequest determines if the element is a request

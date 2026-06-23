@@ -409,6 +409,16 @@ func (this *ElementMutex) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementMutex) ToStringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("M,%d,%s,%s", this.objId, opString, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -423,6 +433,22 @@ func (this *ElementMutex) GetID() int {
 //   - ID int: the trace id
 func (this *ElementMutex) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementMutex) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementMutex) setObjId(id int) {
+	this.objId = id
 }
 
 // IsRequest determines if the element is a request
@@ -444,6 +470,13 @@ func (this *ElementMutex) CanBeRequest() bool {
 //   - bool: element is request
 func (this *ElementMutex) SetRequest(req bool) {
 	this.request = req
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementMutex) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy the element

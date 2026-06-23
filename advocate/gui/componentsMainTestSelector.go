@@ -106,55 +106,55 @@ func creatMainTestSelector() *componentMainTestSelect {
 	return csmt
 }
 
-func (self *componentMainTestSelect) creatMainTestSelectorContainer() {
-	self.label = createSectionLabel("Main/Test")
+func (this *componentMainTestSelect) creatMainTestSelectorContainer() {
+	this.label = createSectionLabel("Main/Test")
 	objects := []fyne.CanvasObject{
-		self.label.Container,
-		self.mainTestSel,
+		this.label.Container,
+		this.mainTestSel,
 	}
 
-	if self.showAllOne {
-		objects = append(objects, self.allOneSel)
+	if this.showAllOne {
+		objects = append(objects, this.allOneSel)
 	}
 
-	if self.showTestName {
-		objects = append(objects, self.testNameSel)
+	if this.showTestName {
+		objects = append(objects, this.testNameSel)
 	}
 
-	self.Container.Objects = objects
-	self.Container.Refresh()
+	this.Container.Objects = objects
+	this.Container.Refresh()
 }
 
-func (self *componentMainTestSelect) setTestNames(names *[]string) {
-	self.testNames = *names
-	self.testNameSel.Options = self.testNames
+func (this *componentMainTestSelect) setTestNames(names *[]string) {
+	this.testNames = *names
+	this.testNameSel.Options = this.testNames
 
 	if len(*names) != 0 {
-		self.testNameSel.SetSelected(self.testNames[0])
+		this.testNameSel.SetSelected(this.testNames[0])
 	} else {
-		self.testNameSel.ClearSelected()
+		this.testNameSel.ClearSelected()
 	}
 }
 
-func (self *componentMainTestSelect) isReplay(r bool) {
-	self.replay = r
+func (this *componentMainTestSelect) isReplay(r bool) {
+	this.replay = r
 	if r {
-		self.allOneSel.SetSelected(oneTest)
-		self.allOneSel.Hide()
+		this.allOneSel.SetSelected(oneTest)
+		this.allOneSel.Hide()
 	} else {
-		self.allOneSel.SetSelected(allTests)
-		self.allOneSel.Show()
+		this.allOneSel.SetSelected(allTests)
+		this.allOneSel.Show()
 	}
 }
 
-func (self *componentMainTestSelect) disable() {
-	self.mainTestSel.Disable()
-	self.allOneSel.Disable()
-	self.testNameSel.Disable()
+func (this *componentMainTestSelect) disable() {
+	this.mainTestSel.Disable()
+	this.allOneSel.Disable()
+	this.testNameSel.Disable()
 }
 
-func (self *componentMainTestSelect) enable() {
-	self.mainTestSel.Enable()
-	self.allOneSel.Enable()
-	self.testNameSel.Enable()
+func (this *componentMainTestSelect) enable() {
+	this.mainTestSel.Enable()
+	this.allOneSel.Enable()
+	this.testNameSel.Enable()
 }

@@ -39,17 +39,17 @@ func createSettings() *componentSetting {
 	return cs
 }
 
-func (self *window) setSettings(content []fyne.CanvasObject) {
-	self.settings.Container.Objects = content
-	self.settings.Refresh()
+func (this *window) setSettings(content []fyne.CanvasObject) {
+	this.settings.Container.Objects = content
+	this.settings.Refresh()
 }
 
-func (self *componentSetting) disable() {
-	self.components.disable()
+func (this *componentSetting) disable() {
+	this.components.disable()
 }
 
-func (self *componentSetting) enable() {
-	self.components.enable()
+func (this *componentSetting) enable() {
+	this.components.enable()
 }
 
 // ------------------------------------------------------------------------------------
@@ -144,83 +144,83 @@ func createSettingComponents() *settingComponents {
 	return &to
 }
 
-func (self *settingComponents) disable() {
-	self.mainTestSelect.disable()
+func (this *settingComponents) disable() {
+	this.mainTestSelect.disable()
 
-	self.toRecord.disable()
-	self.toReplay.disable()
-	self.toFuzzing.disable()
+	this.toRecord.disable()
+	this.toReplay.disable()
+	this.toFuzzing.disable()
 
-	self.maxFuzzingRun.disable()
-	self.maxNumberElements.disable()
+	this.maxFuzzingRun.disable()
+	this.maxNumberElements.disable()
 
-	self.measureTime.disable()
-	self.createStatistics.disable()
-	self.checkForNotExecuted.disable()
+	this.measureTime.disable()
+	this.createStatistics.disable()
+	this.checkForNotExecuted.disable()
 
-	self.ignoreCriticalSections.disable()
-	self.ignoreAtomics.disable()
-	self.onlyAPanicAndLeak.disable()
+	this.ignoreCriticalSections.disable()
+	this.ignoreAtomics.disable()
+	this.onlyAPanicAndLeak.disable()
 
-	self.noRewrite.disable()
-	self.deleteTrace.disable()
-	self.cont.disable()
+	this.noRewrite.disable()
+	this.deleteTrace.disable()
+	this.cont.disable()
 
-	self.noWarning.disable()
-	self.verbose.disable()
-	self.noProgress.disable()
-	self.output.disable()
+	this.noWarning.disable()
+	this.verbose.disable()
+	this.noProgress.disable()
+	this.output.disable()
 
-	self.alwaysPanic.disable()
-	self.noMemorySup.disable()
+	this.alwaysPanic.disable()
+	this.noMemorySup.disable()
 
-	self.fuzzingMode.disable()
+	this.fuzzingMode.disable()
 
-	self.cancelTestIfBugFound.disable()
+	this.cancelTestIfBugFound.disable()
 
-	self.scen.disable()
+	this.scen.disable()
 
-	self.tracePath.disable()
+	this.tracePath.disable()
 
 	win.modeSelect.disable()
 	win.projSelector.disable()
 }
 
-func (self *settingComponents) enable() {
-	self.mainTestSelect.enable()
+func (this *settingComponents) enable() {
+	this.mainTestSelect.enable()
 
-	self.toRecord.enable()
-	self.toReplay.enable()
-	self.toFuzzing.enable()
+	this.toRecord.enable()
+	this.toReplay.enable()
+	this.toFuzzing.enable()
 
-	self.maxFuzzingRun.enable()
-	self.maxNumberElements.enable()
+	this.maxFuzzingRun.enable()
+	this.maxNumberElements.enable()
 
-	self.measureTime.enable()
-	self.createStatistics.enable()
-	self.checkForNotExecuted.enable()
+	this.measureTime.enable()
+	this.createStatistics.enable()
+	this.checkForNotExecuted.enable()
 
-	self.ignoreCriticalSections.enable()
-	self.ignoreAtomics.enable()
-	self.onlyAPanicAndLeak.enable()
+	this.ignoreCriticalSections.enable()
+	this.ignoreAtomics.enable()
+	this.onlyAPanicAndLeak.enable()
 
-	self.noRewrite.enable()
-	self.deleteTrace.enable()
-	self.cont.enable()
+	this.noRewrite.enable()
+	this.deleteTrace.enable()
+	this.cont.enable()
 
-	self.noWarning.enable()
-	self.verbose.enable()
-	self.noProgress.enable()
-	self.output.enable()
+	this.noWarning.enable()
+	this.verbose.enable()
+	this.noProgress.enable()
+	this.output.enable()
 
-	self.alwaysPanic.enable()
-	self.noMemorySup.enable()
+	this.alwaysPanic.enable()
+	this.noMemorySup.enable()
 
-	self.fuzzingMode.enable()
+	this.fuzzingMode.enable()
 
-	self.cancelTestIfBugFound.enable()
+	this.cancelTestIfBugFound.enable()
 
-	self.scen.enable()
+	this.scen.enable()
 
-	self.tracePath.enable()
+	this.tracePath.enable()
 }

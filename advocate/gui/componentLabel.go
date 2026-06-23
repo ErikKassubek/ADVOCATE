@@ -11,10 +11,13 @@
 package gui
 
 import (
+	"image/color"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
 )
 
 type componentSectionLabel struct {
@@ -33,4 +36,21 @@ func createSectionLabel(text string) *componentSectionLabel {
 		Container: container.NewHBox(label),
 		label:     label,
 	}
+}
+
+func createBoxedLabel(text string) fyne.CanvasObject {
+	label := widget.NewLabel(text)
+
+	if text == "" {
+		return label
+	}
+
+	border := canvas.NewRectangle(color.Transparent)
+	border.StrokeColor = color.White
+	border.StrokeWidth = 1
+
+	return container.NewStack(
+		border,
+		label,
+	)
 }

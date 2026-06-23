@@ -356,6 +356,14 @@ func (this *ElementOnce) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementOnce) ToStringGui() string {
+	return fmt.Sprintf("O,%d,%s", this.objId, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -370,6 +378,22 @@ func (this *ElementOnce) GetID() int {
 //   - ID int: the trace id
 func (this *ElementOnce) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementOnce) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementOnce) setObjId(id int) {
+	this.objId = id
 }
 
 // IsRequest determines if the element is a request
@@ -391,6 +415,13 @@ func (this *ElementOnce) CanBeRequest() bool {
 //   - bool: element is request
 func (this *ElementOnce) SetRequest(_ bool) {
 	return
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementOnce) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy the element

@@ -557,6 +557,16 @@ func (this *ElementChannel) ToString() string {
 	return this.toStringSep(",", false)
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementChannel) ToStringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("C,%d,%s,%s", this.objId, opString, this.GetPos())
+}
+
 // ToStringSep returns the simple string representation of the element with a
 // custom separator
 //
@@ -604,6 +614,22 @@ func (this *ElementChannel) setID(ID int) {
 	this.id = ID
 }
 
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementChannel) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementChannel) setObjId(id int) {
+	this.objId = id
+}
+
 // IsRequest determines if the element is a request
 // Returns:
 //   - bool: element is request
@@ -623,6 +649,13 @@ func (this *ElementChannel) CanBeRequest() bool {
 //   - bool: element is request
 func (this *ElementChannel) SetRequest(req bool) {
 	this.request = req
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementChannel) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy creates a copy of the channel element

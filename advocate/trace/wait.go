@@ -412,6 +412,16 @@ func (this *ElementWait) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementWait) ToStringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("W,%d,%s,%s", this.objId, opString, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -426,6 +436,29 @@ func (this *ElementWait) GetID() int {
 //   - ID int: the trace id
 func (this *ElementWait) setID(ID int) {
 	this.id = ID
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementWait) setObjId(id int) {
+	this.objId = id
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementWait) SetRoutine(id int) {
+	this.routine = id
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementWait) setFile(f string) {
+	this.file = f
 }
 
 func (this *ElementWait) IsValid() bool {

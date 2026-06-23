@@ -276,6 +276,14 @@ func (this *ElementNew) ToString() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.tPost, this.objId, string(this.elemType), this.num, this.GetPos())
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementNew) ToStringGui() string {
+	return fmt.Sprintf("N,%d,%s,%s", this.objId, string(this.elemType), this.GetPos())
+}
+
 // IsEqual checks if an trace element is equal to this element
 //
 // Parameter:
@@ -351,6 +359,22 @@ func (this *ElementNew) setID(ID int) {
 	this.id = ID
 }
 
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementNew) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementNew) setObjId(id int) {
+	this.objId = id
+}
+
 // IsRequest determines if the element is a request
 // Returns:
 //   - bool: element is request
@@ -370,6 +394,13 @@ func (this *ElementNew) CanBeRequest() bool {
 //   - bool: element is request
 func (this *ElementNew) SetRequest(_ bool) {
 	return
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementNew) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy the element

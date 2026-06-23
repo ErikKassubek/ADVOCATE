@@ -31,12 +31,13 @@ import (
 //
 // Parameter:
 //   - filePath string: The path to the folder
+//   - si bool: shorten info
 //
 // Returns:
 //   - int: The number of routines
 //   - int: The number of elements
 //   - error: An error if the trace could not be created
-func CreateTraceFromFiles(folderPath string) (int, int, *trace.Trace, error) {
+func CreateTraceFromFiles(folderPath string, si bool) (int, int, *trace.Trace, error) {
 	timer.Start(timer.Io)
 	defer timer.Stop(timer.Io)
 
@@ -48,6 +49,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, *trace.Trace, error) {
 	}
 
 	tr := trace.NewTrace()
+	tr.ShortInfo(si)
 
 	elemCounter := 0
 	for _, file := range files {
@@ -87,6 +89,11 @@ func CreateTraceFromFiles(folderPath string) (int, int, *trace.Trace, error) {
 	}
 
 	tr.Sort()
+
+	if si {
+		numberRoutines = tr.ShortenInfo()
+	}
+
 	return numberRoutines, elemCounter, &tr, nil
 }
 

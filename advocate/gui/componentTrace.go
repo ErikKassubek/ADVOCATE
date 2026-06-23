@@ -12,11 +12,17 @@ package gui
 
 import (
 	"fmt"
+	"image/color"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
-	"fyne.io/fyne/v2/widget"
 )
+
+type traceConnection struct {
+	a string
+	b string
+}
 
 type componentTraceViewer struct {
 	*container.Scroll
@@ -24,59 +30,115 @@ type componentTraceViewer struct {
 	rows, cols int
 	cells      map[string]fyne.CanvasObject
 	grid       *fyne.Container
+
+	lineLayer *traceViewerCanvas
+	links     []traceConnection
 }
 
-func createTraceViewer(rows, cols int) *componentTraceViewer {
+func createTraceViewer(cols, rows int) *componentTraceViewer {
 	grid := container.NewGridWithColumns(cols)
-	scroll := container.NewScroll(grid)
-	scroll.SetMinSize(fyne.NewSize(0, 0))
 
-	v := &componentTraceViewer{
-		Scroll: scroll,
-
-		rows:  rows,
-		cols:  cols,
-		cells: make(map[string]fyne.CanvasObject),
-		grid:  grid,
+	lineLayer := &traceViewerCanvas{
+		lines: make([]*canvas.Line, 0),
 	}
 
-	return v
+	overlay := container.NewStack(
+		lineLayer,
+		grid,
+	)
+
+	scroll := container.NewScroll(overlay)
+	scroll.SetMinSize(fyne.NewSize(0, 0))
+
+	return &componentTraceViewer{
+		Scroll:    scroll,
+		rows:      rows,
+		cols:      cols,
+		cells:     make(map[string]fyne.CanvasObject),
+		grid:      grid,
+		lineLayer: lineLayer,
+	}
 }
 
-func key(r, c int) string {
-	return fmt.Sprintf("%d:%d", r, c)
+func key(rout, row int) string {
+	return fmt.Sprintf("%d:%d", rout, row)
 }
 
 // AddCell places content into a specific row/col
-func (self *componentTraceViewer) AddCell(row, col int, content string) {
-	self.cells[key(row, col)] = self.colorText(content)
-	self.rebuild()
+func (this *componentTraceViewer) AddCell(rout, row int, content string) {
+	this.cells[key(rout, row)] = this.buildCell(content)
 }
 
 // TODO: color/fix text
-func (self *componentTraceViewer) colorText(text string) *widget.Label {
-	return widget.NewLabel(text)
+func (this *componentTraceViewer) buildCell(text string) fyne.CanvasObject {
+	return container.NewPadded(createBoxedLabel(text))
 }
 
-func (self *componentTraceViewer) rebuild() {
-	self.grid.Objects = nil
+func (this *componentTraceViewer) rebuild() {
+	this.grid.Objects = nil
 
-	for r := 0; r < self.rows; r++ {
-		for c := 0; c < self.cols; c++ {
-			k := key(r, c)
+	for r := 0; r < this.rows+1; r++ {
+		for c := 1; c < this.cols+1; c++ {
+			k := key(c, r)
 
-			if obj, ok := self.cells[k]; ok {
-				self.grid.Add(obj)
+			if r == 0 {
+				this.grid.Add(this.buildCell(fmt.Sprint("Routine ", c)))
 			} else {
-				// empty placeholder so grid stays aligned
-				self.grid.Add(widget.NewLabel(""))
+				if obj, ok := this.cells[k]; ok {
+					this.grid.Add(obj)
+					println("PLOT: ", k)
+				} else {
+					// empty placeholder so grid stays aligned
+					this.grid.Add(this.buildCell(""))
+				}
 			}
 		}
 	}
 
-	self.grid.Refresh()
+	this.grid.Refresh()
+	this.refreshLines()
 }
 
-func (self *componentTraceViewer) clear() {
-	self.cells = make(map[string]fyne.CanvasObject)
+func (this *componentTraceViewer) clear() {
+	this.cells = make(map[string]fyne.CanvasObject)
+}
+
+func (v *componentTraceViewer) connect(a, b string) {
+	v.links = append(v.links, traceConnection{
+		a: a,
+		b: b,
+	})
+}
+
+func (v *componentTraceViewer) refreshLines() {
+	v.lineLayer.lines = nil
+
+	for _, c := range v.links {
+		cellA := v.cells[c.a]
+		cellB := v.cells[c.b]
+
+		if cellA == nil || cellB == nil {
+			continue
+		}
+
+		pa := cellA.Position()
+		pb := cellB.Position()
+
+		line := canvas.NewLine(color.White)
+		line.StrokeWidth = 2
+
+		line.Position1 = fyne.NewPos(
+			pa.X+cellA.Size().Width/2,
+			pa.Y+cellA.Size().Height,
+		)
+
+		line.Position2 = fyne.NewPos(
+			pb.X+cellB.Size().Width/2,
+			pb.Y,
+		)
+
+		v.lineLayer.lines = append(v.lineLayer.lines, line)
+	}
+
+	v.lineLayer.Refresh()
 }

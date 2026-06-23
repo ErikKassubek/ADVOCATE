@@ -38,14 +38,14 @@ func createProgressBar() *componentProgress {
 	return cms
 }
 
-func (self *componentProgress) setValue(v float64) {
-	self.progressWidget.SetValue(0)
+func (this *componentProgress) setValue(v float64) {
+	this.progressWidget.SetValue(0)
 }
 
-func (self *componentProgress) setProgress(current int, outOf int) {
+func (this *componentProgress) setProgress(current int, outOf int) {
 	prog := float64(current) / float64(outOf)
 
 	prog = math.Clamp(prog, 0, 1)
 
-	self.progressWidget.SetValue(prog)
+	this.progressWidget.SetValue(prog)
 }

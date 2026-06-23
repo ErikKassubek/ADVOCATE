@@ -332,6 +332,16 @@ func (this *ElementAtomic) ToString() string {
 	return fmt.Sprintf("A,%d,%d,%s,%s", this.tPost, this.objId, opString, this.GetPos())
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementAtomic) ToStringGui() string {
+	opString := string(string(this.op)[1])
+
+	return fmt.Sprintf("A,%d,%s,%s", this.objId, opString, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -346,6 +356,22 @@ func (this *ElementAtomic) GetID() int {
 //   - ID int: the trace id
 func (this *ElementAtomic) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementAtomic) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementAtomic) setObjId(id int) {
+	this.objId = id
 }
 
 // IsRequest determines if the element is a request
@@ -367,6 +393,13 @@ func (this *ElementAtomic) CanBeRequest() bool {
 //   - bool: element is request
 func (this *ElementAtomic) SetRequest(_ bool) {
 	return
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementAtomic) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy the atomic element

@@ -57,7 +57,7 @@ func runAnalyzer(pathTrace string,
 
 	results.InitResults(outReadable, outMachine)
 
-	numberOfRoutines, numberElems, tr, err := io.CreateTraceFromFiles(pathTrace)
+	numberOfRoutines, numberElems, tr, err := io.CreateTraceFromFiles(pathTrace, io.LongFile)
 	baseA.SetMainTrace(tr)
 
 	if err != nil && fuzzingRun <= 0 {

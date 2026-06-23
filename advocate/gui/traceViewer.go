@@ -29,10 +29,10 @@ type traceViewer struct {
 	trace *trace.Trace
 }
 
-func (self *window) openTraceViewer() {
+func (this *window) openTraceViewer() {
 	tv := traceViewer{}
 
-	tv.window = self.app.NewWindow("Trace")
+	tv.window = this.app.NewWindow("Trace")
 
 	tv.pathSelector = createPathSelector("Trace", &tv.path, tv.updateTrace, tv.window)
 	tv.closeButton = createButton("Close", tv.window.Close)
@@ -53,48 +53,66 @@ func (self *window) openTraceViewer() {
 	tv.window.Show()
 }
 
-func (self *traceViewer) updateTrace(dir string) {
-	err := self.readTrace(dir)
+func (this *traceViewer) updateTrace(dir string) {
+	routs, _, err := this.readTrace(dir)
 	if err != nil {
 		win.writeErr("Could not read trace: ", err)
 		return
 	}
 
-	self.trace.AsRequestCommit()
-	self.trace.NormalizeRequestCommit()
+	elems := this.trace.AsRequestCommit()
+	this.trace.NormalizeRequestCommit()
+	this.traceViewer = createTraceViewer(routs, elems)
 
-	self.clear()
+	content := container.NewBorder(
+		this.pathSelector.Container,
+		this.closeButton.Container,
+		nil,
+		nil,
+		container.NewStack(this.traceViewer.Scroll),
+	)
 
-	traceIter := self.trace.AsIterator()
+	this.window.SetContent(content)
+
+	lastReq := make(map[int]string)
+
+	traceIter := this.trace.AsIterator()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
-		elem_name := "C:"
-		if elem.IsRequest() {
-			elem_name = "R:"
-		}
-		elem_name += elem.ToString()
+		rout := elem.GetRoutine()
+		row := elem.GetTSort() + 1
+		k := key(rout, row)
 
-		// println(elem.GetRoutine(), elem.GetTSort()+1, elem_name)
-		self.AddEntry(elem.GetRoutine(), elem.GetTSort()+1, elem_name)
+		elem_name := elem.ToStringGui()
+
+		if elem.IsRequest() {
+			elem_name += "?"
+			lastReq[rout] = k
+			println("REQ: ", rout, k)
+		} else if elem.CanBeRequest() {
+			this.traceViewer.connect(lastReq[rout], k)
+			println("CON: ", rout, lastReq[rout], k)
+		}
+
+		println("ADD: ", elem_name)
+		this.AddEntry(rout, row, elem_name)
 	}
 
-	self.rebuild()
-
+	this.rebuild()
 }
 
-func (self *traceViewer) AddEntry(rout, elem int, text string) {
-	self.traceViewer.AddCell(rout, elem, text)
+func (this *traceViewer) AddEntry(rout, row int, text string) {
+	this.traceViewer.AddCell(rout, row, text)
 }
 
-func (self *traceViewer) clear() {
-	self.traceViewer.clear()
+func (this *traceViewer) clear() {
+	this.traceViewer.clear()
 }
 
-func (self *traceViewer) rebuild() {
-	self.traceViewer.rebuild()
+func (this *traceViewer) rebuild() {
+	this.traceViewer.rebuild()
 }
 
-func (self *traceViewer) readTrace(dir string) error {
-	var err error
-	self.traceViewer.cols, self.traceViewer.rows, self.trace, err = io.CreateTraceFromFiles(dir)
-	return err
+func (this *traceViewer) readTrace(dir string) (cols int, rows int, err error) {
+	cols, rows, this.trace, err = io.CreateTraceFromFiles(dir, io.ShortFile)
+	return cols, rows, err
 }

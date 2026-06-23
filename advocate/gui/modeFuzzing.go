@@ -15,28 +15,28 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (self *window) setFuzzing() {
+func (this *window) setFuzzing() {
 	var content []fyne.CanvasObject
 	content = []fyne.CanvasObject{
-		self.settings.components.mainTestSelect.Container,
+		this.settings.components.mainTestSelect.Container,
 		widget.NewSeparator(),
-		self.settings.components.label.Container,
-		self.settings.components.fuzzingMode.Container,
-		self.settings.components.scen.Container,
-		self.settings.components.toRecord.Container,
-		self.settings.components.toReplay.Container,
-		self.settings.components.toFuzzing.Container,
-		self.settings.components.maxFuzzingRun.Container,
-		self.settings.components.maxNumberElements.Container,
-		twoCheck(self.settings.components.measureTime.Container, self.settings.components.createStatistics.Container),
-		twoCheck(self.settings.components.checkForNotExecuted.Container, self.settings.components.ignoreCriticalSections.Container),
-		twoCheck(self.settings.components.ignoreAtomics.Container, self.settings.components.onlyAPanicAndLeak.Container),
-		twoCheck(self.settings.components.noRewrite.Container, self.settings.components.deleteTrace.Container),
-		twoCheck(self.settings.components.cont.Container, self.settings.components.noWarning.Container),
-		twoCheck(self.settings.components.verbose.Container, self.settings.components.noProgress.Container),
-		twoCheck(self.settings.components.output.Container, self.settings.components.alwaysPanic.Container),
-		twoCheck(self.settings.components.noMemorySup.Container, self.settings.components.cancelTestIfBugFound.Container),
+		this.settings.components.label.Container,
+		this.settings.components.fuzzingMode.Container,
+		this.settings.components.scen.Container,
+		this.settings.components.toRecord.Container,
+		this.settings.components.toReplay.Container,
+		this.settings.components.toFuzzing.Container,
+		this.settings.components.maxFuzzingRun.Container,
+		this.settings.components.maxNumberElements.Container,
+		twoCheck(this.settings.components.measureTime.Container, this.settings.components.createStatistics.Container),
+		twoCheck(this.settings.components.checkForNotExecuted.Container, this.settings.components.ignoreCriticalSections.Container),
+		twoCheck(this.settings.components.ignoreAtomics.Container, this.settings.components.onlyAPanicAndLeak.Container),
+		twoCheck(this.settings.components.noRewrite.Container, this.settings.components.deleteTrace.Container),
+		twoCheck(this.settings.components.cont.Container, this.settings.components.noWarning.Container),
+		twoCheck(this.settings.components.verbose.Container, this.settings.components.noProgress.Container),
+		twoCheck(this.settings.components.output.Container, this.settings.components.alwaysPanic.Container),
+		twoCheck(this.settings.components.noMemorySup.Container, this.settings.components.cancelTestIfBugFound.Container),
 	}
 
-	self.setSettings(content)
+	this.setSettings(content)
 }

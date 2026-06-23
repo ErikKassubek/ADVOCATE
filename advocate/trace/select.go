@@ -687,6 +687,14 @@ func (this *ElementSelect) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementSelect) ToStringGui() string {
+	return fmt.Sprintf("S,%d,%s,%s", this.objId, "TODO", this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -701,6 +709,29 @@ func (this *ElementSelect) GetID() int {
 //   - ID int: the trace id
 func (this *ElementSelect) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementSelect) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementSelect) setObjId(id int) {
+	this.objId = id
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementSelect) SetRoutine(id int) {
+	this.routine = id
 }
 
 // IsRequest determines if the element is a request

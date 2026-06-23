@@ -50,78 +50,78 @@ type window struct {
 	worker *worker
 }
 
-func (self *window) create() {
-	self.app = app.New()
-	self.window = self.app.NewWindow("Advocate")
+func (this *window) create() {
+	this.app = app.New()
+	this.window = this.app.NewWindow("Advocate")
 
 	// self.w.Resize(fyne.NewSize(800, 500))
-	self.window.Resize(fyne.NewSize(1920, 1080))
-	self.window.CenterOnScreen()
+	this.window.Resize(fyne.NewSize(1920, 1080))
+	this.window.CenterOnScreen()
 
-	self.handleClose()
+	this.handleClose()
 
-	self.createComponents()
+	this.createComponents()
 }
 
-func (self *window) build() {
-	self.left = container.NewBorder(
+func (this *window) build() {
+	this.left = container.NewBorder(
 		container.NewVBox(
-			self.modeSelect.Container,
+			this.modeSelect.Container,
 
 			widget.NewSeparator(),
 
-			self.projSelector.Container,
+			this.projSelector.Container,
 		),
 		container.NewVBox(
-			self.runButton.Container,
-			self.cancelButton.Container,
-			self.traceButton.Container,
+			this.runButton.Container,
+			this.cancelButton.Container,
+			this.traceButton.Container,
 		),
 		nil,
 		nil,
 		container.NewVBox(
 			widget.NewSeparator(),
-			self.settings.Container,
+			this.settings.Container,
 		),
 	)
 
-	self.right = container.NewBorder(
+	this.right = container.NewBorder(
 		nil,
-		self.progressBar.Container,
+		this.progressBar.Container,
 		nil,
 		nil,
-		self.output.Container,
+		this.output.Container,
 	)
 
-	content := container.NewHSplit(self.left, self.right)
+	content := container.NewHSplit(this.left, this.right)
 	content.SetOffset(0.33)
 
-	self.window.SetContent(content)
+	this.window.SetContent(content)
 }
 
-func (self *window) createComponents() {
-	self.output = createOutput()
+func (this *window) createComponents() {
+	this.output = createOutput()
 
-	self.projSelector = createPathSelector("Project", &flags.ProgPath, getAllTestNames, win.window)
-	self.runButton = createRunButton()
-	self.cancelButton = createCancelButton()
-	self.traceButton = createTraceButton()
-	self.progressBar = createProgressBar()
-	self.settings = createSettings()
+	this.projSelector = createPathSelector("Project", &flags.ProgPath, getAllTestNames, win.window)
+	this.runButton = createRunButton()
+	this.cancelButton = createCancelButton()
+	this.traceButton = createTraceButton()
+	this.progressBar = createProgressBar()
+	this.settings = createSettings()
 
-	self.modeSelect = createModeSelect() // must be created last
+	this.modeSelect = createModeSelect() // must be created last
 
-	self.cancelButton.disable()
+	this.cancelButton.disable()
 }
 
-func (self *window) showAndRun() {
-	self.window.ShowAndRun()
+func (this *window) showAndRun() {
+	this.window.ShowAndRun()
 }
 
-func (self *window) handleClose() {
-	self.window.SetCloseIntercept(func() {
-		self.WriteGui("Application shutting down...")
-		self.window.Close()
+func (this *window) handleClose() {
+	this.window.SetCloseIntercept(func() {
+		this.WriteGui("Application shutting down...")
+		this.window.Close()
 		os.Exit(0)
 	})
 }

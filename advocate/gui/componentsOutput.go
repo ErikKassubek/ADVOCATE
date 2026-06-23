@@ -97,43 +97,43 @@ func createOutput() *componentOutput {
 	return co
 }
 
-func (self *componentOutput) write(lv log.InfoLevel, text string) {
+func (this *componentOutput) write(lv log.InfoLevel, text string) {
 	timestamp := time.Now().Format("15:04:05")
 	line := fmt.Sprintf("[%s] %s", timestamp, text)
 
-	self.lines = append(self.lines, logLine{
+	this.lines = append(this.lines, logLine{
 		text: line,
 		lv:   lv,
 	})
 
-	self.outputList.Refresh()
+	this.outputList.Refresh()
 
-	self.outputList.ScrollToBottom()
+	this.outputList.ScrollToBottom()
 }
 
-func (self *window) write(lv log.InfoLevel, msg ...any) {
-	self.output.write(lv, fmt.Sprint(msg))
+func (this *window) write(lv log.InfoLevel, msg ...any) {
+	this.output.write(lv, fmt.Sprint(msg))
 }
 
-func (self *window) writef(lv log.InfoLevel, format string, a ...any) {
+func (this *window) writef(lv log.InfoLevel, format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
-	self.output.write(lv, msg)
+	this.output.write(lv, msg)
 }
 
-func (self *window) WriteGui(msg ...any) {
-	self.output.write(log.GuiLv, fmt.Sprint(msg))
+func (this *window) WriteGui(msg ...any) {
+	this.output.write(log.GuiLv, fmt.Sprint(msg))
 }
 
-func (self *window) writeGuif(format string, a ...any) {
+func (this *window) writeGuif(format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
-	self.output.write(log.GuiLv, msg)
+	this.output.write(log.GuiLv, msg)
 }
 
-func (self *window) writeErr(msg ...any) {
-	self.output.write(log.ErrorLv, fmt.Sprint(msg))
+func (this *window) writeErr(msg ...any) {
+	this.output.write(log.ErrorLv, fmt.Sprint(msg))
 }
 
-func (self *window) writeErrf(format string, a ...any) {
+func (this *window) writeErrf(format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
-	self.output.write(log.ErrorLv, msg)
+	this.output.write(log.ErrorLv, msg)
 }

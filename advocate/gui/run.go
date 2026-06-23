@@ -28,28 +28,28 @@ func newWorker() *worker {
 
 }
 
-func (self *worker) IsCanceled() bool {
-	return self.ctx.Err() != nil
+func (this *worker) IsCanceled() bool {
+	return this.ctx.Err() != nil
 }
 
-func (self *window) startRunMode() {
-	self.settings.disable()
+func (this *window) startRunMode() {
+	this.settings.disable()
 	win.modeSelect.disable()
 	win.projSelector.disable()
 	win.runButton.disable()
 	win.cancelButton.enable()
 }
 
-func (self *window) endRunMode() {
-	self.settings.enable()
+func (this *window) endRunMode() {
+	this.settings.enable()
 	win.modeSelect.enable()
 	win.projSelector.enable()
 	win.runButton.enable()
 	win.cancelButton.disable()
 }
 
-func (self *window) start() {
-	self.worker = newWorker()
+func (this *window) start() {
+	this.worker = newWorker()
 
 	go func() {
 		if !validInput() {
@@ -61,23 +61,23 @@ func (self *window) start() {
 			win.WriteGui("Start Run")
 		})
 
-		err := run.Run(self.worker.ctx)
+		err := run.Run(this.worker.ctx)
 		if err != nil {
-			if !self.worker.IsCanceled() {
+			if !this.worker.IsCanceled() {
 				fyne.Do(func() { win.writeErr(err.Error()) })
 			}
 		}
 
 		fyne.Do(func() {
 			win.endRunMode()
-			if !self.worker.IsCanceled() {
+			if !this.worker.IsCanceled() {
 				win.WriteGui("Finish Run")
 			}
 		})
 	}()
 }
 
-func (self *window) cancel() {
-	self.writeErr("Cancel Run...")
-	self.worker.cancel()
+func (this *window) cancel() {
+	this.writeErr("Cancel Run...")
+	this.worker.cancel()
 }

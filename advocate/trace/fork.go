@@ -107,6 +107,14 @@ func (this *ElementFork) GetObjId() int {
 	return this.objId
 }
 
+// SetObjId sets the ID of the newly created routine
+//
+// Parameter:
+//   - id int: The id of the new routine
+func (this *ElementFork) SetObjId(id int) int {
+	return this.objId
+}
+
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
@@ -305,6 +313,14 @@ func (this *ElementFork) ToString() string {
 		"," + this.GetPos()
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementFork) ToStringGui() string {
+	return fmt.Sprintf("G,%d,%s", this.objId, this.GetPos())
+}
+
 // GetID returns the trace id
 //
 // Returns:
@@ -319,6 +335,29 @@ func (this *ElementFork) GetID() int {
 //   - ID int: the trace id
 func (this *ElementFork) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementFork) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementFork) setObjId(id int) {
+	this.objId = id
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementFork) SetRoutine(id int) {
+	this.routine = id
 }
 
 // IsRequest determines if the element is a request

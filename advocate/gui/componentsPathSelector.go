@@ -83,14 +83,14 @@ func createPathSelector(label string, valToSet *string, onChange func(path strin
 	return cps
 }
 
-func (self *componentPathSelector) getPath() string {
-	return self.path
+func (this *componentPathSelector) getPath() string {
+	return this.path
 }
 
-func (self *componentPathSelector) disable() {
-	self.openPathSelButton.Disable()
+func (this *componentPathSelector) disable() {
+	this.openPathSelButton.Disable()
 }
 
-func (self *componentPathSelector) enable() {
-	self.openPathSelButton.Enable()
+func (this *componentPathSelector) enable() {
+	this.openPathSelButton.Enable()
 }

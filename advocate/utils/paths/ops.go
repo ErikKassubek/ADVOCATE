@@ -18,6 +18,10 @@ import (
 	"strings"
 )
 
+const (
+	PathSep = string(os.PathSeparator)
+)
+
 func Join(pre, post bool, elem ...string) string {
 	res := filepath.Join(elem...)
 	if pre {

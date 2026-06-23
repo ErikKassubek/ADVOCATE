@@ -15,16 +15,16 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-func (self *window) setReplay() {
+func (this *window) setReplay() {
 	objects := []fyne.CanvasObject{
-		self.settings.components.mainTestSelect.Container,
+		this.settings.components.mainTestSelect.Container,
 		widget.NewSeparator(),
-		self.settings.components.tracePath.Container,
+		this.settings.components.tracePath.Container,
 		widget.NewSeparator(),
-		self.settings.components.label.Container,
-		self.settings.components.toReplay.Container,
-		twoCheck(self.settings.components.measureTime.Container, self.settings.components.createStatistics.Container),
-		twoCheck(self.settings.components.ignoreAtomics.Container, self.settings.components.cont.Container),
+		this.settings.components.label.Container,
+		this.settings.components.toReplay.Container,
+		twoCheck(this.settings.components.measureTime.Container, this.settings.components.createStatistics.Container),
+		twoCheck(this.settings.components.ignoreAtomics.Container, this.settings.components.cont.Container),
 	}
-	self.setSettings(objects)
+	this.setSettings(objects)
 }

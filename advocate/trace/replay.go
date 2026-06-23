@@ -246,6 +246,14 @@ func (this *ElementReplay) ToString() string {
 	return res
 }
 
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementReplay) ToStringGui() string {
+	return "X"
+}
+
 // UpdateVectorClock update and stores the vector clock of the element
 func (this *ElementReplay) UpdateVectorClock() {
 	// nothing to do
@@ -265,6 +273,20 @@ func (this *ElementReplay) GetID() int {
 //   - ID int: the trace id
 func (this *ElementReplay) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file. Dummy function to implement Element interface
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementReplay) setFile(_ string) {
+}
+
+// setObjId sets the object id. Dummy function to implement Element interface
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementReplay) setObjId(_ int) {
 }
 
 // IsRequest determines if the element is a request
@@ -287,6 +309,11 @@ func (this *ElementReplay) CanBeRequest() bool {
 func (this *ElementReplay) SetRequest(_ bool) {
 	return
 }
+
+// SetRequest sets the routine id. Dummy function to implement Element interface
+// Argument:
+//   - int: new routine id
+func (this *ElementReplay) SetRoutine(_ int) {}
 
 // Copy creates a copy of the element
 //

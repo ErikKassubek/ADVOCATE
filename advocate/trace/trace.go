@@ -999,8 +999,6 @@ func (this *Trace) AsRequestCommit() int {
 			if !elem.CanBeRequest() || elem.GetTCom() != 0 {
 				newRout = append(newRout, elem)
 				elemCounter++
-			} else {
-				println("SKIP: ", elem.ToStringGui())
 			}
 		}
 		newTr[rout] = newRout

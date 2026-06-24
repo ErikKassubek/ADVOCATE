@@ -38,19 +38,78 @@ func createSectionLabel(text string) *componentSectionLabel {
 	}
 }
 
-func createBoxedLabel(text string) fyne.CanvasObject {
+func createBoxedLabel(text string, noBox, removeTop, request bool) fyne.CanvasObject {
+
 	label := widget.NewLabel(text)
 
-	if text == "" {
+	if noBox {
 		return label
 	}
 
-	border := canvas.NewRectangle(color.Transparent)
-	border.StrokeColor = color.White
-	border.StrokeWidth = 1
-
 	return container.NewStack(
-		border,
+		createBorder(removeTop, request),
 		label,
 	)
+}
+
+func createBorder(removeTop, request bool) fyne.CanvasObject {
+	top := canvas.NewLine(color.White)
+	bottom := canvas.NewLine(color.White)
+	left := canvas.NewLine(color.White)
+	right := canvas.NewLine(color.White)
+
+	objects := []fyne.CanvasObject{}
+
+	if !removeTop {
+		objects = append(objects, top)
+	}
+
+	if !request {
+		objects = append(objects, bottom)
+	}
+
+	objects = append(objects, left, right)
+
+	border := container.NewWithoutLayout(objects...)
+
+	border.Layout = &borderLayout{
+		removeTop:    removeTop,
+		removeBottom: request,
+	}
+
+	return border
+}
+
+type borderLayout struct {
+	removeTop    bool
+	removeBottom bool
+}
+
+func (l *borderLayout) Layout(objects []fyne.CanvasObject, size fyne.Size) {
+	i := 0
+
+	if !l.removeTop {
+		objects[i].Move(fyne.NewPos(0, 0))
+		objects[i].Resize(fyne.NewSize(size.Width, 1))
+		i++
+	}
+
+	if !l.removeBottom {
+		objects[i].Move(fyne.NewPos(0, size.Height-1))
+		objects[i].Resize(fyne.NewSize(size.Width, 1))
+		i++
+	}
+
+	// Left
+	objects[i].Move(fyne.NewPos(0, 0))
+	objects[i].Resize(fyne.NewSize(1, size.Height))
+	i++
+
+	// Right
+	objects[i].Move(fyne.NewPos(size.Width-1, 0))
+	objects[i].Resize(fyne.NewSize(1, size.Height))
+}
+
+func (l *borderLayout) MinSize(objects []fyne.CanvasObject) fyne.Size {
+	return fyne.NewSize(0, 0)
 }

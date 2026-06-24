@@ -13,6 +13,7 @@ package gui
 import (
 	"advocate/io"
 	"advocate/trace"
+	"advocate/utils/types"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -74,38 +75,61 @@ func (this *traceViewer) updateTrace(dir string) {
 
 	this.window.SetContent(content)
 
-	lastReq := make(map[int]string)
+	reqCom := make(map[int][]types.Pair[int, int])
+	for id := 1; id < this.trace.GetNoRoutines()+1; id++ {
+		reqCom[id] = make([]types.Pair[int, int], 0)
+	}
+	inOp := make(map[int]bool)
 
 	traceIter := this.trace.AsIterator()
 	for elem := traceIter.Next(); elem != nil; elem = traceIter.Next() {
 		rout := elem.GetRoutine()
 		row := elem.GetTSort() + 1
-		k := key(rout, row)
 
 		elem_name := elem.ToStringGui()
 
+		removeTop := false
+		request := false
+
 		if elem.IsRequest() {
 			elem_name += "?"
-			lastReq[rout] = k
-			println("REQ: ", rout, k)
+			request = true
+			reqCom[rout] = append(reqCom[rout], types.NewPair(row, 0))
+			inOp[rout] = true
 		} else if elem.CanBeRequest() {
-			this.traceViewer.connect(lastReq[rout], k)
-			println("CON: ", rout, lastReq[rout], k)
+			removeTop = true
+			elem_name = ""
+			if inOp[rout] {
+				inOp[rout] = false
+				l := len(reqCom[rout]) - 1
+				elem := reqCom[rout][l]
+				elem.Y = row
+				reqCom[rout][l] = elem
+			}
 		}
 
-		println("ADD: ", elem_name)
-		this.AddEntry(rout, row, elem_name)
+		this.AddEntry(rout, row, elem_name, removeTop, request)
+	}
+
+	// add sides between request and commit
+	for rout, val := range reqCom {
+		for _, op := range val {
+			if op.Y == 0 {
+				continue
+			}
+			for i := op.X + 1; i < op.Y; i++ {
+				this.traceViewer.AddCell(rout, i, "", false, true, true)
+			}
+		}
+
 	}
 
 	this.rebuild()
 }
 
-func (this *traceViewer) AddEntry(rout, row int, text string) {
-	this.traceViewer.AddCell(rout, row, text)
-}
-
-func (this *traceViewer) clear() {
-	this.traceViewer.clear()
+func (this *traceViewer) AddEntry(rout, row int, text string, removeTop, request bool) {
+	noBox := false
+	this.traceViewer.AddCell(rout, row, text, noBox, removeTop, request)
 }
 
 func (this *traceViewer) rebuild() {

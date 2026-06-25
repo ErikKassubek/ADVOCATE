@@ -31,6 +31,8 @@ var (
 	gray   = color.RGBA{200, 200, 200, 255}
 )
 
+var windowSize = fyne.NewSize(1920, 1080)
+
 type window struct {
 	app    fyne.App
 	window fyne.Window
@@ -55,7 +57,7 @@ func (this *window) create() {
 	this.window = this.app.NewWindow("Advocate")
 
 	// self.w.Resize(fyne.NewSize(800, 500))
-	this.window.Resize(fyne.NewSize(1920, 1080))
+	this.window.Resize(windowSize)
 	this.window.CenterOnScreen()
 
 	this.handleClose()
@@ -67,9 +69,7 @@ func (this *window) build() {
 	this.left = container.NewBorder(
 		container.NewVBox(
 			this.modeSelect.Container,
-
 			widget.NewSeparator(),
-
 			this.projSelector.Container,
 		),
 		container.NewVBox(
@@ -79,10 +79,7 @@ func (this *window) build() {
 		),
 		nil,
 		nil,
-		container.NewVBox(
-			widget.NewSeparator(),
-			this.settings.Container,
-		),
+		container.NewScroll(this.settings.Container),
 	)
 
 	this.right = container.NewBorder(
@@ -90,7 +87,7 @@ func (this *window) build() {
 		this.progressBar.Container,
 		nil,
 		nil,
-		this.output.Container,
+		container.NewScroll(this.output.Container),
 	)
 
 	content := container.NewHSplit(this.left, this.right)
@@ -115,6 +112,8 @@ func (this *window) createComponents() {
 }
 
 func (this *window) showAndRun() {
+	// without additional show, the window content is shifted up
+	this.window.Show()
 	this.window.ShowAndRun()
 }
 

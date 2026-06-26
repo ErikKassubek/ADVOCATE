@@ -34,91 +34,91 @@ func (self *staticData) detOpsInFile(file *ast.File) {
 }
 
 func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
-	self.opsPerFunk[fdecl] = make(map[*ast.Expr]map[funcName]struct{})
-	self.funcsPerFunc[fdecl] = make([]funcCall, 0)
-
 	ast.Inspect(fdecl, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.FuncDecl:
 			self.funcDeclMap[x.Name.Pos()] = x
 		case *ast.GoStmt: // new routine
 			self.recordGoStatement(fdecl, x)
+			self.recordFunctionCall(fdecl, x.Call) // TODO: does not work
 		case *ast.SendStmt: // channel send
-			self.recordOperation(fdecl, &x.Chan, chanSend)
+			self.recordOperation(fdecl, x.Chan, chanSend)
+			return true
 		case *ast.UnaryExpr: // channel recv
 			if x.Op == token.ARROW {
-				self.recordOperation(fdecl, &x.X, chanRecv)
+				self.recordOperation(fdecl, x.X, chanRecv)
+				return true
 			}
 		case *ast.CallExpr:
-			// all functions
-			self.recordFunctionCall(fdecl, x)
+			ft := unknownFunc
 
-			// channel close
-			if ident, ok := x.Fun.(*ast.Ident); ok && ident.Name == "close" {
-				self.recordOperation(fdecl, &(x.Args[0]), chanClose)
+			if ident, ok := x.Fun.(*ast.Ident); ok {
+				switch ident.Name {
+				case "close":
+					if len(x.Args) == 1 && self.isChannel(x.Args[0]) {
+						ft = chanClose
+					}
+				case "make":
+					if len(x.Args) != 0 {
+						switch x.Args[0].(type) {
+						case *ast.ChanType:
+							ft = makeChan
+						}
+					}
+				}
+				if ft != unknownFunc {
+					self.recordOperation(fdecl, x.Args[0], ft)
+					return true
+				}
 			}
 
 			if sel, ok := x.Fun.(*ast.SelectorExpr); ok { // a.x()
 				if self.isMutex(x) {
 					switch sel.Sel.Name {
 					case "Lock":
-						self.recordOperation(fdecl, &sel.X, mutexLock)
+						ft = mutexLock
 					case "TryLock":
-						self.recordOperation(fdecl, &sel.X, mutexTryLock)
+						ft = mutexTryLock
 					case "RLock":
-						self.recordOperation(fdecl, &sel.X, mutexRLock)
+						ft = mutexRLock
 					case "TryRLock":
-						self.recordOperation(fdecl, &sel.X, mutexRLock)
+						ft = mutexRLock
 					case "Unlock":
-						self.recordOperation(fdecl, &sel.X, mutexUnlock)
+						ft = mutexUnlock
 					case "RUnlock":
-						self.recordOperation(fdecl, &sel.X, mutexRUnlock)
 					}
+
 				} else if self.isCondVar(x) {
 					switch sel.Sel.Name {
 					case "Wait":
-						self.recordOperation(fdecl, &sel.X, condWait)
+						ft = condWait
 					case "Signal":
-						self.recordOperation(fdecl, &sel.X, condSignal)
+						ft = condSignal
 					case "Broadcast":
-						self.recordOperation(fdecl, &sel.X, condBroadcast)
+						ft = condBroadcast
 					}
 				} else if self.isWaitGroup(x) {
+
 					switch sel.Sel.Name {
 					case "Wait":
-						self.recordOperation(fdecl, &sel.X, wgWait)
+						ft = wgWait
 					case "Add":
-						self.recordOperation(fdecl, &sel.X, wgAdd)
+						ft = wgAdd
 					case "Done":
-						self.recordOperation(fdecl, &sel.X, wgDone)
+						ft = wgDone
 					case "Go":
-						self.recordOperation(fdecl, &sel.X, wgGo)
+						ft = wgGo
 					}
 				}
+
+				if ft != unknownFunc {
+					self.recordOperation(fdecl, sel.X, ft)
+					return true
+				}
 			}
+			self.recordFunctionCall(fdecl, x)
 		}
 
 		return true
 	})
-}
-
-func (self *staticData) recordOperation(fdecl *ast.FuncDecl, variable *ast.Expr, f funcName) {
-	if _, ok := self.opsPerFunk[fdecl][variable]; !ok {
-		self.opsPerFunk[fdecl][variable] = make(map[funcName]struct{})
-	}
-
-	self.opsPerFunk[fdecl][variable][f] = struct{}{}
-}
-
-func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, f *ast.CallExpr) {
-	funcDecl := self.getFuncDecl(f) // TODO: does not handle anonymous functions
-	self.funcsPerFunc[fdecl] = append(self.funcsPerFunc[fdecl], funcCall{f, funcDecl})
-}
-
-func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, f *ast.GoStmt) {
-	if _, ok := self.funcsPerFunc[fdecl]; !ok {
-		self.goStatementPerFunc[fdecl] = make([]*ast.GoStmt, 0)
-	}
-
-	self.goStatementPerFunc[fdecl] = append(self.goStatementPerFunc[fdecl], f)
 }

@@ -11,18 +11,42 @@
 package blockingStatic
 
 import (
+	"advocate/utils/flags"
 	"advocate/utils/log"
+	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
+	"strings"
 
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 )
 
 type funcCall struct {
-	call *ast.CallExpr
+	call     *ast.CallExpr
+	decl     *ast.FuncDecl
+	name     string // TODO: multi package
+	callType funcName
+}
+
+type funcInfo struct {
 	decl *ast.FuncDecl
+
+	// functions called in each function,
+	// func -> call
+	// ast.Expr.(type) -> *ast.Ident: direct function (foo())
+	// ast.Expr.(type) -> *ast.SelectorExpr: methodCall (obj.Method())
+	// ast.Expr.(type) -> *ast.FuncLit: function literal (func() {...}())
+	funcCalls map[*ast.FuncDecl]funcCall
+
+	ops map[ast.Expr]map[funcName]struct{}
+
+	// routine spawns from functions
+	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
+	// *ast.GoStmt.Call.(type) -> *ast.SelectorExpr: methodCall (go obj.Method())
+	// *ast.GoStmt.Call.(type) -> *ast.FuncLit: function literal (go func() { ... }())
+	goCalls map[*ast.GoStmt]struct{}
 }
 
 type staticData struct { // always use buildStaticData, never staticData{}
@@ -30,7 +54,7 @@ type staticData struct { // always use buildStaticData, never staticData{}
 
 	pkgs []*packages.Package
 
-	fst *token.FileSet
+	fset *token.FileSet
 
 	pkgInfo map[*packages.Package]*types.Info
 	uses    map[*ast.Ident]types.Object
@@ -47,34 +71,20 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	funcDeclMap map[token.Pos]*ast.FuncDecl
 
 	// operations per function: func -> vartiable id (TODO: change to point to variable and not expression) -> funcs
-	opsPerFunk map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}
-
-	// functions called in each function,
-	// ast.Expr.(type) -> *ast.Ident: direct function (foo())
-	// ast.Expr.(type) -> *ast.SelectorExpr: methodCall (obj.Method())
-	// ast.Expr.(type) -> *ast.FuncLit: function literal (func() {...}())
-	funcsPerFunc map[*ast.FuncDecl][]funcCall
-
-	// routine spawns from functions
-	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
-	// *ast.GoStmt.Call.(type) -> *ast.SelectorExpr: methodCall (go obj.Method())
-	// *ast.GoStmt.Call.(type) -> *ast.FuncLit: function literal (go func() { ... }())
-	goStatementPerFunc map[*ast.FuncDecl][]*ast.GoStmt
+	funcsInfo map[*ast.FuncDecl]funcInfo
 }
 
 func buildStaticData(dir string) (*staticData, error) {
 	data := &staticData{
-		dir: dir,
-		fst: token.NewFileSet(),
+		dir:  dir,
+		fset: token.NewFileSet(),
 
 		astMap: make(map[string][]*ast.File),
 		ast:    make([]*ast.File, 0),
 		npm:    make(map[ast.Node]*packages.Package),
 
-		funcDeclMap:        make(map[token.Pos]*ast.FuncDecl),
-		opsPerFunk:         make(map[*ast.FuncDecl]map[*ast.Expr]map[funcName]struct{}),
-		funcsPerFunc:       make(map[*ast.FuncDecl][]funcCall),
-		goStatementPerFunc: make(map[*ast.FuncDecl][]*ast.GoStmt),
+		funcDeclMap: make(map[token.Pos]*ast.FuncDecl),
+		funcsInfo:   make(map[*ast.FuncDecl]funcInfo),
 	}
 	err := data.loadPackages()
 	if err != nil {
@@ -90,13 +100,87 @@ func buildStaticData(dir string) (*staticData, error) {
 	return data, nil
 }
 
-func (self staticData) callName(call funcCall) string {
-	res := self.getName(call.call) + ":"
-	if call.decl == nil {
-		res += self.getConcFuncName(call.call)
-	} else {
-		res += self.getName(call.decl.Name)
+func (self *staticData) getCallType(call *ast.CallExpr, decl *ast.FuncDecl) funcName {
+	if decl == nil {
+		return self.getConcFuncName(call)
 	}
 
-	return res
+	return unknownFunc
+}
+
+func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
+	if _, ok := self.funcsInfo[fdecl]; !ok {
+		self.funcsInfo[fdecl] = funcInfo{
+			decl:      fdecl,
+			funcCalls: make(map[*ast.FuncDecl]funcCall, 0),
+			ops:       make(map[ast.Expr]map[funcName]struct{}),
+			goCalls:   make(map[*ast.GoStmt]struct{}),
+		}
+	}
+}
+
+// (fdecl *ast.FuncDecl, f *ast.CallExpr)
+func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallExpr) {
+	self.addFuncIfNotExists(fdecl)
+
+	// prevent function from calling itself, if it is not recursive
+	if self.getPos(call) == self.getPos(fdecl) {
+		return
+	}
+
+	funcDecl := self.getFuncDecl(call)
+	info := self.funcsInfo[fdecl]
+	info.funcCalls[fdecl] = funcCall{call, funcDecl, self.getName(call), self.getCallType(call, funcDecl)}
+	self.funcsInfo[fdecl] = info
+}
+
+func (s *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
+	s.addFuncIfNotExists(f)
+
+	info := s.funcsInfo[f]
+
+	if info.ops == nil {
+		info.ops = make(map[ast.Expr]map[funcName]struct{})
+	}
+
+	if _, ok := info.ops[expr]; !ok {
+		info.ops[expr] = make(map[funcName]struct{})
+	}
+
+	info.ops[expr][name] = struct{}{}
+	s.funcsInfo[f] = info
+}
+
+func (s *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
+	s.addFuncIfNotExists(fdecl)
+
+	info := s.funcsInfo[fdecl]
+	info.goCalls[call] = struct{}{}
+	s.funcsInfo[fdecl] = info
+}
+
+// TODO: not working
+func (self *staticData) getPos(p ast.Node) string {
+	pos := p.Pos()
+	return self.getPosFromPos(pos)
+}
+
+func (self *staticData) getPosFromPos(pos token.Pos) string {
+	if !pos.IsValid() {
+		return "<invalid position>"
+	}
+
+	loc := self.fset.Position(pos)
+
+	if strings.Contains(loc.Filename, ".cache/go-build/") {
+		return "[internal]"
+	}
+
+	file := strings.TrimPrefix(loc.Filename, flags.ProgPath)
+
+	return fmt.Sprintf("[%s:%d]", file, loc.Line)
+}
+
+func (self *staticData) isEqual(p, q ast.Node) bool {
+	return self.getPos(p) == self.getPos(q)
 }

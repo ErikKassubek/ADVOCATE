@@ -13,6 +13,7 @@ package blockingStatic
 import (
 	"advocate/utils/flags"
 	"fmt"
+	"go/ast"
 
 	"golang.org/x/tools/go/packages"
 )
@@ -33,16 +34,50 @@ func RunStaticBlockingAnalysis(dir string) error {
 	}
 
 	data.collectOperations()
-	for p, c := range data.funcsPerFunc {
-		fmt.Println(data.getName(p.Name), ": ")
-		for _, ch := range c {
-			fmt.Println("  ", data.callName(ch), " - ", data.isMutex(ch.call))
-		}
 
-		fmt.Println()
+	data.printInfo()
+
+	var fFunc *ast.FuncDecl
+	var mainFunc *ast.FuncDecl
+
+	for p, funcDecl := range data.funcDeclMap {
+		if data.getPosFromPos(p) == "[/main.go:7]" {
+			fFunc = funcDecl
+		} else if data.getPosFromPos(p) == "[/main.go:30]" {
+			mainFunc = funcDecl
+		}
 	}
+
+	fmt.Println(data.isReachableFuncFromFunc(mainFunc, fFunc))
+
 	data.runAliasAnalysis()
 	return nil
+}
+
+func (self *staticData) printInfo() {
+	for p, c := range self.funcsInfo {
+		fmt.Println(self.getName(p.Name), self.getPos(p))
+
+		fmt.Println("  Funcs: ")
+		for _, call := range self.funcsInfo[p].funcCalls {
+			fmt.Println("    ", call.name, self.getPos(call.call), self.getPos(call.decl))
+		}
+
+		fmt.Println("  Go: ")
+		for ch, _ := range self.funcsInfo[p].goCalls {
+			fmt.Println("    ", self.getPos(ch))
+		}
+
+		fmt.Println("  Ops: ")
+		for op, ch := range c.ops {
+			for f := range ch {
+				fmt.Println("    ", f, self.getPos(op))
+			}
+		}
+	}
+
+	fmt.Println("")
+
 }
 
 // Determine the packages and type info
@@ -51,6 +86,7 @@ func RunStaticBlockingAnalysis(dir string) error {
 //   - dir: string: root directory of project
 func (self *staticData) loadPackages() error {
 	cfg := &packages.Config{
+		Fset: self.fset,
 		Mode: packages.NeedName |
 			packages.NeedFiles |
 			packages.NeedCompiledGoFiles |

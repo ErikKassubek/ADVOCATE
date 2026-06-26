@@ -15,30 +15,32 @@ import (
 	"go/ast"
 )
 
-type funcName int
+type funcName string
 
 const (
-	unknownFunc funcName = iota
+	unknownFunc funcName = "<unknown>"
+	makeFunc    funcName = "<make>"
 
-	chanSend
-	chanRecv
-	chanClose
+	makeChan  funcName = "<chan:make>"
+	chanSend  funcName = "<chan:send>"
+	chanRecv  funcName = "<chan:recv>"
+	chanClose funcName = "<chan:close>"
 
-	mutexLock
-	mutexRLock
-	mutexTryLock
-	mutexTryRLock
-	mutexUnlock
-	mutexRUnlock
+	mutexLock     funcName = "<mutex:lock>"
+	mutexRLock    funcName = "<mutex:rlock>"
+	mutexTryLock  funcName = "<mutex:trylock>"
+	mutexTryRLock funcName = "<mutex:tryrlock>"
+	mutexUnlock   funcName = "<mutex:unlock>"
+	mutexRUnlock  funcName = "<mutex:runlock>"
 
-	condWait
-	condBroadcast
-	condSignal
+	condWait      funcName = "<cond:wait>"
+	condBroadcast funcName = "<cond:broadcast>"
+	condSignal    funcName = "<cond:signal>"
 
-	wgWait
-	wgAdd
-	wgDone
-	wgGo
+	wgWait funcName = "<wait:wait>"
+	wgAdd  funcName = "<wait:add>"
+	wgDone funcName = "<wait:done>"
+	wgGo   funcName = "<wait:go>"
 
 	// TODO: list all
 )
@@ -54,29 +56,29 @@ const (
 	wg
 )
 
-func isCompatibleFunc(a, b funcName) bool {
-	// a should be less then
-	if int(a) > int(b) {
-		a, b = b, a
-	}
+// func isCompatibleFunc(a, b funcName) bool {
+// 	// a should be less then
+// 	if int(a) > int(b) {
+// 		a, b = b, a
+// 	}
 
-	switch a {
-	case chanSend:
-		return b == chanRecv
-	case chanRecv:
-		return b == chanClose
-	case mutexLock, mutexTryLock:
-		return b == mutexUnlock
-	case mutexRLock, mutexTryRLock:
-		return b == mutexRUnlock
-	case condWait:
-		return b == condBroadcast || b == condSignal
-	case wgWait:
-		return b == wgDone
-	}
+// 	switch a {
+// 	case chanSend:
+// 		return b == chanRecv
+// 	case chanRecv:
+// 		return b == chanClose
+// 	case mutexLock, mutexTryLock:
+// 		return b == mutexUnlock
+// 	case mutexRLock, mutexTryRLock:
+// 		return b == mutexRUnlock
+// 	case condWait:
+// 		return b == condBroadcast || b == condSignal
+// 	case wgWait:
+// 		return b == wgDone
+// 	}
 
-	return false
-}
+// 	return false
+// }
 
 func (self *staticData) getName(id ast.Expr) string {
 	if id == nil {

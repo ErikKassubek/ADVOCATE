@@ -40,7 +40,7 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 			self.funcDeclMap[x.Name.Pos()] = x
 		case *ast.GoStmt: // new routine
 			self.recordGoStatement(fdecl, x)
-			self.recordFunctionCall(fdecl, x.Call) // TODO: does not work
+			self.recordFunctionCall(fdecl, x.Call)
 		case *ast.SendStmt: // channel send
 			self.recordOperation(fdecl, x.Chan, chanSend)
 			return true

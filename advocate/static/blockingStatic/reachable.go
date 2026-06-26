@@ -15,13 +15,13 @@ import (
 	"go/ast"
 )
 
-func (d *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string) {
+// TODO: does not work if path needs to pass through in go func() {...}()
+func (self *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string) {
 	if start == nil || target == nil {
 		return false, ""
 	}
 
 	if start == target {
-		fmt.Println(start.Name.Name)
 		return true, ""
 	}
 
@@ -41,7 +41,7 @@ func (d *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, calcPa
 		cur := queue[0]
 		queue = queue[1:]
 
-		info, ok := d.funcsInfo[cur]
+		info, ok := self.funcsInfo[cur]
 		if !ok {
 			continue
 		}

@@ -70,9 +70,12 @@ type staticData struct { // always use buildStaticData, never staticData{}
 
 	funcDeclMap map[token.Pos]*ast.FuncDecl
 
-	// operations per function: func -> vartiable id (TODO: change to point to variable and not expression) -> funcs
 	funcsInfo map[*ast.FuncDecl]funcInfo
 	routFunc  map[*ast.GoStmt]*ast.FuncDecl
+
+	funcLitDecl map[*ast.FuncLit]*ast.FuncDecl // dummy for func lit
+
+	nextID int
 }
 
 func buildStaticData(dir string) (*staticData, error) {
@@ -87,6 +90,8 @@ func buildStaticData(dir string) (*staticData, error) {
 		funcDeclMap: make(map[token.Pos]*ast.FuncDecl),
 		funcsInfo:   make(map[*ast.FuncDecl]funcInfo),
 		routFunc:    make(map[*ast.GoStmt]*ast.FuncDecl),
+
+		funcLitDecl: make(map[*ast.FuncLit]*ast.FuncDecl),
 	}
 	err := data.loadPackages()
 	if err != nil {
@@ -97,7 +102,8 @@ func buildStaticData(dir string) (*staticData, error) {
 	data.buildAst()
 	// must be called afer load packages
 	data.buildSsa()
-	data.printSSA(true)
+	// data.printSSA(true)
+	// fmt.Println("\n\n\n")
 	// data.runPointerAnalysis()
 
 	return data, nil
@@ -122,91 +128,10 @@ func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
 	}
 }
 
-// (fdecl *ast.FuncDecl, f *ast.CallExpr)
-func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallExpr) {
-	self.addFuncIfNotExists(fdecl)
-
-	// prevent function from calling itself, if it is not recursive
-	if self.getPos(call) == self.getPos(fdecl) {
-		return
-	}
-
-	funcDecl := self.getFuncDecl(call)
-	info := self.funcsInfo[fdecl]
-	info.funcCalls[fdecl] = funcCall{call, funcDecl, self.getName(call), self.getCallType(call, funcDecl)}
-	self.funcsInfo[fdecl] = info
-}
-
-func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
-	self.addFuncIfNotExists(f)
-
-	info := self.funcsInfo[f]
-
-	if info.ops == nil {
-		info.ops = make(map[ast.Expr]map[funcName]struct{})
-	}
-
-	if _, ok := info.ops[expr]; !ok {
-		info.ops[expr] = make(map[funcName]struct{})
-	}
-
-	info.ops[expr][name] = struct{}{}
-	self.funcsInfo[f] = info
-}
-
-func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
-	self.addFuncIfNotExists(fdecl)
-
-	info := self.funcsInfo[fdecl]
-
-	funcDecl := self.resolveGoFunc(call)
-
-	info.goCalls[call] = funcDecl
-	self.funcsInfo[fdecl] = info
-
-	self.routFunc[call] = fdecl
-}
-
-func (d *staticData) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
-	ident, ok := goStmt.Call.Fun.(*ast.Ident)
-	if !ok {
-		return nil
-	}
-
-	// 1. find the package that owns this AST node
-	pkg := d.npm[goStmt]
-	if pkg == nil {
-		return nil
-	}
-
-	info := d.pkgInfo[pkg]
-	if info == nil {
-		return nil
-	}
-
-	// 2. resolve identifier → object
-	obj := info.ObjectOf(ident)
-	if obj == nil {
-		return nil
-	}
-
-	// 3. ensure it's a function
-	fn, ok := obj.(*types.Func)
-	if !ok {
-		return nil
-	}
-
-	// 4. map position → FuncDecl
-	pos := fn.Pos()
-	if !pos.IsValid() {
-		return nil
-	}
-
-	return d.funcDeclMap[pos]
-}
-
-// TODO: not working
 func (self *staticData) getPos(p ast.Node) string {
+	if p == nil {
+		return "<nil position>"
+	}
 	pos := p.Pos()
 	return self.getPosFromPos(pos)
 }
@@ -229,4 +154,64 @@ func (self *staticData) getPosFromPos(pos token.Pos) string {
 
 func (self *staticData) isEqual(p, q ast.Node) bool {
 	return self.getPos(p) == self.getPos(q)
+}
+
+func (self *staticData) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
+	ident, ok := goStmt.Call.Fun.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+
+	pkg := self.npm[goStmt]
+	if pkg == nil {
+		return nil
+	}
+
+	info := self.pkgInfo[pkg]
+	if info == nil {
+		return nil
+	}
+
+	obj := info.ObjectOf(ident)
+	if obj == nil {
+		return nil
+	}
+
+	fn, ok := obj.(*types.Func)
+	if !ok {
+		return nil
+	}
+
+	pos := fn.Pos()
+	if !pos.IsValid() {
+		return nil
+	}
+
+	return self.funcDeclMap[pos]
+}
+
+func (self *staticData) printInfo() {
+	fmt.Println("=================== Info ===================\n")
+	for p, c := range self.funcsInfo {
+		fmt.Println(self.getName(p.Name), self.getPos(p))
+
+		fmt.Println("\tFuncs: ")
+		for _, call := range self.funcsInfo[p].funcCalls {
+			fmt.Println("\t\t", call.name, self.getPos(call.call), self.getPos(call.decl))
+		}
+
+		fmt.Println("\tGo: ")
+		for ch, call := range self.funcsInfo[p].goCalls {
+			fmt.Println("\t\t", call.Name, self.getPos(ch), self.getPos(call))
+		}
+
+		fmt.Println("\tOps: ")
+		for op, ch := range c.ops {
+			for f := range ch {
+				fmt.Println("\t\t", f, self.getPos(op))
+			}
+		}
+		fmt.Println("")
+	}
+
 }

@@ -43,7 +43,7 @@ func RunStaticBlockingAnalysis(dir string) error {
 	for p, funcDecl := range data.funcDeclMap {
 		if data.getPosFromPos(p) == "[/main.go:7]" {
 			fFunc = funcDecl
-		} else if data.getPosFromPos(p) == "[/main.go:30]" {
+		} else if data.getPosFromPos(p) == "[/main.go:34]" {
 			mainFunc = funcDecl
 		}
 	}
@@ -59,36 +59,6 @@ func RunStaticBlockingAnalysis(dir string) error {
 
 	data.runAliasAnalysis()
 	return nil
-}
-
-func (self *staticData) printInfo() {
-	for p, c := range self.funcsInfo {
-		fmt.Println(self.getName(p.Name), self.getPos(p))
-
-		fmt.Println("  Funcs: ")
-		for _, call := range self.funcsInfo[p].funcCalls {
-			fmt.Println("    ", call.name, self.getPos(call.call), self.getPos(call.decl))
-		}
-
-		fmt.Println("  Go: ")
-		for ch, call := range self.funcsInfo[p].goCalls {
-			if call == nil {
-				fmt.Println("    ", self.getPos(ch), "FL")
-			} else {
-				fmt.Println("    ", self.getPos(ch), self.getPos(call))
-			}
-		}
-
-		fmt.Println("  Ops: ")
-		for op, ch := range c.ops {
-			for f := range ch {
-				fmt.Println("    ", f, self.getPos(op))
-			}
-		}
-	}
-
-	fmt.Println("")
-
 }
 
 // Determine the packages and type info

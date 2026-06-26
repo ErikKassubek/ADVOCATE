@@ -11,6 +11,7 @@
 package blockingStatic
 
 import (
+	"fmt"
 	"go/ast"
 )
 
@@ -89,7 +90,9 @@ func (self *staticData) getName(id ast.Expr) string {
 		return self.getName(e.X) + "." + e.Sel.Name
 	case *ast.FuncLit:
 		return "FuncLit"
+	case *ast.CallExpr:
+		return self.getName(e.Fun)
 	default:
-		panic("Unknown expr type")
+		panic(fmt.Sprintf("Unknown expr type %T", e))
 	}
 }

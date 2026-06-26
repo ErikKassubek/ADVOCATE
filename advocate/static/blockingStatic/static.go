@@ -58,7 +58,8 @@ func (self *staticData) loadPackages() error {
 			packages.NeedTypes |
 			packages.NeedTypesInfo |
 			packages.NeedImports,
-		Dir: self.dir,
+		Dir:   self.dir,
+		Tests: true,
 	}
 
 	pkgs, err := packages.Load(cfg, self.dir)

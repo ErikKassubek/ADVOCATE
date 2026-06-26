@@ -46,7 +46,7 @@ type funcInfo struct {
 	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
 	// *ast.GoStmt.Call.(type) -> *ast.SelectorExpr: methodCall (go obj.Method())
 	// *ast.GoStmt.Call.(type) -> *ast.FuncLit: function literal (go func() { ... }())
-	goCalls map[*ast.GoStmt]struct{}
+	goCalls map[*ast.GoStmt]*ast.FuncDecl
 }
 
 type staticData struct { // always use buildStaticData, never staticData{}
@@ -72,6 +72,7 @@ type staticData struct { // always use buildStaticData, never staticData{}
 
 	// operations per function: func -> vartiable id (TODO: change to point to variable and not expression) -> funcs
 	funcsInfo map[*ast.FuncDecl]funcInfo
+	routFunc  map[*ast.GoStmt]*ast.FuncDecl
 }
 
 func buildStaticData(dir string) (*staticData, error) {
@@ -85,6 +86,7 @@ func buildStaticData(dir string) (*staticData, error) {
 
 		funcDeclMap: make(map[token.Pos]*ast.FuncDecl),
 		funcsInfo:   make(map[*ast.FuncDecl]funcInfo),
+		routFunc:    make(map[*ast.GoStmt]*ast.FuncDecl),
 	}
 	err := data.loadPackages()
 	if err != nil {
@@ -114,7 +116,7 @@ func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
 			decl:      fdecl,
 			funcCalls: make(map[*ast.FuncDecl]funcCall, 0),
 			ops:       make(map[ast.Expr]map[funcName]struct{}),
-			goCalls:   make(map[*ast.GoStmt]struct{}),
+			goCalls:   make(map[*ast.GoStmt]*ast.FuncDecl),
 		}
 	}
 }
@@ -134,10 +136,10 @@ func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallEx
 	self.funcsInfo[fdecl] = info
 }
 
-func (s *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
-	s.addFuncIfNotExists(f)
+func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
+	self.addFuncIfNotExists(f)
 
-	info := s.funcsInfo[f]
+	info := self.funcsInfo[f]
 
 	if info.ops == nil {
 		info.ops = make(map[ast.Expr]map[funcName]struct{})
@@ -148,15 +150,58 @@ func (s *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcNa
 	}
 
 	info.ops[expr][name] = struct{}{}
-	s.funcsInfo[f] = info
+	self.funcsInfo[f] = info
 }
 
-func (s *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
-	s.addFuncIfNotExists(fdecl)
+func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
+	self.addFuncIfNotExists(fdecl)
 
-	info := s.funcsInfo[fdecl]
-	info.goCalls[call] = struct{}{}
-	s.funcsInfo[fdecl] = info
+	info := self.funcsInfo[fdecl]
+
+	funcDecl := self.resolveGoFunc(call)
+
+	info.goCalls[call] = funcDecl
+	self.funcsInfo[fdecl] = info
+
+	self.routFunc[call] = fdecl
+}
+
+func (d *staticData) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
+	ident, ok := goStmt.Call.Fun.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+
+	// 1. find the package that owns this AST node
+	pkg := d.npm[goStmt]
+	if pkg == nil {
+		return nil
+	}
+
+	info := d.pkgInfo[pkg]
+	if info == nil {
+		return nil
+	}
+
+	// 2. resolve identifier → object
+	obj := info.ObjectOf(ident)
+	if obj == nil {
+		return nil
+	}
+
+	// 3. ensure it's a function
+	fn, ok := obj.(*types.Func)
+	if !ok {
+		return nil
+	}
+
+	// 4. map position → FuncDecl
+	pos := fn.Pos()
+	if !pos.IsValid() {
+		return nil
+	}
+
+	return d.funcDeclMap[pos]
 }
 
 // TODO: not working

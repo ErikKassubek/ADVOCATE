@@ -48,7 +48,14 @@ func RunStaticBlockingAnalysis(dir string) error {
 		}
 	}
 
-	fmt.Println(data.isReachableFuncFromFunc(mainFunc, fFunc))
+	// TODO: only for debug. Remove
+	res, path := data.isReachableFuncFromFunc(mainFunc, fFunc, true)
+	if res {
+		fmt.Println(path)
+	} else {
+		fmt.Println("No Path Found")
+	}
+	//
 
 	data.runAliasAnalysis()
 	return nil
@@ -64,8 +71,12 @@ func (self *staticData) printInfo() {
 		}
 
 		fmt.Println("  Go: ")
-		for ch, _ := range self.funcsInfo[p].goCalls {
-			fmt.Println("    ", self.getPos(ch))
+		for ch, call := range self.funcsInfo[p].goCalls {
+			if call == nil {
+				fmt.Println("    ", self.getPos(ch), "FL")
+			} else {
+				fmt.Println("    ", self.getPos(ch), self.getPos(call))
+			}
 		}
 
 		fmt.Println("  Ops: ")

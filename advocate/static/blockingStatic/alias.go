@@ -40,15 +40,6 @@ func (self *AliasResult) String() string {
 	}
 }
 
-func (self *staticData) buildSsa() {
-	self.ssa, self.ssaPkgs = ssautil.AllPackages(self.pkgs, ssa.SanityCheckFunctions)
-	self.ssa.Build()
-	for _, p := range self.ssaPkgs {
-		p.Build()
-	}
-	self.ssaMains = ssautil.MainPackages(self.ssaPkgs)
-}
-
 // TODO: internal panic T
 func (self *staticData) runPointerAnalysis() error {
 	return nil // TODO: remove if function is fixed

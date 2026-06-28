@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package static
 
 import (
 	"fmt"
@@ -25,15 +25,15 @@ func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallEx
 	}
 
 	funcDecl := self.getFuncDecl(call)
-	info := self.funcsInfo[fdecl]
+	info := self.funcInfo[fdecl]
 	info.funcCalls[fdecl] = funcCall{call, funcDecl, self.getName(call), self.getCallType(call, funcDecl)}
-	self.funcsInfo[fdecl] = info
+	self.funcInfo[fdecl] = info
 }
 
 func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
 	self.addFuncIfNotExists(f)
 
-	info := self.funcsInfo[f]
+	info := self.funcInfo[f]
 
 	if info.ops == nil {
 		info.ops = make(map[ast.Expr]map[funcName]struct{})
@@ -44,14 +44,14 @@ func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name fun
 	}
 
 	info.ops[expr][name] = struct{}{}
-	self.funcsInfo[f] = info
+	self.funcInfo[f] = info
 }
 
 // TODO: go mu.Lock() and similar does not work yet
 func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
 	self.addFuncIfNotExists(fdecl)
 
-	info := self.funcsInfo[fdecl]
+	info := self.funcInfo[fdecl]
 
 	funcDecl := self.resolveGoFunc(call)
 
@@ -64,7 +64,7 @@ func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt)
 	}
 
 	info.goCalls[call] = funcDecl
-	self.funcsInfo[fdecl] = info
+	self.funcInfo[fdecl] = info
 
 	self.routFunc[call] = fdecl
 }
@@ -74,7 +74,7 @@ func (self *staticData) recordFuncLitGo(
 	goStmt *ast.GoStmt,
 ) *ast.FuncDecl {
 
-	if _, ok := self.funcsInfo[fdecl].goCalls[goStmt]; ok {
+	if _, ok := self.funcInfo[fdecl].goCalls[goStmt]; ok {
 		return nil
 	}
 
@@ -97,7 +97,7 @@ func (self *staticData) recordFuncLitGo(
 
 	self.funcLitDecl[lit] = decl
 
-	self.funcsInfo[fdecl].goCalls[goStmt] = decl
+	self.funcInfo[fdecl].goCalls[goStmt] = decl
 
 	self.addFuncIfNotExists(decl)
 

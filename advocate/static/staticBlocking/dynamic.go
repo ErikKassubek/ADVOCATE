@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package staticBlocking
 
 import (
 	"advocate/utils/log"

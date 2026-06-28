@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package staticBlocking
 
 func getBlockedVariables() {
 	// TODO: get relevant variables

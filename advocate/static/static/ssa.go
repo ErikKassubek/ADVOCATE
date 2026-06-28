@@ -7,7 +7,7 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package static
 
 import (
 	"os"
@@ -16,6 +16,8 @@ import (
 	"golang.org/x/tools/go/ssa/ssautil"
 )
 
+// buildSsa creates the ssa.
+// Assumes that packages are already loaded (self.pkgs)
 func (self *staticData) buildSsa() {
 	self.ssa, self.ssaPkgs = ssautil.AllPackages(self.pkgs, ssa.SanityCheckFunctions)
 	self.ssa.Build()

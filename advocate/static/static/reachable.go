@@ -8,7 +8,7 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package static
 
 import (
 	"fmt"
@@ -41,7 +41,7 @@ func (self *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, cal
 		cur := queue[0]
 		queue = queue[1:]
 
-		info, ok := self.funcsInfo[cur]
+		info, ok := self.funcInfo[cur]
 		if !ok {
 			continue
 		}
@@ -141,4 +141,25 @@ func (self *staticData) isReachableObjFromFunc(start, target *ast.FuncDecl) bool
 // TODO: implement
 func (self *staticData) isReachableObjFromRout(start, target *ast.FuncDecl) bool {
 	return false
+}
+
+// TODO: only for debug. Remove
+func (self *staticData) TestReachable() {
+	var fFunc *ast.FuncDecl
+	var mainFunc *ast.FuncDecl
+
+	for p, funcDecl := range self.funcDeclMap {
+		if self.getPosFromPos(p) == "[/main.go:7]" {
+			fFunc = funcDecl
+		} else if self.getPosFromPos(p) == "[/main.go:34]" {
+			mainFunc = funcDecl
+		}
+	}
+
+	res, path := self.isReachableFuncFromFunc(mainFunc, fFunc, true)
+	if res {
+		fmt.Println(path)
+	} else {
+		fmt.Println("No Path Found")
+	}
 }

@@ -12,7 +12,7 @@ package main
 
 import (
 	"advocate/run"
-	"advocate/static/blockingStatic"
+	"advocate/static/staticBlocking"
 	"advocate/utils/log"
 )
 
@@ -28,7 +28,7 @@ func main() {
 		return
 	}
 
-	blockingStatic.Test() // TODO: remove this
+	staticBlocking.Test() // TODO: remove this
 	return
 
 	err := run.Run()

@@ -8,16 +8,14 @@
 //
 // License: BSD-3-Clause
 
-package blockingStatic
+package static
 
 import (
-	"advocate/utils/flags"
 	"advocate/utils/log"
 	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
-	"strings"
 
 	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
@@ -69,16 +67,14 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	ssaMains []*ssa.Package
 
 	funcDeclMap map[token.Pos]*ast.FuncDecl
-
-	funcsInfo map[*ast.FuncDecl]funcInfo
-	routFunc  map[*ast.GoStmt]*ast.FuncDecl
-
+	funcInfo    map[*ast.FuncDecl]funcInfo
+	routFunc    map[*ast.GoStmt]*ast.FuncDecl
 	funcLitDecl map[*ast.FuncLit]*ast.FuncDecl // dummy for func lit
 
 	nextID int
 }
 
-func buildStaticData(dir string) (*staticData, error) {
+func BuildStaticData(dir string) (*staticData, error) {
 	data := &staticData{
 		dir:  dir,
 		fset: token.NewFileSet(),
@@ -88,19 +84,22 @@ func buildStaticData(dir string) (*staticData, error) {
 		npm:    make(map[ast.Node]*packages.Package),
 
 		funcDeclMap: make(map[token.Pos]*ast.FuncDecl),
-		funcsInfo:   make(map[*ast.FuncDecl]funcInfo),
+		funcInfo:    make(map[*ast.FuncDecl]funcInfo),
 		routFunc:    make(map[*ast.GoStmt]*ast.FuncDecl),
 
 		funcLitDecl: make(map[*ast.FuncLit]*ast.FuncDecl),
 	}
+
 	err := data.loadPackages()
 	if err != nil {
 		log.Error(err.Error())
 		return data, err
 	}
+
 	data.buildTypeInfo()
+
 	data.buildAst()
-	// must be called afer load packages
+
 	data.buildSsa()
 	// data.printSSA(true)
 	// fmt.Println("\n\n\n")
@@ -109,99 +108,74 @@ func buildStaticData(dir string) (*staticData, error) {
 	return data, nil
 }
 
-func (self *staticData) getCallType(call *ast.CallExpr, decl *ast.FuncDecl) funcName {
-	if decl == nil {
-		return self.getConcFuncName(call)
+// Determine the packages and type info
+//
+// Parameter:
+//   - dir: string: root directory of project
+func (self *staticData) loadPackages() error {
+	cfg := &packages.Config{
+		Fset: self.fset,
+		Mode: packages.NeedName |
+			packages.NeedFiles |
+			packages.NeedCompiledGoFiles |
+			packages.NeedSyntax |
+			packages.NeedTypes |
+			packages.NeedTypesInfo |
+			packages.NeedImports,
+		Dir:   self.dir,
+		Tests: true,
 	}
 
-	return unknownFunc
+	pkgs, err := packages.Load(cfg, self.dir)
+	if err != nil {
+		return fmt.Errorf("static analysis: failed to load packages: %w", err)
+	}
+
+	for _, pkg := range pkgs {
+		for _, err := range pkg.Errors {
+			return fmt.Errorf("static analysis: packages contain errors: %s", err.Error())
+		}
+	}
+
+	self.pkgs = pkgs
+	return nil
 }
 
-func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
-	if _, ok := self.funcsInfo[fdecl]; !ok {
-		self.funcsInfo[fdecl] = funcInfo{
-			decl:      fdecl,
-			funcCalls: make(map[*ast.FuncDecl]funcCall, 0),
-			ops:       make(map[ast.Expr]map[funcName]struct{}),
-			goCalls:   make(map[*ast.GoStmt]*ast.FuncDecl),
+func (self *staticData) buildTypeInfo() {
+	self.pkgInfo = make(map[*packages.Package]*types.Info)
+
+	self.uses = make(map[*ast.Ident]types.Object)
+	self.defs = make(map[*ast.Ident]types.Object)
+
+	for _, pkg := range self.pkgs {
+		if pkg.TypesInfo == nil {
+			continue
+		}
+
+		self.pkgInfo[pkg] = pkg.TypesInfo
+
+		for ident, obj := range pkg.TypesInfo.Uses {
+			self.uses[ident] = obj
+		}
+
+		for ident, obj := range pkg.TypesInfo.Defs {
+			self.defs[ident] = obj
 		}
 	}
 }
 
-func (self *staticData) getPos(p ast.Node) string {
-	if p == nil {
-		return "<nil position>"
-	}
-	pos := p.Pos()
-	return self.getPosFromPos(pos)
-}
-
-func (self *staticData) getPosFromPos(pos token.Pos) string {
-	if !pos.IsValid() {
-		return "<invalid position>"
-	}
-
-	loc := self.fset.Position(pos)
-
-	if strings.Contains(loc.Filename, ".cache/go-build/") {
-		return "[internal]"
-	}
-
-	file := strings.TrimPrefix(loc.Filename, flags.ProgPath)
-
-	return fmt.Sprintf("[%s:%d]", file, loc.Line)
-}
-
-func (self *staticData) isEqual(p, q ast.Node) bool {
-	return self.getPos(p) == self.getPos(q)
-}
-
-func (self *staticData) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
-	ident, ok := goStmt.Call.Fun.(*ast.Ident)
-	if !ok {
-		return nil
-	}
-
-	pkg := self.npm[goStmt]
-	if pkg == nil {
-		return nil
-	}
-
-	info := self.pkgInfo[pkg]
-	if info == nil {
-		return nil
-	}
-
-	obj := info.ObjectOf(ident)
-	if obj == nil {
-		return nil
-	}
-
-	fn, ok := obj.(*types.Func)
-	if !ok {
-		return nil
-	}
-
-	pos := fn.Pos()
-	if !pos.IsValid() {
-		return nil
-	}
-
-	return self.funcDeclMap[pos]
-}
-
-func (self *staticData) printInfo() {
-	fmt.Println("=================== Info ===================\n")
-	for p, c := range self.funcsInfo {
+func (self *staticData) PrintInfo() {
+	fmt.Print("=================== Info ===================\n\n")
+	for p, c := range self.funcInfo {
 		fmt.Println(self.getName(p.Name), self.getPos(p))
 
 		fmt.Println("\tFuncs: ")
-		for _, call := range self.funcsInfo[p].funcCalls {
+		for _, call := range self.funcInfo[p].funcCalls {
 			fmt.Println("\t\t", call.name, self.getPos(call.call), self.getPos(call.decl))
 		}
 
 		fmt.Println("\tGo: ")
-		for ch, call := range self.funcsInfo[p].goCalls {
+		for ch, call := range self.funcInfo[p].goCalls {
 			fmt.Println("\t\t", call.Name, self.getPos(ch), self.getPos(call))
 		}
 

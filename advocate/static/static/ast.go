@@ -16,6 +16,7 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"reflect"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
@@ -89,6 +90,20 @@ func (self *staticData) getNamed(id *ast.Ident) (*types.Named, bool) {
 	return res, ok
 }
 
+func (self *staticData) isNilNode(node ast.Node) bool {
+	if node == nil {
+		return true
+	}
+
+	v := reflect.ValueOf(node)
+	switch v.Kind() {
+	case reflect.Ptr, reflect.Map, reflect.Slice, reflect.Interface, reflect.Func, reflect.Chan:
+		return v.IsNil()
+	default:
+		return false
+	}
+}
+
 // ================================================================
 // Position
 // ================================================================
@@ -97,6 +112,11 @@ func (self *staticData) getPos(p ast.Node) string {
 	if p == nil {
 		return "<nil position>"
 	}
+
+	if self.isNilNode(p) {
+		return "<nil node>"
+	}
+
 	pos := p.Pos()
 	return self.getPosFromPos(pos)
 }
@@ -125,8 +145,8 @@ func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
 	if _, ok := self.funcInfo[fdecl]; !ok {
 		self.funcInfo[fdecl] = funcInfo{
 			decl:      fdecl,
-			funcCalls: make(map[*ast.FuncDecl]funcCall, 0),
-			ops:       make(map[ast.Expr]map[funcName]struct{}),
+			funcCalls: make(map[funcCall]struct{}),
+			ops:       make(map[operation]map[ast.Expr]struct{}),
 			goCalls:   make(map[*ast.GoStmt]*ast.FuncDecl),
 		}
 	}
@@ -207,6 +227,17 @@ func (self *staticData) FuncDeclForObject(fn *types.Func) *ast.FuncDecl {
 	}
 
 	return nil
+}
+
+func (self *staticData) funcContainsOp(fn *ast.FuncDecl, op operation) bool {
+	info, ok := self.funcInfo[fn]
+	if !ok {
+		return false
+	}
+
+	_, res := info.ops[op]
+
+	return res
 }
 
 // ================================================================

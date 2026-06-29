@@ -30,9 +30,9 @@ func RunStaticBlockingAnalysis(dir string) error {
 		return err
 	}
 
-	data.TestReachable()
-
 	data.PrintInfo()
+
+	data.TestReachable()
 
 	return nil
 }

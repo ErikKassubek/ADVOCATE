@@ -78,7 +78,7 @@ func (self *staticData) getName(id ast.Expr) string {
 }
 
 // parse the files the determine the type information
-func (self *staticData) collectOperations() {
+func (self *staticData) CollectOperations() {
 	// per function
 	for _, file := range self.ast {
 		self.detOpsInFile(file)
@@ -91,18 +91,20 @@ func (self *staticData) detOpsInFile(file *ast.File) {
 		if !ok || fdecl.Body == nil {
 			continue
 		}
-		self.getOpsInFunc(fdecl)
+		self.detOpsInFunc(fdecl)
 	}
 }
 
-func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
+func (self *staticData) detOpsInFunc(fdecl *ast.FuncDecl) {
+	self.addFuncIfNotExists(fdecl)
+
 	ast.Inspect(fdecl, func(n ast.Node) bool {
 		switch x := n.(type) {
 		case *ast.FuncDecl:
 			self.funcDeclMap[x.Name.Pos()] = x
 		case *ast.GoStmt: // new routine
 			self.recordGoStatement(fdecl, x)
-			self.recordFunctionCall(fdecl, x.Call)
+			// self.recordFunctionCall(fdecl, x.Call)
 		case *ast.SendStmt: // channel send
 			self.recordOperation(fdecl, x.Chan, chanSend)
 			return true
@@ -148,6 +150,7 @@ func (self *staticData) getOpsInFunc(fdecl *ast.FuncDecl) {
 					case "Unlock":
 						ft = mutexUnlock
 					case "RUnlock":
+						ft = mutexRUnlock
 					}
 
 				} else if self.isCondVar(x) {
@@ -249,7 +252,7 @@ func (self *staticData) isConcObj(call *ast.CallExpr, on objName) bool {
 
 	switch on {
 	case mutex:
-		return obj.Name() == "Mutex" &&
+		return (obj.Name() == "Mutex" || obj.Name() == "RWMutex") &&
 			obj.Pkg().Path() == "sync"
 	case wg:
 		return obj.Name() == "WaitGroup" &&

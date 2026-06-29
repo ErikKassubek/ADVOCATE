@@ -17,40 +17,46 @@ import (
 
 // TODO: call is not recorded if in funcLit
 func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallExpr) {
-	self.addFuncIfNotExists(fdecl)
-
 	// prevent function from calling itself, if it is not recursive
 	if self.getPos(call) == self.getPos(fdecl) {
 		return
 	}
 
+	name := self.getName(call)
+	if name == "FuncLit" {
+		return
+	}
+
 	funcDecl := self.getFuncDecl(call)
 	info := self.funcInfo[fdecl]
-	info.funcCalls[fdecl] = funcCall{call, funcDecl, self.getName(call), self.getCallType(call, funcDecl)}
+	info.funcCalls[funcCall{call, funcDecl, name, self.getCallType(call, funcDecl)}] = struct{}{}
 	self.funcInfo[fdecl] = info
 }
 
 func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
-	self.addFuncIfNotExists(f)
-
 	info := self.funcInfo[f]
 
 	if info.ops == nil {
-		info.ops = make(map[ast.Expr]map[funcName]struct{})
+		info.ops = make(map[operation]map[ast.Expr]struct{})
 	}
 
-	if _, ok := info.ops[expr]; !ok {
-		info.ops[expr] = make(map[funcName]struct{})
+	// TODO: object ids
+	op := operation{
+		1,
+		name,
 	}
 
-	info.ops[expr][name] = struct{}{}
+	if _, ok := info.ops[op]; !ok {
+		info.ops[op] = make(map[ast.Expr]struct{})
+	}
+
+	info.ops[op][expr] = struct{}{}
+
 	self.funcInfo[f] = info
 }
 
 // TODO: go mu.Lock() and similar does not work yet
 func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
-	self.addFuncIfNotExists(fdecl)
-
 	info := self.funcInfo[fdecl]
 
 	funcDecl := self.resolveGoFunc(call)
@@ -102,7 +108,7 @@ func (self *staticData) recordFuncLitGo(
 	self.addFuncIfNotExists(decl)
 
 	// Analyze the function literal just like any other function.
-	self.getOpsInFunc(decl)
+	self.detOpsInFunc(decl)
 
 	return decl
 }

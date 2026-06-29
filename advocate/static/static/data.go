@@ -21,11 +21,18 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
+type objId int
+
 type funcCall struct {
 	call     *ast.CallExpr
 	decl     *ast.FuncDecl
 	name     string // TODO: multi package
 	callType funcName
+}
+
+type operation struct {
+	obj objId
+	op  funcName
 }
 
 type funcInfo struct {
@@ -36,15 +43,15 @@ type funcInfo struct {
 	// ast.Expr.(type) -> *ast.Ident: direct function (foo())
 	// ast.Expr.(type) -> *ast.SelectorExpr: methodCall (obj.Method())
 	// ast.Expr.(type) -> *ast.FuncLit: function literal (func() {...}())
-	funcCalls map[*ast.FuncDecl]funcCall
-
-	ops map[ast.Expr]map[funcName]struct{}
+	funcCalls map[funcCall]struct{}
 
 	// routine spawns from functions
 	// *ast.GoStmt.Call.(type) -> *ast.Ident: direct function (go foo())
 	// *ast.GoStmt.Call.(type) -> *ast.SelectorExpr: methodCall (go obj.Method())
 	// *ast.GoStmt.Call.(type) -> *ast.FuncLit: function literal (go func() { ... }())
 	goCalls map[*ast.GoStmt]*ast.FuncDecl
+
+	ops map[operation]map[ast.Expr]struct{}
 }
 
 type staticData struct { // always use buildStaticData, never staticData{}
@@ -105,7 +112,7 @@ func BuildStaticData(dir string) (*staticData, error) {
 	// fmt.Println("\n\n\n")
 	// data.runPointerAnalysis()
 
-	data.collectOperations()
+	data.CollectOperations()
 
 	return data, nil
 }
@@ -169,10 +176,14 @@ func (self *staticData) buildTypeInfo() {
 func (self *staticData) PrintInfo() {
 	fmt.Print("=================== Info ===================\n\n")
 	for p, c := range self.funcInfo {
-		fmt.Println(self.getName(p.Name), self.getPos(p))
+		pos := self.getPos(p)
+		if pos == "[internal]" {
+			continue
+		}
+		fmt.Println(self.getName(p.Name), pos)
 
 		fmt.Println("\tFuncs: ")
-		for _, call := range self.funcInfo[p].funcCalls {
+		for call := range self.funcInfo[p].funcCalls {
 			fmt.Println("\t\t", call.name, self.getPos(call.call), self.getPos(call.decl))
 		}
 
@@ -182,11 +193,12 @@ func (self *staticData) PrintInfo() {
 		}
 
 		fmt.Println("\tOps: ")
-		for op, ch := range c.ops {
-			for f := range ch {
-				fmt.Println("\t\t", f, self.getPos(op))
+		for op, expr := range c.ops {
+			for e := range expr {
+				fmt.Println("\t\t", op.obj, op.op, self.getPos(e))
 			}
 		}
+
 		fmt.Println("")
 	}
 

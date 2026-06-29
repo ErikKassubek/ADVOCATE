@@ -292,7 +292,7 @@ func (self *staticData) TestReachable() {
 		fmt.Println("No Path Found")
 	}
 
-	res, path, err = self.isReachableOpFromFunc(mainFunc, operation{1, mutexRUnlock}, true)
+	res, path, err = self.isReachableOpFromFunc(mainFunc, operation{1, mutexTryLock}, true)
 	if err != nil {
 		log.Error("Error in isReachableFuncFromFunc: ", err)
 		return

@@ -47,15 +47,15 @@ const (
 	// TODO: list all
 )
 
-type objName int
+type objName string
 
 const (
-	unknownObj objName = iota
+	unknownObj objName = "unknown"
 
-	mutex
-	channel
-	condVar
-	wg
+	mutex   objName = "mutex"
+	channel objName = "chan"
+	condVar objName = "condVar"
+	wg      objName = "waitGroup"
 )
 
 func (self *staticData) getName(id ast.Expr) string {
@@ -63,18 +63,30 @@ func (self *staticData) getName(id ast.Expr) string {
 		return "NIL"
 	}
 
+	return self.getPackage(id) + ":" + self.getNameRec(id)
+}
+
+func (self *staticData) getNameRec(id ast.Expr) string {
 	switch e := id.(type) {
 	case *ast.Ident:
 		return e.Name
 	case *ast.SelectorExpr:
-		return self.getName(e.X) + "." + e.Sel.Name
+		return self.getNameRec(e.X) + "." + e.Sel.Name
 	case *ast.FuncLit:
 		return "FuncLit"
 	case *ast.CallExpr:
-		return self.getName(e.Fun)
+		return self.getNameRec(e.Fun)
 	default:
 		panic(fmt.Sprintf("Unknown expr type %T", e))
 	}
+}
+
+func (self *staticData) getPackage(expr ast.Expr) string {
+	pkg, ok := self.npm[expr]
+	if !ok {
+		return "[unknown]"
+	}
+	return pkg.Name
 }
 
 // parse the files the determine the type information

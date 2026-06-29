@@ -78,7 +78,7 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	routFunc    map[*ast.GoStmt]*ast.FuncDecl
 	funcLitDecl map[*ast.FuncLit]*ast.FuncDecl // dummy for func lit
 
-	nextID int
+	nextFuncLitId int
 }
 
 func BuildStaticData(dir string) (*staticData, error) {
@@ -108,9 +108,9 @@ func BuildStaticData(dir string) (*staticData, error) {
 	data.buildAst()
 
 	data.buildSsa()
-	// data.printSSA(true)
+	data.PrintSSA(true)
 	// fmt.Println("\n\n\n")
-	// data.runPointerAnalysis()
+	data.runAliasAnalysis()
 
 	data.CollectOperations()
 

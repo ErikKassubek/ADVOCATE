@@ -10,6 +10,7 @@
 package static
 
 import (
+	"fmt"
 	"os"
 
 	"golang.org/x/tools/go/ssa"
@@ -33,7 +34,7 @@ func (self *staticData) buildSsa() {
 //   - onlyOne bool: every file/package can be included multiple times in the ssa if it is included with different contexts,
 //     e.g. main vs test.
 //     If onlyOne is set, print only the first
-func (self *staticData) printSSA(onlyOne bool) {
+func (self *staticData) PrintSSA(onlyOne bool) {
 	seen := make(map[string]bool)
 
 	for _, pkg := range self.ssaPkgs {
@@ -52,7 +53,7 @@ func (self *staticData) printSSA(onlyOne bool) {
 
 		for _, mem := range pkg.Members {
 			if fn, ok := mem.(*ssa.Function); ok {
-				println("====", fn.String(), "====")
+				fmt.Print("\n\n\n\n=================================================================\n\n")
 				fn.WriteTo(os.Stdout)
 			}
 		}

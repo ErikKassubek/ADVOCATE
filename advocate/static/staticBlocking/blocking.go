@@ -25,14 +25,15 @@ func Test() {
 func RunStaticBlockingAnalysis(dir string) error {
 	// vars := make([]*ast.Ident, 0) // TODO: determine vars
 
-	data, err := static.BuildStaticData(dir)
+	_, err := static.BuildStaticData(dir)
 	if err != nil {
 		return err
 	}
 
-	data.PrintInfo()
+	// data.PrintInfo()
+	// data.PrintSSA(true)
 
-	data.TestReachable()
+	// data.TestReachable()
 
 	return nil
 }

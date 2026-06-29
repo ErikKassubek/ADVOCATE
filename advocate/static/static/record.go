@@ -91,15 +91,18 @@ func (self *staticData) recordFuncLitGo(
 		return nil
 	}
 
+	// create dummy declaration
 	decl := &ast.FuncDecl{
 		Name: &ast.Ident{
 			NamePos: lit.Pos(),
-			Name:    fmt.Sprintf("<func-lit-%d>", self.nextID),
+			Name:    fmt.Sprintf("<func-lit-%d>", self.nextFuncLitId),
 		},
 		Type: lit.Type,
 		Body: lit.Body,
 	}
-	self.nextID++
+	self.npm[decl.Name] = self.npm[fdecl]
+
+	self.nextFuncLitId++
 
 	self.funcLitDecl[lit] = decl
 

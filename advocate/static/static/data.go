@@ -105,6 +105,8 @@ func BuildStaticData(dir string) (*staticData, error) {
 	// fmt.Println("\n\n\n")
 	// data.runPointerAnalysis()
 
+	data.collectOperations()
+
 	return data, nil
 }
 

@@ -78,7 +78,7 @@ func (self *staticData) getName(id ast.Expr) string {
 }
 
 // parse the files the determine the type information
-func (self *staticData) CollectOperations() {
+func (self *staticData) collectOperations() {
 	// per function
 	for _, file := range self.ast {
 		self.detOpsInFile(file)

@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"errors"
 	"fmt"
@@ -40,8 +40,8 @@ type ElementFork struct {
 	objId                    int
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	concurrent               []Element
@@ -183,7 +183,7 @@ func (this *ElementFork) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementFork) SetVc(vc *clock.VectorClock) {
+func (this *ElementFork) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -191,7 +191,7 @@ func (this *ElementFork) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementFork) SetWVc(vc *clock.VectorClock) {
+func (this *ElementFork) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -199,7 +199,7 @@ func (this *ElementFork) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementFork) GetVC() *clock.VectorClock {
+func (this *ElementFork) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -207,7 +207,7 @@ func (this *ElementFork) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementFork) GetWVC() *clock.VectorClock {
+func (this *ElementFork) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

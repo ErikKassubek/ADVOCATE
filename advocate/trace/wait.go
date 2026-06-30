@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"errors"
 	"fmt"
@@ -53,8 +53,8 @@ type ElementWait struct {
 	val                      int
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
@@ -266,7 +266,7 @@ func (this *ElementWait) SetVal(v int) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementWait) SetVc(vc *clock.VectorClock) {
+func (this *ElementWait) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -274,7 +274,7 @@ func (this *ElementWait) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementWait) SetWVc(vc *clock.VectorClock) {
+func (this *ElementWait) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -282,7 +282,7 @@ func (this *ElementWait) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementWait) GetVC() *clock.VectorClock {
+func (this *ElementWait) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -290,7 +290,7 @@ func (this *ElementWait) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementWait) GetWVC() *clock.VectorClock {
+func (this *ElementWait) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

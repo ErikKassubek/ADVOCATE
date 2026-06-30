@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"advocate/utils/log"
 	"errors"
@@ -43,8 +43,8 @@ type ElementAtomic struct {
 	tPost                    int
 	objId                    int
 	op                       OperationType
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	file                     string
 	line                     int
 	numberConcurrent         int
@@ -208,7 +208,7 @@ func (this *ElementAtomic) GetTID() string {
 //
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
-func (this *ElementAtomic) SetVc(cl *clock.VectorClock) {
+func (this *ElementAtomic) SetVc(cl *a_clock.VectorClock) {
 	this.vc = cl.Copy()
 }
 
@@ -216,7 +216,7 @@ func (this *ElementAtomic) SetVc(cl *clock.VectorClock) {
 //
 // Parameter:
 //   - cl *clock.VectorClock: the vector clock
-func (this *ElementAtomic) SetWVc(cl *clock.VectorClock) {
+func (this *ElementAtomic) SetWVc(cl *a_clock.VectorClock) {
 	this.wVc = cl.Copy()
 }
 
@@ -224,7 +224,7 @@ func (this *ElementAtomic) SetWVc(cl *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementAtomic) GetVC() *clock.VectorClock {
+func (this *ElementAtomic) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -232,7 +232,7 @@ func (this *ElementAtomic) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The weak vector clock of the element
-func (this *ElementAtomic) GetWVC() *clock.VectorClock {
+func (this *ElementAtomic) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

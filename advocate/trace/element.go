@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 )
 
 // Values for possible primitive types and functions
@@ -136,10 +136,10 @@ type Element interface {
 	SetTWithoutNotExecuted(tSort int)
 	SetT(time int)
 	ToString() string
-	SetVc(vc *clock.VectorClock)
-	SetWVc(vc *clock.VectorClock)
-	GetVC() *clock.VectorClock
-	GetWVC() *clock.VectorClock
+	SetVc(vc *a_clock.VectorClock)
+	SetWVc(vc *a_clock.VectorClock)
+	GetVC() *a_clock.VectorClock
+	GetWVC() *a_clock.VectorClock
 	Copy(mapping map[string]Element, keep bool) Element
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)

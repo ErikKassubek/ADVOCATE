@@ -11,8 +11,8 @@
 package main
 
 import (
-	"advocate/run"
-	"advocate/static/staticBlocking"
+	"advocate/advoc"
+	"advocate/static/s_blocking"
 	"advocate/utils/log"
 )
 
@@ -23,15 +23,15 @@ var (
 // Main function
 func main() {
 
-	cont := run.CommandLine()
+	cont := advoc.CommandLine()
 	if !cont {
 		return
 	}
 
-	staticBlocking.Test() // TODO: remove this
+	s_blocking.Test() // TODO: remove this
 	return
 
-	err := run.Run()
+	err := advoc.Run()
 	if err != nil {
 		log.Error(err)
 	}

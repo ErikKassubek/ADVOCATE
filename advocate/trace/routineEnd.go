@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"errors"
 	"strconv"
 )
@@ -28,8 +28,8 @@ type ElementRoutineEnd struct {
 	index   int
 	routine int
 	tPost   int
-	vc      *clock.VectorClock
-	wVc     *clock.VectorClock
+	vc      *a_clock.VectorClock
+	wVc     *a_clock.VectorClock
 }
 
 // AddTraceElementRoutineEnd add a routine and element to the main trace
@@ -143,7 +143,7 @@ func (this *ElementRoutineEnd) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementRoutineEnd) SetVc(vc *clock.VectorClock) {
+func (this *ElementRoutineEnd) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -151,7 +151,7 @@ func (this *ElementRoutineEnd) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementRoutineEnd) SetWVc(vc *clock.VectorClock) {
+func (this *ElementRoutineEnd) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -159,7 +159,7 @@ func (this *ElementRoutineEnd) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementRoutineEnd) GetVC() *clock.VectorClock {
+func (this *ElementRoutineEnd) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -167,7 +167,7 @@ func (this *ElementRoutineEnd) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementRoutineEnd) GetWVC() *clock.VectorClock {
+func (this *ElementRoutineEnd) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

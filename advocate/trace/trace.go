@@ -11,8 +11,8 @@
 package trace
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/a_hb"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/control"
 	"advocate/utils/log"
 	"advocate/utils/types"
@@ -447,7 +447,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
+			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
 				if minTime == -1 || elem.GetTPre() < minTime {
 					minTime = elem.GetTPre()
@@ -483,7 +483,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
+			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
 				if elem.GetTPre() <= start {
 					continue
 				}
@@ -541,7 +541,7 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Concurrent {
+			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Concurrent {
 				result = append(result, elem)
 			}
 		}
@@ -568,7 +568,7 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Before {
+			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Before {
 				result = append(result, elem)
 			}
 		}
@@ -591,7 +591,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 				continue
 			}
 
-			if clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == a_hb.Concurrent {
 				concurrent[routine] = elem
 			}
 		}
@@ -710,8 +710,8 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 		string
 		time   int
 		thread int
-		vc     *clock.VectorClock
-		wVc    *clock.VectorClock
+		vc     *a_clock.VectorClock
+		wVc    *a_clock.VectorClock
 	}, 0)
 	for _, tra := range this.traces {
 		for _, elem := range tra {
@@ -721,8 +721,8 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					string
 					time   int
 					thread int
-					vc     *clock.VectorClock
-					wVc    *clock.VectorClock
+					vc     *a_clock.VectorClock
+					wVc    *a_clock.VectorClock
 				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
 			}
 		}
@@ -776,7 +776,7 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 
 			e := elem.(*ElementCond)
 
-			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(), e.GetVC()) == a_hb.Concurrent {
 				e := elem.(*ElementCond)
 				switch e.op {
 				case CondSignal:

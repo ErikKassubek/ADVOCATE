@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"errors"
 	"fmt"
@@ -57,8 +57,8 @@ type ElementSelect struct {
 	chosenDefault            bool
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	casesWithPosPartner      []int
 	numberConcurrent         int
 	numberConcurrentWeak     int
@@ -306,7 +306,7 @@ func (this *ElementSelect) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetVc(vc *clock.VectorClock) {
+func (this *ElementSelect) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -314,7 +314,7 @@ func (this *ElementSelect) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetWVc(vc *clock.VectorClock) {
+func (this *ElementSelect) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -322,7 +322,7 @@ func (this *ElementSelect) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetVC() *clock.VectorClock {
+func (this *ElementSelect) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -330,7 +330,7 @@ func (this *ElementSelect) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetWVC() *clock.VectorClock {
+func (this *ElementSelect) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

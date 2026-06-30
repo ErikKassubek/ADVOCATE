@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"strconv"
 )
 
@@ -130,27 +130,27 @@ func (this *ElementReplay) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementReplay) SetVc(_ *clock.VectorClock) {
+func (this *ElementReplay) SetVc(_ *a_clock.VectorClock) {
 }
 
 // SetWVc is a dummy function to implement the TraceElement interface
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementReplay) SetWVc(_ *clock.VectorClock) {
+func (this *ElementReplay) SetWVc(_ *a_clock.VectorClock) {
 }
 
 // GetVC is a dummy function to implement the TraceElement interface
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementReplay) GetVC() *clock.VectorClock {
-	return &clock.VectorClock{}
+func (this *ElementReplay) GetVC() *a_clock.VectorClock {
+	return &a_clock.VectorClock{}
 }
 
 // GetWVC is a dummy function to implement the TraceElement interface
-func (this *ElementReplay) GetWVC() *clock.VectorClock {
-	return &clock.VectorClock{}
+func (this *ElementReplay) GetWVC() *a_clock.VectorClock {
+	return &a_clock.VectorClock{}
 }
 
 // GetType returns the object type

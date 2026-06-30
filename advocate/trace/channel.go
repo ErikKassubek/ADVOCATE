@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 )
 
@@ -63,8 +63,8 @@ type ElementChannel struct {
 	sel                      *ElementSelect
 	selIndex                 int
 	partner                  *ElementChannel
-	vc                       *clock.VectorClock
-	wCl                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wCl                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
@@ -287,7 +287,7 @@ func (this *ElementChannel) IsBuffered() bool {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementChannel) SetVc(vc *clock.VectorClock) {
+func (this *ElementChannel) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -295,7 +295,7 @@ func (this *ElementChannel) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementChannel) SetWVc(vc *clock.VectorClock) {
+func (this *ElementChannel) SetWVc(vc *a_clock.VectorClock) {
 	this.wCl = vc.Copy()
 }
 
@@ -303,7 +303,7 @@ func (this *ElementChannel) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementChannel) GetVC() *clock.VectorClock {
+func (this *ElementChannel) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -311,7 +311,7 @@ func (this *ElementChannel) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementChannel) GetWVC() *clock.VectorClock {
+func (this *ElementChannel) GetWVC() *a_clock.VectorClock {
 	return this.wCl
 }
 

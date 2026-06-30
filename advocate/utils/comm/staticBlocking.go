@@ -11,7 +11,7 @@
 package comm
 
 import (
-	"advocate/static/staticBlocking"
+	"advocate/static/s_blocking"
 	"advocate/utils/log"
 	"strings"
 )
@@ -31,7 +31,7 @@ func (self *Communication) staticBlocking() {
 		if len(data) == 2 {
 			switch data[0] {
 			case "STATICRELEASABLE":
-				res = staticBlocking.RunDynamicBlockingAnalysis(data[1]) // TODO: return "0" if cannot releas, "1" otherwise
+				res = s_blocking.RunDynamicBlockingAnalysis(data[1]) // TODO: return "0" if cannot releas, "1" otherwise
 			default:
 				res = "UNKNOWN KEY: " + data[0]
 			}

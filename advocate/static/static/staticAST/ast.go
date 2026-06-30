@@ -8,9 +8,10 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticAST
 
 import (
+	"advocate/static/static/staticBase"
 	"advocate/utils/flags"
 	"fmt"
 	"go/ast"
@@ -26,9 +27,9 @@ import (
 // var funcInFunc = make(map[string][]string)                          // function creation location -> called created in function
 
 // buildAst build the ast and a map from ast node to package information
-func (self *staticData) buildAst() {
+func (self *Data) buildAst() {
 
-	for _, pkg := range self.pkgs {
+	for _, pkg := range self.Pkgs {
 		self.astMap[pkg.PkgPath] = pkg.Syntax
 		self.ast = append(self.ast, pkg.Syntax...)
 
@@ -51,7 +52,7 @@ func (self *staticData) buildAst() {
 //
 // Returns:
 //   - bool: true, if p and q point to the same code position, false otherwise
-func (self *staticData) isEqual(p, q ast.Node) bool {
+func (self *Data) isEqual(p, q ast.Node) bool {
 	return self.getPos(p) == self.getPos(q)
 }
 
@@ -59,7 +60,7 @@ func (self *staticData) isEqual(p, q ast.Node) bool {
 // Info
 // ================================================================
 
-func (self *staticData) getType(id *ast.Ident) types.Type {
+func (self *Data) getType(id *ast.Ident) types.Type {
 	pkg := self.npm[id]
 	if pkg == nil {
 		return nil
@@ -68,7 +69,7 @@ func (self *staticData) getType(id *ast.Ident) types.Type {
 	return pkg.TypesInfo.TypeOf(id)
 }
 
-func (self *staticData) getObject(id *ast.Ident) (types.Object, *packages.Package) {
+func (self *Data) getObject(id *ast.Ident) (types.Object, *packages.Package) {
 	pkg := self.npm[id]
 	if pkg == nil {
 		return nil, nil
@@ -78,7 +79,7 @@ func (self *staticData) getObject(id *ast.Ident) (types.Object, *packages.Packag
 }
 
 // TODO: does not seem to work
-func (self *staticData) getNamed(id *ast.Ident) (*types.Named, bool) {
+func (self *Data) getNamed(id *ast.Ident) (*types.Named, bool) {
 	t := self.getType(id)
 
 	if ptr, ok := t.(*types.Pointer); ok {
@@ -90,7 +91,7 @@ func (self *staticData) getNamed(id *ast.Ident) (*types.Named, bool) {
 	return res, ok
 }
 
-func (self *staticData) isNilNode(node ast.Node) bool {
+func (self *Data) isNilNode(node ast.Node) bool {
 	if node == nil {
 		return true
 	}
@@ -108,7 +109,7 @@ func (self *staticData) isNilNode(node ast.Node) bool {
 // Position
 // ================================================================
 
-func (self *staticData) getPos(p ast.Node) string {
+func (self *Data) getPos(p ast.Node) string {
 	if p == nil {
 		return "<nil position>"
 	}
@@ -118,10 +119,10 @@ func (self *staticData) getPos(p ast.Node) string {
 	}
 
 	pos := p.Pos()
-	return self.getPosFromPos(pos)
+	return self.GetPosFromPos(pos)
 }
 
-func (self *staticData) getPosFromPos(pos token.Pos) string {
+func (self *Data) GetPosFromPos(pos token.Pos) string {
 	if !pos.IsValid() {
 		return "<invalid position>"
 	}
@@ -141,7 +142,7 @@ func (self *staticData) getPosFromPos(pos token.Pos) string {
 // Functions and Function Calls
 // ================================================================
 
-func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
+func (self *Data) addFuncIfNotExists(fdecl *ast.FuncDecl) {
 	if _, ok := self.funcInfo[fdecl]; !ok {
 		self.funcInfo[fdecl] = funcInfo{
 			decl:      fdecl,
@@ -152,16 +153,16 @@ func (self *staticData) addFuncIfNotExists(fdecl *ast.FuncDecl) {
 	}
 }
 
-func (self *staticData) getCallType(call *ast.CallExpr, decl *ast.FuncDecl) funcName {
+func (self *Data) getCallType(call *ast.CallExpr, decl *ast.FuncDecl) staticBase.FuncName {
 	if decl == nil {
 		return self.getConcFuncName(call)
 	}
 
-	return unknownFunc
+	return staticBase.UnknownFunc
 }
 
 // Given a call expression, find and record the corresponding function declaration
-func (self *staticData) getFuncDecl(call *ast.CallExpr) *ast.FuncDecl {
+func (self *Data) getFuncDecl(call *ast.CallExpr) *ast.FuncDecl {
 
 	obj := self.calledObject(call)
 	if obj == nil {
@@ -176,7 +177,7 @@ func (self *staticData) getFuncDecl(call *ast.CallExpr) *ast.FuncDecl {
 	return self.FuncDeclForObject(fn)
 }
 
-func (self *staticData) calledObject(call *ast.CallExpr) types.Object {
+func (self *Data) calledObject(call *ast.CallExpr) types.Object {
 
 	for _, info := range self.pkgInfo {
 		switch fun := call.Fun.(type) {
@@ -197,11 +198,11 @@ func (self *staticData) calledObject(call *ast.CallExpr) types.Object {
 	return nil
 }
 
-func (self *staticData) FuncDeclForObject(fn *types.Func) *ast.FuncDecl {
+func (self *Data) FuncDeclForObject(fn *types.Func) *ast.FuncDecl {
 
 	pos := fn.Pos()
 
-	for _, pkg := range self.pkgs {
+	for _, pkg := range self.Pkgs {
 		for _, file := range pkg.Syntax {
 
 			var found *ast.FuncDecl
@@ -229,7 +230,7 @@ func (self *staticData) FuncDeclForObject(fn *types.Func) *ast.FuncDecl {
 	return nil
 }
 
-func (self *staticData) funcContainsOp(fn *ast.FuncDecl, op operation) bool {
+func (self *Data) funcContainsOp(fn *ast.FuncDecl, op operation) bool {
 	info, ok := self.funcInfo[fn]
 	if !ok {
 		return false
@@ -244,7 +245,7 @@ func (self *staticData) funcContainsOp(fn *ast.FuncDecl, op operation) bool {
 // Routines
 // ================================================================
 
-func (self *staticData) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
+func (self *Data) resolveGoFunc(goStmt *ast.GoStmt) *ast.FuncDecl {
 	ident, ok := goStmt.Call.Fun.(*ast.Ident)
 	if !ok {
 		return nil

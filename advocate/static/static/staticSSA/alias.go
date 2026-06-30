@@ -8,9 +8,10 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticSSA
 
 import (
+	"advocate/static/static/staticBase"
 	"fmt"
 	"go/token"
 	"go/types"
@@ -70,11 +71,11 @@ func (self *function) string() string {
 	return res
 }
 
-func (self *staticData) aliasFunction(fn *ssa.Function) function {
+func (self *Data) aliasFunction(fn *ssa.Function) function {
 	f := function{
 		name:   fn.Name(),
 		pkg:    fn.Pkg.Pkg.Path(),
-		loc:    self.getPosFromPos(fn.Pos()),
+		loc:    self.ast.GetPosFromPos(fn.Pos()),
 		blocks: make([]block, len(fn.Blocks)),
 		sv:     make([]staticVar, 0),
 	}
@@ -105,7 +106,7 @@ func (self *block) string() string {
 	return res
 }
 
-func (self *staticData) aliasBlock(bl *ssa.BasicBlock) (block, []staticVar) {
+func (self *Data) aliasBlock(bl *ssa.BasicBlock) (block, []staticVar) {
 	b := block{
 		id:    bl.Index,
 		insts: make([]instruction, len(bl.Instrs)),
@@ -130,7 +131,7 @@ func (self *staticData) aliasBlock(bl *ssa.BasicBlock) (block, []staticVar) {
 
 type staticVar struct {
 	name    string
-	objects []objName
+	objects []staticBase.ObjName
 	equal   []staticVar
 }
 
@@ -153,7 +154,7 @@ type instruction struct {
 	// class instructionClass
 
 	ptr     bool
-	objType []objName
+	objType []staticBase.ObjName
 }
 
 func (self *instruction) string() (res string) {
@@ -175,10 +176,10 @@ func (self *instruction) string() (res string) {
 	return
 }
 
-func (self *staticData) aliasInstruction(instr ssa.Instruction) (instruction, staticVar) {
+func (self *Data) aliasInstruction(instr ssa.Instruction) (instruction, staticVar) {
 	inst := instruction{
 		inst:    instr.String(),
-		objType: make([]objName, 0),
+		objType: make([]staticBase.ObjName, 0),
 	}
 
 	if v, ok := instr.(ssa.Value); ok {
@@ -188,16 +189,16 @@ func (self *staticData) aliasInstruction(instr ssa.Instruction) (instruction, st
 	hasChan, hasMutex, hasCond, hasWaitGroup := ContainsSyncPrimitive(instr)
 
 	if hasChan {
-		inst.objType = append(inst.objType, channel)
+		inst.objType = append(inst.objType, staticBase.Channel)
 	}
 	if hasMutex {
-		inst.objType = append(inst.objType, mutex)
+		inst.objType = append(inst.objType, staticBase.Mutex)
 	}
 	if hasCond {
-		inst.objType = append(inst.objType, condVar)
+		inst.objType = append(inst.objType, staticBase.CondVar)
 	}
 	if hasWaitGroup {
-		inst.objType = append(inst.objType, wg)
+		inst.objType = append(inst.objType, staticBase.Wg)
 	}
 
 	sv := staticVar{
@@ -276,7 +277,7 @@ func ContainsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, h
 // Main
 // ================================================================
 
-func (self *staticData) runAliasAnalysis() {
+func (self *Data) runAliasAnalysis() {
 	seen := make(map[string]bool)
 
 	funcs := make([]function, 0)

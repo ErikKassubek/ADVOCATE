@@ -8,57 +8,17 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticAST
 
 import (
+	"advocate/static/static/staticBase"
 	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
 )
 
-type funcName string
-
-const (
-	unknownFunc funcName = "<unknown>"
-	makeFunc    funcName = "<make>"
-
-	makeChan  funcName = "<chan:make>"
-	chanSend  funcName = "<chan:send>"
-	chanRecv  funcName = "<chan:recv>"
-	chanClose funcName = "<chan:close>"
-
-	mutexLock     funcName = "<mutex:lock>"
-	mutexRLock    funcName = "<mutex:rlock>"
-	mutexTryLock  funcName = "<mutex:trylock>"
-	mutexTryRLock funcName = "<mutex:tryrlock>"
-	mutexUnlock   funcName = "<mutex:unlock>"
-	mutexRUnlock  funcName = "<mutex:runlock>"
-
-	condWait      funcName = "<cond:wait>"
-	condBroadcast funcName = "<cond:broadcast>"
-	condSignal    funcName = "<cond:signal>"
-
-	wgWait funcName = "<wait:wait>"
-	wgAdd  funcName = "<wait:add>"
-	wgDone funcName = "<wait:done>"
-	wgGo   funcName = "<wait:go>"
-
-	// TODO: list all
-)
-
-type objName string
-
-const (
-	unknownObj objName = "unknown"
-
-	mutex   objName = "mutex"
-	channel objName = "chan"
-	condVar objName = "condVar"
-	wg      objName = "waitGroup"
-)
-
-func (self *staticData) getName(id ast.Expr) string {
+func (self *Data) getName(id ast.Expr) string {
 	if id == nil {
 		return "NIL"
 	}
@@ -66,7 +26,7 @@ func (self *staticData) getName(id ast.Expr) string {
 	return self.getPackage(id) + ":" + self.getNameRec(id)
 }
 
-func (self *staticData) getNameRec(id ast.Expr) string {
+func (self *Data) getNameRec(id ast.Expr) string {
 	switch e := id.(type) {
 	case *ast.Ident:
 		return e.Name
@@ -81,7 +41,7 @@ func (self *staticData) getNameRec(id ast.Expr) string {
 	}
 }
 
-func (self *staticData) getPackage(expr ast.Expr) string {
+func (self *Data) getPackage(expr ast.Expr) string {
 	pkg, ok := self.npm[expr]
 	if !ok {
 		return "[unknown]"
@@ -90,14 +50,14 @@ func (self *staticData) getPackage(expr ast.Expr) string {
 }
 
 // parse the files the determine the type information
-func (self *staticData) CollectOperations() {
+func (self *Data) CollectOperations() {
 	// per function
 	for _, file := range self.ast {
 		self.detOpsInFile(file)
 	}
 }
 
-func (self *staticData) detOpsInFile(file *ast.File) {
+func (self *Data) detOpsInFile(file *ast.File) {
 	for _, decl := range file.Decls {
 		fdecl, ok := decl.(*ast.FuncDecl)
 		if !ok || fdecl.Body == nil {
@@ -107,7 +67,7 @@ func (self *staticData) detOpsInFile(file *ast.File) {
 	}
 }
 
-func (self *staticData) detOpsInFunc(fdecl *ast.FuncDecl) {
+func (self *Data) detOpsInFunc(fdecl *ast.FuncDecl) {
 	self.addFuncIfNotExists(fdecl)
 
 	ast.Inspect(fdecl, func(n ast.Node) bool {
@@ -118,31 +78,31 @@ func (self *staticData) detOpsInFunc(fdecl *ast.FuncDecl) {
 			self.recordGoStatement(fdecl, x)
 			// self.recordFunctionCall(fdecl, x.Call)
 		case *ast.SendStmt: // channel send
-			self.recordOperation(fdecl, x.Chan, chanSend)
+			self.recordOperation(fdecl, x.Chan, staticBase.ChanSend)
 			return true
 		case *ast.UnaryExpr: // channel recv
 			if x.Op == token.ARROW {
-				self.recordOperation(fdecl, x.X, chanRecv)
+				self.recordOperation(fdecl, x.X, staticBase.ChanRecv)
 				return true
 			}
 		case *ast.CallExpr:
-			ft := unknownFunc
+			ft := staticBase.UnknownFunc
 
 			if ident, ok := x.Fun.(*ast.Ident); ok {
 				switch ident.Name {
 				case "close":
 					if len(x.Args) == 1 && self.isChannel(x.Args[0]) {
-						ft = chanClose
+						ft = staticBase.ChanClose
 					}
 				case "make":
 					if len(x.Args) != 0 {
 						switch x.Args[0].(type) {
 						case *ast.ChanType:
-							ft = makeChan
+							ft = staticBase.MakeChan
 						}
 					}
 				}
-				if ft != unknownFunc {
+				if ft != staticBase.UnknownFunc {
 					self.recordOperation(fdecl, x.Args[0], ft)
 					return true
 				}
@@ -152,43 +112,43 @@ func (self *staticData) detOpsInFunc(fdecl *ast.FuncDecl) {
 				if self.isMutex(x) {
 					switch sel.Sel.Name {
 					case "Lock":
-						ft = mutexLock
+						ft = staticBase.MutexLock
 					case "TryLock":
-						ft = mutexTryLock
+						ft = staticBase.MutexTryLock
 					case "RLock":
-						ft = mutexRLock
+						ft = staticBase.MutexRLock
 					case "TryRLock":
-						ft = mutexRLock
+						ft = staticBase.MutexRLock
 					case "Unlock":
-						ft = mutexUnlock
+						ft = staticBase.MutexUnlock
 					case "RUnlock":
-						ft = mutexRUnlock
+						ft = staticBase.MutexRUnlock
 					}
 
 				} else if self.isCondVar(x) {
 					switch sel.Sel.Name {
 					case "Wait":
-						ft = condWait
+						ft = staticBase.CondWait
 					case "Signal":
-						ft = condSignal
+						ft = staticBase.CondSignal
 					case "Broadcast":
-						ft = condBroadcast
+						ft = staticBase.CondBroadcast
 					}
 				} else if self.isWaitGroup(x) {
 
 					switch sel.Sel.Name {
 					case "Wait":
-						ft = wgWait
+						ft = staticBase.WgWait
 					case "Add":
-						ft = wgAdd
+						ft = staticBase.WgAdd
 					case "Done":
-						ft = wgDone
+						ft = staticBase.WgDone
 					case "Go":
-						ft = wgGo
+						ft = staticBase.WgGo
 					}
 				}
 
-				if ft != unknownFunc {
+				if ft != staticBase.UnknownFunc {
 					self.recordOperation(fdecl, sel.X, ft)
 					return true
 				}
@@ -200,7 +160,7 @@ func (self *staticData) detOpsInFunc(fdecl *ast.FuncDecl) {
 	})
 }
 
-func (self *staticData) isConcOp(id *ast.CallExpr) string {
+func (self *Data) isConcOp(id *ast.CallExpr) string {
 	if self.isMutex(id) {
 		return "Mutex"
 	} else if self.isCondVar(id) {
@@ -212,20 +172,20 @@ func (self *staticData) isConcOp(id *ast.CallExpr) string {
 	}
 }
 
-func (self *staticData) isMutex(id *ast.CallExpr) bool {
-	return self.isConcObj(id, mutex)
+func (self *Data) isMutex(id *ast.CallExpr) bool {
+	return self.isConcObj(id, staticBase.Mutex)
 }
 
-func (self *staticData) isCondVar(id *ast.CallExpr) bool {
-	return self.isConcObj(id, condVar)
+func (self *Data) isCondVar(id *ast.CallExpr) bool {
+	return self.isConcObj(id, staticBase.CondVar)
 }
 
-func (self *staticData) isWaitGroup(id *ast.CallExpr) bool {
-	return self.isConcObj(id, wg)
+func (self *Data) isWaitGroup(id *ast.CallExpr) bool {
+	return self.isConcObj(id, staticBase.Wg)
 }
 
 // TODO: channel
-func (self *staticData) isConcObj(call *ast.CallExpr, on objName) bool {
+func (self *Data) isConcObj(call *ast.CallExpr, on staticBase.ObjName) bool {
 	sel, ok := call.Fun.(*ast.SelectorExpr)
 
 	// Find the package containing this node.
@@ -263,13 +223,13 @@ func (self *staticData) isConcObj(call *ast.CallExpr, on objName) bool {
 	}
 
 	switch on {
-	case mutex:
+	case staticBase.Mutex:
 		return (obj.Name() == "Mutex" || obj.Name() == "RWMutex") &&
 			obj.Pkg().Path() == "sync"
-	case wg:
+	case staticBase.Wg:
 		return obj.Name() == "WaitGroup" &&
 			obj.Pkg().Path() == "sync"
-	case condVar:
+	case staticBase.CondVar:
 		return obj.Name() == "CondVar" &&
 			obj.Pkg().Path() == "sync"
 	}
@@ -277,7 +237,7 @@ func (self *staticData) isConcObj(call *ast.CallExpr, on objName) bool {
 	return false
 }
 
-func (self *staticData) isChannel(expr ast.Expr) bool {
+func (self *Data) isChannel(expr ast.Expr) bool {
 	// Find the package containing this node.
 	pkg := self.npm[expr]
 	if pkg == nil {
@@ -299,7 +259,7 @@ func (self *staticData) isChannel(expr ast.Expr) bool {
 }
 
 // TODO: channel send
-func (self *staticData) getConcFuncName(id ast.Expr) funcName {
+func (self *Data) getConcFuncName(id ast.Expr) staticBase.FuncName {
 	// if x, ok := id.(*ast.SelectorExpr); ok { // X.Sel is func name
 	// 	// fmt.Println(self.isMutex(x.Fun))
 	// 	// } else {
@@ -313,7 +273,7 @@ func (self *staticData) getConcFuncName(id ast.Expr) funcName {
 	// 	return "<chan:send>"
 	case *ast.UnaryExpr: // channel recv
 		if x.Op == token.ARROW {
-			return chanRecv
+			return staticBase.ChanRecv
 		}
 	case *ast.CallExpr:
 		// channel close
@@ -321,22 +281,22 @@ func (self *staticData) getConcFuncName(id ast.Expr) funcName {
 			switch ident.Name {
 			case "close":
 				if len(x.Args) != 1 {
-					return unknownFunc
+					return staticBase.UnknownFunc
 				}
 				if self.isChannel(x.Args[0]) {
-					return chanClose
+					return staticBase.ChanClose
 				}
-				return unknownFunc
+				return staticBase.UnknownFunc
 			case "make":
 				if len(x.Args) == 0 {
-					return unknownFunc
+					return staticBase.UnknownFunc
 				}
 
 				switch x.Args[0].(type) {
 				case *ast.ChanType:
-					return makeChan
+					return staticBase.MakeChan
 				}
-				return makeFunc
+				return staticBase.MakeFunc
 			}
 		}
 
@@ -344,41 +304,41 @@ func (self *staticData) getConcFuncName(id ast.Expr) funcName {
 			if self.isMutex(x) {
 				switch sel.Sel.Name {
 				case "Lock":
-					return mutexLock
+					return staticBase.MutexLock
 				case "TryLock":
-					return mutexTryLock
+					return staticBase.MutexTryLock
 				case "RLock":
-					return mutexRLock
+					return staticBase.MutexRLock
 				case "TryRLock":
-					return mutexTryRLock
+					return staticBase.MutexTryRLock
 				case "Unlock":
-					return mutexUnlock
+					return staticBase.MutexUnlock
 				case "RUnlock":
-					return mutexRUnlock
+					return staticBase.MutexRUnlock
 				}
 			} else if self.isCondVar(x) {
 				switch sel.Sel.Name {
 				case "Wait":
-					return condWait
+					return staticBase.CondWait
 				case "Signal":
-					return condSignal
+					return staticBase.CondSignal
 				case "Broadcast":
-					return condBroadcast
+					return staticBase.CondBroadcast
 				}
 			} else if self.isWaitGroup(x) {
 				switch sel.Sel.Name {
 				case "Wait":
-					return wgWait
+					return staticBase.WgWait
 				case "Add":
-					return wgAdd
+					return staticBase.WgAdd
 				case "Done":
-					return wgDone
+					return staticBase.WgDone
 				case "Go":
-					return wgGo
+					return staticBase.WgGo
 				}
 			}
 		}
 	}
 
-	return unknownFunc
+	return staticBase.UnknownFunc
 }

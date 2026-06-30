@@ -8,15 +8,16 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticAST
 
 import (
+	"advocate/static/static/staticBase"
 	"fmt"
 	"go/ast"
 )
 
 // TODO: call is not recorded if in funcLit
-func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallExpr) {
+func (self *Data) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallExpr) {
 	// prevent function from calling itself, if it is not recursive
 	if self.getPos(call) == self.getPos(fdecl) {
 		return
@@ -33,7 +34,7 @@ func (self *staticData) recordFunctionCall(fdecl *ast.FuncDecl, call *ast.CallEx
 	self.funcInfo[fdecl] = info
 }
 
-func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name funcName) {
+func (self *Data) recordOperation(f *ast.FuncDecl, expr ast.Expr, name staticBase.FuncName) {
 	info := self.funcInfo[f]
 
 	if info.ops == nil {
@@ -56,7 +57,7 @@ func (self *staticData) recordOperation(f *ast.FuncDecl, expr ast.Expr, name fun
 }
 
 // TODO: go mu.Lock() and similar does not work yet
-func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
+func (self *Data) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt) {
 	info := self.funcInfo[fdecl]
 
 	funcDecl := self.resolveGoFunc(call)
@@ -75,7 +76,7 @@ func (self *staticData) recordGoStatement(fdecl *ast.FuncDecl, call *ast.GoStmt)
 	self.routFunc[call] = fdecl
 }
 
-func (self *staticData) recordFuncLitGo(
+func (self *Data) recordFuncLitGo(
 	fdecl *ast.FuncDecl,
 	goStmt *ast.GoStmt,
 ) *ast.FuncDecl {

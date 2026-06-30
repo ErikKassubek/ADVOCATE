@@ -1,24 +1,26 @@
 // Copyright (c) 2026 Erik Kassubek
 //
 // File: data.go
-// Brief: Data for the static blocking analysis
+// Brief: Data for the ast analysis
 //
 // Author: Erik Kassubek
-// Created: 2026-04-28
+// Created: 2026-06-30
 //
 // License: BSD-3-Clause
 
-package static
+package staticAST
 
 import (
+	"advocate/static/static/staticBase"
 	"advocate/utils/log"
 	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
+	"os"
+	"runtime"
 
 	"golang.org/x/tools/go/packages"
-	"golang.org/x/tools/go/ssa"
 )
 
 type objId int
@@ -27,12 +29,12 @@ type funcCall struct {
 	call     *ast.CallExpr
 	decl     *ast.FuncDecl
 	name     string // TODO: multi package
-	callType funcName
+	callType staticBase.FuncName
 }
 
 type operation struct {
 	obj objId
-	op  funcName
+	op  staticBase.FuncName
 }
 
 type funcInfo struct {
@@ -54,10 +56,10 @@ type funcInfo struct {
 	ops map[operation]map[ast.Expr]struct{}
 }
 
-type staticData struct { // always use buildStaticData, never staticData{}
+type Data struct {
 	dir string // path to analyzed program
 
-	pkgs []*packages.Package
+	Pkgs []*packages.Package
 
 	fset *token.FileSet
 
@@ -69,10 +71,6 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	ast    []*ast.File                    // flattened list
 	npm    map[ast.Node]*packages.Package // node packages map
 
-	ssa      *ssa.Program // static single assignment (intermediate program representation where each variable is assigned exactly once)
-	ssaPkgs  []*ssa.Package
-	ssaMains []*ssa.Package
-
 	funcDeclMap map[token.Pos]*ast.FuncDecl
 	funcInfo    map[*ast.FuncDecl]funcInfo
 	routFunc    map[*ast.GoStmt]*ast.FuncDecl
@@ -81,8 +79,8 @@ type staticData struct { // always use buildStaticData, never staticData{}
 	nextFuncLitId int
 }
 
-func BuildStaticData(dir string) (*staticData, error) {
-	data := &staticData{
+func BuildAst(dir string) (*Data, error) {
+	data := &Data{
 		dir:  dir,
 		fset: token.NewFileSet(),
 
@@ -107,11 +105,6 @@ func BuildStaticData(dir string) (*staticData, error) {
 
 	data.buildAst()
 
-	data.buildSsa()
-	data.PrintSSA(true)
-	// fmt.Println("\n\n\n")
-	data.runAliasAnalysis()
-
 	data.CollectOperations()
 
 	return data, nil
@@ -121,17 +114,15 @@ func BuildStaticData(dir string) (*staticData, error) {
 //
 // Parameter:
 //   - dir: string: root directory of project
-func (self *staticData) loadPackages() error {
+func (self *Data) loadPackages() error {
 	cfg := &packages.Config{
 		Fset: self.fset,
-		Mode: packages.NeedName |
-			packages.NeedFiles |
-			packages.NeedCompiledGoFiles |
-			packages.NeedSyntax |
-			packages.NeedTypes |
-			packages.NeedTypesInfo |
-			packages.NeedImports,
-		Dir:   self.dir,
+		Mode: packages.LoadAllSyntax,
+		Dir:  self.dir,
+		Env: append(os.Environ(),
+			"GO111MODULE=on",
+			"GOROOT="+runtime.GOROOT(),
+		),
 		Tests: true,
 	}
 
@@ -146,17 +137,17 @@ func (self *staticData) loadPackages() error {
 		}
 	}
 
-	self.pkgs = pkgs
+	self.Pkgs = pkgs
 	return nil
 }
 
-func (self *staticData) buildTypeInfo() {
+func (self *Data) buildTypeInfo() {
 	self.pkgInfo = make(map[*packages.Package]*types.Info)
 
 	self.uses = make(map[*ast.Ident]types.Object)
 	self.defs = make(map[*ast.Ident]types.Object)
 
-	for _, pkg := range self.pkgs {
+	for _, pkg := range self.Pkgs {
 		if pkg.TypesInfo == nil {
 			continue
 		}
@@ -173,7 +164,7 @@ func (self *staticData) buildTypeInfo() {
 	}
 }
 
-func (self *staticData) PrintInfo() {
+func (self *Data) PrintInfo() {
 	fmt.Print("=================== Info ===================\n\n")
 	for p, c := range self.funcInfo {
 		pos := self.getPos(p)

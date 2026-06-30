@@ -8,9 +8,10 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticAST
 
 import (
+	"advocate/static/static/staticBase"
 	"advocate/utils/log"
 	"fmt"
 	"go/ast"
@@ -29,7 +30,7 @@ import (
 //   - bool: true if a path exists, false otherwise
 //   - string: path from start to target. Only if path exists and calcPath is true
 //   - error
-func (self *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
+func (self *Data) isReachableFuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
 	if start == nil || target == nil {
 		fmt.Println()
 		return false, "", fmt.Errorf("Start or target is nil")
@@ -159,7 +160,7 @@ func (self *staticData) isReachableFuncFromFunc(start, target *ast.FuncDecl, cal
 // }
 
 // TODO: implement
-func (self *staticData) isReachableOpFromFunc(start *ast.FuncDecl, targetOp operation, calcPath bool) (bool, string, error) {
+func (self *Data) isReachableOpFromFunc(start *ast.FuncDecl, targetOp operation, calcPath bool) (bool, string, error) {
 	if start == nil {
 		fmt.Println()
 		return false, "", fmt.Errorf("Start is nil")
@@ -268,14 +269,14 @@ func (self *staticData) isReachableOpFromFunc(start *ast.FuncDecl, targetOp oper
 }
 
 // TODO: only for debug. Remove
-func (self *staticData) TestReachable() {
+func (self *Data) TestReachable() {
 	var fFunc *ast.FuncDecl
 	var mainFunc *ast.FuncDecl
 
 	for p, funcDecl := range self.funcDeclMap {
-		if self.getPosFromPos(p) == "[/main.go:7]" {
+		if self.GetPosFromPos(p) == "[/main.go:7]" {
 			fFunc = funcDecl
-		} else if self.getPosFromPos(p) == "[/main.go:51]" {
+		} else if self.GetPosFromPos(p) == "[/main.go:51]" {
 			mainFunc = funcDecl
 		}
 	}
@@ -292,7 +293,7 @@ func (self *staticData) TestReachable() {
 		fmt.Println("No Path Found")
 	}
 
-	res, path, err = self.isReachableOpFromFunc(mainFunc, operation{1, mutexTryLock}, true)
+	res, path, err = self.isReachableOpFromFunc(mainFunc, operation{1, staticBase.MutexTryLock}, true)
 	if err != nil {
 		log.Error("Error in isReachableFuncFromFunc: ", err)
 		return

@@ -15,6 +15,8 @@ import (
 	"advocate/utils/flags"
 )
 
+var data *static.Data
+
 // Main function for testing static analysis.
 // Todo: remove when static analysis is fully implemented
 func Test() {
@@ -22,18 +24,18 @@ func Test() {
 }
 
 // init to static blocking analysis
-func RunStaticBlockingAnalysis(dir string) error {
+func RunStaticBlockingAnalysis(dir string) (err error) {
 	// vars := make([]*ast.Ident, 0) // TODO: determine vars
 
-	_, err := static.BuildStaticData(dir)
+	data, err = static.BuildStaticData(dir)
 	if err != nil {
 		return err
 	}
 
-	// data.PrintInfo()
-	// data.PrintSSA(true)
+	data.Ast().PrintInfo()
+	data.Ssa().Print(true)
 
-	// data.TestReachable()
+	// data.Ast().TestReachable()
 
 	return nil
 }

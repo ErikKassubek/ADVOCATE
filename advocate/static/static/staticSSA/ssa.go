@@ -7,20 +7,21 @@
 //
 // License: BSD-3-Clause
 
-package static
+package staticSSA
 
 import (
 	"fmt"
 	"os"
 
+	"golang.org/x/tools/go/packages"
 	"golang.org/x/tools/go/ssa"
 	"golang.org/x/tools/go/ssa/ssautil"
 )
 
 // buildSsa creates the ssa.
 // Assumes that packages are already loaded (self.pkgs)
-func (self *staticData) buildSsa() {
-	self.ssa, self.ssaPkgs = ssautil.AllPackages(self.pkgs, ssa.SanityCheckFunctions)
+func (self *Data) buildSsa(pkgs []*packages.Package) {
+	self.ssa, self.ssaPkgs = ssautil.AllPackages(pkgs, ssa.SanityCheckFunctions)
 	self.ssa.Build()
 	for _, p := range self.ssaPkgs {
 		p.Build()
@@ -34,7 +35,7 @@ func (self *staticData) buildSsa() {
 //   - onlyOne bool: every file/package can be included multiple times in the ssa if it is included with different contexts,
 //     e.g. main vs test.
 //     If onlyOne is set, print only the first
-func (self *staticData) PrintSSA(onlyOne bool) {
+func (self *Data) Print(onlyOne bool) {
 	seen := make(map[string]bool)
 
 	for _, pkg := range self.ssaPkgs {

@@ -46,7 +46,7 @@ func (self *function) string() string {
 	return res
 }
 
-func (self *Data) aliasFunction(fn *ssa.Function) function {
+func (self *Data) analysisFunction(fn *ssa.Function) function {
 	f := function{
 		name:   fn.Name(),
 		pkg:    fn.Pkg.Pkg.Path(),
@@ -57,7 +57,7 @@ func (self *Data) aliasFunction(fn *ssa.Function) function {
 
 	for i, block := range fn.Blocks {
 		sv := []staticVar{}
-		f.blocks[i], sv = self.aliasBlock(block)
+		f.blocks[i], sv = self.analysisBlock(block)
 		f.sv = append(f.sv, sv...)
 	}
 
@@ -70,7 +70,7 @@ func (self *Data) aliasFunction(fn *ssa.Function) function {
 
 type block struct {
 	id    int
-	insts []instruction
+	insts []Instruction
 }
 
 func (self *block) string() string {
@@ -81,17 +81,17 @@ func (self *block) string() string {
 	return res
 }
 
-func (self *Data) aliasBlock(bl *ssa.BasicBlock) (block, []staticVar) {
+func (self *Data) analysisBlock(bl *ssa.BasicBlock) (block, []staticVar) {
 	b := block{
 		id:    bl.Index,
-		insts: make([]instruction, len(bl.Instrs)),
+		insts: make([]Instruction, len(bl.Instrs)),
 	}
 
 	v := make([]staticVar, 0)
 
 	for i, instr := range bl.Instrs {
 		sv := staticVar{}
-		b.insts[i], sv = self.aliasInstruction(instr)
+		b.insts[i], sv = self.analysisInstruction(instr)
 		if sv.name != "" && len(sv.objects) != 0 {
 			v = append(v, sv)
 		}
@@ -103,6 +103,14 @@ func (self *Data) aliasBlock(bl *ssa.BasicBlock) (block, []staticVar) {
 // ================================================================
 // Instruction
 // ================================================================
+
+type instClass string
+
+const (
+	unknown instClass = "unknown"
+	alloc   instClass = "alloc"
+	// TODO: list all relevant
+)
 
 type staticVar struct {
 	name    string
@@ -122,69 +130,85 @@ func (self *staticVar) string() string {
 	return res
 }
 
-type instruction struct {
+type Instruction struct {
 	name string
-	inst string
+	inst ssa.Instruction
 
-	// class instructionClass
+	class instClass
 
-	ptr     bool
-	objType []s_base.ObjName
+	ptr bool
+
+	hasConc [4]bool
 }
 
-func (self *instruction) string() (res string) {
+func (self *Instruction) string() (res string) {
 	if self.name == "" {
-		res = self.inst
+		res = self.inst.String()
 	} else {
 		res = fmt.Sprintf("%s = %s", self.name, self.inst)
 	}
 
-	if len(self.objType) != 0 {
-		res += "\t\t-> "
-		for i, obj := range self.objType {
-			if i != 0 {
-				res += ","
-			}
-			res += string(obj)
+	// name
+	name := func(i int) s_base.ObjName {
+		switch i {
+		case 0:
+			return s_base.Channel
+		case 1:
+			return s_base.Mutex
+		case 2:
+			return s_base.CondVar
+		case 3:
+			return s_base.Wg
+		default:
+			return s_base.UnknownObj
 		}
 	}
+
+	found := false
+	for i := 0; i < 4; i++ {
+		if self.hasConc[i] {
+			if !found {
+				res += "\t\t-> "
+			} else {
+				res += ", "
+			}
+			res += string(name(i))
+			found = true
+		}
+	}
+
+	if !found {
+		return
+	}
+
+	if self.class != unknown {
+		res += "\t\t-> " + string(self.class)
+	}
+
 	return
 }
 
-func (self *Data) aliasInstruction(instr ssa.Instruction) (instruction, staticVar) {
-	inst := instruction{
-		inst:    instr.String(),
-		objType: make([]s_base.ObjName, 0),
+func (self *Data) analysisInstruction(instr ssa.Instruction) (Instruction, staticVar) {
+	inst := Instruction{
+		inst: instr,
 	}
 
 	if v, ok := instr.(ssa.Value); ok {
 		inst.name = v.Name()
 	}
 
-	hasChan, hasMutex, hasCond, hasWaitGroup := ContainsSyncPrimitive(instr)
-
-	if hasChan {
-		inst.objType = append(inst.objType, s_base.Channel)
-	}
-	if hasMutex {
-		inst.objType = append(inst.objType, s_base.Mutex)
-	}
-	if hasCond {
-		inst.objType = append(inst.objType, s_base.CondVar)
-	}
-	if hasWaitGroup {
-		inst.objType = append(inst.objType, s_base.Wg)
-	}
+	inst.hasConc[0], inst.hasConc[1], inst.hasConc[2], inst.hasConc[3] = containsSyncPrimitive(instr)
 
 	sv := staticVar{
-		name:    inst.name,
-		objects: inst.objType,
+		name: inst.name,
 	}
+
+	inst.class = self.analysisClass(instr)
 
 	return inst, sv
 }
 
-func ContainsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, hasWaitGroup bool) {
+func containsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, hasWaitGroup bool) {
 	checkType := func(t types.Type) {
 		if t == nil {
 			return
@@ -248,14 +272,24 @@ func ContainsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, h
 	return
 }
 
+func (self *Data) analysisClass(instr ssa.Instruction) instClass {
+	switch instr.(type) {
+	case *ssa.Alloc, *ssa.MakeChan:
+		return alloc
+		// TODO: implement all relevant
+	}
+
+	return unknown
+}
+
 // ================================================================
-// Main
+// Analysis
 // ================================================================
 
 func (self *Data) runSSAAnalysis() {
 	seen := make(map[string]bool)
 
-	funcs := make([]function, 0)
+	self.funcs = make([]function, 0)
 
 	for _, pkg := range self.ssaPkgs {
 		if pkg == nil {
@@ -270,13 +304,13 @@ func (self *Data) runSSAAnalysis() {
 
 		for _, mem := range pkg.Members {
 			if fn, ok := mem.(*ssa.Function); ok {
-				fn := self.aliasFunction(fn)
-				funcs = append(funcs, fn)
+				fn := self.analysisFunction(fn)
+				self.funcs = append(self.funcs, fn)
 			}
 		}
 	}
 
-	for _, fn := range funcs {
+	for _, fn := range self.funcs {
 		fmt.Println(fn.string())
 		fmt.Print("\n\n\n==================================================\n\n\n")
 	}

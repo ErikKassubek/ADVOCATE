@@ -8,10 +8,9 @@
 //
 // License: BSD-3-Clause
 
-package s_reachable
+package s_ast
 
 import (
-	"advocate/static/static/s_ast"
 	"advocate/static/static/s_base"
 	"advocate/utils/log"
 	"fmt"
@@ -31,7 +30,7 @@ import (
 //   - bool: true if a path exists, false otherwise
 //   - string: path from start to target. Only if path exists and calcPath is true
 //   - error
-func FuncFromFunc(aSTree *s_ast.Data, start, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
+func (self *Data) FuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
 	if start == nil || target == nil {
 		fmt.Println()
 		return false, "", fmt.Errorf("Start or target is nil")
@@ -57,7 +56,7 @@ func FuncFromFunc(aSTree *s_ast.Data, start, target *ast.FuncDecl, calcPath bool
 		cur := queue[0]
 		queue = queue[1:]
 
-		info, ok := aSTree.FuncInfo[cur]
+		info, ok := self.FuncInfo[cur]
 		if !ok {
 			continue
 		}
@@ -161,13 +160,13 @@ func FuncFromFunc(aSTree *s_ast.Data, start, target *ast.FuncDecl, calcPath bool
 // }
 
 // TODO: implement
-func OpFromFunc(aSTree *s_ast.Data, start *ast.FuncDecl, targetOp s_ast.Operation, calcPath bool) (bool, string, error) {
+func (self *Data) OpFromFunc(start *ast.FuncDecl, targetOp Operation, calcPath bool) (bool, string, error) {
 	if start == nil {
 		fmt.Println()
 		return false, "", fmt.Errorf("Start is nil")
 	}
 
-	if aSTree.FuncContainsOp(start, targetOp) {
+	if self.FuncContainsOp(start, targetOp) {
 		if calcPath {
 			return true, start.Name.Name, nil
 		}
@@ -192,7 +191,7 @@ func OpFromFunc(aSTree *s_ast.Data, start *ast.FuncDecl, targetOp s_ast.Operatio
 		cur := queue[0]
 		queue = queue[1:]
 
-		info, ok := aSTree.FuncInfo[cur]
+		info, ok := self.FuncInfo[cur]
 		if !ok {
 			continue
 		}
@@ -206,7 +205,7 @@ func OpFromFunc(aSTree *s_ast.Data, start *ast.FuncDecl, targetOp s_ast.Operatio
 				visited[next] = true
 				parent[next] = parentInfo{from: cur}
 
-				if aSTree.FuncContainsOp(next, targetOp) {
+				if self.FuncContainsOp(next, targetOp) {
 					found = true
 					queue = nil
 					return true
@@ -270,19 +269,19 @@ func OpFromFunc(aSTree *s_ast.Data, start *ast.FuncDecl, targetOp s_ast.Operatio
 }
 
 // TODO: only for debug. Remove
-func TestReachable(aSTree *s_ast.Data) {
+func (self *Data) TestReachable() {
 	var fFunc *ast.FuncDecl
 	var mainFunc *ast.FuncDecl
 
-	for p, funcDecl := range aSTree.FuncDeclMap {
-		if aSTree.GetPosFromPos(p) == "[/main.go:7]" {
+	for p, funcDecl := range self.FuncDeclMap {
+		if self.GetPosFromPos(p) == "[/main.go:7]" {
 			fFunc = funcDecl
-		} else if aSTree.GetPosFromPos(p) == "[/main.go:51]" {
+		} else if self.GetPosFromPos(p) == "[/main.go:51]" {
 			mainFunc = funcDecl
 		}
 	}
 
-	res, path, err := FuncFromFunc(aSTree, mainFunc, fFunc, true)
+	res, path, err := self.FuncFromFunc(mainFunc, fFunc, true)
 	if err != nil {
 		log.Error("Error in isReachableFuncFromFunc: ", err)
 		return
@@ -294,7 +293,7 @@ func TestReachable(aSTree *s_ast.Data) {
 		fmt.Println("No Path Found")
 	}
 
-	res, path, err = OpFromFunc(aSTree, mainFunc, s_ast.Operation{1, s_base.MutexTryLock}, true)
+	res, path, err = self.OpFromFunc(mainFunc, Operation{1, s_base.MutexTryLock}, true)
 	if err != nil {
 		log.Error("Error in isReachableFuncFromFunc: ", err)
 		return

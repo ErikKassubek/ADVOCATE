@@ -22,6 +22,9 @@ type Data struct {
 	ssa      *ssa.Program // static single assignment (intermediate program representation where each variable is assigned exactly once)
 	ssaPkgs  []*ssa.Package
 	ssaMains []*ssa.Package
+
+	funcs []function
+	alloc map[*Instruction][]Instruction // instruction -> set of alloc
 }
 
 func BuildSsa(ast *s_ast.Data) *Data {
@@ -31,5 +34,32 @@ func BuildSsa(ast *s_ast.Data) *Data {
 
 	data.buildSsa(ast.Pkgs)
 
+	data.runSSAAnalysis()
+
 	return data
+}
+
+// ================================================================
+// Alias
+// ================================================================
+
+type aliasResult int
+
+const (
+	never aliasResult = iota
+	sometimes
+	always
+)
+
+func (self *aliasResult) string() string {
+	switch *self {
+	case never:
+		return "never"
+	case sometimes:
+		return "sometimes"
+	case always:
+		return "always"
+	default:
+		return "unknown"
+	}
 }

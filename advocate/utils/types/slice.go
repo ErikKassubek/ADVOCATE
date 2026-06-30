@@ -119,6 +119,33 @@ func MergeListsSort[T Ordered](l1, l2 []T) []T {
 	return res
 }
 
+// HasCommonElement returns true if l1 and l2 share at least one element.
+//
+// Parameters:
+//   - l1 []T: first list
+//   - l2 []T: second list
+//
+// Returns:
+//   - bool: true if a common element exists, false otherwise
+func HasCommonElement[T comparable](l1, l2 []T) bool {
+	if len(l1) > len(l2) {
+		l1, l2 = l2, l1
+	}
+
+	set := make(map[T]struct{}, len(l1))
+	for _, v := range l1 {
+		set[v] = struct{}{}
+	}
+
+	for _, v := range l2 {
+		if _, ok := set[v]; ok {
+			return true
+		}
+	}
+
+	return false
+}
+
 // CopyOfRange copies the content of the slice in a given range
 //
 // Parameters:

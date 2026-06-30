@@ -11,15 +11,13 @@
 package static
 
 import (
-	"advocate/static/static/s_alias"
 	"advocate/static/static/s_ast"
 	"advocate/static/static/s_ssa"
 )
 
 type Data struct { // always use buildStaticData, never staticData{}
-	ast   *s_ast.Data
-	ssa   *s_ssa.Data
-	alias *s_alias.Data
+	ast *s_ast.Data
+	ssa *s_ssa.Data
 }
 
 func BuildStaticData(dir string) (*Data, error) {
@@ -30,12 +28,9 @@ func BuildStaticData(dir string) (*Data, error) {
 
 	ssa := s_ssa.BuildSsa(ast)
 
-	al := s_alias.RunAliasAnalysis(ssa)
-
 	data := &Data{
-		ast:   ast,
-		ssa:   ssa,
-		alias: al,
+		ast: ast,
+		ssa: ssa,
 	}
 
 	return data, nil

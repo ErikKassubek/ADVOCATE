@@ -107,9 +107,52 @@ func (self *Data) analysisBlock(bl *ssa.BasicBlock) (block, []staticVar) {
 type instClass string
 
 const (
-	unknown instClass = "unknown"
-	alloc   instClass = "alloc"
-	// TODO: list all relevant
+	ic_unknown             instClass = "unknown"
+	ic_alloc               instClass = "alloc"
+	ic_binOp               instClass = "binOp"
+	ic_builtin             instClass = "builtin"
+	ic_call                instClass = "call"
+	ic_changeInterface     instClass = "changeInterface"
+	ic_changeType          instClass = "changeType"
+	ic_const               instClass = "const"
+	ic_convert             instClass = "convert"
+	ic_debugRef            instClass = "debugRef"
+	ic_defer               instClass = "defer"
+	ic_extract             instClass = "extract"
+	ic_field               instClass = "field"
+	ic_fieldAddr           instClass = "fieldAddr"
+	ic_freeVar             instClass = "freeVar"
+	ic_function            instClass = "function"
+	ic_global              instClass = "global"
+	ic_go                  instClass = "go"
+	ic_if                  instClass = "if"
+	ic_index               instClass = "index"
+	ic_indexAddr           instClass = "indexAddr"
+	ic_jump                instClass = "jump"
+	ic_lookup              instClass = "lookup"
+	ic_makeChan            instClass = "makeChan"
+	ic_makeClosure         instClass = "makeClosure"
+	ic_makeInterface       instClass = "makeInterface"
+	ic_makeMap             instClass = "makeMap"
+	ic_makeSlice           instClass = "makeSlice"
+	ic_mapUpdate           instClass = "mapUpdate"
+	ic_multiConvert        instClass = "multiConvert"
+	ic_namedConst          instClass = "namedConst"
+	ic_next                instClass = "next"
+	ic_panic               instClass = "panic"
+	ic_parameter           instClass = "parameter"
+	ic_phi                 instClass = "phi"
+	ic_range               instClass = "range"
+	ic_return              instClass = "return"
+	ic_runDefers           instClass = "runDefers"
+	ic_select              instClass = "select"
+	ic_send                instClass = "send"
+	ic_slice               instClass = "slice"
+	ic_sliceToArrayPointer instClass = "sliceToArrayPointer"
+	ic_store               instClass = "store"
+	ic_type                instClass = "type"
+	ic_typeAssert          instClass = "typeAssert"
+	ic_unOp                instClass = "unOp"
 )
 
 type staticVar struct {
@@ -177,11 +220,7 @@ func (self *Instruction) string() (res string) {
 		}
 	}
 
-	if !found {
-		return
-	}
-
-	if self.class != unknown {
+	if self.class != ic_unknown {
 		res += "\t\t-> " + string(self.class)
 	}
 
@@ -274,12 +313,83 @@ func containsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, h
 
 func (self *Data) analysisClass(instr ssa.Instruction) instClass {
 	switch instr.(type) {
-	case *ssa.Alloc, *ssa.MakeChan:
-		return alloc
-		// TODO: implement all relevant
+	case *ssa.Alloc:
+		return ic_alloc
+	case *ssa.BinOp:
+		return ic_binOp
+	case *ssa.Call:
+		return ic_call
+	case *ssa.ChangeInterface:
+		return ic_changeInterface
+	case *ssa.ChangeType:
+		return ic_changeType
+	case *ssa.Convert:
+		return ic_convert
+	case *ssa.DebugRef:
+		return ic_debugRef
+	case *ssa.Defer:
+		return ic_defer
+	case *ssa.Extract:
+		return ic_extract
+	case *ssa.Field:
+		return ic_field
+	case *ssa.FieldAddr:
+		return ic_fieldAddr
+	case *ssa.Go:
+		return ic_go
+	case *ssa.If:
+		return ic_if
+	case *ssa.Index:
+		return ic_index
+	case *ssa.IndexAddr:
+		return ic_indexAddr
+	case *ssa.Jump:
+		return ic_jump
+	case *ssa.Lookup:
+		return ic_lookup
+	case *ssa.MakeChan:
+		return ic_makeChan
+	case *ssa.MakeClosure:
+		return ic_makeClosure
+	case *ssa.MakeInterface:
+		return ic_makeInterface
+	case *ssa.MakeMap:
+		return ic_makeMap
+	case *ssa.MakeSlice:
+		return ic_makeSlice
+	case *ssa.MapUpdate:
+		return ic_mapUpdate
+	case *ssa.MultiConvert:
+		return ic_multiConvert
+	case *ssa.Next:
+		return ic_next
+	case *ssa.Panic:
+		return ic_panic
+	case *ssa.Phi:
+		return ic_phi
+	case *ssa.Range:
+		return ic_range
+	case *ssa.Return:
+		return ic_return
+	case *ssa.RunDefers:
+		return ic_runDefers
+	case *ssa.Select:
+		return ic_select
+	case *ssa.Send:
+		return ic_send
+	case *ssa.Slice:
+		return ic_slice
+	case *ssa.SliceToArrayPointer:
+		return ic_sliceToArrayPointer
+	case *ssa.Store:
+		return ic_store
+	case *ssa.TypeAssert:
+		return ic_typeAssert
+	case *ssa.UnOp:
+		return ic_unOp
 	}
 
-	return unknown
+	return ic_unknown
 }
 
 // ================================================================

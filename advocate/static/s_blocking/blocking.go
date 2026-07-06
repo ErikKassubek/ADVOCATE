@@ -32,8 +32,8 @@ func RunStaticBlockingAnalysis(dir string) (err error) {
 		return err
 	}
 
-	data.Ast().PrintInfo()
-	data.Ssa().Print(true)
+	// data.Ast().PrintInfo()
+	// data.Ssa().Print(true)
 
 	// data.Ast().TestReachable()
 

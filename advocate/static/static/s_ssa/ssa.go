@@ -52,10 +52,23 @@ func (self *Data) Print(onlyOne bool) {
 			seen[path] = true
 		}
 
+		var printFn func(*ssa.Function)
+		printFn = func(fn *ssa.Function) {
+			if fn == nil {
+				return
+			}
+
+			fmt.Printf("\n============ %s ============\n", fn.String())
+			fn.WriteTo(os.Stdout)
+
+			for _, anon := range fn.AnonFuncs {
+				printFn(anon)
+			}
+		}
+
 		for _, mem := range pkg.Members {
 			if fn, ok := mem.(*ssa.Function); ok {
-				fmt.Print("\n\n\n\n=================================================================\n\n")
-				fn.WriteTo(os.Stdout)
+				printFn(fn)
 			}
 		}
 	}

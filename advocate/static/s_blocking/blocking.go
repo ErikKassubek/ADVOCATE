@@ -33,7 +33,7 @@ func RunStaticBlockingAnalysis(dir string) (err error) {
 	}
 
 	// data.Ast().PrintInfo()
-	// data.Ssa().Print(true)
+	data.Ssa().Print(true)
 
 	// data.Ast().TestReachable()
 

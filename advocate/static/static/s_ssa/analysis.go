@@ -310,8 +310,8 @@ func (self *Data) runSSAAnalysis() {
 		}
 	}
 
-	for _, fn := range self.funcs {
-		fmt.Println(fn.string())
-		fmt.Print("\n\n\n==================================================\n\n\n")
-	}
+	// for _, fn := range self.funcs {
+	// 	fmt.Println(fn.string())
+	// 	fmt.Print("\n\n\n==================================================\n\n\n")
+	// }
 }

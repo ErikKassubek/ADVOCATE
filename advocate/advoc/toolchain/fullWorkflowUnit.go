@@ -570,7 +570,7 @@ func unitTestRecord(pkg, file, testName string,
 	command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", buildFlags, "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -679,7 +679,7 @@ func unitTestReplay(dir, pkg, file,
 
 		log.Infof("Run guided execution %d/%d", i+1, len(rewrittenTraces))
 		pkgPath := paths.MakePathLocal(pkg)
-		command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", "-gcflags=all=-N -l", "-v", "-count=1", "-run="+testName, pkgPath)
+		command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", buildFlags, "-v", "-count=1", "-run="+testName, pkgPath)
 		log.Infof("Finished  guided execution %d/%d", i+1, len(rewrittenTraces))
 
 		if wasReplaySuc(output) {

@@ -124,8 +124,7 @@ func runWorkflowMain(
 
 		// build the program
 		log.Info("Build program for recording")
-		log.Debug(paths.Go)
-		if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
+		if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, paths.Go, "build", buildFlags); err != nil {
 			log.Error("Error in building program, removing header and stopping workflow")
 			headerRemoverMain(paths.Prog)
 			return 0, 0, err
@@ -183,7 +182,7 @@ func runWorkflowMain(
 
 			// build the program
 			log.Info("Build program for replay")
-			if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, paths.Go, "build", "-gcflags=all=-N -l"); err != nil {
+			if err := command.RunCommand(origStdout, origStderr, command.NoTimeout, paths.Go, "build", buildFlags); err != nil {
 				log.Error("Error in building program, removing header and stopping workflow")
 				headerRemoverMain(paths.Prog)
 				continue

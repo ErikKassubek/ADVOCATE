@@ -22,6 +22,8 @@ import (
 	"strings"
 )
 
+const buildFlags = "-gcflags=-N -l"
+
 // extractTraceNumber extracts the numeric part from a trace directory name
 //
 // Parameter:

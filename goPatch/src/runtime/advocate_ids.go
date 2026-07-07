@@ -35,6 +35,18 @@ func GetNextAdvocateRoutineID() uint64 {
 	return advocateCurrentRoutineID.Load() + 1
 }
 
+func NewIdIfReq(currentId uint64, memOld, memCurr uintptr) (uint64, uintptr) {
+	if currentId == 0 {
+		return GetAdvocateObjectID(), memCurr
+	}
+
+	if memOld == memCurr {
+		return currentId, memCurr
+	}
+
+	return GetAdvocateObjectID(), memCurr
+}
+
 // GetAdvocateObjectID returns a new id for an primitive
 // Return:
 //   - new id

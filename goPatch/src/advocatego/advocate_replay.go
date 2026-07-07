@@ -122,7 +122,7 @@ func startReplay(timeout int) {
 
 	// DetectBlockingGC(0)
 
-	runtime.EnableReplay(DetectBlockingGC)
+	runtime.EnableReplay()
 }
 
 // readReplayActive checks if a rewrite_active.log file exists in the path
@@ -464,7 +464,7 @@ func FinishReplay() {
 	println("FinishReplay")
 	runtime.WaitForReplayFinish()
 
-	DetectBlockingGC()
+	// DetectBlockingGC()
 
 	time.Sleep(time.Second)
 

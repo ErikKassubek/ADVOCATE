@@ -30,12 +30,16 @@ import (
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
+//   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
+//   - blocked map[int][]int: routines which are blocked and the objects that block it
 type Trace struct {
 	traces                map[int][]Element
 	hbWasCalc             bool
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
+	objectAware           map[int][]int
+	blocked               map[int]Element
 }
 
 // NewTrace creates a new empty trace structure
@@ -48,6 +52,8 @@ func NewTrace() Trace {
 		hbWasCalc:             false,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
+		objectAware:           make(map[int][]int),
+		blocked:               make(map[int]Element),
 	}
 }
 
@@ -56,6 +62,9 @@ func (this *Trace) Clear() {
 	this.traces = make(map[int][]Element)
 	this.hbWasCalc = false
 	this.minTraceID = 0
+	this.channelWithoutPartner = make(map[int]map[int]*ElementChannel)
+	this.objectAware = make(map[int][]int)
+	this.blocked = make(map[int]Element)
 }
 
 // AddElement adds an element to the trace
@@ -67,6 +76,10 @@ func (this *Trace) AddElement(elem Element) {
 
 	this.minTraceID++
 	elem.setID(this.minTraceID)
+
+	if elem.GetTPost() == 0 {
+		this.blocked[routine] = elem
+	}
 
 	this.traces[routine] = append(this.traces[routine], elem)
 }
@@ -146,6 +159,17 @@ func (this *Trace) GetRoutineTrace(id int) []Element {
 	return this.traces[id]
 }
 
+// GetRoutineTrace returns the trace of the given routine
+//
+// Parameter:
+//   - id int: The id of the routine
+//
+// Returns:
+//   - []traceElement: The trace of the routine
+func (this *Trace) GetLastElemInRout(id int) Element {
+	return this.traces[id][len(this.traces[id])]
+}
+
 // GetNumberElements returns the total number of elements in the trace
 //
 // Returns:
@@ -176,6 +200,31 @@ func (this *Trace) GetTraceElementFromTID(tID string) (Element, error) {
 		}
 	}
 	return nil, errors.New("Element " + tID + " does not exist")
+}
+
+func (this *Trace) GetBlocked() map[int]Element {
+	return this.blocked
+}
+
+func (this *Trace) GetObjAware() map[int][]int {
+	return this.objectAware
+}
+
+func (this *Trace) GetNotReturned(onlyNonBlocked bool) []int {
+	res := make([]int, 0)
+
+	for rout, elems := range this.traces {
+		if len(elems) == 0 {
+			res = append(res, rout)
+			continue
+		}
+		last := elems[len(elems)-1]
+		if last.GetType(false) != End && (!onlyNonBlocked || last.GetTPost() != 0) {
+			res = append(res, rout)
+		}
+	}
+
+	return res
 }
 
 // GetTraceElementFromBugArg returns the element in the trace,

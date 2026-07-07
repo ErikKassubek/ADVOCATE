@@ -26,7 +26,7 @@ const (
 	ACloseOnNilChannel      ResultType = "A04"
 	ANegWG                  ResultType = "A05"
 	AUnlockOfNotLockedMutex ResultType = "A06"
-	ALeak                   ResultType = "A07"
+	ABlocking               ResultType = "A07"
 	ADeadlock               ResultType = "A08"
 	AConcurrentRecv         ResultType = "A09"
 	AMixedDeadlock          ResultType = "A10"
@@ -68,7 +68,7 @@ var ResultTypes = []ResultType{
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
-	ALeak,
+	ABlocking,
 	ADeadlock,
 	AConcurrentRecv,
 	AMixedDeadlock,
@@ -99,7 +99,7 @@ var ResultTypesActual = []ResultType{
 	ACloseOnNilChannel,
 	ANegWG,
 	AUnlockOfNotLockedMutex,
-	ALeak,
+	ABlocking,
 	ADeadlock,
 	AConcurrentRecv,
 	AMixedDeadlock,
@@ -149,7 +149,7 @@ func ResultTypeFromString(code string) ResultType {
 	case "A06":
 		return AUnlockOfNotLockedMutex
 	case "A07":
-		return ALeak
+		return ABlocking
 	case "A08":
 		return ADeadlock
 	case "A09":

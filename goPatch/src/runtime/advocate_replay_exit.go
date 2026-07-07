@@ -78,7 +78,6 @@ var hasPanicked = false
 // Parameter:
 //   - msg: the panic message
 func AdvocatePanic(msg any) {
-	println("HAS: ", hasPanicked)
 	if hasPanicked {
 		exit(1)
 	}
@@ -113,8 +112,6 @@ func ExitReplayTimeout() {
 	// }
 
 	// println("ExitPosition:" + top)
-
-	detectBlockingGC()
 
 	advocateExitCode = ExitCodeTimeout
 	AdvocatePanic("Timeout")

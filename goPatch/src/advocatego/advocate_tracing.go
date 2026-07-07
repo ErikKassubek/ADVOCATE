@@ -89,7 +89,9 @@ func FinishTracing() {
 
 	runtime.DisableTracing()
 
-	DetectBlockingGC()
+	runtime.BuildOAT()
+
+	// DetectBlockingGC()
 
 	if timerStarted {
 		duration = time.Since(startTime)
@@ -108,7 +110,7 @@ func writeToTraceFiles() {
 
 	currentlyWriting := make([]int, 0)
 
-	for i := 1; i <= numRout; i++ {
+	for i := 1; i <= numRout+1; i++ {
 		active, writing := runtime.IsActive(i)
 		if !active {
 			continue

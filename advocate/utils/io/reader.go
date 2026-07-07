@@ -283,6 +283,8 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		// TODO: process function call
 	case "R":
 		// TODO: process function return
+	case "OAT":
+		err = tr.AddTraceObjectAware(routine, fields[1])
 	default:
 		return errors.New("Unknown element type in: " + element)
 	}

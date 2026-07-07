@@ -47,7 +47,7 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = errors.New("Actual negative Wait Group. Therefore no rewrite is needed")
 	case helper.AUnlockOfNotLockedMutex:
 		err = errors.New("Actual unlock of not locked mutex. Therefore no rewrite is needed")
-	case helper.ALeak:
+	case helper.ABlocking:
 		err = errors.New("Actual blocking routine. Therefore no rewrite is needed")
 	case helper.ADeadlock:
 		err = errors.New("Actual deadlock. Therefore no rewrite is needed")

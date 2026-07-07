@@ -185,10 +185,10 @@ func TraceToChanByID(id uint64) chan string {
 			}
 
 			if !routine.hasReturned && len(routine.oat) != 0 {
-				oatElems := "\nOAT:"
+				oatElems := "\nOAT,"
 				for i, obj := range routine.oat {
 					if i != 0 {
-						oatElems += ","
+						oatElems += "-"
 					}
 					oatElems += uint64ToString(obj)
 				}

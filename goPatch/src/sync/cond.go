@@ -48,7 +48,8 @@ type Cond struct {
 	checker copyChecker
 
 	// ADVOCATE-START
-	id uint64
+	id     uint64
+	memAdr uintptr
 	// ADVOCATE-END
 }
 
@@ -74,9 +75,7 @@ func NewCond(l Locker) *Cond {
 //	c.L.Unlock()
 func (c *Cond) Wait() {
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
-	}
+	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond, false)
@@ -109,9 +108,7 @@ func (c *Cond) Wait() {
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
-	}
+	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond, true)
@@ -135,9 +132,7 @@ func (c *Cond) Signal() {
 // during the call.
 func (c *Cond) Broadcast() {
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = runtime.GetAdvocateObjectID()
-	}
+	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond, true)

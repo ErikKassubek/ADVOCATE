@@ -130,7 +130,7 @@ func (this Bug) ToString() string {
 		typeStr = "Concurrent Receive:"
 		arg1Str = "recv: "
 		arg2Str = "recv: "
-	case helper.ALeak:
+	case helper.ABlocking:
 		typeStr = "Blocking routine:"
 		arg1Str = "blocking: "
 	case helper.ADeadlock:
@@ -295,7 +295,7 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		bug.Type = helper.AUnlockOfNotLockedMutex
 		actual = true
 	case "A07":
-		bug.Type = helper.ALeak
+		bug.Type = helper.ABlocking
 		actual = true
 	case "A08":
 		bug.Type = helper.ADeadlock

@@ -25,7 +25,7 @@ var bugCrit = map[helper.ResultType]string{
 	helper.ACloseOnNilChannel:      consts.Bug,
 	helper.ANegWG:                  consts.Bug,
 	helper.AUnlockOfNotLockedMutex: consts.Bug,
-	helper.ALeak:                   consts.Bug,
+	helper.ABlocking:               consts.Bug,
 	helper.ADeadlock:               consts.Bug,
 	helper.AConcurrentRecv:         consts.Diagnostic,
 	helper.AMixedDeadlock:          consts.Bug,
@@ -56,7 +56,7 @@ var bugNames = map[helper.ResultType]string{
 	helper.ACloseOnNilChannel:      "Actual Close on Nil Channel",
 	helper.ANegWG:                  "Actual Negative Wait Group",
 	helper.AUnlockOfNotLockedMutex: "Actual Unlock of Not Locked Mutex",
-	helper.ALeak:                   "Actual Non-Cyclic Blocking Bug",
+	helper.ABlocking:               "Actual Non-Cyclic Blocking Bug",
 	helper.ADeadlock:               "Actual Cyclic Deadlock",
 	helper.AConcurrentRecv:         "Actual Concurrent Receive",
 	helper.AMixedDeadlock:          "Actual Mixed Deadlock",
@@ -100,7 +100,7 @@ var bugExplanations = map[helper.ResultType]string{
 		"The occurrence of a negative wait group counter lead to a panic.",
 	helper.AUnlockOfNotLockedMutex: "During the execution, a not locked mutex was unlocked.\n" +
 		"The occurrence of this lead to a panic.",
-	helper.ALeak: "During the execution, a blocking bug was detected.\n" +
+	helper.ABlocking: "During the execution, a blocking bug was detected.\n" +
 		"This means, there is a routine that is blocked, and there is not possibility of it being unblocked in the future",
 	helper.ADeadlock: "During the execution, a deadlock was detected.\n" +
 		"This means, there is are routine that are cyclicaly blocked, and there is not possibility of it being unblocked in the future",

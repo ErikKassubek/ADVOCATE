@@ -191,7 +191,6 @@ func (self *Data) isConcObj(call *ast.CallExpr, on s_base.ObjName) bool {
 	// Find the package containing this node.
 	pkg := self.npm[call]
 	if pkg == nil {
-		println("Not Sel")
 		return false
 	}
 

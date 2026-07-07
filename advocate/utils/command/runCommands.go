@@ -11,7 +11,6 @@
 package command
 
 import (
-	"advocate/utils/comm"
 	"advocate/utils/control"
 	"advocate/utils/flags"
 	"advocate/utils/log"
@@ -25,9 +24,9 @@ import (
 
 const (
 	NoTimeout = -1
-	OpenCom   = true
-	NoCom     = false
 )
+
+var count = 0
 
 // RunCommand runs a command line (shell) commands
 //
@@ -35,13 +34,12 @@ const (
 //   - osOut *os.File: file/output to write to not being what os.Stdout points to
 //   - osErr *os.File: file/output to write to not being what os.Stdout points to
 //   - timeout int: timeout in seconds, -1 for no timeout
-//   - openCom bool: open communication to runtime, TODO: not working yet
 //   - name string: main command
 //   - args ...string: command line parameters
 //
 // Returns:
 //   - error
-func RunCommand(osOut, osErr *os.File, timeout int, openCom bool, name string, args ...string) error {
+func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string) error {
 	var ctx context.Context
 	var cancel context.CancelFunc
 	if timeout > 0 {
@@ -68,24 +66,9 @@ func RunCommand(osOut, osErr *os.File, timeout int, openCom bool, name string, a
 		cmd.Stderr = osErr
 	}
 
-	if err := cmd.Start(); err != nil {
-		return err
-	}
+	count++
 
-	var c comm.Communication
-	if openCom {
-		go func() {
-			c := comm.Open(comm.StaticBlock)
-			c.Run()
-		}()
-	}
-
-	// wait goroutine + cleanup
-	err := cmd.Wait()
-
-	c.Close()
-
-	return err
+	return cmd.Run()
 }
 
 func RunGoModTidy() {
@@ -95,7 +78,7 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, NoTimeout, false, "go", "mod", "tidy")
+	RunCommand(nil, nil, NoTimeout, "go", "mod", "tidy")
 }
 
 // func runCommandWithOutput(name, outputFile string, args ...string) (string, error) {

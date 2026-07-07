@@ -17,6 +17,8 @@ import (
 	"go/ast"
 )
 
+// TODO: remove since no longer needed
+
 // FuncFromFunc determines if the target function is reachable from the start function
 // It is implemented as a BFS
 //
@@ -32,7 +34,6 @@ import (
 //   - error
 func (self *Data) FuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
 	if start == nil || target == nil {
-		fmt.Println()
 		return false, "", fmt.Errorf("Start or target is nil")
 	}
 
@@ -159,7 +160,6 @@ func (self *Data) FuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool
 // 	return res, fmt.Sprintf("Go -> %s", path), nil
 // }
 
-// TODO: implement
 func (self *Data) OpFromFunc(start *ast.FuncDecl, targetOp Operation, calcPath bool) (bool, string, error) {
 	if start == nil {
 		fmt.Println()

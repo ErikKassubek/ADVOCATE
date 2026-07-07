@@ -64,7 +64,6 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 			defer file.Close()
 
 			// write trace
-			// println("Write trace to " + fileName + "...")
 			trace := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre

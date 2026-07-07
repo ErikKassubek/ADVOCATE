@@ -137,8 +137,6 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 		t.CurrentLockset.Add(lockID)
 		t.LockDepth++
 		t.WriteDepth++
-		//log.Debug(fmt.Sprintf("MD phase1: T%d acq(write lock=%d) depth=%d writeDepth=%d",
-		//	tid, element.GetObjId(), t.LockDepth, t.WriteDepth))
 
 	// --------- READ LOCK (RWMutex RLock) ---------
 	case trace.MutexRLock, trace.MutexTryRLock:
@@ -153,8 +151,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 			t.LockDepth++
 		}
 		t.ReadDepth++
-		//log.Debug(fmt.Sprintf("MD phase1: T%d acq(read lock=%d) readDepth=%d lockDepth=%d count=%d",
-		//	tid, element.GetObjId(), t.ReadDepth, t.LockDepth, t.ReadLockCount[lockID]))
+
 
 	// --------- WRITE UNLOCK ---------
 	case trace.MutexUnlock:
@@ -167,16 +164,12 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 			}
 			t.LockDepth--
 			t.WriteDepth--
-			//log.Debug(fmt.Sprintf("MD phase1: T%d rel(write lock=%d) depth=%d writeDepth=%d",
-			//	tid, element.GetObjId(), t.LockDepth, t.WriteDepth))
 		}
 		t.CurrentLockset.Remove(lockID)
 
 	// --------- READ UNLOCK (RWMutex RUnlock) ---------
 	case trace.MutexRUnlock:
 		if _, ok := t.ReadLockCount[lockID]; !ok {
-			//log.Debug(fmt.Sprintf("MD phase1: T%d rel(read lock=%d) - no counter, ignoring",
-			//	tid, element.GetObjId()))
 			break
 		}
 
@@ -196,8 +189,6 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 			t.CurrentLockset.Remove(lockID)
 			delete(t.ReadLockCount, lockID)
 		}
-		//log.Debug(fmt.Sprintf("MD phase1: T%d rel(read lock=%d) readDepth=%d lockDepth=%d count=%d",
-		//	tid, element.GetObjId(), t.ReadDepth, t.LockDepth, t.ReadLockCount[lockID]))
 
 	default:
 		log.Error(fmt.Sprintf("MD phase1: unknown mutex operation: %s", element.ToString()))
@@ -280,9 +271,6 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		WriteDepth: t.WriteDepth,
 	}
 	currentMDState.AllCDs = append(currentMDState.AllCDs, cd)
-
-	//log.Debug(fmt.Sprintf("MD phase1: T%d chan(%s) depth=%d readDepth=%d writeDepth=%d assocRDs=%d",
-	//	tid, opType, t.LockDepth, t.ReadDepth, t.WriteDepth, len(assocRDs)))
 }
 
 // ---------------------------------------------------------------------------
@@ -294,8 +282,6 @@ func CheckForMixedDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	//log.Debug(fmt.Sprintf("MD phase2: start partner matching, AllCDs=%d",
-	//	len(currentMDState.AllCDs)))
 
 	cdByChan := make(map[int][]*mdCDNode, len(currentMDState.AllCDs))
 	for _, cd := range currentMDState.AllCDs {
@@ -387,29 +373,20 @@ func mdCheckAndReport(cdA, cdB *mdCDNode, reported map[[2]*trace.ElementChannel]
 			}
 
 			if !refA.IsCS && !refB.IsCS {
-				//log.Debug(fmt.Sprintf("MD phase2: T%d/T%d ch=%d — both PCS, skip",
-				//cdA.Thread, cdB.Thread, cdA.ChanID))
 				continue
 			}
 
 			if refA.IsCS && refB.IsCS && !cdA.Buffered {
 				if cdA.OpType != trace.ChannelClose && cdB.OpType != trace.ChannelClose {
-					//log.Debug("MD phase2: both CS on unbuffered send/recv - skip")
 					continue
 				}
 			}
 
 			if !mdLockAcqAreConcurrent(refA.RD, refB.RD) {
-				//log.Debug(fmt.Sprintf("MD phase2: T%d/T%d ch=%d — lock acquires not concurrent",
-				//	cdA.Thread, cdB.Thread, cdA.ChanID))
 				continue
 			}
 
 			holderCD, holderRef, waiterCD, waiterRef := mdDetermineRoles(cdA, refA, cdB, refB)
-
-			//log.Debug(fmt.Sprintf("MD phase2: FOUND MD | ch=%d | holder=T%d(CS=%v depth=%d readDepth=%d) waiter=T%d(CS=%v depth=%d readDepth=%d)",
-			//	cdA.ChanID, holderCD.Thread, holderRef.IsCS, holderCD.Depth, holderCD.ReadDepth,
-			//	waiterCD.Thread, waiterRef.IsCS, waiterCD.Depth, waiterCD.ReadDepth))
 
 			mdReportCandidate(holderCD, holderRef, waiterCD, waiterRef)
 			reported[key] = true
@@ -583,9 +560,6 @@ func mdReportCandidate(
 		waiterChanRes,
 		waiterLockRes,
 	}
-
-	//log.Debug(fmt.Sprintf("MD report: PMixedDeadlock holder=T%d(ch=%d) waiter=T%d(ch=%d) lock=%d",
-	//	holderCD.Thread, holderCD.ChanID, waiterCD.Thread, waiterCD.ChanID, holderRef.LockID.ID))
 
 	results.Result(
 		results.CRITICAL,

@@ -99,14 +99,14 @@ func Run() error {
 		err = modeToolchain(modeMainTest, true, true, true)
 	case "fuzzing":
 		err = modeFuzzing()
-	case "record", "recording":
+	case "record", "recording", "trace":
 		flags.DeleteTraces = false
 		err = modeToolchain(modeMainTest, true, false, false)
 	case "replay":
 		err = modeToolchain(modeMainTest, false, false, true)
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
-		log.Error("Select one mode from  'analysmodesis', 'fuzzing' or 'record'")
+		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay' or 'record'")
 		err = fmt.Errorf("Unknown mode %s", os.Args[1])
 		helper.PrintHelp()
 	}

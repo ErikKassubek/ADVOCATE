@@ -74,6 +74,7 @@ func AdvocatRoutineExit() {
 		tPost: timer,
 	}
 	insertIntoTrace(elem)
+	currentGoRoutineInfo().hasReturned = true
 }
 
 // Get a string representation of a trace spawn

@@ -62,7 +62,7 @@ func (m *Mutex) Lock() {
 		}
 		if replayElem.Blocked {
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
 			runtime.BlockForever()
 		}
 	}
@@ -86,7 +86,7 @@ func (m *Mutex) Lock() {
 	// ADVOCATE-END
 
 	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false, runtime.OperationMutexLock)
+	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false, runtime.OperationMutexLock, m.id)
 	// ADVOCATE-END
 
 	m.mu.Lock()
@@ -112,7 +112,7 @@ func (m *Mutex) TryLock() bool {
 				m.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
 			runtime.BlockForever()
 		}
 	}
@@ -157,7 +157,7 @@ func (m *Mutex) Unlock() {
 				m.id = runtime.GetAdvocateObjectID()
 			}
 			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever)
+			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
 			runtime.BlockForever()
 		}
 	}

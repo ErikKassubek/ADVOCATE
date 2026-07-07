@@ -19,6 +19,12 @@ var AdvocateRoutinesLock = mutex{}
 
 var projectPath string
 
+type park struct {
+	addr unsafe.Pointer
+	id   uint64
+	op   Operation
+}
+
 // var atomicRecordingDisabled = false
 
 // AdvocateRoutine is a struct to store the trace of a routine
@@ -27,6 +33,7 @@ var projectPath string
 //   - maxObjectId uint64: the maximum id of elements in the trace
 //   - G *g: the g struct of the routine
 //   - Trace []traceElem: the trace of the routine
+//   - oat []uint64: object aware trace elements, ids of blocked object the routine can access
 //   - replayID int: when used in reply, id of the new routine in the replayed trace
 //   - forkFile string: file where the routine was created in, "main" for main routine
 //   - forkLine int: line where ther routine was created in, 0 for main routine
@@ -34,18 +41,20 @@ var projectPath string
 //   - parkPos string: position of last park in form file:line
 //   - parkForeverReplay bool: if true, routine parks forever based on replay
 //   - wokenByTimeout bool: in replay block was woken up by timeout
+//   - hasReturned bool: true if the routine has terminated
 type AdvocateRoutine struct {
 	id                   uint64
 	maxObjectId          uint64
 	G                    *g
 	Trace                []traceElem
+	oat                  []uint64
 	replayID             int
 	forkFile             string
 	forkLine             int32
-	parkOn               []unsafe.Pointer
+	parkObj              []park
 	parkPos              string
-	parkOp               []Operation
 	parkForeverReplay    bool
+	hasReturned          bool
 	wokenButTimeout      bool
 	startedWritingToFile bool
 }
@@ -70,8 +79,8 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 			forkFile:    file,
 			forkLine:    line,
 			replayID:    replayRoutine,
-			parkOp:      make([]Operation, 0),
-			parkOn:      make([]unsafe.Pointer, 0),
+
+			parkObj: make([]park, 0),
 		}
 	}
 
@@ -81,7 +90,7 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
-		parkOn:      make([]unsafe.Pointer, 0),
+		parkObj:     make([]park, 0),
 		forkFile:    file,
 		forkLine:    line,
 	}

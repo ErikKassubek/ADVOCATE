@@ -142,6 +142,9 @@ func CurrentTraceToString() string {
 // Returns:
 //   - index of the element in the trace
 func insertIntoTrace(elem traceElem) int {
+	if currentGoRoutineInfo().hasReturned {
+		return -1
+	}
 	return currentGoRoutineInfo().addToTrace(elem)
 }
 
@@ -179,6 +182,18 @@ func TraceToChanByID(id uint64) chan string {
 					c <- res
 					res = ""
 				}
+			}
+
+			if !routine.hasReturned && len(routine.oat) != 0 {
+				oatElems := "\nOAT:"
+				for i, obj := range routine.oat {
+					if i != 0 {
+						oatElems += ","
+					}
+					oatElems += uint64ToString(obj)
+				}
+
+				res += oatElems + "\n"
 			}
 
 			if res != "" {

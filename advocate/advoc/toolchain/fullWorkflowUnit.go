@@ -169,10 +169,6 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
-			if isErrorCancel(err) {
-				return 0, 0, err
-			}
-
 			timer.UpdateTimeFileDetail(testFunc, nrReplay)
 
 			if !isFuzzing {
@@ -471,9 +467,6 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 		err = unitTestRecord(pkg, file,
 			testName, fuzzing, fuzzingTrace, paths.NameOutput, origStdout, origStderr)
 		if err != nil {
-			if isErrorCancel(err) {
-				return 0, false, err
-			}
 			log.Error("Recording failed: ", err.Error())
 		}
 	}
@@ -575,9 +568,6 @@ func unitTestRecord(pkg, file, testName string,
 	pkgPath := paths.MakePathLocal(pkg)
 	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", buildFlags, "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
-		if isErrorCancel(err) { // canceled
-			return err
-		}
 		if isFuzzing {
 			if checkForTimeout(output) {
 				log.Timeout("Recording timed out")

@@ -115,9 +115,6 @@ func runWorkflowMain(
 				headerRemoverMain(paths.Prog)
 			}
 			timer.Stop(timer.Run)
-			if isErrorCancel(err) {
-				return 0, 0, err
-			}
 		}
 
 		// Add header
@@ -204,11 +201,6 @@ func runWorkflowMain(
 
 			fmt.Printf("Remove replay header from %s\n", paths.Prog)
 			if err := headerRemoverMain(paths.Prog); err != nil {
-				timer.Stop(timer.Replay)
-				return 0, 0, err
-			}
-
-			if isErrorCancel(err) {
 				timer.Stop(timer.Replay)
 				return 0, 0, err
 			}

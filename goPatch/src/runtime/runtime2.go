@@ -434,7 +434,7 @@ type g struct {
 	goid         uint64
 	schedlink    guintptr
 	waitsince    int64      // approx time when the g become blocked
-	waitreason   waitReason // if status==Gwaiting
+	waitreason   WaitReason // if status==Gwaiting
 
 	preempt       bool // preemption signal, duplicates stackguard0 = stackpreempt
 	preemptStop   bool // transition to _Gpreempted on preemption; otherwise, just deschedule
@@ -1059,37 +1059,37 @@ type ancestorInfo struct {
 	gopc uintptr   // pc of go statement that created this goroutine
 }
 
-// A waitReason explains why a goroutine has been stopped.
+// A WaitReason explains why a goroutine has been stopped.
 // See gopark. Do not re-use waitReasons, add new ones.
-type waitReason uint8
+type WaitReason uint8
 
 const (
-	waitReasonZero                  waitReason = iota // ""
+	waitReasonZero                  WaitReason = iota // ""
 	waitReasonGCAssistMarking                         // "GC assist marking"
 	waitReasonIOWait                                  // "IO wait"
-	waitReasonChanReceiveNilChan                      // "chan receive (nil chan)"
-	waitReasonChanSendNilChan                         // "chan send (nil chan)"
+	WaitReasonChanReceiveNilChan                      // "chan receive (nil chan)"
+	WaitReasonChanSendNilChan                         // "chan send (nil chan)"
 	waitReasonDumpingHeap                             // "dumping heap"
 	waitReasonGarbageCollection                       // "garbage collection"
 	waitReasonGarbageCollectionScan                   // "garbage collection scan"
 	waitReasonPanicWait                               // "panicwait"
-	waitReasonSelect                                  // "select"
-	waitReasonSelectNoCases                           // "select (no cases)"
+	WaitReasonSelect                                  // "select"
+	WaitReasonSelectNoCases                           // "select (no cases)"
 	waitReasonGCAssistWait                            // "GC assist wait"
 	waitReasonGCSweepWait                             // "GC sweep wait"
 	waitReasonGCScavengeWait                          // "GC scavenge wait"
-	waitReasonChanReceive                             // "chan receive"
-	waitReasonChanSend                                // "chan send"
+	WaitReasonChanReceive                             // "chan receive"
+	WaitReasonChanSend                                // "chan send"
 	waitReasonFinalizerWait                           // "finalizer wait"
 	waitReasonForceGCIdle                             // "force gc (idle)"
 	waitReasonUpdateGOMAXPROCSIdle                    // "GOMAXPROCS updater (idle)"
 	waitReasonSemacquire                              // "semacquire"
 	waitReasonSleep                                   // "sleep"
-	waitReasonSyncCondWait                            // "sync.Cond.Wait"
-	waitReasonSyncMutexLock                           // "sync.Mutex.Lock"
-	waitReasonSyncRWMutexRLock                        // "sync.RWMutex.RLock"
-	waitReasonSyncRWMutexLock                         // "sync.RWMutex.Lock"
-	waitReasonSyncWaitGroupWait                       // "sync.WaitGroup.Wait"
+	WaitReasonSyncCondWait                            // "sync.Cond.Wait"
+	WaitReasonSyncMutexLock                           // "sync.Mutex.Lock"
+	WaitReasonSyncRWMutexRLock                        // "sync.RWMutex.RLock"
+	WaitReasonSyncRWMutexLock                         // "sync.RWMutex.Lock"
+	WaitReasonSyncWaitGroupWait                       // "sync.WaitGroup.Wait"
 	waitReasonTraceReaderBlocked                      // "trace reader (blocked)"
 	waitReasonWaitForGCCycle                          // "wait for GC cycle"
 	waitReasonGCWorkerIdle                            // "GC worker (idle)"
@@ -1117,29 +1117,29 @@ var waitReasonStrings = [...]string{
 	waitReasonZero:                  "",
 	waitReasonGCAssistMarking:       "GC assist marking",
 	waitReasonIOWait:                "IO wait",
-	waitReasonChanReceiveNilChan:    "chan receive (nil chan)",
-	waitReasonChanSendNilChan:       "chan send (nil chan)",
+	WaitReasonChanReceiveNilChan:    "chan receive (nil chan)",
+	WaitReasonChanSendNilChan:       "chan send (nil chan)",
 	waitReasonDumpingHeap:           "dumping heap",
 	waitReasonGarbageCollection:     "garbage collection",
 	waitReasonGarbageCollectionScan: "garbage collection scan",
 	waitReasonPanicWait:             "panicwait",
-	waitReasonSelect:                "select",
-	waitReasonSelectNoCases:         "select (no cases)",
+	WaitReasonSelect:                "select",
+	WaitReasonSelectNoCases:         "select (no cases)",
 	waitReasonGCAssistWait:          "GC assist wait",
 	waitReasonGCSweepWait:           "GC sweep wait",
 	waitReasonGCScavengeWait:        "GC scavenge wait",
-	waitReasonChanReceive:           "chan receive",
-	waitReasonChanSend:              "chan send",
+	WaitReasonChanReceive:           "chan receive",
+	WaitReasonChanSend:              "chan send",
 	waitReasonFinalizerWait:         "finalizer wait",
 	waitReasonForceGCIdle:           "force gc (idle)",
 	waitReasonUpdateGOMAXPROCSIdle:  "GOMAXPROCS updater (idle)",
 	waitReasonSemacquire:            "semacquire",
 	waitReasonSleep:                 "sleep",
-	waitReasonSyncCondWait:          "sync.Cond.Wait",
-	waitReasonSyncMutexLock:         "sync.Mutex.Lock",
-	waitReasonSyncRWMutexRLock:      "sync.RWMutex.RLock",
-	waitReasonSyncRWMutexLock:       "sync.RWMutex.Lock",
-	waitReasonSyncWaitGroupWait:     "sync.WaitGroup.Wait",
+	WaitReasonSyncCondWait:          "sync.Cond.Wait",
+	WaitReasonSyncMutexLock:         "sync.Mutex.Lock",
+	WaitReasonSyncRWMutexRLock:      "sync.RWMutex.RLock",
+	WaitReasonSyncRWMutexLock:       "sync.RWMutex.Lock",
+	WaitReasonSyncWaitGroupWait:     "sync.WaitGroup.Wait",
 	waitReasonTraceReaderBlocked:    "trace reader (blocked)",
 	waitReasonWaitForGCCycle:        "wait for GC cycle",
 	waitReasonGCWorkerIdle:          "GC worker (idle)",
@@ -1163,20 +1163,20 @@ var waitReasonStrings = [...]string{
 	waitReasonCleanupWait:           "cleanup wait",
 }
 
-func (w waitReason) String() string {
-	if w < 0 || w >= waitReason(len(waitReasonStrings)) {
+func (w WaitReason) String() string {
+	if w < 0 || w >= WaitReason(len(waitReasonStrings)) {
 		return "unknown wait reason"
 	}
 	return waitReasonStrings[w]
 }
 
-func (w waitReason) isMutexWait() bool {
-	return w == waitReasonSyncMutexLock ||
-		w == waitReasonSyncRWMutexRLock ||
-		w == waitReasonSyncRWMutexLock
+func (w WaitReason) isMutexWait() bool {
+	return w == WaitReasonSyncMutexLock ||
+		w == WaitReasonSyncRWMutexRLock ||
+		w == WaitReasonSyncRWMutexLock
 }
 
-func (w waitReason) isWaitingForSuspendG() bool {
+func (w WaitReason) isWaitingForSuspendG() bool {
 	return isWaitingForSuspendG[w]
 }
 
@@ -1199,17 +1199,17 @@ var isWaitingForSuspendG = [len(waitReasonStrings)]bool{
 	waitReasonFlushProcCaches:       true,
 }
 
-func (w waitReason) isIdleInSynctest() bool {
+func (w WaitReason) isIdleInSynctest() bool {
 	return isIdleInSynctest[w]
 }
 
 // isIdleInSynctest indicates that a goroutine is considered idle by synctest.Wait.
 var isIdleInSynctest = [len(waitReasonStrings)]bool{
-	waitReasonChanReceiveNilChan:    true,
-	waitReasonChanSendNilChan:       true,
-	waitReasonSelectNoCases:         true,
+	WaitReasonChanReceiveNilChan:    true,
+	WaitReasonChanSendNilChan:       true,
+	WaitReasonSelectNoCases:         true,
 	waitReasonSleep:                 true,
-	waitReasonSyncCondWait:          true,
+	WaitReasonSyncCondWait:          true,
 	waitReasonSynctestWaitGroupWait: true,
 	waitReasonCoroutine:             true,
 	waitReasonSynctestRun:           true,

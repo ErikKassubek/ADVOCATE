@@ -1,0 +1,36 @@
+// Copyright (c) 2024 Erik Kassubek
+//
+// File: /advocate/trace/objectAware.go
+// Brief: Object awareness for blocking bug detection
+//
+// Author: Erik Kassubek
+// Created: 2026-07-06
+//
+// License: BSD-3-Clause
+
+package trace
+
+import (
+	"strconv"
+	"strings"
+)
+
+func (this *Trace) AddTraceObjectAware(routine int, objects string) error {
+	obj := strings.Split(objects, "-")
+	if len(obj) == 0 {
+		return nil
+	}
+
+	this.objectAware[routine] = make([]int, 0)
+
+	for _, o := range obj {
+		n, err := strconv.Atoi(o)
+		if err != nil {
+			return err
+		}
+
+		this.objectAware[routine] = append(this.objectAware[routine], n)
+	}
+
+	return nil
+}

@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 )
 
@@ -53,8 +53,8 @@ type ElementMutex struct {
 	suc                      bool
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
@@ -163,19 +163,19 @@ func (this *ElementMutex) GetRoutine() int {
 	return this.routine
 }
 
-// GetTReq returns the tPre of the element.
+// GetTPre returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementMutex) GetTReq() int {
+func (this *ElementMutex) GetTPre() int {
 	return this.tPre
 }
 
-// GetTCom returns the tPost of the element.
+// GetTPost returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementMutex) GetTCom() int {
+func (this *ElementMutex) GetTPost() int {
 	return this.tPost
 }
 
@@ -247,7 +247,7 @@ func (this *ElementMutex) IsLock() bool {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementMutex) SetVc(vc *clock.VectorClock) {
+func (this *ElementMutex) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -255,7 +255,7 @@ func (this *ElementMutex) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementMutex) SetWVc(vc *clock.VectorClock) {
+func (this *ElementMutex) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -263,7 +263,7 @@ func (this *ElementMutex) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementMutex) GetVC() *clock.VectorClock {
+func (this *ElementMutex) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -271,7 +271,7 @@ func (this *ElementMutex) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementMutex) GetWVC() *clock.VectorClock {
+func (this *ElementMutex) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

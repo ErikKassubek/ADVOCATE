@@ -12,52 +12,56 @@
 
 package runtime
 
-type Operation int // enum for operation
+type Operation string // enum for operation
 
 const (
-	OperationNone Operation = iota
-	OperationSpawn
-	OperationSpawned
-	OperationRoutineExit
+	OperationNone        Operation = "none"
+	OperationSpawn       Operation = "routineSpawn"
+	OperationSpawned     Operation = "routineSpawned"
+	OperationRoutineExit Operation = "routineExit"
 
-	OperationChannelSend
-	OperationChannelRecv
-	OperationChannelClose
+	OperationChannelSend  Operation = "chanSend"
+	OperationChannelRecv  Operation = "chanRecv"
+	OperationChannelClose Operation = "chanClose"
 
-	OperationMutexLock
-	OperationMutexUnlock
-	OperationMutexTryLock
-	OperationRWMutexLock
-	OperationRWMutexUnlock
-	OperationRWMutexTryLock
-	OperationRWMutexRLock
-	OperationRWMutexRUnlock
-	OperationRWMutexTryRLock
+	OperationMutexLock       Operation = "mutexLock"
+	OperationMutexUnlock     Operation = "mutexUnlock"
+	OperationMutexTryLock    Operation = "mutexTrylock"
+	OperationRWMutexLock     Operation = "rwmutexLock"
+	OperationRWMutexUnlock   Operation = "rwmutexUnlock"
+	OperationRWMutexTryLock  Operation = "rwmutexTrylock"
+	OperationRWMutexRLock    Operation = "rwmutexRlock"
+	OperationRWMutexRUnlock  Operation = "rwmutexrunlock"
+	OperationRWMutexTryRLock Operation = "rwmutexTryrlock"
 
-	OperationOnceDo
+	OperationOnceDo Operation = "onceDo"
 
-	OperationWaitgroupAddDone
-	OperationWaitgroupWait
+	OperationWaitgroupAddDone Operation = "wgAdddone"
+	OperationWaitgroupWait    Operation = "wgWait"
 
-	OperationSelect
-	OperationSelectCase
-	OperationSelectDefault
+	OperationSelect        Operation = "wgSelect"
+	OperationSelectCase    Operation = "wgSelectcase"
+	OperationSelectDefault Operation = "wgSelectdefault"
 
-	OperationCondSignal
-	OperationCondBroadcast
-	OperationCondWait
+	OperationCondSignal    Operation = "condSignal"
+	OperationCondBroadcast Operation = "condBroadcast"
+	OperationCondWait      Operation = "condWait"
 
-	OperationAtomicLoad
-	OperationAtomicStore
-	OperationAtomicAdd
-	OperationAtomicSwap
-	OperationAtomicCompareAndSwap
-	OperationAtomicAnd
-	OperationAtomicOr
+	OperationAtomicLoad           Operation = "atomicLoad"
+	OperationAtomicStore          Operation = "atoicStore"
+	OperationAtomicAdd            Operation = "atomicAdd"
+	OperationAtomicSwap           Operation = "atomicSwap"
+	OperationAtomicCompareAndSwap Operation = "atomicCompareandswap"
+	OperationAtomicAnd            Operation = "atomicAnd"
+	OperationAtomicOr             Operation = "atomicOr"
 
-	OperationNewChan
+	OperationNewChan Operation = "newChan"
 
-	OperationReplayEnd
+	OperationFunctionCall   Operation = "funcCall"
+	OperationFunctionReturn Operation = "funcReturn"
+
+	OperationReplayNever Operation = "replayNever"
+	OperationReplayEnd   Operation = "replayEnd"
 )
 
 const posSep = "#"
@@ -138,6 +142,9 @@ func CurrentTraceToString() string {
 // Returns:
 //   - index of the element in the trace
 func insertIntoTrace(elem traceElem) int {
+	if currentGoRoutineInfo().hasReturned {
+		return -1
+	}
 	return currentGoRoutineInfo().addToTrace(elem)
 }
 
@@ -160,21 +167,29 @@ func TraceToChanByID(id uint64) chan string {
 	c := make(chan string, 20)
 	if routine, ok := AdvocateRoutines[id]; ok {
 		unlock(&AdvocateRoutinesLock)
-
 		go func() {
 			res := ""
 			blockSize := 1000
 			// if atomic recording is disabled
 			for i, elem := range routine.Trace {
-				if i != 0 {
-					res += "\n"
-				}
-				res += elem.toString()
+				res += elem.toString() + "\n"
 
 				if i%blockSize == 0 {
 					c <- res
 					res = ""
 				}
+			}
+
+			if !routine.hasReturned && len(routine.oat) != 0 {
+				oatElems := "OAT,"
+				for i, obj := range routine.oat {
+					if i != 0 {
+						oatElems += "-"
+					}
+					oatElems += uint64ToString(obj)
+				}
+
+				res += oatElems + "\n"
 			}
 
 			if res != "" {
@@ -320,7 +335,7 @@ func AdvocateWriteTraceToFile() {
 		return
 	}
 
-	if AdvocateIgnore(g.createdAtFile) {
+	if AdvocateIgnore(g.forkFile) {
 		return
 	}
 

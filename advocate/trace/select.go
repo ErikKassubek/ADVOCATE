@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"errors"
 	"fmt"
@@ -58,8 +58,8 @@ type ElementSelect struct {
 	chosenDefault            bool
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	casesWithPosPartner      []int
 	numberConcurrent         int
 	numberConcurrentWeak     int
@@ -235,19 +235,19 @@ func (this *ElementSelect) GetRoutine() int {
 	return this.routine
 }
 
-// GetTReq returns the timestamp at the start of the event
+// GetTPre returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the start of the event
-func (this *ElementSelect) GetTReq() int {
+func (this *ElementSelect) GetTPre() int {
 	return this.tPre
 }
 
-// GetTCom returns the timestamp at the start of the event
+// GetTPost returns the timestamp at the start of the event
 //
 // Returns:
 //   - int: The timestamp at the end of the event
-func (this *ElementSelect) GetTCom() int {
+func (this *ElementSelect) GetTPost() int {
 	return this.tPost
 }
 
@@ -311,7 +311,7 @@ func (this *ElementSelect) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetVc(vc *clock.VectorClock) {
+func (this *ElementSelect) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -319,7 +319,7 @@ func (this *ElementSelect) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetWVc(vc *clock.VectorClock) {
+func (this *ElementSelect) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -327,7 +327,7 @@ func (this *ElementSelect) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetVC() *clock.VectorClock {
+func (this *ElementSelect) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -335,7 +335,7 @@ func (this *ElementSelect) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetWVC() *clock.VectorClock {
+func (this *ElementSelect) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 
@@ -601,7 +601,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 		return nil
 	}
 
-	this.cases[index].SetTPost(this.GetTCom())
+	this.cases[index].SetTPost(this.GetTPost())
 	this.chosenIndex = index
 	this.chosenDefault = false
 	return nil
@@ -632,7 +632,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	found := false
 	for i, c := range this.cases {
 		if c.objId == chanID && c.op == op {
-			tPost := this.GetTCom()
+			tPost := this.GetTPost()
 			if !this.chosenDefault {
 				this.cases[this.chosenIndex].SetTPost(0)
 			} else {

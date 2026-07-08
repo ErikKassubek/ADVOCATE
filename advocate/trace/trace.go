@@ -11,8 +11,8 @@
 package trace
 
 import (
-	"advocate/analysis/hb"
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/a_hb"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/control"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -32,6 +32,8 @@ import (
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
+//   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
+//   - blocked map[int][]int: routines which are blocked and the objects that block it
 //   - request bool: if true, requests and commits are separate elements, otherwise they are the same
 //   - detCommonPrefix bool: if true, the common prefix of paths is determined
 //   - commonPos string: the current common path prefix
@@ -41,6 +43,8 @@ type Trace struct {
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
+	objectAware           map[int][]int
+	blocked               map[int]Element
 	request               bool
 
 	shortInfo        bool
@@ -60,6 +64,8 @@ func NewTrace() Trace {
 		hbWasCalc:             false,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
+		objectAware:           make(map[int][]int),
+		blocked:               make(map[int]Element),
 		objIDMap:              make(map[int]int),
 		createdRoutines:       map[int]*ElementFork{1: nil},
 	}
@@ -70,6 +76,9 @@ func (this *Trace) Clear() {
 	this.traces = make(map[int][]Element)
 	this.hbWasCalc = false
 	this.minTraceID = 0
+	this.channelWithoutPartner = make(map[int]map[int]*ElementChannel)
+	this.objectAware = make(map[int][]int)
+	this.blocked = make(map[int]Element)
 }
 
 // Shorten trace paths and object ids
@@ -262,9 +271,23 @@ func (this *Trace) GetTraceSize() (int, int) {
 //   - id int: The id of the routine
 //
 // Returns:
-//   - []traceElement: The trace of the routine
+//   - []Element: The trace of the routine
 func (this *Trace) GetRoutineTrace(id int) []Element {
 	return this.traces[id]
+}
+
+// GetRoutineTrace returns the trace of the given routine
+//
+// Parameter:
+//   - id int: The id of the routine
+//
+// Returns:
+//   - Element: The last element of the routine or nil if empty
+func (this *Trace) GetLastElemInRout(id int) Element {
+	if len(this.traces[id]) == 0 {
+		return nil
+	}
+	return this.traces[id][len(this.traces[id])-1]
 }
 
 // GetNumberElements returns the total number of elements in the trace
@@ -299,6 +322,31 @@ func (this *Trace) GetTraceElementFromTID(tID string) (Element, error) {
 	return nil, errors.New("Element " + tID + " does not exist")
 }
 
+func (this *Trace) GetBlocked() map[int]Element {
+	return this.blocked
+}
+
+func (this *Trace) GetObjAware() map[int][]int {
+	return this.objectAware
+}
+
+func (this *Trace) GetNotReturned(onlyNonBlocked bool) []int {
+	res := make([]int, 0)
+
+	for rout, elems := range this.traces {
+		if len(elems) == 0 {
+			res = append(res, rout)
+			continue
+		}
+		last := elems[len(elems)-1]
+		if last.GetType(false) != End && (!onlyNonBlocked || last.GetTPost() != 0) {
+			res = append(res, rout)
+		}
+	}
+
+	return res
+}
+
 // GetTraceElementFromBugArg returns the element in the trace,
 // given the bug info from the machine readable result file.
 //
@@ -330,14 +378,14 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 	}
 
 	for index, elem := range this.traces[routine] {
-		if elem.GetTReq() == tPre {
+		if elem.GetTPre() == tPre {
 			return this.traces[routine][index], nil
 		}
 	}
 
 	for routine, trace := range this.traces {
 		for index, elem := range trace {
-			if elem.GetTReq() == tPre {
+			if elem.GetTPre() == tPre {
 				return this.traces[routine][index], nil
 			}
 		}
@@ -514,7 +562,7 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 			switch e := elem.(type) {
 			case *ElementWait:
 				if e.GetObjId() == wgID {
-					if e.GetTReq() < waitTime {
+					if e.GetTPre() < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {
 							nrAdd++
@@ -543,7 +591,7 @@ func (this *Trace) ShiftTrace(startTPre int, shift int) bool {
 
 	for routine, trace := range this.traces {
 		for index, elem := range trace {
-			if elem.GetTReq() >= startTPre {
+			if elem.GetTPre() >= startTPre {
 				this.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 			}
 		}
@@ -568,19 +616,19 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
+			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetTReq() < minTime {
-					minTime = elem.GetTReq()
+				if minTime == -1 || elem.GetTPre() < minTime {
+					minTime = elem.GetTPre()
 				}
 			}
 		}
 	}
 
-	distance := element.GetTReq() - minTime + 1
+	distance := element.GetTPre() - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetTReq()
+		tSort := elem.GetTPre()
 		elem.SetT(tSort + distance)
 	}
 }
@@ -604,31 +652,31 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 				continue
 			}
 
-			if !(clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == hb.Before) {
-				if elem.GetTReq() <= start {
+			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
+				if elem.GetTPre() <= start {
 					continue
 				}
 
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetTReq() < minTime {
-					minTime = elem.GetTReq()
+				if minTime == -1 || elem.GetTPre() < minTime {
+					minTime = elem.GetTPre()
 				}
 			} else {
-				if maxNotMoved == 0 || elem.GetTReq() > maxNotMoved {
-					maxNotMoved = elem.GetTReq()
+				if maxNotMoved == 0 || elem.GetTPre() > maxNotMoved {
+					maxNotMoved = elem.GetTPre()
 				}
 			}
 		}
 	}
 
-	if element.GetTCom() == 0 {
+	if element.GetTPost() == 0 {
 		element.SetT(maxNotMoved + 1)
 	}
 
-	distance := element.GetTReq() - minTime + 1
+	distance := element.GetTPre() - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetTReq()
+		tSort := elem.GetTPre()
 		elem.SetT(tSort + distance)
 	}
 
@@ -662,7 +710,7 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Concurrent {
+			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Concurrent {
 				result = append(result, elem)
 			}
 		}
@@ -689,7 +737,7 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				continue
 			}
 
-			if clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != hb.Before {
+			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Before {
 				result = append(result, elem)
 			}
 		}
@@ -712,7 +760,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 				continue
 			}
 
-			if clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == a_hb.Concurrent {
 				concurrent[routine] = elem
 			}
 		}
@@ -729,7 +777,7 @@ func (this *Trace) RemoveLater(tPost int) {
 	for routine, trace := range this.traces {
 		newElems := make([]Element, 0)
 		for _, elem := range trace {
-			if elem.GetTCom() > tPost {
+			if elem.GetTPost() > tPost {
 				newElems = append(newElems, elem.Copy(mapping, true))
 			}
 		}
@@ -753,7 +801,7 @@ func (this *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 	}
 
 	for index, elem := range this.traces[routine] {
-		if elem.GetTReq() >= startTSort {
+		if elem.GetTPre() >= startTSort {
 			this.traces[routine][index].SetTWithoutNotExecuted(elem.GetTSort() + shift)
 		}
 	}
@@ -831,8 +879,8 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 		string
 		time   int
 		thread int
-		vc     *clock.VectorClock
-		wVc    *clock.VectorClock
+		vc     *a_clock.VectorClock
+		wVc    *a_clock.VectorClock
 	}, 0)
 	for _, tra := range this.traces {
 		for _, elem := range tra {
@@ -842,9 +890,9 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					string
 					time   int
 					thread int
-					vc     *clock.VectorClock
-					wVc    *clock.VectorClock
-				}{elemStr, elem.GetTCom(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
+					vc     *a_clock.VectorClock
+					wVc    *a_clock.VectorClock
+				}{elemStr, elem.GetTPost(), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
 			}
 		}
 	}
@@ -897,7 +945,7 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 
 			e := elem.(*ElementCond)
 
-			if clock.GetHappensBefore(element.GetVC(), e.GetVC()) == hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(), e.GetVC()) == a_hb.Concurrent {
 				e := elem.(*ElementCond)
 				switch e.op {
 				case CondSignal:
@@ -996,7 +1044,7 @@ func (this *Trace) AsRequestCommit() int {
 				newRout = append(newRout, newElem)
 				elemCounter++
 			}
-			if !elem.CanBeRequest() || elem.GetTCom() != 0 {
+			if !elem.CanBeRequest() || elem.GetTPost() != 0 {
 				newRout = append(newRout, elem)
 				elemCounter++
 			}

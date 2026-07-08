@@ -11,7 +11,7 @@
 package trace
 
 import (
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 	"errors"
 	"fmt"
@@ -46,8 +46,8 @@ type ElementCond struct {
 	op                       OperationType
 	file                     string
 	line                     int
-	vc                       *clock.VectorClock
-	wVc                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
@@ -131,19 +131,19 @@ func (this *ElementCond) GetRoutine() int {
 	return this.routine
 }
 
-// GetTReq returns the tPre of the element.
+// GetTPre returns the tPre of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementCond) GetTReq() int {
+func (this *ElementCond) GetTPre() int {
 	return this.tPre
 }
 
-// GetTCom returns the tPost of the element.
+// GetTPost returns the tPost of the element.
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementCond) GetTCom() int {
+func (this *ElementCond) GetTPost() int {
 	return this.tPost
 }
 
@@ -207,7 +207,7 @@ func (this *ElementCond) GetTID() string {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementCond) SetVc(vc *clock.VectorClock) {
+func (this *ElementCond) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -215,7 +215,7 @@ func (this *ElementCond) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementCond) SetWVc(vc *clock.VectorClock) {
+func (this *ElementCond) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -223,7 +223,7 @@ func (this *ElementCond) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementCond) GetVC() *clock.VectorClock {
+func (this *ElementCond) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -231,7 +231,7 @@ func (this *ElementCond) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementCond) GetWVC() *clock.VectorClock {
+func (this *ElementCond) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 

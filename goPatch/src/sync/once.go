@@ -34,7 +34,8 @@ type Once struct {
 	m    Mutex
 
 	// ADVOCATE-START
-	id uint64 // id of the once
+	id     uint64 // id of the once
+	memAdr uintptr
 	// ADVOCATE-END
 }
 
@@ -78,20 +79,16 @@ func (o *Once) Do(f func()) {
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
-			if o.id == 0 {
-				o.id = runtime.GetAdvocateObjectID()
-			}
+			o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
 			_ = runtime.AdvocateOncePre(o.id)
-			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true)
+			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true, runtime.OperationReplayNever, o.id)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(2)
 
-	if o.id == 0 {
-		o.id = runtime.GetAdvocateObjectID()
-	}
+	o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
 	index := runtime.AdvocateOncePre(o.id)
 	res := false
 	// ADVOCATE-END

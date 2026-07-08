@@ -280,7 +280,7 @@ func posFromCaller(skip int) string {
 //
 // Returns:
 //   - true if the list contains the element, false otherwise
-func isInSlice[T comparable](list []T, elem T) bool {
+func IsInSlice[T comparable](list []T, elem T) bool {
 	for _, e := range list {
 		if e == elem {
 			return true

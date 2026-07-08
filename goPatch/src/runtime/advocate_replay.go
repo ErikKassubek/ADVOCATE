@@ -30,10 +30,10 @@ const (
 )
 
 const (
-	releaseOldestWaitLastMax  int64 = 6
-	releaseWaitMaxWait              = 3
-	releaseWaitMaxNoWait            = 2
-	acknowledgementMaxWaitSec       = 1
+	releaseOldestWaitLastMax  int64   = 6
+	releaseWaitMaxWait        float64 = 3
+	releaseWaitMaxNoWait      float64 = 2
+	acknowledgementMaxWaitSec float64 = 1
 )
 
 var ExitCodeNames = map[int]string{
@@ -66,8 +66,6 @@ var (
 
 	releasedFork = 0
 )
-
-var detectBlockingGC func() int
 
 func SetReplayAtomic(repl bool) {
 	ignoreAtomicsReplay = !repl
@@ -197,10 +195,8 @@ var (
 )
 
 // Enable the replay by starting the replay manager
-func EnableReplay(detectBlockingGCFunc func() int) {
+func EnableReplay() {
 	numberElementsInTrace = len(replayData)
-
-	detectBlockingGC = detectBlockingGCFunc
 
 	if printDebug {
 		println("\nTRACE\n")

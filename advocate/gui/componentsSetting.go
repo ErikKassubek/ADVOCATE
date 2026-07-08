@@ -11,7 +11,7 @@
 package gui
 
 import (
-	"advocate/fuzzing/baseF"
+	"advocate/fuzzing/f_base"
 	"advocate/utils/flags"
 
 	"fyne.io/fyne/v2"
@@ -127,7 +127,7 @@ func createSettingComponents() *settingComponents {
 		output:                 createInputCheck("Show Program/Test Output: ", &flags.Output, direct),
 		alwaysPanic:            createInputCheck("Always Panic: ", &flags.AlwaysPanic, direct),
 		noMemorySup:            createInputCheck("Disable Memory Supervisor", &flags.NoMemorySupervisor, direct),
-		fuzzingMode:            createInputSelect("Fuzzing Mode: ", &flags.FuzzingMode, baseF.Modes, canNotBeDisabled),
+		fuzzingMode:            createInputSelect("Fuzzing Mode: ", &flags.FuzzingMode, f_base.Modes, canNotBeDisabled),
 		cancelTestIfBugFound:   createInputCheck("Cancel Fuzzing If Bug Found: ", &flags.CancelTestIfBugFound, direct),
 		scen: createInputTextFunc("Scenations (disabled = all): ", "",
 			func(e bool, s string) {

@@ -101,7 +101,7 @@ func selparkcommit(gp *g, _ unsafe.Pointer) bool {
 }
 
 func block() {
-	gopark(nil, nil, waitReasonSelectNoCases, traceBlockForever, 1) // forever
+	gopark(nil, nil, WaitReasonSelectNoCases, traceBlockForever, 1) // forever
 }
 
 // selectgo implements the select statement.
@@ -130,7 +130,7 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 	ai := -1
 
 	if block {
-		StoreParkSelect(cas0, order0, nsends+nrecvs, CallerSkipSelect)
+		StoreParkSelect(cas0, nsends, nsends+nrecvs, CallerSkipSelect)
 	}
 
 	if wait {
@@ -235,7 +235,7 @@ func selectWithPrefCase(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecv
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := waitReasonSelect
+	waitReason := WaitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
@@ -728,7 +728,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	pollorder = pollorder[:norder]
 	lockorder = lockorder[:norder]
 
-	waitReason := waitReasonSelect
+	waitReason := WaitReasonSelect
 	if gp.bubble != nil && allSynctest {
 		// Every channel selected on is in a synctest bubble,
 		// so this goroutine will count as idle while selecting.
@@ -739,7 +739,7 @@ func originalSelect(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs in
 	// simple heap sort, to guarantee n log n time and constant stack footprint.
 	for i := range lockorder {
 		j := i
-		// Start with the pollorder to permute cases on the same channel.
+		// Start with the pollorder to perint(casei)mute cases on the same channel.
 		c := scases[pollorder[i]].c
 		for j > 0 && scases[lockorder[(j-1)/2]].c.sortkey() < c.sortkey() {
 			k := (j - 1) / 2

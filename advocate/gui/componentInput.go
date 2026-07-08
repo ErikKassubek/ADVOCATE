@@ -11,7 +11,7 @@
 package gui
 
 import (
-	"advocate/fuzzing/baseF"
+	"advocate/fuzzing/f_base"
 	"advocate/utils/math"
 	"strings"
 	"unicode"
@@ -263,7 +263,7 @@ func createInputSelect(labelStr string, valToSet *string, values []string, canBe
 		*valToSet = s
 	})
 
-	entry.SetSelected(baseF.Modes[0])
+	entry.SetSelected(f_base.Modes[0])
 
 	var check *widget.Check
 	var middle fyne.CanvasObject

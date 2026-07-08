@@ -92,22 +92,22 @@ func sync_runtime_Semrelease(addr *uint32, handoff bool, skipframes int) {
 
 //go:linkname internal_sync_runtime_SemacquireMutex internal/sync.runtime_SemacquireMutex
 func internal_sync_runtime_SemacquireMutex(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncMutexLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncMutexLock)
 }
 
 //go:linkname sync_runtime_SemacquireRWMutexR sync.runtime_SemacquireRWMutexR
 func sync_runtime_SemacquireRWMutexR(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncRWMutexRLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncRWMutexRLock)
 }
 
 //go:linkname sync_runtime_SemacquireRWMutex sync.runtime_SemacquireRWMutex
 func sync_runtime_SemacquireRWMutex(addr *uint32, lifo bool, skipframes int) {
-	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, waitReasonSyncRWMutexLock)
+	semacquire1(addr, lifo, semaBlockProfile|semaMutexProfile, skipframes, WaitReasonSyncRWMutexLock)
 }
 
 //go:linkname sync_runtime_SemacquireWaitGroup sync.runtime_SemacquireWaitGroup
 func sync_runtime_SemacquireWaitGroup(addr *uint32, synctestDurable bool) {
-	reason := waitReasonSyncWaitGroupWait
+	reason := WaitReasonSyncWaitGroupWait
 	if synctestDurable {
 		reason = waitReasonSynctestWaitGroupWait
 	}
@@ -143,7 +143,7 @@ func semacquire(addr *uint32) {
 	semacquire1(addr, false, 0, 0, waitReasonSemacquire)
 }
 
-func semacquire1(addr *uint32, lifo bool, profile semaProfileFlags, skipframes int, reason waitReason) {
+func semacquire1(addr *uint32, lifo bool, profile semaProfileFlags, skipframes int, reason WaitReason) {
 	gp := getg()
 	if gp != gp.m.curg {
 		throw("semacquire not on the G stack")
@@ -603,7 +603,7 @@ func notifyListWait(l *notifyList, t uint32) {
 		l.tail.next = s
 	}
 	l.tail = s
-	goparkunlock(&l.lock, waitReasonSyncCondWait, traceBlockCondWait, 3)
+	goparkunlock(&l.lock, WaitReasonSyncCondWait, traceBlockCondWait, 3)
 	if t0 != 0 {
 		blockevent(s.releasetime-t0, 2)
 	}

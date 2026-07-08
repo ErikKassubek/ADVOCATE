@@ -109,7 +109,7 @@ func WaitForReplayPath(op Operation, file string, line int, waitForResponse bool
 		}
 
 		// the operation is sometimes active, but not this time
-		if !isInSlice(c, currentCounter) {
+		if !IsInSlice(c, currentCounter) {
 			if printDebug {
 				print("ReleaseNonActiveT: ", key)
 				for _, d := range c {

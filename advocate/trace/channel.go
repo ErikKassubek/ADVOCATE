@@ -16,7 +16,7 @@ import (
 	"math"
 	"strconv"
 
-	"advocate/analysis/hb/clock"
+	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
 )
 
@@ -64,8 +64,8 @@ type ElementChannel struct {
 	sel                      *ElementSelect
 	selIndex                 int
 	partner                  *ElementChannel
-	vc                       *clock.VectorClock
-	wCl                      *clock.VectorClock
+	vc                       *a_clock.VectorClock
+	wCl                      *a_clock.VectorClock
 	numberConcurrent         int
 	numberConcurrentWeak     int
 	numberConcurrentSame     int
@@ -204,11 +204,11 @@ func (this *ElementChannel) GetRoutine() int {
 	return this.routine
 }
 
-// GetTReq returns the tPre of the element
+// GetTPre returns the tPre of the element
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementChannel) GetTReq() int {
+func (this *ElementChannel) GetTPre() int {
 	return this.tPre
 }
 
@@ -292,7 +292,7 @@ func (this *ElementChannel) IsBuffered() bool {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementChannel) SetVc(vc *clock.VectorClock) {
+func (this *ElementChannel) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -300,7 +300,7 @@ func (this *ElementChannel) SetVc(vc *clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementChannel) SetWVc(vc *clock.VectorClock) {
+func (this *ElementChannel) SetWVc(vc *a_clock.VectorClock) {
 	this.wCl = vc.Copy()
 }
 
@@ -308,7 +308,7 @@ func (this *ElementChannel) SetWVc(vc *clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementChannel) GetVC() *clock.VectorClock {
+func (this *ElementChannel) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -316,15 +316,15 @@ func (this *ElementChannel) GetVC() *clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementChannel) GetWVC() *clock.VectorClock {
+func (this *ElementChannel) GetWVC() *a_clock.VectorClock {
 	return this.wCl
 }
 
-// GetTCom returns the tPost of the element
+// GetTPost returns the tPost of the element
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementChannel) GetTCom() int {
+func (this *ElementChannel) GetTPost() int {
 	return this.tPost
 }
 
@@ -591,7 +591,7 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	timeString := ""
 	posStr := ""
 	if !sel {
-		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTReq(), sep, this.GetTCom())
+		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTPre(), sep, this.GetTPost())
 		posStr = sep + this.GetPos()
 	}
 
@@ -767,7 +767,7 @@ func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	oID := this.GetOID()
 
 	// return -1 if closed by channel
-	if this.GetClosed() || this.GetTCom() == 0 {
+	if this.GetClosed() || this.GetTPost() == 0 {
 		return nil
 	}
 

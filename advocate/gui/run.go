@@ -11,7 +11,7 @@
 package gui
 
 import (
-	"advocate/run"
+	"advocate/advoc"
 	"context"
 
 	"fyne.io/fyne/v2"
@@ -61,7 +61,7 @@ func (this *window) start() {
 			win.WriteGui("Start Run")
 		})
 
-		err := run.Run(this.worker.ctx)
+		err := advoc.Run(this.worker.ctx)
 		if err != nil {
 			if !this.worker.IsCanceled() {
 				fyne.Do(func() { win.writeErr(err.Error()) })

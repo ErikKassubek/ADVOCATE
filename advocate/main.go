@@ -11,8 +11,9 @@
 package main
 
 import (
+	"advocate/advoc"
 	"advocate/gui"
-	"advocate/run"
+	"advocate/static/s_blocking"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 	"advocate/utils/paths"
@@ -22,7 +23,8 @@ import (
 
 // Main function
 func main() {
-	cont := run.CommandLine()
+
+	cont := advoc.CommandLine()
 	if !cont {
 		return
 	}
@@ -34,11 +36,17 @@ func main() {
 	if flags.Mode == "gui" {
 		gui.Run()
 	} else {
-		err := run.Run(context.Background())
+		if flags.Mode == "static" {
+			s_blocking.Test() // TODO: remove this
+			return
+		}
+
+		err := advoc.Run(context.Background())
 		if err != nil {
 			log.Error(err)
 		}
 	}
+
 }
 
 func initialize() {

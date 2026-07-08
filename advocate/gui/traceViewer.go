@@ -11,8 +11,8 @@
 package gui
 
 import (
-	"advocate/io"
 	"advocate/trace"
+	"advocate/utils/io"
 	"advocate/utils/types"
 
 	"fyne.io/fyne/v2"

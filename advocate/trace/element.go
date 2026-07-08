@@ -10,9 +10,7 @@
 
 package trace
 
-import (
-	"advocate/analysis/hb/clock"
-)
+import "advocate/analysis/hb/a_clock"
 
 // Values for possible primitive types and functions
 type OperationType string
@@ -118,9 +116,9 @@ type Element interface {
 	setID(ID int)
 	GetID() int
 	GetObjId() int
-	GetTReq() int
+	GetTPre() int
 	GetTSort() int
-	GetTCom() int
+	GetTPost() int
 	GetPos() string
 	GetFile() string
 	GetLine() int
@@ -140,10 +138,10 @@ type Element interface {
 	setObjId(id int)
 	ToString() string
 	ToStringGui() string
-	SetVc(vc *clock.VectorClock)
-	SetWVc(vc *clock.VectorClock)
-	GetVC() *clock.VectorClock
-	GetWVC() *clock.VectorClock
+	SetVc(vc *a_clock.VectorClock)
+	SetWVc(vc *a_clock.VectorClock)
+	GetVC() *a_clock.VectorClock
+	GetWVC() *a_clock.VectorClock
 	Copy(mapping map[string]Element, keep bool) Element
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)

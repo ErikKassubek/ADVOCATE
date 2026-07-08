@@ -23,6 +23,8 @@ import (
 	"time"
 )
 
+var count = 0
+
 // RunCommand runs a command line (shell) commands
 //
 // Parameter:
@@ -74,9 +76,11 @@ func RunCommand(osOut, osErr *os.File, timeout int, dir string, name string, arg
 			}
 		}
 	} else {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		cmd.Stdout = osOut
+		cmd.Stderr = osErr
 	}
+
+	count++
 
 	return cmd.Run()
 }
@@ -88,7 +92,7 @@ func RunGoModTidy() {
 	if err == nil {
 		defer os.Unsetenv("GOROOT")
 	}
-	RunCommand(nil, nil, NoTimeout, NoDir, "go", "mod", "tidy")
+	RunCommand(nil, nil, NoTimeout, "go", "mod", "tidy")
 }
 
 func BuildRuntime() error {

@@ -13,7 +13,6 @@ package a_scenarios
 import (
 	"advocate/analysis/a_base"
 	"advocate/utils/helper"
-	"advocate/utils/log"
 	"advocate/utils/results/results"
 	"advocate/utils/types"
 )
@@ -33,17 +32,12 @@ func Blocked() error {
 
 	l := a_base.MainTrace.GetNotReturned(true)
 
-	log.Debug(b)
-	log.Debug(l)
-	log.Debug(ref)
-
 	for {
 		r := make([]int, 0)
 
 		for routB := range b {
 			for _, routL := range l {
 				if types.Contains(ref[routL], routB) {
-					log.Debug(routL, " -> ", routB)
 					r = append(r, routB)
 					break
 				}
@@ -60,8 +54,6 @@ func Blocked() error {
 		}
 	}
 
-	log.Debug(b)
-
 	cyclic := checkCyclic(b, ref)
 
 	for rout := range cyclic {
@@ -69,7 +61,7 @@ func Blocked() error {
 	}
 
 	reportBlocking(cyclic, helper.ADeadlock)
-	reportBlocking(cyclic, helper.ABlocking)
+	reportBlocking(b, helper.ABlocking)
 
 	return nil
 }

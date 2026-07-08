@@ -154,7 +154,7 @@ func (this *Trace) GetTraceSize() (int, int) {
 //   - id int: The id of the routine
 //
 // Returns:
-//   - []traceElement: The trace of the routine
+//   - []Element: The trace of the routine
 func (this *Trace) GetRoutineTrace(id int) []Element {
 	return this.traces[id]
 }
@@ -165,9 +165,12 @@ func (this *Trace) GetRoutineTrace(id int) []Element {
 //   - id int: The id of the routine
 //
 // Returns:
-//   - []traceElement: The trace of the routine
+//   - Element: The last element of the routine or nil if empty
 func (this *Trace) GetLastElemInRout(id int) Element {
-	return this.traces[id][len(this.traces[id])]
+	if len(this.traces[id]) == 0 {
+		return nil
+	}
+	return this.traces[id][len(this.traces[id])-1]
 }
 
 // GetNumberElements returns the total number of elements in the trace

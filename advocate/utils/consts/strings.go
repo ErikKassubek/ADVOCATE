@@ -14,6 +14,7 @@ const (
 	Actual    = "Actual"
 	Possible  = "Possible"
 	Confirmed = "Confirmed"
+	Runtime   = "Runtime"
 
 	ConfirmedTheBug = "confirmed the bug"
 

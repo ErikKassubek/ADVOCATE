@@ -15,6 +15,7 @@ import (
 	"advocate/utils/log"
 	"advocate/utils/paths"
 	"errors"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -74,50 +75,42 @@ func GetProgramCode(file string, line int, numbers bool) (string, error) {
 		return "", errors.New("line number out of range")
 	}
 
-	res := "```go\n"
+	line = line - 1 // 1 based index of lines to 0 base index of slice
 
 	buffer := 10
 
-	start := line - buffer
-	diff := 0
-	if start <= 0 {
-		diff = buffer - line + 1
-		start = 0
-	} else {
-		res += "...\n\n"
-	}
-	end := line + buffer
-	isEnd := false
-	if end >= len(lines) {
-		end = len(lines)
-		isEnd = true
+	start := max(0, line-buffer)
+	end := min(line+buffer, len(lines)-1)
+
+	code := lines[start : end+1]
+
+	res := "```go"
+
+	if start != 1 {
+		res += "...\n"
 	}
 
-	res += strings.Join(lines[start:end], "\n")
+	width := len(fmt.Sprintf("%d", 20+start))
 
-	if !isEnd {
-		res += "\n\n..."
-	}
-	res += "\n```"
-
-	if !numbers {
-		return res, nil
-	}
-
-	// add line numbers
-	resWithLines := ""
-	for i, l := range strings.Split(res, "\n") {
-		if i == 0 || i == len(strings.Split(res, "\n"))-1 {
-			resWithLines += l + "\n"
-			continue
+	for i, l := range code {
+		ln := i + start + 1
+		if numbers {
+			res += fmt.Sprintf("%*d ", width, ln)
 		}
-		resWithLines += strconv.Itoa(i+start-2+diff) + " " + l
-		if i+start-2+diff == line {
-			resWithLines += "           // <-------\n"
-		} else {
-			resWithLines += "\n"
+		res += l
+
+		if ln-1 == line {
+			res += "                    // <================= "
 		}
+
+		res += "\n"
 	}
 
-	return resWithLines, nil
+	if end != len(lines)-1 {
+		res += "...\n"
+	}
+
+	res += "```"
+
+	return res, nil
 }

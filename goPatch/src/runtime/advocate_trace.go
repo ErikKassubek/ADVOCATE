@@ -167,16 +167,12 @@ func TraceToChanByID(id uint64) chan string {
 	c := make(chan string, 20)
 	if routine, ok := AdvocateRoutines[id]; ok {
 		unlock(&AdvocateRoutinesLock)
-
 		go func() {
 			res := ""
 			blockSize := 1000
 			// if atomic recording is disabled
 			for i, elem := range routine.Trace {
-				if i != 0 {
-					res += "\n"
-				}
-				res += elem.toString()
+				res += elem.toString() + "\n"
 
 				if i%blockSize == 0 {
 					c <- res
@@ -185,7 +181,7 @@ func TraceToChanByID(id uint64) chan string {
 			}
 
 			if !routine.hasReturned && len(routine.oat) != 0 {
-				oatElems := "\nOAT,"
+				oatElems := "OAT,"
 				for i, obj := range routine.oat {
 					if i != 0 {
 						oatElems += "-"

@@ -45,6 +45,7 @@ const (
 	exitCodeDesc
 	exitCode
 	desc
+	class
 )
 
 var printedExplanations = make(map[bug]struct{})
@@ -339,64 +340,67 @@ func writeFile(path string, index string, description map[bugKeys]string,
 	}
 
 	// write the code of the bug elements
-	res += "## Bug Elements\n"
+	res += "## Bug Elements\n\n"
 	res += "The elements involved in the found "
 	res += strings.ToLower(description[crit])
 	res += " are located at the following positions:\n\n"
 
 	for key := range positions {
 		res += "###  "
-		res += bugElemType[key] + "\n"
+		res += bugElemType[key] + "\n\n"
 
 		for j, pos := range positions[key] {
 			if pos == ":-1" {
 				return nil
 			}
 			code := code[key][j]
-			res += "-> " + pos + "\n"
+			res += "-> " + pos + "\n\n"
 			res += code + "\n\n"
 		}
 	}
 
-	// write the info about the replay, if possible including the command to read the bug
-	replayPossible := replay[replaySuc] != "was not possible" && replay[replaySuc] != "was not run"
-	replayDouble := replay[exitCode] == "double"
+	confirmed := false
 
-	res += "## Replay\n"
-	if replayPossible && !replayDouble {
-		res += replay[desc] + "\n\n"
-	}
+	if description[class] == consts.Possible { // replay only for possible bugs
+		// write the info about the replay, if possible including the command to read the bug
+		replayPossible := replay[replaySuc] != "was not possible" && replay[replaySuc] != "was not run"
+		replayDouble := replay[exitCode] == "double"
 
-	if replayDouble {
-		res += "The replay was not performed, because the same bug had been found before."
-	} else {
-		res += "**Replaying " + replay[replaySuc] + "**.\n\n"
-		if replayPossible {
-			// res += "The replayed trace can be found in: "
-			// res += "rewrittenTrace_" + index + "\n\n"
-			if replay[replaySuc] == "panicked" {
-				res += "It panicked with the following message:\n\n"
-				res += replay[replaySuc] + "\n\n"
-			} else if replay[exitCode] == "fail" {
-				res += replay[exitCodeDesc] + "\n\n"
-			} else {
-				res += consts.ItExitedWithTheFollowingCode
-				res += replay[exitCode] + "\n\n"
-				res += replay[exitCodeDesc] + "\n\n"
+		res += "## Replay\n"
+		if replayPossible && !replayDouble {
+			res += replay[desc] + "\n\n"
+		}
+
+		if replayDouble {
+			res += "The replay was not performed, because the same bug had been found before."
+		} else {
+			res += "**Replaying " + replay[replaySuc] + "**.\n\n"
+			if replayPossible {
+				// res += "The replayed trace can be found in: "
+				// res += "rewrittenTrace_" + index + "\n\n"
+				if replay[replaySuc] == "panicked" {
+					res += "It panicked with the following message:\n\n"
+					res += replay[replaySuc] + "\n\n"
+				} else if replay[exitCode] == "fail" {
+					res += replay[exitCodeDesc] + "\n\n"
+				} else {
+					res += consts.ItExitedWithTheFollowingCode
+					res += replay[exitCode] + "\n\n"
+					res += replay[exitCodeDesc] + "\n\n"
+				}
 			}
 		}
-	}
 
-	confirmed := false
-	dep := strings.TrimPrefix(description[name], consts.Possible)
-
-	if description[crit] == "Bug" {
-		if replayDouble || replay[replaySuc] == "confirmed the bug" ||
-			strings.HasPrefix(description[name], consts.Actual) {
-			confirmed = true
+		if description[crit] == "Bug" {
+			if replayDouble || replay[replaySuc] == "confirmed the bug" ||
+				strings.HasPrefix(description[name], consts.Actual) {
+				confirmed = true
+			}
 		}
+
 	}
 
+	dep := strings.TrimPrefix(description[name], consts.Possible)
 	id := progInfo[file] + "#" + progInfo[name]
 	if replay[replaySuc] == "was not run" {
 		log.Resultf(true, confirmed, id, "Found %s.", description[name])

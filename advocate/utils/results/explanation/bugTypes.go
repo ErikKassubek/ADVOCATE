@@ -49,6 +49,39 @@ var bugCrit = map[helper.ResultType]string{
 	helper.LContext:                consts.Leak,
 }
 
+var bugClass = map[helper.ResultType]string{
+	helper.RUnknownPanic:           consts.Runtime,
+	helper.RTimeout:                consts.Runtime,
+	helper.ASendOnClosed:           consts.Actual,
+	helper.ARecvOnClosed:           consts.Actual,
+	helper.ACloseOnClosed:          consts.Actual,
+	helper.ACloseOnNilChannel:      consts.Actual,
+	helper.ANegWG:                  consts.Actual,
+	helper.AUnlockOfNotLockedMutex: consts.Actual,
+	helper.ABlocking:               consts.Actual,
+	helper.ADeadlock:               consts.Actual,
+	helper.AConcurrentRecv:         consts.Actual,
+	helper.AMixedDeadlock:          consts.Actual,
+	helper.PSendOnClosed:           consts.Possible,
+	helper.PRecvOnClosed:           consts.Possible,
+	helper.PNegWG:                  consts.Possible,
+	helper.PUnlockBeforeLock:       consts.Possible,
+	helper.PCyclicDeadlock:         consts.Possible,
+	helper.PMixedDeadlock:          consts.Possible,
+	helper.LUnknown:                consts.Leak,
+	helper.LUnbufferedWith:         consts.Leak,
+	helper.LUnbufferedWithout:      consts.Leak,
+	helper.LBufferedWith:           consts.Leak,
+	helper.LBufferedWithout:        consts.Leak,
+	helper.LNilChan:                consts.Leak,
+	helper.LSelectWith:             consts.Leak,
+	helper.LSelectWithout:          consts.Leak,
+	helper.LMutex:                  consts.Leak,
+	helper.LWaitGroup:              consts.Leak,
+	helper.LCond:                   consts.Leak,
+	helper.LContext:                consts.Leak,
+}
+
 var bugNames = map[helper.ResultType]string{
 	helper.ASendOnClosed:           "Actual Send on Closed Channel",
 	helper.ARecvOnClosed:           "Actual Receive on Closed Channel",
@@ -342,6 +375,7 @@ func getBugTypeDescription(bt helper.ResultType) map[bugKeys]string {
 		name:        bugNames[bt],
 		bugType:     string(bt),
 		explanation: bugExplanations[bt],
+		class:       bugClass[bt],
 	}
 }
 

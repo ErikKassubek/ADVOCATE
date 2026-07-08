@@ -27,10 +27,10 @@ func main() {
 		return
 	}
 
-	// if flags.Mode == "static" {
-	// 	s_blocking.Test() // TODO: remove this
-	// 	return
-	// }
+	if flags.Mode == "static" {
+		s_blocking.Test() // TODO: remove this
+		return
+	}
 
 	err := advoc.Run()
 	if err != nil {

@@ -47,7 +47,7 @@ func ParseTrace(tr *trace.Trace) {
 			f_gopie.CalculateRelRule1(routine)
 		}
 
-		for _, elem := range routine {
+		for _, elem := range routine.Elems() {
 
 			if control.WasCanceled() {
 				return

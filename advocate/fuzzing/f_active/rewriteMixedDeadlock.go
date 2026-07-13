@@ -49,8 +49,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	//	mainRout, holderRout, lockHolder.GetT(tPre, ), cdHolder.GetT(tPre, ), waiterRout, lockWaiter.GetT(tPre, ))
 
 	lastTime := max(lockHolder.GetT(trace.Commit), lockWaiter.GetT(trace.Commit))
-	if mainTrace := tr.GetRoutineTrace(mainRout); len(mainTrace) > 0 {
-		if lastElem := mainTrace[len(mainTrace)-1]; lastElem.GetT(trace.Commit) > lastTime {
+	if mainTrace := tr.GetRoutineTrace(mainRout); mainTrace.Len() > 0 {
+		if lastElem := mainTrace.Last(); lastElem.GetT(trace.Commit) > lastTime {
 			lastTime = lastElem.GetT(trace.Commit)
 		}
 	}
@@ -68,10 +68,10 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		shift := targetTPre - lockWaiter.GetT(trace.Request)
 		if shift > 0 {
 			waiterTrace := tr.GetRoutineTrace(waiterRout)
-			if len(waiterTrace) == 0 {
+			if waiterTrace.Empty() {
 				return fmt.Errorf("rewriteMixedDeadlock: waiter R%d has no trace", waiterRout)
 			}
-			startElem := waiterTrace[0]
+			startElem := waiterTrace.First()
 			startTPre := startElem.GetT(trace.Request)
 			//fmt.Printf("rewriteMixedDeadlock: shifting waiter R%d by %d\n", waiterRout, shift)
 			tr.ShiftRoutine(waiterRout, startTPre, shift)
@@ -91,8 +91,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 
 	// Calculate final time
 	newLastTime := 0
-	for _, traceSlice := range tr.GetTraces() {
-		for _, elem := range traceSlice {
+	for _, routSlice := range tr.GetTraces() {
+		for _, elem := range routSlice.Elems() {
 			t := elem.GetT(trace.Sorting)
 			if t > newLastTime && t != math.MaxInt {
 				newLastTime = t

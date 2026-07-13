@@ -12,6 +12,7 @@ package a_scenarios
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/trace"
 	"advocate/utils/helper"
 	"advocate/utils/results/results"
 	"advocate/utils/types"
@@ -20,7 +21,7 @@ import (
 func Blocked() error {
 	tr := &a_base.MainTrace
 	blocked := tr.GetBlocked()
-	ref := tr.GetObjAware()
+	ref := tr.GetResources()
 
 	// blocked routines
 	b := make(map[int]struct{})
@@ -37,8 +38,15 @@ func Blocked() error {
 
 		for routB := range b {
 			for _, routL := range l {
-				if types.Contains(ref[routL], routB) {
-					r = append(r, routB)
+				found := false
+				for _, blockedB := range ref[routB] {
+					if types.Contains(ref[routL], blockedB) {
+						r = append(r, routB)
+						found = true
+						break
+					}
+				}
+				if found {
 					break
 				}
 			}
@@ -67,15 +75,18 @@ func Blocked() error {
 }
 
 // check for cyclic dependencies
-func checkCyclic(b map[int]struct{}, ref map[int][]int) map[int]struct{} {
+func checkCyclic(b map[int]struct{}, res map[int][]trace.Resource) map[int]struct{} {
 	graph := map[int][]int{}
 	selfLoop := map[int]bool{}
 
 	for rID := range b {
-		for _, rID2 := range ref[rID] {
-			graph[rID] = append(graph[rID], rID2)
-			if rID == rID2 {
-				selfLoop[rID] = true
+		for rID2 := range b {
+			if types.HasCommonElement(res[rID], res[rID2]) {
+
+				graph[rID] = append(graph[rID], rID2)
+				if rID == rID2 {
+					selfLoop[rID] = true
+				}
 			}
 		}
 	}
@@ -126,8 +137,9 @@ func checkCyclic(b map[int]struct{}, ref map[int][]int) map[int]struct{} {
 
 			// must be closed
 			for r := range scc {
-				for _, r2 := range ref[r] {
-					if _, ok := scc[r2]; !ok {
+				neigh := graph[r]
+				for _, n := range neigh {
+					if _, ok := scc[n]; !ok {
 						return
 					}
 				}

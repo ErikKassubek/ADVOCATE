@@ -15,19 +15,6 @@ import (
 	"advocate/trace"
 )
 
-type ft int
-
-const (
-	call ft = iota
-	spawn
-)
-
-type funcId struct {
-	pkg      string
-	name     string
-	funcType ft
-}
-
 // backwards determines the path from the creation of a resource to the end point of a routine
 //
 // Parameter:
@@ -37,20 +24,24 @@ type funcId struct {
 // Returns:
 //
 //	-
-func backwards(routineID int, resourceID int) []funcId {
-	res := make([]funcId, 0)
+func backwards(routineID int, resourceID int) []string {
+	res := make([]string, 0)
 
-	tr := a_base.MainTrace.GetRoutineTrace(routineID)
+	rout := a_base.MainTrace.GetRoutineTrace(routineID)
 
-	for i := len(tr) - 1; i >= 0; i-- {
-		op := tr[i]
+	for i := rout.Len() - 1; i >= 0; i-- {
+		op := rout.At(i)
 
-		switch op.(type) {
+		// Note: the first element in each routine is always the function that is called in this routine.
+		// We therefore do not need to record spawns.
+
+		switch o := op.(type) {
 		case *trace.ElementAlloc:
 			if op.GetObjId() == resourceID {
 				return res
 			}
-			// case trace.ElementF
+		case *trace.ElementFunc:
+			res = append([]string{o.GetName()}, res...)
 		}
 	}
 

@@ -31,18 +31,18 @@ import (
 // CalculateRelRule1 store the rule 1 information for each element in a routine trace
 //
 // Parameter:
-//   - routineTrace []analysis.TraceElement: the list of elems in the same trace
-func CalculateRelRule1(routineTrace []trace.Element) {
-	if len(routineTrace) < 2 {
+//   - routineTrace trace.Routine: the list of elems in the same trace
+func CalculateRelRule1(routineTrace *trace.Routine) {
+	if routineTrace.Len() < 2 {
 		return
 	}
 
-	for i := 0; i < len(routineTrace)-1; i++ {
-		elem1 := routineTrace[i]
+	for i := 0; i < routineTrace.Len()-1; i++ {
+		elem1 := routineTrace.At(i)
 		if !isGoPieElem(elem1) {
 			continue
 		}
-		elem2 := routineTrace[i+1]
+		elem2 := routineTrace.At(i + 1)
 		if !isGoPieElem(elem2) {
 			continue
 		}

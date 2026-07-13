@@ -20,22 +20,21 @@ var data *static.Data
 // Main function for testing static analysis.
 // Todo: remove when static analysis is fully implemented
 func Test() {
-	RunStaticBlockingAnalysis(flags.ProgPath)
+	BuildStaticBlockingAnalysis(flags.ProgPath)
 }
 
 // init to static blocking analysis
-func RunStaticBlockingAnalysis(dir string) (err error) {
-	// vars := make([]*ast.Ident, 0) // TODO: determine vars
+func BuildStaticBlockingAnalysis(dir string) (err error) {
 
 	data, err = static.BuildStaticData(dir)
 	if err != nil {
 		return err
 	}
 
-	// data.Ast().PrintInfo()
-	data.Ssa().Print(true)
-
-	// data.Ast().TestReachable()
-
 	return nil
+}
+
+func IsBlockingBug() {
+	_ = getBlockedResources()
+
 }

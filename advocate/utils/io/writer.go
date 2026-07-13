@@ -63,15 +63,15 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 			}
 			defer file.Close()
 
-			// write tr
-			tr := traceToWrite.GetRoutineTrace(i)
+			// write rout
+			rout := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre
-			sort.Slice(tr, func(i, j int) bool {
-				return tr[i].GetT(trace.Request) < tr[j].GetT(trace.Request)
+			sort.Slice(rout, func(i, j int) bool {
+				return rout.At(i).GetT(trace.Request) < rout.At(j).GetT(trace.Request)
 			})
 
-			for index, element := range tr {
+			for index, element := range rout.Elems() {
 				if !replay || !isReplay(element) {
 					continue
 				}
@@ -82,7 +82,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 				if _, err := file.WriteString(elementString); err != nil {
 					log.Error("Error in writing trace to file. Could not write string: ", err.Error())
 				}
-				if index < len(tr)-1 {
+				if index < rout.Len()-1 {
 					if _, err := file.WriteString("\n"); err != nil {
 						log.Error("Error in writing trace to file. Could not wrote string: ", err.Error())
 					}

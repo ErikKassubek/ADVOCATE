@@ -237,3 +237,11 @@ func (this *ElementFunc) Copy(mapping map[string]Element, keep bool) Element {
 func (this *ElementFunc) IsValid() bool {
 	return this != nil
 }
+
+// ========================================================
+// Others
+// ========================================================
+
+func (this *ElementFunc) GetName() string {
+	return this.name
+}

@@ -31,16 +31,16 @@ import (
 func GetConcurrentAllPairs(elem trace.Element, all, sameElem, weak bool) []trace.Element {
 	res := make([]trace.Element, 0)
 	id := elem.GetObjId()
-	routine := elem.GetRoutine()
+	routId := elem.GetRoutine()
 
-	for r, trace := range a_base.MainTrace.GetTraces() {
+	for r, routine := range a_base.MainTrace.GetTraces() {
 		// same routine
-		if routine == r {
+		if routId == r {
 			continue
 		}
 
 		// different routine
-		for _, e := range trace {
+		for _, e := range routine.Elems() {
 			if sameElem && e.GetObjId() != id {
 				continue
 			}
@@ -98,12 +98,12 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range a_base.MainTrace.GetTraces() {
-		if rout == elem.GetRoutine() {
+	for routID, routine := range a_base.MainTrace.GetTraces() {
+		if routID == elem.GetRoutine() {
 			continue
 		}
 
-		for _, tElem := range trace {
+		for _, tElem := range routine.Elems() {
 			if sameElem && elem.GetObjId() != tElem.GetObjId() {
 				continue
 			}

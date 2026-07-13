@@ -31,15 +31,16 @@ import (
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
 //   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
-//   - blocked map[int][]int: routines which are blocked and the objects that block it
+//   - blocked map[resource][]int: routines which are blocked and the objects that block it
+//   - forks: for each routine store the fork that created it
 type Trace struct {
-	traces                map[int][]Element
+	routines              map[int]*Routine
 	hbWasCalc             bool
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
-	objectAware           map[int][]int
 	blocked               map[int]Element
+	forks                 map[int]*ElementFork
 }
 
 // NewTrace creates a new empty trace structure
@@ -48,23 +49,23 @@ type Trace struct {
 //   - Trace: the new trace
 func NewTrace() Trace {
 	return Trace{
-		traces:                make(map[int][]Element),
+		routines:              make(map[int]*Routine),
 		hbWasCalc:             false,
 		minTraceID:            0,
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
-		objectAware:           make(map[int][]int),
 		blocked:               make(map[int]Element),
+		forks:                 make(map[int]*ElementFork),
 	}
 }
 
 // Clear the trace
 func (this *Trace) Clear() {
-	this.traces = make(map[int][]Element)
+	this.routines = make(map[int]*Routine)
 	this.hbWasCalc = false
 	this.minTraceID = 0
 	this.channelWithoutPartner = make(map[int]map[int]*ElementChannel)
-	this.objectAware = make(map[int][]int)
 	this.blocked = make(map[int]Element)
+	this.forks = make(map[int]*ElementFork)
 }
 
 // AddElement adds an element to the trace
@@ -81,7 +82,12 @@ func (this *Trace) AddElement(elem Element) {
 		this.blocked[routine] = elem
 	}
 
-	this.traces[routine] = append(this.traces[routine], elem)
+	switch e := elem.(type) {
+	case *ElementFork:
+		this.forks[e.objId] = e
+	}
+
+	this.routines[routine].addElement(elem)
 }
 
 // AddRoutine adds an empty routine if not exists
@@ -89,8 +95,8 @@ func (this *Trace) AddElement(elem Element) {
 // Parameter:
 //   - routine int: The routine
 func (this *Trace) AddRoutine(routine int) {
-	if _, ok := this.traces[routine]; !ok {
-		this.traces[routine] = make([]Element, 0)
+	if _, ok := this.routines[routine]; !ok {
+		this.routines[routine] = NewRoutine(routine)
 	}
 }
 
@@ -110,22 +116,8 @@ func (a sortByTSort) Less(i, j int) bool {
 
 // Sort each routine of the trace by tPost
 func (this *Trace) Sort() {
-	for routine, trace := range this.traces {
-		sort.Sort(sortByTSort(trace))
-		this.traces[routine] = trace
-	}
-}
-
-// SortRoutines sort each routine of the trace by tPost
-//
-// Parameter:
-//   - routines []int: List of routines to sort. For routines that are not in the trace, do nothing
-func (this *Trace) SortRoutines(routines []int) {
-	for _, routine := range routines {
-		if trace, ok := this.traces[routine]; ok {
-			sort.Sort(sortByTSort(trace))
-			this.traces[routine] = trace
-		}
+	for routine, _ := range this.routines {
+		this.routines[routine].sort()
 	}
 }
 
@@ -133,17 +125,18 @@ func (this *Trace) SortRoutines(routines []int) {
 //
 // Returns:
 //   - map[int][]traceElement: The traces
-func (this *Trace) GetTraces() map[int][]Element {
-	return this.traces
+func (this *Trace) GetTraces() map[int]*Routine {
+	return this.routines
 }
 
 // GetTraceSize returns the number of TraceElement with cap and len
 func (this *Trace) GetTraceSize() (int, int) {
 	capTot := 0
 	lenTot := 0
-	for _, elems := range this.traces {
-		capTot += cap(elems)
-		lenTot += len(elems)
+	for _, rout := range this.routines {
+		cap, len := rout.size()
+		capTot += cap
+		lenTot += len
 	}
 	return capTot, lenTot
 }
@@ -155,8 +148,8 @@ func (this *Trace) GetTraceSize() (int, int) {
 //
 // Returns:
 //   - []Element: The trace of the routine
-func (this *Trace) GetRoutineTrace(id int) []Element {
-	return this.traces[id]
+func (this *Trace) GetRoutineTrace(id int) *Routine {
+	return this.routines[id]
 }
 
 // GetRoutineTrace returns the trace of the given routine
@@ -167,10 +160,7 @@ func (this *Trace) GetRoutineTrace(id int) []Element {
 // Returns:
 //   - Element: The last element of the routine or nil if empty
 func (this *Trace) GetLastElemInRout(id int) Element {
-	if len(this.traces[id]) == 0 {
-		return nil
-	}
-	return this.traces[id][len(this.traces[id])-1]
+	return this.routines[id].Last()
 }
 
 // GetNumberElements returns the total number of elements in the trace
@@ -181,49 +171,21 @@ func (this *Trace) GetNumberElements() int {
 	return this.NumberElemInRoutine(-1)
 }
 
-// GetTraceElementFromTID returns the routine and index of the element
-// in trace, given the file and line info.
-//
-// Parameter:
-//   - tID string: The tID of the element
-//
-// Returns:
-//   - *TraceElement: The element
-//   - error: An error if the element does not exist
-func (this *Trace) GetTraceElementFromTID(tID string) (Element, error) {
-	if tID == "" {
-		return nil, errors.New("tID is empty")
-	}
-
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
-			if elem.GetTID() == tID {
-				return this.traces[routine][index], nil
-			}
-		}
-	}
-	return nil, errors.New("Element " + tID + " does not exist")
-}
-
 func (this *Trace) GetBlocked() map[int]Element {
 	return this.blocked
-}
-
-func (this *Trace) GetObjAware() map[int][]int {
-	return this.objectAware
 }
 
 func (this *Trace) GetNotReturned(onlyNonBlocked bool) []int {
 	res := make([]int, 0)
 
-	for rout, elems := range this.traces {
-		if len(elems) == 0 {
-			res = append(res, rout)
+	for id, rout := range this.routines {
+		if rout.Empty() {
+			res = append(res, id)
 			continue
 		}
-		last := elems[len(elems)-1]
+		last := rout.Last()
 		if last.GetType(false) != End && (!onlyNonBlocked || last.Committed()) {
-			res = append(res, rout)
+			res = append(res, id)
 		}
 	}
 
@@ -260,16 +222,16 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 		return nil, errors.New("Could not parse tPre from bug argument: " + bugArg)
 	}
 
-	for index, elem := range this.traces[routine] {
+	for index, elem := range this.routines[routine].elems {
 		if elem.GetT(Request) == tPre {
-			return this.traces[routine][index], nil
+			return this.routines[routine].At(index), nil
 		}
 	}
 
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
+	for id, rout := range this.routines {
+		for index, elem := range rout.elems {
 			if elem.GetT(Request) == tPre {
-				return this.traces[routine][index], nil
+				return this.routines[id].At(index), nil
 			}
 		}
 	}
@@ -283,14 +245,14 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 //   - time int: The time to shorten the trace to
 //   - incl bool: True if an element with the same time should stay included in the trace
 func (this *Trace) ShortenTrace(time int, incl bool) {
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
+	for id, rout := range this.routines {
+		for index, elem := range rout.elems {
 			if incl && elem.GetT(Sorting) > time {
-				this.traces[routine] = this.traces[routine][:index]
+				this.routines[id].shortenIndex(index)
 				break
 			}
 			if !incl && elem.GetT(Sorting) >= time {
-				this.traces[routine] = this.traces[routine][:index]
+				this.routines[id].shortenIndex(index)
 				break
 			}
 		}
@@ -302,10 +264,10 @@ func (this *Trace) ShortenTrace(time int, incl bool) {
 // Parameter:
 //   - tID string: The tID of the element to remove
 func (this *Trace) RemoveElementFromTrace(tID string) {
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
+	for id, rout := range this.routines {
+		for index, elem := range rout.elems {
 			if elem.GetTID() == tID {
-				this.traces[routine] = append(this.traces[routine][:index], this.traces[routine][index+1:]...)
+				this.routines[id].removeAtIndex(index)
 				break
 			}
 		}
@@ -319,12 +281,7 @@ func (this *Trace) RemoveElementFromTrace(tID string) {
 //   - routine int: The routine to shorten
 //   - time int: The time to shorten the trace to
 func (this *Trace) ShortenRoutine(routine int, time int) {
-	for index, elem := range this.traces[routine] {
-		if elem.GetT(Sorting) >= time {
-			this.traces[routine] = this.traces[routine][:index]
-			break
-		}
-	}
+	this.routines[routine].shortenTime(time)
 }
 
 // ShortenRoutineIndex shorten a given a routine to index
@@ -335,9 +292,9 @@ func (this *Trace) ShortenRoutine(routine int, time int) {
 //   - incl bool: if true, the value a index will remain in the routine, otherwise it will be removed
 func (this *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
 	if incl {
-		this.traces[routine] = this.traces[routine][:index+1]
+		this.routines[routine].shortenIndex(index + 1)
 	} else {
-		this.traces[routine] = this.traces[routine][:index]
+		this.routines[routine].shortenIndex(index)
 	}
 }
 
@@ -346,7 +303,7 @@ func (this *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
 // Returns:
 //   - int: The number of routines
 func (this *Trace) GetNoRoutines() int {
-	return len(this.traces)
+	return len(this.routines)
 }
 
 // GetTraceLength returns the number of element in a given routine
@@ -357,7 +314,7 @@ func (this *Trace) GetNoRoutines() int {
 // Returns:
 //   - int: number of elements in the routine.
 func (this *Trace) GetTraceLength(routine int) int {
-	return len(this.GetTraces()[routine])
+	return this.routines[routine].Len()
 }
 
 // GetTraceLengths returns a slice containing the number of elements in the
@@ -367,8 +324,8 @@ func (this *Trace) GetTraceLength(routine int) int {
 //   - []int: number of elements in routines.
 func (this *Trace) GetTraceLengths() []int {
 	l := make([]int, this.GetNoRoutines()+1)
-	for i, trace := range this.GetTraces() {
-		l[i] = len(trace)
+	for i, rout := range this.routines {
+		l[i] = rout.Len()
 	}
 
 	return l
@@ -384,30 +341,13 @@ func (this *Trace) GetTraceLengths() []int {
 func (this *Trace) NumberElemInRoutine(routine int) int {
 	if routine == -1 {
 		total := 0
-		for _, n := range this.traces {
-			total += len(n)
+		for _, rout := range this.routines {
+			total += rout.Len()
 		}
 		return total
 	}
 
-	return len(this.traces[routine])
-}
-
-// GetLastElemPerRout returns the last elements in each routine
-// Returns
-//
-//   - []TraceElements: List of elements that are the last element in a routine
-func (this *Trace) GetLastElemPerRout() []Element {
-	res := make([]Element, 0)
-	for _, trace := range this.traces {
-		if len(trace) == 0 {
-			continue
-		}
-
-		res = append(res, trace[len(trace)-1])
-	}
-
-	return res
+	return this.routines[routine].Len()
 }
 
 // SetHBWasCalc sets the hwWasCalc value of the trace
@@ -440,8 +380,8 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	nrAdd := 0
 	nrDone := 0
 
-	for _, trace := range this.traces {
-		for _, elem := range trace {
+	for _, routine := range this.routines {
+		for _, elem := range routine.elems {
 			switch e := elem.(type) {
 			case *ElementWait:
 				if e.GetObjId() == wgID {
@@ -472,10 +412,10 @@ func (this *Trace) ShiftTrace(startTPre int, shift int) bool {
 		return false
 	}
 
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
+	for _, routine := range this.routines {
+		for index, elem := range routine.elems {
 			if elem.GetT(Request) >= startTPre {
-				this.traces[routine][index].SetTWithoutNotExecuted(elem.GetT(Sorting) + shift)
+				routine.At(index).SetTWithoutNotExecuted(elem.GetT(Sorting) + shift)
 			}
 		}
 	}
@@ -493,8 +433,8 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 	elemsToShift := make([]Element, 0)
 	minTime := -1
 
-	for _, trace := range this.traces {
-		for _, elem := range trace {
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
 			if elem.GetTID() == element.GetTID() {
 				continue
 			}
@@ -529,8 +469,8 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 	minTime := -1
 	maxNotMoved := 0
 
-	for _, trace := range this.traces {
-		for _, elem := range trace {
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
 			if elem.GetTID() == element.GetTID() {
 				continue
 			}
@@ -580,9 +520,9 @@ func (this *Trace) ShiftConcurrentToBefore(element Element) {
 // Parameter:
 //   - element traceElement: The element
 func (this *Trace) RemoveConcurrent(element Element, tMin int) {
-	for routine, trace := range this.traces {
+	for routine, rout := range this.routines {
 		result := make([]Element, 0)
-		for _, elem := range trace {
+		for _, elem := range rout.elems {
 			if elem.GetT(Sorting) < tMin {
 				result = append(result, elem)
 				continue
@@ -597,7 +537,7 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 				result = append(result, elem)
 			}
 		}
-		this.traces[routine] = result
+		this.routines[routine].elems = result
 	}
 }
 
@@ -607,9 +547,9 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 // Parameter:
 //   - element traceElement: The element
 func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
-	for routine, trace := range this.traces {
+	for routine, rout := range this.routines {
 		result := make([]Element, 0)
-		for _, elem := range trace {
+		for _, elem := range rout.elems {
 			if elem.GetT(Sorting) < tMin {
 				result = append(result, elem)
 				continue
@@ -624,7 +564,7 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				result = append(result, elem)
 			}
 		}
-		this.traces[routine] = result
+		this.routines[routine].elems = result
 	}
 }
 
@@ -637,8 +577,8 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 //   - map[int]traceElement: The earliest concurrent element for each routine
 func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 	concurrent := make(map[int]Element)
-	for routine, trace := range this.traces {
-		for _, elem := range trace {
+	for routine, rout := range this.routines {
+		for _, elem := range rout.elems {
 			if elem.GetTID() == element.GetTID() {
 				continue
 			}
@@ -657,14 +597,14 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 //   - tPost int: Remove elements after tPost
 func (this *Trace) RemoveLater(tPost int) {
 	mapping := make(map[string]Element)
-	for routine, trace := range this.traces {
+	for routine, rout := range this.routines {
 		newElems := make([]Element, 0)
-		for _, elem := range trace {
+		for _, elem := range rout.elems {
 			if elem.GetT(Commit) > tPost {
 				newElems = append(newElems, elem.Copy(mapping, true))
 			}
 		}
-		this.traces[routine] = newElems
+		this.routines[routine].elems = newElems
 	}
 }
 
@@ -683,11 +623,7 @@ func (this *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 		return false
 	}
 
-	for index, elem := range this.traces[routine] {
-		if elem.GetT(Request) >= startTSort {
-			this.traces[routine][index].SetTWithoutNotExecuted(elem.GetT(Sorting) + shift)
-		}
-	}
+	this.routines[routine].shift(startTSort, shift)
 
 	return true
 }
@@ -703,14 +639,14 @@ func (this *Trace) ShiftRoutine(routine int, startTSort int, shift int) bool {
 //   - map[int][]TraceElement: The partial trace
 func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element {
 	result := make(map[int][]Element)
-	for routine, trace := range this.traces {
-		for index, elem := range trace {
+	for routine, trace := range this.routines {
+		for index, elem := range trace.elems {
 			if _, ok := result[routine]; !ok {
 				result[routine] = make([]Element, 0)
 			}
 			time := elem.GetT(Sorting)
 			if time >= startTime && time <= endTime {
-				result[routine] = append(result[routine], this.traces[routine][index])
+				result[routine] = append(result[routine], this.routines[routine].At(index))
 			}
 		}
 	}
@@ -728,23 +664,19 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 //   - error
 func (this *Trace) Copy(keep bool) (Trace, error) {
 	mapping := make(map[string]Element)
-	tracesCopy := make(map[int][]Element)
-	for routine, trace := range this.traces {
-		tracesCopy[routine] = make([]Element, len(trace))
-		for i, elem := range trace {
-			tracesCopy[routine][i] = elem.Copy(mapping, keep)
 
+	newTrace := NewTrace()
+
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
+			newTrace.AddElement(elem.Copy(mapping, keep))
 			if control.WasCanceled() {
 				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
 			}
 		}
 	}
 
-	return Trace{
-		traces:     tracesCopy,
-		hbWasCalc:  this.hbWasCalc,
-		minTraceID: this.minTraceID,
-	}, nil
+	return newTrace, nil
 }
 
 // PrintTrace prints the trace sorted by tPost
@@ -765,8 +697,8 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 		vc     *a_clock.VectorClock
 		wVc    *a_clock.VectorClock
 	}, 0)
-	for _, tra := range this.traces {
-		for _, elem := range tra {
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
 			elemStr := elem.ToString()
 			if len(ty) == 0 || types.Contains(ty, elemStr[0:1]) {
 				elements = append(elements, struct {
@@ -814,8 +746,8 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 	res["broadcast"] = make([]Element, 0)
 	res["signal"] = make([]Element, 0)
 	res["wait"] = make([]Element, 0)
-	for _, trace := range this.traces {
-		for _, elem := range trace {
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
 			switch elem.(type) {
 			case *ElementCond:
 			default:
@@ -851,10 +783,7 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 //   - routine int: the routine of the element
 //   - index int: the index of the element in its routine
 func (this *Trace) SetTSortAtIndex(tPost, routine, index int) {
-	if len(this.traces[routine]) <= index {
-		return
-	}
-	this.traces[routine][index].SetT(Sorting, tPost)
+	this.routines[routine].SetTSortAtIndex(tPost, index)
 }
 
 // Iterator is an iterator to iterate over the element in the trace
@@ -908,6 +837,20 @@ func (this *Trace) GetTraceSection(start, end int) []Element {
 	return res
 }
 
+func (this *Trace) GetResourcesPerRout(routID int) []Resource {
+	return this.routines[routID].getResources()
+}
+
+func (this *Trace) GetResources() map[int][]Resource {
+	res := make(map[int][]Resource)
+
+	for id, rout := range this.routines {
+		res[id] = rout.getResources()
+	}
+
+	return res
+}
+
 // Next returns the next element from the iterator. If all elements have been returned
 // already, return nul
 //
@@ -918,25 +861,25 @@ func (this *Iterator) Next() Element {
 	// has the smallest tPost
 	minTSort := -1
 	minRoutine := -1
-	for routine, trace := range this.t.traces {
+	for routine, rout := range this.t.routines {
 		// no more elements in the routine trace
 		if this.currentIndex[routine] == -1 {
 			continue
 		}
 
 		// ignore empty routines
-		if len(trace) == 0 {
+		if rout.Empty() {
 			this.currentIndex[routine] = -1
 			continue
 		}
 
 		// ignore non executed operations
-		tSort := trace[this.currentIndex[routine]].GetT(Sorting)
+		tSort := rout.At(this.currentIndex[routine]).GetT(Sorting)
 		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
-		if minTSort == -1 || trace[this.currentIndex[routine]].GetT(Sorting) < minTSort {
-			minTSort = trace[this.currentIndex[routine]].GetT(Sorting)
+		if minTSort == -1 || rout.At(this.currentIndex[routine]).GetT(Sorting) < minTSort {
+			minTSort = rout.At(this.currentIndex[routine]).GetT(Sorting)
 			minRoutine = routine
 		}
 	}
@@ -944,12 +887,12 @@ func (this *Iterator) Next() Element {
 	// all executed elements have been processed
 	// check for elements with just a pre but no post
 	if minRoutine == -1 {
-		for routine := range this.t.traces {
+		for routine := range this.t.routines {
 			if this.currentIndex[routine] == -1 {
 				continue
 			}
 
-			element := this.t.traces[routine][this.currentIndex[routine]]
+			element := this.t.routines[routine].At(this.currentIndex[routine])
 			this.IncreaseIndex(routine)
 
 			return element
@@ -960,7 +903,7 @@ func (this *Iterator) Next() Element {
 	}
 
 	// return the element and increase the index
-	element := this.t.traces[minRoutine][this.currentIndex[minRoutine]]
+	element := this.t.routines[minRoutine].At(this.currentIndex[minRoutine])
 	this.IncreaseIndex(minRoutine)
 
 	return element
@@ -980,7 +923,7 @@ func (this *Iterator) IncreaseIndex(routine int) {
 		log.Error("Tried to increase index of -1 at routine ", routine)
 	}
 	this.currentIndex[routine]++
-	if this.currentIndex[routine] >= len(this.t.traces[routine]) {
+	if this.currentIndex[routine] >= this.t.routines[routine].Len() {
 		this.currentIndex[routine] = -1
 	}
 }

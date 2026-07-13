@@ -32,6 +32,8 @@ where `G` identifies the element as an routine creation element.
   the line number, where the trace of this new routine is saved in the trace.
 - [pos]: Position in the program, where the spawn was created.
 
+The function called when creating the new routine can be read from the first element in the new routine, which is a [function](./function.md) element.
+
 ## Implementation
 
 The element is recorded in the [newproc](../../goPatch/src/runtime/proc.go#L5059) function in the `goPatch/src/runtime/proc.go` file. Unfortunately we cannot use the normal `runtime.Caller` function to determine the code position of

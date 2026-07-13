@@ -38,12 +38,12 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range a_base.MainTrace.GetTraces() {
+	for rout, routine := range a_base.MainTrace.GetTraces() {
 		if rout == elem.GetRoutine() {
 			continue
 		}
 
-		for _, tElem := range trace {
+		for _, tElem := range routine.Elems() {
 			if sameElem && elem.GetObjId() != tElem.GetObjId() {
 				continue
 			}

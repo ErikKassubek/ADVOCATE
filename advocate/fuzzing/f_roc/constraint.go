@@ -31,9 +31,9 @@ import (
 func startConstraint(num, length int) []f_base.Constraint {
 	res := make([]f_base.Constraint, 0)
 
-	traces := a_base.MainTrace.GetTraces()
+	routines := a_base.MainTrace.GetTraces()
 
-	if len(traces) == 0 {
+	if len(routines) == 0 {
 		return res
 	}
 
@@ -42,14 +42,14 @@ func startConstraint(num, length int) []f_base.Constraint {
 	alreadyAdded := make(map[int]struct{})
 
 	for i := 0; i < 1000; i++ {
-		key := rand.Intn(len(traces)) + 1
-		tr := traces[key]
-		if len(tr) == 0 {
+		key := rand.Intn(len(routines)) + 1
+		rout := routines[key]
+		if rout.Empty() {
 			continue
 		}
 
-		ind := rand.Intn(len(tr))
-		elem := tr[ind]
+		ind := rand.Intn(rout.Len())
+		elem := rout.At(ind)
 
 		if _, ok := alreadyAdded[elem.GetT(trace.Commit)]; ok {
 			continue

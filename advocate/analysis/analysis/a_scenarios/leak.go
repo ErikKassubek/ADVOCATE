@@ -532,12 +532,12 @@ func CheckForStuckRoutine(simple bool) bool {
 
 	res := false
 
-	for routine, tr := range a_base.MainTrace.GetTraces() {
-		if len(tr) == 0 {
+	for routId, routine := range a_base.MainTrace.GetTraces() {
+		if routine.Empty() {
 			continue
 		}
 
-		lastElem := tr[len(tr)-1]
+		lastElem := routine.Last()
 		switch lastElem.(type) {
 		case *trace.ElementRoutineEnd:
 			continue
@@ -585,23 +585,23 @@ func CheckForStuckRoutine(simple bool) bool {
 		}
 
 		arg := results.TraceElementResult{
-			RoutineID: routine, ObjID: lastElem.GetObjId(), TRequest: lastElem.GetT(trace.Request),
+			RoutineID: routId, ObjID: lastElem.GetObjId(), TRequest: lastElem.GetT(trace.Request),
 			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 
 		timer, ctx := isLeakTimerOrCtx(lastElem)
 
 		if leakType == helper.LUnknown {
-			leaks[routine] = TERLeak{leakType,
+			leaks[routId] = TERLeak{leakType,
 				"elem", []results.ResultElem{arg}, "", []results.ResultElem{}}
 		} else if timer {
-			leaks[routine] = TERLeak{helper.LUnknown,
+			leaks[routId] = TERLeak{helper.LUnknown,
 				"elem", []results.ResultElem{arg}, "", []results.ResultElem{}}
 		} else if ctx {
-			leaks[routine] = TERLeak{helper.LContext,
+			leaks[routId] = TERLeak{helper.LContext,
 				"elem", []results.ResultElem{arg}, "", []results.ResultElem{}}
 		} else {
-			leaks[routine] = TERLeak{leakType,
+			leaks[routId] = TERLeak{leakType,
 				"elem", []results.ResultElem{arg}, "", []results.ResultElem{}}
 		}
 

@@ -21,15 +21,13 @@ func (this *Trace) AddTraceObjectAware(routine int, objects string) error {
 		return nil
 	}
 
-	this.objectAware[routine] = make([]int, 0)
-
 	for _, o := range obj {
 		n, err := strconv.Atoi(o)
 		if err != nil {
 			return err
 		}
 
-		this.objectAware[routine] = append(this.objectAware[routine], n)
+		this.routines[routine].addResource(Resource{n})
 	}
 
 	return nil

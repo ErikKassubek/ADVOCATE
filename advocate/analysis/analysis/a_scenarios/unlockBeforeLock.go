@@ -102,7 +102,7 @@ func CheckForUnlockBeforeLock() {
 			for i := 0; i < len(locks); {
 				removed := false
 				for j := 0; j < len(unlocks); {
-					if a_clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == a_hb.Concurrent {
+					if a_clock.GetHappensBefore(locks[i].GetVC(a_clock.Strong), unlocks[j].GetVC(a_clock.Strong)) == a_hb.Concurrent {
 						locksSorted = append(locksSorted, locks[i])
 						unlockSorted = append(unlockSorted, unlocks[i])
 						locks = append(locks[:i], locks[i+1:]...)

@@ -130,33 +130,40 @@ const (
 
 // Element is an interface for the elements in a trace
 type Element interface {
-	setID(ID int)
 	GetID() int
+	setID(ID int)
 	GetObjId() int
 
 	GetT(t timeType) int
 	SetT(t timeType, time int)
+	SetTWithoutNotExecuted(tSort int)
 	Committed() bool
 
 	GetPos() string
 	GetFile() string
 	GetLine() int
-	GetReplayID() string
-	GetType(operation bool) OperationType
-	GetTID() string
+
 	GetRoutine() int
+	GetTraceIndex() (int, int)
+
+	GetType(operation bool) OperationType
+
 	IsEqual(elem Element) bool // TODO: fix
 	IsSameElement(elem Element) bool
-	GetTraceIndex() (int, int)
-	SetTWithoutNotExecuted(tSort int)
+
 	ToString() string
-	SetVc(vc *a_clock.VectorClock)
-	SetWVc(vc *a_clock.VectorClock)
-	GetVC() *a_clock.VectorClock
-	GetWVC() *a_clock.VectorClock
-	Copy(mapping map[string]Element, keep bool) Element
+
+	SetVc(weak a_clock.VcType, vc *a_clock.VectorClock)
+	GetVC(weak a_clock.VcType) *a_clock.VectorClock
+
 	GetNumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
+
+	GetReplayID() string
+	GetTID() string
+
+	Copy(mapping map[string]Element, keep bool) Element
+
 	IsValid() bool
 }
 

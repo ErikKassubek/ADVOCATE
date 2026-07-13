@@ -37,7 +37,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	// check if there is an earlier send, that could happen concurrently to close
 	if a_base.AnalysisCasesMap[flags.SendOnClosed] && a_base.HasSend[id] {
 		for routine, mrs := range a_base.MostRecentSend {
-			happensBefore := a_clock.GetHappensBefore(mrs[id].Vc, a_base.CloseData[id].GetVC())
+			happensBefore := a_clock.GetHappensBefore(mrs[id].Vc, a_base.CloseData[id].GetVC(a_clock.Strong))
 
 			if mrs[id].Elem != nil && mrs[id].Elem.GetTID() != "" && happensBefore != a_hb.Before {
 
@@ -79,7 +79,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 
 	// if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] && baseA.HasReceived[id] {
 	// 	for routine, mrr := range baseA.MostRecentReceive {
-	// 		happensBefore := clock.GetHappensBefore(baseA.CloseData[id].GetVC(), mrr[id].Vc)
+	// 		happensBefore := clock.GetHappensBefore(baseA.CloseData[id].GetVC(a_clock.Strong), mrr[id].Vc)
 	// 		if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {
 
 	// 			file1, line1, tPre1, err := trace.InfoFromTID(mrr[id].Elem.GetTID()) // recv

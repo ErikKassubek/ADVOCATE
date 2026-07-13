@@ -22,7 +22,7 @@ This will create 2 trace elements.
 The call of a function is recorded as
 
 ```
-F,[t],[name],[posFunc]
+F,[t],[name],[posDef],[posCall]
 ```
 
 where `F` identifies the element as a function call.
@@ -30,7 +30,8 @@ where `F` identifies the element as a function call.
 - [t] $\in \mathbb N$: This is the time. It is replaced by the int value of the global counter at the moment of the routines creation.
 - [posCal]: Position of the function call (f())
 - [name]: Name of the function in form "pkgName.funcName" or "pkgName.receiverName.funcName"
-- [pos]: Position of the function call
+- [posDef]: Position of the function declaration
+- [posCall]: Position of the function call
 
 The return of a funciton is recorded as 
 
@@ -46,6 +47,36 @@ The element does not contain a position. The function corresponding to the retur
 
 ## Implementation
 
-TODO: call
+The recording of those events cannot simply be implemented in the runtime, 
+since Go does not provide function entry and exit hooks.
 
-The return element is recorded in `deferreturn` [deferreturn](../../goPatch/src/runtime/panic.go#L579). This function is automatically called when a function returnes, with the main task of the function beeing to call the `defer` in the function. The recording of the return element is added after all the defered functions have been called.
+Instead, we implement it via the compiler. 
+
+During the building of the SSA during the compilation, we add in calls to 
+the recording functions implemented in the runtime. 
+
+This is mainly done in [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go) in the buildssa function.
+
+For the recording of a function call, we implement a function `advocateFunctionCall` and insert it into the SSA using
+
+```go
+if fn != nil &&
+		fn.Sym().Pkg != nil &&
+		fn.Sym().Pkg.Path != "runtime" &&
+		fn.Pragma&ir.Nosplit == 0 &&
+		!fn.Wrapper() &&
+		fn.Sym().Name != "advocateFunctionCall" &&
+        fn.Sym().Name != "advocateFunctionReturn" {
+
+		s.rtcall(
+			ir.Syms.AdvocateFunctionCall,
+			true,
+			nil,
+		)
+	}
+```
+
+We insert it into the compiler using by adding `AdvocateFunctionCall *obj.LSym` into `symsStruct` in [src/cmd/compile/internal/ir/symtab.go](./goPatch/src/cmd/compile/internal/ir/symtab.go) and initialize it in [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go) as `ir.Syms.AdvocateFunctionCall = typecheck.LookupRuntimeFunc("advocateFunctionCall")`.
+We classify the recording function as as a runtimeDecl in [src/cmd/compile/internal/typecheck/builtin.go](./goPatch/src/cmd/compile/internal/typecheck/builtin.go).
+
+For the return of a function we create the corresponding elements for the advocateFunctionReturn function and add it into the `exit` function in the SSA creation.

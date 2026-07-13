@@ -167,7 +167,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 	// 	for _, c := range cases {
 	// 		scenarios.CheckForLeakChannelRun(routine, c.GetRoutine(),
 	// 			baseA.ElemWithVc{
-	// 				Vc:   se.GetVC().Copy(),
+	// 				Vc:   se.GetVC(a_clock.Strong).Copy(),
 	// 				Elem: se},
 	// 			c.GetType(true), c.IsBuffered())
 	// 	}
@@ -447,7 +447,7 @@ func setChannelAsLastSend(c trace.Element) {
 	}
 	a_base.MostRecentSend[routine][id] = a_base.ElemWithVcVal{
 		Elem: c,
-		Vc:   c.GetVC(),
+		Vc:   c.GetVC(a_clock.Strong),
 		Val:  id,
 	}
 	a_base.HasSend[routine] = true
@@ -470,7 +470,7 @@ func setChannelAsLastReceive(c trace.Element) {
 	}
 	a_base.MostRecentReceive[routine][id] = a_base.ElemWithVcVal{
 		Elem: c,
-		Vc:   c.GetVC(),
+		Vc:   c.GetVC(a_clock.Strong),
 		Val:  id,
 	}
 	a_base.HasReceived[id] = true

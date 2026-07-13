@@ -11,6 +11,7 @@
 package a_vc
 
 import (
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 )
 
@@ -23,8 +24,8 @@ import (
 func UpdateHBFork(fo *trace.ElementFork) {
 	routine := fo.GetRoutine()
 
-	fo.SetVc(CurrentVC[routine])
-	fo.SetWVc(CurrentWVC[routine])
+	fo.SetVc(a_clock.Strong, CurrentVC[routine])
+	fo.SetVc(a_clock.Weak, CurrentWVC[routine])
 
 	oldRout := fo.GetRoutine()
 	newRout := fo.GetObjId()

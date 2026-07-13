@@ -54,12 +54,12 @@ func CheckForSelectCaseWithPartner() {
 				a_base.SelectCases[j].PartnerFound = true
 				a_base.SelectCases[i].Partner = append(a_base.SelectCases[i].Partner, a_base.ElemWithVcVal{
 					Elem: a_base.SelectCases[j].Sel,
-					Vc:   a_base.SelectCases[j].Sel.GetVC(),
+					Vc:   a_base.SelectCases[j].Sel.GetVC(a_clock.Strong),
 					Val:  0,
 				})
 				a_base.SelectCases[j].Partner = append(a_base.SelectCases[j].Partner, a_base.ElemWithVcVal{
 					Elem: a_base.SelectCases[i].Sel,
-					Vc:   a_base.SelectCases[i].Sel.GetVC(),
+					Vc:   a_base.SelectCases[i].Sel.GetVC(a_clock.Strong),
 					Val:  0,
 				})
 			}
@@ -116,7 +116,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *a_clock.Ve
 				found = true
 				vcTID := a_base.ElemWithVcVal{
 					Elem: p,
-					Vc:   p.GetVC().Copy(),
+					Vc:   p.GetVC(a_clock.Strong).Copy(),
 					Val:  0,
 				}
 				partner = append(partner, vcTID)
@@ -257,7 +257,7 @@ func RerunCheckForSelectCaseWithPartnerChannel() {
 	for _, tr := range a_base.MainTrace.GetTraces() {
 		for _, elem := range tr {
 			if e, ok := elem.(*trace.ElementChannel); ok {
-				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(),
+				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(a_clock.Strong),
 					e.GetType(true) == trace.ChannelSend, e.IsBuffered())
 			}
 		}

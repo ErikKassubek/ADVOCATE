@@ -229,6 +229,11 @@ func InitConfig() {
 	ir.Syms.WasmTruncS = typecheck.LookupRuntimeVar("wasmTruncS")
 	ir.Syms.WasmTruncU = typecheck.LookupRuntimeVar("wasmTruncU")
 	ir.Syms.SigPanic = typecheck.LookupRuntimeFunc("sigpanic")
+
+	// ADVOCATE-START
+	ir.Syms.AdvocateFunctionCall = typecheck.LookupRuntimeFunc("advocateFunctionCall")
+	ir.Syms.AdvocateFunctionReturn = typecheck.LookupRuntimeFunc("advocateFunctionReturn")
+	// ADVOCATE-END
 }
 
 func InitTables() {
@@ -454,6 +459,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 
 	s.startBlock(s.f.Entry)
 	s.vars[memVar] = s.startmem
+
 	if s.hasOpenDefers {
 		// Create the deferBits variable and stack slot.  deferBits is a
 		// bitmask showing which of the open-coded defers in this function
@@ -586,8 +592,20 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncenter, true, nil, s.newValue0(ssa.OpGetCallerPC, types.Types[types.TUINTPTR]))
 	}
+
 	s.zeroResults()
 	s.paramsToHeap()
+
+	// ADVOCATE-START
+	if shouldAdvocate(fn) {
+		s.rtcall(
+			ir.Syms.AdvocateFunctionCall,
+			true,
+			nil,
+		)
+	}
+	// ADVOCATE-END
+
 	s.stmtList(fn.Body)
 
 	// fallthrough to exit
@@ -2276,6 +2294,43 @@ func (s *state) stmt(n ir.Node) {
 // worse line-number information)
 const shareDeferExits = false
 
+// ADOVCATE-START
+func shouldAdvocate(fn *ir.Func) bool {
+	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
+		return false
+	}
+
+	pkg := fn.Sym().Pkg.Path
+
+	if pkg == "runtime" ||
+		pkg == "syscall" ||
+		pkg == "os" ||
+		pkg == "internal/syscall" {
+
+		return false
+	}
+
+	if fn.Pragma&ir.Nosplit != 0 || fn.Wrapper() {
+		return false
+	}
+
+	name := fn.Sym().Name
+
+	if name == "advocateFunctionCall" || name == "advocateFunctionReturn" {
+		return false
+	}
+
+	return true
+}
+
+func (s *state) advocateExitCall(fn *ir.Func) {
+	if shouldAdvocate(fn) {
+		s.rtcall(ir.Syms.AdvocateFunctionReturn, true, nil)
+	}
+}
+
+// ADVOCATE-END
+
 // exit processes any code that needs to be generated just before returning.
 // It returns a BlockRet block that ends the control flow. Its control value
 // will be set to the final memory state.
@@ -2286,6 +2341,9 @@ func (s *state) exit() *ssa.Block {
 				if s.curBlock.Kind != ssa.BlockPlain {
 					panic("Block for an exit should be BlockPlain")
 				}
+				// ADVOCATE-START
+				s.advocateExitCall(s.curfn)
+				// ADVOCATE-END
 				s.curBlock.AddEdgeTo(s.lastDeferExit)
 				s.endBlock()
 				return s.lastDeferFinalBlock
@@ -2341,6 +2399,10 @@ func (s *state) exit() *ssa.Block {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncexit, true, nil)
 	}
+
+	// ADVOCATE-START
+	s.advocateExitCall(s.curfn)
+	// ADVOCATE-END
 
 	results[len(results)-1] = s.mem()
 	m := s.newValue0(ssa.OpMakeResult, s.f.OwnAux.LateExpansionResultType())

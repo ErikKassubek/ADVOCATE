@@ -10,15 +10,18 @@
 
 package a_vc
 
-import "advocate/trace"
+import (
+	"advocate/analysis/hb/a_clock"
+	"advocate/trace"
+)
 
 // UpdateHBNew store the vector clock of the element
 // Parameter:
 //   - n *trace.TraceElementAlloc: the new trace element
 func UpdateHBNew(n *trace.ElementAlloc) {
 	routine := n.GetRoutine()
-	n.SetVc(CurrentVC[routine])
-	n.SetWVc(CurrentWVC[routine])
+	n.SetVc(a_clock.Strong, CurrentVC[routine])
+	n.SetVc(a_clock.Weak, CurrentWVC[routine])
 }
 
 // UpdateHBRoutineEnd store the vector clock of the element
@@ -26,6 +29,6 @@ func UpdateHBNew(n *trace.ElementAlloc) {
 //   - re *trace.TraceElementRoutineEnd: the new trace element
 func UpdateHBRoutineEnd(re *trace.ElementRoutineEnd) {
 	routine := re.GetRoutine()
-	re.SetVc(CurrentVC[routine])
-	re.SetWVc(CurrentWVC[routine])
+	re.SetVc(a_clock.Strong, CurrentVC[routine])
+	re.SetVc(a_clock.Weak, CurrentWVC[routine])
 }

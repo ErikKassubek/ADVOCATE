@@ -58,6 +58,26 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	return nil
 }
 
+// ========================================================
+// ID
+// ========================================================
+
+// GetID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (this *ElementRoutineEnd) GetID() int {
+	return this.id
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementRoutineEnd) setID(ID int) {
+	this.id = ID
+}
+
 // GetObjId is a dummy function to implement the traceElement interface
 //
 // Returns:
@@ -66,13 +86,9 @@ func (this *ElementRoutineEnd) GetObjId() int {
 	return 0
 }
 
-// GetRoutine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementRoutineEnd) GetRoutine() int {
-	return this.routine
-}
+// ========================================================
+// Timestamps
+// ========================================================
 
 // GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
 //
@@ -80,133 +96,6 @@ func (this *ElementRoutineEnd) GetRoutine() int {
 //   - int: The tPre of the element
 func (this *ElementRoutineEnd) GetT(_ timeType) int {
 	return this.tPost
-}
-
-// Committed returns if the operation was committed (tPost != 0)
-//
-// Returns:
-//   - bool: true if committed, false if not
-func (this *ElementRoutineEnd) Committed() bool {
-	return true
-}
-
-// GetPos is a dummy function to implement the traceElement interface
-//
-// Returns:
-//   - string: empty string
-func (this *ElementRoutineEnd) GetPos() string {
-	return ""
-}
-
-// GetReplayID is a dummy function to implement the traceElement interface
-//
-// Returns:
-//   - string: empty string
-func (this *ElementRoutineEnd) GetReplayID() string {
-	return ""
-}
-
-// GetFile is a dummy function to implement the traceElement interface
-//
-// Returns:
-//   - string: empty string
-func (this *ElementRoutineEnd) GetFile() string {
-	return ""
-}
-
-// GetLine is a dummy function to implement the traceElement interface
-//
-// Returns:
-//   - int: 0
-func (this *ElementRoutineEnd) GetLine() int {
-	return 0
-}
-
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementRoutineEnd) GetTID() string {
-	return ""
-}
-
-// SetVc sets the vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementRoutineEnd) SetVc(vc *a_clock.VectorClock) {
-	this.vc = vc.Copy()
-}
-
-// SetWVc sets the weak vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementRoutineEnd) SetWVc(vc *a_clock.VectorClock) {
-	this.wVc = vc.Copy()
-}
-
-// GetVC returns the vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementRoutineEnd) GetVC() *a_clock.VectorClock {
-	return this.vc
-}
-
-// GetWVC returns the weak vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementRoutineEnd) GetWVC() *a_clock.VectorClock {
-	return this.wVc
-}
-
-// GetType returns the object type
-//
-// Parameter:
-//   - operation bool: if true get the operation code, otherwise only the primitive code
-//
-// Returns:
-//   - string: the object type
-func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
-	if !operation {
-		return End
-	}
-	return EndRoutine
-}
-
-// IsEqual checks if an trace element is equal to this element
-//
-// Parameter:
-//   - elem TraceElement: The element to check against
-//
-// Returns:
-//   - bool: true if it is the same operation, false otherwise
-func (this *ElementRoutineEnd) IsEqual(elem Element) bool {
-	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: always false
-func (this *ElementRoutineEnd) IsSameElement(elem Element) bool {
-	return false
-}
-
-// GetTraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementRoutineEnd) GetTraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
@@ -229,6 +118,112 @@ func (this *ElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementRoutineEnd) Committed() bool {
+	return true
+}
+
+// ========================================================
+// Position
+// ========================================================
+
+// GetPos is a dummy function to implement the traceElement interface
+//
+// Returns:
+//   - string: empty string
+func (this *ElementRoutineEnd) GetPos() string {
+	return ""
+}
+
+// GetFile is a dummy function to implement the traceElement interface
+//
+// Returns:
+//   - string: empty string
+func (this *ElementRoutineEnd) GetFile() string {
+	return ""
+}
+
+// GetLine is a dummy function to implement the traceElement interface
+//
+// Returns:
+//   - int: 0
+func (this *ElementRoutineEnd) GetLine() int {
+	return 0
+}
+
+// ========================================================
+// Index
+// ========================================================
+
+// GetRoutine returns the routine ID of the element.
+//
+// Returns:
+//   - int: The routine of the element
+func (this *ElementRoutineEnd) GetRoutine() int {
+	return this.routine
+}
+
+// GetTraceIndex returns trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (this *ElementRoutineEnd) GetTraceIndex() (int, int) {
+	return this.routine, this.index
+}
+
+// ========================================================
+// Operation
+// ========================================================
+
+// GetType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - string: the object type
+func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
+	if !operation {
+		return End
+	}
+	return EndRoutine
+}
+
+// ========================================================
+// Equal
+// ========================================================
+
+// IsEqual checks if an trace element is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (this *ElementRoutineEnd) IsEqual(elem Element) bool {
+	return this.id == elem.GetID()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (this *ElementRoutineEnd) IsSameElement(elem Element) bool {
+	return false
+}
+
+// ========================================================
+// String
+// ========================================================
+
 // ToString returns the simple string representation of the element
 //
 // Returns:
@@ -237,21 +232,83 @@ func (this *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(this.tPost)
 }
 
-// GetID returns the trace id
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
-//   - int: the trace id
-func (this *ElementRoutineEnd) GetID() int {
-	return this.id
+//   - string: The tID of the element
+func (this *ElementRoutineEnd) GetTID() string {
+	return ""
 }
 
-// GetTraceID sets the trace id
+// ========================================================
+// VC
+// ========================================================
+
+// SetVc sets the vector clock
 //
 // Parameter:
-//   - ID int: the trace id
-func (this *ElementRoutineEnd) setID(ID int) {
-	this.id = ID
+//   - weak bool
+//   - vc *clock.VectorClock: the vector clock
+func (this *ElementRoutineEnd) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	if weak == a_clock.Weak {
+		this.wVc = vc.Copy()
+	} else {
+		this.vc = vc.Copy()
+	}
 }
+
+// GetVC returns the vector clock of the element
+//
+// Parameter:
+//   - weak bool
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
+func (this *ElementRoutineEnd) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	if weak == a_clock.Weak {
+		return this.wVc
+	}
+	return this.vc
+}
+
+// ========================================================
+// Concurrent
+// ========================================================
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+func (this *ElementRoutineEnd) GetNumberConcurrent(_, _ bool) int {
+	return -1
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+func (this *ElementRoutineEnd) SetNumberConcurrent(_ int, _, _ bool) {}
+
+// GetConcurrent returns the elements that are concurrent to the element
+func (this *ElementRoutineEnd) GetConcurrent(_, _ bool) []Element {
+	return []Element{}
+}
+
+// SetConcurrent sets the concurrent elements
+func (this *ElementRoutineEnd) SetConcurrent(_ []Element, _, _ bool) {
+}
+
+// ========================================================
+// Replay
+// ========================================================
+
+// GetReplayID is a dummy function to implement the traceElement interface
+//
+// Returns:
+//   - string: empty string
+func (this *ElementRoutineEnd) GetReplayID() string {
+	return ""
+}
+
+// ========================================================
+// Copy
+// ========================================================
 
 // Copy the element
 //
@@ -283,24 +340,10 @@ func (this *ElementRoutineEnd) Copy(mapping map[string]Element, keep bool) Eleme
 	}
 }
 
+// ========================================================
+// Valid
+// ========================================================
+
 func (this *ElementRoutineEnd) IsValid() bool {
 	return this != nil
-}
-
-// GetNumberConcurrent returns the number of elements concurrent to the element
-// If not set, it returns -1
-func (this *ElementRoutineEnd) GetNumberConcurrent(_, _ bool) int {
-	return -1
-}
-
-// SetNumberConcurrent sets the number of concurrent elements
-func (this *ElementRoutineEnd) SetNumberConcurrent(_ int, _, _ bool) {}
-
-// GetConcurrent returns the elements that are concurrent to the element
-func (this *ElementRoutineEnd) GetConcurrent(_, _ bool) []Element {
-	return []Element{}
-}
-
-// SetConcurrent sets the concurrent elements
-func (this *ElementRoutineEnd) SetConcurrent(_ []Element, _, _ bool) {
 }

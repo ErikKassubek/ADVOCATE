@@ -19,12 +19,14 @@ package runtime
 // AdvocateTraceFunctionStart is a struct to store the start of a function
 // Fields:
 //   - t int: time
+//   - name string: name of the function
 //   - fileCal string: file of the function call
 //   - lineCal int: line of the function call
 //   - fileDef string: file of the function definition
 //   - lineDef int: line of the function definition
 type AdvocateTraceFunctionStart struct {
 	t        int64
+	name     string
 	fileCall string
 	lineCall int
 	fileDef  string
@@ -39,42 +41,44 @@ type AdvocateTraceFunctionReturn struct {
 }
 
 // AdvocateFunctionCall adds a function stall to the trace
-//
-// Returns:
-//   - index of the operation in the trace
-func AdvocateFunctionCall() int { // TODO: not yet called
+func advocateFunctionCall() { // TODO: not yet called
+	// println("A")
 	if advocateTracingDisabled {
-		return -1
+		return
 	}
 
+	// move to slow required because advocateFunctionCall is handled in the compiler
 	timer := GetNextTimeStep()
 
-	callerSkip := 2 // TODO: set
+	callerSkip := 1
 	_, fileCall, lineCall, _ := Caller(callerSkip + 1)
-	_, fileDef, lineDef, _ := Caller(callerSkip)
+	pc, fileDef, lineDef, _ := Caller(callerSkip)
 
 	if AdvocateIgnore(fileCall) && AdvocateIgnore(fileDef) {
-		return -1
+		return
 	}
+
+	funcName := FuncForPC(pc).Name()
 
 	elem := AdvocateTraceFunctionStart{
 		t:        timer,
+		name:     funcName,
 		fileCall: fileCall,
 		lineCall: lineCall,
 		fileDef:  fileDef,
 		lineDef:  lineDef,
 	}
 
-	return insertIntoTrace(elem)
+	insertIntoTrace(elem)
 }
 
 // AdvocateFunctionCall adds a function stall to the trace
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateFunctionReturn() int {
+func advocateFunctionReturn() {
 	if advocateTracingDisabled {
-		return -1
+		return
 	}
 
 	timer := GetNextTimeStep()
@@ -83,7 +87,7 @@ func AdvocateFunctionReturn() int {
 		t: timer,
 	}
 
-	return insertIntoTrace(elem)
+	insertIntoTrace(elem)
 }
 
 // Get a string representation of the trace element
@@ -91,7 +95,7 @@ func AdvocateFunctionReturn() int {
 // Returns:
 //   - string: the string representation
 func (elem AdvocateTraceFunctionStart) toString() string {
-	return buildTraceElemString("F", elem.t, posToString(elem.fileCall, elem.lineCall), posToString(elem.fileDef, elem.lineDef))
+	return buildTraceElemString("F", elem.t, elem.name, posToString(elem.fileDef, elem.lineDef), posToString(elem.fileCall, elem.lineCall))
 }
 
 // Get a string representation of the trace element

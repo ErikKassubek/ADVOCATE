@@ -12,6 +12,8 @@ package main
 
 import (
 	"advocate/advoc"
+	"advocate/static/s_blocking"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -27,10 +29,10 @@ func main() {
 		return
 	}
 
-	// if flags.Mode == "static" {
-	// 	s_blocking.Test() // TODO: remove this
-	// 	return
-	// }
+	if flags.Mode == "static" {
+		s_blocking.Test() // TODO: remove this
+		return
+	}
 
 	err := advoc.Run()
 	if err != nil {

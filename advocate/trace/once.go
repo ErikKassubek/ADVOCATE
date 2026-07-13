@@ -110,6 +110,26 @@ func (this *Trace) AddTraceElementOnce(routine int, tPre string,
 	return nil
 }
 
+// ========================================================
+// ID
+// ========================================================
+
+// GetID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (this *ElementOnce) GetID() int {
+	return this.id
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementOnce) setID(ID int) {
+	this.id = ID
+}
+
 // GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
@@ -118,13 +138,9 @@ func (this *ElementOnce) GetObjId() int {
 	return this.objId
 }
 
-// GetRoutine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementOnce) GetRoutine() int {
-	return this.routine
-}
+// ========================================================
+// Timestamps
+// ========================================================
 
 // GetT returns the t of the element
 //
@@ -147,157 +163,6 @@ func (this *ElementOnce) GetT(t timeType) int {
 	}
 
 	return this.tPost
-}
-
-// Committed returns if the operation was committed (tPost != 0)
-//
-// Returns:
-//   - bool: true if committed, false if not
-func (this *ElementOnce) Committed() bool {
-	return this.tPost != 0
-}
-
-// GetPos returns the position of the operation in the form [file]:[line].
-//
-// Returns:
-//   - string: The position of the element
-func (this *ElementOnce) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
-}
-
-// GetReplayID returns the replay id of the element
-//
-// Returns:
-//   - The replay id
-func (this *ElementOnce) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
-}
-
-// GetFile returns the file of the element
-//
-// Returns:
-//   - The file of the element
-func (this *ElementOnce) GetFile() string {
-	return this.file
-}
-
-// GetLine returns the line of the element
-//
-// Returns:
-//   - The line of the element
-func (this *ElementOnce) GetLine() int {
-	return this.line
-}
-
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementOnce) GetTID() string {
-	return "O@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
-}
-
-// SetVc sets the vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementOnce) SetVc(vc *a_clock.VectorClock) {
-	this.vc = vc.Copy()
-}
-
-// SetWVc sets the weak vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementOnce) SetWVc(vc *a_clock.VectorClock) {
-	this.wVc = vc.Copy()
-}
-
-// GetVC returns the vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementOnce) GetVC() *a_clock.VectorClock {
-	return this.vc
-}
-
-// GetWVC returns the weak vector clock of the element
-//
-// Returns:
-//   - VectorClock: The weak vector clock of the element
-func (this *ElementOnce) GetWVC() *a_clock.VectorClock {
-	return this.wVc
-}
-
-// GetType returns the object type
-//
-// Parameter:
-//   - operation bool: if true get the operation code, otherwise only the primitive code
-//
-// Returns:
-//   - ObjectType: the object type
-func (this *ElementOnce) GetType(operation bool) OperationType {
-	if !operation {
-		return Once
-	}
-
-	if this.suc {
-		return OnceSuc
-	}
-	return OnceFail
-}
-
-// GetSuc returns whether the once do was executed (successful)
-//
-// Returns:
-//   - bool: true if function in Do was executed, false otherwise
-func (this *ElementOnce) GetSuc() bool {
-	return this.suc
-}
-
-// SetSuc sets whether the once do was executed successful
-//
-// Parameter:
-//   - bool: true if function in Do was executed, false otherwise
-func (this *ElementOnce) SetSuc(s bool) {
-	this.suc = s
-}
-
-// IsEqual checks if an trace element is equal to this element
-//
-// Parameter:
-//   - elem TraceElement: The element to check against
-//
-// Returns:
-//   - bool: true if it is the same operation, false otherwise
-func (this *ElementOnce) IsEqual(elem Element) bool {
-	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: true if at and elem are operations on the same once
-func (this *ElementOnce) IsSameElement(elem Element) bool {
-	if elem.GetType(false) != Once {
-		return false
-	}
-
-	return this.objId == elem.GetObjId()
-}
-
-// GetTraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementOnce) GetTraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
@@ -335,6 +200,120 @@ func (this *ElementOnce) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementOnce) Committed() bool {
+	return this.tPost != 0
+}
+
+// ========================================================
+// Position
+// ========================================================
+
+// GetPos returns the position of the operation in the form [file]:[line].
+//
+// Returns:
+//   - string: The position of the element
+func (this *ElementOnce) GetPos() string {
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+}
+
+// GetFile returns the file of the element
+//
+// Returns:
+//   - The file of the element
+func (this *ElementOnce) GetFile() string {
+	return this.file
+}
+
+// GetLine returns the line of the element
+//
+// Returns:
+//   - The line of the element
+func (this *ElementOnce) GetLine() int {
+	return this.line
+}
+
+// ========================================================
+// Index
+// ========================================================
+
+// GetRoutine returns the routine ID of the element.
+//
+// Returns:
+//   - int: The routine of the element
+func (this *ElementOnce) GetRoutine() int {
+	return this.routine
+}
+
+// GetTraceIndex returns trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (this *ElementOnce) GetTraceIndex() (int, int) {
+	return this.routine, this.index
+}
+
+// ========================================================
+// Operation
+// ========================================================
+
+// GetType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (this *ElementOnce) GetType(operation bool) OperationType {
+	if !operation {
+		return Once
+	}
+
+	if this.suc {
+		return OnceSuc
+	}
+	return OnceFail
+}
+
+// ========================================================
+// Equal
+// ========================================================
+
+// IsEqual checks if an trace element is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (this *ElementOnce) IsEqual(elem Element) bool {
+	return this.id == elem.GetID()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same once
+func (this *ElementOnce) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Once {
+		return false
+	}
+
+	return this.objId == elem.GetObjId()
+}
+
+// ========================================================
+// String
+// ========================================================
+
 // ToString returns the simple string representation of the element
 //
 // Returns:
@@ -353,21 +332,109 @@ func (this *ElementOnce) ToString() string {
 	return res
 }
 
-// GetID returns the trace id
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
-//   - int: the trace id
-func (this *ElementOnce) GetID() int {
-	return this.id
+//   - string: The tID of the element
+func (this *ElementOnce) GetTID() string {
+	return "O@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
 }
 
-// GetTraceID sets the trace id
+// ========================================================
+// VC
+// ========================================================
+
+// SetVc sets the vector clock
 //
 // Parameter:
-//   - ID int: the trace id
-func (this *ElementOnce) setID(ID int) {
-	this.id = ID
+//   - weak bool
+//   - vc *clock.VectorClock: the vector clock
+func (this *ElementOnce) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	if weak == a_clock.Weak {
+		this.wVc = vc.Copy()
+	} else {
+		this.vc = vc.Copy()
+	}
 }
+
+// GetVC returns the vector clock of the element
+//
+// Parameter:
+//   - weak bool
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
+func (this *ElementOnce) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	if weak == a_clock.Weak {
+		return this.wVc
+	}
+	return this.vc
+}
+
+// ========================================================
+// Concurrent
+// ========================================================
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (this *ElementOnce) GetNumberConcurrent(weak, sameElem bool) int {
+	if weak {
+		if sameElem {
+			return this.numberConcurrentWeakSame
+		}
+		return this.numberConcurrentWeak
+	}
+	if sameElem {
+		return this.numberConcurrentSame
+	}
+	return this.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (this *ElementOnce) SetNumberConcurrent(c int, weak, sameElem bool) {
+	if weak {
+		if sameElem {
+			this.numberConcurrentWeakSame = c
+		} else {
+			this.numberConcurrentWeak = c
+		}
+	} else {
+		if sameElem {
+			this.numberConcurrentSame = c
+		} else {
+			this.numberConcurrent = c
+		}
+	}
+}
+
+// ========================================================
+// Replay
+// ========================================================
+
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
+func (this *ElementOnce) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+}
+
+// ========================================================
+// Copy
+// ========================================================
 
 // Copy the element
 //
@@ -417,50 +484,30 @@ func (this *ElementOnce) Copy(_ map[string]Element, keep bool) Element {
 	}
 }
 
+// ========================================================
+// Valid
+// ========================================================
+
 func (this *ElementOnce) IsValid() bool {
 	return this != nil
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
-// If not set, it returns -1
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
+// ========================================================
+// Others
+// ========================================================
+
+// GetSuc returns whether the once do was executed (successful)
 //
 // Returns:
-//   - number of concurrent element, or -1
-func (this *ElementOnce) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+//   - bool: true if function in Do was executed, false otherwise
+func (this *ElementOnce) GetSuc() bool {
+	return this.suc
 }
 
-// SetNumberConcurrent sets the number of concurrent elements
+// SetSuc sets whether the once do was executed successful
 //
 // Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (this *ElementOnce) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+//   - bool: true if function in Do was executed, false otherwise
+func (this *ElementOnce) SetSuc(s bool) {
+	this.suc = s
 }

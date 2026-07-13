@@ -45,150 +45,35 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	return nil
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ========================================================
+// ID
+// ========================================================
+
+// GetID returns the trace id
 //
 // Returns:
-//   - int: The id of the element
-func (this *ElementReplay) GetObjId() int {
-	return 0
+//   - int: the trace id
+func (this *ElementReplay) GetID() int {
+	return this.id
 }
 
-// GetRoutine returns the routine ID of the element.
+// GetTraceID sets the trace id
 //
-// Returns:
-//   - int: The routine of the element
-func (this *ElementReplay) GetRoutine() int {
-	return 1
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementReplay) setID(ID int) {
+	this.id = ID
 }
+
+// ========================================================
+// Timestamps
+// ========================================================
 
 // GetTPre returns the t of the element.
 //
 //   - int: The tPost of the element
 func (this *ElementReplay) GetT(_ timeType) int {
 	return this.tPost
-}
-
-// Committed returns if the operation was committed (tPost != 0)
-//
-// Returns:
-//   - bool: true if committed, false if not
-func (this *ElementReplay) Committed() bool {
-	return true
-}
-
-// GetPos returns the position of the operation in the form [file]:[line].
-//
-// Returns:
-//   - string: The file of the element
-func (this *ElementReplay) GetPos() string {
-	return ""
-}
-
-// GetReplayID returns the replay id of the element
-//
-// Returns:
-//   - The replay id
-func (this *ElementReplay) GetReplayID() string {
-	return ""
-}
-
-// GetFile returns the file of the element
-//
-// Returns:
-//   - The file of the element
-func (this *ElementReplay) GetFile() string {
-	return ""
-}
-
-// GetLine returns the line of the element
-//
-// Returns:
-//   - The line of the element
-func (this *ElementReplay) GetLine() int {
-	return 0
-}
-
-// GetTID returns the tID of the element.
-// The tID is normally a string of form [file]:[line]@[tPre]
-// Since the replay element is not used for any analysis, it returns an empty string
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementReplay) GetTID() string {
-	return ""
-}
-
-// SetVc is a dummy function to implement the TraceElement interface
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementReplay) SetVc(_ *a_clock.VectorClock) {
-}
-
-// SetWVc is a dummy function to implement the TraceElement interface
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementReplay) SetWVc(_ *a_clock.VectorClock) {
-}
-
-// GetVC is a dummy function to implement the TraceElement interface
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementReplay) GetVC() *a_clock.VectorClock {
-	return &a_clock.VectorClock{}
-}
-
-// GetWVC is a dummy function to implement the TraceElement interface
-func (this *ElementReplay) GetWVC() *a_clock.VectorClock {
-	return &a_clock.VectorClock{}
-}
-
-// GetType returns the object type
-//
-// Parameter:
-//   - operation bool: if true get the operation code, otherwise only the primitive code
-//
-// Returns:
-//   - ObjectType: the object type
-func (this *ElementReplay) GetType(operation bool) OperationType {
-	if !operation {
-		return Replay
-	}
-	return ReplayOP
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: always false
-func (this *ElementReplay) IsSameElement(elem Element) bool {
-	return false
-}
-
-// IsEqual checks if an trace element is equal to this element
-//
-// Parameter:
-//   - elem TraceElement: The element to check against
-//
-// Returns:
-//   - bool: true if it is the same operation, false otherwise
-func (this *ElementReplay) IsEqual(elem Element) bool {
-	return this.ToString() == elem.ToString()
-}
-
-// GetTraceIndex returns the trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementReplay) GetTraceIndex() (int, int) {
-	return -1, -1
 }
 
 // SetT sets the tPre and tPost of the element
@@ -210,6 +95,120 @@ func (this *ElementReplay) SetTWithoutNotExecuted(tSort int) {
 	this.tPost = tSort
 }
 
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementReplay) Committed() bool {
+	return true
+}
+
+// ========================================================
+// Position
+// ========================================================
+
+// GetPos returns the position of the operation in the form [file]:[line].
+//
+// Returns:
+//   - string: The file of the element
+func (this *ElementReplay) GetPos() string {
+	return ""
+}
+
+// GetFile returns the file of the element
+//
+// Returns:
+//   - The file of the element
+func (this *ElementReplay) GetFile() string {
+	return ""
+}
+
+// GetLine returns the line of the element
+//
+// Returns:
+//   - The line of the element
+func (this *ElementReplay) GetLine() int {
+	return 0
+}
+
+// ========================================================
+// Index
+// ========================================================
+
+// GetRoutine returns the routine ID of the element.
+//
+// Returns:
+//   - int: The routine of the element
+func (this *ElementReplay) GetRoutine() int {
+	return 1
+}
+
+// GetTraceIndex returns the trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (this *ElementReplay) GetTraceIndex() (int, int) {
+	return -1, -1
+}
+
+// GetObjId returns the ID of the primitive on which the operation was executed
+//
+// Returns:
+//   - int: The id of the element
+func (this *ElementReplay) GetObjId() int {
+	return 0
+}
+
+// ========================================================
+// Operation
+// ========================================================
+
+// GetType returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (this *ElementReplay) GetType(operation bool) OperationType {
+	if !operation {
+		return Replay
+	}
+	return ReplayOP
+}
+
+// ========================================================
+// Equal
+// ========================================================
+
+// IsEqual checks if an trace element is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (this *ElementReplay) IsEqual(elem Element) bool {
+	return this.id == elem.GetID()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (this *ElementReplay) IsSameElement(elem Element) bool {
+	return false
+}
+
+// ========================================================
+// String
+// ========================================================
+
 // ToString returns the simple string representation of the element.
 //
 // Returns:
@@ -219,53 +218,32 @@ func (this *ElementReplay) ToString() string {
 	return res
 }
 
-// UpdateVectorClock update and stores the vector clock of the element
-func (this *ElementReplay) UpdateVectorClock() {
-	// nothing to do
-}
-
-// GetID returns the trace id
+// GetTID returns the tID of the element.
+// The tID is normally a string of form [file]:[line]@[tPre]
+// Since the replay element is not used for any analysis, it returns an empty string
 //
 // Returns:
-//   - int: the trace id
-func (this *ElementReplay) GetID() int {
-	return this.id
+//   - string: The tID of the element
+func (this *ElementReplay) GetTID() string {
+	return ""
 }
 
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementReplay) setID(ID int) {
-	this.id = ID
+// ========================================================
+// VC
+// ========================================================
+
+// SetVc is a dummy function to implement the TraceElement interface
+func (this *ElementReplay) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
 }
 
-// Copy creates a copy of the element
-//
-// Parameter:
-//   - _ map[string]Element: map containing all already copied elements.
-//   - keep bool: if true, keep vc and order information
-//
-// Returns:
-//   - TraceElement: The copy of the element
-func (this *ElementReplay) Copy(_ map[string]Element, keep bool) Element {
-	if !keep {
-		return &ElementReplay{
-			id:       this.id,
-			tPost:    0,
-			exitCode: this.exitCode,
-		}
-	}
-	return &ElementReplay{
-		id:       this.id,
-		tPost:    this.tPost,
-		exitCode: this.exitCode,
-	}
+// GetVC is a dummy function to implement the TraceElement interface
+func (this *ElementReplay) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
+	return &a_clock.VectorClock{}
 }
 
-func (this *ElementReplay) IsValid() bool {
-	return this != nil
-}
+// ========================================================
+// Concurrent
+// ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
@@ -292,4 +270,51 @@ func (this *ElementReplay) GetConcurrent(_, _ bool) []Element {
 
 // SetConcurrent sets the concurrent elements
 func (this *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
+}
+
+// ========================================================
+// Replay
+// ========================================================
+
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
+func (this *ElementReplay) GetReplayID() string {
+	return ""
+}
+
+// ========================================================
+// Copy
+// ========================================================
+
+// Copy creates a copy of the element
+//
+// Parameter:
+//   - _ map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
+//
+// Returns:
+//   - TraceElement: The copy of the element
+func (this *ElementReplay) Copy(_ map[string]Element, keep bool) Element {
+	if !keep {
+		return &ElementReplay{
+			id:       this.id,
+			tPost:    0,
+			exitCode: this.exitCode,
+		}
+	}
+	return &ElementReplay{
+		id:       this.id,
+		tPost:    this.tPost,
+		exitCode: this.exitCode,
+	}
+}
+
+// ========================================================
+// Valid
+// ========================================================
+
+func (this *ElementReplay) IsValid() bool {
+	return this != nil
 }

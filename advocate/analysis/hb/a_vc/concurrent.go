@@ -96,14 +96,14 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 			}
 
 			if weak {
-				if a_clock.IsConcurrent(elem.GetWVC(), tElem.GetWVC()) {
+				if a_clock.IsConcurrent(elem.GetVC(a_clock.Weak), tElem.GetVC(a_clock.Weak)) {
 					res = append(res, tElem)
 					if !all {
 						return res
 					}
 				}
 			} else {
-				if a_clock.IsConcurrent(elem.GetVC(), tElem.GetVC()) {
+				if a_clock.IsConcurrent(elem.GetVC(a_clock.Strong), tElem.GetVC(a_clock.Strong)) {
 					res = append(res, tElem)
 					if !all {
 						return res

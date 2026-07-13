@@ -12,6 +12,7 @@ package a_vc
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 )
 
@@ -22,8 +23,8 @@ import (
 func UpdateHBAtomic(at *trace.ElementAtomic) {
 	routine := at.GetRoutine()
 
-	at.SetVc(CurrentVC[routine])
-	at.SetWVc(CurrentWVC[routine])
+	at.SetVc(a_clock.Strong, CurrentVC[routine])
+	at.SetVc(a_clock.Weak, CurrentWVC[routine])
 
 	switch at.GetType(true) {
 	case trace.AtomicLoad:
@@ -58,8 +59,8 @@ func Read(at *trace.ElementAtomic, sync bool, routine int) {
 	id := at.GetObjId()
 
 	if sync && a_base.LastAtomicWriter[id] != nil {
-		CurrentVC[routine].Sync(a_base.LastAtomicWriter[id].GetVC())
-		CurrentWVC[routine].Sync(a_base.LastAtomicWriter[id].GetWVC())
+		CurrentVC[routine].Sync(a_base.LastAtomicWriter[id].GetVC(a_clock.Strong))
+		CurrentWVC[routine].Sync(a_base.LastAtomicWriter[id].GetVC(a_clock.Weak))
 	}
 }
 

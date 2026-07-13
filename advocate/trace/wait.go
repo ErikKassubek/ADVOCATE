@@ -151,6 +151,26 @@ func EmptyWait(id int) ElementWait {
 	}
 }
 
+// ========================================================
+// ID
+// ========================================================
+
+// GetID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (this *ElementWait) GetID() int {
+	return this.id
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementWait) setID(ID int) {
+	this.id = ID
+}
+
 // GetObjId returns the ID of the primitive on which the operation was executed
 //
 // Returns:
@@ -159,13 +179,9 @@ func (this *ElementWait) GetObjId() int {
 	return this.objId
 }
 
-// GetRoutine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementWait) GetRoutine() int {
-	return this.routine
-}
+// ========================================================
+// Timestamps
+// ========================================================
 
 // GetT returns the t of the element
 //
@@ -188,164 +204,6 @@ func (this *ElementWait) GetT(t timeType) int {
 	}
 
 	return this.tPost
-}
-
-// Committed returns if the operation was committed (tPost != 0)
-//
-// Returns:
-//   - bool: true if committed, false if not
-func (this *ElementWait) Committed() bool {
-	return this.tPost != 0
-}
-
-// GetPos returns the position of the operation in the form [file]:[line].
-//
-// Returns:
-//   - string: The position of the element
-func (this *ElementWait) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
-}
-
-// GetReplayID returns the replay id of the element
-//
-// Returns:
-//   - The replay id
-func (this *ElementWait) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
-}
-
-// GetFile returns the file where the operation represented by the element was executed
-//
-// Returns:
-//   - The file of the element
-func (this *ElementWait) GetFile() string {
-	return this.file
-}
-
-// GetLine returns the line where the operation represented by the element was executed
-//
-// Returns:
-//   - The line of the element
-func (this *ElementWait) GetLine() int {
-	return this.line
-}
-
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementWait) GetTID() string {
-	return "W@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
-}
-
-// IsWait returns if the operation is a wait op
-//
-// Returns:
-//   - bool: True if the operation is a wait op
-func (this *ElementWait) IsWait() bool {
-	return this.op == WaitWait
-}
-
-// GetDelta returns the delta of the element. The delta is the value by which the counter
-// of the wait has been changed. For Add the delta is > 0, for Done it is -1,
-// for Wait it is 0
-//
-// Returns:
-//   - int: the delta of the wait element
-func (this *ElementWait) GetDelta() int {
-	return this.delta
-}
-
-// SetVal sets the value of the internal counter
-//
-// Parameter:
-//   - v int: the new value
-func (this *ElementWait) SetVal(v int) {
-	this.val = v
-}
-
-// SetVc sets the vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementWait) SetVc(vc *a_clock.VectorClock) {
-	this.vc = vc.Copy()
-}
-
-// SetWVc sets the weak vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementWait) SetWVc(vc *a_clock.VectorClock) {
-	this.wVc = vc.Copy()
-}
-
-// GetVC returns the vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementWait) GetVC() *a_clock.VectorClock {
-	return this.vc
-}
-
-// GetWVC returns the weak vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementWait) GetWVC() *a_clock.VectorClock {
-	return this.wVc
-}
-
-// GetType returns the string representation of the object type
-//
-// Parameter:
-//   - operation bool: if true get the operation code, otherwise only the primitive code
-//
-// Returns:
-//   - ObjectType: the object type
-func (this *ElementWait) GetType(operation bool) OperationType {
-	if !operation {
-		return Wait
-	}
-
-	return this.op
-}
-
-// IsEqual checks if an trace element is equal to this element
-//
-// Parameter:
-//   - elem TraceElement: The element to check against
-//
-// Returns:
-//   - bool: true if it is the same operation, false otherwise
-func (this *ElementWait) IsEqual(elem Element) bool {
-	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: true if at and elem are operations on the same w3ait group
-func (this *ElementWait) IsSameElement(elem Element) bool {
-	if elem.GetType(false) != Wait {
-		return false
-	}
-
-	return this.objId == elem.GetObjId()
-}
-
-// GetTraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementWait) GetTraceIndex() (int, int) {
-	return this.routine, this.index
 }
 
 // SetT sets the tPre and tPost of the element
@@ -383,6 +241,125 @@ func (this *ElementWait) SetTWithoutNotExecuted(tSort int) {
 	}
 }
 
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementWait) Committed() bool {
+	return this.tPost != 0
+}
+
+// ========================================================
+// Position
+// ========================================================
+
+// GetPos returns the position of the operation in the form [file]:[line].
+//
+// Returns:
+//   - string: The position of the element
+func (this *ElementWait) GetPos() string {
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+}
+
+// GetFile returns the file where the operation represented by the element was executed
+//
+// Returns:
+//   - The file of the element
+func (this *ElementWait) GetFile() string {
+	return this.file
+}
+
+// GetLine returns the line where the operation represented by the element was executed
+//
+// Returns:
+//   - The line of the element
+func (this *ElementWait) GetLine() int {
+	return this.line
+}
+
+// ========================================================
+// Index
+// ========================================================
+
+// GetRoutine returns the routine ID of the element.
+//
+// Returns:
+//   - int: The routine of the element
+func (this *ElementWait) GetRoutine() int {
+	return this.routine
+}
+
+// GetTraceIndex returns trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (this *ElementWait) GetTraceIndex() (int, int) {
+	return this.routine, this.index
+}
+
+// ========================================================
+// Operation
+// ========================================================
+
+// GetType returns the string representation of the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (this *ElementWait) GetType(operation bool) OperationType {
+	if !operation {
+		return Wait
+	}
+
+	return this.op
+}
+
+// IsWait returns if the operation is a wait op
+//
+// Returns:
+//   - bool: True if the operation is a wait op
+func (this *ElementWait) IsWait() bool {
+	return this.op == WaitWait
+}
+
+// ========================================================
+// Equal
+// ========================================================
+
+// IsEqual checks if an trace element is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (this *ElementWait) IsEqual(elem Element) bool {
+	return this.id == elem.GetID()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same w3ait group
+func (this *ElementWait) IsSameElement(elem Element) bool {
+	if elem.GetType(false) != Wait {
+		return false
+	}
+
+	return this.objId == elem.GetObjId()
+}
+
+// ========================================================
+// String
+// ========================================================
+
 // ToString returns the simple string representation of the element
 //
 // Returns:
@@ -403,25 +380,108 @@ func (this *ElementWait) ToString() string {
 	return res
 }
 
-// GetID returns the trace id
+// GetTID returns the tID of the element.
+// The tID is a string of form [file]:[line]@[tPre]
 //
 // Returns:
-//   - int: the trace id
-func (this *ElementWait) GetID() int {
-	return this.id
+//   - string: The tID of the element
+func (this *ElementWait) GetTID() string {
+	return "W@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
 }
 
-// GetTraceID sets the trace id
+// ========================================================
+// VC
+// ========================================================
+
+// SetVc sets the vector clock
 //
 // Parameter:
-//   - ID int: the trace id
-func (this *ElementWait) setID(ID int) {
-	this.id = ID
+//   - weak bool
+//   - vc *clock.VectorClock: the vector clock
+func (this *ElementWait) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	if weak == a_clock.Weak {
+		this.wVc = vc.Copy()
+	}
+	this.vc = vc.Copy()
 }
 
-func (this *ElementWait) IsValid() bool {
-	return this != nil
+// GetVC returns the vector clock of the element
+//
+// Parameter:
+//   - weak bool
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
+func (this *ElementWait) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	if weak == a_clock.Weak {
+		return this.wVc
+	}
+	return this.vc
 }
+
+// ========================================================
+// Concurrent
+// ========================================================
+
+// GetNumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (this *ElementWait) GetNumberConcurrent(weak, sameElem bool) int {
+	if weak {
+		if sameElem {
+			return this.numberConcurrentWeakSame
+		}
+		return this.numberConcurrentWeak
+	}
+	if sameElem {
+		return this.numberConcurrentSame
+	}
+	return this.numberConcurrent
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (this *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
+	if weak {
+		if sameElem {
+			this.numberConcurrentWeakSame = c
+		} else {
+			this.numberConcurrentWeak = c
+		}
+	} else {
+		if sameElem {
+			this.numberConcurrentSame = c
+		} else {
+			this.numberConcurrent = c
+		}
+	}
+}
+
+// ========================================================
+// Replay
+// ========================================================
+
+// GetReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
+func (this *ElementWait) GetReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+}
+
+// ========================================================
+// Copy
+// ========================================================
 
 // Copy the element
 //
@@ -475,46 +535,32 @@ func (this *ElementWait) Copy(mapping map[string]Element, keep bool) Element {
 	}
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
-// If not set, it returns -1
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - number of concurrent element, or -1
-func (this *ElementWait) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+// ========================================================
+// Copy
+// ========================================================
+
+func (this *ElementWait) IsValid() bool {
+	return this != nil
 }
 
-// SetNumberConcurrent sets the number of concurrent elements
+// ========================================================
+// Others
+// ========================================================
+
+// GetDelta returns the delta of the element. The delta is the value by which the counter
+// of the wait has been changed. For Add the delta is > 0, for Done it is -1,
+// for Wait it is 0
+//
+// Returns:
+//   - int: the delta of the wait element
+func (this *ElementWait) GetDelta() int {
+	return this.delta
+}
+
+// SetVal sets the value of the internal counter
 //
 // Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (this *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+//   - v int: the new value
+func (this *ElementWait) SetVal(v int) {
+	this.val = v
 }

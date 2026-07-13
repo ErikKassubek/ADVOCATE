@@ -126,7 +126,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 		ThreadID:    tid,
 		TraceID:     element.GetTID(),
 		LockID:      element.GetObjId(),
-		VectorClock: element.GetWVC().Copy(),
+		VectorClock: element.GetVC(a_clock.Weak).Copy(),
 	}
 
 	switch element.GetType(true) {
@@ -230,7 +230,7 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		ThreadID:    tid,
 		TraceID:     element.GetTID(),
 		LockID:      element.GetObjId(),
-		VectorClock: element.GetWVC().Copy(),
+		VectorClock: element.GetVC(a_clock.Weak).Copy(),
 	}
 
 	var assocRDs []mdLockRef

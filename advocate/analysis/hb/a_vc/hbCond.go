@@ -12,6 +12,7 @@ package a_vc
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 )
 
@@ -21,8 +22,8 @@ import (
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateHBCond(co *trace.ElementCond) {
 	routine := co.GetRoutine()
-	co.SetVc(CurrentVC[routine])
-	co.SetWVc(CurrentWVC[routine])
+	co.SetVc(a_clock.Strong, CurrentVC[routine])
+	co.SetVc(a_clock.Weak, CurrentWVC[routine])
 
 	switch co.GetType(true) {
 	case trace.CondWait:

@@ -12,6 +12,7 @@ package a_pog
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -85,7 +86,7 @@ func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(se.GetVC())
+		chosenCase.SetVc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(graph, chosenCase, recorded)
 	}

@@ -12,6 +12,7 @@ package a_vc
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -21,8 +22,8 @@ import (
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
 	routine := wa.GetRoutine()
-	wa.SetVc(CurrentVC[routine])
-	wa.SetWVc(CurrentWVC[routine])
+	wa.SetVc(a_clock.Strong, CurrentVC[routine])
+	wa.SetVc(a_clock.Weak, CurrentWVC[routine])
 
 	switch wa.GetType(true) {
 	case trace.WaitAdd, trace.WaitDone:
@@ -45,7 +46,7 @@ func Change(wa *trace.ElementWait) {
 
 	lw := a_base.LastChangeWG[id]
 	if lw != nil {
-		wa.GetVC().Sync(lw.GetVC())
+		wa.GetVC(a_clock.Strong).Sync(lw.GetVC(a_clock.Strong))
 	}
 	a_base.LastChangeWG[id] = wa
 
@@ -64,7 +65,7 @@ func Wait(wa *trace.ElementWait) {
 	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]
 		if lc != nil {
-			CurrentVC[routine].Sync(lc.GetVC())
+			CurrentVC[routine].Sync(lc.GetVC(a_clock.Strong))
 		}
 	}
 

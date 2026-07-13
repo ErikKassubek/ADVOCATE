@@ -588,8 +588,6 @@ func deferreturn() {
 		}
 		fn()
 	}
-
-	AdvocateFunctionReturn()
 }
 
 // Goexit terminates the goroutine that calls it. No other goroutine is affected.

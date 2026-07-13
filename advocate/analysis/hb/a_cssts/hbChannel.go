@@ -12,6 +12,7 @@ package a_cssts
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -84,7 +85,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(se.GetVC())
+		chosenCase.SetVc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(chosenCase)
 	}

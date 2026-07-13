@@ -499,7 +499,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 				continue
 			}
 
-			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
+			if !(a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) == a_hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
 				if minTime == -1 || elem.GetT(Request) < minTime {
 					minTime = elem.GetT(Request)
@@ -535,7 +535,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 				continue
 			}
 
-			if !(a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) == a_hb.Before) {
+			if !(a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) == a_hb.Before) {
 				if elem.GetT(Request) <= start {
 					continue
 				}
@@ -593,7 +593,7 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 				continue
 			}
 
-			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Concurrent {
+			if a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) != a_hb.Concurrent {
 				result = append(result, elem)
 			}
 		}
@@ -620,7 +620,7 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				continue
 			}
 
-			if a_clock.GetHappensBefore(elem.GetVC(), element.GetVC()) != a_hb.Before {
+			if a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) != a_hb.Before {
 				result = append(result, elem)
 			}
 		}
@@ -643,7 +643,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 				continue
 			}
 
-			if a_clock.GetHappensBefore(element.GetVC(), elem.GetVC()) == a_hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(a_clock.Strong), elem.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 				concurrent[routine] = elem
 			}
 		}
@@ -775,7 +775,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					thread int
 					vc     *a_clock.VectorClock
 					wVc    *a_clock.VectorClock
-				}{elemStr, elem.GetT(Commit), elem.GetRoutine(), elem.GetVC(), elem.GetWVC()})
+				}{elemStr, elem.GetT(Commit), elem.GetRoutine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
 			}
 		}
 	}
@@ -828,7 +828,7 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 
 			e := elem.(*ElementCond)
 
-			if a_clock.GetHappensBefore(element.GetVC(), e.GetVC()) == a_hb.Concurrent {
+			if a_clock.GetHappensBefore(element.GetVC(a_clock.Strong), e.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 				e := elem.(*ElementCond)
 				switch e.op {
 				case CondSignal:

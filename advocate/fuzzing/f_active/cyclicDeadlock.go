@@ -82,7 +82,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							// Move the as much of the routine of the deadlocking element as possible behind this unlock!
 							var concurrentStartElem trace.Element = nil
 							for _, possibleStart := range tr.GetRoutineTrace(lockElem.GetRoutine()) {
-								if a_clock.GetHappensBefore(possibleStart.GetWVC(), (*unlock).GetWVC()) == a_hb.Concurrent {
+								if a_clock.GetHappensBefore(possibleStart.GetVC(a_clock.Weak), (*unlock).GetVC(a_clock.Weak)) == a_hb.Concurrent {
 									concurrentStartElem = possibleStart
 									break
 								}

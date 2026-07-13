@@ -18,6 +18,13 @@ import (
 	"strconv"
 )
 
+type VcType int
+
+const (
+	Weak VcType = iota
+	Strong
+)
+
 // VectorClock is a vector clock
 // Fields:
 //

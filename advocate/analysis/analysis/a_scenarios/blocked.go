@@ -158,7 +158,7 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 		objRes := results.TraceElementResult{
 			RoutineID: r,
 			ObjID:     -1,
-			TPre:      -1,
+			TRequest:  -1,
 			ObjType:   elem.GetType(true),
 			File:      elem.GetFile(),
 			Line:      elem.GetLine(),

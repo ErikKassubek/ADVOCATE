@@ -272,7 +272,7 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		if len(fields) != 6 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
 		}
-		err = tr.AddTraceElementNew(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementAlloc(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "E":
 		if len(fields) != 2 {
@@ -280,9 +280,15 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		}
 		err = tr.AddTraceElementRoutineEnd(routine, fields[1])
 	case "F":
-		// TODO: process function call
+		if len(fields) != 4 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
+		}
+		err = tr.AddTaceElementFunc(routine, fields[1], fields[2], trace.FuncCall, fields[3])
 	case "R":
-		// TODO: process function return
+		if len(fields) != 2 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
+		}
+		err = tr.AddTaceElementFunc(routine, fields[1], "", trace.FuncReturn, "")
 	case "OAT":
 		err = tr.AddTraceObjectAware(routine, fields[1])
 	default:

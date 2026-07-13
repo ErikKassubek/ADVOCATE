@@ -84,7 +84,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 func CalculateRelRule2And4() {
 	for _, elems := range ElemsByID {
 		sort.Slice(elems, func(i, j int) bool {
-			return elems[i].GetTSort() < elems[j].GetTSort()
+			return elems[i].GetT(trace.Sorting) < elems[j].GetT(trace.Sorting)
 		})
 
 		for i := 0; i < len(elems)-1; i++ {

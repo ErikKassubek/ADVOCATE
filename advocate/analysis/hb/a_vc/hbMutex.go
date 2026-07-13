@@ -51,7 +51,7 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 		}
 	}
 
-	if mu.GetTPost() != 0 {
+	if mu.Committed() {
 		CurrentVC[routine].Inc(routine)
 		CurrentWVC[routine].Inc(routine)
 	}
@@ -75,7 +75,7 @@ func Lock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 	routine := mu.GetRoutine()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
 		CurrentWVC[routine].Inc(routine)
 		return
@@ -100,7 +100,7 @@ func RLock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 	routine := mu.GetRoutine()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
 		CurrentWVC[routine].Inc(routine)
 		return
@@ -119,7 +119,7 @@ func RUnlock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 	routine := mu.GetRoutine()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
 		CurrentWVC[routine].Inc(routine)
 		return

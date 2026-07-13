@@ -4,7 +4,7 @@ Both the start of a function and the return of a function are recorded in the tr
 As an example, see the following.
 
 ```go
-def f(){
+func f(){
     ...
 }
 
@@ -22,14 +22,15 @@ This will create 2 trace elements.
 The call of a function is recorded as
 
 ```
-F,[t],[posCall],[posFunc]
+F,[t],[name],[posFunc]
 ```
 
 where `F` identifies the element as a function call.
 
 - [t] $\in \mathbb N$: This is the time. It is replaced by the int value of the global counter at the moment of the routines creation.
 - [posCal]: Position of the function call (f())
-- [posFunc]: Position of the function definition (def f(){...)
+- [name]: Name of the function in form "pkgName.funcName" or "pkgName.receiverName.funcName"
+- [pos]: Position of the function call
 
 The return of a funciton is recorded as 
 

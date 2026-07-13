@@ -61,27 +61,19 @@ func (this *ElementReplay) GetRoutine() int {
 	return 1
 }
 
-// GetTPre returns the tPre of the element.
+// GetTPre returns the t of the element.
 //
 //   - int: The tPost of the element
-func (this *ElementReplay) GetTPre() int {
+func (this *ElementReplay) GetT(_ timeType) int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element.
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - int: The tPost of the element
-func (this *ElementReplay) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementReplay) GetTSort() int {
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementReplay) Committed() bool {
+	return true
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -203,27 +195,8 @@ func (this *ElementReplay) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementReplay) SetT(time int) {
+func (this *ElementReplay) SetT(_ timeType, time int) {
 	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementReplay) SetTPre(tPre int) {
-	tPre = max(1, tPre)
-	this.tPost = tPre
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementReplay) SetTSort(tSort int) {
-	tSort = max(1, tSort)
-	this.SetTPre(tSort)
-	this.tPost = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -233,7 +206,7 @@ func (this *ElementReplay) SetTSort(tSort int) {
 //   - tSort int: The timer of the element
 func (this *ElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	this.tPost = tSort
 }
 

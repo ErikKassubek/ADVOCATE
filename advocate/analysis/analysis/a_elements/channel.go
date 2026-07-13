@@ -60,7 +60,7 @@ func UpdateChannel(ch *trace.ElementChannel) {
 
 	a_hbcalc.UpdateHBChannel(ch)
 
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -202,7 +202,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 		}
 	}
 
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.Committed() && recv.Committed() {
 		if a_base.MostRecentReceive[recv.GetRoutine()] == nil {
 			a_base.MostRecentReceive[recv.GetRoutine()] = make(map[int]a_base.ElemWithVcVal)
 		}
@@ -252,7 +252,7 @@ func Send(ch *trace.ElementChannel, vc, wVc map[int]*a_clock.VectorClock) {
 	id := ch.GetObjId()
 	routine := ch.GetRoutine()
 
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -308,7 +308,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*a_clock.VectorClock) {
 		a_scenarios.CheckForConcurrentRecv(ch, vc)
 	}
 
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -349,7 +349,7 @@ func Recv(ch *trace.ElementChannel, vc, wVc map[int]*a_clock.VectorClock) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Close(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -395,7 +395,7 @@ func SendC(ch *trace.ElementChannel) {
 //   - wVc map[int]*VectorClock: the current weak vector clocks
 //   - buffered bool: true if the channel is buffered
 func RecvC(ch *trace.ElementChannel, vc, wVc map[int]*a_clock.VectorClock, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 

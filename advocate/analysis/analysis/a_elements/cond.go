@@ -26,7 +26,7 @@ func AnalyzeCond(co *trace.ElementCond) {
 
 	// update currently waiting elements
 	id := co.GetObjId()
-	if co.GetTPost() != 0 { // not leak
+	if co.Committed() { // not leak
 		switch co.GetType(true) {
 		case trace.CondWait:
 			if _, ok := a_base.CurrentlyWaiting[id]; !ok {

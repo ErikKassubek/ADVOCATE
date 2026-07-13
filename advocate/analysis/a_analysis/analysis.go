@@ -136,7 +136,7 @@ func RunHBAnalysis(fuzzing bool) {
 		// count how many operations where executed on the underlying structure
 		// do not count for operations that do not have an underlying structure
 		switch e := elem.(type) {
-		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
+		case *trace.ElementFork, *trace.ElementAlloc, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
 			a_base.AddOpsPerID(e.GetObjId())
 		}
@@ -183,7 +183,7 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		case *trace.ElementRoutineEnd:
 			a_elements.AnalyzeRoutineEnd(e)
-		case *trace.ElementNew:
+		case *trace.ElementAlloc:
 			a_elements.AnalyzeNew(e)
 		}
 
@@ -204,7 +204,7 @@ func RunHBAnalysis(fuzzing bool) {
 		}
 
 		// check for leak
-		if a_base.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
+		if a_base.AnalysisCasesMap[flags.Leak] && !elem.Committed() {
 			checkLeak(elem)
 		}
 

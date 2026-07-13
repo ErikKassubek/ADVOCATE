@@ -52,7 +52,7 @@ func Change(wa *trace.ElementWait) {
 func Wait(wa *trace.ElementWait) {
 	id := wa.GetObjId()
 
-	if wa.GetTPost() != 0 {
+	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]
 		if lc != nil {
 			AddEdge(lc, wa, false)

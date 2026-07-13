@@ -152,7 +152,6 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 		}
 		t.ReadDepth++
 
-
 	// --------- WRITE UNLOCK ---------
 	case trace.MutexUnlock:
 		if stack, ok := t.ActiveRDs[lockID]; ok && len(stack) > 0 {
@@ -241,7 +240,7 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		if stack, ok := t.ActiveRDs[lockID]; ok && len(stack) > 0 {
 			topRD := stack[len(stack)-1]
 			fmt.Printf("DEBUG: CS lock for T%d chan: lock=%d, tPre=%d\n",
-				tid, lockID.ID, topRD.Elem.GetTPre())
+				tid, lockID.ID, topRD.Elem.GetT(trace.Request))
 			assocRDs = append(assocRDs, mdLockRef{LockID: lockID, IsCS: true, RD: topRD})
 		}
 	}
@@ -281,7 +280,6 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 func CheckForMixedDeadlock() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
-
 
 	cdByChan := make(map[int][]*mdCDNode, len(currentMDState.AllCDs))
 	for _, cd := range currentMDState.AllCDs {
@@ -464,10 +462,10 @@ func mdDetermineRoles(
 	// Tie-break: larger tPre = acquired later = holder
 	tPreA, tPreB := 0, 0
 	if refA.RD.Elem != nil {
-		tPreA = refA.RD.Elem.GetTPre()
+		tPreA = refA.RD.Elem.GetT(trace.Request)
 	}
 	if refB.RD.Elem != nil {
-		tPreB = refB.RD.Elem.GetTPre()
+		tPreB = refB.RD.Elem.GetT(trace.Request)
 	}
 	if tPreA >= tPreB {
 		return cdA, refA, cdB, refB
@@ -498,7 +496,7 @@ func mdReportCandidate(
 	holderChanRes := results.TraceElementResult{
 		RoutineID: int(holderCD.Thread),
 		ObjID:     holderCD.ChanID,
-		TPre:      holderChanTPre,
+		TRequest:  holderChanTPre,
 		ObjType:   holderCD.OpType,
 		File:      holderChanFile,
 		Line:      holderChanLine,
@@ -514,7 +512,7 @@ func mdReportCandidate(
 	holderLockRes := results.TraceElementResult{
 		RoutineID: int(holderRef.RD.Thread),
 		ObjID:     holderRef.LockID.ID,
-		TPre:      holderLockTPre,
+		TRequest:  holderLockTPre,
 		ObjType:   "DC",
 		File:      holderLockFile,
 		Line:      holderLockLine,
@@ -529,7 +527,7 @@ func mdReportCandidate(
 	waiterChanRes := results.TraceElementResult{
 		RoutineID: int(waiterCD.Thread),
 		ObjID:     waiterCD.ChanID,
-		TPre:      waiterChanTPre,
+		TRequest:  waiterChanTPre,
 		ObjType:   waiterCD.OpType,
 		File:      waiterChanFile,
 		Line:      waiterChanLine,
@@ -545,7 +543,7 @@ func mdReportCandidate(
 	waiterLockRes := results.TraceElementResult{
 		RoutineID: int(waiterRef.RD.Thread),
 		ObjID:     waiterRef.LockID.ID,
-		TPre:      waiterLockTPre,
+		TRequest:  waiterLockTPre,
 		ObjType:   "DC",
 		File:      waiterLockFile,
 		Line:      waiterLockLine,
@@ -571,7 +569,7 @@ func mdReportCandidate(
 
 // mdPairKey returns a canonical key for a channel-element pair (de-duplication)
 func mdPairKey(a, b *trace.ElementChannel) [2]*trace.ElementChannel {
-	if a.GetTPre() <= b.GetTPre() {
+	if a.GetT(trace.Request) <= b.GetT(trace.Request) {
 		return [2]*trace.ElementChannel{a, b}
 	}
 	return [2]*trace.ElementChannel{b, a}

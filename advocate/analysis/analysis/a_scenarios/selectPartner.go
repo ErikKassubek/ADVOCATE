@@ -108,7 +108,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *a_clock.Ve
 		executed := false
 		var partner = make([]a_base.ElemWithVcVal, 0)
 
-		if casi == se.GetChosenIndex() && se.GetTPost() != 0 {
+		if casi == se.GetChosenIndex() && se.Committed() {
 			// no need to check if the channel is the chosen case
 			executed = true
 			p := se.GetPartner()

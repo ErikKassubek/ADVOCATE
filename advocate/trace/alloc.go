@@ -1,6 +1,6 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
-// File: /advocate/trace/new.go
+// File: alloc.go
 // Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
 // Author: Erik Kassubek
@@ -18,7 +18,7 @@ import (
 	"strconv"
 )
 
-// ElementNew is a trace element for the creation of an object / new
+// ElementAlloc is a trace element for the creation of an object / new
 // Fields:
 //   - id: id of the element, should never be changed
 //   - index int: Index in the routine
@@ -35,9 +35,10 @@ import (
 //   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
 //   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
 //   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - request bool: if trace is split into request commit, set if request or commit
 //
 // For now this is only creates the new for channel. This may be expanded later.
-type ElementNew struct {
+type ElementAlloc struct {
 	id                       int
 	index                    int
 	routine                  int
@@ -55,7 +56,7 @@ type ElementNew struct {
 	numberConcurrentWeakSame int
 }
 
-// AddTraceElementNew adds a make trace element to the main trace
+// AddTraceElementAlloc adds a make trace element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
@@ -64,7 +65,7 @@ type ElementNew struct {
 //   - elemType string: Type of the created primitive
 //   - num string: Variable field for additional information
 //   - pos string: position
-func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elemType string, num string, pos string) error {
+func (this *Trace) AddTraceElementAlloc(routine int, tPost string, id string, elemType string, num string, pos string) error {
 	tPostInt, err := strconv.Atoi(tPost)
 	if err != nil {
 		return errors.New("tPost is not an integer")
@@ -101,7 +102,7 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 		et = NewWait
 	}
 
-	elem := ElementNew{
+	elem := ElementAlloc{
 		index:                    this.NumberElemInRoutine(routine),
 		routine:                  routine,
 		tPost:                    tPostInt,
@@ -126,39 +127,31 @@ func (this *Trace) AddTraceElementNew(routine int, tPost string, id string, elem
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementNew) GetObjId() int {
+func (this *ElementAlloc) GetObjId() int {
 	return this.objId
 }
 
-// GetTPre returns the tPre of the element
+// GetT returns the timestamp of the element
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementNew) GetTPre() int {
+func (this *ElementAlloc) GetT(_ timeType) int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the operation.
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementNew) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - float32: The time of the element
-func (this *ElementNew) GetTSort() int {
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementAlloc) Committed() bool {
+	return true
 }
 
 // GetRoutine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementNew) GetRoutine() int {
+func (this *ElementAlloc) GetRoutine() int {
 	return this.routine
 }
 
@@ -166,7 +159,7 @@ func (this *ElementNew) GetRoutine() int {
 //
 // Returns:
 //   - string: The position of the element
-func (this *ElementNew) GetPos() string {
+func (this *ElementAlloc) GetPos() string {
 	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }
 
@@ -174,7 +167,7 @@ func (this *ElementNew) GetPos() string {
 //
 // Returns:
 //   - int: The replayId of the element
-func (this *ElementNew) GetReplayID() string {
+func (this *ElementAlloc) GetReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
 }
 
@@ -182,7 +175,7 @@ func (this *ElementNew) GetReplayID() string {
 //
 // Returns:
 //   - int: The file of the element
-func (this *ElementNew) GetFile() string {
+func (this *ElementAlloc) GetFile() string {
 	return this.file
 }
 
@@ -190,7 +183,7 @@ func (this *ElementNew) GetFile() string {
 //
 // Returns:
 //   - int: The line of the element
-func (this *ElementNew) GetLine() int {
+func (this *ElementAlloc) GetLine() int {
 	return this.line
 }
 
@@ -199,7 +192,7 @@ func (this *ElementNew) GetLine() int {
 //
 // Returns:
 //   - int: The tID of the element
-func (this *ElementNew) GetTID() string {
+func (this *ElementAlloc) GetTID() string {
 	return "N@" + this.GetPos() + "@" + strconv.Itoa(this.tPost)
 }
 
@@ -210,7 +203,7 @@ func (this *ElementNew) GetTID() string {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementNew) GetType(operation bool) OperationType {
+func (this *ElementAlloc) GetType(operation bool) OperationType {
 	if !operation {
 		return New
 	}
@@ -222,7 +215,7 @@ func (this *ElementNew) GetType(operation bool) OperationType {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementNew) SetVc(vc *a_clock.VectorClock) {
+func (this *ElementAlloc) SetVc(vc *a_clock.VectorClock) {
 	this.vc = vc.Copy()
 }
 
@@ -230,7 +223,7 @@ func (this *ElementNew) SetVc(vc *a_clock.VectorClock) {
 //
 // Parameter:
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementNew) SetWVc(vc *a_clock.VectorClock) {
+func (this *ElementAlloc) SetWVc(vc *a_clock.VectorClock) {
 	this.wVc = vc.Copy()
 }
 
@@ -238,7 +231,7 @@ func (this *ElementNew) SetWVc(vc *a_clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementNew) GetVC() *a_clock.VectorClock {
+func (this *ElementAlloc) GetVC() *a_clock.VectorClock {
 	return this.vc
 }
 
@@ -246,7 +239,7 @@ func (this *ElementNew) GetVC() *a_clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementNew) GetWVC() *a_clock.VectorClock {
+func (this *ElementAlloc) GetWVC() *a_clock.VectorClock {
 	return this.wVc
 }
 
@@ -254,7 +247,7 @@ func (this *ElementNew) GetWVC() *a_clock.VectorClock {
 //
 // Returns:
 //   - VectorClock: The num field of the element
-func (this *ElementNew) GetNum() int {
+func (this *ElementAlloc) GetNum() int {
 	return this.num
 }
 
@@ -263,7 +256,7 @@ func (this *ElementNew) GetNum() int {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementNew) GetTraceIndex() (int, int) {
+func (this *ElementAlloc) GetTraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -271,8 +264,16 @@ func (this *ElementNew) GetTraceIndex() (int, int) {
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementNew) ToString() string {
+func (this *ElementAlloc) ToString() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.tPost, this.objId, string(this.elemType), this.num, this.GetPos())
+}
+
+// ToString returns the simple string representation of the element.
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementAlloc) ToStringGui() string {
+	return fmt.Sprintf("N,%d,%s,%s", this.objId, string(this.elemType), this.GetPos())
 }
 
 // IsEqual checks if an trace element is equal to this element
@@ -282,7 +283,7 @@ func (this *ElementNew) ToString() string {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (this *ElementNew) IsEqual(elem Element) bool {
+func (this *ElementAlloc) IsEqual(elem Element) bool {
 	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
 }
 
@@ -294,31 +295,15 @@ func (this *ElementNew) IsEqual(elem Element) bool {
 //
 // Returns:
 //   - bool: always false
-func (this *ElementNew) IsSameElement(elem Element) bool {
+func (this *ElementAlloc) IsSameElement(elem Element) bool {
 	return false
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementNew) SetTPre(tSort int) {
-	this.tPost = tSort
 }
 
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementNew) SetT(tSort int) {
-	this.tPost = tSort
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementNew) SetTSort(tSort int) {
+func (this *ElementAlloc) SetT(_ timeType, tSort int) {
 	this.tPost = tSort
 }
 
@@ -327,7 +312,7 @@ func (this *ElementNew) SetTSort(tSort int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (this *ElementNew) SetTWithoutNotExecuted(tSort int) {
+func (this *ElementAlloc) SetTWithoutNotExecuted(tSort int) {
 	if this.tPost == 0 {
 		return
 	}
@@ -338,7 +323,7 @@ func (this *ElementNew) SetTWithoutNotExecuted(tSort int) {
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementNew) GetID() int {
+func (this *ElementAlloc) GetID() int {
 	return this.id
 }
 
@@ -346,8 +331,52 @@ func (this *ElementNew) GetID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementNew) setID(ID int) {
+func (this *ElementAlloc) setID(ID int) {
 	this.id = ID
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementAlloc) setFile(f string) {
+	this.file = f
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementAlloc) setObjId(id int) {
+	this.objId = id
+}
+
+// IsRequest determines if the element is a request
+// Returns:
+//   - bool: element is request
+func (this *ElementAlloc) IsRequest() bool {
+	return false
+}
+
+// IsRequest determines if the element can be a request
+// Returns:
+//   - bool: element can be request
+func (this *ElementAlloc) CanBeRequest() bool {
+	return false
+}
+
+// SetRequest set request
+// Argument:
+//   - bool: element is request
+func (this *ElementAlloc) SetRequest(_ bool) {
+	return
+}
+
+// SetRequest sets the routine id
+// Argument:
+//   - int: new routine id
+func (this *ElementAlloc) SetRoutine(id int) {
+	this.routine = id
 }
 
 // Copy the element
@@ -358,9 +387,9 @@ func (this *ElementNew) setID(ID int) {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementNew) Copy(_ map[string]Element, _ bool) Element {
+func (this *ElementAlloc) Copy(_ map[string]Element, _ bool) Element {
 
-	return &ElementNew{
+	return &ElementAlloc{
 		id:                       this.id,
 		index:                    0,
 		routine:                  this.routine,
@@ -378,7 +407,7 @@ func (this *ElementNew) Copy(_ map[string]Element, _ bool) Element {
 	}
 }
 
-func (this *ElementNew) IsValid() bool {
+func (this *ElementAlloc) IsValid() bool {
 	return this != nil
 }
 
@@ -391,7 +420,7 @@ func (this *ElementNew) IsValid() bool {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementNew) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementAlloc) GetNumberConcurrent(weak, sameElem bool) int {
 	if weak {
 		if sameElem {
 			return this.numberConcurrentWeakSame
@@ -410,7 +439,7 @@ func (this *ElementNew) GetNumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (this *ElementNew) SetNumberConcurrent(c int, weak, sameElem bool) {
+func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
 	if weak {
 		if sameElem {
 			this.numberConcurrentWeakSame = c

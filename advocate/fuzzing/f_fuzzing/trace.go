@@ -61,12 +61,12 @@ func ParseTrace(tr *trace.Trace) {
 				f_gopie.CalculateRelRule2AddElem(elem)
 			}
 
-			if elem.GetTPost() == 0 {
+			if !elem.Committed() {
 				continue
 			}
 
 			switch e := elem.(type) {
-			case *trace.ElementNew:
+			case *trace.ElementAlloc:
 				if f_base.FuzzingModeGFuzz {
 					parseNew(e)
 				}
@@ -109,7 +109,7 @@ func ParseTrace(tr *trace.Trace) {
 // Parse a new elem element.
 // For now only channels are considered
 // Add the corresponding info into FuzzingChannel
-func parseNew(elem *trace.ElementNew) {
+func parseNew(elem *trace.ElementAlloc) {
 	// only process channels
 	if elem.GetType(true) != trace.NewChannel {
 		log.Important("Unexpected new on: ", elem.GetType(true))
@@ -147,7 +147,7 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			f_gfuzz.ChannelInfoTrace[elem.GetObjId()] = e
 			f_gfuzz.NumberClose++
 		case trace.ChannelSend:
-			if elem.GetTPost() == 0 {
+			if !elem.Committed() {
 				return
 			}
 

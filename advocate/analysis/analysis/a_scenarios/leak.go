@@ -50,7 +50,7 @@ func CheckForLeakChannelStuck(ch *trace.ElementChannel, vc *a_clock.VectorClock)
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: routine, ObjID: id, TPre: ch.GetTPre(), ObjType: opC, File: ch.GetFile(), Line: ch.GetLine()}
+		RoutineID: routine, ObjID: id, TRequest: ch.GetT(trace.Request), ObjType: opC, File: ch.GetFile(), Line: ch.GetLine()}
 
 	if id == -1 {
 		leaks[routine] = TERLeak{helper.LNilChan,
@@ -123,14 +123,14 @@ func CheckForLeak() {
 				elem2 := partner.Elem.Elem
 				file2 := elem2.GetFile()
 				line2 := elem2.GetLine()
-				tPre2 := elem2.GetTPre()
+				tPre2 := elem2.GetT(trace.Request)
 
 				if vcTID.Sel {
 					arg1 := results.TraceElementResult{ // select
-						RoutineID: routineID, ObjID: vcTID.ID, TPre: tPre1, ObjType: "SS", File: file1, Line: line1}
+						RoutineID: routineID, ObjID: vcTID.ID, TRequest: tPre1, ObjType: "SS", File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TRequest: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
 					if !timer {
@@ -152,10 +152,10 @@ func CheckForLeak() {
 					}
 
 					arg1 := results.TraceElementResult{ // channel
-						RoutineID: routineID, ObjID: vcTID.ID, TPre: tPre1, ObjType: vcTID.TypeVal, File: file1, Line: line1}
+						RoutineID: routineID, ObjID: vcTID.ID, TRequest: tPre1, ObjType: vcTID.TypeVal, File: file1, Line: line1}
 
 					arg2 := results.TraceElementResult{ // select
-						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TPre: tPre2, ObjType: "SS", File: file2, Line: line2}
+						RoutineID: elem2.GetRoutine(), ObjID: partner.Sel.GetObjId(), TRequest: tPre2, ObjType: "SS", File: file2, Line: line2}
 
 					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
 					if !timer {
@@ -181,7 +181,7 @@ func CheckForLeak() {
 					}
 
 					arg1 := results.TraceElementResult{
-						RoutineID: vcTID.Routine, ObjID: vcTID.SelID, TPre: tPre, ObjType: "SS", File: file, Line: line}
+						RoutineID: vcTID.Routine, ObjID: vcTID.SelID, TRequest: tPre, ObjType: "SS", File: file, Line: line}
 
 					timer, ctx := chanIsTimerOrCtx(vcTID.ID)
 					if !timer {
@@ -205,7 +205,7 @@ func CheckForLeak() {
 					}
 
 					arg1 := results.TraceElementResult{
-						RoutineID: vcTID.Routine, ObjID: vcTID.ID, TPre: tPre, ObjType: vcTID.TypeVal, File: file, Line: line}
+						RoutineID: vcTID.Routine, ObjID: vcTID.ID, TRequest: tPre, ObjType: vcTID.TypeVal, File: file, Line: line}
 
 					var bugType helper.ResultType = helper.LUnbufferedWithout
 					if buffered {
@@ -252,7 +252,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 
 	routine := se.GetRoutine()
 	id := se.GetObjId()
-	tPre := se.GetTPre()
+	tPre := se.GetT(trace.Request)
 
 	if len(ids) == 0 {
 		file, line, _, err := trace.InfoFromTID(se.GetTID())
@@ -262,7 +262,7 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 		}
 
 		arg1 := results.TraceElementResult{
-			RoutineID: routine, ObjID: id, TPre: tPre, ObjType: "SS", File: file, Line: line}
+			RoutineID: routine, ObjID: id, TRequest: tPre, ObjType: "SS", File: file, Line: line}
 
 		timer, ctx := isLeakTimerOrCtx(se)
 		if !timer && !se.GetContainsDefault() {
@@ -299,9 +299,9 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 						}
 
 						arg1 := results.TraceElementResult{
-							RoutineID: routine, ObjID: id, TPre: tPre, ObjType: "SS", File: file1, Line: line1}
+							RoutineID: routine, ObjID: id, TRequest: tPre, ObjType: "SS", File: file1, Line: line1}
 						arg2 := results.TraceElementResult{
-							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CR", File: file2, Line: line2}
+							RoutineID: routinePartner, ObjID: id, TRequest: tPre2, ObjType: "CR", File: file2, Line: line2}
 
 						timer, ctx := isLeakTimerOrCtx(se)
 						if !timer && !se.GetContainsDefault() {
@@ -336,9 +336,9 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 						}
 
 						arg1 := results.TraceElementResult{
-							RoutineID: routine, ObjID: id, TPre: tPre, ObjType: "SS", File: file1, Line: line1}
+							RoutineID: routine, ObjID: id, TRequest: tPre, ObjType: "SS", File: file1, Line: line1}
 						arg2 := results.TraceElementResult{
-							RoutineID: routinePartner, ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
+							RoutineID: routinePartner, ObjID: id, TRequest: tPre2, ObjType: "CS", File: file2, Line: line2}
 
 						timer, ctx := isLeakTimerOrCtx(se)
 						if !timer && !se.GetContainsDefault() {
@@ -371,9 +371,9 @@ func CheckForLeakSelectStuck(se *trace.ElementSelect, ids []int, buffered []bool
 				}
 
 				arg1 := results.TraceElementResult{
-					RoutineID: routine, ObjID: id, TPre: tPre, ObjType: "SS", File: file1, Line: line1}
+					RoutineID: routine, ObjID: id, TRequest: tPre, ObjType: "SS", File: file1, Line: line1}
 				arg2 := results.TraceElementResult{
-					RoutineID: cl.GetRoutine(), ObjID: id, TPre: tPre2, ObjType: "CS", File: file2, Line: line2}
+					RoutineID: cl.GetRoutine(), ObjID: id, TRequest: tPre2, ObjType: "CS", File: file2, Line: line2}
 
 				timer, ctx := isLeakTimerOrCtx(se)
 				if !timer && !se.GetContainsDefault() {
@@ -431,7 +431,7 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 
 	elem := a_base.MostRecentAcquireTotal[id].Elem
 
-	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetTPre()
+	file2, line2, tPre2 := elem.GetFile(), elem.GetLine(), elem.GetT(trace.Request)
 
 	switch opM {
 	case trace.MutexLock, trace.MutexRLock:
@@ -447,10 +447,10 @@ func CheckForLeakMutex(mu *trace.ElementMutex) {
 	}
 
 	arg1 := results.TraceElementResult{
-		RoutineID: mu.GetRoutine(), ObjID: id, TPre: mu.GetTPre(), ObjType: opM, File: mu.GetFile(), Line: mu.GetLine()}
+		RoutineID: mu.GetRoutine(), ObjID: id, TRequest: mu.GetT(trace.Request), ObjType: opM, File: mu.GetFile(), Line: mu.GetLine()}
 
 	arg2 := results.TraceElementResult{
-		RoutineID: elem.GetRoutine(), ObjID: id, TPre: tPre2, ObjType: objType2, File: file2, Line: line2}
+		RoutineID: elem.GetRoutine(), ObjID: id, TRequest: tPre2, ObjType: objType2, File: file2, Line: line2}
 
 	leaks[routineID] = TERLeak{helper.LMutex,
 		"mutex", []results.ResultElem{arg1}, "last", []results.ResultElem{arg2}}
@@ -487,7 +487,7 @@ func CheckForLeakWait(wa *trace.ElementWait) {
 	routineID := wa.GetRoutine()
 
 	arg := results.TraceElementResult{
-		RoutineID: routineID, ObjID: wa.GetObjId(), TPre: tPre, ObjType: "WW", File: file, Line: line}
+		RoutineID: routineID, ObjID: wa.GetObjId(), TRequest: tPre, ObjType: "WW", File: file, Line: line}
 
 	leaks[routineID] = TERLeak{helper.LWaitGroup,
 		"wait", []results.ResultElem{arg}, "", []results.ResultElem{}}
@@ -511,7 +511,7 @@ func CheckForLeakCond(co *trace.ElementCond) {
 	routineID := co.GetRoutine()
 
 	arg := results.TraceElementResult{
-		RoutineID: routineID, ObjID: co.GetObjId(), TPre: tPre, ObjType: "DW", File: file, Line: line}
+		RoutineID: routineID, ObjID: co.GetObjId(), TRequest: tPre, ObjType: "DW", File: file, Line: line}
 
 	leaks[routineID] = TERLeak{helper.LCond,
 		"cond", []results.ResultElem{arg}, "", []results.ResultElem{}}
@@ -543,7 +543,7 @@ func CheckForStuckRoutine(simple bool) bool {
 			continue
 		}
 
-		lastTPost := lastElem.GetTPost()
+		lastTPost := lastElem.GetT(trace.Commit)
 
 		leakType := helper.LUnknown
 		objectType := trace.None
@@ -585,7 +585,7 @@ func CheckForStuckRoutine(simple bool) bool {
 		}
 
 		arg := results.TraceElementResult{
-			RoutineID: routine, ObjID: lastElem.GetObjId(), TPre: lastElem.GetTPre(),
+			RoutineID: routine, ObjID: lastElem.GetObjId(), TRequest: lastElem.GetT(trace.Request),
 			ObjType: objectType, File: lastElem.GetFile(), Line: lastElem.GetLine(),
 		}
 

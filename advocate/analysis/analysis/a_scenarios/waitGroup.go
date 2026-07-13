@@ -153,7 +153,7 @@ func CheckForDoneBeforeAdd() {
 				args1 = append(args1, results.TraceElementResult{
 					RoutineID: done.GetRoutine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  tPre,
 					ObjType:   "WD",
 					File:      file,
 					Line:      line,
@@ -173,7 +173,7 @@ func CheckForDoneBeforeAdd() {
 				args2 = append(args2, results.TraceElementResult{
 					RoutineID: add.GetRoutine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  tPre,
 					ObjType:   "WA",
 					File:      file,
 					Line:      line,

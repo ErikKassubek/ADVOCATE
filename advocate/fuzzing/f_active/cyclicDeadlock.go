@@ -41,7 +41,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	// remove tail after lastTime and the last lock
 	tr.ShortenTrace(lastTime, true)
 	for _, elem := range bug.TraceElement2 {
-		tr.ShortenRoutine(elem.GetRoutine(), elem.GetTSort())
+		tr.ShortenRoutine(elem.GetRoutine(), elem.GetT(trace.Sorting))
 	}
 
 	var locksetElements []trace.Element
@@ -75,7 +75,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 						// If yes, make sure the unlock happens before the final lock attempts!
 						if (*unlock).GetObjId() == lockElem.GetObjId() {
 							// Do nothing if the unlock already happens before the lockset element
-							if (*unlock).GetTPre() < lockElem.GetTPre() {
+							if (*unlock).GetT(trace.Request) < lockElem.GetT(trace.Request) {
 								break
 							}
 
@@ -94,9 +94,9 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 							}
 
 							routineEndElem := tr.GetRoutineTrace(lockElem.GetRoutine())[len(tr.GetRoutineTrace(lockElem.GetRoutine()))-1]
-							tr.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetTPre(), ((*unlock).GetTSort()-concurrentStartElem.GetTSort())+1)
-							if routineEndElem.GetTPost() > lastTime {
-								lastTime = routineEndElem.GetTPost()
+							tr.ShiftRoutine(lockElem.GetRoutine(), concurrentStartElem.GetT(trace.Request), ((*unlock).GetT(trace.Sorting)-concurrentStartElem.GetT(trace.Sorting))+1)
+							if routineEndElem.GetT(trace.Commit) > lastTime {
+								lastTime = routineEndElem.GetT(trace.Commit)
 							}
 							tr.ShiftConcurrentOrAfterToAfter(unlock)
 						}
@@ -109,7 +109,7 @@ func rewriteCyclicDeadlock(tr *trace.Trace, bug bugs.Bug) error {
 	tr.AddTraceElementReplay(lastTime+1, helper.ExitCodeCyclic)
 
 	for _, elem := range bug.TraceElement2 {
-		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetTPre(), elem.GetTPost(), elem.GetObjId())
+		fmt.Println("Deadlocking Element: ", elem.GetRoutine(), "M", elem.GetT(trace.Request), elem.GetT(trace.Commit), elem.GetObjId())
 	}
 
 	return nil
@@ -126,8 +126,8 @@ func findLastTime(bugElements []trace.Element) int {
 	lastTime := -1
 
 	for _, e := range bugElements {
-		if lastTime == -1 || e.GetTSort() > lastTime {
-			lastTime = e.GetTSort()
+		if lastTime == -1 || e.GetT(trace.Sorting) > lastTime {
+			lastTime = e.GetT(trace.Sorting)
 		}
 	}
 	return lastTime

@@ -61,7 +61,7 @@ func Wait(wa *trace.ElementWait) {
 	id := wa.GetObjId()
 	routine := wa.GetRoutine()
 
-	if wa.GetTPost() != 0 {
+	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]
 		if lc != nil {
 			CurrentVC[routine].Sync(lc.GetVC())

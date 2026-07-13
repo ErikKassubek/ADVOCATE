@@ -114,28 +114,20 @@ func (this *ElementFork) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
+// GetT returns the t of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementFork) GetTPre() int {
+func (this *ElementFork) GetT(_ timeType) int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - int: The tPost of the element
-func (this *ElementFork) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementFork) GetTSort() int {
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementFork) Committed() bool {
+	return true
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -262,25 +254,8 @@ func (this *ElementFork) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementFork) SetT(time int) {
+func (this *ElementFork) SetT(_ timeType, time int) {
 	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementFork) SetTPre(tPre int) {
-	this.tPost = tPre
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementFork) SetTSort(tPost int) {
-	this.SetTPre(tPost)
-	this.tPost = tPost
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -289,7 +264,6 @@ func (this *ElementFork) SetTSort(tPost int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementFork) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
 	if this.tPost != 0 {
 		this.tPost = tSort
 	}

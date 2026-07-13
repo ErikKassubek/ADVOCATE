@@ -109,7 +109,7 @@ type ResultElem interface {
 type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
-	TPre      int
+	TRequest  int
 	ObjType   trace.OperationType
 	File      string
 	Line      int
@@ -149,7 +149,7 @@ func (this TraceElementResult) stringMachineShort() string {
 //   - string: the string representation
 func (this TraceElementResult) stringMachine() string {
 	return fmt.Sprintf("T%s%d%s%d%s%d%s%s%s%s%s%d", consts.PosSep, this.RoutineID, consts.PosSep, this.ObjID,
-		consts.PosSep, this.TPre, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
+		consts.PosSep, this.TRequest, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 
 // stringReadable returns a human readable string representation
@@ -158,7 +158,7 @@ func (this TraceElementResult) stringMachine() string {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringReadable() string {
-	return fmt.Sprintf("%s:%d@%d", this.File, this.Line, this.TPre)
+	return fmt.Sprintf("%s:%d@%d", this.File, this.Line, this.TRequest)
 }
 
 // isInvalid checks if the result element is not corrupted/empty

@@ -46,7 +46,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 
 	t1 := -1
 	for _, elem := range mut.Elems {
-		tPost := elem.GetTPost()
+		tPost := elem.GetT(trace.Commit)
 		if t1 == -1 || tPost < t1 {
 			t1 = tPost
 		}
@@ -59,7 +59,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	mapping := make(map[string]trace.Element)
 	for i, elem := range mut.Elems {
 		c := elem.Copy(mapping, true)
-		c.SetTSort(t1 + i*2)
+		c.SetT(trace.Sorting, t1+i*2)
 		traceCopy.AddElement(c)
 	}
 
@@ -79,7 +79,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
 		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTPost())
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetT(trace.Commit))
 	}
 
 	traceCopy.Clear()
@@ -219,7 +219,7 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, p
 		posCounter[routPos]++
 		if _, ok := mutCounter[routPos]; ok { // is in chain
 			mutCounter[routPos] = posCounter[routPos]
-			mutTime[routPos] = elem.GetTSort()
+			mutTime[routPos] = elem.GetT(trace.Sorting)
 		}
 	}
 

@@ -202,23 +202,35 @@ func (this *ElementChannel) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element
+// GetT returns the t of the element
+//
+// Parameter:
+//   - t timeType: timer type
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementChannel) GetTPre() int {
-	return this.tPre
+func (this *ElementChannel) GetT(t timeType) int {
+	switch t {
+	case Request:
+		return this.tPre
+	case Commit:
+		return this.tPost
+	case Sorting:
+		if this.tPost == 0 {
+			return math.MaxInt
+		}
+		return this.tPost
+	}
+
+	return this.tPost
 }
 
-// GetTSort returns the timer value, that is used for the sorting of the trace
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - float32: The time of the element
-func (this *ElementChannel) GetTSort() int {
-	if this.tPost == 0 {
-		return math.MaxInt
-	}
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementChannel) Committed() bool {
+	return this.tPost != 0
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -315,14 +327,6 @@ func (this *ElementChannel) GetWVC() *a_clock.VectorClock {
 	return this.wCl
 }
 
-// GetTPost returns the tPost of the element
-//
-// Returns:
-//   - int: The tPost of the element
-func (this *ElementChannel) GetTPost() int {
-	return this.tPost
-}
-
 // GetObjType returns the object type
 //
 // Parameter:
@@ -411,7 +415,33 @@ func (this *ElementChannel) GetTraceIndex() (int, int) {
 //
 // Parameter:
 // - time int: The tPre and tPost of the element
-func (this *ElementChannel) SetT(time int) {
+func (this *ElementChannel) SetT(t timeType, time int) {
+	switch t {
+	case Request:
+		this.tPre = time
+		if this.tPost != 0 && this.tPost < time {
+			this.tPost = time
+		}
+
+		if this.sel != nil {
+			this.sel.SetTPre2(time)
+		}
+	case Commit:
+		this.tPost = time
+		if this.sel != nil {
+			this.sel.SetTPost2(time)
+		}
+	case Sorting:
+		this.SetT(Request, time)
+		this.tPost = time
+
+		if this.sel != nil {
+			this.sel.SetTSort2(time)
+		}
+	case Both:
+		this.SetT(Request, time)
+		this.SetT(Commit, time)
+	}
 	this.tPre = time
 	this.tPost = time
 }
@@ -440,21 +470,6 @@ func (this *ElementChannel) GetClosed() bool {
 	return this.cl
 }
 
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementChannel) SetTPre(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
-	}
-
-	if this.sel != nil {
-		this.sel.SetTPre2(tPre)
-	}
-}
-
 // SetTPre2 sets the tPre of the element. It does not set the tPre of the select operation
 //
 // Parameter:
@@ -466,17 +481,6 @@ func (this *ElementChannel) SetTPre2(tPre int) {
 	}
 }
 
-// SetTPost sets the tPost of the element.
-//
-// Parameter:
-//   - tPost int: The tPost of the element
-func (this *ElementChannel) SetTPost(tPost int) {
-	this.tPost = tPost
-	if this.sel != nil {
-		this.sel.SetTPost2(tPost)
-	}
-}
-
 // SetTPost2 sets the tPost of the element. It does not set the tPost of the select operation
 //
 // Parameter:
@@ -485,26 +489,13 @@ func (this *ElementChannel) SetTPost2(tPost int) {
 	this.tPost = tPost
 }
 
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementChannel) SetTSort(tPost int) {
-	this.SetTPre(tPost)
-	this.tPost = tPost
-
-	if this.sel != nil {
-		this.sel.SetTSort2(tPost)
-	}
-}
-
 // SetTSort2 sets the timer, that is used for the sorting of the trace.
 // It does not set the tPost of the select operation
 //
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementChannel) SetTSort2(tPost int) {
-	this.SetTPre(tPost)
+	this.SetT(Request, tPost)
 	this.tPost = tPost
 }
 
@@ -514,7 +505,7 @@ func (this *ElementChannel) SetTSort2(tPost int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementChannel) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	if this.tPost != 0 {
 		this.tPost = tSort
 	}
@@ -530,7 +521,7 @@ func (this *ElementChannel) SetTWithoutNotExecuted(tSort int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	if this.tPost != 0 {
 		this.tPost = tSort
 	}
@@ -576,7 +567,7 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	timeString := ""
 	posStr := ""
 	if !sel {
-		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetTPre(), sep, this.GetTPost())
+		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetT(Request), sep, this.GetT(Commit))
 		posStr = sep + this.GetPos()
 	}
 
@@ -708,7 +699,7 @@ func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
 	oID := this.GetOID()
 
 	// return -1 if closed by channel
-	if this.GetClosed() || this.GetTPost() == 0 {
+	if this.GetClosed() || !this.Committed() {
 		return nil
 	}
 

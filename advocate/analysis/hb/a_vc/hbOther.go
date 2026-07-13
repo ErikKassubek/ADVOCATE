@@ -14,8 +14,8 @@ import "advocate/trace"
 
 // UpdateHBNew store the vector clock of the element
 // Parameter:
-//   - n *trace.TraceElementNew: the new trace element
-func UpdateHBNew(n *trace.ElementNew) {
+//   - n *trace.TraceElementAlloc: the new trace element
+func UpdateHBNew(n *trace.ElementAlloc) {
 	routine := n.GetRoutine()
 	n.SetVc(CurrentVC[routine])
 	n.SetWVc(CurrentWVC[routine])

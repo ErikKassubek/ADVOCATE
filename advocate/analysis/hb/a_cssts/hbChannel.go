@@ -26,7 +26,7 @@ var (
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateHBChannel(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -80,7 +80,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 // Parameter:
 //   - se *trace.TraceElementSelect: the select element
 func UpdateHBSelect(se *trace.ElementSelect) {
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
+	noChannel := se.GetChosenDefault() || !se.Committed()
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
@@ -100,7 +100,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.Committed() && recv.Committed() {
 		AddEdge(sender, recv, false)
 	}
 }
@@ -110,7 +110,7 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Send(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -167,7 +167,7 @@ func Send(ch *trace.ElementChannel) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Recv(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -200,7 +200,7 @@ func Recv(ch *trace.ElementChannel) {
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
 func RecvC(ch *trace.ElementChannel, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 

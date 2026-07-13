@@ -233,32 +233,35 @@ func (this *ElementSelect) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the timestamp at the start of the event
+// GetT returns the t of the element
+//
+// Parameter:
+//   - t timeType: timer type
 //
 // Returns:
-//   - int: The timestamp at the start of the event
-func (this *ElementSelect) GetTPre() int {
-	return this.tPre
-}
-
-// GetTPost returns the timestamp at the start of the event
-//
-// Returns:
-//   - int: The timestamp at the end of the event
-func (this *ElementSelect) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementSelect) GetTSort() int {
-	if this.tPost == 0 {
-		// add at the end of the trace
-		return math.MaxInt
+//   - int: The tPre of the element
+func (this *ElementSelect) GetT(t timeType) int {
+	switch t {
+	case Request:
+		return this.tPre
+	case Commit:
+		return this.tPost
+	case Sorting:
+		if this.tPost == 0 {
+			return math.MaxInt
+		}
+		return this.tPost
 	}
+
 	return this.tPost
+}
+
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementSelect) Committed() bool {
+	return this.tPost != 0
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -433,30 +436,34 @@ func (this *ElementSelect) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementSelect) SetT(time int) {
-	this.tPre = time
-	this.tPost = time
+func (this *ElementSelect) SetT(t timeType, time int) {
+	switch t {
+	case Request:
+		this.tPre = time
+		if this.tPost != 0 && this.tPost < time {
+			this.tPost = time
+		}
 
-	this.chosenCase.tPost = time
+		for _, c := range this.cases {
+			c.SetTPre2(time)
+		}
+	case Commit:
+		this.tPost = time
+		this.chosenCase.SetTPost2(time)
+	case Sorting:
+		this.SetT(Request, Sorting)
+		this.tPost = Sorting
+	case Both:
+		this.tPre = time
+		this.tPost = time
 
-	for i := range this.cases {
-		this.cases[i].tPre = time
+		this.chosenCase.tPost = time
+
+		for i := range this.cases {
+			this.cases[i].tPre = time
+		}
 	}
-}
 
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementSelect) SetTPre(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
-	}
-
-	for _, c := range this.cases {
-		c.SetTPre2(tPre)
-	}
 }
 
 // SetTPre2 sets the tPre of the element. It does not update the chosen case
@@ -508,30 +515,12 @@ func (this *ElementSelect) SetChosenCase(index int) error {
 	return nil
 }
 
-// SetTPost sets the tPost
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTPost(tPost int) {
-	this.tPost = tPost
-	this.chosenCase.SetTPost2(tPost)
-}
-
 // SetTPost2 sets the tPost. It does not update the chosen case
 //
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementSelect) SetTPost2(tPost int) {
 	this.tPost = tPost
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTSort(tSort int) {
-	this.SetTPre(tSort)
-	this.tPost = tSort
 }
 
 // SetTSort2 set the timer, that is used for the sorting of the trace.
@@ -549,7 +538,7 @@ func (this *ElementSelect) SetTSort2(tSort int) {
 //
 // Parameter: tSort int: The timer of the element
 func (this *ElementSelect) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	if this.tPost != 0 {
 		this.tPost = tSort
 	}
@@ -587,7 +576,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 	}
 
 	for i := range this.cases {
-		this.cases[i].SetTPost(0)
+		this.cases[i].SetT(Commit, 0)
 	}
 
 	if index < 0 {
@@ -596,7 +585,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 		return nil
 	}
 
-	this.cases[index].SetTPost(this.GetTPost())
+	this.cases[index].SetT(Commit, this.GetT(Commit))
 	this.chosenIndex = index
 	this.chosenDefault = false
 	return nil
@@ -616,7 +605,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 			this.chosenDefault = true
 			this.chosenIndex = -1
 			for i := range this.cases {
-				this.cases[i].SetTPost(0)
+				this.cases[i].SetT(Commit, 0)
 			}
 			return nil
 		}
@@ -627,13 +616,13 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	found := false
 	for i, c := range this.cases {
 		if c.objId == chanID && c.op == op {
-			tPost := this.GetTPost()
+			tPost := this.GetT(Commit)
 			if !this.chosenDefault {
-				this.cases[this.chosenIndex].SetTPost(0)
+				this.cases[this.chosenIndex].SetT(Commit, 0)
 			} else {
 				this.chosenDefault = false
 			}
-			this.cases[i].SetTPost(tPost)
+			this.cases[i].SetT(Commit, tPost)
 			this.chosenIndex = i
 			this.chosenDefault = false
 			found = true

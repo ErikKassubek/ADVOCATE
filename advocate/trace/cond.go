@@ -129,36 +129,32 @@ func (this *ElementCond) GetRoutine() int {
 	return this.routine
 }
 
-// GetTPre returns the tPre of the element.
+// GetT returns the t of the element
+//
+// Parameter:
+//   - t timeType: timer type
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementCond) GetTPre() int {
-	return this.tPre
-}
+func (this *ElementCond) GetT(t timeType) int {
+	switch t {
+	case Request:
+		return this.tPre
+	case Commit:
+		return this.tPost
+	case Sorting:
+		t := this.tPre
+		if this.op == CondWait {
+			t = this.tPost
+		}
+		if t == 0 {
+			// add at the end of the trace
+			return math.MaxInt
+		}
+		return t
+	}
 
-// GetTPost returns the tPost of the element.
-//
-// Returns:
-//   - int: The tPost of the element
-func (this *ElementCond) GetTPost() int {
 	return this.tPost
-}
-
-// GetTSort returns the timer, that is used for sorting the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementCond) GetTSort() int {
-	t := this.tPre
-	if this.op == CondWait {
-		t = this.tPost
-	}
-	if t == 0 {
-		// add at the end of the trace
-		return math.MaxInt
-	}
-	return t
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -288,32 +284,32 @@ func (this *ElementCond) GetTraceIndex() (int, int) {
 // SetT sets the tPre and tPost of the element
 //
 // Parameter:
+//   - t timeType: type of time to set
 //   - time int: The tPre and tPost of the element
-func (this *ElementCond) SetT(time int) {
-	this.tPre = time
-	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementCond) SetTPre(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
+func (this *ElementCond) SetT(t timeType, time int) {
+	switch t {
+	case Request:
+		this.tPre = time
+		if this.tPost != 0 && this.tPost < time {
+			this.tPost = time
+		}
+	case Commit, Sorting:
+		this.tPost = time
+		if time != 0 && this.tPre > time {
+			this.tPre = time
+		}
+	case Both:
+		this.SetT(Request, time)
+		this.SetT(Commit, time)
 	}
 }
 
-// SetTSort sets the timer that is used for sorting the trace
+// Committed returns if the operation was committed (tPost != 0)
 //
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementCond) SetTSort(tSort int) {
-	this.SetTPre(tSort)
-	if this.op == CondWait {
-		this.tPost = tSort
-	}
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementCond) Committed() bool {
+	return this.tPost != 0
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -322,7 +318,7 @@ func (this *ElementCond) SetTSort(tSort int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	if this.op == CondWait {
 		if this.tPost != 0 {
 			this.tPost = tSort

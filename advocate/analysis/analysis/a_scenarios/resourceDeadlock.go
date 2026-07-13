@@ -377,7 +377,7 @@ func CheckForResourceDeadlock() {
 			cycleElements = append(cycleElements, results.TraceElementResult{
 				RoutineID: int(request.ThreadID),
 				ObjID:     request.LockID,
-				TPre:      tPre,
+				TRequest:  tPre,
 				ObjType:   "DC",
 				File:      file,
 				Line:      line,

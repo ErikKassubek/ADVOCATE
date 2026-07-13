@@ -69,7 +69,7 @@ func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 func Lock(graph *PoGraph, mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		return
 	}
 
@@ -103,7 +103,7 @@ func Lock(graph *PoGraph, mu *trace.ElementMutex) {
 func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 	id := mu.GetObjId()
 
-	if recorded && mu.GetTPost() == 0 {
+	if recorded && !mu.Committed() {
 		return
 	}
 
@@ -130,7 +130,7 @@ func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 func RUnlock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 	id := mu.GetObjId()
 
-	if recorded && mu.GetTPost() == 0 {
+	if recorded && !mu.Committed() {
 		return
 	}
 

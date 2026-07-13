@@ -146,8 +146,8 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 // UpdateHBNew stores the hb info of the trace for a new element
 //
 // Parameter
-//   - n *trace.TraceElementNew: the new trace operation
-func UpdateHBNew(n *trace.ElementNew) {
+//   - n *trace.TraceElementAlloc: the new trace operation
+func UpdateHBNew(n *trace.ElementAlloc) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)
 
@@ -183,7 +183,7 @@ func UpdateHBOnce(on *trace.ElementOnce) {
 // UpdateHBRoutineEnd stores the hb info of the trace for a routine end element
 //
 // Parameter
-//   - n *trace.TraceElementNew: the new trace operation
+//   - n *trace.TraceElementAlloc: the new trace operation
 func UpdateHBRoutineEnd(n *trace.ElementRoutineEnd) {
 	timer.Start(timer.AnaHb)
 	defer timer.Stop(timer.AnaHb)

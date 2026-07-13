@@ -74,7 +74,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 		}
 
 		for _, tElem := range tr {
-			if tElem.GetTPost() == 0 {
+			if !tElem.Committed() {
 				continue
 			}
 

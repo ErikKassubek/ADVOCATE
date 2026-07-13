@@ -19,8 +19,8 @@ import (
 
 // AnalyzeNew store the vector clock of the element
 // Parameter:
-//   - n *trace.TraceElementNew: the new trace element
-func AnalyzeNew(n *trace.ElementNew) {
+//   - n *trace.TraceElementAlloc: the new trace element
+func AnalyzeNew(n *trace.ElementAlloc) {
 	a_hbcalc.UpdateHBNew(n)
 
 	a_base.NewChan[n.GetObjId()] = n.GetFile()

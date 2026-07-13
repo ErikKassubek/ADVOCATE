@@ -51,7 +51,7 @@ func UpdateHBMutex(mu *trace.ElementMutex) {
 func Lock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		return
 	}
 
@@ -73,7 +73,7 @@ func Lock(mu *trace.ElementMutex) {
 func RLock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		return
 	}
 
@@ -89,7 +89,7 @@ func RLock(mu *trace.ElementMutex) {
 func RUnlock(mu *trace.ElementMutex) {
 	id := mu.GetObjId()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		return
 	}
 

@@ -43,18 +43,18 @@ func startConstraint(num, length int) []f_base.Constraint {
 
 	for i := 0; i < 1000; i++ {
 		key := rand.Intn(len(traces)) + 1
-		trace := traces[key]
-		if len(trace) == 0 {
+		tr := traces[key]
+		if len(tr) == 0 {
 			continue
 		}
 
-		ind := rand.Intn(len(trace))
-		elem := trace[ind]
+		ind := rand.Intn(len(tr))
+		elem := tr[ind]
 
-		if _, ok := alreadyAdded[elem.GetTPost()]; ok {
+		if _, ok := alreadyAdded[elem.GetT(trace.Commit)]; ok {
 			continue
 		}
-		alreadyAdded[elem.GetTPost()] = struct{}{}
+		alreadyAdded[elem.GetT(trace.Commit)] = struct{}{}
 
 		if !f_base.CanBeAddedToConstraint(elem) {
 			continue

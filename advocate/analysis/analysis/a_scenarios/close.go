@@ -56,7 +56,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				arg1 := results.TraceElementResult{ // send
 					RoutineID: routine,
 					ObjID:     id,
-					TPre:      tPre1,
+					TRequest:  tPre1,
 					ObjType:   "CS",
 					File:      file1,
 					Line:      line1,
@@ -65,7 +65,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				arg2 := results.TraceElementResult{ // close
 					RoutineID: a_base.CloseData[ch.GetObjId()].GetRoutine(),
 					ObjID:     id,
-					TPre:      tPre2,
+					TRequest:  tPre2,
 					ObjType:   "CC",
 					File:      file2,
 					Line:      line2,
@@ -147,7 +147,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	arg1 := results.TraceElementResult{ // send
 		RoutineID: elem.GetRoutine(),
 		ObjID:     id,
-		TPre:      elem.GetTPre(),
+		TRequest:  elem.GetT(trace.Request),
 		ObjType:   "CS",
 		File:      fileSend,
 		Line:      elem.GetLine(),
@@ -156,7 +156,7 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	arg2 := results.TraceElementResult{ // close
 		RoutineID: a_base.CloseData[id].GetRoutine(),
 		ObjID:     id,
-		TPre:      closeElem.GetTPre(),
+		TRequest:  closeElem.GetT(trace.Request),
 		ObjType:   "CC",
 		File:      closeElem.GetFile(),
 		Line:      closeElem.GetLine(),
@@ -261,7 +261,7 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 		arg1 := results.TraceElementResult{
 			RoutineID: ch.GetRoutine(),
 			ObjID:     id,
-			TPre:      tPre1,
+			TRequest:  tPre1,
 			ObjType:   "CC",
 			File:      file1,
 			Line:      line1,
@@ -270,7 +270,7 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 		arg2 := results.TraceElementResult{
 			RoutineID: oldClose.GetRoutine(),
 			ObjID:     id,
-			TPre:      tPre2,
+			TRequest:  tPre2,
 			ObjType:   "CC",
 			File:      file2,
 			Line:      line2,

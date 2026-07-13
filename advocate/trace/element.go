@@ -76,6 +76,10 @@ const (
 	WaitDone OperationType = "WD"
 	WaitWait OperationType = "WW"
 
+	Func       OperationType = "F"
+	FuncCall   OperationType = "FC"
+	FuncReturn OperationType = "FR"
+
 	UnknownOperation OperationType = "XX"
 )
 
@@ -108,19 +112,32 @@ func GetElemTypeFromObjectType(ob OperationType) OperationType {
 		return Select
 	case Wait, WaitAdd, WaitDone, WaitWait:
 		return Wait
+	case Func, FuncCall, FuncReturn:
+		return Func
 	default:
 		return None
 	}
 }
+
+type timeType int
+
+const (
+	Request timeType = iota
+	Commit
+	Both = iota
+	Sorting
+)
 
 // Element is an interface for the elements in a trace
 type Element interface {
 	setID(ID int)
 	GetID() int
 	GetObjId() int
-	GetTPre() int
-	GetTSort() int
-	GetTPost() int
+
+	GetT(t timeType) int
+	SetT(t timeType, time int)
+	Committed() bool
+
 	GetPos() string
 	GetFile() string
 	GetLine() int
@@ -128,13 +145,10 @@ type Element interface {
 	GetType(operation bool) OperationType
 	GetTID() string
 	GetRoutine() int
-	IsEqual(elem Element) bool
+	IsEqual(elem Element) bool // TODO: fix
 	IsSameElement(elem Element) bool
 	GetTraceIndex() (int, int)
-	SetTPre(tPre int)
-	SetTSort(tSort int)
 	SetTWithoutNotExecuted(tSort int)
-	SetT(time int)
 	ToString() string
 	SetVc(vc *a_clock.VectorClock)
 	SetWVc(vc *a_clock.VectorClock)
@@ -148,7 +162,7 @@ type Element interface {
 
 func IsOp(elem Element) bool {
 	switch elem.(type) {
-	case *ElementNew, *ElementReplay, *ElementRoutineEnd:
+	case *ElementAlloc, *ElementReplay, *ElementRoutineEnd:
 		return false
 	}
 

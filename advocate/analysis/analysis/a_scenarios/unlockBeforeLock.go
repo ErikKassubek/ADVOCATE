@@ -134,7 +134,7 @@ func CheckForUnlockBeforeLock() {
 				args1 = append(args1, results.TraceElementResult{
 					RoutineID: u.GetRoutine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  tPre,
 					ObjType:   u.GetType(true),
 					File:      file,
 					Line:      line,
@@ -154,7 +154,7 @@ func CheckForUnlockBeforeLock() {
 				args2 = append(args2, results.TraceElementResult{
 					RoutineID: l.GetRoutine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  tPre,
 					ObjType:   l.GetType(true),
 					File:      file,
 					Line:      line,

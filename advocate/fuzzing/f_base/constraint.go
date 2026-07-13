@@ -114,7 +114,7 @@ func (this *Constraint) ElemWithSmallestTPost() trace.Element {
 	var min trace.Element
 
 	for _, c := range this.Elems {
-		if min == nil || c.GetTSort() < min.GetTSort() {
+		if min == nil || c.GetT(trace.Sorting) < min.GetT(trace.Sorting) {
 			min = c
 		}
 	}

@@ -78,24 +78,16 @@ func (this *ElementRoutineEnd) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementRoutineEnd) GetTPre() int {
+func (this *ElementRoutineEnd) GetT(_ timeType) int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - int: The tPost of the element
-func (this *ElementRoutineEnd) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementRoutineEnd) GetTSort() int {
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementRoutineEnd) Committed() bool {
+	return true
 }
 
 // GetPos is a dummy function to implement the traceElement interface
@@ -221,25 +213,8 @@ func (this *ElementRoutineEnd) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementRoutineEnd) SetT(time int) {
+func (this *ElementRoutineEnd) SetT(_ timeType, time int) {
 	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementRoutineEnd) SetTPre(tPre int) {
-	this.tPost = tPre
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementRoutineEnd) SetTSort(tPost int) {
-	this.SetTPre(tPost)
-	this.tPost = tPost
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -248,7 +223,7 @@ func (this *ElementRoutineEnd) SetTSort(tPost int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementRoutineEnd) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
+	this.SetT(Request, tSort)
 	if this.tPost != 0 {
 		this.tPost = tSort
 	}

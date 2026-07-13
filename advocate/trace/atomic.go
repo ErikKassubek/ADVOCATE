@@ -143,24 +143,16 @@ func (this *ElementAtomic) GetRoutine() int {
 //
 // Returns:
 //   - int: The tPost of the element
-func (this *ElementAtomic) GetTPre() int {
+func (this *ElementAtomic) GetT(_ timeType) int {
 	return this.tPost
 }
 
-// GetTPost returns the tPost of the element. For atomic elements, tPre and tPost are the same
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - int: The tPost of the element
-func (this *ElementAtomic) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementAtomic) GetTSort() int {
-	return this.tPost
+//   - bool: true if committed, false if not
+func (this *ElementAtomic) Committed() bool {
+	return true
 }
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -291,24 +283,8 @@ func (this *ElementAtomic) GetTraceIndex() (int, int) {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementAtomic) SetT(time int) {
+func (this *ElementAtomic) SetT(_ timeType, time int) {
 	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPost of the element
-func (this *ElementAtomic) SetTPre(tPre int) {
-	this.tPost = tPre
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementAtomic) SetTSort(tSort int) {
-	this.tPost = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original

@@ -23,8 +23,9 @@ type Data struct {
 	ssaPkgs  []*ssa.Package
 	ssaMains []*ssa.Package
 
-	funcs []function
-	alloc map[*Instruction][]Instruction // instruction -> set of alloc
+	funcs    []*Function
+	mainFunc *Function
+	alloc    map[*Instruction][]Instruction // instruction -> set of alloc
 }
 
 func BuildSsa(ast *s_ast.Data) *Data {

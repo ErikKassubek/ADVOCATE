@@ -16,14 +16,15 @@ import (
 )
 
 // getBlockedResources returns the resources of which at least one routine is blocking
-func getBlockedResources() map[trace.Resource]struct{} {
+func getBlockedResources() map[trace.Resource][]*trace.ElementAlloc {
 	tr := &a_base.MainTrace
 
-	res := make(map[trace.Resource]struct{})
+	res := make(map[trace.Resource][]*trace.ElementAlloc)
 
-	for _, t := range tr.GetBlocked() {
-		ob := t.GetObjId()
-		res[trace.NewResource(ob)] = struct{}{}
+	for _, e := range tr.GetBlocked() {
+		ob := e.GetObjId()
+		alloc := tr.GetAlloc(e)
+		res[trace.NewResource(ob)] = alloc
 	}
 
 	return res

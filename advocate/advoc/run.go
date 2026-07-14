@@ -14,6 +14,7 @@ import (
 	"advocate/analysis/a_base"
 	"advocate/fuzzing/f_base"
 	"advocate/fuzzing/f_fuzzing"
+	"advocate/static/s_blocking"
 	"advocate/utils/command"
 	"advocate/utils/control"
 	"advocate/utils/flags"
@@ -24,6 +25,12 @@ import (
 	"advocate/utils/timer"
 	"fmt"
 	"os"
+)
+
+const (
+	record   = true
+	analysis = true
+	replay   = true
 )
 
 // Run starts the execution of advocate
@@ -52,9 +59,7 @@ func Run() error {
 	}
 
 	progPathDir := paths.GetDirectory(flags.ProgPath)
-	if err != nil {
-		return err
-	}
+
 	timer.Init(progPathDir)
 	timer.Start(timer.Total)
 	defer timer.Stop(timer.Total)
@@ -96,14 +101,18 @@ func Run() error {
 
 	switch flags.Mode {
 	case "analysis":
-		err = modeToolchain(modeMainTest, true, true, true)
+		err = modeToolchain(modeMainTest, record, analysis, replay)
 	case "fuzzing":
 		err = modeFuzzing()
 	case "record", "recording", "trace":
 		flags.DeleteTraces = false
-		err = modeToolchain(modeMainTest, true, false, false)
+		err = modeToolchain(modeMainTest, record, !analysis, !replay)
 	case "replay":
-		err = modeToolchain(modeMainTest, false, false, true)
+		err = modeToolchain(modeMainTest, !record, !analysis, replay)
+	case "static": // TODO: only for testing, when working move into analysis
+		flags.DeleteTraces = false
+		err = modeToolchain(modeMainTest, record, analysis, !replay)
+		s_blocking.BuildStaticBlockingAnalysis()
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
 		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay' or 'record'")

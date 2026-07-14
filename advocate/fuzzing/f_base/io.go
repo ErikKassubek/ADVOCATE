@@ -56,7 +56,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	traceCopy.ShortenTrace(t1, false)
 
 	// add in all the elements in the chain
-	mapping := make(map[string]trace.Element)
+	mapping := make(map[int]trace.Element)
 	for i, elem := range mut.Elems {
 		c := elem.Copy(mapping, true)
 		c.SetT(trace.Sorting, t1+i*2)

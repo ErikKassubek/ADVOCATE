@@ -12,7 +12,67 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
+	"advocate/utils/consts"
+	"fmt"
 )
+
+// ========================================================
+// MARK: Element
+// ========================================================
+
+// Element is an interface for the elements in a trace
+type Element interface {
+	GetID() int
+	setID(ID int)
+	GetObjId() int
+
+	GetT(t timeType) int
+	SetT(t timeType, time int)
+	SetTWithoutNotExecuted(tSort int)
+	Committed() bool
+
+	GetPos() string
+	GetFile() string
+	GetLine() int
+
+	GetRoutine() int
+	GetTraceIndex() (int, int)
+
+	GetType(operation bool) OperationType
+
+	IsEqual(elem Element) bool
+	IsSameElement(elem Element) bool
+
+	ToString() string
+
+	GetFunction() *ElementFunc // TODO: GLOBAL
+
+	SetVc(weak a_clock.VcType, vc *a_clock.VectorClock)
+	GetVC(weak a_clock.VcType) *a_clock.VectorClock
+
+	GetNumberConcurrent(weak, sameElem bool) int
+	SetNumberConcurrent(c int, weak, sameElem bool)
+
+	GetReplayID() string
+	GetTID() string
+
+	Copy(mapping map[int]Element, keep bool) Element
+
+	IsValid() bool
+}
+
+func IsOp(elem Element) bool {
+	switch elem.(type) {
+	case *ElementAlloc, *ElementReplay, *ElementRoutineEnd:
+		return false
+	}
+
+	return true
+}
+
+// ========================================================
+// MARK: Operation
+// ========================================================
 
 // Values for possible primitive types and functions
 type OperationType string
@@ -119,6 +179,10 @@ func GetElemTypeFromObjectType(ob OperationType) OperationType {
 	}
 }
 
+// ========================================================
+// MARK: Time
+// ========================================================
+
 type timeType int
 
 const (
@@ -128,50 +192,97 @@ const (
 	Sorting
 )
 
-// Element is an interface for the elements in a trace
-type Element interface {
-	GetID() int
-	setID(ID int)
-	GetObjId() int
+// ========================================================
+// MARK: Concurrent
+// ========================================================
 
-	GetT(t timeType) int
-	SetT(t timeType, time int)
-	SetTWithoutNotExecuted(tSort int)
-	Committed() bool
-
-	GetPos() string
-	GetFile() string
-	GetLine() int
-
-	GetRoutine() int
-	GetTraceIndex() (int, int)
-
-	GetType(operation bool) OperationType
-
-	IsEqual(elem Element) bool // TODO: fix
-	IsSameElement(elem Element) bool
-
-	ToString() string
-
-	SetVc(weak a_clock.VcType, vc *a_clock.VectorClock)
-	GetVC(weak a_clock.VcType) *a_clock.VectorClock
-
-	GetNumberConcurrent(weak, sameElem bool) int
-	SetNumberConcurrent(c int, weak, sameElem bool)
-
-	GetReplayID() string
-	GetTID() string
-
-	Copy(mapping map[string]Element, keep bool) Element
-
-	IsValid() bool
+type concInfo struct {
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
+	numberConcurrent         int
+	numberConcurrentWeak     int
+	numberConcurrentSame     int
+	numberConcurrentWeakSame int
 }
 
-func IsOp(elem Element) bool {
-	switch elem.(type) {
-	case *ElementAlloc, *ElementReplay, *ElementRoutineEnd:
-		return false
-	}
+func newConcInfo() *concInfo {
+	return &concInfo{nil, nil, -1, -1, -1, -1}
+}
 
-	return true
+func (this *concInfo) copy() *concInfo {
+	return &concInfo{
+		this.vc.Copy(),
+		this.wVc.Copy(),
+		this.numberConcurrent,
+		this.numberConcurrentWeak,
+		this.numberConcurrentSame,
+		this.numberConcurrentWeakSame,
+	}
+}
+
+func (this *concInfo) getVC(weak a_clock.VcType) *a_clock.VectorClock {
+	if weak == a_clock.Weak {
+		return this.wVc
+	}
+	return this.vc
+}
+
+func (this *concInfo) setVC(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	if weak == a_clock.Weak {
+		this.wVc = vc
+		return
+	}
+	this.vc = vc
+}
+
+func (this *concInfo) GetNumberConcurrent(weak, sameElem bool) int {
+	if weak {
+		if sameElem {
+			return this.numberConcurrentWeakSame
+		}
+		return this.numberConcurrentWeak
+	}
+	if sameElem {
+		return this.numberConcurrentSame
+	}
+	return this.numberConcurrent
+}
+
+func (this *concInfo) SetNumberConcurrent(c int, weak, sameElem bool) {
+	if weak {
+		if sameElem {
+			this.numberConcurrentWeakSame = c
+		} else {
+			this.numberConcurrentWeak = c
+		}
+	} else {
+		if sameElem {
+			this.numberConcurrentSame = c
+		} else {
+			this.numberConcurrent = c
+		}
+	}
+}
+
+// ========================================================
+// MARK: Position
+// ========================================================
+
+type position struct {
+	file string
+	line int
+}
+
+func newPosition(file string, line int) *position {
+	return &position{file, line}
+}
+
+func (this *position) copy() *position {
+	return &position{
+		this.file, this.line,
+	}
+}
+
+func (this *position) toString() string {
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }

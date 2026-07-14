@@ -235,6 +235,8 @@ The arguments for `-path` and if necessary `-main` are required. They are
 defined the same way as in for the [recording](#mode-recording) and [replay](#mode-replay)
 modes.
 
+If `-path` does not point to the root of the program, `-root [path]` must be set. 
+
 The default behavior is to run all analysis scenarios. You can select to run
 only certain scenarios to by setting
 

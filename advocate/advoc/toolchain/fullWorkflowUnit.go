@@ -557,7 +557,7 @@ func unitTestRecord(pkg, file, testName string,
 	}
 
 	// Add header
-	if err := headerInserterUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
+	if err := headerInsertUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -673,7 +673,7 @@ func unitTestReplay(dir, pkg, file,
 			continue
 		}
 
-		headerInserterUnit(file, testName, true, -1, traceNum, record)
+		headerInsertUnit(file, testName, true, -1, traceNum, record)
 
 		os.Setenv("GOROOT", paths.GoPatch)
 

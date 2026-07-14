@@ -11,30 +11,65 @@
 package s_blocking
 
 import (
+	"advocate/advoc/toolchain"
 	"advocate/static/static"
 	"advocate/utils/flags"
+	"advocate/utils/log"
 )
 
 var data *static.Data
 
-// Main function for testing static analysis.
-// Todo: remove when static analysis is fully implemented
-func Test() {
-	BuildStaticBlockingAnalysis(flags.ProgPath)
-}
-
 // init to static blocking analysis
-func BuildStaticBlockingAnalysis(dir string) (err error) {
+func BuildStaticBlockingAnalysis() (err error) {
+	log.Info("Build static Analysis")
 
-	data, err = static.BuildStaticData(dir)
+	il := 0
+	if flags.ModeMain {
+		il, err = toolchain.HeaderInsertDummyMain()
+		if err != nil {
+			log.Error(err.Error())
+		}
+	} else {
+		log.Error("Static not implemented for tests")
+		// TODO: implement
+	}
+
+	data, err = static.BuildStaticData(flags.RootPath)
+
+	if flags.ModeMain {
+		toolchain.HeaderRemoverDummyMain(il)
+	} else {
+		log.Error("Static not implemented for tests")
+		// TODO: implement
+	}
+
 	if err != nil {
 		return err
 	}
+
+	IsBlockingBug()
+
+	// data.Ssa().PrintAnalysis()
+
+	// tr := a_base.MainTrace.AsIterator()
+	// for elem := tr.Next(); elem != nil; elem = tr.Next() {
+	// 	f, instr := data.Ssa().TraceToSSA(elem)
+	// 	if instr != nil {
+	// 		println(f.Name(), " # ", elem.ToString(), " # ", instr.String())
+	// 	}
+	// }
 
 	return nil
 }
 
 func IsBlockingBug() {
-	_ = getBlockedResources()
+	blocked := getBlockedResources()
+
+	for _, alloc := range blocked {
+		for _, a := range alloc {
+			f, s := data.Ssa().TraceToSSA(a)
+			log.Debug(a.GetObjId(), " # ", f.Name(), " # ", s.String())
+		}
+	}
 
 }

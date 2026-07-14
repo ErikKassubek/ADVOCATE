@@ -12,61 +12,57 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"strconv"
 )
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
 // ElementAlloc is a trace element for the creation of an object / new
 // Fields:
 //   - id: id of the element, should never be changed
+//   - objId int: The id of the underlying operation
 //   - index int: Index in the routine
 //   - routine int: The routine id
-//   - tPost int: The timestamp of the new
-//   - objId int: The id of the underlying operation
 //   - elemType newOpType: The type of the created object
-//   - num int: Variable field for additional information
-//   - file string: The file of the new
-//   - line int: The line of the new
-//   - children []TraceElement: children in partial order graph
-//   - parents []TraceElement: parents in partial order graph
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
-//   - request bool: if trace is split into request commit, set if request or commit
+//   - t int: The timestamp of the new
+//   - pos *position: code position
+//   - ci *concInfo: concurrency info
+//   - num int: variable field for additional information
+//   - function *ElementFunc: the function the operation is in
 //
 // For now this is only creates the new for channel. This may be expanded later.
 type ElementAlloc struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPost                    int
-	objId                    int
-	elemType                 OperationType
-	num                      int
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
+	id       int
+	objId    int
+	index    int
+	routine  int
+	elemType OperationType
+	t        int
+	pos      *position
+	ci       *concInfo
+	num      int
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementAlloc adds a make trace element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
-//   - tPost string: The timestamp at the end of the event
+//   - t string: The timestamp at the event
 //   - id string: The id of the channel
 //   - elemType string: Type of the created primitive
 //   - num string: Variable field for additional information
 //   - pos string: position
-func (this *Trace) AddTraceElementAlloc(routine int, tPost string, id string, elemType string, num string, pos string) error {
-	tPostInt, err := strconv.Atoi(tPost)
+func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemType string, num string, pos string) error {
+	tInt, err := strconv.Atoi(t)
 	if err != nil {
 		return errors.New("tPost is not an integer")
 	}
@@ -103,28 +99,26 @@ func (this *Trace) AddTraceElementAlloc(routine int, tPost string, id string, el
 	}
 
 	elem := ElementAlloc{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		elemType:                 et,
-		num:                      numInt,
-		file:                     file,
-		line:                     line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
+		index:    this.NumberElemInRoutine(routine),
+		routine:  routine,
+		t:        tInt,
+		objId:    idInt,
+		elemType: et,
+		num:      numInt,
+		pos:      newPosition(file, line),
+		ci:       newConcInfo(),
+		function: getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
+
+	this.allocs[elem.objId] = &elem
+
 	return nil
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 // GetID returns the trace id
@@ -151,76 +145,16 @@ func (this *ElementAlloc) GetObjId() int {
 	return this.objId
 }
 
-// ========================================================
-// Timestamps
-// ========================================================
-
-// GetT returns the timestamp of the element
-//
-// Returns:
-//   - int: The tPre of the element
-func (this *ElementAlloc) GetT(_ timeType) int {
-	return this.tPost
-}
-
-// SetT sets the tPre and tPost of the element
+// setObjId sets the object id
 //
 // Parameter:
-//   - time int: The tPre and tPost of the element
-func (this *ElementAlloc) SetT(_ timeType, tSort int) {
-	this.tPost = tSort
-}
-
-// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
-// value was not 0
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementAlloc) SetTWithoutNotExecuted(tSort int) {
-	if this.tPost == 0 {
-		return
-	}
-	this.tPost = tSort
-}
-
-// Committed returns if the operation was committed (tPost != 0)
-//
-// Returns:
-//   - bool: true if committed, false if not
-func (this *ElementAlloc) Committed() bool {
-	return true
+//   - id int: the object id
+func (this *ElementAlloc) setObjId(id int) {
+	this.objId = id
 }
 
 // ========================================================
-// Position
-// ========================================================
-
-// GetPos returns the position of the operation in the form [file]:[line].
-//
-// Returns:
-//   - string: The position of the element
-func (this *ElementAlloc) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
-}
-
-// GetFile returns the file where the operation represented by the element was executed
-//
-// Returns:
-//   - int: The file of the element
-func (this *ElementAlloc) GetFile() string {
-	return this.file
-}
-
-// GetLine returns the line where the operation represented by the element was executed
-//
-// Returns:
-//   - int: The line of the element
-func (this *ElementAlloc) GetLine() int {
-	return this.line
-}
-
-// ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 // GetRoutine returns the routine ID of the element.
@@ -241,7 +175,7 @@ func (this *ElementAlloc) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 // GetType returns the object type
@@ -260,7 +194,83 @@ func (this *ElementAlloc) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Timestamps
+// ========================================================
+
+// GetT returns the timestamp of the element
+//
+// Returns:
+//   - int: The tPre of the element
+func (this *ElementAlloc) GetT(_ timeType) int {
+	return this.t
+}
+
+// SetT sets the tPre and tPost of the element
+//
+// Parameter:
+//   - time int: The tPre and tPost of the element
+func (this *ElementAlloc) SetT(_ timeType, tSort int) {
+	this.t = tSort
+}
+
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (this *ElementAlloc) SetTWithoutNotExecuted(tSort int) {
+	if this.t == 0 {
+		return
+	}
+	this.t = tSort
+}
+
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementAlloc) Committed() bool {
+	return true
+}
+
+// ========================================================
+// MARK: Position
+// ========================================================
+
+// GetPos returns the position of the operation in the form [file]:[line].
+//
+// Returns:
+//   - string: The position of the element
+func (this *ElementAlloc) GetPos() string {
+	return this.pos.toString()
+}
+
+// GetFile returns the file where the operation represented by the element was executed
+//
+// Returns:
+//   - int: The file of the element
+func (this *ElementAlloc) GetFile() string {
+	return this.pos.file
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementAlloc) setFile(f string) {
+	this.pos.file = f
+}
+
+// GetLine returns the line where the operation represented by the element was executed
+//
+// Returns:
+//   - int: The line of the element
+func (this *ElementAlloc) GetLine() int {
+	return this.pos.line
+}
+
+// ========================================================
+// MARK: Equal
 // ========================================================
 
 // IsEqual checks if an trace element is equal to this element
@@ -287,7 +297,7 @@ func (this *ElementAlloc) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 // ToString returns the simple string representation of the element
@@ -295,7 +305,7 @@ func (this *ElementAlloc) IsSameElement(elem Element) bool {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementAlloc) ToString() string {
-	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.tPost, this.objId, string(this.elemType), this.num, this.GetPos())
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.GetPos())
 }
 
 // GetTID returns the tID of the element.
@@ -304,40 +314,40 @@ func (this *ElementAlloc) ToString() string {
 // Returns:
 //   - int: The tID of the element
 func (this *ElementAlloc) GetTID() string {
-	return "N@" + this.GetPos() + "@" + strconv.Itoa(this.tPost)
+	return "N@" + this.GetPos() + "@" + strconv.Itoa(this.t)
 }
 
 // ========================================================
-// VC
+// MARK: Function
+// ========================================================
+
+func (this *ElementAlloc) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 // SetVc sets the vector clock
 //
 // Parameter:
-//   - weak bool: set weak wc
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementAlloc) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
-	if weak == a_clock.Weak {
-		this.wVc = vc.Copy()
-	} else {
-		this.vc = vc.Copy()
-	}
+//   - weak bool: set the weak wv
+//   - cl *clock.VectorClock: the vector clock
+func (this *ElementAlloc) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+	this.ci.setVC(weak, cl)
 }
 
 // GetVC returns the vector clock of the element
 //
+// Parameter:
+//   - weak bool: get the weak
+//
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (this *ElementAlloc) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
-	if weak == a_clock.Weak {
-		return this.wVc
-	}
-	return this.vc
+	return this.ci.getVC(weak)
 }
-
-// ========================================================
-// Concurrent
-// ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
@@ -349,16 +359,7 @@ func (this *ElementAlloc) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 // Returns:
 //   - number of concurrent element, or -1
 func (this *ElementAlloc) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -368,23 +369,11 @@ func (this *ElementAlloc) GetNumberConcurrent(weak, sameElem bool) int {
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
 func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 // GetReplayID returns the replay ID of the element
@@ -392,11 +381,11 @@ func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - int: The replayId of the element
 func (this *ElementAlloc) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 // Copy the element
@@ -407,28 +396,23 @@ func (this *ElementAlloc) GetReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAlloc) Copy(_ map[string]Element, _ bool) Element {
+func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
 
 	return &ElementAlloc{
-		id:                       this.id,
-		index:                    0,
-		routine:                  this.routine,
-		tPost:                    0,
-		objId:                    this.objId,
-		elemType:                 this.elemType,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         0,
-		numberConcurrentWeak:     0,
-		numberConcurrentSame:     0,
-		numberConcurrentWeakSame: 0,
+		id:       this.id,
+		index:    0,
+		routine:  this.routine,
+		t:        0,
+		objId:    this.objId,
+		elemType: this.elemType,
+		pos:      this.pos.copy(),
+		ci:       this.ci.copy(),
+		function: this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementAlloc) IsValid() bool {
@@ -436,7 +420,7 @@ func (this *ElementAlloc) IsValid() bool {
 }
 
 // ========================================================
-// Others
+// MARK: Others
 // ========================================================
 
 // GetNum returns the num field of the element
@@ -445,22 +429,6 @@ func (this *ElementAlloc) IsValid() bool {
 //   - VectorClock: The num field of the element
 func (this *ElementAlloc) GetNum() int {
 	return this.num
-}
-
-// GetTraceID sets the file
-//
-// Parameter:
-//   - f string: the file
-func (this *ElementAlloc) setFile(f string) {
-	this.file = f
-}
-
-// setObjId sets the object id
-//
-// Parameter:
-//   - id int: the object id
-func (this *ElementAlloc) setObjId(id int) {
-	this.objId = id
 }
 
 // IsRequest determines if the element is a request

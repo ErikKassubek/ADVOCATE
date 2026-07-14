@@ -12,45 +12,39 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"strconv"
 )
+
+// ========================================================
+// MARK: Data
+// ========================================================
 
 // ElementFork is a trace element for a go statement
 // Fields:
 //   - id: id of the element, should never be changed
 //   - index int: the index of the fork in the routine
 //   - routine int: The routine id of
-//   - tPost int: The timestamp at the end of the event
+//   - t int: The timestamp at the end of the event
 //   - objId int: The id of the new go routine
-//   - file (string), line int: The position of the trace element in the file
-//   - vc *clock.VectorClock: the vector clock of the element
-//   - wVc *clock.VectorClock: the weak vector clock of the element
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - pos *position: code position
+//   - ci *concInfo: concurrency info
+//   - function *ElementFunc: the function the operation is in
 type ElementFork struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPost                    int
-	objId                    int
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	concurrent               []Element
-	concurrentWeak           []Element
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
-	concurrentSame           []Element
-	concurrentWeakSame       []Element
+	id       int
+	index    int
+	routine  int
+	t        int
+	objId    int
+	pos      *position
+	ci       *concInfo
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementFork adds a new go statement element to the main trace
 //
@@ -76,22 +70,13 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 	}
 
 	elem := ElementFork{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		file:                     file,
-		line:                     line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		concurrent:               make([]Element, 0),
-		concurrentWeak:           make([]Element, 0),
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
-		concurrentSame:           make([]Element, 0),
-		concurrentWeakSame:       make([]Element, 0),
+		index:    this.NumberElemInRoutine(routine),
+		routine:  routine,
+		t:        tPostInt,
+		objId:    idInt,
+		pos:      newPosition(file, line),
+		ci:       newConcInfo(),
+		function: getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -99,7 +84,7 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 // GetID returns the trace id
@@ -127,7 +112,7 @@ func (this *ElementFork) GetObjId() int {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 // GetT returns the t of the element.
@@ -135,7 +120,7 @@ func (this *ElementFork) GetObjId() int {
 // Returns:
 //   - int: The tPre of the element
 func (this *ElementFork) GetT(_ timeType) int {
-	return this.tPost
+	return this.t
 }
 
 // SetT sets the tPre and tPost of the element
@@ -143,7 +128,7 @@ func (this *ElementFork) GetT(_ timeType) int {
 // Parameter:
 //   - time int: The tPre and tPost of the element
 func (this *ElementFork) SetT(_ timeType, time int) {
-	this.tPost = time
+	this.t = time
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -152,8 +137,8 @@ func (this *ElementFork) SetT(_ timeType, time int) {
 // Parameter:
 //   - tSort int: The timer of the element
 func (this *ElementFork) SetTWithoutNotExecuted(tSort int) {
-	if this.tPost != 0 {
-		this.tPost = tSort
+	if this.t != 0 {
+		this.t = tSort
 	}
 }
 
@@ -166,7 +151,7 @@ func (this *ElementFork) Committed() bool {
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -174,7 +159,7 @@ func (this *ElementFork) Committed() bool {
 // Returns:
 //   - string: The position of the element
 func (this *ElementFork) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+	return this.pos.toString()
 }
 
 // GetFile returns the file where the operation represented by the element was executed
@@ -182,7 +167,7 @@ func (this *ElementFork) GetPos() string {
 // Returns:
 //   - The file of the element
 func (this *ElementFork) GetFile() string {
-	return this.file
+	return this.pos.file
 }
 
 // GetLine returns the line where the operation represented by the element was executed
@@ -190,11 +175,11 @@ func (this *ElementFork) GetFile() string {
 // Returns:
 //   - The line of the element
 func (this *ElementFork) GetLine() int {
-	return this.line
+	return this.pos.line
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 // GetRoutine returns the routine ID of the element.
@@ -215,7 +200,7 @@ func (this *ElementFork) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 // GetObjType returns the object type
@@ -233,7 +218,7 @@ func (this *ElementFork) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 // IsEqual checks if an trace element is equal to this element
@@ -261,7 +246,7 @@ func (this *ElementFork) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 // ToString returns the simple string representation of the element
@@ -269,7 +254,7 @@ func (this *ElementFork) IsSameElement(elem Element) bool {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementFork) ToString() string {
-	return "G" + "," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) +
+	return "G" + "," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.objId) +
 		"," + this.GetPos()
 }
 
@@ -279,41 +264,40 @@ func (this *ElementFork) ToString() string {
 // Returns:
 //   - string: The tID of the element
 func (this *ElementFork) GetTID() string {
-	return "F@" + this.GetPos() + "@" + strconv.Itoa(this.tPost)
+	return "F@" + this.GetPos() + "@" + strconv.Itoa(this.t)
 }
 
 // ========================================================
-// VC
+// MARK: Function
+// ========================================================
+
+func (this *ElementFork) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 // SetVc sets the vector clock
 //
 // Parameter:
-//   - weak bool: set the weak vc
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementFork) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
-	if weak == a_clock.Weak {
-		this.wVc = vc.Copy()
-	} else {
-		this.vc = vc.Copy()
-	}
+//   - weak bool: set the weak wv
+//   - cl *clock.VectorClock: the vector clock
+func (this *ElementFork) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+	this.ci.setVC(weak, cl)
 }
 
 // GetVC returns the vector clock of the element
 //
+// Parameter:
+//   - weak bool: get the weak
+//
 // Returns:
-//   - weak bool: get the weak vc
 //   - VectorClock: The vector clock of the element
 func (this *ElementFork) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
-	if weak == a_clock.Weak {
-		return this.wVc
-	}
-	return this.vc
+	return this.ci.getVC(weak)
 }
-
-// ========================================================
-// Concurrent
-// ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
@@ -325,16 +309,7 @@ func (this *ElementFork) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 // Returns:
 //   - number of concurrent element, or -1
 func (this *ElementFork) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -344,23 +319,11 @@ func (this *ElementFork) GetNumberConcurrent(weak, sameElem bool) int {
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
 func (this *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 // GetReplayID returns the replay id of the element
@@ -368,11 +331,11 @@ func (this *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementFork) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 // Copy the element
@@ -383,44 +346,34 @@ func (this *ElementFork) GetReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementFork) Copy(mapping map[string]Element, keep bool) Element {
+func (this *ElementFork) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementFork{
-			id:                       this.id,
-			index:                    0,
-			routine:                  this.routine,
-			tPost:                    0,
-			objId:                    this.objId,
-			file:                     this.file,
-			line:                     this.line,
-			vc:                       nil,
-			wVc:                      nil,
-			numberConcurrent:         0,
-			numberConcurrentWeak:     0,
-			numberConcurrentSame:     0,
-			numberConcurrentWeakSame: 0,
+			id:       this.id,
+			index:    0,
+			routine:  this.routine,
+			t:        0,
+			objId:    this.objId,
+			pos:      this.pos.copy(),
+			ci:       newConcInfo(),
+			function: this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementFork{
-		id:                       this.id,
-		index:                    this.index,
-		routine:                  this.routine,
-		tPost:                    this.tPost,
-		objId:                    this.objId,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
+		id:       this.id,
+		index:    this.index,
+		routine:  this.routine,
+		t:        this.t,
+		objId:    this.objId,
+		pos:      this.pos.copy(),
+		ci:       this.ci.copy(),
+		function: this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementFork) IsValid() bool {

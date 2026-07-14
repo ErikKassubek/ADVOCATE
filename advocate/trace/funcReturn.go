@@ -17,13 +17,29 @@ import (
 	"strconv"
 )
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
+// ElementReturn is a struct to save a function return in the trace
+// Fields:
+//
+//   - id: id of the element, should never be changed
+//   - index int: index in the routine
+//   - routine int: The routine id
+//   - t int: The timestamp of the event
+//   - function *ElementFunc: corresponding function call
 type ElementReturn struct {
-	id      int
-	index   int
-	routine int
-	t       int
-	call    *ElementFunc
+	id       int
+	index    int
+	routine  int
+	t        int
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 	tInt, err := strconv.Atoi(t)
@@ -31,13 +47,16 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 		return errors.New("t is not an integer")
 	}
 
-	call := lastCall[routine].Pop()
+	var call *ElementFunc = nil
+	if _, ok := lastCall[routine]; ok {
+		call = lastCall[routine].Pop()
+	}
 
 	elem := ElementReturn{
-		index:   this.NumberElemInRoutine(routine),
-		routine: routine,
-		t:       tInt,
-		call:    call,
+		index:    this.NumberElemInRoutine(routine),
+		routine:  routine,
+		t:        tInt,
+		function: call,
 	}
 
 	this.AddElement(&elem)
@@ -45,7 +64,7 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 func (this *ElementReturn) GetID() int {
@@ -61,7 +80,7 @@ func (this *ElementReturn) GetObjId() int {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 func (this *ElementReturn) GetT(_ timeType) int {
@@ -85,7 +104,7 @@ func (this *ElementReturn) Committed() bool {
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 func (this *ElementReturn) GetPos() string {
@@ -101,7 +120,7 @@ func (this *ElementReturn) GetLine() int {
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 func (this *ElementReturn) GetRoutine() int {
@@ -113,7 +132,7 @@ func (this *ElementReturn) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 func (this *ElementReturn) GetType(operation bool) OperationType {
@@ -125,7 +144,7 @@ func (this *ElementReturn) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 func (this *ElementReturn) IsEqual(elem Element) bool { // TODO: fix
@@ -135,18 +154,18 @@ func (this *ElementReturn) IsEqual(elem Element) bool { // TODO: fix
 func (this *ElementReturn) IsSameElement(elem Element) bool {
 	switch e := elem.(type) {
 	case *ElementReturn:
-		return this.call.name == e.call.name
+		return this.function.name == e.function.name
 	}
 
 	return false
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 func (this *ElementReturn) ToString() string {
-	return fmt.Sprint("R,%d", this.t)
+	return fmt.Sprintf("R,%d", this.t)
 }
 
 func (this *ElementReturn) GetTID() string {
@@ -154,7 +173,7 @@ func (this *ElementReturn) GetTID() string {
 }
 
 // ========================================================
-// VC
+// MARK: VC
 // ========================================================
 
 func (this *ElementReturn) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
@@ -165,7 +184,15 @@ func (this *ElementReturn) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
 }
 
 // ========================================================
-// Concurrent
+// MARK: Function
+// ========================================================
+
+func (this *ElementReturn) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 func (this *ElementReturn) GetNumberConcurrent(_, _ bool) int {
@@ -176,7 +203,7 @@ func (this *ElementReturn) SetNumberConcurrent(_ int, _, _ bool) {
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 func (this *ElementReturn) GetReplayID() string {
@@ -184,20 +211,21 @@ func (this *ElementReturn) GetReplayID() string {
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
-func (this *ElementReturn) Copy(mapping map[string]Element, keep bool) Element {
+func (this *ElementReturn) Copy(mapping map[int]Element, keep bool) Element {
 	return &ElementReturn{
-		id:      this.id,
-		index:   this.index,
-		routine: this.routine,
-		t:       this.t,
+		id:       this.id,
+		index:    this.index,
+		routine:  this.routine,
+		t:        this.t,
+		function: this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementReturn) IsValid() bool {

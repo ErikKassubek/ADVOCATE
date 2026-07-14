@@ -25,6 +25,7 @@ var (
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+	root  = newFlagVal("root", "", "if different from path", "Path to the root of the program folder. Must only be set if different from path")
 	prog  = newFlagVal("prog", "", "-stat/-time/-notExec", "Name of the program")
 	prog2 = newFlagVal("prog", "", "", "Name of the program")
 	exec1 = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
@@ -336,6 +337,7 @@ func printHelpAnalysis() {
 
 	// paths
 	fmt.Println(path.toString(true))
+	fmt.Println(root.toString(true))
 	fmt.Println(prog.toString(false))
 	fmt.Println(exec1.toString(false))
 

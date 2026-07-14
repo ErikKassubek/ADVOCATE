@@ -194,7 +194,7 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int) (int, er
 		line := scanner.Text()
 		err := processElement(tr, line, routine)
 		if err != nil {
-			log.Error("Error in processing trace element: ", err)
+			log.Error("Error in processing trace element %s: ", line, err)
 		}
 		counter++
 
@@ -288,7 +288,7 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		if len(fields) != 2 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
 		}
-		err = tr.AddTaceElementFunc(routine, fields[1], "", trace.FuncReturn, "", "")
+		err = tr.AddTaceElementReturn(routine, fields[1])
 	case "OAT":
 		err = tr.AddTraceObjectAware(routine, fields[1])
 	default:

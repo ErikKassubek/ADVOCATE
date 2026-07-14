@@ -21,17 +21,48 @@ import (
 
 var lastCall = make(map[int]*types.Stack[*ElementFunc])
 
+func getLastCall(rout int) *ElementFunc {
+	rStack, ok := lastCall[rout]
+	if !ok {
+		return nil
+	}
+
+	if rStack.IsEmpty() {
+		return nil
+	}
+
+	return rStack.Peek()
+}
+
+// ========================================================
+// MARK: Data
+// ========================================================
+
+// ElementFunc is a struct to save a function call in the trace
+// Fields:
+//
+//   - id: id of the element, should never be changed
+//   - index int: index in the routine
+//   - routine int: The routine id
+//   - name: name of the called function
+//   - t int: The timestamp of the event
+//   - posDef *position: code position of the function declaration
+//   - posCall *position: code position of the function call
+//   - function *ElementFunc: the function the operation is in
 type ElementFunc struct {
 	id       int
 	index    int
 	routine  int
 	name     string
 	t        int
-	fileDef  string
-	lineDef  int
-	fileCall string
-	lineCall int
+	posDef   *position
+	posCall  *position
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op OperationType, posDef, posCall string) error {
 	tInt, err := strconv.Atoi(t)
@@ -54,10 +85,9 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op Ope
 		routine:  routine,
 		name:     name,
 		t:        tInt,
-		fileDef:  fileDef,
-		lineDef:  lineDef,
-		fileCall: fileCall,
-		lineCall: lineCall,
+		posDef:   newPosition(fileDef, lineDef),
+		posCall:  newPosition(fileCall, lineCall),
+		function: getLastCall(routine),
 	}
 
 	if _, ok := lastCall[routine]; !ok {
@@ -70,7 +100,7 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op Ope
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 func (this *ElementFunc) GetID() int {
@@ -86,7 +116,7 @@ func (this *ElementFunc) GetObjId() int {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 func (this *ElementFunc) GetT(_ timeType) int {
@@ -110,27 +140,27 @@ func (this *ElementFunc) Committed() bool {
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 func (this *ElementFunc) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.fileCall, consts.PosSep, this.lineCall)
+	return this.posCall.toString()
 }
 
 func (this *ElementFunc) GetFile() string {
-	return this.fileCall
+	return this.posCall.file
 }
 
 func (this *ElementFunc) GetLine() int {
-	return this.lineCall
+	return this.posCall.line
 }
 
 func (this *ElementFunc) GetPosDef() string {
-	return fmt.Sprintf("%s%s%d", this.fileDef, consts.PosSep, this.lineDef)
+	return fmt.Sprintf("%s%s%d", this.posCall.file, consts.PosSep, this.posCall.line)
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 func (this *ElementFunc) GetRoutine() int {
@@ -142,7 +172,7 @@ func (this *ElementFunc) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 func (this *ElementFunc) GetType(operation bool) OperationType {
@@ -154,7 +184,7 @@ func (this *ElementFunc) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 func (this *ElementFunc) IsEqual(elem Element) bool {
@@ -171,7 +201,7 @@ func (this *ElementFunc) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 func (this *ElementFunc) ToString() string {
@@ -183,7 +213,7 @@ func (this *ElementFunc) GetTID() string {
 }
 
 // ========================================================
-// VC
+// MARK: VC
 // ========================================================
 
 func (this *ElementFunc) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
@@ -194,7 +224,15 @@ func (this *ElementFunc) GetVC(a_clock.VcType) *a_clock.VectorClock {
 }
 
 // ========================================================
-// Concurrent
+// MARK: Function
+// ========================================================
+
+func (this *ElementFunc) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 func (this *ElementFunc) GetNumberConcurrent(_, _ bool) int {
@@ -205,33 +243,41 @@ func (this *ElementFunc) SetNumberConcurrent(_ int, _, _ bool) {
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 func (this *ElementFunc) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.fileCall, this.lineCall)
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.posCall.file, this.posCall.line)
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
-func (this *ElementFunc) Copy(mapping map[string]Element, keep bool) Element {
-	return &ElementFunc{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		t:        this.t,
-		name:     this.name,
-		fileDef:  this.fileDef,
-		lineDef:  this.lineDef,
-		fileCall: this.fileCall,
-		lineCall: this.lineCall,
+func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
+	id := this.GetID()
+
+	if existing, ok := mapping[id]; ok {
+		return existing
 	}
+
+	elem := &ElementFunc{
+		id:      this.id,
+		index:   this.index,
+		routine: this.routine,
+		t:       this.t,
+		name:    this.name,
+		posDef:  this.posDef.copy(),
+		posCall: this.posCall.copy(),
+	}
+
+	mapping[id] = elem
+
+	return elem
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementFunc) IsValid() bool {
@@ -239,7 +285,7 @@ func (this *ElementFunc) IsValid() bool {
 }
 
 // ========================================================
-// Others
+// MARK: Others
 // ========================================================
 
 func (this *ElementFunc) GetName() string {

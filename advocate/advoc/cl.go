@@ -32,6 +32,7 @@ func CommandLine() bool {
 	flag.BoolVar(&help, "help", false, "Print help")
 
 	flag.StringVar(&flags.ProgPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+	flag.StringVar(&flags.RootPath, "root", "", "Path to the root of the program folder. Must only be set if different from path")
 
 	flag.StringVar(&flags.ProgName, "prog", "", "Name of the program")
 	flag.StringVar(&flags.ExecName, "exec", "", "Name of the executable or test")

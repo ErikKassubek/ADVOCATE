@@ -57,6 +57,10 @@ func CheckProg() string {
 		return ""
 	}
 
+	if flags.RootPath == "" {
+		flags.RootPath = paths.GetDirectory(flags.ProgPath)
+	}
+
 	// Search for go.mod
 	err = filepath.WalkDir(paths.GetDirectory(flags.ProgPath), func(path string, d os.DirEntry, err error) error {
 		if err != nil {

@@ -12,46 +12,44 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"math"
 	"strconv"
 )
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
 // ElementCond is a trace element for a condition variable
 // Fields:
 //   - id: id of the element, should never be changed
+//   - index int: index in the routine
 //   - routine int: The routine id
-//   - tPre int: The timestamp at the start of the event
-//   - tPost int: The timestamp at the end of the event
+//   - tReq int: The timestamp at the start of the event
+//   - tCom int: The timestamp at the end of the event
 //   - objId int: The id of the condition variable
 //   - op objectType: The operation on the condition variable
-//   - file string, The file of the condition variable operation in the code
-//   - line int, The line of the condition variable operation in the code
-//   - children []TraceElement: children in partial order graph
-//   - parent []TraceElement: parents in partial order graph
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - pos *position: code position
+//   - ci *concInfo: concurrency infocalculated
+//   - function *ElementFunc: the function the operation is in
 type ElementCond struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPre                     int
-	tPost                    int
-	objId                    int
-	op                       OperationType
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
+	id       int
+	index    int
+	routine  int
+	tReq     int
+	tCom     int
+	objId    int
+	op       OperationType
+	pos      *position
+	ci       *concInfo
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementCond adds a new condition variable element to the main trace
 //
@@ -93,20 +91,15 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPre:                     tPreInt,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		op:                       op,
-		file:                     file,
-		line:                     line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
+		index:    this.NumberElemInRoutine(routine),
+		routine:  routine,
+		tReq:     tPreInt,
+		tCom:     tPostInt,
+		objId:    idInt,
+		op:       op,
+		pos:      newPosition(file, line),
+		ci:       newConcInfo(),
+		function: getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -114,7 +107,7 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 // GetID returns the trace id
@@ -142,7 +135,7 @@ func (this *ElementCond) GetObjId() int {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 // GetT returns the t of the element
@@ -155,13 +148,13 @@ func (this *ElementCond) GetObjId() int {
 func (this *ElementCond) GetT(t timeType) int {
 	switch t {
 	case Request:
-		return this.tPre
+		return this.tReq
 	case Commit:
-		return this.tPost
+		return this.tCom
 	case Sorting:
-		t := this.tPre
+		t := this.tReq
 		if this.op == CondWait {
-			t = this.tPost
+			t = this.tCom
 		}
 		if t == 0 {
 			// add at the end of the trace
@@ -170,7 +163,7 @@ func (this *ElementCond) GetT(t timeType) int {
 		return t
 	}
 
-	return this.tPost
+	return this.tCom
 }
 
 // SetT sets the tPre and tPost of the element
@@ -181,14 +174,14 @@ func (this *ElementCond) GetT(t timeType) int {
 func (this *ElementCond) SetT(t timeType, time int) {
 	switch t {
 	case Request:
-		this.tPre = time
-		if this.tPost != 0 && this.tPost < time {
-			this.tPost = time
+		this.tReq = time
+		if this.tCom != 0 && this.tCom < time {
+			this.tCom = time
 		}
 	case Commit, Sorting:
-		this.tPost = time
-		if time != 0 && this.tPre > time {
-			this.tPre = time
+		this.tCom = time
+		if time != 0 && this.tReq > time {
+			this.tReq = time
 		}
 	case Both:
 		this.SetT(Request, time)
@@ -204,13 +197,13 @@ func (this *ElementCond) SetT(t timeType, time int) {
 func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 	this.SetT(Request, tSort)
 	if this.op == CondWait {
-		if this.tPost != 0 {
-			this.tPost = tSort
+		if this.tCom != 0 {
+			this.tCom = tSort
 		}
 		return
 	}
-	if this.tPre != 0 {
-		this.tPre = tSort
+	if this.tReq != 0 {
+		this.tReq = tSort
 	}
 }
 
@@ -219,11 +212,11 @@ func (this *ElementCond) SetTWithoutNotExecuted(tSort int) {
 // Returns:
 //   - bool: true if committed, false if not
 func (this *ElementCond) Committed() bool {
-	return this.tPost != 0
+	return this.tCom != 0
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -231,7 +224,7 @@ func (this *ElementCond) Committed() bool {
 // Returns:
 //   - string: The position of the element
 func (this *ElementCond) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+	return this.pos.toString()
 }
 
 // GetFile returns the file of the element
@@ -239,7 +232,7 @@ func (this *ElementCond) GetPos() string {
 // Returns:
 //   - The file of the element
 func (this *ElementCond) GetFile() string {
-	return this.file
+	return this.pos.file
 }
 
 // GetLine returns the line of the element
@@ -247,11 +240,11 @@ func (this *ElementCond) GetFile() string {
 // Returns:
 //   - The line of the element
 func (this *ElementCond) GetLine() int {
-	return this.line
+	return this.pos.line
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 // GetRoutine returns the routine ID of the element.
@@ -272,7 +265,7 @@ func (this *ElementCond) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 // GetType returns the object type
@@ -291,7 +284,7 @@ func (this *ElementCond) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 // IsEqual checks if an trace element is equal to this element
@@ -322,7 +315,7 @@ func (this *ElementCond) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 // ToString returns the string representation of the element
@@ -331,7 +324,7 @@ func (this *ElementCond) IsSameElement(elem Element) bool {
 //   - string: The string representation of the element
 func (this *ElementCond) ToString() string {
 	res := "D,"
-	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
+	res += strconv.Itoa(this.tReq) + "," + strconv.Itoa(this.tCom) + ","
 	res += strconv.Itoa(this.objId) + ","
 	switch this.op {
 	case CondWait:
@@ -351,43 +344,40 @@ func (this *ElementCond) ToString() string {
 // Returns:
 //   - string: The tID of the element
 func (this *ElementCond) GetTID() string {
-	return "D@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
+	return "D@" + this.GetPos() + "@" + strconv.Itoa(this.tReq)
 }
 
 // ========================================================
-// VC
+// MARK: Function
+// ========================================================
+
+func (this *ElementCond) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 // SetVc sets the vector clock
 //
 // Parameter:
-//   - weak bool: set weak vc
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementCond) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
-	if weak == a_clock.Weak {
-		this.wVc = vc.Copy()
-	} else {
-		this.vc = vc.Copy()
-	}
+//   - weak bool: set the weak wv
+//   - cl *clock.VectorClock: the vector clock
+func (this *ElementCond) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+	this.ci.setVC(weak, cl)
 }
 
 // GetVC returns the vector clock of the element
 //
 // Parameter:
-//   - weak bool: get weak
+//   - weak bool: get the weak
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (this *ElementCond) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
-	if weak == a_clock.Weak {
-		return this.wVc
-	}
-	return this.vc
+	return this.ci.getVC(weak)
 }
-
-// ========================================================
-// Concurrent
-// ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
@@ -399,16 +389,7 @@ func (this *ElementCond) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 // Returns:
 //   - number of concurrent element, or -1
 func (this *ElementCond) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -418,23 +399,11 @@ func (this *ElementCond) GetNumberConcurrent(weak, sameElem bool) int {
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
 func (this *ElementCond) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 // GetReplayID returns the replay id of the element
@@ -442,11 +411,11 @@ func (this *ElementCond) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementCond) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 // Copy the element
@@ -459,48 +428,38 @@ func (this *ElementCond) GetReplayID() string {
 
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementCond) Copy(mapping map[string]Element, keep bool) Element {
+func (this *ElementCond) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementCond{
-			id:                       this.id,
-			index:                    0,
-			routine:                  this.routine,
-			tPre:                     0,
-			tPost:                    0,
-			objId:                    this.objId,
-			op:                       this.op,
-			file:                     this.file,
-			line:                     this.line,
-			vc:                       nil,
-			wVc:                      nil,
-			numberConcurrent:         0,
-			numberConcurrentWeak:     0,
-			numberConcurrentSame:     0,
-			numberConcurrentWeakSame: 0,
+			id:       this.id,
+			index:    0,
+			routine:  this.routine,
+			tReq:     0,
+			tCom:     0,
+			objId:    this.objId,
+			op:       this.op,
+			pos:      this.pos.copy(),
+			ci:       newConcInfo(),
+			function: this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementCond{
-		id:                       this.id,
-		index:                    this.index,
-		routine:                  this.routine,
-		tPre:                     this.tPre,
-		tPost:                    this.tPost,
-		objId:                    this.objId,
-		op:                       this.op,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
+		id:       this.id,
+		index:    this.index,
+		routine:  this.routine,
+		tReq:     this.tReq,
+		tCom:     this.tCom,
+		objId:    this.objId,
+		op:       this.op,
+		pos:      this.pos.copy(),
+		ci:       this.ci.copy(),
+		function: this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementCond) IsValid() bool {

@@ -24,6 +24,10 @@ import (
 	"strings"
 )
 
+// ========================================================
+// MARK: Trace
+// ========================================================
+
 // Trace is a struct to represent a trace
 // Fields:
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
@@ -41,6 +45,7 @@ type Trace struct {
 	channelIDs            map[int]struct{}
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
+	allocs                map[int]*ElementAlloc
 }
 
 // NewTrace creates a new empty trace structure
@@ -55,6 +60,7 @@ func NewTrace() Trace {
 		channelWithoutPartner: make(map[int]map[int]*ElementChannel),
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
+		allocs:                make(map[int]*ElementAlloc),
 	}
 }
 
@@ -66,6 +72,7 @@ func (this *Trace) Clear() {
 	this.channelWithoutPartner = make(map[int]map[int]*ElementChannel)
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
+	this.allocs = make(map[int]*ElementAlloc)
 }
 
 // AddElement adds an element to the trace
@@ -97,27 +104,6 @@ func (this *Trace) AddElement(elem Element) {
 func (this *Trace) AddRoutine(routine int) {
 	if _, ok := this.routines[routine]; !ok {
 		this.routines[routine] = NewRoutine(routine)
-	}
-}
-
-// Helper functions to sort the trace by tSort
-type sortByTSort []Element
-
-// len function required for sorting
-func (a sortByTSort) Len() int { return len(a) }
-
-// swap function required for sorting
-func (a sortByTSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-
-// order function required for sorting
-func (a sortByTSort) Less(i, j int) bool {
-	return a[i].GetT(Sorting) < a[j].GetT(Sorting)
-}
-
-// Sort each routine of the trace by tPost
-func (this *Trace) Sort() {
-	for routine, _ := range this.routines {
-		this.routines[routine].sort()
 	}
 }
 
@@ -239,65 +225,6 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 	return nil, fmt.Errorf("Element %s not in trace", bugArg)
 }
 
-// ShortenTrace shortens the trace by removing all elements after the given time
-//
-// Parameter:
-//   - time int: The time to shorten the trace to
-//   - incl bool: True if an element with the same time should stay included in the trace
-func (this *Trace) ShortenTrace(time int, incl bool) {
-	for id, rout := range this.routines {
-		for index, elem := range rout.elems {
-			if incl && elem.GetT(Sorting) > time {
-				this.routines[id].shortenIndex(index)
-				break
-			}
-			if !incl && elem.GetT(Sorting) >= time {
-				this.routines[id].shortenIndex(index)
-				break
-			}
-		}
-	}
-}
-
-// RemoveElementFromTrace removes the element with the given tID from the trace
-//
-// Parameter:
-//   - tID string: The tID of the element to remove
-func (this *Trace) RemoveElementFromTrace(tID string) {
-	for id, rout := range this.routines {
-		for index, elem := range rout.elems {
-			if elem.GetTID() == tID {
-				this.routines[id].removeAtIndex(index)
-				break
-			}
-		}
-	}
-}
-
-// ShortenRoutine shorten the trace of the given routine by removing all
-// elements after and equal the given time
-//
-// Parameter:
-//   - routine int: The routine to shorten
-//   - time int: The time to shorten the trace to
-func (this *Trace) ShortenRoutine(routine int, time int) {
-	this.routines[routine].shortenTime(time)
-}
-
-// ShortenRoutineIndex shorten a given a routine to index
-//
-// Parameter:
-//   - routine int: the routine to shorten
-//   - index int: the index to which it should be shortened
-//   - incl bool: if true, the value a index will remain in the routine, otherwise it will be removed
-func (this *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
-	if incl {
-		this.routines[routine].shortenIndex(index + 1)
-	} else {
-		this.routines[routine].shortenIndex(index)
-	}
-}
-
 // GetNoRoutines returns the number of routines
 //
 // Returns:
@@ -399,6 +326,259 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 	}
 
 	return nrAdd, nrDone
+}
+
+// PrintTrace prints the trace sorted by tPost
+func (this *Trace) PrintTrace() {
+	this.PrintTraceArgs([]string{}, false)
+}
+
+// PrintTraceArgs print the elements of given types sorted by tPost
+//
+// Parameter:
+//   - ty: types of the elements to print. If empty, all elements will be printed
+//   - clocks: if true, the clocks will be printed
+func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
+	elements := make([]struct {
+		string
+		time   int
+		thread int
+		vc     *a_clock.VectorClock
+		wVc    *a_clock.VectorClock
+	}, 0)
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
+			elemStr := elem.ToString()
+			if len(ty) == 0 || types.Contains(ty, elemStr[0:1]) {
+				elements = append(elements, struct {
+					string
+					time   int
+					thread int
+					vc     *a_clock.VectorClock
+					wVc    *a_clock.VectorClock
+				}{elemStr, elem.GetT(Commit), elem.GetRoutine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
+			}
+		}
+	}
+
+	// sort elements by timestamp
+	sort.Slice(elements, func(i, j int) bool {
+		return elements[i].time < elements[j].time
+	})
+
+	if len(elements) == 0 {
+		log.Info("Trace contains no elements")
+	} else {
+		log.Infof("Trace contains %d elements", len(elements))
+	}
+
+	for _, elem := range elements {
+		if clocks {
+			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
+		} else {
+			fmt.Println(elem.thread, elem.string)
+		}
+	}
+}
+
+// GetConcurrentWaitGroups returns all to element concurrent wait, broadcast
+// and signal operations on the same condition variable
+//
+// Parameter:
+//   - element traceElement: The element
+//   - filter []string: The types of the elements to return
+//
+// Returns:
+//   - []*traceElement: The concurrent elements
+func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element {
+	res := make(map[string][]Element)
+	res["broadcast"] = make([]Element, 0)
+	res["signal"] = make([]Element, 0)
+	res["wait"] = make([]Element, 0)
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
+			switch elem.(type) {
+			case *ElementCond:
+			default:
+				continue
+			}
+
+			if !element.IsSameElement(elem) {
+				continue
+			}
+
+			e := elem.(*ElementCond)
+
+			if a_clock.GetHappensBefore(element.GetVC(a_clock.Strong), e.GetVC(a_clock.Strong)) == a_hb.Concurrent {
+				e := elem.(*ElementCond)
+				switch e.op {
+				case CondSignal:
+					res["signal"] = append(res["signal"], elem)
+				case CondBroadcast:
+					res["broadcast"] = append(res["broadcast"], elem)
+				case CondWait:
+					res["wait"] = append(res["wait"], elem)
+				}
+			}
+		}
+	}
+	return res
+}
+
+// GetAlloc returns the alloc of an element.
+// For an alloc the element is returned.
+// For elements without alloc, nil is returned
+func (this *Trace) GetAlloc(elem Element) []*ElementAlloc {
+	switch e := elem.(type) {
+	case *ElementAlloc:
+		return []*ElementAlloc{e}
+	case *ElementSelect:
+		resMap := make(map[*ElementAlloc]struct{})
+		for _, c := range e.GetCases() {
+			alloc := this.GetAlloc(c)
+			for _, a := range alloc {
+				resMap[a] = struct{}{}
+			}
+		}
+
+		res := make([]*ElementAlloc, len(resMap))
+		i := 0
+		for a := range resMap {
+			res[i] = a
+			i++
+		}
+		return res
+
+	}
+
+	return []*ElementAlloc{this.allocs[elem.GetObjId()]}
+}
+
+// SetTSortAtIndex sets the tSort for an element given by its index
+//
+// Parameter:
+//   - tSort int: the new tSort
+//   - routine int: the routine of the element
+//   - index int: the index of the element in its routine
+func (this *Trace) SetTSortAtIndex(tPost, routine, index int) {
+	this.routines[routine].SetTSortAtIndex(tPost, index)
+}
+
+// ========================================================
+// MARK: Copy
+// ========================================================
+
+// Copy returns a deep copy a trace
+//
+// Parameter:
+//   - keep bool: if true, keep vc and order information
+//
+// Returns:
+//   - Trace: The copy of the trace
+//   - error
+func (this *Trace) Copy(keep bool) (Trace, error) {
+	mapping := make(map[int]Element)
+
+	newTrace := NewTrace()
+
+	for _, rout := range this.routines {
+		for _, elem := range rout.elems {
+			newTrace.AddElement(elem.Copy(mapping, keep))
+			if control.WasCanceled() {
+				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
+			}
+		}
+	}
+
+	return newTrace, nil
+}
+
+// ========================================================
+// MARK: Sort
+// ========================================================
+
+// Helper functions to sort the trace by tSort
+type sortByTSort []Element
+
+// len function required for sorting
+func (a sortByTSort) Len() int { return len(a) }
+
+// swap function required for sorting
+func (a sortByTSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+
+// order function required for sorting
+func (a sortByTSort) Less(i, j int) bool {
+	return a[i].GetT(Sorting) < a[j].GetT(Sorting)
+}
+
+// Sort each routine of the trace by tPost
+func (this *Trace) Sort() {
+	for routine, _ := range this.routines {
+		this.routines[routine].sort()
+	}
+}
+
+// ========================================================
+// MARK: Modify Trace
+// ========================================================
+
+// ShortenTrace shortens the trace by removing all elements after the given time
+//
+// Parameter:
+//   - time int: The time to shorten the trace to
+//   - incl bool: True if an element with the same time should stay included in the trace
+func (this *Trace) ShortenTrace(time int, incl bool) {
+	for id, rout := range this.routines {
+		for index, elem := range rout.elems {
+			if incl && elem.GetT(Sorting) > time {
+				this.routines[id].shortenIndex(index)
+				break
+			}
+			if !incl && elem.GetT(Sorting) >= time {
+				this.routines[id].shortenIndex(index)
+				break
+			}
+		}
+	}
+}
+
+// RemoveElementFromTrace removes the element with the given tID from the trace
+//
+// Parameter:
+//   - tID string: The tID of the element to remove
+func (this *Trace) RemoveElementFromTrace(tID string) {
+	for id, rout := range this.routines {
+		for index, elem := range rout.elems {
+			if elem.GetTID() == tID {
+				this.routines[id].removeAtIndex(index)
+				break
+			}
+		}
+	}
+}
+
+// ShortenRoutine shorten the trace of the given routine by removing all
+// elements after and equal the given time
+//
+// Parameter:
+//   - routine int: The routine to shorten
+//   - time int: The time to shorten the trace to
+func (this *Trace) ShortenRoutine(routine int, time int) {
+	this.routines[routine].shortenTime(time)
+}
+
+// ShortenRoutineIndex shorten a given a routine to index
+//
+// Parameter:
+//   - routine int: the routine to shorten
+//   - index int: the index to which it should be shortened
+//   - incl bool: if true, the value a index will remain in the routine, otherwise it will be removed
+func (this *Trace) ShortenRoutineIndex(routine, index int, incl bool) {
+	if incl {
+		this.routines[routine].shortenIndex(index + 1)
+	} else {
+		this.routines[routine].shortenIndex(index)
+	}
 }
 
 // ShiftTrace shifts all elements with time greater or equal to startTSort by shift
@@ -596,7 +776,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 // Parameter:
 //   - tPost int: Remove elements after tPost
 func (this *Trace) RemoveLater(tPost int) {
-	mapping := make(map[string]Element)
+	mapping := make(map[int]Element)
 	for routine, rout := range this.routines {
 		newElems := make([]Element, 0)
 		for _, elem := range rout.elems {
@@ -654,137 +834,9 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 	return result
 }
 
-// Copy returns a deep copy a trace
-//
-// Parameter:
-//   - keep bool: if true, keep vc and order information
-//
-// Returns:
-//   - Trace: The copy of the trace
-//   - error
-func (this *Trace) Copy(keep bool) (Trace, error) {
-	mapping := make(map[string]Element)
-
-	newTrace := NewTrace()
-
-	for _, rout := range this.routines {
-		for _, elem := range rout.elems {
-			newTrace.AddElement(elem.Copy(mapping, keep))
-			if control.WasCanceled() {
-				return Trace{}, fmt.Errorf("Analysis was canceled due to insufficient RAM")
-			}
-		}
-	}
-
-	return newTrace, nil
-}
-
-// PrintTrace prints the trace sorted by tPost
-func (this *Trace) PrintTrace() {
-	this.PrintTraceArgs([]string{}, false)
-}
-
-// PrintTraceArgs print the elements of given types sorted by tPost
-//
-// Parameter:
-//   - ty: types of the elements to print. If empty, all elements will be printed
-//   - clocks: if true, the clocks will be printed
-func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
-	elements := make([]struct {
-		string
-		time   int
-		thread int
-		vc     *a_clock.VectorClock
-		wVc    *a_clock.VectorClock
-	}, 0)
-	for _, rout := range this.routines {
-		for _, elem := range rout.elems {
-			elemStr := elem.ToString()
-			if len(ty) == 0 || types.Contains(ty, elemStr[0:1]) {
-				elements = append(elements, struct {
-					string
-					time   int
-					thread int
-					vc     *a_clock.VectorClock
-					wVc    *a_clock.VectorClock
-				}{elemStr, elem.GetT(Commit), elem.GetRoutine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
-			}
-		}
-	}
-
-	// sort elements by timestamp
-	sort.Slice(elements, func(i, j int) bool {
-		return elements[i].time < elements[j].time
-	})
-
-	if len(elements) == 0 {
-		log.Info("Trace contains no elements")
-	} else {
-		log.Infof("Trace contains %d elements", len(elements))
-	}
-
-	for _, elem := range elements {
-		if clocks {
-			fmt.Println(elem.thread, elem.string, elem.vc.ToString(), elem.wVc.ToString())
-		} else {
-			fmt.Println(elem.thread, elem.string)
-		}
-	}
-}
-
-// GetConcurrentWaitGroups returns all to element concurrent wait, broadcast
-// and signal operations on the same condition variable
-//
-// Parameter:
-//   - element traceElement: The element
-//   - filter []string: The types of the elements to return
-//
-// Returns:
-//   - []*traceElement: The concurrent elements
-func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element {
-	res := make(map[string][]Element)
-	res["broadcast"] = make([]Element, 0)
-	res["signal"] = make([]Element, 0)
-	res["wait"] = make([]Element, 0)
-	for _, rout := range this.routines {
-		for _, elem := range rout.elems {
-			switch elem.(type) {
-			case *ElementCond:
-			default:
-				continue
-			}
-
-			if !element.IsSameElement(elem) {
-				continue
-			}
-
-			e := elem.(*ElementCond)
-
-			if a_clock.GetHappensBefore(element.GetVC(a_clock.Strong), e.GetVC(a_clock.Strong)) == a_hb.Concurrent {
-				e := elem.(*ElementCond)
-				switch e.op {
-				case CondSignal:
-					res["signal"] = append(res["signal"], elem)
-				case CondBroadcast:
-					res["broadcast"] = append(res["broadcast"], elem)
-				case CondWait:
-					res["wait"] = append(res["wait"], elem)
-				}
-			}
-		}
-	}
-	return res
-}
-
-// SetTSortAtIndex sets the tSort for an element given by its index
-//
-// Parameter:
-//   - tSort int: the new tSort
-//   - routine int: the routine of the element
-//   - index int: the index of the element in its routine
-func (this *Trace) SetTSortAtIndex(tPost, routine, index int) {
-	this.routines[routine].SetTSortAtIndex(tPost, index)
-}
+// ========================================================
+// MARK: Iterator
+// ========================================================
 
 // Iterator is an iterator to iterate over the element in the trace
 // sorted by tSort

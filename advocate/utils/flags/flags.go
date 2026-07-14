@@ -13,6 +13,7 @@ package flags
 // Paths and names
 var (
 	ProgPath  string
+	RootPath  string
 	TracePath string
 
 	ProgName string

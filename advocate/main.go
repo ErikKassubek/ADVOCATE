@@ -12,8 +12,6 @@ package main
 
 import (
 	"advocate/advoc"
-	"advocate/static/s_blocking"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
@@ -26,11 +24,6 @@ func main() {
 
 	cont := advoc.CommandLine()
 	if !cont {
-		return
-	}
-
-	if flags.Mode == "static" {
-		s_blocking.Test() // TODO: remove this
 		return
 	}
 

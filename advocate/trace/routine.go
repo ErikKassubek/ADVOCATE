@@ -12,6 +12,10 @@ package trace
 
 import "sort"
 
+// ========================================================
+// MARK: Resource
+// ========================================================
+
 type Resource struct {
 	id int
 }
@@ -19,6 +23,14 @@ type Resource struct {
 func NewResource(id int) Resource {
 	return Resource{id}
 }
+
+func (this *Resource) Id() int {
+	return this.id
+}
+
+// ========================================================
+// MARK: Routine
+// ========================================================
 
 type Routine struct {
 	id        int

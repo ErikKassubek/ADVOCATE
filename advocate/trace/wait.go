@@ -12,7 +12,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"math"
@@ -22,44 +21,43 @@ import (
 // OpWait enum
 type OpWait int
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
 // ElementWait is a trace element for a wait group statement
 //
 // Fields:
 //   - id: id of the element, should never be changed
+//   - objId int: The id of the wait group
 //   - index int: Index in the routine
+//   - routine int: The routine id
+//   - op OperationType: The operation on the wait group
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - objId int: The id of the wait group
-//   - opW opW: The operation on the wait group
+//   - pos *position: code position
+//   - ci *concInfo: concurrency info
 //   - delta int: The delta of the wait group
 //   - val int: The value of the wait group
-//   - file string: The file of the wait group in the code
-//   - line int: The line of the wait group in the code
-//   - vc *clock.VectorClock: The vector clock of the operation
-//   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - function *ElementFunc: the function the operation is in
 type ElementWait struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPre                     int
-	tPost                    int
-	objId                    int
-	op                       OperationType
-	delta                    int
-	val                      int
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
+	id       int
+	objId    int
+	index    int
+	routine  int
+	op       OperationType
+	tPre     int
+	tPost    int
+	pos      *position
+	ci       *concInfo
+	delta    int
+	val      int
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementWait adds a new wait group element to the main trace
 //
@@ -114,22 +112,17 @@ func (this *Trace) AddTraceElementWait(routine int, tPre,
 	}
 
 	elem := ElementWait{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPre:                     tPreInt,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		op:                       opWOp,
-		delta:                    deltaInt,
-		val:                      valInt,
-		file:                     file,
-		line:                     line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
+		index:    this.NumberElemInRoutine(routine),
+		routine:  routine,
+		tPre:     tPreInt,
+		tPost:    tPostInt,
+		objId:    idInt,
+		op:       opWOp,
+		delta:    deltaInt,
+		val:      valInt,
+		pos:      newPosition(file, line),
+		ci:       newConcInfo(),
+		function: getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -152,7 +145,7 @@ func EmptyWait(id int) ElementWait {
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 // GetID returns the trace id
@@ -180,7 +173,7 @@ func (this *ElementWait) GetObjId() int {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 // GetT returns the t of the element
@@ -250,7 +243,7 @@ func (this *ElementWait) Committed() bool {
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -258,7 +251,7 @@ func (this *ElementWait) Committed() bool {
 // Returns:
 //   - string: The position of the element
 func (this *ElementWait) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+	return this.pos.toString()
 }
 
 // GetFile returns the file where the operation represented by the element was executed
@@ -266,7 +259,7 @@ func (this *ElementWait) GetPos() string {
 // Returns:
 //   - The file of the element
 func (this *ElementWait) GetFile() string {
-	return this.file
+	return this.pos.file
 }
 
 // GetLine returns the line where the operation represented by the element was executed
@@ -274,11 +267,11 @@ func (this *ElementWait) GetFile() string {
 // Returns:
 //   - The line of the element
 func (this *ElementWait) GetLine() int {
-	return this.line
+	return this.pos.line
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 // GetRoutine returns the routine ID of the element.
@@ -299,7 +292,7 @@ func (this *ElementWait) GetTraceIndex() (int, int) {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 // GetType returns the string representation of the object type
@@ -326,7 +319,7 @@ func (this *ElementWait) IsWait() bool {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 // IsEqual checks if an trace element is equal to this element
@@ -357,7 +350,7 @@ func (this *ElementWait) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 // ToString returns the simple string representation of the element
@@ -390,38 +383,36 @@ func (this *ElementWait) GetTID() string {
 }
 
 // ========================================================
-// VC
+// MARK: Function
+// ========================================================
+
+func (this *ElementWait) GetFunction() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 // SetVc sets the vector clock
 //
 // Parameter:
-//   - weak bool
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementWait) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
-	if weak == a_clock.Weak {
-		this.wVc = vc.Copy()
-	}
-	this.vc = vc.Copy()
+//   - weak bool: set the weak wv
+//   - cl *clock.VectorClock: the vector clock
+func (this *ElementWait) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+	this.ci.setVC(weak, cl)
 }
 
 // GetVC returns the vector clock of the element
 //
 // Parameter:
-//   - weak bool
+//   - weak bool: get the weak
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
 func (this *ElementWait) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
-	if weak == a_clock.Weak {
-		return this.wVc
-	}
-	return this.vc
+	return this.ci.getVC(weak)
 }
-
-// ========================================================
-// Concurrent
-// ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
@@ -433,16 +424,7 @@ func (this *ElementWait) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 // Returns:
 //   - number of concurrent element, or -1
 func (this *ElementWait) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
+	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -452,23 +434,11 @@ func (this *ElementWait) GetNumberConcurrent(weak, sameElem bool) int {
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
 func (this *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 // GetReplayID returns the replay id of the element
@@ -476,11 +446,11 @@ func (this *ElementWait) SetNumberConcurrent(c int, weak, sameElem bool) {
 // Returns:
 //   - The replay id
 func (this *ElementWait) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 // Copy the element
@@ -491,52 +461,42 @@ func (this *ElementWait) GetReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementWait) Copy(mapping map[string]Element, keep bool) Element {
+func (this *ElementWait) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementWait{
-			id:                       this.id,
-			index:                    0,
-			routine:                  this.routine,
-			tPre:                     0,
-			tPost:                    0,
-			objId:                    this.objId,
-			op:                       this.op,
-			delta:                    this.delta,
-			val:                      0,
-			file:                     this.file,
-			line:                     this.line,
-			vc:                       nil,
-			wVc:                      nil,
-			numberConcurrent:         0,
-			numberConcurrentWeak:     0,
-			numberConcurrentSame:     0,
-			numberConcurrentWeakSame: 0,
+			id:       this.id,
+			index:    0,
+			routine:  this.routine,
+			tPre:     0,
+			tPost:    0,
+			objId:    this.objId,
+			op:       this.op,
+			delta:    this.delta,
+			val:      0,
+			pos:      this.pos.copy(),
+			ci:       newConcInfo(),
+			function: this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementWait{
-		id:                       this.id,
-		index:                    this.index,
-		routine:                  this.routine,
-		tPre:                     this.tPre,
-		tPost:                    this.tPost,
-		objId:                    this.objId,
-		op:                       this.op,
-		delta:                    this.delta,
-		val:                      this.val,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
+		id:       this.id,
+		index:    this.index,
+		routine:  this.routine,
+		tPre:     this.tPre,
+		tPost:    this.tPost,
+		objId:    this.objId,
+		op:       this.op,
+		delta:    this.delta,
+		val:      this.val,
+		pos:      this.pos.copy(),
+		ci:       this.ci.copy(),
+		function: this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 func (this *ElementWait) IsValid() bool {
@@ -544,7 +504,7 @@ func (this *ElementWait) IsValid() bool {
 }
 
 // ========================================================
-// Others
+// MARK: Others
 // ========================================================
 
 // GetDelta returns the delta of the element. The delta is the value by which the counter

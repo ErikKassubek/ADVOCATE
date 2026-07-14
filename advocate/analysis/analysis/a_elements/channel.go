@@ -137,9 +137,9 @@ func UpdateSelect(se *trace.ElementSelect) {
 		opC := c.GetType(true)
 		switch opC {
 		case trace.ChannelSend:
-			setChannelAsLastSend(&c)
+			setChannelAsLastSend(c)
 		case trace.ChannelRecv:
-			setChannelAsLastReceive(&c)
+			setChannelAsLastReceive(c)
 		}
 	}
 
@@ -155,7 +155,7 @@ func UpdateSelect(se *trace.ElementSelect) {
 			if _, ok := a_base.CloseData[c.GetObjId()]; ok {
 				switch opC {
 				case trace.ChannelSend:
-					a_scenarios.FoundSendOnClosedChannel(&c, false)
+					a_scenarios.FoundSendOnClosedChannel(c, false)
 					// case trace.ChannelRecv:
 					// scenarios.FoundReceiveOnClosedChannel(&c, false)
 				}

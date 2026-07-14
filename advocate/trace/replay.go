@@ -15,16 +15,24 @@ import (
 	"strconv"
 )
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
 // ElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
 //   - id: id of the element, should never be changed
-//   - tPost int: The timestamp of the event
+//   - t int: The timestamp of the event
 //   - exitCode int: expected exit code
 type ElementReplay struct {
 	id       int
-	tPost    int
+	t        int
 	exitCode int
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementReplay adds an replay end element to a trace
 //
@@ -36,7 +44,7 @@ type ElementReplay struct {
 //   - error
 func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := ElementReplay{
-		tPost:    ts,
+		t:        ts,
 		exitCode: exitCode,
 	}
 
@@ -46,7 +54,7 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 }
 
 // ========================================================
-// ID
+// MARK: ID
 // ========================================================
 
 // GetID returns the trace id
@@ -66,14 +74,14 @@ func (this *ElementReplay) setID(ID int) {
 }
 
 // ========================================================
-// Timestamps
+// MARK: Timestamps
 // ========================================================
 
 // GetTPre returns the t of the element.
 //
 //   - int: The tPost of the element
 func (this *ElementReplay) GetT(_ timeType) int {
-	return this.tPost
+	return this.t
 }
 
 // SetT sets the tPre and tPost of the element
@@ -81,7 +89,7 @@ func (this *ElementReplay) GetT(_ timeType) int {
 // Parameter:
 //   - time int: The tPre and tPost of the element
 func (this *ElementReplay) SetT(_ timeType, time int) {
-	this.tPost = time
+	this.t = time
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -92,7 +100,7 @@ func (this *ElementReplay) SetT(_ timeType, time int) {
 func (this *ElementReplay) SetTWithoutNotExecuted(tSort int) {
 	tSort = max(1, tSort)
 	this.SetT(Request, tSort)
-	this.tPost = tSort
+	this.t = tSort
 }
 
 // Committed returns if the operation was committed (tPost != 0)
@@ -104,7 +112,7 @@ func (this *ElementReplay) Committed() bool {
 }
 
 // ========================================================
-// Position
+// MARK: Position
 // ========================================================
 
 // GetPos returns the position of the operation in the form [file]:[line].
@@ -132,7 +140,7 @@ func (this *ElementReplay) GetLine() int {
 }
 
 // ========================================================
-// Index
+// MARK: Index
 // ========================================================
 
 // GetRoutine returns the routine ID of the element.
@@ -161,7 +169,7 @@ func (this *ElementReplay) GetObjId() int {
 }
 
 // ========================================================
-// Operation
+// MARK: Operation
 // ========================================================
 
 // GetType returns the object type
@@ -179,7 +187,7 @@ func (this *ElementReplay) GetType(operation bool) OperationType {
 }
 
 // ========================================================
-// Equal
+// MARK: Equal
 // ========================================================
 
 // IsEqual checks if an trace element is equal to this element
@@ -206,7 +214,7 @@ func (this *ElementReplay) IsSameElement(elem Element) bool {
 }
 
 // ========================================================
-// String
+// MARK: String
 // ========================================================
 
 // ToString returns the simple string representation of the element.
@@ -214,7 +222,7 @@ func (this *ElementReplay) IsSameElement(elem Element) bool {
 // Returns:
 //   - string: The simple string representation of the element
 func (this *ElementReplay) ToString() string {
-	res := "X," + strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.exitCode)
+	res := "X," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.exitCode)
 	return res
 }
 
@@ -229,7 +237,7 @@ func (this *ElementReplay) GetTID() string {
 }
 
 // ========================================================
-// VC
+// MARK: VC
 // ========================================================
 
 // SetVc is a dummy function to implement the TraceElement interface
@@ -242,7 +250,15 @@ func (this *ElementReplay) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
 }
 
 // ========================================================
-// Concurrent
+// MARK: Function
+// ========================================================
+
+func (this *ElementReplay) GetFunction() *ElementFunc {
+	return nil
+}
+
+// ========================================================
+// MARK: Concurrent
 // ========================================================
 
 // GetNumberConcurrent returns the number of elements concurrent to the element
@@ -273,7 +289,7 @@ func (this *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
 }
 
 // ========================================================
-// Replay
+// MARK: Replay
 // ========================================================
 
 // GetReplayID returns the replay id of the element
@@ -285,7 +301,7 @@ func (this *ElementReplay) GetReplayID() string {
 }
 
 // ========================================================
-// Copy
+// MARK: Copy
 // ========================================================
 
 // Copy creates a copy of the element
@@ -296,23 +312,23 @@ func (this *ElementReplay) GetReplayID() string {
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementReplay) Copy(_ map[string]Element, keep bool) Element {
+func (this *ElementReplay) Copy(_ map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementReplay{
 			id:       this.id,
-			tPost:    0,
+			t:        0,
 			exitCode: this.exitCode,
 		}
 	}
 	return &ElementReplay{
 		id:       this.id,
-		tPost:    this.tPost,
+		t:        this.t,
 		exitCode: this.exitCode,
 	}
 }
 
 // ========================================================
-// Valid
+// MARK: Valid
 // ========================================================
 
 func (this *ElementReplay) IsValid() bool {

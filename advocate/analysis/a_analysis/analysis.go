@@ -52,14 +52,6 @@ func RunAnalysis(fuzzing bool) {
 
 	a_scenarios.RunAnalysisOnExitCodes(true)
 
-	if flags.OnlyAPanicAndLeak {
-		a_scenarios.CheckForStuckRoutine(true)
-
-		if !fuzzing {
-			return
-		}
-	}
-
 	if !fuzzing || f_base.UseHBInfoFuzzing {
 		RunHBAnalysis(fuzzing)
 	}
@@ -203,11 +195,6 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		}
 
-		// check for leak
-		if a_base.AnalysisCasesMap[flags.Leak] && !elem.Committed() {
-			checkLeak(elem)
-		}
-
 		if control.WasCanceled() {
 			return
 		}
@@ -220,15 +207,6 @@ func RunHBAnalysis(fuzzing bool) {
 	if f_base.FuzzingModeGFuzz || a_base.AnalysisCasesMap[flags.Leak] {
 		a_scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		a_scenarios.CheckForSelectCaseWithPartner()
-	}
-
-	if control.WasCanceled() {
-		return
-	}
-
-	if a_base.AnalysisCasesMap[flags.Leak] {
-		a_scenarios.CheckForLeak()
-		a_scenarios.CheckForStuckRoutine(false)
 	}
 
 	if control.WasCanceled() {
@@ -261,37 +239,5 @@ func RunHBAnalysis(fuzzing bool) {
 
 	if a_base.AnalysisCasesMap[flags.UnlockBeforeLock] {
 		a_scenarios.CheckForUnlockBeforeLock()
-	}
-}
-
-// checkLeak checks for a given element if it leaked (has no tPost). If so,
-// it will look for a possible way to resolve the leak
-//
-// Parameter:
-//   - elem TraceElement: Element to check
-func checkLeak(elem trace.Element) {
-	switch e := elem.(type) {
-	case *trace.ElementChannel:
-		a_scenarios.CheckForLeakChannelStuck(e, a_vc.CurrentVC[e.GetRoutine()])
-	case *trace.ElementMutex:
-		a_scenarios.CheckForLeakMutex(e)
-	case *trace.ElementWait:
-		a_scenarios.CheckForLeakWait(e)
-	case *trace.ElementSelect:
-		timer.Start(timer.AnaLeak)
-		cases := e.GetCases()
-		ids := make([]int, 0)
-		buffered := make([]bool, 0)
-		opTypes := make([]trace.OperationType, 0)
-		for _, c := range cases {
-			ids = append(ids, c.GetObjId())
-			opTypes = append(opTypes, c.GetType(true))
-			buffered = append(buffered, c.IsBuffered())
-
-		}
-		timer.Stop(timer.AnaLeak)
-		a_scenarios.CheckForLeakSelectStuck(e, ids, buffered, a_vc.CurrentVC[e.GetRoutine()], opTypes)
-	case *trace.ElementCond:
-		a_scenarios.CheckForLeakCond(e)
 	}
 }

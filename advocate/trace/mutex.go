@@ -364,15 +364,6 @@ func (this *ElementMutex) ToString() string {
 	return res
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form "M@[file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementMutex) GetTID() string {
-	return "M@" + this.GetPos() + "@" + strconv.Itoa(this.tReq)
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

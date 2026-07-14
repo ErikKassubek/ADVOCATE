@@ -122,42 +122,32 @@ func CheckForUnlockBeforeLock() {
 			args2 := []results.ResultElem{} // locks
 
 			for _, u := range unlockSorted {
-				if u.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(u.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if u.GetID() == 0 {
 					continue
 				}
 
 				args1 = append(args1, results.TraceElementResult{
 					RoutineID: u.GetRoutine(),
 					ObjID:     id,
-					TRequest:  tPre,
+					TRequest:  u.GetT(trace.Request),
 					ObjType:   u.GetType(true),
-					File:      file,
-					Line:      line,
+					File:      u.GetFile(),
+					Line:      u.GetLine(),
 				})
 			}
 
 			for _, l := range locksSorted {
-				if l.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(l.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if l.GetID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
 					RoutineID: l.GetRoutine(),
 					ObjID:     id,
-					TRequest:  tPre,
+					TRequest:  l.GetT(trace.Request),
 					ObjType:   l.GetType(true),
-					File:      file,
-					Line:      line,
+					File:      l.GetFile(),
+					Line:      l.GetLine(),
 				})
 			}
 

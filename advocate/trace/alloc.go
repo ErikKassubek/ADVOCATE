@@ -308,15 +308,6 @@ func (this *ElementAlloc) ToString() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.GetPos())
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form "N@[file]:[line]@[tPre]
-//
-// Returns:
-//   - int: The tID of the element
-func (this *ElementAlloc) GetTID() string {
-	return "N@" + this.GetPos() + "@" + strconv.Itoa(this.t)
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

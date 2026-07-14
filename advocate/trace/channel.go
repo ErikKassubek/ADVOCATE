@@ -463,20 +463,6 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form C@[file]:[line]@[tPre]. If it is part of a select,
-// it has the form C@[file]:[line]@[tPre]@[index]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementChannel) GetTID() string {
-	tID := "C@" + this.GetPos() + "@" + strconv.Itoa(this.tReq)
-	if this.selIndex != -1 {
-		tID += "@" + strconv.Itoa(this.selIndex)
-	}
-	return tID
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

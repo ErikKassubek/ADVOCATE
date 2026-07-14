@@ -139,9 +139,9 @@ func ShortenTrace(time int, incl bool) {
 // RemoveElementFromTrace removes the element with the given tID from the trace
 //
 // Parameter:
-//   - tID string: The tID of the element to remove
-func RemoveElementFromTrace(tID string) {
-	MainTrace.RemoveElementFromTrace(tID)
+//   - elem trace.Element: element to remove
+func RemoveElementFromTrace(elem trace.Element) {
+	MainTrace.RemoveElementFromTrace(elem)
 }
 
 // ShortenRoutine shortens the trace of the given routine by removing all

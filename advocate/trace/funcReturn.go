@@ -168,10 +168,6 @@ func (this *ElementReturn) ToString() string {
 	return fmt.Sprintf("R,%d", this.t)
 }
 
-func (this *ElementReturn) GetTID() string {
-	return "R@" + this.GetPos() + "@" + strconv.Itoa(this.t)
-}
-
 // ========================================================
 // MARK: VC
 // ========================================================

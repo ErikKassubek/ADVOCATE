@@ -38,10 +38,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	// --------- WRITE LOCK ---------
 	case trace.MutexLock:
-		if a_base.AnalysisCasesMap[flags.Leak] {
-			a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-		}
-
 		a_base.CurrentlyHoldLock[id] = mu
 		a_scenarios.IncFuzzingCounter(mu)
 
@@ -51,10 +47,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	// --------- READ LOCK (RWMutex RLock) ---------
 	case trace.MutexRLock:
-		if a_base.AnalysisCasesMap[flags.Leak] {
-			a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-		}
-
 		a_base.CurrentlyHoldLock[id] = mu
 		a_scenarios.IncFuzzingCounter(mu)
 
@@ -65,10 +57,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	// --------- TRY LOCK (write) ---------
 	case trace.MutexTryLock:
 		if mu.IsSuc() {
-			if a_base.AnalysisCasesMap[flags.Leak] {
-				a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-			}
-
 			a_base.CurrentlyHoldLock[id] = mu
 			a_scenarios.IncFuzzingCounter(mu)
 
@@ -80,10 +68,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	// --------- TRY RLOCK (read) ---------
 	case trace.MutexTryRLock:
 		if mu.IsSuc() {
-			if a_base.AnalysisCasesMap[flags.Leak] {
-				a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-			}
-
 			a_base.CurrentlyHoldLock[id] = mu
 			a_scenarios.IncFuzzingCounter(mu)
 

@@ -33,19 +33,18 @@ type mdLockRef struct {
 
 // mdRDNode represents a single lock-acquire event in a goroutine
 type mdRDNode struct {
-	Thread   a_base.ThreadID
+	Thread   int
 	Lock     a_base.LockID
-	Requests []a_base.LockEvent
+	Requests []*trace.ElementMutex
 	Elem     *trace.ElementMutex
 }
 
 // mdCDNode represents a channel operation that has at least one lock context
 type mdCDNode struct {
-	Thread     a_base.ThreadID
+	Thread     int
 	ChanID     int
 	OpType     trace.OperationType // ChannelSend | ChannelRecv | ChannelClose
 	Buffered   bool
-	Event      a_base.LockEvent      // channel-op VC
 	AssocRDs   []mdLockRef           // CS and PCS lock contexts at time of op
 	Elem       *trace.ElementChannel // concrete trace element
 	Depth      int                   // total lock stack depth at channel op
@@ -66,7 +65,7 @@ type mdThreadState struct {
 
 // mdState as global analysis state for mixed-deadlock detection
 type mdState struct {
-	Threads map[a_base.ThreadID]*mdThreadState
+	Threads map[int]*mdThreadState
 	AllCDs  []*mdCDNode
 }
 
@@ -81,12 +80,12 @@ func ResetMixedDeadlockState() {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 	currentMDState = mdState{
-		Threads: make(map[a_base.ThreadID]*mdThreadState),
+		Threads: make(map[int]*mdThreadState),
 	}
 }
 
 // getOrCreateMDThread returns the per-goroutine state, creating it if absent.
-func getOrCreateMDThread(tid a_base.ThreadID) *mdThreadState {
+func getOrCreateMDThread(tid int) *mdThreadState {
 	if t, ok := currentMDState.Threads[tid]; ok {
 		return t
 	}
@@ -108,7 +107,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 	timer.Start(timer.AnaResource)
 	defer timer.Stop(timer.AnaResource)
 
-	tid := a_base.ThreadID(element.GetRoutine())
+	tid := element.GetRoutine()
 	t := getOrCreateMDThread(tid)
 
 	isReadLock := false
@@ -122,18 +121,11 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 
 	lockID := a_base.LockID{ID: element.GetObjId(), ReadLock: isReadLock || isReadUnlock}
 
-	event := a_base.LockEvent{
-		ThreadID:    tid,
-		TraceID:     element.GetTID(),
-		LockID:      element.GetObjId(),
-		VectorClock: element.GetVC(a_clock.Weak).Copy(),
-	}
-
 	switch element.GetType(true) {
 
 	// --------- WRITE LOCK ---------
 	case trace.MutexLock, trace.MutexTryLock:
-		mdPushRD(t, tid, lockID, event, element)
+		mdPushRD(t, tid, lockID, element, element)
 		t.CurrentLockset.Add(lockID)
 		t.LockDepth++
 		t.WriteDepth++
@@ -146,7 +138,7 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 		t.ReadLockCount[lockID]++
 
 		if t.ReadLockCount[lockID] == 1 {
-			mdPushRD(t, tid, lockID, event, element)
+			mdPushRD(t, tid, lockID, element, element)
 			t.CurrentLockset.Add(lockID)
 			t.LockDepth++
 		}
@@ -197,15 +189,15 @@ func HandleMutexEventForMixedDeadlock(element *trace.ElementMutex) {
 // mdPushRD pushes a new RD node onto the stack for the given lock
 func mdPushRD(
 	t *mdThreadState,
-	tid a_base.ThreadID,
+	tid int,
 	lockID a_base.LockID,
-	event a_base.LockEvent,
+	event *trace.ElementMutex,
 	element *trace.ElementMutex,
 ) {
 	rd := &mdRDNode{
 		Thread:   tid,
 		Lock:     lockID,
-		Requests: []a_base.LockEvent{event.Clone()},
+		Requests: []*trace.ElementMutex{event},
 		Elem:     element,
 	}
 	t.ActiveRDs[lockID] = append(t.ActiveRDs[lockID], rd)
@@ -223,15 +215,8 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		return
 	}
 
-	tid := a_base.ThreadID(element.GetRoutine())
+	tid := element.GetRoutine()
 	t := getOrCreateMDThread(tid)
-
-	event := a_base.LockEvent{
-		ThreadID:    tid,
-		TraceID:     element.GetTID(),
-		LockID:      element.GetObjId(),
-		VectorClock: element.GetVC(a_clock.Weak).Copy(),
-	}
 
 	var assocRDs []mdLockRef
 
@@ -262,7 +247,6 @@ func HandleChannelEventForMixedDeadlock(element *trace.ElementChannel) {
 		ChanID:     element.GetObjId(),
 		OpType:     opType,
 		Buffered:   element.IsBuffered(),
-		Event:      event,
 		AssocRDs:   assocRDs,
 		Elem:       element,
 		Depth:      t.LockDepth,
@@ -398,14 +382,14 @@ func mdLockAcqAreConcurrent(rdA, rdB *mdRDNode) bool {
 		return false
 	}
 	for _, reqA := range rdA.Requests {
-		if reqA.VectorClock == nil {
+		if reqA.GetVC(a_clock.Strong) == nil {
 			continue
 		}
 		for _, reqB := range rdB.Requests {
-			if reqB.VectorClock == nil {
+			if reqB.GetVC(a_clock.Strong) == nil {
 				continue
 			}
-			if a_clock.GetHappensBefore(reqA.VectorClock, reqB.VectorClock) == a_hb.Concurrent {
+			if a_clock.GetHappensBefore(reqA.GetVC(a_clock.Strong), reqB.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 				return true
 			}
 		}
@@ -447,8 +431,8 @@ func mdDetermineRoles(
 
 	// Both CS with same depth VC order
 	if len(refA.RD.Requests) > 0 && len(refB.RD.Requests) > 0 {
-		vcA := refA.RD.Requests[0].VectorClock
-		vcB := refB.RD.Requests[0].VectorClock
+		vcA := refA.RD.Requests[0].GetVC(a_clock.Strong)
+		vcB := refB.RD.Requests[0].GetVC(a_clock.Strong)
 		if vcA != nil && vcB != nil {
 			switch a_clock.GetHappensBefore(vcA, vcB) {
 			case a_hb.Before:
@@ -488,65 +472,44 @@ func mdReportCandidate(
 	}
 
 	// holder's channel element
-	holderChanFile, holderChanLine, holderChanTPre, err := trace.InfoFromTID(holderCD.Event.TraceID)
-	if err != nil {
-		log.Error("MD report: InfoFromTID for holder CD: ", err.Error())
-		return
-	}
 	holderChanRes := results.TraceElementResult{
 		RoutineID: int(holderCD.Thread),
 		ObjID:     holderCD.ChanID,
-		TRequest:  holderChanTPre,
+		TRequest:  holderCD.Elem.GetT(trace.Request),
 		ObjType:   holderCD.OpType,
-		File:      holderChanFile,
-		Line:      holderChanLine,
+		File:      holderCD.Elem.GetFile(),
+		Line:      holderCD.Elem.GetLine(),
 	}
 
 	// holder's lock acquire element
-	holderLockReq := holderRef.RD.Requests[0]
-	holderLockFile, holderLockLine, holderLockTPre, err := trace.InfoFromTID(holderLockReq.TraceID)
-	if err != nil {
-		log.Error("MD report: InfoFromTID for holder RD: ", err.Error())
-		return
-	}
 	holderLockRes := results.TraceElementResult{
 		RoutineID: int(holderRef.RD.Thread),
 		ObjID:     holderRef.LockID.ID,
-		TRequest:  holderLockTPre,
+		TRequest:  holderCD.Elem.GetT(trace.Request),
 		ObjType:   "DC",
-		File:      holderLockFile,
-		Line:      holderLockLine,
+		File:      holderCD.Elem.GetFile(),
+		Line:      holderCD.Elem.GetLine(),
 	}
 
 	// waiter's channel element
-	waiterChanFile, waiterChanLine, waiterChanTPre, err := trace.InfoFromTID(waiterCD.Event.TraceID)
-	if err != nil {
-		log.Error("MD report: InfoFromTID for waiter CD: ", err.Error())
-		return
-	}
 	waiterChanRes := results.TraceElementResult{
 		RoutineID: int(waiterCD.Thread),
 		ObjID:     waiterCD.ChanID,
-		TRequest:  waiterChanTPre,
+		TRequest:  waiterCD.Elem.GetT(trace.Request),
 		ObjType:   waiterCD.OpType,
-		File:      waiterChanFile,
-		Line:      waiterChanLine,
+		File:      waiterCD.Elem.GetFile(),
+		Line:      waiterCD.Elem.GetLine(),
 	}
 
 	// waiter's lock acquire element (stuck element)
 	waiterLockReq := waiterRef.RD.Requests[0]
-	waiterLockFile, waiterLockLine, waiterLockTPre, err := trace.InfoFromTID(waiterLockReq.TraceID)
-	if err != nil {
-		log.Error("MD report: InfoFromTID for waiter RD: ", err.Error())
-		return
-	}
 	waiterLockRes := results.TraceElementResult{
 		RoutineID: int(waiterRef.RD.Thread),
 		ObjID:     waiterRef.LockID.ID,
-		TRequest:  waiterLockTPre,
+		TRequest:  waiterLockReq.GetT(trace.Request),
 		ObjType:   "DC",
-		File:      waiterLockFile,
-		Line:      waiterLockLine,
+		File:      waiterLockReq.GetFile(),
+		Line:      waiterLockReq.GetLine(),
 	}
 
 	stuckElement := waiterLockRes

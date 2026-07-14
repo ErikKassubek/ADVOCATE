@@ -33,7 +33,7 @@ func CheckForSelectCaseWithPartner() {
 			// 	continue
 			// }
 
-			if c1.ChanID != c2.ChanID || c1.Elem.Elem.GetTID() == c2.Elem.Elem.GetTID() || c1.Send == c2.Send {
+			if c1.ChanID != c2.ChanID || c1.Elem.Elem.GetID() == c2.Elem.Elem.GetID() || c1.Send == c2.Send {
 				continue
 			}
 
@@ -184,7 +184,7 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *a_clock.VectorCl
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	for i, c := range a_base.SelectCases {
-		if c.PartnerFound || c.ChanID != ch.GetObjId() || c.Send == send || c.Elem.Elem.GetTID() == ch.GetTID() {
+		if c.PartnerFound || c.ChanID != ch.GetObjId() || c.Send == send || c.Elem.Elem.GetID() == ch.GetID() {
 			continue
 		}
 

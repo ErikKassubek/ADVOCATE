@@ -70,6 +70,7 @@ func Blocked() error {
 
 	reportBlocking(cyclic, helper.ADeadlock)
 	reportBlocking(b, helper.ABlocking)
+	reportLeak(l)
 
 	return nil
 }
@@ -185,97 +186,48 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 	}
 }
 
-// func Blocked() error {
-// 	output := filepath.Join(paths.ProgDir, paths.NameOutput)
+func reportLeak(l []int) {
+	tr := &a_base.MainTrace
+	for routID := range l {
+		rout := tr.GetRoutineTrace(routID)
+		if rout.IsTerminated() {
+			continue
+		}
 
-// 	file, err := os.Open(output)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer file.Close()
+		last := rout.Last()
 
-// 	scanner := bufio.NewScanner(file)
+		objRes := results.TraceElementResult{
+			RoutineID: routID,
+			ObjID:     last.GetObjId(),
+			TRequest:  last.GetT(trace.Request),
+			ObjType:   last.GetType(true),
+			File:      last.GetFile(),
+			Line:      last.GetLine(),
+		}
 
-// 	buf := make([]byte, 0, 1024*1024) // 1 MB initial buffer
-// 	scanner.Buffer(buf, 10*1024*1024)
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		if strings.HasPrefix(line, "LEAK_GC@") {
-// 			err = readGCBlocked(line, false)
-// 		} else if strings.HasPrefix(line, "DEADLOCK_GC@") {
-// 			err = readGCBlocked(line, true)
-// 		}
-// 		if err != nil {
-// 			log.Errorf(err.Error())
-// 		}
-// 	}
+		leakType := helper.LUnknown
 
-// 	// if err := scanner.Err(); err != nil {
-// 	// 	return err
-// 	// }
+		if last != nil && last.Committed() {
+			switch last.(type) {
+			case *trace.ElementChannel:
+				if last.GetObjId() == 0 {
+					leakType = helper.LNilChan
+				} else {
+					leakType = helper.LChan
+				}
+			case *trace.ElementSelect:
+				leakType = helper.LSelect
+			case *trace.ElementMutex:
+				leakType = helper.LMutex
+			case *trace.ElementWait:
+				leakType = helper.LWaitGroup
+			case *trace.ElementCond:
+				leakType = helper.LCond
+			}
+		}
 
-// 	reportGCBlocked()
-// 	reportNonDeadlockLeaks()
+		results.Result(results.CRITICAL, leakType, "", []results.ResultElem{
+			objRes}, "", []results.ResultElem{})
 
-// 	return nil
-// }
-
-// func readGCBlocked(line string, deadlock bool) error {
-// 	fields := strings.Split(line, "@")
-
-// 	if len(fields) != 4 {
-// 		return fmt.Errorf("Could not process deadlock %s", line)
-// 	}
-
-// 	routineID, err := strconv.Atoi(fields[1])
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// only count deadlocks that are also in the trace
-// 	if obj, ok := leaks[routineID]; ok {
-// 		var objRes results.ResultElem
-// 		objRes = obj.arg1[0]
-// 		delete(leaks, routineID)
-// 		if deadlock {
-// 			GCDeadlock = append(GCDeadlock, objRes)
-// 		} else {
-// 			GCLeak = append(GCLeak, objRes)
-// 		}
-// 	}
-
-// 	// if !objResSet {
-// 	// 	objRes = results.TraceElementResult{
-// 	// 		RoutineID: routineID,
-// 	// 		ObjID:     -1,
-// 	// 		TPre:      -1,
-// 	// 		ObjType:   getObjectType(fields[3]),
-// 	// 		File:      file,
-// 	// 		Line:      line,
-// 	// 	}
-// 	// }
-
-// 	return nil
-// }
-
-// reportGCBlocked creates a result for all elements that are in a deadlock
-// func reportGCBlocked() {
-// 	if len(GCLeak) > 0 {
-// 		results.Result(results.CRITICAL, helper.ALeak,
-// 			"Blocked", GCLeak, "", []results.ResultElem{})
-// 	}
-
-// 	if len(GCDeadlock) > 0 {
-// 		results.Result(results.CRITICAL, helper.ADeadlock,
-// 			"Blocked", GCDeadlock, "", []results.ResultElem{})
-// 	}
-// }
-
-// // reportNonDeadlockLeaks creates results for all elements that have a leek
-// // without being in a deadlock
-// func reportNonDeadlockLeaks() {
-// 	for _, leak := range leaks {
-// 		results.Result(results.CRITICAL, leak.resultType,
-// 			leak.argType1, leak.arg1, leak.argType1, leak.arg2)
-// 	}
-// }
+	}
+}

@@ -74,6 +74,19 @@ func (this *Routine) isBlocked() bool {
 	return !this.Last().Committed()
 }
 
+func (this *Routine) IsTerminated() bool {
+	if this.Empty() {
+		return false
+	}
+
+	switch this.Last().(type) {
+	case *ElementRoutineEnd:
+		return true
+	}
+
+	return false
+}
+
 // ========================================================
 // Elements
 // ========================================================

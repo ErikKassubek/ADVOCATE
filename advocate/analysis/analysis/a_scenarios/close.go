@@ -17,7 +17,6 @@ import (
 	"advocate/trace"
 	"advocate/utils/flags"
 	"advocate/utils/helper"
-	"advocate/utils/log"
 	"advocate/utils/results/results"
 	"advocate/utils/timer"
 )
@@ -39,36 +38,26 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		for routine, mrs := range a_base.MostRecentSend {
 			happensBefore := a_clock.GetHappensBefore(mrs[id].Vc, a_base.CloseData[id].GetVC(a_clock.Strong))
 
-			if mrs[id].Elem != nil && mrs[id].Elem.GetTID() != "" && happensBefore != a_hb.Before {
+			elem := mrs[id].Elem
 
-				file1, line1, tPre1, err := trace.InfoFromTID(mrs[id].Elem.GetTID()) // send
-				if err != nil {
-					log.Error(err.Error())
-					return
-				}
-
-				file2, line2, tPre2, err := trace.InfoFromTID(ch.GetTID()) // close
-				if err != nil {
-					log.Error(err.Error())
-					return
-				}
+			if elem != nil && happensBefore != a_hb.Before {
 
 				arg1 := results.TraceElementResult{ // send
 					RoutineID: routine,
 					ObjID:     id,
-					TRequest:  tPre1,
+					TRequest:  elem.GetT(trace.Request),
 					ObjType:   "CS",
-					File:      file1,
-					Line:      line1,
+					File:      elem.GetFile(),
+					Line:      elem.GetLine(),
 				}
 
 				arg2 := results.TraceElementResult{ // close
 					RoutineID: a_base.CloseData[ch.GetObjId()].GetRoutine(),
 					ObjID:     id,
-					TRequest:  tPre2,
+					TRequest:  ch.GetT(trace.Request),
 					ObjType:   "CC",
-					File:      file2,
-					Line:      line2,
+					File:      ch.GetFile(),
+					Line:      ch.GetLine(),
 				}
 
 				results.Result(results.CRITICAL, helper.PSendOnClosed,
@@ -242,38 +231,26 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 	id := ch.GetObjId()
 
 	if oldClose, ok := a_base.CloseData[id]; ok {
-		if oldClose.GetTID() == "" || oldClose.GetTID() == "\n" || ch.GetTID() == "" || ch.GetTID() == "\n" {
-			return
-		}
-
-		file1, line1, tPre1, err := trace.InfoFromTID(oldClose.GetTID())
-		if err != nil {
-			log.Error(err.Error())
-			return
-		}
-
-		file2, line2, tPre2, err := trace.InfoFromTID(oldClose.GetTID())
-		if err != nil {
-			log.Error(err.Error())
+		if oldClose.GetID() == 0 || ch.GetID() == 0 {
 			return
 		}
 
 		arg1 := results.TraceElementResult{
 			RoutineID: ch.GetRoutine(),
 			ObjID:     id,
-			TRequest:  tPre1,
+			TRequest:  oldClose.GetT(trace.Request),
 			ObjType:   "CC",
-			File:      file1,
-			Line:      line1,
+			File:      oldClose.GetFile(),
+			Line:      oldClose.GetLine(),
 		}
 
 		arg2 := results.TraceElementResult{
-			RoutineID: oldClose.GetRoutine(),
+			RoutineID: ch.GetRoutine(),
 			ObjID:     id,
-			TRequest:  tPre2,
+			TRequest:  ch.GetT(trace.Request),
 			ObjType:   "CC",
-			File:      file2,
-			Line:      line2,
+			File:      ch.GetFile(),
+			Line:      ch.GetLine(),
 		}
 
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,

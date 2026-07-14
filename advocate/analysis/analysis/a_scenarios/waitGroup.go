@@ -141,42 +141,32 @@ func CheckForDoneBeforeAdd() {
 			args2 := []results.ResultElem{} // adds
 
 			for _, done := range donesNEgWgSorted {
-				if done.GetTID() == "\n" {
+				if done.GetID() == 0 {
 					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(done.GetTID())
-				if err != nil {
-					log.Error(err.Error())
-					return
 				}
 
 				args1 = append(args1, results.TraceElementResult{
 					RoutineID: done.GetRoutine(),
 					ObjID:     id,
-					TRequest:  tPre,
+					TRequest:  done.GetT(trace.Request),
 					ObjType:   "WD",
-					File:      file,
-					Line:      line,
+					File:      done.GetFile(),
+					Line:      done.GetLine(),
 				})
 			}
 
 			for _, add := range addsNegWgSorted {
-				if add.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(add.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if add.GetID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
 					RoutineID: add.GetRoutine(),
 					ObjID:     id,
-					TRequest:  tPre,
+					TRequest:  add.GetT(trace.Request),
 					ObjType:   "WA",
-					File:      file,
-					Line:      line,
+					File:      add.GetFile(),
+					Line:      add.GetLine(),
 				})
 
 			}

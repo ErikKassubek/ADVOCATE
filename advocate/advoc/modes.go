@@ -25,14 +25,7 @@ func modeFuzzing() error {
 		flags.ProgName = paths.GetProgName(flags.ProgPath)
 	}
 
-	var err error
-	if err != nil {
-		log.Error("Error on checking prog path: ", err)
-		log.Error("Set path with -path [path]")
-		return err
-	}
-
-	err = f_fuzzing.Fuzzing()
+	err := f_fuzzing.Fuzzing()
 	if err != nil {
 		log.Error("Fuzzing Failed: ", err.Error())
 		return err
@@ -52,13 +45,7 @@ func modeFuzzing() error {
 //
 // Note:
 //   - If recording is false, but analysis or replay is set, -trace must be set
-func modeToolchain(mode string, record bool, analysis bool, replay bool) error {
-	var err error
-	if err != nil {
-		log.Error("Error on checking prog path: ", err)
-		return err
-	}
-
+func modeToolchain(mode string, record bool, analysis bool, replay bool) (err error) {
 	if !record && (analysis || replay) {
 		flags.TracePath, err = paths.CheckPath(flags.TracePath)
 		if err != nil {

@@ -54,7 +54,6 @@ type Element interface {
 	SetNumberConcurrent(c int, weak, sameElem bool)
 
 	GetReplayID() string
-	GetTID() string
 
 	Copy(mapping map[int]Element, keep bool) Element
 

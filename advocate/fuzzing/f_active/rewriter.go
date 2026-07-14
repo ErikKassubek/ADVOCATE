@@ -40,9 +40,9 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 	case helper.ARecvOnClosed:
 		err = errors.New("Actual receive on closed in trace. Therefore no rewrite is needed")
 	case helper.ACloseOnClosed:
-		err = errors.New("Actual close on close detected. Therefor no rewrite is needed")
+		err = errors.New("Actual close on close detected. Therefore no rewrite is needed")
 	case helper.ACloseOnNilChannel:
-		err = errors.New("Actual close on nil detected. Therefor no rewrite is needed")
+		err = errors.New("Actual close on nil detected. Therefore no rewrite is needed")
 	case helper.ANegWG:
 		err = errors.New("Actual negative Wait Group. Therefore no rewrite is needed")
 	case helper.AUnlockOfNotLockedMutex:
@@ -78,59 +78,8 @@ func RewriteTrace(tr *trace.Trace, bug bugs.Bug, rewrittenBugs map[helper.Result
 		err = rewriteMixedDeadlock(tr, bug, code)
 
 	// LEAKS
-	case helper.LUnknown:
-		err = errors.New("Source of blocking not known. Therefore no rewrite is possible")
-	case helper.LUnbufferedWith:
-		code = helper.ExitCodeLeakUnbuf
-		rewriteNeeded = true
-		err = rewriteUnbufChanLeak(tr, bug)
-	case helper.LUnbufferedWithout:
-		err = errors.New("No possible partner for stuck channel found. Cannot rewrite trace")
-	case helper.LBufferedWith:
-		code = helper.ExitCodeLeakBuf
-		rewriteNeeded = true
-		err = rewriteBufChanLeak(tr, bug)
-	case helper.LBufferedWithout:
-		err = errors.New("No possible partner for stuck channel found. Cannot rewrite trace")
-	case helper.LNilChan:
-		err = errors.New("Leak on nil channel. Cannot rewrite trace")
-	case helper.LSelectWith:
-		code = helper.ExitCodeLeakUnbuf
-		rewriteNeeded = true
-		switch b := bug.TraceElement2[0].(type) {
-		case *trace.ElementSelect:
-			err = rewriteUnbufChanLeak(tr, bug)
-		case *trace.ElementChannel:
-			if b.IsBuffered() {
-				err = rewriteBufChanLeak(tr, bug)
-			} else {
-				err = rewriteUnbufChanLeak(tr, bug)
-			}
-		default:
-			rewriteNeeded = false
-			code = helper.ExitCodeNone
-			err = errors.New("For the given bug type no trace rewriting is possible")
-		}
-	case helper.LSelectWithout:
-		code = helper.ExitCodeNone
-		err = errors.New("No possible partner for stuck select found. Cannot rewrite trace")
-	case helper.LMutex:
-		rewriteNeeded = true
-		code = helper.ExitCodeLeakMutex
-		err = rewriteMutexLeak(tr, bug)
-	case helper.LWaitGroup:
-		rewriteNeeded = true
-		code = helper.ExitCodeLeakWG
-		err = rewriteWaitGroupLeak(tr, bug)
-	case helper.LCond:
-		rewriteNeeded = true
-		code = helper.ExitCodeLeakCond
-		err = rewriteCondLeak(tr, bug)
-	case helper.LContext:
-		err = errors.New("For the given bug type no trace rewriting is possible")
-		// case bugs.SNotExecutedWithPartner:
-		// 	rewriteNeeded = false
-		// 	err = errors.New("Rewrite for select not exec with partner not available")
+	case helper.LUnknown, helper.LChan, helper.LSelect, helper.LNilChan, helper.LMutex, helper.LWaitGroup, helper.LCond:
+		err = errors.New("Leak. No rewrite")
 	case helper.RUnknownPanic:
 		err = errors.New("Unknown panic. No rewrite possible")
 	case helper.RTimeout:

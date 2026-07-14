@@ -208,10 +208,6 @@ func (this *ElementFunc) ToString() string {
 	return fmt.Sprint("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.GetPos())
 }
 
-func (this *ElementFunc) GetTID() string {
-	return "F@" + this.GetPos() + "@" + strconv.Itoa(this.t)
-}
-
 // ========================================================
 // MARK: VC
 // ========================================================

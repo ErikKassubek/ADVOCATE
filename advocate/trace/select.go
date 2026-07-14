@@ -493,15 +493,6 @@ func (this *ElementSelect) ToString() string {
 	return res
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementSelect) GetTID() string {
-	return "S@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

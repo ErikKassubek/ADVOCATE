@@ -226,16 +226,6 @@ func (this *ElementReplay) ToString() string {
 	return res
 }
 
-// GetTID returns the tID of the element.
-// The tID is normally a string of form [file]:[line]@[tPre]
-// Since the replay element is not used for any analysis, it returns an empty string
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementReplay) GetTID() string {
-	return ""
-}
-
 // ========================================================
 // MARK: VC
 // ========================================================

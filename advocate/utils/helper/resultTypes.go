@@ -40,18 +40,13 @@ const (
 	PMixedDeadlock    ResultType = "P06"
 
 	// leaks
-	LUnknown           ResultType = "L00"
-	LUnbufferedWith    ResultType = "L01"
-	LUnbufferedWithout ResultType = "L02"
-	LBufferedWith      ResultType = "L03"
-	LBufferedWithout   ResultType = "L04"
-	LNilChan           ResultType = "L05"
-	LSelectWith        ResultType = "L06"
-	LSelectWithout     ResultType = "L07"
-	LMutex             ResultType = "L08"
-	LWaitGroup         ResultType = "L09"
-	LCond              ResultType = "L10"
-	LContext           ResultType = "L11"
+	LUnknown   ResultType = "L00"
+	LChan      ResultType = "L01"
+	LNilChan   ResultType = "L02"
+	LSelect    ResultType = "L03"
+	LMutex     ResultType = "L04"
+	LWaitGroup ResultType = "L05"
+	LCond      ResultType = "L06"
 
 	// recording
 	RUnknownPanic ResultType = "R01"
@@ -73,23 +68,17 @@ var ResultTypes = []ResultType{
 	AConcurrentRecv,
 	AMixedDeadlock,
 	PSendOnClosed,
-	// PRecvOnClosed,
 	PNegWG,
 	PUnlockBeforeLock,
 	PCyclicDeadlock,
 	PMixedDeadlock,
 	LUnknown,
-	LUnbufferedWith,
-	LUnbufferedWithout,
-	LBufferedWith,
-	LBufferedWithout,
+	LChan,
 	LNilChan,
-	LSelectWith,
-	LSelectWithout,
+	LSelect,
 	LMutex,
 	LWaitGroup,
 	LCond,
-	LContext,
 }
 
 var ResultTypesActual = []ResultType{
@@ -116,17 +105,12 @@ var ResultTypesPotential = []ResultType{
 
 var ResultTypesLeak = []ResultType{
 	LUnknown,
-	LUnbufferedWith,
-	LUnbufferedWithout,
-	LBufferedWith,
-	LBufferedWithout,
+	LChan,
 	LNilChan,
-	LSelectWith,
-	LSelectWithout,
+	LSelect,
 	LMutex,
 	LWaitGroup,
 	LCond,
-	LContext,
 }
 
 var ResultTypesRecording = []ResultType{
@@ -169,27 +153,17 @@ func ResultTypeFromString(code string) ResultType {
 	case "L00":
 		return LUnknown
 	case "L01":
-		return LUnbufferedWith
+		return LChan
 	case "L02":
-		return LUnbufferedWithout
-	case "L03":
-		return LBufferedWith
-	case "L04":
-		return LBufferedWithout
-	case "L05":
 		return LNilChan
-	case "L06":
-		return LSelectWith
-	case "L07":
-		return LSelectWithout
-	case "L08":
+	case "L03":
+		return LSelect
+	case "L04":
 		return LMutex
-	case "L09":
+	case "L05":
 		return LWaitGroup
-	case "L10":
+	case "L06":
 		return LCond
-	case "L11":
-		return LContext
 	case "R01":
 		return RUnknownPanic
 	case "R02":

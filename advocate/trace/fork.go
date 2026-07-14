@@ -258,15 +258,6 @@ func (this *ElementFork) ToString() string {
 		"," + this.GetPos()
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form F@[file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementFork) GetTID() string {
-	return "F@" + this.GetPos() + "@" + strconv.Itoa(this.t)
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

@@ -238,15 +238,6 @@ func (this *ElementRoutineEnd) ToString() string {
 	return "E" + "," + strconv.Itoa(this.t)
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementRoutineEnd) GetTID() string {
-	return ""
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

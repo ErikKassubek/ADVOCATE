@@ -542,14 +542,14 @@ func (this *Trace) ShortenTrace(time int, incl bool) {
 	}
 }
 
-// RemoveElementFromTrace removes the element with the given tID from the trace
+// RemoveElementFromTrace removes the element with the given id from the trace
 //
 // Parameter:
-//   - tID string: The tID of the element to remove
-func (this *Trace) RemoveElementFromTrace(tID string) {
+//   - elem Element: element to remove
+func (this *Trace) RemoveElementFromTrace(elem Element) {
 	for id, rout := range this.routines {
-		for index, elem := range rout.elems {
-			if elem.GetTID() == tID {
+		for index, e := range rout.elems {
+			if e.GetID() == elem.GetID() {
 				this.routines[id].removeAtIndex(index)
 				break
 			}
@@ -615,7 +615,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 
 	for _, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetTID() == element.GetTID() {
+			if elem.GetID() == element.GetID() {
 				continue
 			}
 
@@ -651,7 +651,7 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 
 	for _, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetTID() == element.GetTID() {
+			if elem.GetID() == element.GetID() {
 				continue
 			}
 
@@ -708,7 +708,7 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 				continue
 			}
 
-			if elem.GetTID() == element.GetTID() {
+			if elem.GetID() == element.GetID() {
 				result = append(result, elem)
 				continue
 			}
@@ -735,7 +735,7 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 				continue
 			}
 
-			if elem.GetTID() == element.GetTID() {
+			if elem.GetID() == element.GetID() {
 				result = append(result, elem)
 				continue
 			}
@@ -759,7 +759,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 	concurrent := make(map[int]Element)
 	for routine, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetTID() == element.GetTID() {
+			if elem.GetID() == element.GetID() {
 				continue
 			}
 

@@ -287,15 +287,6 @@ func (this *ElementAtomic) ToString() string {
 	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.GetPos())
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form A@[file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementAtomic) GetTID() string {
-	return "A@" + this.GetPos() + "@" + strconv.Itoa(this.t)
-}
-
 // ========================================================
 // MARK: Function
 // ========================================================

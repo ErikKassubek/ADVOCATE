@@ -43,10 +43,6 @@ use the best possible result for the bug. The fields are
 - `NoDetectedL04`
 - `NoDetectedL05`
 - `NoDetectedL06`
-- `NoDetectedL07`
-- `NoDetectedL08`
-- `NoDetectedL09`
-- `NoDetectedL10`
 - `NoDetectedR01`
 - `NoDetectedR02`
 - `NoReplayWrittenA01`
@@ -69,10 +65,6 @@ use the best possible result for the bug. The fields are
 - `NoReplayWrittenL04`
 - `NoReplayWrittenL05`
 - `NoReplayWrittenL06`
-- `NoReplayWrittenL07`
-- `NoReplayWrittenL08`
-- `NoReplayWrittenL09`
-- `NoReplayWrittenL10`
 - `NoReplayWrittenR01`
 - `NoReplayWrittenR02`
 - `NoReplaySuccessfulA01`
@@ -95,10 +87,6 @@ use the best possible result for the bug. The fields are
 - `NoReplaySuccessfulL04`
 - `NoReplaySuccessfulL05`
 - `NoReplaySuccessfulL06`
-- `NoReplaySuccessfulL07`
-- `NoReplaySuccessfulL08`
-- `NoReplaySuccessfulL09`
-- `NoReplaySuccessfulL10`
 - `NoReplaySuccessfulR01`
 - `NoReplaySuccessfulR02`
 - `NoUnexpectedPanicA01`
@@ -121,10 +109,6 @@ use the best possible result for the bug. The fields are
 - `NoUnexpectedPanicL04`
 - `NoUnexpectedPanicL05`
 - `NoUnexpectedPanicL06`
-- `NoUnexpectedPanicL07`
-- `NoUnexpectedPanicL08`
-- `NoUnexpectedPanicL09`
-- `NoUnexpectedPanicL10`
 - `NoUnexpectedPanicR01`
 - `NoUnexpectedPanicR02`
 

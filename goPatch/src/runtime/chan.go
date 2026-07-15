@@ -126,7 +126,7 @@ func makechan(t *chantype, size int) *hchan {
 
 	// ADVOCATE-START
 	// get and save a new id for the channel
-	c.id = AdvocateAlloc(string(OperationAllocChan), int(c.dataqsiz))
+	c.id = AdvocateAlloc("C", int(c.dataqsiz))
 	// ADVOCATE-END
 
 	lockInit(&c.lock, lockRankHchan)
@@ -222,7 +222,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 
 	// ADVOCATE-START
 	if c.id == 0 {
-		c.id = AdvocateAlloc(string(OperationAllocChan), int(c.dataqsiz))
+		c.id = AdvocateAlloc("C", int(c.dataqsiz))
 	}
 
 	// wait until the replay has reached the current point
@@ -533,7 +533,7 @@ func closechan(c *hchan) {
 
 	// ADVOCATE-START
 	if c.id == 0 {
-		c.id = AdvocateAlloc(string(OperationAllocChan), int(c.dataqsiz))
+		c.id = AdvocateAlloc("C", int(c.dataqsiz))
 	}
 
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
@@ -683,7 +683,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 
 	// ADVOCATE-START
 	if c.id == 0 {
-		c.id = AdvocateAlloc(string(OperationAllocChan), int(c.dataqsiz))
+		c.id = AdvocateAlloc("C", int(c.dataqsiz))
 	}
 
 	// wait until the replay has reached the current point

@@ -50,6 +50,7 @@ var (
 	MeasureTime      bool
 	CreateStatistics bool
 	NotExecuted      bool
+	CheckBenign      bool
 )
 
 // memory and panic

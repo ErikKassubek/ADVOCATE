@@ -56,6 +56,7 @@ All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 - [src/runtime/advocate_tracing.go](../goPatch/src/runtime/advocate_tracing.go)
 - [src/runtime/advocate_util.go](../goPatch/src/runtime/advocate_util.go)
 - [src/runtime/advocate_wait.go](../goPatch/src/runtime/advocate_wait.go)
+- [src/cmd/compile/internal/ssagen/advocate_ssagen.go](../goPatch/src/cmd/compile/internal/ssagen/advocate_ssagen.go)
 
 ### Modified files
 

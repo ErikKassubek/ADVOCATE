@@ -200,6 +200,10 @@ func (rt ResultType) IsLeak() bool {
 	return string(rt)[0] == 'L'
 }
 
+func (rt ResultType) IsBlocking() bool {
+	return rt == ABlocking || rt == ADeadlock
+}
+
 func (rt ResultType) IsPos() bool {
 	return string(rt)[0] == 'P'
 }

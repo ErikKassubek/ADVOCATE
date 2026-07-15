@@ -18,7 +18,7 @@ package runtime
 // Fields
 //   - tPost int64: time when the operation finished
 //   - id string: id of the channel
-//   - elemType string: type of created primitive, for now only "NC" for channel
+//   - op Opertions: type of created primitive
 //   - qSizeu int: for channel the buffer size, for all other type always 0
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
@@ -54,18 +54,42 @@ func AdvocateAlloc(objType string, qSize int) uint64 {
 		return id
 	}
 
+	op := OperationNone
+	switch objType {
+	case "C":
+		op = OperationAllocChan
+	case "M":
+		op = OperationAllocMutex
+	case "D":
+		op = OperationAllocCond
+	case "W":
+		op = OperationAllocWg
+	}
+
 	elem := AdvocateTraceAlloc{
 		tPost: timer,
 		id:    id,
 		file:  file,
 		line:  line,
 		qSize: qSize,
-		op:    Operation(OperationAllocChan),
+		op:    op,
 	}
 
 	insertIntoTrace(elem)
 
 	return id
+}
+
+func AdvocateAllocMutex() {
+	AdvocateAlloc("M", 0)
+}
+
+func AdvocateAllocCondVar() {
+	AdvocateAlloc("D", 0)
+}
+
+func AdvocateAllocWG() {
+	AdvocateAlloc("W", 0)
 }
 
 // Get a string representation of the trace element

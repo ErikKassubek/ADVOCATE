@@ -188,8 +188,9 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 
 func reportLeak(l []int) {
 	tr := &a_base.MainTrace
-	for routID := range l {
+	for _, routID := range l {
 		rout := tr.GetRoutineTrace(routID)
+
 		if rout.IsTerminated() {
 			continue
 		}

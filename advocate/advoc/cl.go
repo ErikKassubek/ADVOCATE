@@ -89,10 +89,11 @@ func CommandLine() bool {
 
 	flag.StringVar(&flags.Settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
 
-	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
+	flag.BoolVar(&flags.CheckBenign, "benign", false, "Check if blocking bug is benign")
 
 	// for experiments
 	flag.BoolVar(&f_base.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
+	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
 
 	flag.Parse()
 

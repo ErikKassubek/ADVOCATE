@@ -92,7 +92,7 @@ type block struct {
 func (self *block) string() string {
 	res := fmt.Sprintf("%d:\n", self.id)
 	for _, inst := range self.insts {
-		res += "\t\t" + inst.String() + "\n"
+		res += "\t\t" + inst.StringInfo() + "\n"
 	}
 	return res
 }
@@ -180,8 +180,14 @@ func (this *Instruction) String() (res string) {
 	if this.name == "" {
 		res = this.inst.String()
 	} else {
-		res = fmt.Sprintf("%s = %s", this.name, this.inst)
+		res = fmt.Sprintf("%s = %s", this.name, this.inst.String())
 	}
+
+	return
+}
+
+func (this *Instruction) StringInfo() (res string) {
+	res = fmt.Sprintf("%-40s", this.String())
 
 	// name
 	obj := func(i int) s_base.ObjName {
@@ -200,7 +206,7 @@ func (this *Instruction) String() (res string) {
 	}
 
 	if this.class != ic_unknown {
-		res += "\t-> " + string(this.class)
+		res += "\t-> " + fmt.Sprintf("%-20s", string(this.class))
 	}
 
 	found := false
@@ -236,7 +242,17 @@ func (this *Instruction) hasWg() bool {
 }
 
 func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
+	name := ""
+	switch v := instr.(type) {
+	case ssa.Value:
+		name = v.Name()
+	case nil:
+		// Be robust against bad transforms.
+		name = "<deleted>"
+	}
+
 	inst := Instruction{
+		name: name,
 		inst: instr,
 	}
 

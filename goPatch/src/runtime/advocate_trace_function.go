@@ -50,11 +50,16 @@ func advocateFunctionCall() {
 	// move to slow required because advocateFunctionCall is handled in the compiler
 	timer := GetNextTimeStep()
 
-	callerSkip := 1
-	_, fileCall, lineCall, _ := Caller(callerSkip + 1)
-	pc, fileDef, lineDef, _ := Caller(callerSkip)
+	_, fileCall, lineCall, _ := Caller(2)
+	pc, fileDef, lineDef, _ := Caller(1)
 
-	if AdvocateIgnore(fileCall) && AdvocateIgnore(fileDef) {
+	if hasSuffix(fileCall, ".s") { // required for go f()
+		fileCall = fileDef
+		lineCall = lineDef
+	}
+
+	if AdvocateIgnore(fileDef) {
+		println("SKIP: ", fileCall, fileDef)
 		return
 	}
 

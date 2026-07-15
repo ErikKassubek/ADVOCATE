@@ -247,6 +247,9 @@ var runtimeDecls = [...]struct {
 	// ADVOCATE-START
 	{"advocateFunctionCall", funcTag, 9},
 	{"advocateFunctionReturn", funcTag, 9},
+	{"AdvocateAllocMutex", funcTag, 9},
+	{"AdvocateAllocCondVar", funcTag, 9},
+	{"AdvocateAllocWG", funcTag, 9},
 	// ADVOCATE-END
 }
 

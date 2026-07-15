@@ -597,6 +597,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	s.paramsToHeap()
 
 	// ADVOCATE-START
+	// function calls
 	if shouldAdvocate(fn) {
 		s.rtcall(
 			ir.Syms.AdvocateFunctionCall,
@@ -604,6 +605,29 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 			nil,
 		)
 	}
+
+	// _, objType := syncObjectDecl(n)
+	// 	if objType == "M" {
+	// 		s.rtcall(
+	// 			ir.Syms.AdvocateAllocMutex,
+	// 			false,
+	// 			nil,
+	// 		)
+	// 	} else if objType == "D" {
+	// 		s.rtcall(
+	// 			ir.Syms.AdvocateAllocCondVar,
+	// 			false,
+	// 			nil,
+	// 		)
+	// 	} else if objType == "W" {
+	// 		s.rtcall(
+	// 			ir.Syms.AdvocateAllocWG,
+	// 			false,
+	// 			nil,
+	// 		)
+	// 	}
+	// }
+
 	// ADVOCATE-END
 
 	s.stmtList(fn.Body)

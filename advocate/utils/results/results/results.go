@@ -196,10 +196,10 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 
 	falsePos := "tp"
 
-	if resType.IsLeak() {
+	if flags.CheckBenign && (resType.IsLeak() || resType.IsBlocking()) {
 		falsePositive, err := benign.IsBenign(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
+			log.Errorf("Could not determine if bug is benign: %s", err.Error())
 		}
 		if falsePositive {
 			falsePos = "fp"

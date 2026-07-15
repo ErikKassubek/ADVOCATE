@@ -76,5 +76,5 @@ func replayElemFromKey(key string) ReplayElement {
 }
 
 func (elem *ReplayElement) NotExec() bool {
-	return elem.Op == OperationNone || elem.Op == OperationSpawned || elem.Op == OperationRoutineExit || elem.Op == OperationNewChan || elem.Op == OperationReplayEnd
+	return elem.Op == OperationNone || elem.Op == OperationSpawned || elem.Op == OperationRoutineExit || elem.Op == OperationAllocChan || elem.Op == OperationReplayEnd
 }

@@ -22,7 +22,7 @@ We record the following operations:
 - [Once](trace/once.md): Do
 - [Conditional Variable](trace/conditionalVariables.md): Wait, Signal, Broadcast
 - [Atomics](trace/atomics.md): Load, Store, Add Swap, CompareAndSwap
-- [New Channel](trace/newChannel.md)
+- [Alloc](trace/alloc.md)
 - [Fork/Spawn](trace/fork.md) (Start of new routine)
 - [End of Routine](trace/routineEnd.md)
 

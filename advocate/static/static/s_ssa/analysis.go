@@ -20,7 +20,7 @@ import (
 )
 
 // ================================================================
-// Function
+// MARK: Function
 // ================================================================
 
 type Function struct {
@@ -28,7 +28,7 @@ type Function struct {
 	pkg    string
 	loc    string
 	blocks []block
-	sv     []staticVar
+	fv     []*ssa.FreeVar
 }
 
 func (this *Function) Name() string {
@@ -36,16 +36,22 @@ func (this *Function) Name() string {
 }
 
 func (this *Function) string() string {
-	res := fmt.Sprintf("Name: %s\nPackage: %s\nLocation: %s\n", this.name, this.pkg, this.loc)
+	res := fmt.Sprintf("Name: %s\n", this.name)
+
+	if this.fv != nil {
+		res += "Free variables:\n"
+		for i, fv := range this.fv {
+			res += fmt.Sprintf("\t%d:\t%s\n", i, fv.Name())
+		}
+	}
+
+	res += "Func:\n"
+
 	for _, block := range this.blocks {
 		res += "\t" + block.string()
 	}
 
 	res += "\n --------------------------------------------------\n"
-
-	for _, s := range this.sv {
-		res += s.string() + "\n"
-	}
 
 	return res
 }
@@ -56,14 +62,13 @@ func (this *Data) analysisFunction(fn *ssa.Function) Function {
 		pkg:    fn.Pkg.Pkg.Path(),
 		loc:    this.ast.GetPosFromPos(fn.Pos()),
 		blocks: make([]block, len(fn.Blocks)),
-		sv:     make([]staticVar, 0),
 	}
 
 	for i, block := range fn.Blocks {
-		sv := []staticVar{}
-		f.blocks[i], sv = this.analysisBlock(block)
-		f.sv = append(f.sv, sv...)
+		f.blocks[i] = this.analysisBlock(block)
 	}
+
+	f.fv = fn.FreeVars
 
 	return f
 }
@@ -76,7 +81,7 @@ func isMain(fn *ssa.Function) bool {
 }
 
 // ================================================================
-// Block
+// MARK: Block
 // ================================================================
 
 type block struct {
@@ -92,27 +97,21 @@ func (self *block) string() string {
 	return res
 }
 
-func (this *Data) analysisBlock(bl *ssa.BasicBlock) (block, []staticVar) {
+func (this *Data) analysisBlock(bl *ssa.BasicBlock) block {
 	b := block{
 		id:    bl.Index,
 		insts: make([]Instruction, len(bl.Instrs)),
 	}
 
-	v := make([]staticVar, 0)
-
 	for i, instr := range bl.Instrs {
-		sv := staticVar{}
-		b.insts[i], sv = this.analysisInstruction(instr)
-		if sv.name != "" && len(sv.objects) != 0 {
-			v = append(v, sv)
-		}
+		b.insts[i] = this.analysisInstruction(instr)
 	}
 
-	return b, v
+	return b
 }
 
 // ================================================================
-// Instruction
+// MARK: Instruction
 // ================================================================
 
 type instClass string
@@ -166,31 +165,6 @@ const (
 	ic_unOp                instClass = "unOp"
 )
 
-const (
-	chanInd    = 0
-	mutexInd   = 1
-	condVarInd = 2
-	wgInd      = 3
-)
-
-type staticVar struct {
-	name    string
-	objects []s_base.ObjName
-	equal   []staticVar
-}
-
-func (self *staticVar) string() string {
-	res := self.name + " -> "
-	for i, obj := range self.objects {
-		if i != 0 {
-			res += ","
-		}
-		res += string(obj)
-	}
-
-	return res
-}
-
 type Instruction struct {
 	name string
 	inst ssa.Instruction
@@ -211,7 +185,7 @@ func (this *Instruction) String() (res string) {
 
 	// name
 	obj := func(i int) s_base.ObjName {
-		switch i {
+		switch concRes(i) {
 		case chanInd:
 			return s_base.Channel
 		case mutexInd:
@@ -225,21 +199,21 @@ func (this *Instruction) String() (res string) {
 		}
 	}
 
+	if this.class != ic_unknown {
+		res += "\t-> " + string(this.class)
+	}
+
 	found := false
 	for i := 0; i < 4; i++ {
 		if this.hasConc[i] {
 			if !found {
-				res += "\t\t-> "
+				res += "  -> "
 			} else {
 				res += ", "
 			}
 			res += string(obj(i))
 			found = true
 		}
-	}
-
-	if this.class != ic_unknown {
-		res += "\t\t-> " + string(this.class)
 	}
 
 	return
@@ -261,24 +235,16 @@ func (this *Instruction) hasWg() bool {
 	return this.hasConc[wgInd]
 }
 
-func (this *Data) analysisInstruction(instr ssa.Instruction) (Instruction, staticVar) {
+func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
 	inst := Instruction{
 		inst: instr,
 	}
 
-	if v, ok := instr.(ssa.Value); ok {
-		inst.name = v.Name()
-	}
-
 	inst.hasConc[0], inst.hasConc[1], inst.hasConc[2], inst.hasConc[3] = containsSyncPrimitive(instr)
-
-	sv := staticVar{
-		name: inst.name,
-	}
 
 	inst.class = this.analysisClass(instr)
 
-	return inst, sv
+	return inst
 }
 
 func containsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, hasWaitGroup bool) {
@@ -437,7 +403,48 @@ func (this *Data) getInstructionPos(instr ssa.Instruction) (string, int) {
 }
 
 // ================================================================
-// Analysis
+// MARK: ConcRes
+// ================================================================
+
+type concRes int
+
+const (
+	chanInd    concRes = 0
+	mutexInd   concRes = 1
+	condVarInd concRes = 2
+	wgInd      concRes = 3
+)
+
+func (this *concRes) string() string {
+	switch *this {
+	case chanInd:
+		return "chan"
+	case mutexInd:
+		return "mutex"
+	case condVarInd:
+		return "condVar"
+	case wgInd:
+		return "wg"
+	}
+	return ""
+}
+
+// ================================================================
+// MARK: Free Var
+// ================================================================
+
+type freeVar struct {
+	id   int
+	name string
+	t    concRes
+}
+
+func (this *freeVar) string() string {
+	return fmt.Sprintf("%d:  %s %s", this.id, this.name, this.t.string())
+}
+
+// ================================================================
+// MARK: Analysis
 // ================================================================
 
 func (this *Data) runSSAAnalysis() {
@@ -456,16 +463,29 @@ func (this *Data) runSSAAnalysis() {
 		}
 		seen[path] = true
 
-		for _, mem := range pkg.Members {
-			if fn, ok := mem.(*ssa.Function); ok {
-				f := this.analysisFunction(fn)
-				this.funcs = append(this.funcs, &f)
+		var addFunc func(*ssa.Function)
+		addFunc = func(fn *ssa.Function) {
+			if fn == nil {
+				return
+			}
+			f := this.analysisFunction(fn)
+			this.funcs = append(this.funcs, &f)
 
-				if isMain(fn) {
-					this.mainFunc = &f
-				}
+			if isMain(fn) {
+				this.mainFunc = &f
+			}
+
+			for _, anon := range fn.AnonFuncs {
+				addFunc(anon)
 			}
 		}
+
+		for _, mem := range pkg.Members {
+			if fn, ok := mem.(*ssa.Function); ok {
+				addFunc(fn)
+			}
+		}
+
 	}
 
 	// for _, fn := range self.funcs {

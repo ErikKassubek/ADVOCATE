@@ -56,6 +56,8 @@ func walkStmt(n ir.Node) ir.Node {
 			base.Fatalf("missing typecheck: %+v", n)
 		}
 
+		println(n.Op().String())
+
 		init := ir.TakeInit(n)
 		n = walkExpr(n, &init)
 		if n.Op() == ir.ONAME {

@@ -174,9 +174,6 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 	var caseElem AdvocateTraceChannel
 
 	if c != nil {
-		if c.id == 0 {
-			c.id = AdvocateChanMake(int(c.dataqsiz))
-		}
 		caseElem = AdvocateTraceChannel{
 			tPre:  timer,
 			id:    c.id,

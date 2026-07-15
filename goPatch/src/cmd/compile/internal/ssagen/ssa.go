@@ -7688,7 +7688,7 @@ func (e *ssafn) SplitSlot(parent *ssa.LocalSlot, suffix string, offset int64, t 
 // Logf logs a message from the compiler.
 func (e *ssafn) Logf(msg string, args ...interface{}) {
 	if e.log {
-		fmt.Printf(msg, args...)
+		// fmt.Printf(msg, args...)
 	}
 }
 

@@ -49,7 +49,8 @@ func BuildStaticBlockingAnalysis() (err error) {
 
 	IsBlockingBug()
 
-	// data.Ssa().PrintAnalysis()
+	data.Ssa().PrintAnalysis()
+	// data.Ssa().PrintSsa(true)
 
 	// tr := a_base.MainTrace.AsIterator()
 	// for elem := tr.Next(); elem != nil; elem = tr.Next() {

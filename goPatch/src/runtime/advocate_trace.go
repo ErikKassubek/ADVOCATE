@@ -55,7 +55,10 @@ const (
 	OperationAtomicAnd            Operation = "atomicAnd"
 	OperationAtomicOr             Operation = "atomicOr"
 
-	OperationNewChan Operation = "newChan"
+	OperationAllocChan  Operation = "allocChan"
+	OperationAllocMutex Operation = "allocMutex"
+	OperationAllocCond  Operation = "allocCond"
+	OperationAllocWg    Operation = "allocWg"
 
 	OperationFunctionCall   Operation = "funcCall"
 	OperationFunctionReturn Operation = "funcReturn"

@@ -84,17 +84,13 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 
 	et := None
 	switch elemType {
-	case "NA":
-		et = NewAtomic
-	case "NC":
+	case "C":
 		et = NewChannel
-	case "ND":
+	case "D":
 		et = NewCond
-	case "NM":
+	case "M":
 		et = NewMutex
-	case "NO":
-		et = NewOnce
-	case "NW":
+	case "W":
 		et = NewWait
 	}
 

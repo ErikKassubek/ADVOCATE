@@ -2302,6 +2302,13 @@ func shouldAdvocate(fn *ir.Func) bool {
 
 	pkg := fn.Sym().Pkg.Path
 
+	if fn.Pos().IsKnown() {
+		file := base.Ctxt.PosTable.Pos(fn.Pos()).Filename()
+		if strings.Contains(file, "/goPatch/") {
+			return false
+		}
+	}
+
 	if pkg == "runtime" ||
 		pkg == "syscall" ||
 		pkg == "os" ||

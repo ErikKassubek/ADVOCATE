@@ -41,7 +41,7 @@ type AdvocateTraceFunctionReturn struct {
 }
 
 // AdvocateFunctionCall adds a function stall to the trace
-func advocateFunctionCall() { // TODO: not yet called
+func advocateFunctionCall() {
 	// println("A")
 	if advocateTracingDisabled {
 		return

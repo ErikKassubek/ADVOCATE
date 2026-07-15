@@ -1,7 +1,0 @@
-./abi.go
-./arch.go
-./intrinsics.go
-./nowb.go
-./pgen.go
-./phi.go
-./ssa.go

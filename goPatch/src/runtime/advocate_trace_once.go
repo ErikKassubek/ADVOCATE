@@ -38,7 +38,7 @@ type AdvocateTraceOnce struct {
 // Returns:
 //   - int: index of the operation in the trace
 func AdvocateOncePre(id uint64) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -66,7 +66,7 @@ func AdvocateOncePre(id uint64) int {
 //   - index int: index of the operation in the trace
 //   - suc bool: true if the do on the once was called for the first time, false otherwise
 func AdvocateOncePost(index int, suc bool) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

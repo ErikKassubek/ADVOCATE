@@ -39,7 +39,7 @@ type AdvocateTraceCond struct {
  * 	index of the operation in the trace
  */
 func AdvocateCondPre(id uint64, op Operation) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -67,7 +67,7 @@ func AdvocateCondPre(id uint64, op Operation) int {
  * 	index: index of the operation in the trace
  */
 func AdvocateCondPost(index int) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

@@ -40,7 +40,7 @@ type AdvocateTraceAlloc struct {
  * 	(int): id for the channel
  */
 func AdvocateAlloc(objType string, qSize int) uint64 {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return 0
 	}
 
@@ -78,18 +78,6 @@ func AdvocateAlloc(objType string, qSize int) uint64 {
 	insertIntoTrace(elem)
 
 	return id
-}
-
-func AdvocateAllocMutex() {
-	AdvocateAlloc("M", 0)
-}
-
-func AdvocateAllocCondVar() {
-	AdvocateAlloc("D", 0)
-}
-
-func AdvocateAllocWG() {
-	AdvocateAlloc("W", 0)
 }
 
 // Get a string representation of the trace element

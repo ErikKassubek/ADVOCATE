@@ -34,7 +34,7 @@ type AdvocateTraceAtomic struct {
 //   - op Operation: the operation type
 //   - skip iny: skip for Caller
 func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

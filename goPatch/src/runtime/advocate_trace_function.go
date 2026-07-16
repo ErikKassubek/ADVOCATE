@@ -43,7 +43,7 @@ type AdvocateTraceFunctionReturn struct {
 // AdvocateFunctionCall adds a function stall to the trace
 func advocateFunctionCall() {
 	// println("A")
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 
@@ -82,7 +82,7 @@ func advocateFunctionCall() {
 // Returns:
 //   - index of the operation in the trace
 func advocateFunctionReturn() {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

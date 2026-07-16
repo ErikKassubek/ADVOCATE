@@ -43,7 +43,7 @@ type AdvocateTraceRoutineExit struct {
 //   - line int32: line where the routine was created
 func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file string,
 	line int32) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 
@@ -65,7 +65,7 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 
 // Record the finish of a routine
 func AdvocatRoutineExit() {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

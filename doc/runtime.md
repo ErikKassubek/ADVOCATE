@@ -87,3 +87,5 @@ Modifications in files are marked with
 - [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
 - [src/cmd/compile/internal/ir/symtab.go](../goPatch/src/cmd/compile/internal/ir/symtab.go)
 - [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)
+- [src/cmd/compile/internal/typecheck/_builtin/runtime.go](./goPatch/src/cmd/compile/internal/typecheck/_builtin/runtime.go)
+- [src/cmd/compile/internal/typecheck/builtin.go](../goPatch/src/cmd/compile/internal/typecheck/builtin.go) (indirect via running `go run mkbuiltin.go` in src/cmd/compile/internal/typecheck)

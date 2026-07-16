@@ -44,7 +44,7 @@ var lastRWOpLock mutex
 // Returns:
 //   - index of the operation in the trace
 func AdvocateMutexPre(id uint64, op Operation) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -75,7 +75,7 @@ func AdvocateMutexPre(id uint64, op Operation) int {
 //   - index: index of the operation in the trace
 //   - suc: wether the lock was successfull for try, otherwise true
 func AdvocateMutexPost(index int, suc bool) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

@@ -13,6 +13,23 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocCondVar runtime.AdvocateAllocCondVar
+func AdvocateAllocCondVar(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	c := (*Cond)(ptr)
+	if c.id != 0 {
+		return
+	}
+	c.id = runtime.AdvocateAlloc("D", 0)
+	c.memAdr = uintptr(unsafe.Pointer(c))
+}
+
+// ADVOCATE-END
+
 // Cond implements a condition variable, a rendezvous point
 // for goroutines waiting for or announcing the occurrence
 // of an event.

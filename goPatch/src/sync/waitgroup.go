@@ -15,6 +15,23 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocWG runtime.AdvocateAllocWG
+func AdvocateAllocWG(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	w := (*WaitGroup)(ptr)
+	if w.id != 0 {
+		return
+	}
+	w.id = runtime.AdvocateAlloc("W", 0)
+	w.memAdr = uintptr(unsafe.Pointer(w))
+}
+
+// ADVOCATE-END
+
 // A WaitGroup is a counting semaphore typically used to wait
 // for a group of goroutines or tasks to finish.
 //

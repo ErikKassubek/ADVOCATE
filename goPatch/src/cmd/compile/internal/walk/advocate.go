@@ -16,6 +16,8 @@ import (
 	"cmd/compile/internal/base"
 	"cmd/compile/internal/ir"
 	"cmd/compile/internal/typecheck"
+	"cmd/compile/internal/types"
+	"cmd/internal/src"
 	"fmt"
 	"strings"
 )
@@ -29,32 +31,91 @@ func shouldAdvocate(fn *ir.Func) bool {
 
 	pkg := fn.Sym().Pkg.Path
 
+	// Never instrument the compiler/runtime/toolchain itself.
+	switch {
+	case pkg == "runtime":
+		return false
+
+	case pkg == "runtime/internal":
+		return false
+
+	case pkg == "syscall":
+		return false
+
+	case pkg == "os":
+		return false
+
+	case pkg == "internal/syscall":
+		return false
+
+	case strings.HasPrefix(pkg, "internal/"):
+		return false
+
+	case strings.HasPrefix(pkg, "cmd/"):
+		return false
+
+	case strings.HasPrefix(pkg, "bootstrap/"):
+		return false
+
+	case strings.HasPrefix(pkg, "go/"):
+		return false
+	}
+
+	// Never instrument compiler source files.
 	if fn.Pos().IsKnown() {
 		file := base.Ctxt.PosTable.Pos(fn.Pos()).Filename()
+
+		// Your modified Go tree
 		if strings.Contains(file, "/goPatch/") {
+			return false
+		}
+
+		// Any GOROOT source tree
+		if strings.Contains(file, "/src/cmd/") ||
+			strings.Contains(file, "/src/runtime/") ||
+			strings.Contains(file, "/src/internal/") {
 			return false
 		}
 	}
 
-	if pkg == "runtime" ||
-		pkg == "syscall" ||
-		pkg == "os" ||
-		pkg == "internal/syscall" {
-
-		return false
-	}
-
+	// Compiler generated wrappers and special functions
 	if fn.Pragma&ir.Nosplit != 0 || fn.Wrapper() {
 		return false
 	}
 
 	name := fn.Sym().Name
 
-	if name == "advocateFunctionCall" || name == "advocateFunctionReturn" {
+	switch name {
+	case "advocateFunctionCall",
+		"advocateFunctionReturn",
+		"AdvocateAllocMutex",
+		"AdvocateAllocCondVar",
+		"AdvocateAllocWG":
 		return false
 	}
 
 	return true
+}
+
+func isAdvocateCall(n ir.Node) bool {
+	call, ok := n.(*ir.CallExpr)
+	if !ok {
+		return false
+	}
+
+	if call.Op() != ir.OCALLFUNC {
+		return false
+	}
+
+	name, ok := call.Fun.(*ir.Name)
+	if !ok {
+		return false
+	}
+
+	return name.Sym() != nil &&
+		(name.Sym().Name == "AdvocateAllocMutex" ||
+			name.Sym().Name == "AdvocateAllocCondVar" ||
+			name.Sym().Name == "AdvocateAllocWG")
 }
 
 func instrumentBody(fn *ir.Func) {
@@ -62,65 +123,153 @@ func instrumentBody(fn *ir.Func) {
 		return
 	}
 
-	old := fn.Body
-	out := make(ir.Nodes, 0, len(old))
+	fn.Body = instrumentStmtList(fn.Body)
+}
 
-	for _, stmt := range old {
+func instrumentStmtList(body ir.Nodes) ir.Nodes {
+	out := make(ir.Nodes, 0, len(body)*2)
+
+	for _, stmt := range body {
+		// First recurse into children
+		instrumentStmt(stmt)
+
 		out.Append(stmt)
+
+		if isAdvocateCall(stmt) {
+			continue
+		}
 
 		if n := addAlloc(stmt); n != nil {
 			out.Append(n)
 		}
 	}
 
-	fn.Body = out
+	return out
 }
 
+func instrumentStmt(n ir.Node) {
+	switch n := n.(type) {
+
+	case *ir.BlockStmt:
+		n.List = instrumentStmtList(n.List)
+
+	case *ir.IfStmt:
+		n.Body = instrumentStmtList(n.Body)
+
+		if n.Else != nil {
+			n.Else = instrumentStmtList(n.Else)
+		}
+
+	case *ir.ForStmt:
+		n.Body = instrumentStmtList(n.Body)
+
+	case *ir.RangeStmt:
+		n.Body = instrumentStmtList(n.Body)
+
+	case *ir.SwitchStmt:
+		for _, c := range n.Compiled {
+			switch c := c.(type) {
+			case *ir.CaseClause:
+				c.Body = instrumentStmtList(c.Body)
+			}
+		}
+
+	case *ir.SelectStmt:
+		for _, c := range n.Compiled {
+			switch c := c.(type) {
+			case *ir.CommClause:
+				c.Body = instrumentStmtList(c.Body)
+			}
+		}
+	}
+}
+
+// TODO: variables created in init
 func addAlloc(n ir.Node) ir.Node {
-	if !isMutexCreation(n) {
+	t, obj := allocatedSync(n)
+	if t == nil || obj == nil {
 		return nil
 	}
 
-	switch n.(type) {
-	case *ir.AssignStmt:
+	var runtimeName string
+
+	switch {
+	case isSyncType(t, "Mutex") || isSyncType(t, "RWMutex"):
 		fmt.Println(n)
+		runtimeName = "AdvocateAllocMutex"
 
-		fn := typecheck.LookupRuntime("AdvocateAllocMutex")
+	case isSyncType(t, "Cond"):
+		runtimeName = "AdvocateAllocCondVar"
 
-		call := ir.NewCallExpr(
-			n.Pos(),
-			ir.OCALLFUNC,
-			fn,
-			nil,
-		)
+	case isSyncType(t, "WaitGroup"):
+		runtimeName = "AdvocateAllocWG"
 
-		call.SetTypecheck(1)
-
-		return call
+	default:
+		return nil
 	}
 
-	return nil
+	fn := typecheck.LookupRuntime(runtimeName)
 
+	addr := ir.NewAddrExpr(
+		n.Pos(),
+		obj,
+	)
+
+	addr.SetType(types.NewPtr(obj.Type()))
+	addr.SetTypecheck(1)
+
+	unsafeAddr := makeUnsafePointer(addr, n.Pos())
+
+	call := typecheck.Call(
+		n.Pos(),
+		fn,
+		[]ir.Node{unsafeAddr},
+		false,
+	)
+
+	return call
 }
 
-func isMutexCreation(n ir.Node) bool {
-	as, ok := n.(*ir.AssignStmt)
-	if !ok {
-		return false
+func makeUnsafePointer(addr ir.Node, pos src.XPos) ir.Node {
+	ptrType := types.Types[types.TUNSAFEPTR]
+
+	return ir.NewConvExpr(
+		pos,
+		ir.OCONV,
+		ptrType,
+		addr,
+	)
+}
+
+func allocatedSync(n ir.Node) (t *types.Type, m *ir.Name) {
+	switch n := n.(type) {
+
+	case *ir.AssignStmt:
+		// m := sync.Mutex{}
+		if n.Y != nil {
+			t = n.Y.Type()
+		}
+		name, ok := n.X.(*ir.Name)
+		if ok {
+			m = name
+		}
+
+	case *ir.Decl:
+		// var m sync.Mutex
+		if n.X != nil {
+			t = n.X.Type()
+			m = n.X
+		}
 	}
 
-	// Only handle single assignment: m := sync.Mutex{}
-	rhs := as.Y
-	if rhs == nil {
-		return false
-	}
+	return
+}
 
-	t := rhs.Type()
+func isSyncType(t *types.Type, name string) bool {
 	if t == nil {
 		return false
 	}
 
-	// Strip aliases/named wrappers as needed.
 	sym := t.Sym()
 	if sym == nil {
 		return false
@@ -128,7 +277,5 @@ func isMutexCreation(n ir.Node) bool {
 
 	return sym.Pkg != nil &&
 		sym.Pkg.Path == "sync" &&
-		sym.Name == "Mutex"
+		sym.Name == name
 }
-
-// ADVOCATE-FILE-END

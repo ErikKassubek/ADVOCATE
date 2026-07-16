@@ -48,7 +48,7 @@ type AdvocateTraceSelect struct {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
-	if advocateTracingDisabled || cases == nil {
+	if AdvocateTracingDisabled || cases == nil {
 		return -1
 	}
 
@@ -110,7 +110,7 @@ func AdvocateSelectPre(cases *[]scase, nsends int, ncases int, block bool) int {
 //   - selIndex: index of the chosen case in the select
 //   - rClosed: true if the channel was closed at another routine
 func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 
@@ -158,7 +158,7 @@ func AdvocateSelectPost(index int, c *hchan, selIndex int, rClosed bool) {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -215,7 +215,7 @@ func AdvocateSelectPreOneNonDef(c *hchan, send bool) int {
 //   - res: true for channel, false for default
 //   - c *hchan: the channel in the select cases
 func AdvocateSelectPostOneNonDef(index int, res bool, c *hchan) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

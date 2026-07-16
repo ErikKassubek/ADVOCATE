@@ -19,6 +19,23 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocMutex runtime.AdvocateAllocMutex
+func AdvocateAllocMutex(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	m := (*Mutex)(ptr)
+	if m.id != 0 {
+		return
+	}
+	m.id = runtime.AdvocateAlloc("M", 0)
+	m.memAdr = uintptr(unsafe.Pointer(m))
+}
+
+// ADVOCATE-END
+
 // A Mutex is a mutual exclusion lock.
 // The zero value for a Mutex is an unlocked mutex.
 //

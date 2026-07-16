@@ -45,7 +45,7 @@ type AdvocateTraceWaitGroup struct {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -84,7 +84,7 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateWaitGroupWait(id uint64) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -113,7 +113,7 @@ func AdvocateWaitGroupWait(id uint64) int {
 // Parameter:
 //   - index: index of the operation in the trace
 func AdvocateWaitGroupPost(index int) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

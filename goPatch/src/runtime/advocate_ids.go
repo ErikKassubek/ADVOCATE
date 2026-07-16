@@ -10,7 +10,9 @@
 
 package runtime
 
-import "internal/runtime/atomic"
+import (
+	"internal/runtime/atomic"
+)
 
 var advocateCurrentRoutineID atomic.Uint64
 

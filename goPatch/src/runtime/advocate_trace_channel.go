@@ -56,7 +56,7 @@ type AdvocateTraceChannel struct {
 // Returns:
 //   - int: index of the operation in the trace, return -1 if it is a atomic operation
 func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -92,7 +92,7 @@ func AdvocateChanPre(id uint64, op Operation, qSize uint, isNil bool) int {
 // Returns:
 //   - index of the operation in the trace
 func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return -1
 	}
 
@@ -124,7 +124,7 @@ func AdvocateChanClose(id uint64, qSize uint, qCount uint) int {
 //   - c: the channel
 //   - op: the operation
 func AdvocateChanPost(index int, c *hchan, op Operation) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 
@@ -188,7 +188,7 @@ func AdvocateChanPost(index int, c *hchan, op Operation) {
 // Args:
 //   - index: index of the operation in the trace
 func AdvocateChanPostCausedByClose(index int) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

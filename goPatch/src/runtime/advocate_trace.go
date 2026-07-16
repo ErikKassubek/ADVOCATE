@@ -76,7 +76,7 @@ const (
 	none
 )
 
-var advocateTracingDisabled = true
+var AdvocateTracingDisabled = true
 
 // var advocateTraceWritingDisabled = false
 
@@ -328,7 +328,7 @@ func IsActive(id int) (bool, bool) {
 // Returns:
 //   - bool: true if not started or written to file
 func AdvocateWriteTraceToFile() {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

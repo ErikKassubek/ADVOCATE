@@ -70,7 +70,7 @@ type AdvocateRoutine struct {
 //   - the new advocate routine
 func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *AdvocateRoutine {
 	// ignore the internal routines that are run before the main/test function starts
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return &AdvocateRoutine{
 			id:          0,
 			maxObjectId: 0,
@@ -167,7 +167,7 @@ func (gi *AdvocateRoutine) GetForkPos() string {
 //   - index: the index of the element to update
 //   - elem: the new element
 func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

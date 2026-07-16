@@ -56,7 +56,7 @@ All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 - [src/runtime/advocate_tracing.go](../goPatch/src/runtime/advocate_tracing.go)
 - [src/runtime/advocate_util.go](../goPatch/src/runtime/advocate_util.go)
 - [src/runtime/advocate_wait.go](../goPatch/src/runtime/advocate_wait.go)
-- [src/cmd/compile/internal/ssagen/advocate_ssagen.go](../goPatch/src/cmd/compile/internal/ssagen/advocate_ssagen.go)
+- [src/cmd/compile/internal/walk/advocate.go](../goPatch/src/cmd/compile/internal/ssawalken/advocate.go)
 
 ### Modified files
 
@@ -86,4 +86,4 @@ Modifications in files are marked with
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
 - [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
 - [src/cmd/compile/internal/ir/symtab.go](../goPatch/src/cmd/compile/internal/ir/symtab.go)
-- [src/cmd/link/internal/loader/loader.go](../goPatch/src/cmd/link/internal/loader/loader.go)
+- [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)

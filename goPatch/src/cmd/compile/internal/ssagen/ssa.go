@@ -597,7 +597,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	s.paramsToHeap()
 
 	// ADVOCATE-START
-	// function calls
+	// MARK: function calls
 	if shouldAdvocate(fn) {
 		s.rtcall(
 			ir.Syms.AdvocateFunctionCall,
@@ -605,30 +605,6 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 			nil,
 		)
 	}
-
-	// _, objType := syncObjectDecl(n)
-	// 	if objType == "M" {
-	// 		s.rtcall(
-	// 			ir.Syms.AdvocateAllocMutex,
-	// 			false,
-	// 			nil,
-	// 		)
-	// 	} else if objType == "D" {
-	// 		s.rtcall(
-	// 			ir.Syms.AdvocateAllocCondVar,
-	// 			false,
-	// 			nil,
-	// 		)
-	// 	} else if objType == "W" {
-	// 		s.rtcall(
-	// 			ir.Syms.AdvocateAllocWG,
-	// 			false,
-	// 			nil,
-	// 		)
-	// 	}
-	// }
-
-	// ADVOCATE-END
 
 	s.stmtList(fn.Body)
 
@@ -2319,6 +2295,7 @@ func (s *state) stmt(n ir.Node) {
 const shareDeferExits = false
 
 // ADOVCATE-START
+// MARK: shouldAdvocate
 func shouldAdvocate(fn *ir.Func) bool {
 	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
 		return false
@@ -2354,6 +2331,7 @@ func shouldAdvocate(fn *ir.Func) bool {
 	return true
 }
 
+// MARK: exit
 func (s *state) advocateExitCall(fn *ir.Func) {
 	if shouldAdvocate(fn) {
 		s.rtcall(ir.Syms.AdvocateFunctionReturn, true, nil)

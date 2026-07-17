@@ -23,12 +23,12 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - alt bool: if Ignore critical sections is set
 func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
-	routine := mu.GetRoutine()
-	mu.SetVc(a_clock.Strong, CurrentVC[routine])
-	mu.SetVc(a_clock.Weak, CurrentWVC[routine])
+	routine := mu.Routine()
+	mu.Vc(a_clock.Strong, CurrentVC[routine])
+	mu.Vc(a_clock.Weak, CurrentWVC[routine])
 
 	if !alt {
-		switch mu.GetType(true) {
+		switch mu.Type(true) {
 		case trace.MutexLock:
 			Lock(mu)
 		case trace.MutexRLock:
@@ -46,7 +46,7 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 		case trace.MutexRUnlock:
 			RUnlock(mu)
 		default:
-			err := "Unknown mutex operation: " + mu.ToString()
+			err := "Unknown mutex operation: " + mu.String()
 			log.Error(err)
 		}
 	}
@@ -63,8 +63,8 @@ func UpdateHBMutex(mu *trace.ElementMutex, alt bool) {
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
 func UpdateHBMutexAlt(mu *trace.ElementMutex) {
-	routine := mu.GetRoutine()
-	mu.SetVc(a_clock.Strong, CurrentVC[routine])
+	routine := mu.Routine()
+	mu.Vc(a_clock.Strong, CurrentVC[routine])
 }
 
 // Lock updates and calculates the vector clocks given a lock operation
@@ -72,8 +72,8 @@ func UpdateHBMutexAlt(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func Lock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
-	routine := mu.GetRoutine()
+	id := mu.ObjID()
+	routine := mu.Routine()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
@@ -97,8 +97,8 @@ func Lock(mu *trace.ElementMutex) {
 // Returns:
 //   - *VectorClock: The new vector clock
 func RLock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
-	routine := mu.GetRoutine()
+	id := mu.ObjID()
+	routine := mu.Routine()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)
@@ -116,8 +116,8 @@ func RLock(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func RUnlock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
-	routine := mu.GetRoutine()
+	id := mu.ObjID()
+	routine := mu.Routine()
 
 	if !mu.Committed() {
 		CurrentVC[routine].Inc(routine)

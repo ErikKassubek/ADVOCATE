@@ -30,8 +30,8 @@ import (
 //   - []trace.TraceElement: the concurrent element(s)
 func GetConcurrentAllPairs(elem trace.Element, all, sameElem, weak bool) []trace.Element {
 	res := make([]trace.Element, 0)
-	id := elem.GetObjId()
-	routId := elem.GetRoutine()
+	id := elem.ObjID()
+	routId := elem.Routine()
 
 	for r, routine := range a_base.MainTrace.GetTraces() {
 		// same routine
@@ -41,7 +41,7 @@ func GetConcurrentAllPairs(elem trace.Element, all, sameElem, weak bool) []trace
 
 		// different routine
 		for _, e := range routine.Elems() {
-			if sameElem && e.GetObjId() != id {
+			if sameElem && e.ObjID() != id {
 				continue
 			}
 
@@ -90,7 +90,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	reachableFromN := types.NewSet[types.Pair[int, int]]()
 	reachableToN := types.NewSet[types.Pair[int, int]]()
 
-	rout, ind := elem.GetTraceIndex()
+	rout, ind := elem.TraceIndex()
 	elemInd := types.NewPair(rout, ind)
 
 	dfsCSST(elemInd, reachableFromN, weak, false)
@@ -99,12 +99,12 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	res := make([]trace.Element, 0)
 
 	for routID, routine := range a_base.MainTrace.GetTraces() {
-		if routID == elem.GetRoutine() {
+		if routID == elem.Routine() {
 			continue
 		}
 
 		for _, tElem := range routine.Elems() {
-			if sameElem && elem.GetObjId() != tElem.GetObjId() {
+			if sameElem && elem.ObjID() != tElem.ObjID() {
 				continue
 			}
 
@@ -112,7 +112,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 				continue
 			}
 
-			r, i := tElem.GetTraceIndex()
+			r, i := tElem.TraceIndex()
 			tElemInd := types.NewPair(r, i)
 
 			if !reachableFromN.Contains(tElemInd) && !reachableToN.Contains(tElemInd) {

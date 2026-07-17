@@ -57,11 +57,11 @@ func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementReplay) GetID() int {
+func (this *ElementReplay) ID() int {
 	return this.id
 }
 
@@ -80,7 +80,7 @@ func (this *ElementReplay) setID(ID int) {
 // GetTPre returns the t of the element.
 //
 //   - int: The tPost of the element
-func (this *ElementReplay) GetT(_ timeType) int {
+func (this *ElementReplay) T(_ timeType) int {
 	return this.t
 }
 
@@ -115,27 +115,27 @@ func (this *ElementReplay) Committed() bool {
 // MARK: Position
 // ========================================================
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The file of the element
-func (this *ElementReplay) GetPos() string {
+func (this *ElementReplay) Pos() string {
 	return ""
 }
 
-// GetFile returns the file of the element
+// File returns the file of the element
 //
 // Returns:
 //   - The file of the element
-func (this *ElementReplay) GetFile() string {
+func (this *ElementReplay) File() string {
 	return ""
 }
 
-// GetLine returns the line of the element
+// Line returns the line of the element
 //
 // Returns:
 //   - The line of the element
-func (this *ElementReplay) GetLine() int {
+func (this *ElementReplay) Line() int {
 	return 0
 }
 
@@ -143,28 +143,28 @@ func (this *ElementReplay) GetLine() int {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementReplay) GetRoutine() int {
+func (this *ElementReplay) Routine() int {
 	return 1
 }
 
-// GetTraceIndex returns the trace local index of the element in the trace
+// TraceIndex returns the trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementReplay) GetTraceIndex() (int, int) {
+func (this *ElementReplay) TraceIndex() (int, int) {
 	return -1, -1
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementReplay) GetObjId() int {
+func (this *ElementReplay) ObjID() int {
 	return 0
 }
 
@@ -172,14 +172,14 @@ func (this *ElementReplay) GetObjId() int {
 // MARK: Operation
 // ========================================================
 
-// GetType returns the object type
+// Type returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementReplay) GetType(operation bool) OperationType {
+func (this *ElementReplay) Type(operation bool) OperationType {
 	if !operation {
 		return Replay
 	}
@@ -198,7 +198,7 @@ func (this *ElementReplay) GetType(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementReplay) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -217,11 +217,11 @@ func (this *ElementReplay) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element.
+// String returns the simple string representation of the element.
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementReplay) ToString() string {
+func (this *ElementReplay) String() string {
 	res := "X," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.exitCode)
 	return res
 }
@@ -230,8 +230,8 @@ func (this *ElementReplay) ToString() string {
 // MARK: VC
 // ========================================================
 
-// SetVc is a dummy function to implement the TraceElement interface
-func (this *ElementReplay) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
+// Vc is a dummy function to implement the TraceElement interface
+func (this *ElementReplay) Vc(_ a_clock.VcType, _ *a_clock.VectorClock) {
 }
 
 // GetVC is a dummy function to implement the TraceElement interface
@@ -243,7 +243,7 @@ func (this *ElementReplay) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
 // MARK: Function
 // ========================================================
 
-func (this *ElementReplay) GetFunction() *ElementFunc {
+func (this *ElementReplay) Function() *ElementFunc {
 	return nil
 }
 
@@ -251,12 +251,12 @@ func (this *ElementReplay) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
 // Returns:
 //   - int: -1
-func (this *ElementReplay) GetNumberConcurrent(_, _ bool) int {
+func (this *ElementReplay) NumberConcurrent(_, _ bool) int {
 	return -1
 }
 
@@ -282,11 +282,11 @@ func (this *ElementReplay) SetConcurrent(_ []Element, _, _ bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID returns the replay id of the element
+// ReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (this *ElementReplay) GetReplayID() string {
+func (this *ElementReplay) ReplayID() string {
 	return ""
 }
 

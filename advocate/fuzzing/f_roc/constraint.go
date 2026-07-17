@@ -51,10 +51,10 @@ func startConstraint(num, length int) []f_base.Constraint {
 		ind := rand.Intn(rout.Len())
 		elem := rout.At(ind)
 
-		if _, ok := alreadyAdded[elem.GetT(trace.Commit)]; ok {
+		if _, ok := alreadyAdded[elem.T(trace.Commit)]; ok {
 			continue
 		}
-		alreadyAdded[elem.GetT(trace.Commit)] = struct{}{}
+		alreadyAdded[elem.T(trace.Commit)] = struct{}{}
 
 		if !f_base.CanBeAddedToConstraint(elem) {
 			continue

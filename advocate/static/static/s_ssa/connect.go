@@ -25,7 +25,7 @@ func (this *Data) TraceToSSA(elem trace.Element) (*Function, *Instruction) {
 		return nil, nil
 	}
 
-	f := elem.GetFunction()
+	f := elem.Function()
 
 	ssaF := this.TraceFuncToSSAFunc(f)
 
@@ -78,22 +78,22 @@ func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Elemen
 	ssaClass := i.class
 	file, line := this.getInstructionPos(i.inst)
 
-	if file != elem.GetFile() || line != elem.GetLine() {
+	if file != elem.File() || line != elem.Line() {
 		return false
 	}
 
 	switch e := elem.(type) {
 	case *trace.ElementAlloc:
 		if ssaClass == ic_alloc {
-			if elem.GetType(false) == trace.Mutex && i.hasMutex() {
+			if elem.Type(false) == trace.Mutex && i.hasMutex() {
 				return true
-			} else if elem.GetType(false) == trace.Cond && i.hasCond() {
+			} else if elem.Type(false) == trace.Cond && i.hasCond() {
 				return true
-			} else if elem.GetType(false) == trace.Wait && i.hasWg() {
+			} else if elem.Type(false) == trace.Wait && i.hasWg() {
 				return true
 			}
 		}
-		if ssaClass == ic_makeChan && elem.GetType(true) == trace.NewChannel && i.hasChannel() {
+		if ssaClass == ic_makeChan && elem.Type(true) == trace.NewChannel && i.hasChannel() {
 			return true
 		}
 	case *trace.ElementChannel:

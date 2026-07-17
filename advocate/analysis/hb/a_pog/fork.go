@@ -28,7 +28,7 @@ func AddEdgeSameRoutineAndFork(graph *PoGraph, elem trace.Element) {
 	if !a_helper.Valid(elem) {
 		return
 	}
-	routineID := elem.GetRoutine()
+	routineID := elem.Routine()
 
 	gr := graph
 	if graph == nil {

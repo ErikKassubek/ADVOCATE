@@ -70,7 +70,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.GetObjId()
+	id := elem.ObjID()
 	if _, ok := ElemsByID[id]; !ok {
 		ElemsByID[id] = make([]trace.Element, 0)
 	}
@@ -84,14 +84,14 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 func CalculateRelRule2And4() {
 	for _, elems := range ElemsByID {
 		sort.Slice(elems, func(i, j int) bool {
-			return elems[i].GetT(trace.Sorting) < elems[j].GetT(trace.Sorting)
+			return elems[i].T(trace.Sorting) < elems[j].T(trace.Sorting)
 		})
 
 		for i := 0; i < len(elems)-1; i++ {
 			elem1 := elems[i]
 			for j := i + 1; j < len(elems)-1; j++ {
 				elem2 := elems[j]
-				if elem1.GetRoutine() != elem2.GetRoutine() {
+				if elem1.Routine() != elem2.Routine() {
 					if _, ok := rel2[elem1]; !ok {
 						rel2[elem1] = make(map[trace.Element]struct{})
 					}
@@ -165,7 +165,7 @@ func CalculateRelRule3() {
 // Returns:
 //   - bool: true if elem should be used in chains, false if not
 func isGoPieElem(elem trace.Element) bool {
-	elemTypeShort := elem.GetType(false)
+	elemTypeShort := elem.Type(false)
 
 	if flags.FuzzingMode == f_base.GoPie {
 		validTypes := []trace.OperationType{

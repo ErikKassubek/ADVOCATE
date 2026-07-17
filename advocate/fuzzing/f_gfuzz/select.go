@@ -22,8 +22,8 @@ import (
 //   - e *trace.TraceElementSelect: the select trace element to add
 func AddFuzzingSelect(e *trace.ElementSelect) {
 	fs := f_base.FuzzingSelect{
-		ID:              e.GetReplayID(),
-		T:               e.GetT(trace.Commit),
+		ID:              e.ReplayID(),
+		T:               e.T(trace.Commit),
 		ChosenCase:      e.GetChosenIndex(),
 		NumberCases:     len(e.GetCases()),
 		ContainsDefault: e.GetContainsDefault(),

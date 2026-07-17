@@ -31,7 +31,7 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	// check if there is an earlier send, that could happen concurrently to close
 	if a_base.AnalysisCasesMap[flags.SendOnClosed] && a_base.HasSend[id] {
@@ -45,19 +45,19 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 				arg1 := results.TraceElementResult{ // send
 					RoutineID: routine,
 					ObjID:     id,
-					TRequest:  elem.GetT(trace.Request),
+					TRequest:  elem.T(trace.Request),
 					ObjType:   "CS",
-					File:      elem.GetFile(),
-					Line:      elem.GetLine(),
+					File:      elem.File(),
+					Line:      elem.Line(),
 				}
 
 				arg2 := results.TraceElementResult{ // close
-					RoutineID: a_base.CloseData[ch.GetObjId()].GetRoutine(),
+					RoutineID: a_base.CloseData[ch.ObjID()].Routine(),
 					ObjID:     id,
-					TRequest:  ch.GetT(trace.Request),
+					TRequest:  ch.T(trace.Request),
 					ObjType:   "CC",
-					File:      ch.GetFile(),
-					Line:      ch.GetLine(),
+					File:      ch.File(),
+					Line:      ch.Line(),
 				}
 
 				results.Result(results.CRITICAL, helper.PSendOnClosed,
@@ -120,35 +120,35 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := elem.GetObjId()
+	id := elem.ObjID()
 
 	if _, ok := a_base.CloseData[id]; !ok {
 		return
 	}
 
 	closeElem := a_base.CloseData[id]
-	fileSend := elem.GetFile()
+	fileSend := elem.File()
 
 	if fileSend == "" || fileSend == "\n" {
 		return
 	}
 
 	arg1 := results.TraceElementResult{ // send
-		RoutineID: elem.GetRoutine(),
+		RoutineID: elem.Routine(),
 		ObjID:     id,
-		TRequest:  elem.GetT(trace.Request),
+		TRequest:  elem.T(trace.Request),
 		ObjType:   "CS",
 		File:      fileSend,
-		Line:      elem.GetLine(),
+		Line:      elem.Line(),
 	}
 
 	arg2 := results.TraceElementResult{ // close
-		RoutineID: a_base.CloseData[id].GetRoutine(),
+		RoutineID: a_base.CloseData[id].Routine(),
 		ObjID:     id,
-		TRequest:  closeElem.GetT(trace.Request),
+		TRequest:  closeElem.T(trace.Request),
 		ObjType:   "CC",
-		File:      closeElem.GetFile(),
-		Line:      closeElem.GetLine(),
+		File:      closeElem.File(),
+		Line:      closeElem.Line(),
 	}
 
 	if actual {
@@ -228,29 +228,29 @@ func CheckForClosedOnClosed(ch *trace.ElementChannel) {
 	timer.Start(timer.AnaClose)
 	defer timer.Stop(timer.AnaClose)
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	if oldClose, ok := a_base.CloseData[id]; ok {
-		if oldClose.GetID() == 0 || ch.GetID() == 0 {
+		if oldClose.ID() == 0 || ch.ID() == 0 {
 			return
 		}
 
 		arg1 := results.TraceElementResult{
-			RoutineID: ch.GetRoutine(),
+			RoutineID: ch.Routine(),
 			ObjID:     id,
-			TRequest:  oldClose.GetT(trace.Request),
+			TRequest:  oldClose.T(trace.Request),
 			ObjType:   "CC",
-			File:      oldClose.GetFile(),
-			Line:      oldClose.GetLine(),
+			File:      oldClose.File(),
+			Line:      oldClose.Line(),
 		}
 
 		arg2 := results.TraceElementResult{
-			RoutineID: ch.GetRoutine(),
+			RoutineID: ch.Routine(),
 			ObjID:     id,
-			TRequest:  ch.GetT(trace.Request),
+			TRequest:  ch.T(trace.Request),
 			ObjType:   "CC",
-			File:      ch.GetFile(),
-			Line:      ch.GetLine(),
+			File:      ch.File(),
+			Line:      ch.Line(),
 		}
 
 		results.Result(results.CRITICAL, helper.ACloseOnClosed,

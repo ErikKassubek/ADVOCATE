@@ -87,11 +87,11 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementFork) GetID() int {
+func (this *ElementFork) ID() int {
 	return this.id
 }
 
@@ -103,11 +103,11 @@ func (this *ElementFork) setID(ID int) {
 	this.id = ID
 }
 
-// GetObjId returns the ID of the newly created routine
+// ObjID returns the ID of the newly created routine
 //
 // Returns:
 //   - int: The id of the new routine
-func (this *ElementFork) GetObjId() int {
+func (this *ElementFork) ObjID() int {
 	return this.objId
 }
 
@@ -115,11 +115,11 @@ func (this *ElementFork) GetObjId() int {
 // MARK: Timestamps
 // ========================================================
 
-// GetT returns the t of the element.
+// T returns the t of the element.
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementFork) GetT(_ timeType) int {
+func (this *ElementFork) T(_ timeType) int {
 	return this.t
 }
 
@@ -154,27 +154,27 @@ func (this *ElementFork) Committed() bool {
 // MARK: Position
 // ========================================================
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (this *ElementFork) GetPos() string {
+func (this *ElementFork) Pos() string {
 	return this.pos.toString()
 }
 
-// GetFile returns the file where the operation represented by the element was executed
+// File returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
-func (this *ElementFork) GetFile() string {
+func (this *ElementFork) File() string {
 	return this.pos.file
 }
 
-// GetLine returns the line where the operation represented by the element was executed
+// Line returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
-func (this *ElementFork) GetLine() int {
+func (this *ElementFork) Line() int {
 	return this.pos.line
 }
 
@@ -182,20 +182,20 @@ func (this *ElementFork) GetLine() int {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementFork) GetRoutine() int {
+func (this *ElementFork) Routine() int {
 	return this.routine
 }
 
-// GetTraceIndex returns trace local index of the element in the trace
+// TraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementFork) GetTraceIndex() (int, int) {
+func (this *ElementFork) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -210,7 +210,7 @@ func (this *ElementFork) GetTraceIndex() (int, int) {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementFork) GetType(operation bool) OperationType {
+func (this *ElementFork) Type(operation bool) OperationType {
 	if !operation {
 		return Fork
 	}
@@ -229,7 +229,7 @@ func (this *ElementFork) GetType(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementFork) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.objId == elem.ObjID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -242,27 +242,27 @@ func (this *ElementFork) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: true if at and elem are operations on the same channel
 func (this *ElementFork) IsSameElement(elem Element) bool {
-	return elem.GetType(false) == Fork
+	return elem.Type(false) == Fork
 }
 
 // ========================================================
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementFork) ToString() string {
+func (this *ElementFork) String() string {
 	return "G" + "," + strconv.Itoa(this.t) + "," + strconv.Itoa(this.objId) +
-		"," + this.GetPos()
+		"," + this.Pos()
 }
 
 // ========================================================
 // MARK: Function
 // ========================================================
 
-func (this *ElementFork) GetFunction() *ElementFunc {
+func (this *ElementFork) Function() *ElementFunc {
 	return this.function
 }
 
@@ -270,12 +270,12 @@ func (this *ElementFork) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// SetVc sets the vector clock
+// Vc sets the vector clock
 //
 // Parameter:
 //   - weak bool: set the weak wv
 //   - cl *clock.VectorClock: the vector clock
-func (this *ElementFork) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+func (this *ElementFork) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
 	this.ci.setVC(weak, cl)
 }
 
@@ -290,7 +290,7 @@ func (this *ElementFork) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 	return this.ci.getVC(weak)
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
 // Parameter:
@@ -299,7 +299,7 @@ func (this *ElementFork) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementFork) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementFork) NumberConcurrent(weak, sameElem bool) int {
 	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
@@ -317,11 +317,11 @@ func (this *ElementFork) SetNumberConcurrent(c int, weak, sameElem bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID returns the replay id of the element
+// ReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (this *ElementFork) GetReplayID() string {
+func (this *ElementFork) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 

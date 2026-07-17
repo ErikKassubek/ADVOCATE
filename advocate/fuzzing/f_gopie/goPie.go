@@ -199,14 +199,14 @@ func getSpecialMuts() map[string]f_base.Constraint {
 			switch t := s.(type) {
 			case *trace.ElementSelect:
 				for _, cc := range t.GetCases() {
-					if cc.GetType(true) == trace.ChannelSend {
+					if cc.Type(true) == trace.ChannelSend {
 						chain := f_base.NewConstraint()
 						chain.Add(c, s)
 						res[chain.ToString()] = chain
 					}
 				}
 			default:
-				if s.GetType(true) == trace.ChannelSend {
+				if s.Type(true) == trace.ChannelSend {
 					chain := f_base.NewConstraint()
 					chain.Add(c, s)
 					res[chain.ToString()] = chain
@@ -219,7 +219,7 @@ func getSpecialMuts() map[string]f_base.Constraint {
 	for id, dones := range a_base.WgDoneData {
 		for _, done := range dones {
 			for _, add := range a_base.WGAddData[id] {
-				if add.GetT(trace.Commit) > done.GetT(trace.Commit) {
+				if add.T(trace.Commit) > done.T(trace.Commit) {
 					continue
 				}
 

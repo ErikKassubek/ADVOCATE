@@ -68,7 +68,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 
 			// sort trace by tPre
 			sort.Slice(rout, func(i, j int) bool {
-				return rout.At(i).GetT(trace.Request) < rout.At(j).GetT(trace.Request)
+				return rout.At(i).T(trace.Request) < rout.At(j).T(trace.Request)
 			})
 
 			for index, element := range rout.Elems() {
@@ -78,7 +78,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 				if !element.Committed() {
 					element.SetT(trace.Sorting, math.MaxInt)
 				}
-				elementString := element.ToString()
+				elementString := element.String()
 				if _, err := file.WriteString(elementString); err != nil {
 					log.Error("Error in writing trace to file. Could not write string: ", err.Error())
 				}
@@ -111,7 +111,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
 func isReplay(element trace.Element) bool {
-	t := element.GetType(false)
+	t := element.Type(false)
 	return !(t == trace.New || t == trace.End)
 }
 

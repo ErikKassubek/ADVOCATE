@@ -46,7 +46,7 @@ func CheckForDoneBeforeAddChange(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
 func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WGAddData[id]; !ok {
@@ -62,7 +62,7 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
 func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WgDoneData[id]; !ok {
@@ -141,32 +141,32 @@ func CheckForDoneBeforeAdd() {
 			args2 := []results.ResultElem{} // adds
 
 			for _, done := range donesNEgWgSorted {
-				if done.GetID() == 0 {
+				if done.ID() == 0 {
 					continue
 				}
 
 				args1 = append(args1, results.TraceElementResult{
-					RoutineID: done.GetRoutine(),
+					RoutineID: done.Routine(),
 					ObjID:     id,
-					TRequest:  done.GetT(trace.Request),
+					TRequest:  done.T(trace.Request),
 					ObjType:   "WD",
-					File:      done.GetFile(),
-					Line:      done.GetLine(),
+					File:      done.File(),
+					Line:      done.Line(),
 				})
 			}
 
 			for _, add := range addsNegWgSorted {
-				if add.GetID() == 0 {
+				if add.ID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
-					RoutineID: add.GetRoutine(),
+					RoutineID: add.Routine(),
 					ObjID:     id,
-					TRequest:  add.GetT(trace.Request),
+					TRequest:  add.T(trace.Request),
 					ObjType:   "WA",
-					File:      add.GetFile(),
-					Line:      add.GetLine(),
+					File:      add.File(),
+					Line:      add.Line(),
 				})
 
 			}

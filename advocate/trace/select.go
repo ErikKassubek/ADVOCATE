@@ -203,11 +203,11 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementSelect) GetID() int {
+func (this *ElementSelect) ID() int {
 	return this.id
 }
 
@@ -219,11 +219,11 @@ func (this *ElementSelect) setID(ID int) {
 	this.id = ID
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementSelect) GetObjId() int {
+func (this *ElementSelect) ObjID() int {
 	return this.objId
 }
 
@@ -231,14 +231,14 @@ func (this *ElementSelect) GetObjId() int {
 // MARK: Timestamps
 // ========================================================
 
-// GetT returns the t of the element
+// T returns the t of the element
 //
 // Parameter:
 //   - t timeType: timer type
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementSelect) GetT(t timeType) int {
+func (this *ElementSelect) T(t timeType) int {
 	switch t {
 	case Request:
 		return this.tPre
@@ -356,27 +356,27 @@ func (this *ElementSelect) Committed() bool {
 // MARK: Position
 // ========================================================
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (this *ElementSelect) GetPos() string {
+func (this *ElementSelect) Pos() string {
 	return this.pos.toString()
 }
 
-// GetFile returns the file where the operation represented by the element was executed
+// File returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - string: The file of the element
-func (this *ElementSelect) GetFile() string {
+func (this *ElementSelect) File() string {
 	return this.pos.file
 }
 
-// GetLine returns the line where the operation represented by the element was executed
+// Line returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - string: The line of the element
-func (this *ElementSelect) GetLine() int {
+func (this *ElementSelect) Line() int {
 	return this.pos.line
 }
 
@@ -384,20 +384,20 @@ func (this *ElementSelect) GetLine() int {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementSelect) GetRoutine() int {
+func (this *ElementSelect) Routine() int {
 	return this.routine
 }
 
-// GetTraceIndex returns the index of the element in the routine
+// TraceIndex returns the index of the element in the routine
 // Returns
 //
 //   - int: routine index
 //   - int: routine local index of the element
-func (this *ElementSelect) GetTraceIndex() (int, int) {
+func (this *ElementSelect) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -413,14 +413,14 @@ func (this *ElementSelect) GetCases() []*ElementChannel {
 	return this.cases
 }
 
-// GetType returns he object type
+// Type returns he object type
 //
 // Parameter:
 //   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
 //
 // Returns:
 //   - the object type
-func (this *ElementSelect) GetType(operation bool) OperationType {
+func (this *ElementSelect) Type(operation bool) OperationType {
 	if !operation {
 		return Select
 	}
@@ -440,7 +440,7 @@ func (this *ElementSelect) GetType(operation bool) OperationType {
 // Returns:
 //   - bool: true if they are equal, false otherwise
 func (this *ElementSelect) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.objId == elem.ObjID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -459,11 +459,11 @@ func (this *ElementSelect) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementSelect) ToString() string {
+func (this *ElementSelect) String() string {
 	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
 		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
 
@@ -489,7 +489,7 @@ func (this *ElementSelect) ToString() string {
 		}
 	}
 	res += "," + strconv.Itoa(this.chosenIndex)
-	res += "," + this.GetPos()
+	res += "," + this.Pos()
 	return res
 }
 
@@ -497,7 +497,7 @@ func (this *ElementSelect) ToString() string {
 // MARK: Function
 // ========================================================
 
-func (this *ElementSelect) GetFunction() *ElementFunc {
+func (this *ElementSelect) Function() *ElementFunc {
 	return this.function
 }
 
@@ -505,15 +505,15 @@ func (this *ElementSelect) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// SetVc sets the vector clock
+// Vc sets the vector clock
 //
 // Parameter:
 //   - weak bool
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+func (this *ElementSelect) Vc(weak a_clock.VcType, vc *a_clock.VectorClock) {
 	this.ci.setVC(weak, vc)
 	if this.chosenCase != nil {
-		this.chosenCase.SetVc(weak, vc)
+		this.chosenCase.Vc(weak, vc)
 	}
 }
 
@@ -528,7 +528,7 @@ func (this *ElementSelect) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 	return this.ci.getVC(weak)
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
 // Parameter:
@@ -537,7 +537,7 @@ func (this *ElementSelect) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementSelect) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementSelect) NumberConcurrent(weak, sameElem bool) int {
 	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
@@ -559,11 +559,11 @@ func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID returns the replay id of the operations
+// ReplayID returns the replay id of the operations
 //
 // Returns:
 //   - string: The replay id of the element
-func (this *ElementSelect) GetReplayID() string {
+func (this *ElementSelect) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
@@ -581,7 +581,7 @@ func (this *ElementSelect) GetReplayID() string {
 // Returns:
 //   - TraceElement: The copy of the element
 func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
-	id := this.GetID()
+	id := this.ID()
 
 	if existing, ok := mapping[id]; ok {
 		return existing
@@ -777,7 +777,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 		return nil
 	}
 
-	this.cases[index].SetT(Commit, this.GetT(Commit))
+	this.cases[index].SetT(Commit, this.T(Commit))
 	this.chosenIndex = index
 	this.chosenDefault = false
 	return nil
@@ -808,7 +808,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	found := false
 	for i, c := range this.cases {
 		if c.objId == chanID && c.op == op {
-			tPost := this.GetT(Commit)
+			tPost := this.T(Commit)
 			if !this.chosenDefault {
 				this.cases[this.chosenIndex].SetT(Commit, 0)
 			} else {

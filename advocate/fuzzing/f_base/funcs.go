@@ -47,6 +47,6 @@ func AddMutToQueue(mut Mutation, front, force bool) bool {
 // Returns:
 //   - True if the element is of one of those types, false otherwise
 func IgnoreFuzzing(elem trace.Element, ignoreNew bool) bool {
-	t := elem.GetType(false)
+	t := elem.Type(false)
 	return (ignoreNew && t == trace.New) || t == trace.Replay || t == trace.End
 }

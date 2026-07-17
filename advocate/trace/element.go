@@ -22,38 +22,38 @@ import (
 
 // Element is an interface for the elements in a trace
 type Element interface {
-	GetID() int
+	ID() int
 	setID(ID int)
-	GetObjId() int
+	ObjID() int
 
-	GetT(t timeType) int
+	T(t timeType) int
 	SetT(t timeType, time int)
 	SetTWithoutNotExecuted(tSort int)
 	Committed() bool
 
-	GetPos() string
-	GetFile() string
-	GetLine() int
+	Pos() string
+	File() string
+	Line() int
 
-	GetRoutine() int
-	GetTraceIndex() (int, int)
+	Routine() int
+	TraceIndex() (int, int)
 
-	GetType(operation bool) OperationType
+	Type(operation bool) OperationType
 
 	IsEqual(elem Element) bool
 	IsSameElement(elem Element) bool
 
-	ToString() string
+	String() string
 
-	GetFunction() *ElementFunc // TODO: GLOBAL
+	Function() *ElementFunc // TODO: GLOBAL
 
-	SetVc(weak a_clock.VcType, vc *a_clock.VectorClock)
+	Vc(weak a_clock.VcType, vc *a_clock.VectorClock)
 	GetVC(weak a_clock.VcType) *a_clock.VectorClock
 
-	GetNumberConcurrent(weak, sameElem bool) int
+	NumberConcurrent(weak, sameElem bool) int
 	SetNumberConcurrent(c int, weak, sameElem bool)
 
-	GetReplayID() string
+	ReplayID() string
 
 	Copy(mapping map[int]Element, keep bool) Element
 

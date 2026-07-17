@@ -21,13 +21,13 @@ import (
 //   - wa *trace.TraceElementWait: the wait group operation
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBWait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
-	switch wa.GetType(true) {
+	switch wa.Type(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(graph, wa)
 	case trace.WaitWait:
 		Wait(graph, wa, recorded)
 	default:
-		err := "Unknown operation on wait group: " + wa.ToString()
+		err := "Unknown operation on wait group: " + wa.String()
 		log.Error(err)
 	}
 }
@@ -38,7 +38,7 @@ func UpdateHBWait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - wa *TraceElementWait: The trace element
 func Change(graph *PoGraph, wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	gr := graph
 	if graph == nil {
@@ -67,7 +67,7 @@ func Wait(graph *PoGraph, wa *trace.ElementWait, recorded bool) {
 		return
 	}
 
-	id := wa.GetObjId()
+	id := wa.ObjID()
 	gr := graph
 	if graph == nil {
 		gr = &po

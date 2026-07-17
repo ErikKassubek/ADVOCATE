@@ -22,7 +22,7 @@ func getBlockedResources() map[trace.Resource][]*trace.ElementAlloc {
 	res := make(map[trace.Resource][]*trace.ElementAlloc)
 
 	for _, e := range tr.GetBlocked() {
-		ob := e.GetObjId()
+		ob := e.ObjID()
 		alloc := tr.GetAlloc(e)
 		res[trace.NewResource(ob)] = alloc
 	}

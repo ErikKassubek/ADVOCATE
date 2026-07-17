@@ -48,8 +48,8 @@ import (
 // We show the event processing functions for acquire and release.
 
 func acquire(s *a_base.State, readLock bool, event trace.Element) {
-	if _, exists := s.Routines[event.GetRoutine()]; !exists {
-		s.Routines[event.GetRoutine()] = a_base.Thread{
+	if _, exists := s.Routines[event.Routine()]; !exists {
+		s.Routines[event.Routine()] = a_base.Thread{
 			CurrentLockset:   make(a_base.Lockset),
 			LockDependencies: make(map[a_base.LockID][]a_base.Dependency),
 			ReaderCounter:    make(map[a_base.LockID]int),
@@ -57,39 +57,39 @@ func acquire(s *a_base.State, readLock bool, event trace.Element) {
 	}
 
 	lockID := a_base.LockID{
-		ID:       event.GetObjId(),
+		ID:       event.ObjID(),
 		ReadLock: readLock,
 	}
 
-	ls := s.Routines[event.GetRoutine()].CurrentLockset
+	ls := s.Routines[event.Routine()].CurrentLockset
 	if !ls.Empty() {
-		deps := s.Routines[event.GetRoutine()].LockDependencies
+		deps := s.Routines[event.Routine()].LockDependencies
 		deps[lockID] = insert(deps[lockID], ls, event)
 	}
 
 	if lockID.IsRead() {
-		lockID.AddReader(s.Routines[event.GetRoutine()])
+		lockID.AddReader(s.Routines[event.Routine()])
 	}
-	s.Routines[event.GetRoutine()].CurrentLockset.Add(lockID)
+	s.Routines[event.Routine()].CurrentLockset.Add(lockID)
 }
 
 func release(s *a_base.State, readLock bool, event trace.Element) {
 	lockID := a_base.LockID{
-		ID:       event.GetObjId(),
+		ID:       event.ObjID(),
 		ReadLock: readLock,
 	}
 
 	if lockID.IsRead() {
-		lockID.RemoveReader(s.Routines[event.GetRoutine()])
+		lockID.RemoveReader(s.Routines[event.Routine()])
 		for _, thread := range s.Routines {
 			if lockID.HasReaders(thread) {
 				continue
 			}
 			thread.CurrentLockset.Remove(lockID)
 		}
-		s.Routines[event.GetRoutine()].CurrentLockset.Remove(lockID)
+		s.Routines[event.Routine()].CurrentLockset.Remove(lockID)
 	} else {
-		if !s.Routines[event.GetRoutine()].CurrentLockset.Remove(lockID) {
+		if !s.Routines[event.Routine()].CurrentLockset.Remove(lockID) {
 			// "Lock not found in lockset! Has probably been released in another thread, this is an unsupported case."
 			s.Failed = true
 		}
@@ -306,7 +306,7 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 		return
 	}
 
-	switch element.GetType(true) {
+	switch element.Type(true) {
 	case trace.MutexLock, trace.MutexTryLock:
 		acquire(&a_base.CurrentState, false, &element)
 		// We do not check event.suc because that could led to false negatives
@@ -356,18 +356,18 @@ func CheckForResourceDeadlock() {
 				}
 			}
 
-			if request.GetRoutine() != cycle[i].Thread {
-				log.Error("Request thread id ", request.GetRoutine(), "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
+			if request.Routine() != cycle[i].Thread {
+				log.Error("Request thread id ", request.Routine(), "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
 				break
 			}
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: request.GetRoutine(),
-				ObjID:     request.GetObjId(),
-				TRequest:  request.GetT(trace.Request),
+				RoutineID: request.Routine(),
+				ObjID:     request.ObjID(),
+				TRequest:  request.T(trace.Request),
 				ObjType:   "DC",
-				File:      request.GetFile(),
-				Line:      request.GetLine(),
+				File:      request.File(),
+				Line:      request.Line(),
 			})
 		}
 
@@ -384,10 +384,10 @@ func CheckForResourceDeadlock() {
 // Finds the earliest request in a cycle.
 func findEarliestRequest(cycle []a_base.LockDependency) trace.Element {
 	earliest := cycle[0].Requests[0]
-	earliestTime := earliest.GetT(trace.Request)
+	earliestTime := earliest.T(trace.Request)
 	for _, c := range cycle {
 		for _, r := range c.Requests {
-			requestTime := r.GetT(trace.Request)
+			requestTime := r.T(trace.Request)
 
 			if requestTime < earliestTime {
 				earliest = r

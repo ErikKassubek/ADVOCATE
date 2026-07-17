@@ -81,10 +81,10 @@ func (this Bug) GetBugString() string {
 	paths := make([]string, 0)
 
 	for _, t := range this.TraceElement1 {
-		paths = append(paths, t.GetPos())
+		paths = append(paths, t.Pos())
 	}
 	for _, t := range this.TraceElement2 {
-		paths = append(paths, t.GetPos())
+		paths = append(paths, t.Pos())
 	}
 
 	sort.Strings(paths)
@@ -203,7 +203,7 @@ func (this Bug) ToString() string {
 		if i != 0 {
 			res += ";"
 		}
-		res += elem.ToString()
+		res += elem.String()
 	}
 
 	if arg2Str != "" {
@@ -217,7 +217,7 @@ func (this Bug) ToString() string {
 			if i != 0 {
 				res += ";"
 			}
-			res += elem.ToString()
+			res += elem.String()
 		}
 	}
 

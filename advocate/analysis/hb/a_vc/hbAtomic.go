@@ -21,12 +21,12 @@ import (
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
 func UpdateHBAtomic(at *trace.ElementAtomic) {
-	routine := at.GetRoutine()
+	routine := at.Routine()
 
-	at.SetVc(a_clock.Strong, CurrentVC[routine])
-	at.SetVc(a_clock.Weak, CurrentWVC[routine])
+	at.Vc(a_clock.Strong, CurrentVC[routine])
+	at.Vc(a_clock.Weak, CurrentWVC[routine])
 
-	switch at.GetType(true) {
+	switch at.Type(true) {
 	case trace.AtomicLoad:
 		Read(at, true, routine)
 	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
@@ -56,7 +56,7 @@ func Write(at *trace.ElementAtomic, routine int) {
 //   - sync bool: sync reader with last writer
 //   - routine int: the routine of at
 func Read(at *trace.ElementAtomic, sync bool, routine int) {
-	id := at.GetObjId()
+	id := at.ObjID()
 
 	if sync && a_base.LastAtomicWriter[id] != nil {
 		CurrentVC[routine].Sync(a_base.LastAtomicWriter[id].GetVC(a_clock.Strong))

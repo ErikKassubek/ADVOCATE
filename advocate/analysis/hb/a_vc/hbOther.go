@@ -19,16 +19,16 @@ import (
 // Parameter:
 //   - n *trace.TraceElementAlloc: the new trace element
 func UpdateHBNew(n *trace.ElementAlloc) {
-	routine := n.GetRoutine()
-	n.SetVc(a_clock.Strong, CurrentVC[routine])
-	n.SetVc(a_clock.Weak, CurrentWVC[routine])
+	routine := n.Routine()
+	n.Vc(a_clock.Strong, CurrentVC[routine])
+	n.Vc(a_clock.Weak, CurrentWVC[routine])
 }
 
 // UpdateHBRoutineEnd store the vector clock of the element
 // Parameter:
 //   - re *trace.TraceElementRoutineEnd: the new trace element
 func UpdateHBRoutineEnd(re *trace.ElementRoutineEnd) {
-	routine := re.GetRoutine()
-	re.SetVc(a_clock.Strong, CurrentVC[routine])
-	re.SetVc(a_clock.Weak, CurrentWVC[routine])
+	routine := re.Routine()
+	re.Vc(a_clock.Strong, CurrentVC[routine])
+	re.Vc(a_clock.Weak, CurrentWVC[routine])
 }

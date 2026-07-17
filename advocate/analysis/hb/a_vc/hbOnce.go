@@ -20,10 +20,10 @@ import (
 // Parameter:
 //   - on *trace.TraceElementOnce: the once trace element
 func UpdateHBOnce(on *trace.ElementOnce) {
-	routine := on.GetRoutine()
+	routine := on.Routine()
 
-	on.SetVc(a_clock.Strong, CurrentVC[routine])
-	on.SetVc(a_clock.Weak, CurrentVC[routine])
+	on.Vc(a_clock.Strong, CurrentVC[routine])
+	on.Vc(a_clock.Weak, CurrentVC[routine])
 
 	if on.GetSuc() {
 		DoSuc(on)
@@ -37,7 +37,7 @@ func UpdateHBOnce(on *trace.ElementOnce) {
 // Parameter:
 //   - on *TraceElementOnce: The trace element
 func DoSuc(on *trace.ElementOnce) {
-	routine := on.GetRoutine()
+	routine := on.Routine()
 
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
@@ -48,8 +48,8 @@ func DoSuc(on *trace.ElementOnce) {
 // Parameter:
 //   - on *TraceElementOnce: The trace element
 func DoFail(on *trace.ElementOnce) {
-	id := on.GetObjId()
-	routine := on.GetRoutine()
+	id := on.ObjID()
+	routine := on.Routine()
 
 	suc := a_base.OSuc[id]
 

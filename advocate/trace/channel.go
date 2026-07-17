@@ -170,11 +170,11 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementChannel) GetID() int {
+func (this *ElementChannel) ID() int {
 	return this.id
 }
 
@@ -186,11 +186,11 @@ func (this *ElementChannel) setID(ID int) {
 	this.id = ID
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementChannel) GetObjId() int {
+func (this *ElementChannel) ObjID() int {
 	return this.objId
 }
 
@@ -198,20 +198,20 @@ func (this *ElementChannel) GetObjId() int {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementChannel) GetRoutine() int {
+func (this *ElementChannel) Routine() int {
 	return this.routine
 }
 
-// GetTraceIndex returns trace local index of the element in the trace
+// TraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementChannel) GetTraceIndex() (int, int) {
+func (this *ElementChannel) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -219,14 +219,14 @@ func (this *ElementChannel) GetTraceIndex() (int, int) {
 // MARK: Timestamps
 // ========================================================
 
-// GetT returns the t of the element
+// T returns the t of the element
 //
 // Parameter:
 //   - t timeType: timer type
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementChannel) GetT(t timeType) int {
+func (this *ElementChannel) T(t timeType) int {
 	switch t {
 	case Request:
 		return this.tReq
@@ -346,27 +346,27 @@ func (this *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
 // MARK: Position
 // ========================================================
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (this *ElementChannel) GetPos() string {
+func (this *ElementChannel) Pos() string {
 	return this.pos.toString()
 }
 
-// GetFile returns the file where the operation represented by the element was executed
+// File returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
-func (this *ElementChannel) GetFile() string {
+func (this *ElementChannel) File() string {
 	return this.pos.file
 }
 
-// GetLine returns the line where the operation represented by the element was executed
+// Line returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
-func (this *ElementChannel) GetLine() int {
+func (this *ElementChannel) Line() int {
 	return this.pos.line
 }
 
@@ -381,7 +381,7 @@ func (this *ElementChannel) GetLine() int {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementChannel) GetType(operation bool) OperationType {
+func (this *ElementChannel) Type(operation bool) OperationType {
 	if !operation {
 		return Channel
 	}
@@ -401,7 +401,7 @@ func (this *ElementChannel) GetType(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementChannel) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.objId == elem.ObjID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -413,22 +413,22 @@ func (this *ElementChannel) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: true if at and elem are operations on the same channel
 func (this *ElementChannel) IsSameElement(elem Element) bool {
-	if elem.GetType(false) != Channel {
+	if elem.Type(false) != Channel {
 		return false
 	}
 
-	return this.objId == elem.GetObjId()
+	return this.objId == elem.ObjID()
 }
 
 // ========================================================
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementChannel) ToString() string {
+func (this *ElementChannel) String() string {
 	return this.toStringSep(",", false)
 }
 
@@ -456,8 +456,8 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	timeString := ""
 	posStr := ""
 	if !sel {
-		timeString = fmt.Sprintf("%s%d%s%d", sep, this.GetT(Request), sep, this.GetT(Commit))
-		posStr = sep + this.GetPos()
+		timeString = fmt.Sprintf("%s%d%s%d", sep, this.T(Request), sep, this.T(Commit))
+		posStr = sep + this.Pos()
 	}
 
 	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
@@ -467,7 +467,7 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 // MARK: Function
 // ========================================================
 
-func (this *ElementChannel) GetFunction() *ElementFunc {
+func (this *ElementChannel) Function() *ElementFunc {
 	return this.function
 }
 
@@ -475,12 +475,12 @@ func (this *ElementChannel) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// SetVc sets the vector clock
+// Vc sets the vector clock
 //
 // Parameter:
 //   - weak bool: set the weak wv
 //   - cl *clock.VectorClock: the vector clock
-func (this *ElementChannel) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+func (this *ElementChannel) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
 	this.ci.setVC(weak, cl)
 }
 
@@ -495,7 +495,7 @@ func (this *ElementChannel) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 	return this.ci.getVC(weak)
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
 // Parameter:
@@ -504,7 +504,7 @@ func (this *ElementChannel) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementChannel) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementChannel) NumberConcurrent(weak, sameElem bool) int {
 	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
@@ -522,11 +522,11 @@ func (this *ElementChannel) SetNumberConcurrent(c int, weak, sameElem bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID returns the replay id of the element
+// ReplayID returns the replay id of the element
 //
 // Returns:
 //   - The replay id
-func (this *ElementChannel) GetReplayID() string {
+func (this *ElementChannel) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 
@@ -543,7 +543,7 @@ func (this *ElementChannel) GetReplayID() string {
 // Returns:
 //   - TraceElement: The copy of the element
 func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
-	id := this.GetID()
+	id := this.ID()
 	if existing, ok := mapping[id]; ok {
 		return existing
 	}
@@ -730,7 +730,7 @@ func (this *ElementChannel) SetOID(oID int) {
 // Returns:
 //   - *TraceElementChannel: The partner, -1 if not found
 func (this *ElementChannel) findPartner(tr *Trace) *ElementChannel {
-	id := this.GetObjId()
+	id := this.ObjID()
 	oID := this.GetOID()
 
 	// return -1 if closed by channel

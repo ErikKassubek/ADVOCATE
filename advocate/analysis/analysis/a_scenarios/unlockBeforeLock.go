@@ -33,7 +33,7 @@ func CheckForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if _, ok := a_base.AllLocks[id]; !ok {
 		a_base.AllLocks[id] = make([]trace.Element, 0)
@@ -50,7 +50,7 @@ func CheckForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if _, ok := a_base.AllLocks[id]; !ok {
 		a_base.AllUnlocks[id] = make([]trace.Element, 0)
@@ -122,32 +122,32 @@ func CheckForUnlockBeforeLock() {
 			args2 := []results.ResultElem{} // locks
 
 			for _, u := range unlockSorted {
-				if u.GetID() == 0 {
+				if u.ID() == 0 {
 					continue
 				}
 
 				args1 = append(args1, results.TraceElementResult{
-					RoutineID: u.GetRoutine(),
+					RoutineID: u.Routine(),
 					ObjID:     id,
-					TRequest:  u.GetT(trace.Request),
-					ObjType:   u.GetType(true),
-					File:      u.GetFile(),
-					Line:      u.GetLine(),
+					TRequest:  u.T(trace.Request),
+					ObjType:   u.Type(true),
+					File:      u.File(),
+					Line:      u.Line(),
 				})
 			}
 
 			for _, l := range locksSorted {
-				if l.GetID() == 0 {
+				if l.ID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
-					RoutineID: l.GetRoutine(),
+					RoutineID: l.Routine(),
 					ObjID:     id,
-					TRequest:  l.GetT(trace.Request),
-					ObjType:   l.GetType(true),
-					File:      l.GetFile(),
-					Line:      l.GetLine(),
+					TRequest:  l.T(trace.Request),
+					ObjType:   l.Type(true),
+					File:      l.File(),
+					Line:      l.Line(),
 				})
 			}
 

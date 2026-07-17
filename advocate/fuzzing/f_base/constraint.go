@@ -114,7 +114,7 @@ func (this *Constraint) ElemWithSmallestTPost() trace.Element {
 	var min trace.Element
 
 	for _, c := range this.Elems {
-		if min == nil || c.GetT(trace.Sorting) < min.GetT(trace.Sorting) {
+		if min == nil || c.T(trace.Sorting) < min.T(trace.Sorting) {
 			min = c
 		}
 	}
@@ -182,7 +182,7 @@ func (this *Constraint) Len() int {
 func (this *Constraint) ToString() string {
 	res := ""
 	for _, e := range this.Elems {
-		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
+		res += fmt.Sprintf("%d:%s", e.Routine(), e.Pos())
 		switch f := e.(type) {
 		case *trace.ElementSelect:
 			res += fmt.Sprintf("%d", f.GetChosenIndex())

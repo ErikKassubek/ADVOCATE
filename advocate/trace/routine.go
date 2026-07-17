@@ -133,7 +133,7 @@ func (this *Routine) removeAtIndex(index int) {
 
 func (this *Routine) shortenTime(time int) {
 	for index, elem := range this.elems {
-		if elem.GetT(Sorting) >= time {
+		if elem.T(Sorting) >= time {
 			this.shortenIndex(index)
 			break
 		}
@@ -142,8 +142,8 @@ func (this *Routine) shortenTime(time int) {
 
 func (this *Routine) shift(startTSort, shift int) {
 	for index, elem := range this.elems {
-		if elem.GetT(Request) >= startTSort {
-			this.elems[index].SetTWithoutNotExecuted(elem.GetT(Sorting) + shift)
+		if elem.T(Request) >= startTSort {
+			this.elems[index].SetTWithoutNotExecuted(elem.T(Sorting) + shift)
 		}
 	}
 }

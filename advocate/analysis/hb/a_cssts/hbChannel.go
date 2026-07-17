@@ -31,7 +31,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 		return
 	}
 
-	opC := ch.GetType(true)
+	opC := ch.Type(true)
 	cl := ch.GetClosed()
 
 	if ch.IsBuffered() {
@@ -46,7 +46,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 			}
 		case trace.ChannelClose:
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	} else { // unbuffered channel
@@ -70,7 +70,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 			}
 		case trace.ChannelClose:
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	}
@@ -85,7 +85,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(a_clock.Strong, se.GetVC(a_clock.Strong))
+		chosenCase.Vc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(chosenCase)
 	}
@@ -115,8 +115,8 @@ func Send(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetObjId()
-	routine := ch.GetRoutine()
+	id := ch.ObjID()
+	routine := ch.Routine()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -172,8 +172,8 @@ func Recv(ch *trace.ElementChannel) {
 		return
 	}
 
-	id := ch.GetObjId()
-	routine := ch.GetRoutine()
+	id := ch.ObjID()
+	routine := ch.Routine()
 	qSize := ch.GetQSize()
 
 	newBuffer(id, qSize)
@@ -205,7 +205,7 @@ func RecvC(ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	if _, ok := a_base.CloseData[id]; ok {
 		c := a_base.CloseData[id]

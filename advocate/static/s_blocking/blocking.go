@@ -69,7 +69,7 @@ func IsBlockingBug() {
 	for _, alloc := range blocked {
 		for _, a := range alloc {
 			f, s := data.Ssa().TraceToSSA(a)
-			log.Debug(a.GetObjId(), " # ", f.Name(), " # ", s.String())
+			log.Debug(a.ObjID(), " # ", f.Name(), " # ", s.String())
 		}
 	}
 

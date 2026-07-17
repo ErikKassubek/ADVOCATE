@@ -46,7 +46,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 
 	t1 := -1
 	for _, elem := range mut.Elems {
-		tPost := elem.GetT(trace.Commit)
+		tPost := elem.T(trace.Commit)
 		if t1 == -1 || tPost < t1 {
 			t1 = tPost
 		}
@@ -79,7 +79,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
 		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetT(trace.Commit))
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().T(trace.Commit))
 	}
 
 	traceCopy.Clear()
@@ -219,18 +219,18 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, p
 		posCounter[routPos]++
 		if _, ok := mutCounter[routPos]; ok { // is in chain
 			mutCounter[routPos] = posCounter[routPos]
-			mutTime[routPos] = elem.GetT(trace.Sorting)
+			mutTime[routPos] = elem.T(trace.Sorting)
 		}
 	}
 
 	for _, elem := range mut.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[routPos], mutCounter[routPos])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.Routine(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
 		f.WriteString(key)
 	}
 }
 
 func getRoutPos(elem trace.Element) string {
-	return fmt.Sprintf("%d:%s", elem.GetRoutine(), elem.GetPos())
+	return fmt.Sprintf("%d:%s", elem.Routine(), elem.Pos())
 }

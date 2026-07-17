@@ -22,7 +22,7 @@ import (
 // Parameter:
 //   - mu *trace.TraceElementMutex: the mutex trace element
 func UpdateHBMutex(mu *trace.ElementMutex) {
-	switch mu.GetType(true) {
+	switch mu.Type(true) {
 	case trace.MutexLock:
 		Lock(mu)
 	case trace.MutexRLock:
@@ -39,7 +39,7 @@ func UpdateHBMutex(mu *trace.ElementMutex) {
 	case trace.MutexRUnlock:
 		RUnlock(mu)
 	default:
-		err := "Unknown mutex operation: " + mu.ToString()
+		err := "Unknown mutex operation: " + mu.String()
 		log.Error(err)
 	}
 }
@@ -49,7 +49,7 @@ func UpdateHBMutex(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func Lock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if !mu.Committed() {
 		return
@@ -71,7 +71,7 @@ func Lock(mu *trace.ElementMutex) {
 // Returns:
 //   - *VectorClock: The new vector clock
 func RLock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if !mu.Committed() {
 		return
@@ -87,7 +87,7 @@ func RLock(mu *trace.ElementMutex) {
 // Parameter:
 //   - mu *TraceElementMutex: The trace element
 func RUnlock(mu *trace.ElementMutex) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if !mu.Committed() {
 		return

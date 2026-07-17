@@ -40,7 +40,7 @@ func CreateMutations() {
 				return
 			}
 
-			id := on.Elem.GetReplayID()
+			id := on.Elem.ReplayID()
 			if counts, ok := alreadyDelayedElems[id]; ok {
 				found := false
 				for _, count := range counts {

@@ -28,7 +28,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 		return
 	}
 
-	opC := ch.GetType(true)
+	opC := ch.Type(true)
 	cl := ch.GetClosed()
 
 	if ch.IsBuffered() {
@@ -44,7 +44,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 		case trace.ChannelClose:
 			Close(graph, ch)
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	} else { // unbuffered channel
@@ -69,7 +69,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 		case trace.ChannelClose:
 			Close(graph, ch)
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	}
@@ -86,7 +86,7 @@ func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(a_clock.Strong, se.GetVC(a_clock.Strong))
+		chosenCase.Vc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(graph, chosenCase, recorded)
 	}
@@ -124,7 +124,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -180,7 +180,7 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 	qSize := ch.GetQSize()
 
 	newBuffer(gr, id, qSize)
@@ -212,7 +212,7 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 		return
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	if graph != nil {
 		if _, ok := graph.closeData[id]; ok {
@@ -235,9 +235,9 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 func Close(graph *PoGraph, ch *trace.ElementChannel) {
 	// TODO: should there be an edge to all send/recv that where executed before the close?
 	if graph != nil {
-		graph.closeData[ch.GetObjId()] = ch
+		graph.closeData[ch.ObjID()] = ch
 	} else {
-		po.closeData[ch.GetObjId()] = ch
+		po.closeData[ch.ObjID()] = ch
 	}
 }
 

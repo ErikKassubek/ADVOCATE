@@ -117,11 +117,11 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementAlloc) GetID() int {
+func (this *ElementAlloc) ID() int {
 	return this.id
 }
 
@@ -133,11 +133,11 @@ func (this *ElementAlloc) setID(ID int) {
 	this.id = ID
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAlloc) GetObjId() int {
+func (this *ElementAlloc) ObjID() int {
 	return this.objId
 }
 
@@ -153,20 +153,20 @@ func (this *ElementAlloc) setObjId(id int) {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementAlloc) GetRoutine() int {
+func (this *ElementAlloc) Routine() int {
 	return this.routine
 }
 
-// GetTraceIndex returns trace local index of the element in the trace
+// TraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementAlloc) GetTraceIndex() (int, int) {
+func (this *ElementAlloc) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -174,14 +174,14 @@ func (this *ElementAlloc) GetTraceIndex() (int, int) {
 // MARK: Operation
 // ========================================================
 
-// GetType returns the object type
+// Type returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementAlloc) GetType(operation bool) OperationType {
+func (this *ElementAlloc) Type(operation bool) OperationType {
 	if !operation {
 		return New
 	}
@@ -193,11 +193,11 @@ func (this *ElementAlloc) GetType(operation bool) OperationType {
 // MARK: Timestamps
 // ========================================================
 
-// GetT returns the timestamp of the element
+// T returns the timestamp of the element
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementAlloc) GetT(_ timeType) int {
+func (this *ElementAlloc) T(_ timeType) int {
 	return this.t
 }
 
@@ -233,19 +233,19 @@ func (this *ElementAlloc) Committed() bool {
 // MARK: Position
 // ========================================================
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
 //   - string: The position of the element
-func (this *ElementAlloc) GetPos() string {
+func (this *ElementAlloc) Pos() string {
 	return this.pos.toString()
 }
 
-// GetFile returns the file where the operation represented by the element was executed
+// File returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - int: The file of the element
-func (this *ElementAlloc) GetFile() string {
+func (this *ElementAlloc) File() string {
 	return this.pos.file
 }
 
@@ -257,11 +257,11 @@ func (this *ElementAlloc) setFile(f string) {
 	this.pos.file = f
 }
 
-// GetLine returns the line where the operation represented by the element was executed
+// Line returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - int: The line of the element
-func (this *ElementAlloc) GetLine() int {
+func (this *ElementAlloc) Line() int {
 	return this.pos.line
 }
 
@@ -277,7 +277,7 @@ func (this *ElementAlloc) GetLine() int {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementAlloc) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.objId == elem.ObjID() && this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -289,26 +289,26 @@ func (this *ElementAlloc) IsEqual(elem Element) bool {
 // Returns:
 //   - bool: always false
 func (this *ElementAlloc) IsSameElement(elem Element) bool {
-	return this.objId == elem.GetObjId()
+	return this.objId == elem.ObjID()
 }
 
 // ========================================================
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementAlloc) ToString() string {
-	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.GetPos())
+func (this *ElementAlloc) String() string {
+	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos())
 }
 
 // ========================================================
 // MARK: Function
 // ========================================================
 
-func (this *ElementAlloc) GetFunction() *ElementFunc {
+func (this *ElementAlloc) Function() *ElementFunc {
 	return this.function
 }
 
@@ -316,12 +316,12 @@ func (this *ElementAlloc) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// SetVc sets the vector clock
+// Vc sets the vector clock
 //
 // Parameter:
 //   - weak bool: set the weak wv
 //   - cl *clock.VectorClock: the vector clock
-func (this *ElementAlloc) SetVc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+func (this *ElementAlloc) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
 	this.ci.setVC(weak, cl)
 }
 
@@ -336,7 +336,7 @@ func (this *ElementAlloc) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 	return this.ci.getVC(weak)
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
 //
 // Parameter:
@@ -345,7 +345,7 @@ func (this *ElementAlloc) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementAlloc) GetNumberConcurrent(weak, sameElem bool) int {
+func (this *ElementAlloc) NumberConcurrent(weak, sameElem bool) int {
 	return this.ci.GetNumberConcurrent(weak, sameElem)
 }
 
@@ -363,11 +363,11 @@ func (this *ElementAlloc) SetNumberConcurrent(c int, weak, sameElem bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID returns the replay ID of the element
+// ReplayID returns the replay ID of the element
 //
 // Returns:
 //   - int: The replayId of the element
-func (this *ElementAlloc) GetReplayID() string {
+func (this *ElementAlloc) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
 }
 

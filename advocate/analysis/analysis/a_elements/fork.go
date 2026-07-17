@@ -30,5 +30,5 @@ func AnalyzeFork(fo *trace.ElementFork) {
 	a_hbcalc.UpdateHBFork(fo)
 
 	// store fork operations for each routine
-	a_base.ForkOperations[fo.GetObjId()] = fo
+	a_base.ForkOperations[fo.ObjID()] = fo
 }

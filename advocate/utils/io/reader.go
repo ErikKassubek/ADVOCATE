@@ -78,7 +78,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 		numberRoutines++
 
 		if elemCounter > flags.MaxNumberElements {
-			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
+			return numberRoutines, elemCounter, fmt.Errorf("Too many elements")
 		}
 
 		if control.WasCanceled() {

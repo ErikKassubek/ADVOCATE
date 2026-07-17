@@ -80,7 +80,7 @@ func (this *Trace) Clear() {
 // Parameter:
 //   - elem TraceElement: Element to add
 func (this *Trace) AddElement(elem Element) {
-	routine := elem.GetRoutine()
+	routine := elem.Routine()
 
 	this.minTraceID++
 	elem.setID(this.minTraceID)
@@ -170,7 +170,7 @@ func (this *Trace) GetNotReturned(onlyNonBlocked bool) []int {
 			continue
 		}
 		last := rout.Last()
-		if last.GetType(false) != End && (!onlyNonBlocked || last.Committed()) {
+		if last.Type(false) != End && (!onlyNonBlocked || last.Committed()) {
 			res = append(res, id)
 		}
 	}
@@ -209,14 +209,14 @@ func (this *Trace) GetTraceElementFromBugArg(bugArg string) (Element, error) {
 	}
 
 	for index, elem := range this.routines[routine].elems {
-		if elem.GetT(Request) == tPre {
+		if elem.T(Request) == tPre {
 			return this.routines[routine].At(index), nil
 		}
 	}
 
 	for id, rout := range this.routines {
 		for index, elem := range rout.elems {
-			if elem.GetT(Request) == tPre {
+			if elem.T(Request) == tPre {
 				return this.routines[id].At(index), nil
 			}
 		}
@@ -311,8 +311,8 @@ func (this *Trace) GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 		for _, elem := range routine.elems {
 			switch e := elem.(type) {
 			case *ElementWait:
-				if e.GetObjId() == wgID {
-					if e.GetT(Request) < waitTime {
+				if e.ObjID() == wgID {
+					if e.T(Request) < waitTime {
 						delta := e.GetDelta()
 						if delta > 0 {
 							nrAdd++
@@ -348,7 +348,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 	}, 0)
 	for _, rout := range this.routines {
 		for _, elem := range rout.elems {
-			elemStr := elem.ToString()
+			elemStr := elem.String()
 			if len(ty) == 0 || types.Contains(ty, elemStr[0:1]) {
 				elements = append(elements, struct {
 					string
@@ -356,7 +356,7 @@ func (this *Trace) PrintTraceArgs(ty []string, clocks bool) {
 					thread int
 					vc     *a_clock.VectorClock
 					wVc    *a_clock.VectorClock
-				}{elemStr, elem.GetT(Commit), elem.GetRoutine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
+				}{elemStr, elem.T(Commit), elem.Routine(), elem.GetVC(a_clock.Strong), elem.GetVC(a_clock.Weak)})
 			}
 		}
 	}
@@ -451,7 +451,7 @@ func (this *Trace) GetAlloc(elem Element) []*ElementAlloc {
 
 	}
 
-	return []*ElementAlloc{this.allocs[elem.GetObjId()]}
+	return []*ElementAlloc{this.allocs[elem.ObjID()]}
 }
 
 // SetTSortAtIndex sets the tSort for an element given by its index
@@ -508,7 +508,7 @@ func (a sortByTSort) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
 
 // order function required for sorting
 func (a sortByTSort) Less(i, j int) bool {
-	return a[i].GetT(Sorting) < a[j].GetT(Sorting)
+	return a[i].T(Sorting) < a[j].T(Sorting)
 }
 
 // Sort each routine of the trace by tPost
@@ -530,11 +530,11 @@ func (this *Trace) Sort() {
 func (this *Trace) ShortenTrace(time int, incl bool) {
 	for id, rout := range this.routines {
 		for index, elem := range rout.elems {
-			if incl && elem.GetT(Sorting) > time {
+			if incl && elem.T(Sorting) > time {
 				this.routines[id].shortenIndex(index)
 				break
 			}
-			if !incl && elem.GetT(Sorting) >= time {
+			if !incl && elem.T(Sorting) >= time {
 				this.routines[id].shortenIndex(index)
 				break
 			}
@@ -549,7 +549,7 @@ func (this *Trace) ShortenTrace(time int, incl bool) {
 func (this *Trace) RemoveElementFromTrace(elem Element) {
 	for id, rout := range this.routines {
 		for index, e := range rout.elems {
-			if e.GetID() == elem.GetID() {
+			if e.ID() == elem.ID() {
 				this.routines[id].removeAtIndex(index)
 				break
 			}
@@ -594,8 +594,8 @@ func (this *Trace) ShiftTrace(startTPre int, shift int) bool {
 
 	for _, routine := range this.routines {
 		for index, elem := range routine.elems {
-			if elem.GetT(Request) >= startTPre {
-				routine.At(index).SetTWithoutNotExecuted(elem.GetT(Sorting) + shift)
+			if elem.T(Request) >= startTPre {
+				routine.At(index).SetTWithoutNotExecuted(elem.T(Sorting) + shift)
 			}
 		}
 	}
@@ -615,23 +615,23 @@ func (this *Trace) ShiftConcurrentOrAfterToAfter(element Element) {
 
 	for _, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetID() == element.GetID() {
+			if elem.ID() == element.ID() {
 				continue
 			}
 
 			if !(a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) == a_hb.Before) {
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetT(Request) < minTime {
-					minTime = elem.GetT(Request)
+				if minTime == -1 || elem.T(Request) < minTime {
+					minTime = elem.T(Request)
 				}
 			}
 		}
 	}
 
-	distance := element.GetT(Request) - minTime + 1
+	distance := element.T(Request) - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetT(Request)
+		tSort := elem.T(Request)
 		elem.SetT(Both, tSort+distance)
 	}
 }
@@ -651,22 +651,22 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 
 	for _, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetID() == element.GetID() {
+			if elem.ID() == element.ID() {
 				continue
 			}
 
 			if !(a_clock.GetHappensBefore(elem.GetVC(a_clock.Strong), element.GetVC(a_clock.Strong)) == a_hb.Before) {
-				if elem.GetT(Request) <= start {
+				if elem.T(Request) <= start {
 					continue
 				}
 
 				elemsToShift = append(elemsToShift, elem)
-				if minTime == -1 || elem.GetT(Request) < minTime {
-					minTime = elem.GetT(Request)
+				if minTime == -1 || elem.T(Request) < minTime {
+					minTime = elem.T(Request)
 				}
 			} else {
-				if maxNotMoved == 0 || elem.GetT(Request) > maxNotMoved {
-					maxNotMoved = elem.GetT(Request)
+				if maxNotMoved == 0 || elem.T(Request) > maxNotMoved {
+					maxNotMoved = elem.T(Request)
 				}
 			}
 		}
@@ -676,10 +676,10 @@ func (this *Trace) ShiftConcurrentOrAfterToAfterStartingFromElement(element Elem
 		element.SetT(Both, maxNotMoved+1)
 	}
 
-	distance := element.GetT(Request) - minTime + 1
+	distance := element.T(Request) - minTime + 1
 
 	for _, elem := range elemsToShift {
-		tSort := elem.GetT(Request)
+		tSort := elem.T(Request)
 		elem.SetT(Both, tSort+distance)
 	}
 
@@ -703,12 +703,12 @@ func (this *Trace) RemoveConcurrent(element Element, tMin int) {
 	for routine, rout := range this.routines {
 		result := make([]Element, 0)
 		for _, elem := range rout.elems {
-			if elem.GetT(Sorting) < tMin {
+			if elem.T(Sorting) < tMin {
 				result = append(result, elem)
 				continue
 			}
 
-			if elem.GetID() == element.GetID() {
+			if elem.ID() == element.ID() {
 				result = append(result, elem)
 				continue
 			}
@@ -730,12 +730,12 @@ func (this *Trace) RemoveConcurrentOrAfter(element Element, tMin int) {
 	for routine, rout := range this.routines {
 		result := make([]Element, 0)
 		for _, elem := range rout.elems {
-			if elem.GetT(Sorting) < tMin {
+			if elem.T(Sorting) < tMin {
 				result = append(result, elem)
 				continue
 			}
 
-			if elem.GetID() == element.GetID() {
+			if elem.ID() == element.ID() {
 				result = append(result, elem)
 				continue
 			}
@@ -759,7 +759,7 @@ func (this *Trace) GetConcurrentEarliest(element Element) map[int]Element {
 	concurrent := make(map[int]Element)
 	for routine, rout := range this.routines {
 		for _, elem := range rout.elems {
-			if elem.GetID() == element.GetID() {
+			if elem.ID() == element.ID() {
 				continue
 			}
 
@@ -780,7 +780,7 @@ func (this *Trace) RemoveLater(tPost int) {
 	for routine, rout := range this.routines {
 		newElems := make([]Element, 0)
 		for _, elem := range rout.elems {
-			if elem.GetT(Commit) > tPost {
+			if elem.T(Commit) > tPost {
 				newElems = append(newElems, elem.Copy(mapping, true))
 			}
 		}
@@ -824,7 +824,7 @@ func (this *Trace) GetPartialTrace(startTime int, endTime int) map[int][]Element
 			if _, ok := result[routine]; !ok {
 				result[routine] = make([]Element, 0)
 			}
-			time := elem.GetT(Sorting)
+			time := elem.T(Sorting)
 			if time >= startTime && time <= endTime {
 				result[routine] = append(result[routine], this.routines[routine].At(index))
 			}
@@ -926,12 +926,12 @@ func (this *Iterator) Next() Element {
 		}
 
 		// ignore non executed operations
-		tSort := rout.At(this.currentIndex[routine]).GetT(Sorting)
+		tSort := rout.At(this.currentIndex[routine]).T(Sorting)
 		if tSort == 0 || tSort == math.MaxInt {
 			continue
 		}
-		if minTSort == -1 || rout.At(this.currentIndex[routine]).GetT(Sorting) < minTSort {
-			minTSort = rout.At(this.currentIndex[routine]).GetT(Sorting)
+		if minTSort == -1 || rout.At(this.currentIndex[routine]).T(Sorting) < minTSort {
+			minTSort = rout.At(this.currentIndex[routine]).T(Sorting)
 			minRoutine = routine
 		}
 	}

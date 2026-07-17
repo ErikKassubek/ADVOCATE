@@ -21,11 +21,11 @@ import (
 // Parameter
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateHBCond(co *trace.ElementCond) {
-	routine := co.GetRoutine()
-	co.SetVc(a_clock.Strong, CurrentVC[routine])
-	co.SetVc(a_clock.Weak, CurrentWVC[routine])
+	routine := co.Routine()
+	co.Vc(a_clock.Strong, CurrentVC[routine])
+	co.Vc(a_clock.Weak, CurrentWVC[routine])
 
-	switch co.GetType(true) {
+	switch co.Type(true) {
 	case trace.CondWait:
 		CondWait(co)
 	case trace.CondSignal:
@@ -40,7 +40,7 @@ func UpdateHBCond(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondWait(co *trace.ElementCond) {
-	routine := co.GetRoutine()
+	routine := co.Routine()
 
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
@@ -51,12 +51,12 @@ func CondWait(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondSignal(co *trace.ElementCond) {
-	id := co.GetObjId()
-	routine := co.GetRoutine()
+	id := co.ObjID()
+	routine := co.Routine()
 
 	if len(a_base.CurrentlyWaiting[id]) != 0 {
 		tWait := a_base.CurrentlyWaiting[id][0]
-		CurrentVC[tWait.GetRoutine()].Sync(CurrentVC[routine])
+		CurrentVC[tWait.Routine()].Sync(CurrentVC[routine])
 	}
 
 	CurrentVC[routine].Inc(routine)
@@ -68,11 +68,11 @@ func CondSignal(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(co *trace.ElementCond) {
-	id := co.GetObjId()
-	routine := co.GetRoutine()
+	id := co.ObjID()
+	routine := co.Routine()
 
 	for _, wait := range a_base.CurrentlyWaiting[id] {
-		CurrentVC[wait.GetRoutine()].Sync(CurrentVC[routine])
+		CurrentVC[wait.Routine()].Sync(CurrentVC[routine])
 	}
 
 	CurrentVC[routine].Inc(routine)

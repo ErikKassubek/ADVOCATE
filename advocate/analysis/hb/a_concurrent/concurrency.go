@@ -54,12 +54,12 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 			switch a := e.(type) {
 			case *trace.ElementSelect:
 				for _, c := range a.GetCases() {
-					if elem.GetObjId() == c.GetObjId() {
+					if elem.ObjID() == c.ObjID() {
 						res = append(res, e)
 					}
 				}
 			default:
-				if e.GetObjId() == elem.GetObjId() {
+				if e.ObjID() == elem.ObjID() {
 					res = append(res, e)
 				}
 			}
@@ -82,7 +82,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 // Returns:
 //   - int: number of elements that are concurrent to the element
 func GetNumberConcurrent(elem trace.Element, sameElem, sameType, weak bool) int {
-	m := elem.GetNumberConcurrent(weak, sameElem)
+	m := elem.NumberConcurrent(weak, sameElem)
 	if m != -1 {
 		return m
 	}

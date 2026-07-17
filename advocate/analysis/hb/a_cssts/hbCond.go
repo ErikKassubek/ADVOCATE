@@ -20,7 +20,7 @@ import (
 // Parameter
 //   - co *trace.TraceElementCond: the conditional trace operation
 func UpdateHBCond(co *trace.ElementCond) {
-	switch co.GetType(true) {
+	switch co.Type(true) {
 	case trace.CondWait:
 		// wait does not add any edge
 	case trace.CondSignal:
@@ -35,7 +35,7 @@ func UpdateHBCond(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondSignal(co *trace.ElementCond) {
-	id := co.GetObjId()
+	id := co.ObjID()
 
 	if len(a_base.CurrentlyWaiting[id]) != 0 {
 		tWait := a_base.CurrentlyWaiting[id][0]
@@ -48,7 +48,7 @@ func CondSignal(co *trace.ElementCond) {
 // Parameter:
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(co *trace.ElementCond) {
-	id := co.GetObjId()
+	id := co.ObjID()
 	for _, wait := range a_base.CurrentlyWaiting[id] {
 		AddEdge(co, wait, false)
 	}

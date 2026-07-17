@@ -172,9 +172,9 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 			RoutineID: r,
 			ObjID:     -1,
 			TRequest:  -1,
-			ObjType:   elem.GetType(true),
-			File:      elem.GetFile(),
-			Line:      elem.GetLine(),
+			ObjType:   elem.Type(true),
+			File:      elem.File(),
+			Line:      elem.Line(),
 		}
 
 		obj = append(obj, objRes)
@@ -199,11 +199,11 @@ func reportLeak(l []int) {
 
 		objRes := results.TraceElementResult{
 			RoutineID: routID,
-			ObjID:     last.GetObjId(),
-			TRequest:  last.GetT(trace.Request),
-			ObjType:   last.GetType(true),
-			File:      last.GetFile(),
-			Line:      last.GetLine(),
+			ObjID:     last.ObjID(),
+			TRequest:  last.T(trace.Request),
+			ObjType:   last.Type(true),
+			File:      last.File(),
+			Line:      last.Line(),
 		}
 
 		leakType := helper.LUnknown
@@ -211,7 +211,7 @@ func reportLeak(l []int) {
 		if last != nil && last.Committed() {
 			switch last.(type) {
 			case *trace.ElementChannel:
-				if last.GetObjId() == 0 {
+				if last.ObjID() == 0 {
 					leakType = helper.LNilChan
 				} else {
 					leakType = helper.LChan

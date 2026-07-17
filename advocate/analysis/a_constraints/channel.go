@@ -24,7 +24,7 @@ func AddChannel(elem *trace.ElementChannel) {
 		return
 	}
 
-	if elem.GetType(true) == trace.ChannelRecv {
+	if elem.Type(true) == trace.ChannelRecv {
 		p := elem.GetPartner()
 		AddConstraint(true, p, elem)
 	}

@@ -103,7 +103,7 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op Ope
 // MARK: ID
 // ========================================================
 
-func (this *ElementFunc) GetID() int {
+func (this *ElementFunc) ID() int {
 	return this.id
 }
 
@@ -111,7 +111,7 @@ func (this *ElementFunc) setID(ID int) {
 	this.id = ID
 }
 
-func (this *ElementFunc) GetObjId() int {
+func (this *ElementFunc) ObjID() int {
 	return -1
 }
 
@@ -119,7 +119,7 @@ func (this *ElementFunc) GetObjId() int {
 // MARK: Timestamps
 // ========================================================
 
-func (this *ElementFunc) GetT(_ timeType) int {
+func (this *ElementFunc) T(_ timeType) int {
 	return this.t
 }
 
@@ -143,15 +143,15 @@ func (this *ElementFunc) Committed() bool {
 // MARK: Position
 // ========================================================
 
-func (this *ElementFunc) GetPos() string {
+func (this *ElementFunc) Pos() string {
 	return this.posCall.toString()
 }
 
-func (this *ElementFunc) GetFile() string {
+func (this *ElementFunc) File() string {
 	return this.posCall.file
 }
 
-func (this *ElementFunc) GetLine() int {
+func (this *ElementFunc) Line() int {
 	return this.posCall.line
 }
 
@@ -163,11 +163,11 @@ func (this *ElementFunc) GetPosDef() string {
 // MARK: Index
 // ========================================================
 
-func (this *ElementFunc) GetRoutine() int {
+func (this *ElementFunc) Routine() int {
 	return this.routine
 }
 
-func (this *ElementFunc) GetTraceIndex() (int, int) {
+func (this *ElementFunc) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -175,7 +175,7 @@ func (this *ElementFunc) GetTraceIndex() (int, int) {
 // MARK: Operation
 // ========================================================
 
-func (this *ElementFunc) GetType(operation bool) OperationType {
+func (this *ElementFunc) Type(operation bool) OperationType {
 	if operation {
 		return FuncCall
 	}
@@ -188,7 +188,7 @@ func (this *ElementFunc) GetType(operation bool) OperationType {
 // ========================================================
 
 func (this *ElementFunc) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.id == elem.ID()
 }
 
 func (this *ElementFunc) IsSameElement(elem Element) bool {
@@ -204,15 +204,15 @@ func (this *ElementFunc) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-func (this *ElementFunc) ToString() string {
-	return fmt.Sprint("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.GetPos())
+func (this *ElementFunc) String() string {
+	return fmt.Sprint("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.Pos())
 }
 
 // ========================================================
 // MARK: VC
 // ========================================================
 
-func (this *ElementFunc) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
+func (this *ElementFunc) Vc(_ a_clock.VcType, _ *a_clock.VectorClock) {
 }
 
 func (this *ElementFunc) GetVC(a_clock.VcType) *a_clock.VectorClock {
@@ -223,7 +223,7 @@ func (this *ElementFunc) GetVC(a_clock.VcType) *a_clock.VectorClock {
 // MARK: Function
 // ========================================================
 
-func (this *ElementFunc) GetFunction() *ElementFunc {
+func (this *ElementFunc) Function() *ElementFunc {
 	return this.function
 }
 
@@ -231,7 +231,7 @@ func (this *ElementFunc) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-func (this *ElementFunc) GetNumberConcurrent(_, _ bool) int {
+func (this *ElementFunc) NumberConcurrent(_, _ bool) int {
 	return 0
 }
 
@@ -242,7 +242,7 @@ func (this *ElementFunc) SetNumberConcurrent(_ int, _, _ bool) {
 // MARK: Replay
 // ========================================================
 
-func (this *ElementFunc) GetReplayID() string {
+func (this *ElementFunc) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, this.posCall.file, this.posCall.line)
 }
 
@@ -251,7 +251,7 @@ func (this *ElementFunc) GetReplayID() string {
 // ========================================================
 
 func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
-	id := this.GetID()
+	id := this.ID()
 
 	if existing, ok := mapping[id]; ok {
 		return existing

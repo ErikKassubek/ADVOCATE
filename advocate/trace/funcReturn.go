@@ -67,7 +67,7 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 // MARK: ID
 // ========================================================
 
-func (this *ElementReturn) GetID() int {
+func (this *ElementReturn) ID() int {
 	return this.id
 }
 
@@ -75,7 +75,7 @@ func (this *ElementReturn) setID(ID int) {
 	this.id = ID
 }
 
-func (this *ElementReturn) GetObjId() int {
+func (this *ElementReturn) ObjID() int {
 	return -1
 }
 
@@ -83,7 +83,7 @@ func (this *ElementReturn) GetObjId() int {
 // MARK: Timestamps
 // ========================================================
 
-func (this *ElementReturn) GetT(_ timeType) int {
+func (this *ElementReturn) T(_ timeType) int {
 	return this.t
 }
 
@@ -107,15 +107,15 @@ func (this *ElementReturn) Committed() bool {
 // MARK: Position
 // ========================================================
 
-func (this *ElementReturn) GetPos() string {
+func (this *ElementReturn) Pos() string {
 	return ""
 }
 
-func (this *ElementReturn) GetFile() string {
+func (this *ElementReturn) File() string {
 	return ""
 }
 
-func (this *ElementReturn) GetLine() int {
+func (this *ElementReturn) Line() int {
 	return -1
 }
 
@@ -123,11 +123,11 @@ func (this *ElementReturn) GetLine() int {
 // MARK: Index
 // ========================================================
 
-func (this *ElementReturn) GetRoutine() int {
+func (this *ElementReturn) Routine() int {
 	return this.routine
 }
 
-func (this *ElementReturn) GetTraceIndex() (int, int) {
+func (this *ElementReturn) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -135,7 +135,7 @@ func (this *ElementReturn) GetTraceIndex() (int, int) {
 // MARK: Operation
 // ========================================================
 
-func (this *ElementReturn) GetType(operation bool) OperationType {
+func (this *ElementReturn) Type(operation bool) OperationType {
 	if operation {
 		return FuncReturn
 	}
@@ -148,7 +148,7 @@ func (this *ElementReturn) GetType(operation bool) OperationType {
 // ========================================================
 
 func (this *ElementReturn) IsEqual(elem Element) bool { // TODO: fix
-	return this.id == elem.GetID()
+	return this.id == elem.ID()
 }
 
 func (this *ElementReturn) IsSameElement(elem Element) bool {
@@ -164,7 +164,7 @@ func (this *ElementReturn) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-func (this *ElementReturn) ToString() string {
+func (this *ElementReturn) String() string {
 	return fmt.Sprintf("R,%d", this.t)
 }
 
@@ -172,7 +172,7 @@ func (this *ElementReturn) ToString() string {
 // MARK: VC
 // ========================================================
 
-func (this *ElementReturn) SetVc(_ a_clock.VcType, _ *a_clock.VectorClock) {
+func (this *ElementReturn) Vc(_ a_clock.VcType, _ *a_clock.VectorClock) {
 }
 
 func (this *ElementReturn) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
@@ -183,7 +183,7 @@ func (this *ElementReturn) GetVC(_ a_clock.VcType) *a_clock.VectorClock {
 // MARK: Function
 // ========================================================
 
-func (this *ElementReturn) GetFunction() *ElementFunc {
+func (this *ElementReturn) Function() *ElementFunc {
 	return this.function
 }
 
@@ -191,7 +191,7 @@ func (this *ElementReturn) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-func (this *ElementReturn) GetNumberConcurrent(_, _ bool) int {
+func (this *ElementReturn) NumberConcurrent(_, _ bool) int {
 	return 0
 }
 
@@ -202,7 +202,7 @@ func (this *ElementReturn) SetNumberConcurrent(_ int, _, _ bool) {
 // MARK: Replay
 // ========================================================
 
-func (this *ElementReturn) GetReplayID() string {
+func (this *ElementReturn) ReplayID() string {
 	return fmt.Sprintf("%d:%s:%d", this.routine, "", -1)
 }
 

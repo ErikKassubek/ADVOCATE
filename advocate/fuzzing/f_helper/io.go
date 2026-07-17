@@ -136,18 +136,18 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *f_base.Constr
 		posCounter[routPos]++
 		if _, ok := mutCounter[routPos]; ok { // is in chain
 			mutCounter[routPos] = posCounter[routPos]
-			mutTime[routPos] = elem.GetT(trace.Sorting)
+			mutTime[routPos] = elem.T(trace.Sorting)
 		}
 	}
 
 	for _, elem := range mut.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[routPos], mutCounter[routPos])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.Routine(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
 		f.WriteString(key)
 	}
 }
 
 func getRoutPos(elem trace.Element) string {
-	return fmt.Sprintf("%d:%s", elem.GetRoutine(), elem.GetPos())
+	return fmt.Sprintf("%d:%s", elem.Routine(), elem.Pos())
 }

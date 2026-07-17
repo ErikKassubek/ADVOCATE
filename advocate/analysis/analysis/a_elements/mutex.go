@@ -31,10 +31,10 @@ import (
 func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	a_hbcalc.UpdateHBMutex(mu, alt)
 
-	routine := mu.GetRoutine()
-	id := mu.GetObjId()
+	routine := mu.Routine()
+	id := mu.ObjID()
 
-	switch mu.GetType(true) {
+	switch mu.Type(true) {
 
 	// --------- WRITE LOCK ---------
 	case trace.MutexLock:
@@ -108,6 +108,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		}
 
 	default:
-		log.Error("Unknown mutex operation: " + mu.ToString())
+		log.Error("Unknown mutex operation: " + mu.String())
 	}
 }

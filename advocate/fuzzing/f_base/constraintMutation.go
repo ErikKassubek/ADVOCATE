@@ -269,7 +269,7 @@ func (this *Constraint) MutSelect() map[string]Constraint {
 	res := make(map[string]Constraint)
 
 	for i, elem := range this.Elems {
-		if elem.GetType(false) != trace.Select {
+		if elem.Type(false) != trace.Select {
 			continue
 		}
 
@@ -312,7 +312,7 @@ func (this *Constraint) MutSelect() map[string]Constraint {
 // Returns:
 //   - true if it can be added to a scheduling chain, false otherwise
 func CanBeAddedToConstraint(elem trace.Element) bool {
-	t := elem.GetType(false)
+	t := elem.Type(false)
 	if flags.FuzzingMode == GoPie {
 		// for standard GoPie, only mutex, channel and select operations are considered
 		return t == trace.Mutex || t == trace.Channel || t == trace.Select
@@ -335,7 +335,7 @@ func Quality(elem trace.Element) float64 {
 	w2 := 0.3
 	w3 := 0.5
 
-	numberOps, _ := a_base.GetOpsPerID(elem.GetObjId())
+	numberOps, _ := a_base.GetOpsPerID(elem.ObjID())
 	numberConcurrentTotal := a_concurrent.GetNumberConcurrent(elem, false, false, true)
 	numberConcurrentSame := a_concurrent.GetNumberConcurrent(elem, true, false, true)
 

@@ -21,6 +21,6 @@ import "advocate/trace"
 // Returns:
 //   - bool: true if the element is valid, false otherwise
 func Valid(elem trace.Element) bool {
-	t := elem.GetType(false)
+	t := elem.Type(false)
 	return !(t == trace.Replay || t == trace.New || t == trace.End)
 }

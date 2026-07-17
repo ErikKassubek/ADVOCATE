@@ -111,15 +111,15 @@ func ParseTrace(tr *trace.Trace) {
 // Add the corresponding info into FuzzingChannel
 func parseNew(elem *trace.ElementAlloc) {
 	// only process channels
-	if elem.GetType(true) != trace.NewChannel {
-		log.Important("Unexpected new on: ", elem.GetType(true))
+	if elem.Type(true) != trace.NewChannel {
+		log.Important("Unexpected new on: ", elem.Type(true))
 		return
 	}
 
 	if f_base.FuzzingModeGFuzz {
 		fuzzingElem := f_gfuzz.FuzzingChannel{
-			GlobalID:  elem.GetPos(),
-			LocalID:   elem.GetObjId(),
+			GlobalID:  elem.Pos(),
+			LocalID:   elem.ObjID(),
 			CloseInfo: f_gfuzz.Never,
 			QSize:     elem.GetNum(),
 			MaxQCount: 0,
@@ -137,14 +137,14 @@ func parseNew(elem *trace.ElementAlloc) {
 func parseChannelOp(elem *trace.ElementChannel, selID int) {
 
 	if f_base.FuzzingModeGFuzz {
-		op := elem.GetType(true)
+		op := elem.Type(true)
 
 		// close -> update channelInfoTrace
 		switch op {
 		case trace.ChannelClose:
-			e := f_gfuzz.ChannelInfoTrace[elem.GetObjId()]
+			e := f_gfuzz.ChannelInfoTrace[elem.ObjID()]
 			e.CloseInfo = f_gfuzz.Always // before is always unknown
-			f_gfuzz.ChannelInfoTrace[elem.GetObjId()] = e
+			f_gfuzz.ChannelInfoTrace[elem.ObjID()] = e
 			f_gfuzz.NumberClose++
 		case trace.ChannelSend:
 			if !elem.Committed() {
@@ -152,11 +152,11 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			}
 
 			recv := elem.GetPartner()
-			chanID := elem.GetObjId()
+			chanID := elem.ObjID()
 
 			if recv != nil {
-				sendPos := elem.GetPos()
-				recvPos := recv.GetPos()
+				sendPos := elem.Pos()
+				recvPos := recv.Pos()
 				key := sendPos + "-" + recvPos
 
 				// if receive is a select case

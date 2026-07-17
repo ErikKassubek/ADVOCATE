@@ -72,8 +72,8 @@ func SameRoutine(elems ...[]Element) bool {
 	for _, elem := range elems {
 		for i, e := range elem {
 			if _, ok := ids[i]; !ok {
-				ids[i] = e.GetRoutine()
-			} else if ids[i] != e.GetRoutine() {
+				ids[i] = e.Routine()
+			} else if ids[i] != e.Routine() {
 				return false
 			}
 		}

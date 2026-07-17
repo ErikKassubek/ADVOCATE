@@ -23,7 +23,7 @@ func AnalyzeOnce(on *trace.ElementOnce) {
 	a_hbcalc.UpdateHBOnce(on)
 
 	if on.GetSuc() {
-		id := on.GetObjId()
+		id := on.ObjID()
 		a_base.OSuc[id] = on
 	}
 }

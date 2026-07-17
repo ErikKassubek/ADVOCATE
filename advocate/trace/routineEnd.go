@@ -68,11 +68,11 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 // MARK: ID
 // ========================================================
 
-// GetID returns the trace id
+// ID returns the trace id
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementRoutineEnd) GetID() int {
+func (this *ElementRoutineEnd) ID() int {
 	return this.id
 }
 
@@ -84,11 +84,11 @@ func (this *ElementRoutineEnd) setID(ID int) {
 	this.id = ID
 }
 
-// GetObjId is a dummy function to implement the traceElement interface
+// ObjID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) GetObjId() int {
+func (this *ElementRoutineEnd) ObjID() int {
 	return 0
 }
 
@@ -100,7 +100,7 @@ func (this *ElementRoutineEnd) GetObjId() int {
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementRoutineEnd) GetT(_ timeType) int {
+func (this *ElementRoutineEnd) T(_ timeType) int {
 	return this.t
 }
 
@@ -136,27 +136,27 @@ func (this *ElementRoutineEnd) Committed() bool {
 // MARK: Position
 // ========================================================
 
-// GetPos is a dummy function to implement the traceElement interface
+// Pos is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
-func (this *ElementRoutineEnd) GetPos() string {
+func (this *ElementRoutineEnd) Pos() string {
 	return ""
 }
 
-// GetFile is a dummy function to implement the traceElement interface
+// File is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
-func (this *ElementRoutineEnd) GetFile() string {
+func (this *ElementRoutineEnd) File() string {
 	return ""
 }
 
-// GetLine is a dummy function to implement the traceElement interface
+// Line is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - int: 0
-func (this *ElementRoutineEnd) GetLine() int {
+func (this *ElementRoutineEnd) Line() int {
 	return 0
 }
 
@@ -164,20 +164,20 @@ func (this *ElementRoutineEnd) GetLine() int {
 // MARK: Index
 // ========================================================
 
-// GetRoutine returns the routine ID of the element.
+// Routine returns the routine ID of the element.
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementRoutineEnd) GetRoutine() int {
+func (this *ElementRoutineEnd) Routine() int {
 	return this.routine
 }
 
-// GetTraceIndex returns trace local index of the element in the trace
+// TraceIndex returns trace local index of the element in the trace
 //
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementRoutineEnd) GetTraceIndex() (int, int) {
+func (this *ElementRoutineEnd) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -185,14 +185,14 @@ func (this *ElementRoutineEnd) GetTraceIndex() (int, int) {
 // MARK: Operation
 // ========================================================
 
-// GetType returns the object type
+// Type returns the object type
 //
 // Parameter:
 //   - operation bool: if true get the operation code, otherwise only the primitive code
 //
 // Returns:
 //   - string: the object type
-func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
+func (this *ElementRoutineEnd) Type(operation bool) OperationType {
 	if !operation {
 		return End
 	}
@@ -211,7 +211,7 @@ func (this *ElementRoutineEnd) GetType(operation bool) OperationType {
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
 func (this *ElementRoutineEnd) IsEqual(elem Element) bool {
-	return this.id == elem.GetID()
+	return this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -230,11 +230,11 @@ func (this *ElementRoutineEnd) IsSameElement(elem Element) bool {
 // MARK: String
 // ========================================================
 
-// ToString returns the simple string representation of the element
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementRoutineEnd) ToString() string {
+func (this *ElementRoutineEnd) String() string {
 	return "E" + "," + strconv.Itoa(this.t)
 }
 
@@ -242,7 +242,7 @@ func (this *ElementRoutineEnd) ToString() string {
 // MARK: Function
 // ========================================================
 
-func (this *ElementRoutineEnd) GetFunction() *ElementFunc {
+func (this *ElementRoutineEnd) Function() *ElementFunc {
 	return nil
 }
 
@@ -250,12 +250,12 @@ func (this *ElementRoutineEnd) GetFunction() *ElementFunc {
 // MARK: Concurrent
 // ========================================================
 
-// SetVc sets the vector clock
+// Vc sets the vector clock
 //
 // Parameter:
 //   - weak bool
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementRoutineEnd) SetVc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+func (this *ElementRoutineEnd) Vc(weak a_clock.VcType, vc *a_clock.VectorClock) {
 	this.ci.setVC(weak, vc)
 }
 
@@ -270,9 +270,9 @@ func (this *ElementRoutineEnd) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 	return this.ci.getVC(weak)
 }
 
-// GetNumberConcurrent returns the number of elements concurrent to the element
+// NumberConcurrent returns the number of elements concurrent to the element
 // If not set, it returns -1
-func (this *ElementRoutineEnd) GetNumberConcurrent(_, _ bool) int {
+func (this *ElementRoutineEnd) NumberConcurrent(_, _ bool) int {
 	return -1
 }
 
@@ -292,11 +292,11 @@ func (this *ElementRoutineEnd) SetConcurrent(_ []Element, _, _ bool) {
 // MARK: Replay
 // ========================================================
 
-// GetReplayID is a dummy function to implement the traceElement interface
+// ReplayID is a dummy function to implement the traceElement interface
 //
 // Returns:
 //   - string: empty string
-func (this *ElementRoutineEnd) GetReplayID() string {
+func (this *ElementRoutineEnd) ReplayID() string {
 	return ""
 }
 

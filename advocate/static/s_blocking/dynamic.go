@@ -12,41 +12,56 @@ package s_blocking
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 )
 
 // getBlockedResources returns the resources of which at least one routine is blocking
-func getBlockedResources() map[trace.Resource][]*trace.ElementAlloc {
-	tr := &a_base.MainTrace
+//
+// Returns:
+//   - map[trace.Resource]*trace.ElementAlloc: slice of map from blocked resource to alloc of resource.
+func getBlockedResources() map[trace.Resource]*trace.ElementAlloc {
+	res := make(map[trace.Resource]*trace.ElementAlloc)
 
-	res := make(map[trace.Resource][]*trace.ElementAlloc)
+	for _, e := range a_base.MainTrace.GetBlocked() {
+		switch s := e.(type) {
+		case *trace.ElementSelect:
+			ca := s.GetCases()
+			for _, ch := range ca {
+				addAlloc(ch, res)
+			}
+		default:
+			addAlloc(e, res)
+		}
 
-	for _, e := range tr.GetBlocked() {
-		ob := e.ObjID()
-		alloc := tr.GetAlloc(e)
-		res[trace.NewResource(ob)] = alloc
 	}
 
 	return res
 }
 
-// activeRoutines returns the active, i.e. not terminated routines and the resources they can access
-//
-// Parameter:
-//   - res []resource: the relevant resources
-// func activeRoutines(res map[trace.Resource]struct{}) map[int][]trace.Resource {
-// 	tr := &a_base.MainTrace
+func addAlloc(e trace.Element, res map[trace.Resource]*trace.ElementAlloc) {
+	ob := e.ObjID()
 
-// 	for rout, _ := range tr.GetTraces() {
-// 		lastElem := tr.GetLastElemInRout(rout)
+	r := trace.NewResource(ob)
 
-// 		switch lastElem.(type) {
-// 		case *trace.ElementRoutineEnd:
-// 		default:
-// 			continue
-// 		}
+	if _, ok := res[r]; ok {
+		return
+	}
 
-// 	}
+	alloc := a_base.MainTrace.GetAlloc(e)
+	res[r] = alloc
+}
 
-// 	return
-// }
+func buildFuncCallToSSAFunc() {
+	funcCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
+
+	for f := range a_base.MainTrace.CallTree().GetTree() {
+		fn := getSSAFuncFromName(f.GetSSAName())
+		if fn == nil {
+			log.Errorf("Could not find ssa function for %s", f.GetSSAName())
+			continue
+		}
+		funcCallToSSAFunc[f] = fn
+	}
+}

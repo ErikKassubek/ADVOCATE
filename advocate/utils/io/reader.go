@@ -49,6 +49,10 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 
 	tr := trace.NewTrace()
 
+	if err != nil {
+		log.Error(err)
+	}
+
 	elemCounter := 0
 	for _, file := range files {
 		if file.IsDir() {
@@ -283,7 +287,7 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		if len(fields) != 5 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
 		}
-		err = tr.AddTaceElementFunc(routine, fields[1], fields[2], trace.FuncCall, fields[3], fields[4])
+		err = tr.AddTaceElementFunc(routine, fields[1], fields[2], fields[3], fields[4])
 	case "R":
 		if len(fields) != 2 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))

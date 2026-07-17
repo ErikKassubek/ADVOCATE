@@ -12,6 +12,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
+	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
@@ -78,6 +79,11 @@ func (this *Trace) AddTraceElementFork(routine int, tPost string, id string, pos
 		ci:       newConcInfo(),
 		function: getLastCall(routine),
 	}
+
+	if _, ok := lastCall[idInt]; !ok {
+		lastCall[idInt] = types.NewStack[*ElementFunc]()
+	}
+	lastCall[idInt].Push(getLastCall(routine))
 
 	this.AddElement(&elem)
 	return nil

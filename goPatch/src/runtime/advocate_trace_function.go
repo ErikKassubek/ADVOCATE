@@ -42,12 +42,10 @@ type AdvocateTraceFunctionReturn struct {
 
 // AdvocateFunctionCall adds a function stall to the trace
 func advocateFunctionCall() {
-	// println("A")
 	if AdvocateTracingDisabled {
 		return
 	}
 
-	// move to slow required because advocateFunctionCall is handled in the compiler
 	timer := GetNextTimeStep()
 
 	_, fileCall, lineCall, _ := Caller(2)
@@ -72,6 +70,29 @@ func advocateFunctionCall() {
 		lineCall: lineCall,
 		fileDef:  fileDef,
 		lineDef:  lineDef,
+	}
+
+	insertIntoTrace(elem)
+}
+
+func advocateFunctionCallMain() {
+	if AdvocateTracingDisabled {
+		return
+	}
+
+	timer := GetNextTimeStep()
+
+	_, file, line, _ := Caller(3)
+
+	funcName := "main.main"
+
+	elem := AdvocateTraceFunctionStart{
+		t:        timer,
+		name:     funcName,
+		fileCall: file,
+		lineCall: line,
+		fileDef:  file,
+		lineDef:  line - 2, // main def is two lines above header
 	}
 
 	insertIntoTrace(elem)

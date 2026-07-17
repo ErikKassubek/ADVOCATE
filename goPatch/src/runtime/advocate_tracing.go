@@ -30,6 +30,9 @@ func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool
 	if tracingStartNano == 0 {
 		tracingStartNano = nanotime()
 	}
+
+	// record call of main function
+	advocateFunctionCallMain()
 }
 
 // DisableTracing disables the trace recording

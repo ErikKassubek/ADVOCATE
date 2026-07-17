@@ -37,6 +37,8 @@ import (
 //   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
 //   - blocked map[resource][]int: routines which are blocked and the objects that block it
 //   - forks: for each routine store the fork that created it
+//   - allocs: resources and allocs
+//   - callGraph: call graph
 type Trace struct {
 	routines              map[int]*Routine
 	hbWasCalc             bool
@@ -46,6 +48,7 @@ type Trace struct {
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
 	allocs                map[int]*ElementAlloc
+	callTree              CallTree
 }
 
 // NewTrace creates a new empty trace structure
@@ -61,6 +64,7 @@ func NewTrace() Trace {
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
 		allocs:                make(map[int]*ElementAlloc),
+		callTree:              *newCallGraph(),
 	}
 }
 
@@ -73,6 +77,7 @@ func (this *Trace) Clear() {
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
 	this.allocs = make(map[int]*ElementAlloc)
+	this.callTree = *newCallGraph()
 }
 
 // AddElement adds an element to the trace
@@ -428,30 +433,16 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 // GetAlloc returns the alloc of an element.
 // For an alloc the element is returned.
 // For elements without alloc, nil is returned
-func (this *Trace) GetAlloc(elem Element) []*ElementAlloc {
+// Elem must not be select
+func (this *Trace) GetAlloc(elem Element) *ElementAlloc {
 	switch e := elem.(type) {
 	case *ElementAlloc:
-		return []*ElementAlloc{e}
+		return e
 	case *ElementSelect:
-		resMap := make(map[*ElementAlloc]struct{})
-		for _, c := range e.GetCases() {
-			alloc := this.GetAlloc(c)
-			for _, a := range alloc {
-				resMap[a] = struct{}{}
-			}
-		}
-
-		res := make([]*ElementAlloc, len(resMap))
-		i := 0
-		for a := range resMap {
-			res[i] = a
-			i++
-		}
-		return res
-
+		panic("Select in get alloc")
 	}
 
-	return []*ElementAlloc{this.allocs[elem.ObjID()]}
+	return this.allocs[elem.ObjID()]
 }
 
 // SetTSortAtIndex sets the tSort for an element given by its index
@@ -462,6 +453,10 @@ func (this *Trace) GetAlloc(elem Element) []*ElementAlloc {
 //   - index int: the index of the element in its routine
 func (this *Trace) SetTSortAtIndex(tPost, routine, index int) {
 	this.routines[routine].SetTSortAtIndex(tPost, index)
+}
+
+func (this *Trace) CallTree() *CallTree {
+	return &this.callTree
 }
 
 // ========================================================
@@ -978,4 +973,56 @@ func (this *Iterator) IncreaseIndex(routine int) {
 	if this.currentIndex[routine] >= this.t.routines[routine].Len() {
 		this.currentIndex[routine] = -1
 	}
+}
+
+// ========================================================
+// MARK: CallTree
+// ========================================================
+
+type CallTree struct {
+	tree map[*ElementFunc][]*ElementFunc
+	root *ElementFunc
+}
+
+func newCallGraph() *CallTree {
+	return &CallTree{
+		tree: make(map[*ElementFunc][]*ElementFunc),
+		root: nil,
+	}
+}
+
+func (this *CallTree) AddElem(parent, child *ElementFunc) {
+	if parent != nil {
+		this.tree[parent] = append(this.tree[parent], child)
+	} else {
+		this.root = child
+	}
+
+	this.tree[child] = make([]*ElementFunc, 0)
+}
+
+func (this *CallTree) GetTree() map[*ElementFunc][]*ElementFunc {
+	return this.tree
+}
+
+func (this *CallTree) String() string {
+	if this == nil || this.root == nil {
+		return ""
+	}
+
+	var b strings.Builder
+	fmt.Fprintln(&b, "CALL TREE")
+
+	var walk func(*ElementFunc, int)
+	walk = func(fn *ElementFunc, depth int) {
+		b.WriteString(strings.Repeat("    ", depth))
+		fmt.Fprintln(&b, fn.GetSSAName())
+
+		for _, child := range this.tree[fn] {
+			walk(child, depth+1)
+		}
+	}
+
+	walk(this.root, 0)
+	return b.String()
 }

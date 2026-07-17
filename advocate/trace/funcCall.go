@@ -13,10 +13,12 @@ package trace
 import (
 	"advocate/analysis/hb/a_clock"
 	"advocate/utils/consts"
+	"advocate/utils/flags"
 	"advocate/utils/types"
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 var lastCall = make(map[int]*types.Stack[*ElementFunc])
@@ -64,7 +66,7 @@ type ElementFunc struct {
 // MARK: Constructor
 // ========================================================
 
-func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op OperationType, posDef, posCall string) error {
+func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef, posCall string) error {
 	tInt, err := strconv.Atoi(t)
 	if err != nil {
 		return errors.New("t is not an integer")
@@ -83,7 +85,7 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op Ope
 	elem := ElementFunc{
 		index:    this.NumberElemInRoutine(routine),
 		routine:  routine,
-		name:     name,
+		name:     funcNameToSSANane(name),
 		t:        tInt,
 		posDef:   newPosition(fileDef, lineDef),
 		posCall:  newPosition(fileCall, lineCall),
@@ -93,6 +95,11 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, op Ope
 	if _, ok := lastCall[routine]; !ok {
 		lastCall[routine] = types.NewStack[*ElementFunc]()
 	}
+
+	lc := lastCall[routine].Peek()
+
+	this.callTree.AddElem(lc, &elem)
+
 	lastCall[routine].Push(&elem)
 
 	this.AddElement(&elem)
@@ -286,4 +293,31 @@ func (this *ElementFunc) IsValid() bool {
 
 func (this *ElementFunc) GetName() string {
 	return this.name
+}
+
+func (this *ElementFunc) GetSSAName() string {
+	return funcNameToSSANane(this.name)
+}
+
+func funcNameToSSANane(name string) string {
+	if name == "" {
+		return name
+	}
+
+	fields := strings.Split(name, ".")
+
+	if fields[0] == "main" {
+		fields[0] = flags.ExecName
+	}
+
+	if len(fields) >= 3 {
+		l := len(fields) - 1
+		if strings.HasPrefix(fields[l], "func") {
+			fields[l-1] = fields[l-1] + "$" + strings.TrimPrefix(fields[l], "func")
+			fields = fields[:l]
+		}
+	}
+
+	return strings.Join(fields, ".")
+
 }

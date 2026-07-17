@@ -12,12 +12,11 @@ package s_blocking
 
 import (
 	"advocate/advoc/toolchain"
+	"advocate/analysis/a_base"
 	"advocate/static/static"
 	"advocate/utils/flags"
 	"advocate/utils/log"
 )
-
-var data *static.Data
 
 // init to static blocking analysis
 func BuildStaticBlockingAnalysis() (err error) {
@@ -47,7 +46,7 @@ func BuildStaticBlockingAnalysis() (err error) {
 		return err
 	}
 
-	IsBlockingBug()
+	isBlockingBug()
 
 	data.Ssa().PrintAnalysis()
 	// data.Ssa().PrintSsa(true)
@@ -63,14 +62,19 @@ func BuildStaticBlockingAnalysis() (err error) {
 	return nil
 }
 
-func IsBlockingBug() {
+func isBlockingBug() {
 	blocked := getBlockedResources()
 
 	for _, alloc := range blocked {
-		for _, a := range alloc {
-			f, s := data.Ssa().TraceToSSA(a)
-			log.Debug(a.ObjID(), " # ", f.Name(), " # ", s.String())
-		}
+		f, s := data.Ssa().TraceToSSA(alloc)
+		log.Debug(alloc.ObjID(), " # ", f.Name(), " # ", s.String())
+	}
+
+	buildFuncCallToSSAFunc()
+	log.Debug(a_base.MainTrace.CallTree().String())
+
+	for res, alloc := range blocked {
+		calcAlias(res, alloc)
 	}
 
 }

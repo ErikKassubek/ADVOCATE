@@ -40,27 +40,6 @@ func BuildSsa(ast *s_ast.Data) *Data {
 	return data
 }
 
-// ================================================================
-// Alias
-// ================================================================
-
-type aliasResult int
-
-const (
-	never aliasResult = iota
-	sometimes
-	always
-)
-
-func (self *aliasResult) string() string {
-	switch *self {
-	case never:
-		return "never"
-	case sometimes:
-		return "sometimes"
-	case always:
-		return "always"
-	default:
-		return "unknown"
-	}
+func (this *Data) Funcs() []*Function {
+	return this.funcs
 }

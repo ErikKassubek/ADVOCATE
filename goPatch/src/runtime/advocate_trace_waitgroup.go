@@ -12,12 +12,14 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on a wait group
 //
 // Fields
-//   - tPre int64: time when the operation started
-//   - tPost int64: time when the operation finished
-//   - id uint64: id of the mutex
+//   - tReq int64: time when the operation started
+//   - tCom int64: time when the operation finished
+//   - res AdvocateTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - delta int: value by which the internal counter was changed with this operation
 //     for Add > 0, for Done -1 and for wait = 0
@@ -25,9 +27,9 @@ package runtime
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 type AdvocateTraceWaitGroup struct {
-	tPre  int64
-	tPost int64
-	id    uint64
+	tReq  int64
+	tCom  int64
+	res   AdvocateTraceResource
 	op    Operation
 	delta int
 	val   int32
@@ -38,13 +40,14 @@ type AdvocateTraceWaitGroup struct {
 // AdvocateWaitGroupAdd adds a waitgroup add or done to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id: id of the waitgroup
 //   - delta: delta of the waitgroup
 //   - val: value of the waitgroup after the operation
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
+func AdvocateWaitGroupAdd(mem unsafe.Pointer, id uint64, delta int, val int32) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -63,10 +66,12 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 		return -1
 	}
 
+	res := AdvocateTraceResource{id: id, addr: mem}
+
 	elem := AdvocateTraceWaitGroup{
-		tPre:  timer,
-		id:    id,
+		tReq:  timer,
 		op:    OperationWaitgroupAddDone,
+		res:   res,
 		delta: delta,
 		val:   val,
 		file:  file,
@@ -79,11 +84,12 @@ func AdvocateWaitGroupAdd(id uint64, delta int, val int32) int {
 // AdvocateWaitGroupWait adds a waitgroup wait to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id: id of the waitgroup
 //
 // Returns:
 //   - index of the operation in the trace
-func AdvocateWaitGroupWait(id uint64) int {
+func AdvocateWaitGroupWait(mem unsafe.Pointer, id uint64) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -96,9 +102,11 @@ func AdvocateWaitGroupWait(id uint64) int {
 		return -1
 	}
 
+	res := AdvocateTraceResource{id: id, addr: mem}
+
 	elem := AdvocateTraceWaitGroup{
-		tPre: timer,
-		id:   id,
+		tReq: timer,
+		res:  res,
 		op:   OperationWaitgroupWait,
 		file: file,
 		line: line,
@@ -132,7 +140,7 @@ func AdvocateWaitGroupPost(index int) {
 
 	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceWaitGroup)
 
-	elem.tPost = timer
+	elem.tCom = timer
 
 	currentGoRoutineInfo().updateElement(index, elem)
 }
@@ -148,7 +156,7 @@ func (elem AdvocateTraceWaitGroup) toString() string {
 		opStr = "W"
 	}
 
-	return buildTraceElemString("W", elem.tPre, elem.tPost, elem.id, opStr, elem.delta, elem.val, posToString(elem.file, elem.line))
+	return buildTraceElemString("W", elem.tReq, elem.tCom, elem.res.id, opStr, elem.delta, elem.val, posToString(elem.file, elem.line))
 }
 
 // getOperation is a getter for the operation
@@ -157,4 +165,20 @@ func (elem AdvocateTraceWaitGroup) toString() string {
 //   - Operation: the operation
 func (elem AdvocateTraceWaitGroup) getOperation() Operation {
 	return elem.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceWaitGroup) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceWaitGroup) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{self.res}
 }

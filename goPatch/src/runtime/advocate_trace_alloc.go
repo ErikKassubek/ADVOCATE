@@ -17,14 +17,14 @@ package runtime
 //
 // Fields
 //   - tPost int64: time when the operation finished
-//   - id string: id of the channel
+//   - res AdvocateTraceResource: the resource the op is applied to
 //   - op Opertions: type of created primitive
 //   - qSizeu int: for channel the buffer size, for all other type always 0
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 type AdvocateTraceAlloc struct {
-	tPost int64
-	id    uint64
+	t     int64
+	res   AdvocateTraceResource
 	qSize int
 	file  string
 	line  int
@@ -66,9 +66,11 @@ func AdvocateAlloc(objType string, qSize int) uint64 {
 		op = OperationAllocWg
 	}
 
+	res := AdvocateTraceResource{id: id, addr: nil}
+
 	elem := AdvocateTraceAlloc{
-		tPost: timer,
-		id:    id,
+		t:     timer,
+		res:   res,
 		file:  file,
 		line:  line,
 		qSize: qSize,
@@ -84,10 +86,10 @@ func AdvocateAlloc(objType string, qSize int) uint64 {
 //
 // Returns:
 //   - string: the string representation
-func (elem AdvocateTraceAlloc) toString() string {
+func (self AdvocateTraceAlloc) toString() string {
 	operationType := ""
 
-	switch elem.op {
+	switch self.op {
 	case OperationAllocChan:
 		operationType = "C"
 	case OperationAllocMutex:
@@ -98,7 +100,7 @@ func (elem AdvocateTraceAlloc) toString() string {
 		operationType = "W"
 	}
 
-	return buildTraceElemString("N", elem.tPost, elem.id, operationType, elem.qSize, posToString(elem.file, elem.line))
+	return buildTraceElemString("N", self.t, self.res.id, operationType, self.qSize, posToString(self.file, self.line))
 }
 
 // Get the string representation for the primitive type
@@ -106,7 +108,7 @@ func (elem AdvocateTraceAlloc) toString() string {
 //
 // Returns:
 //   - string representation of the primitive type
-func (elem AdvocateTraceAlloc) getOpStr() string {
+func (self AdvocateTraceAlloc) getOpStr() string {
 	return "NC"
 }
 
@@ -114,6 +116,22 @@ func (elem AdvocateTraceAlloc) getOpStr() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceAlloc) getOperation() Operation {
-	return elem.op
+func (self AdvocateTraceAlloc) getOperation() Operation {
+	return self.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceAlloc) hasCommit() bool {
+	return true
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceAlloc) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{self.res}
 }

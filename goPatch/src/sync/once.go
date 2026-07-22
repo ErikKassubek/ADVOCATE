@@ -80,8 +80,7 @@ func (o *Once) Do(f func()) {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-			_ = runtime.AdvocateOncePre(o.id)
-			runtime.StorePark(unsafe.Pointer(o), runtime.CallerSkipOne, true, runtime.OperationReplayNever, o.id)
+			_ = runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
 			runtime.BlockForever()
 		}
 	}
@@ -89,7 +88,7 @@ func (o *Once) Do(f func()) {
 	runtime.FuzzingFlowWait(2)
 
 	o.id, o.memAdr = runtime.NewIdIfReq(o.id, o.memAdr, uintptr(unsafe.Pointer(o)))
-	index := runtime.AdvocateOncePre(o.id)
+	index := runtime.AdvocateOncePre(unsafe.Pointer(o), o.id)
 	res := false
 	// ADVOCATE-END
 

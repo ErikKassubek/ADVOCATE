@@ -12,32 +12,35 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on a once
 //
 // Fields
 //   - tPre int64: time when the operation started
 //   - tPost int64: time when the operation finished
-//   - id string: id of the once
+//   - res AdvocateTraceResource: the resource the op is applied to
 //   - suc bool: true if the func in the Do was executed, false otherwise
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 type AdvocateTraceOnce struct {
-	tPre  int64
-	tPost int64
-	id    uint64
-	suc   bool
-	file  string
-	line  int
+	tReq int64
+	tCom int64
+	res  AdvocateTraceResource
+	suc  bool
+	file string
+	line int
 }
 
 // AdvocateOncePre adds a once to the trace
 //
 // Parameter:
+//   - mem unsafe.Pointer: memory address
 //   - id uint64: id of the once
 //
 // Returns:
 //   - int: index of the operation in the trace
-func AdvocateOncePre(id uint64) int {
+func AdvocateOncePre(mem unsafe.Pointer, id uint64) int {
 	if AdvocateTracingDisabled {
 		return -1
 	}
@@ -50,9 +53,11 @@ func AdvocateOncePre(id uint64) int {
 		return -1
 	}
 
+	res := AdvocateTraceResource{id: id, addr: mem}
+
 	elem := AdvocateTraceOnce{
-		tPre: timer,
-		id:   id,
+		tReq: timer,
+		res:  res,
 		file: file,
 		line: line,
 	}
@@ -77,7 +82,7 @@ func AdvocateOncePost(index int, suc bool) {
 	}
 	elem := currentGoRoutineInfo().getElement(index).(AdvocateTraceOnce)
 
-	elem.tPost = timer
+	elem.tCom = timer
 	elem.suc = suc
 
 	currentGoRoutineInfo().updateElement(index, elem)
@@ -88,14 +93,30 @@ func AdvocateOncePost(index int, suc bool) {
 // Returns:
 //   - string: the string representation of the form
 //     O,[tPre],[tPost],[id],[suc],[file],[line]
-func (elem AdvocateTraceOnce) toString() string {
-	return buildTraceElemString("O", elem.tPre, elem.tPost, elem.id, elem.suc, posToString(elem.file, elem.line))
+func (self AdvocateTraceOnce) toString() string {
+	return buildTraceElemString("O", self.tReq, self.tCom, self.res.id, self.suc, posToString(self.file, self.line))
 }
 
 // getOperation is a getter for the operation
 //
 // Returns:
 //   - Operation: the operation
-func (elen AdvocateTraceOnce) getOperation() Operation {
+func (self AdvocateTraceOnce) getOperation() Operation {
 	return OperationOnceDo
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceOnce) hasCommit() bool {
+	return self.tCom != 0
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceOnce) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{self.res}
 }

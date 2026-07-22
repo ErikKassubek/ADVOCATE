@@ -12,20 +12,22 @@
 
 package runtime
 
+import "unsafe"
+
 // Struct to store an operation on an atomic variable
 //
 // Fields
 //   - timer int64: time when the operation was executed
-//   - id string: id of the atomic, address of the atomic
+//   - res AdvocateTraceResource: the resource the op is applied to
 //   - op Operation: operation type
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 type AdvocateTraceAtomic struct {
-	timer int64
-	id    string
-	op    Operation
-	file  string
-	line  int
+	t    int64
+	res  AdvocateTraceResource
+	op   Operation
+	file string
+	line int
 }
 
 // Add an atomic operation to the trace
@@ -33,7 +35,7 @@ type AdvocateTraceAtomic struct {
 //   - addr *T: memory address of the atomic
 //   - op Operation: the operation type
 //   - skip iny: skip for Caller
-func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
+func AdvocateAtomic[T int32 | int64 | uint32 | uint64 | uintptr | unsafe.Pointer](addr *T, op Operation, skip int) {
 	if AdvocateTracingDisabled {
 		return
 	}
@@ -46,14 +48,18 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 		return
 	}
 
-	id := pointerAddressAsString(addr, true)
+	unsafeAddr := unsafe.Pointer(addr)
+
+	id := uint64(uintptr(unsafeAddr))
+
+	res := AdvocateTraceResource{id: id, addr: unsafeAddr}
 
 	elem := AdvocateTraceAtomic{
-		timer: timer,
-		id:    id,
-		op:    op,
-		file:  file,
-		line:  line,
+		t:    timer,
+		res:  res,
+		op:   op,
+		file: file,
+		line: line,
 	}
 
 	insertIntoTrace(elem)
@@ -64,9 +70,9 @@ func AdvocateAtomic[T any](addr *T, op Operation, skip int) {
 // Returns:
 //   - string: the string representation of the form
 //     U,[timer],[id],[operation],[file],[line]
-func (elem AdvocateTraceAtomic) toString() string {
+func (self AdvocateTraceAtomic) toString() string {
 	opStr := "U"
-	switch elem.op {
+	switch self.op {
 	case OperationAtomicLoad:
 		opStr = "L"
 	case OperationAtomicStore:
@@ -83,13 +89,29 @@ func (elem AdvocateTraceAtomic) toString() string {
 		opStr = "O"
 	}
 
-	return buildTraceElemString("A", elem.timer, elem.id, opStr, posToString(elem.file, elem.line))
+	return buildTraceElemString("A", self.t, self.res.id, opStr, posToString(self.file, self.line))
 }
 
 // getOperation is a getter for the operation
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceAtomic) getOperation() Operation {
-	return elem.op
+func (self AdvocateTraceAtomic) getOperation() Operation {
+	return self.op
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceAtomic) hasCommit() bool {
+	return true
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceAtomic) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{self.res}
 }

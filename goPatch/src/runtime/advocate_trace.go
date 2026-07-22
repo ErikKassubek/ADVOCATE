@@ -119,6 +119,8 @@ func getOperationObjectString(op Operation) string {
 type traceElem interface {
 	toString() string
 	getOperation() Operation
+	hasCommit() bool
+	resource() []AdvocateTraceResource
 }
 
 // Return a string representation of the trace of the current go routine

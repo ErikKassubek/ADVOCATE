@@ -46,7 +46,7 @@ func BuildOAT() {
 				ref[r] = make([]uint64, 0)
 			}
 
-			ref[r] = append(ref[r], blocked[obj].id)
+			ref[r] = append(ref[r], blocked[obj])
 		}
 	}
 
@@ -63,14 +63,14 @@ func BuildOAT() {
 	})
 }
 
-// blockeInfo determines all blocked objects
+// blockeInfo determines all blocked resource
 // It additionally determines the max routine id
 //
 // Returns:
-//   - map[uintptr]park: blocked objects, from object memory addres to object info
+//   - map[uintptr]park: blocked resource, from object memory addres to object info
 //   - uint64: max rout id
-func blockeInfo() (map[uintptr]park, uint64) {
-	blocked := make(map[uintptr]park, 0)
+func blockeInfo() (map[uintptr]uint64, uint64) {
+	blocked := make(map[uintptr]uint64, 0)
 	var maxID uint64 = 0
 
 	ForEachAdvocateG(func(gp *AdvocateG) {
@@ -78,9 +78,15 @@ func blockeInfo() (map[uintptr]park, uint64) {
 			return
 		}
 
-		if gp.isRoutineWaitingOnConcurrency() {
-			for _, parkObj := range gp.parkInfo() {
-				blocked[uintptr(parkObj.addr)] = parkObj
+		le := gp.LastTraceElem()
+
+		if le == nil {
+			return
+		}
+
+		if !le.hasCommit() { // automatically filters out terminated routines
+			for _, res := range le.resource() {
+				blocked[uintptr(res.addr)] = res.id
 			}
 		}
 

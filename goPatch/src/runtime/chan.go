@@ -203,7 +203,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 		if !block {
 			return false
 		}
-		StorePark(nil, CallerSkipChanSendRecv, false, OperationChannelSend, c.id)
 		gopark(nil, nil, WaitReasonChanSendNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
@@ -233,9 +232,8 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+				_ = AdvocateChanPre(c, OperationChannelSend, false)
 				unlock(&c.lock)
-				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true, OperationReplayNever, c.id)
 				BlockForever()
 			}
 		}
@@ -285,7 +283,7 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	// pre envent in the trace.
 	var advocateIndex int
 	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c.id, OperationChannelSend, c.dataqsiz, false)
+		advocateIndex = AdvocateChanPre(c, OperationChannelSend, false)
 	}
 	// ADVOCATE-END
 
@@ -372,10 +370,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanSend
 	}
-
-	// ADVOCATE-START
-	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false, OperationChannelSend, c.id)
-	// ADVOCATE-END
 
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanSend, 2)
 
@@ -544,7 +538,7 @@ func closechan(c *hchan) {
 			defer func() { chAck <- struct{}{} }()
 			<-chWait
 		}
-		AdvocateChanClose(c.id, c.dataqsiz, c.qcount)
+		AdvocateChanClose(c)
 	}
 	// ADVOCATE-END
 
@@ -668,7 +662,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 		if !block {
 			return
 		}
-		StorePark(nil, CallerSkipChanSendRecv, false, OperationChannelRecv, c.id)
 		gopark(nil, nil, WaitReasonChanReceiveNilChan, traceBlockForever, 2)
 		throw("unreachable")
 	}
@@ -694,9 +687,8 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 			replayElem = <-ch
 			if replayElem.Blocked {
 				lock(&c.lock)
-				_ = AdvocateChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
+				_ = AdvocateChanPre(c, OperationChannelRecv, false)
 				unlock(&c.lock)
-				StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, true, OperationReplayNever, c.id)
 				BlockForever()
 			}
 		}
@@ -759,7 +751,7 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	// pre envent in the trace.
 	var advocateIndex int
 	if !ignored && !c.advocateIgnore {
-		advocateIndex = AdvocateChanPre(c.id, OperationChannelRecv, c.dataqsiz, false)
+		advocateIndex = AdvocateChanPre(c, OperationChannelRecv, false)
 	}
 	// ADVOCATE-END
 
@@ -868,9 +860,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	if c.bubble != nil {
 		reason = waitReasonSynctestChanReceive
 	}
-	// ADVOCATE-START
-	StorePark(unsafe.Pointer(c), CallerSkipChanSendRecv, false, OperationChannelRecv, c.id)
-	// ADVOCATE-END
 	gopark(chanparkcommit, unsafe.Pointer(&c.lock), reason, traceBlockChanRecv, 2)
 
 	// someone woke us up
@@ -1014,7 +1003,6 @@ func selectnbsend(c *hchan, elem unsafe.Pointer) (selected bool) {
 				lock(&c.lock)
 				_ = AdvocateSelectPreOneNonDef(c, true)
 				unlock(&c.lock)
-				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true, OperationReplayNever, c.id)
 				BlockForever()
 			}
 		}
@@ -1088,7 +1076,6 @@ func selectnbrecv(elem unsafe.Pointer, c *hchan) (selected, received bool) {
 				lock(&c.lock)
 				_ = AdvocateSelectPreOneNonDef(c, false)
 				unlock(&c.lock)
-				StorePark(unsafe.Pointer(c), CallerSkipSelectOneDef, true, OperationReplayNever, c.id)
 				BlockForever()
 			}
 		}

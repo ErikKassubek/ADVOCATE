@@ -20,7 +20,7 @@ package runtime
 //   - file string: file where the operation occurred
 //   - line int: line where the operation occurred
 type AdvocateTraceSpawn struct {
-	tPost int64
+	t     int64
 	newID uint64
 	file  string
 	line  int
@@ -54,7 +54,7 @@ func AdvocateSpawnCaller(callerRoutine *AdvocateRoutine, newID uint64, file stri
 	}
 
 	elem := AdvocateTraceSpawn{
-		tPost: timer,
+		t:     timer,
 		newID: newID,
 		file:  file,
 		line:  int(line),
@@ -82,8 +82,8 @@ func AdvocatRoutineExit() {
 // Returns:
 //   - string: the string representation of the form
 //     G,[tPost],[newID],[file],[line]
-func (elem AdvocateTraceSpawn) toString() string {
-	return buildTraceElemString("G", elem.tPost, elem.newID, posToString(elem.file, elem.line))
+func (self AdvocateTraceSpawn) toString() string {
+	return buildTraceElemString("G", self.t, self.newID, posToString(self.file, self.line))
 }
 
 // Get a string representation of the routine element
@@ -99,7 +99,7 @@ func (elem AdvocateTraceRoutineExit) toString() string {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceSpawn) getOperation() Operation {
+func (self AdvocateTraceSpawn) getOperation() Operation {
 	return OperationSpawn
 }
 
@@ -115,7 +115,7 @@ func (elem AdvocateTraceRoutineExit) getOperation() Operation {
 //
 // Returns:
 //   - bool: true if its finished, false otherwise
-func (elem AdvocateTraceSpawn) hasFinished() bool {
+func (self AdvocateTraceSpawn) hasFinished() bool {
 	return true
 }
 
@@ -125,4 +125,36 @@ func (elem AdvocateTraceSpawn) hasFinished() bool {
 //   - bool: true if its finished, false otherwise
 func (elem AdvocateTraceRoutineExit) hasFinished() bool {
 	return true
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceSpawn) hasCommit() bool {
+	return true
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceRoutineExit) hasCommit() bool {
+	return true
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceSpawn) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{}
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceRoutineExit) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{}
 }

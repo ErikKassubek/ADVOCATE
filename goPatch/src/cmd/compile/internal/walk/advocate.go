@@ -24,77 +24,54 @@ import (
 
 // ADOVCATE-START
 // MARK: shouldAdvocate
-func shouldAdvocate(fn *ir.Func) bool {
-	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
+func shouldAdvocate(n ir.Node) bool {
+	if n == nil {
 		return false
 	}
 
-	pkg := fn.Sym().Pkg.Path
+	if sym := nodeSym(n); sym != nil && sym.Pkg != nil {
+		return !isStdPkgPath(sym.Pkg.Path)
+	}
 
-	// Never instrument the compiler/runtime/toolchain itself.
-	switch {
-	case pkg == "runtime":
-		return false
+	if !n.Pos().IsKnown() {
+		return false // synthetic/unknown position — be conservative
+	}
 
-	case pkg == "runtime/internal":
-		return false
-
-	case pkg == "syscall":
-		return false
-
-	case pkg == "os":
-		return false
-
-	case pkg == "internal/syscall":
-		return false
-
-	case strings.HasPrefix(pkg, "internal/"):
-		return false
-
-	case strings.HasPrefix(pkg, "cmd/"):
-		return false
-
-	case strings.HasPrefix(pkg, "bootstrap/"):
-		return false
-
-	case strings.HasPrefix(pkg, "go/"):
+	pkgPath := types.LocalPkg.Path // package currently being compiled
+	if isStdPkgPath(pkgPath) {
 		return false
 	}
 
-	// Never instrument compiler source files.
-	if fn.Pos().IsKnown() {
-		file := base.Ctxt.PosTable.Pos(fn.Pos()).Filename()
+	return !isAdvocateCall(n)
+}
 
-		// Your modified Go tree
-		if strings.Contains(file, "/goPatch/") {
-			return false
+func nodeSym(n ir.Node) *types.Sym {
+	switch x := ir.StaticValue(n).(type) {
+	case *ir.Name:
+		return x.Sym()
+	case *ir.SelectorExpr:
+		if x.Selection != nil {
+			return x.Selection.Sym
 		}
-
-		// Any GOROOT source tree
-		if strings.Contains(file, "/src/cmd/") ||
-			strings.Contains(file, "/src/runtime/") ||
-			strings.Contains(file, "/src/internal/") {
-			return false
-		}
+		return x.Sel
+	case *ir.CallExpr:
+		return nodeSym(x.Fun)
 	}
-
-	// Compiler generated wrappers and special functions
-	if fn.Pragma&ir.Nosplit != 0 || fn.Wrapper() {
-		return false
+	if t := n.Type(); t != nil && t.Sym() != nil {
+		return t.Sym()
 	}
+	return nil
+}
 
-	name := fn.Sym().Name
-
-	switch name {
-	case "advocateFunctionCall",
-		"advocateFunctionReturn",
-		"AdvocateAllocMutex",
-		"AdvocateAllocCondVar",
-		"AdvocateAllocWG":
-		return false
+func isStdPkgPath(pkgPath string) bool {
+	if pkgPath == "" || pkgPath == "main" {
+		return true
 	}
-
-	return true
+	first := pkgPath
+	if i := strings.IndexByte(pkgPath, '/'); i >= 0 {
+		first = pkgPath[:i]
+	}
+	return !strings.Contains(first, ".")
 }
 
 func isAdvocateCall(n ir.Node) bool {
@@ -119,7 +96,10 @@ func isAdvocateCall(n ir.Node) bool {
 }
 
 func instrumentBody(fn *ir.Func) {
-	if !shouldAdvocate(fn) {
+	sh := shouldAdvocate(fn)
+	println(base.Ctxt.PosTable.Pos(fn.Pos()).Base().AbsFilename(), " ", sh)
+
+	if !sh {
 		return
 	}
 
@@ -131,7 +111,7 @@ func instrumentStmtList(body ir.Nodes) ir.Nodes {
 
 	for _, stmt := range body {
 		// First recurse into children
-		instrumentStmt(stmt)
+		instrumentStmtRecursive(stmt)
 
 		out.Append(stmt)
 
@@ -142,12 +122,16 @@ func instrumentStmtList(body ir.Nodes) ir.Nodes {
 		if n := addAlloc(stmt); n != nil {
 			out.Append(n)
 		}
+
+		if n := addIfSwitch(stmt); n != nil {
+			out.Append(n)
+		}
 	}
 
 	return out
 }
 
-func instrumentStmt(n ir.Node) {
+func instrumentStmtRecursive(n ir.Node) {
 	switch n := n.(type) {
 
 	case *ir.BlockStmt:
@@ -184,6 +168,36 @@ func instrumentStmt(n ir.Node) {
 	}
 }
 
+func addIfSwitch(n ir.Node) ir.Node {
+	switch n := n.(type) {
+	case *ir.IfStmt:
+		walkIfChain(n)
+	}
+
+	return nil
+}
+
+func walkIfChain(n *ir.IfStmt) {
+	for n != nil {
+		// process n.Cond, n.Body here
+		fmt.Printf("if %v { ... }\n", n.Cond)
+
+		if len(n.Else) == 1 {
+			if elseif, ok := n.Else[0].(*ir.IfStmt); ok {
+				// this is an "else if"
+				n = elseif
+				continue
+			}
+		}
+
+		// plain else block (0 or >1 statements, or a single non-If statement)
+		if len(n.Else) > 0 {
+			fmt.Printf("else { %v }\n", n.Else)
+		}
+		break
+	}
+}
+
 // TODO: variables created in init
 func addAlloc(n ir.Node) ir.Node {
 	t, obj := allocatedSync(n)
@@ -195,7 +209,6 @@ func addAlloc(n ir.Node) ir.Node {
 
 	switch {
 	case isSyncType(t, "Mutex") || isSyncType(t, "RWMutex"):
-		fmt.Println(n)
 		runtimeName = "AdvocateAllocMutex"
 
 	case isSyncType(t, "Cond"):
@@ -242,27 +255,30 @@ func makeUnsafePointer(addr ir.Node, pos src.XPos) ir.Node {
 }
 
 func allocatedSync(n ir.Node) (t *types.Type, m *ir.Name) {
-	switch n := n.(type) {
+	// TODO: for now only record channels
+	return nil, nil
 
-	case *ir.AssignStmt:
-		// m := sync.Mutex{}
-		if n.Y != nil {
-			t = n.Y.Type()
-		}
-		name, ok := n.X.(*ir.Name)
-		if ok {
-			m = name
-		}
+	// switch n := n.(type) {
 
-	case *ir.Decl:
-		// var m sync.Mutex
-		if n.X != nil {
-			t = n.X.Type()
-			m = n.X
-		}
-	}
+	// case *ir.AssignStmt:
+	// 	// m := sync.Mutex{}
+	// 	if n.Y != nil {
+	// 		t = n.Y.Type()
+	// 	}
+	// 	name, ok := n.X.(*ir.Name)
+	// 	if ok {
+	// 		m = name
+	// 	}
 
-	return
+	// case *ir.Decl:
+	// 	// var m sync.Mutex
+	// 	if n.X != nil {
+	// 		t = n.X.Type()
+	// 		m = n.X
+	// 	}
+	// }
+
+	// return
 }
 
 func isSyncType(t *types.Type, name string) bool {

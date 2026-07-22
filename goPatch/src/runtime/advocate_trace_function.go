@@ -128,8 +128,8 @@ func (elem AdvocateTraceFunctionStart) toString() string {
 //
 // Returns:
 //   - string: the string representation
-func (elem AdvocateTraceFunctionReturn) toString() string {
-	return buildTraceElemString("R", elem.t)
+func (self AdvocateTraceFunctionReturn) toString() string {
+	return buildTraceElemString("R", self.t)
 }
 
 // getOperation is a getter for the operation
@@ -144,6 +144,38 @@ func (elem AdvocateTraceFunctionStart) getOperation() Operation {
 //
 // Returns:
 //   - Operation: the operation
-func (elem AdvocateTraceFunctionReturn) getOperation() Operation {
+func (self AdvocateTraceFunctionReturn) getOperation() Operation {
 	return OperationFunctionReturn
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceFunctionStart) hasCommit() bool {
+	return true
+}
+
+// hasCommit returns if the event has committed
+//
+// Returns:
+//   - bool: true if committed, false if only request
+func (self AdvocateTraceFunctionReturn) hasCommit() bool {
+	return true
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceFunctionStart) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{}
+}
+
+// resource returns the resources for the operation. Can only be greater 1 for select
+//
+// Returns:
+//   - []AdvocateTraceResource: recources
+func (self AdvocateTraceFunctionReturn) resource() []AdvocateTraceResource {
+	return []AdvocateTraceResource{}
 }

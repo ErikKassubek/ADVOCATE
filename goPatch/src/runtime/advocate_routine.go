@@ -12,18 +12,10 @@
 
 package runtime
 
-import "unsafe"
-
 var AdvocateRoutines map[uint64]*AdvocateRoutine
 var AdvocateRoutinesLock = mutex{}
 
 var projectPath string
-
-type park struct {
-	addr unsafe.Pointer
-	id   uint64
-	op   Operation
-}
 
 // var atomicRecordingDisabled = false
 
@@ -51,8 +43,6 @@ type AdvocateRoutine struct {
 	replayID             int
 	forkFile             string
 	forkLine             int32
-	parkObj              []park
-	parkPos              string
 	parkForeverReplay    bool
 	hasReturned          bool
 	wokenButTimeout      bool
@@ -79,8 +69,6 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 			forkFile:    file,
 			forkLine:    line,
 			replayID:    replayRoutine,
-
-			parkObj: make([]park, 0),
 		}
 	}
 
@@ -90,7 +78,6 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
-		parkObj:     make([]park, 0),
 		forkFile:    file,
 		forkLine:    line,
 	}

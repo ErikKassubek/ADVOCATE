@@ -77,8 +77,7 @@ func (m *Mutex) Lock() {
 		replayElem := <-ch
 		m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 			runtime.BlockForever()
 		}
 	}
@@ -96,11 +95,7 @@ func (m *Mutex) Lock() {
 	// In this case, the Lock event in the trace is updated to include
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-	// ADVOCATE-END
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false, runtime.OperationMutexLock, m.id)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
 	m.mu.Lock()
@@ -123,8 +118,7 @@ func (m *Mutex) TryLock() bool {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
@@ -139,7 +133,7 @@ func (m *Mutex) TryLock() bool {
 
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 	// ADVOCATE-END
 
 	res := m.mu.TryLock()
@@ -164,8 +158,7 @@ func (m *Mutex) Unlock() {
 		replayElem := <-ch
 		if replayElem.Blocked {
 			m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 			runtime.BlockForever()
 		}
 	}
@@ -178,7 +171,7 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 	// ADVOCATE-END
 
 	m.mu.Unlock()

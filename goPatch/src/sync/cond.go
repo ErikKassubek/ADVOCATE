@@ -101,12 +101,8 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondWait)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(c), runtime.CallerSkipCond, false, runtime.OperationCondWait, c.id)
 	// ADVOCATE-END
 
 	c.checker.check()
@@ -135,7 +131,7 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondSignal)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
 	defer runtime.AdvocateCondPost(advocateIndex)
 	// ADVOCATE-END
 
@@ -159,7 +155,7 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondBroadcast)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
 	defer runtime.AdvocateCondPost(advocateIndex)
 	// ADVOCATE-END
 

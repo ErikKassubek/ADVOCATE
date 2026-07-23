@@ -4,7 +4,6 @@
 // Brief: Function to parse the trace and get all relevant information
 //
 // Author: Erik Kassubek
-// Created: 2024-11-29
 //
 // License: BSD-3-Clause
 

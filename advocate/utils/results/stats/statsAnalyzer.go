@@ -4,7 +4,6 @@
 // Brief: Collect stats about the analysis and the replay
 //
 // Author: Erik Kassubek
-// Created: 2024-09-20
 //
 // License: BSD-3-Clause
 

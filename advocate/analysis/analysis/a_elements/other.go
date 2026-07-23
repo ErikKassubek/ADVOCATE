@@ -5,7 +5,6 @@
 //   elements that do not change, but only store the vc
 //
 // Author: Erik Kassubek
-// Created: 2025-04-26
 //
 // License: BSD-3-Clause
 

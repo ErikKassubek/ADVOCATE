@@ -4,7 +4,6 @@
 // Brief: Starting point for the analyzer and replay
 //
 // Author: Erik Kassubek
-// Created: 2025-04-26
 //
 // License: BSD-3-Clause
 

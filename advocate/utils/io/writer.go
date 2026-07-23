@@ -4,7 +4,6 @@
 // Brief: Write the internal trace into files
 //
 // Author: Erik Kassubek
-// Created: 2023-12-01
 //
 // License: BSD-3-Clause
 

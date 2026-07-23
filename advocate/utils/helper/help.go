@@ -4,7 +4,6 @@
 // Brief: Function to print help/how to use
 //
 // Author: Erik Kassubek
-// Created: 2025-05-19
 //
 // License: BSD-3-Clause
 

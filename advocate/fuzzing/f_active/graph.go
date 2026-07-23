@@ -4,7 +4,6 @@
 // Brief: Rewrite for negative wait group counter
 //
 // Author: Erik Kassubek
-// Created: 2024-04-05
 //
 // License: BSD-3-Clause
 

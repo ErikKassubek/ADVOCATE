@@ -4,7 +4,6 @@
 // Brief: Constraints for guided fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2025-10-21
 //
 // License: BSD-3-Clause
 

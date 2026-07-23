@@ -6,7 +6,6 @@
 //   For concurrent send, receive, (try)(r)lock, once.Do: store to use in fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2024-01-27
 //
 // License: BSD-3-Clause
 

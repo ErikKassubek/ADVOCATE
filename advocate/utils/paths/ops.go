@@ -4,7 +4,6 @@
 // Brief: Operations on paths
 //
 // Author: Erik Kassubek
-// Created: 2026-04-27
 //
 // License: BSD-3-Clause
 

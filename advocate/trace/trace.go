@@ -4,7 +4,6 @@
 // Brief: Functions and structs for the trace
 //
 // Author: Erik Kassubek
-// Created: 2024-08-08
 //
 // License: BSD-3-Clause
 
@@ -37,7 +36,8 @@ import (
 //   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
 //   - blocked map[resource][]int: routines which are blocked and the objects that block it
 //   - forks: for each routine store the fork that created it
-//   - allocs: resources and allocs
+//   - allocs: allocs
+//   - resources: obj id to resource
 //   - callGraph: call graph
 type Trace struct {
 	routines              map[int]*Routine
@@ -48,6 +48,7 @@ type Trace struct {
 	blocked               map[int]Element
 	forks                 map[int]*ElementFork
 	allocs                map[int]*ElementAlloc
+	resources             map[int]*Resource
 	callTree              CallTree
 }
 
@@ -64,6 +65,7 @@ func NewTrace() Trace {
 		blocked:               make(map[int]Element),
 		forks:                 make(map[int]*ElementFork),
 		allocs:                make(map[int]*ElementAlloc),
+		resources:             make(map[int]*Resource),
 		callTree:              *newCallGraph(),
 	}
 }
@@ -77,6 +79,7 @@ func (this *Trace) Clear() {
 	this.blocked = make(map[int]Element)
 	this.forks = make(map[int]*ElementFork)
 	this.allocs = make(map[int]*ElementAlloc)
+	this.resources = make(map[int]*Resource)
 	this.callTree = *newCallGraph()
 }
 
@@ -99,7 +102,29 @@ func (this *Trace) AddElement(elem Element) {
 		this.forks[e.objId] = e
 	}
 
+	this.AddResource(elem)
+
 	this.routines[routine].addElement(elem)
+}
+
+// AddElement adds a resouce if elem has a resource and if it is not created yet
+func (this *Trace) AddResource(elem Element) {
+	switch elem.(type) {
+	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
+		return
+	}
+
+	id := elem.ObjID()
+
+	if _, ok := this.resources[id]; ok {
+		return
+	}
+
+	alloc, ok := this.allocs[id]
+	if !ok {
+		log.Error("Found Elemen on Resource Without precious alloc")
+	}
+	this.resources[id] = NewResource(id, alloc)
 }
 
 // AddRoutine adds an empty routine if not exists
@@ -428,21 +453,6 @@ func (this *Trace) GetConcurrentWaitGroups(element Element) map[string][]Element
 		}
 	}
 	return res
-}
-
-// GetAlloc returns the alloc of an element.
-// For an alloc the element is returned.
-// For elements without alloc, nil is returned
-// Elem must not be select
-func (this *Trace) GetAlloc(elem Element) *ElementAlloc {
-	switch e := elem.(type) {
-	case *ElementAlloc:
-		return e
-	case *ElementSelect:
-		panic("Select in get alloc")
-	}
-
-	return this.allocs[elem.ObjID()]
 }
 
 // SetTSortAtIndex sets the tSort for an element given by its index
@@ -884,20 +894,6 @@ func (this *Trace) GetTraceSection(start, end int) []Element {
 	return res
 }
 
-func (this *Trace) GetResourcesPerRout(routID int) []Resource {
-	return this.routines[routID].getResources()
-}
-
-func (this *Trace) GetResources() map[int][]Resource {
-	res := make(map[int][]Resource)
-
-	for id, rout := range this.routines {
-		res[id] = rout.getResources()
-	}
-
-	return res
-}
-
 // Next returns the next element from the iterator. If all elements have been returned
 // already, return nul
 //
@@ -973,6 +969,56 @@ func (this *Iterator) IncreaseIndex(routine int) {
 	if this.currentIndex[routine] >= this.t.routines[routine].Len() {
 		this.currentIndex[routine] = -1
 	}
+}
+
+// ========================================================
+// MARK: Resources
+// ========================================================
+
+func (this *Trace) GetResourcesPerRout(routID int) []*Resource {
+	return this.routines[routID].Resources()
+}
+
+func (this *Trace) GetResourcesRout() map[int][]*Resource {
+	res := make(map[int][]*Resource)
+
+	for id, rout := range this.routines {
+		res[id] = rout.Resources()
+	}
+
+	return res
+}
+
+func (this *Trace) Resources() map[int]*Resource {
+	return this.resources
+}
+
+// GetAlloc returns the alloc of an element.
+// For an alloc the element is returned.
+// For elements without alloc, nil is returned
+// Elem must not be select
+func (this *Trace) GetResources(elem Element) []*Resource {
+	res := make([]*Resource, 0)
+
+	switch elem := elem.(type) {
+	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
+	case *ElementSelect:
+		for _, c := range elem.GetCases() {
+			r, ok := this.resources[c.ObjID()]
+			if !ok || r == nil {
+				panic("Invalid Resource")
+			}
+			res = append(res, r)
+		}
+	default:
+		r, ok := this.resources[elem.ObjID()]
+		if !ok || r == nil {
+			panic("Invalid Resource")
+		}
+		res = append(res, r)
+	}
+
+	return res
 }
 
 // ========================================================

@@ -4,7 +4,6 @@
 // Brief: Mutations for chains
 //
 // Author: Erik Kassubek
-// Created: 2025-03-21
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief: Find elements from the trace or code in the SSA and vice versa
 //
 // Author: Erik Kassubek
-// Created: 2026-05-07
 //
 // License: BSD-3-Clause
 
@@ -84,40 +83,40 @@ func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Elemen
 
 	switch e := elem.(type) {
 	case *trace.ElementAlloc:
-		if ssaClass == ic_alloc {
-			if elem.Type(false) == trace.Mutex && i.hasMutex() {
+		if ssaClass == Ic_alloc {
+			if elem.Type(false) == trace.Mutex && i.HasMutex() {
 				return true
-			} else if elem.Type(false) == trace.Cond && i.hasCond() {
+			} else if elem.Type(false) == trace.Cond && i.HasCond() {
 				return true
-			} else if elem.Type(false) == trace.Wait && i.hasWg() {
+			} else if elem.Type(false) == trace.Wait && i.HasWg() {
 				return true
 			}
 		}
-		if ssaClass == ic_makeChan && elem.Type(true) == trace.NewChannel && i.hasChannel() {
+		if ssaClass == Ic_makeChan && elem.Type(true) == trace.NewChannel && i.HasChannel() {
 			return true
 		}
 	case *trace.ElementChannel:
-		if i.hasChannel() && (ssaClass == ic_send || ssaClass == ic_unOp || ssaClass == ic_call) {
+		if i.HasChannel() && (ssaClass == Ic_send || ssaClass == Ic_unOp || ssaClass == Ic_call) {
 			return true
 		}
 	case *trace.ElementMutex:
-		if i.hasMutex() && ssaClass == ic_call {
+		if i.HasMutex() && ssaClass == Ic_call {
 			return true
 		}
 	case *trace.ElementCond:
-		if i.hasCond() && ssaClass == ic_call {
+		if i.HasCond() && ssaClass == Ic_call {
 			return true
 		}
 	case *trace.ElementWait:
-		if i.hasWg() && ssaClass == ic_call {
+		if i.HasWg() && ssaClass == Ic_call {
 			return true
 		}
 	case *trace.ElementSelect:
-		if i.hasChannel() && ssaClass == ic_select {
+		if i.HasChannel() && ssaClass == Ic_select {
 			return true
 		}
 	case *trace.ElementFunc:
-		if ssaClass == ic_call && i.name == e.GetName() {
+		if ssaClass == Ic_call && i.name == e.GetName() {
 			return true
 		}
 	}

@@ -6,7 +6,6 @@
 // Brief: analysis of traces if performed from here
 //
 // Author: Erik Kassubek, Sebastian Pohsner
-// Created: 2025-01-01
 //
 // License: BSD-3-Clause
 
@@ -204,7 +203,7 @@ func RunHBAnalysis(fuzzing bool) {
 
 	log.Info("Finished HB analysis")
 
-	if f_base.FuzzingModeGFuzz || a_base.AnalysisCasesMap[flags.Leak] {
+	if f_base.FuzzingModeGFuzz {
 		a_scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		a_scenarios.CheckForSelectCaseWithPartner()
 	}

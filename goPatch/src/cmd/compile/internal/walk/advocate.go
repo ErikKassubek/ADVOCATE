@@ -13,12 +13,10 @@
 package walk
 
 import (
-	"cmd/compile/internal/base"
 	"cmd/compile/internal/ir"
 	"cmd/compile/internal/typecheck"
 	"cmd/compile/internal/types"
 	"cmd/internal/src"
-	"fmt"
 	"strings"
 )
 
@@ -97,7 +95,6 @@ func isAdvocateCall(n ir.Node) bool {
 
 func instrumentBody(fn *ir.Func) {
 	sh := shouldAdvocate(fn)
-	println(base.Ctxt.PosTable.Pos(fn.Pos()).Base().AbsFilename(), " ", sh)
 
 	if !sh {
 		return
@@ -180,7 +177,6 @@ func addIfSwitch(n ir.Node) ir.Node {
 func walkIfChain(n *ir.IfStmt) {
 	for n != nil {
 		// process n.Cond, n.Body here
-		fmt.Printf("if %v { ... }\n", n.Cond)
 
 		if len(n.Else) == 1 {
 			if elseif, ok := n.Else[0].(*ir.IfStmt); ok {
@@ -190,10 +186,6 @@ func walkIfChain(n *ir.IfStmt) {
 			}
 		}
 
-		// plain else block (0 or >1 statements, or a single non-If statement)
-		if len(n.Else) > 0 {
-			fmt.Printf("else { %v }\n", n.Else)
-		}
 		break
 	}
 }

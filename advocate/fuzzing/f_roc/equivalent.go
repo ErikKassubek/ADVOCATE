@@ -4,7 +4,6 @@
 // Brief: Check if an roc is considered equivalent to the trace it is based on
 //
 // Author: Erik Kassubek
-// Created: 2026-01-19
 //
 // License: BSD-3-Clause
 

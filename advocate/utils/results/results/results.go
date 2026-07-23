@@ -4,7 +4,6 @@
 // Brief: Function for debug results and for results found bugs
 //
 // Author: Erik Kassubek
-// Created: 2023-08-30
 //
 // License: BSD-3-Clause
 

@@ -5,7 +5,6 @@
 //        Some function start analysis functions
 //
 // Author: Erik Kassubek
-// Created: 2023-07-25
 //
 // License: BSD-3-Clause
 

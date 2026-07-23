@@ -4,7 +4,6 @@
 // Brief: Struct and functions for replay control elements in the trace
 //
 // Author: Erik Kassubek
-// Created: 2024-04-03
 //
 // License: BSD-3-Clause
 

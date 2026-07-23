@@ -3,7 +3,6 @@
 // File: ssa.go
 // Brief: Static Single Assigned
 // Author: Erik Kassubek
-// Created: 2026-05-07
 //
 // License: BSD-3-Clause
 

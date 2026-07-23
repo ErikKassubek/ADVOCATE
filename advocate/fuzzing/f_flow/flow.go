@@ -4,7 +4,6 @@
 // Brief: Add mutations based on flow
 //
 // Author: Erik Kassubek
-// Created: 2025-02-24
 //
 // License: BSD-3-Clause
 

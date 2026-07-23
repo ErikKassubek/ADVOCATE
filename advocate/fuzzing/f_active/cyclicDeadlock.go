@@ -4,7 +4,6 @@
 // Brief: Rewrite trace for cyclic deadlocks
 //
 // Author: Erik Kassubek
-// Created: 2024-04-05
 //
 // License: BSD-3-Clause
 

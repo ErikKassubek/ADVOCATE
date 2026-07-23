@@ -4,7 +4,6 @@
 // Brief: Update function for happens before info for forks (creation of new routine)
 //
 // Author: Erik Kassubek
-// Created: 2023-07-26
 //
 // License: BSD-3-Clause
 

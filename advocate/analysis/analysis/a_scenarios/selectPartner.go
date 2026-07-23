@@ -4,7 +4,6 @@
 // Brief: Trace analysis for detection of select cases without any possible partners
 //
 // Author: Erik Kassubek
-// Created: 2024-03-04
 //
 // License: BSD-3-Clause
 

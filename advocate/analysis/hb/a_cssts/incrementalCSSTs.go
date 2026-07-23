@@ -4,7 +4,6 @@
 // Brief: Implementation of IncrementalCSSTs.java from CSST paper (see csst.go)
 //
 // Author: Erik Kassubek
-// Created: 2025-07-02
 //
 // License: BSD-3-Clause
 

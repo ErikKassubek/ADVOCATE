@@ -4,7 +4,6 @@
 // Brief: Get concurrency information
 //
 // Author: Erik Kassubek
-// Created: 2025-07-07
 //
 // License: BSD-3-Clause
 

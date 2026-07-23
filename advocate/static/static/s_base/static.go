@@ -4,7 +4,6 @@
 // Brief: Base package for static analysis
 //
 // Author: Erik Kassubek
-// Created: 2026-06-30
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief:data for blocking detection
 //
 // Author: Erik Kassubek
-// Created: 2026-03-25
 //
 // License: BSD-3-Clause
 

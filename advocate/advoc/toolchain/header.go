@@ -5,7 +5,6 @@
 //    a main function
 //
 // Author: Erik Kassubek, Mario Occhinegro
-// Created: 2024-09-18
 //
 // License: BSD-3-Clause
 

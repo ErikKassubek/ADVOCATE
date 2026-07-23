@@ -4,7 +4,6 @@
 // Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
 // Author: Erik Kassubek
-// Created: 2024-11-29
 //
 // License: BSD-3-Clause
 
@@ -106,9 +105,9 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 		function: getLastCall(routine),
 	}
 
-	this.AddElement(&elem)
+	this.allocs[idInt] = &elem
 
-	this.allocs[elem.objId] = &elem
+	this.AddElement(&elem)
 
 	return nil
 }
@@ -320,7 +319,7 @@ func (this *ElementAlloc) Function() *ElementFunc {
 //
 // Parameter:
 //   - weak bool: set the weak wv
-//   - cl *clock.VectorClock: the vector clock
+//   - cl *clock.allocVectorClock: the vector clock
 func (this *ElementAlloc) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
 	this.ci.setVC(weak, cl)
 }
@@ -384,7 +383,6 @@ func (this *ElementAlloc) ReplayID() string {
 // Returns:
 //   - TraceElement: The copy of the element
 func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
-
 	return &ElementAlloc{
 		id:       this.id,
 		index:    0,

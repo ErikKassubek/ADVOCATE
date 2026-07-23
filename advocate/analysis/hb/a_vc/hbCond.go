@@ -4,7 +4,6 @@
 // Brief: Update the vc for conds
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 

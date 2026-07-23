@@ -5,7 +5,6 @@
 //   counter and unlock before lock
 //
 // Author: Erik Kassubek
-// Created: 2024-09-23
 //
 // License: BSD-3-Clause
 

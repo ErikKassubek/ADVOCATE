@@ -4,7 +4,6 @@
 // Brief: File for the selects for fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2024-12-04
 //
 // License: BSD-3-Clause
 

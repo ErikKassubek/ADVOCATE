@@ -4,7 +4,6 @@
 // Brief: Print informations for all bug types
 //
 // Author: Erik Kassubek
-// Created: 2024-06-14
 //
 // License: BSD-3-Clause
 

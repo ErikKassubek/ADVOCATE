@@ -4,7 +4,6 @@
 // Brief: Implement a comparable pair data type
 //
 // Author: Erik Kassubek
-// Created: 2025-07-02
 //
 // License: BSD-3-Clause
 

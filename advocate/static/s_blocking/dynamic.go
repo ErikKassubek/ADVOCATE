@@ -4,7 +4,6 @@
 // Brief: The dynamic parts of the blocking detection
 //
 // Author: Erik Kassubek
-// Created: 2026-03-25
 //
 // License: BSD-3-Clause
 
@@ -20,37 +19,17 @@ import (
 // getBlockedResources returns the resources of which at least one routine is blocking
 //
 // Returns:
-//   - map[trace.Resource]*trace.ElementAlloc: slice of map from blocked resource to alloc of resource.
-func getBlockedResources() map[trace.Resource]*trace.ElementAlloc {
-	res := make(map[trace.Resource]*trace.ElementAlloc)
+//   - []trace.Resource: slice of blocked resource.
+func getBlockedResources() map[*trace.Resource]struct{} {
+	res := make(map[*trace.Resource]struct{})
 
 	for _, e := range a_base.MainTrace.GetBlocked() {
-		switch s := e.(type) {
-		case *trace.ElementSelect:
-			ca := s.GetCases()
-			for _, ch := range ca {
-				addAlloc(ch, res)
-			}
-		default:
-			addAlloc(e, res)
+		for _, r := range a_base.MainTrace.GetResources(e) {
+			res[r] = struct{}{}
 		}
-
 	}
 
 	return res
-}
-
-func addAlloc(e trace.Element, res map[trace.Resource]*trace.ElementAlloc) {
-	ob := e.ObjID()
-
-	r := trace.NewResource(ob)
-
-	if _, ok := res[r]; ok {
-		return
-	}
-
-	alloc := a_base.MainTrace.GetAlloc(e)
-	res[r] = alloc
 }
 
 func buildFuncCallToSSAFunc() {

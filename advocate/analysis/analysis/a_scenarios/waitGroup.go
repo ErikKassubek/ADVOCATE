@@ -4,7 +4,6 @@
 // Brief: Trace analysis for possible negative wait group counter
 //
 // Author: Erik Kassubek
-// Created: 2023-11-24
 //
 // License: BSD-3-Clause
 

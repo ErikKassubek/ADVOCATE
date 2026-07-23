@@ -4,7 +4,6 @@
 // Brief: Command line flags
 //
 // Author: Erik Kassubek
-// Created: 2025-08-26
 //
 // License: BSD-3-Clause
 

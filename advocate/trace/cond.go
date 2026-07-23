@@ -4,7 +4,6 @@
 // Brief: Struct and functions for operations of conditional variables in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-12-25
 //
 // License: BSD-3-Clause
 

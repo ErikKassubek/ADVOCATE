@@ -4,7 +4,6 @@
 // Brief: Main function to run gfuzz
 //
 // Author: Erik Kassubek
-// Created: 2025-03-22
 //
 // License: BSD-3-Clause
 

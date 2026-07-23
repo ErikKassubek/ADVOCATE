@@ -4,7 +4,6 @@
 // Brief: Utility functions on slices
 //
 // Author: Erik Kassubek
-// Created: 2024-04-06
 //
 // License: BSD-3-Clause
 

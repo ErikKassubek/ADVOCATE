@@ -4,7 +4,6 @@
 // Brief: Determine if a func/routine/obj is reachable from a func/routine
 //
 // Author: Erik Kassubek
-// Created: 2026-04-28
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief: Update functions for happens before info for once operations
 //
 // Author: Erik Kassubek
-// Created: 2023-07-25
 //
 // License: BSD-3-Clause
 

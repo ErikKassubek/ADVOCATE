@@ -4,7 +4,6 @@
 // Brief: Operations for handling found bugs
 //
 // Author: Erik Kassubek
-// Created: 2023-11-30
 //
 // License: BSD-3-Clause
 

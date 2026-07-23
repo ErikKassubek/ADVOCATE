@@ -4,7 +4,6 @@
 // Brief: Entry point for static blocking analysis
 //
 // Author: Erik Kassubek
-// Created: 2026-03-25
 //
 // License: BSD-3-Clause
 
@@ -65,16 +64,13 @@ func BuildStaticBlockingAnalysis() (err error) {
 func isBlockingBug() {
 	blocked := getBlockedResources()
 
-	for _, alloc := range blocked {
-		f, s := data.Ssa().TraceToSSA(alloc)
-		log.Debug(alloc.ObjID(), " # ", f.Name(), " # ", s.String())
+	for r := range blocked {
+		f, s := data.Ssa().TraceToSSA(r.Alloc())
+		log.Debug(r.Id(), " # ", f.Name(), " # ", s.String())
 	}
 
 	buildFuncCallToSSAFunc()
 	log.Debug(a_base.MainTrace.CallTree().String())
 
-	for res, alloc := range blocked {
-		calcAlias(res, alloc)
-	}
-
+	// determineResouceToSSAAtTermination()
 }

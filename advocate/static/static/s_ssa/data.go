@@ -4,7 +4,6 @@
 // Brief: Data for the ssa analysis
 //
 // Author: Erik Kassubek
-// Created: 2026-06-30
 //
 // License: BSD-3-Clause
 
@@ -23,7 +22,7 @@ type Data struct {
 	ssaPkgs  []*ssa.Package
 	ssaMains []*ssa.Package
 
-	funcs    []*Function
+	funcs    map[string]*Function
 	mainFunc *Function
 	alloc    map[*Instruction][]Instruction // instruction -> set of alloc
 }
@@ -40,6 +39,6 @@ func BuildSsa(ast *s_ast.Data) *Data {
 	return data
 }
 
-func (this *Data) Funcs() []*Function {
+func (this *Data) Funcs() map[string]*Function {
 	return this.funcs
 }

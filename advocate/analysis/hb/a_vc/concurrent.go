@@ -4,7 +4,6 @@
 // Brief: Data required for calculating the vector clocks
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 

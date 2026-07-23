@@ -4,7 +4,6 @@
 // Brief: Store the vc for new and routine element
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 

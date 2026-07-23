@@ -4,7 +4,6 @@
 // Brief: Function to find concurrent operations by building direct order graph
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief: Cancel analysis when not enough memory
 //
 // Author: Erik Kassubek
-// Created: 2025-03-03
 //
 // License: BSD-3-Clause
 

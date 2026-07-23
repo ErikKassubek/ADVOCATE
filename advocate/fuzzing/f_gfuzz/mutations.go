@@ -4,7 +4,6 @@
 // Brief: Create the mutations
 //
 // Author: Erik Kassubek
-// Created: 2024-12-03
 //
 // License: BSD-3-Clause
 

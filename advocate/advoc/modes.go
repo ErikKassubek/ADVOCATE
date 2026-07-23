@@ -4,7 +4,6 @@
 // Brief: controll the different modes
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 

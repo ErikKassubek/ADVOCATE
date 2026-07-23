@@ -4,7 +4,6 @@
 // Brief: Functions and structs for one routine
 //
 // Author: Erik Kassubek
-// Created: 2024-08-08
 //
 // License: BSD-3-Clause
 
@@ -13,33 +12,17 @@ package trace
 import "sort"
 
 // ========================================================
-// MARK: Resource
-// ========================================================
-
-type Resource struct {
-	id int
-}
-
-func NewResource(id int) Resource {
-	return Resource{id}
-}
-
-func (this *Resource) Id() int {
-	return this.id
-}
-
-// ========================================================
 // MARK: Routine
 // ========================================================
 
 type Routine struct {
 	id        int
 	elems     []Element
-	resources []Resource // for resource aware blocking bug detection
+	resources []*Resource // for resource aware blocking bug detection
 }
 
 func NewRoutine(id int) *Routine {
-	return &Routine{id, make([]Element, 0), make([]Resource, 0)}
+	return &Routine{id, make([]Element, 0), make([]*Resource, 0)}
 }
 
 func (this *Routine) addElement(elem Element) {
@@ -115,7 +98,7 @@ func (this *Routine) First() Element {
 	return this.elems[0]
 }
 
-func (this *Routine) getResources() []Resource {
+func (this *Routine) Resources() []*Resource {
 	return this.resources
 }
 
@@ -159,6 +142,6 @@ func (this *Routine) SetTSortAtIndex(tPost, index int) {
 // Resource Aware
 // ========================================================
 
-func (this *Routine) addResource(res Resource) {
+func (this *Routine) addResource(res *Resource) {
 	this.resources = append(this.resources, res)
 }

@@ -4,7 +4,6 @@
 // Brief: Record data
 //
 // Author: Erik Kassubek
-// Created: 2026-04-28
 //
 // License: BSD-3-Clause
 

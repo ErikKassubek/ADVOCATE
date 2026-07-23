@@ -7,7 +7,6 @@
 //        Some of the update function also start analysis functions
 //
 // Author: Erik Kassubek
-// Created: 2023-07-27
 //
 // License: BSD-3-Clause
 

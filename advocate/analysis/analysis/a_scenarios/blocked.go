@@ -4,7 +4,6 @@
 // Brief: Trace analysis for routine blocks
 //
 // Author: Erik Kassubek
-// Created: 2024-01-28
 //
 // License: BSD-3-Clause
 
@@ -21,7 +20,6 @@ import (
 func Blocked() error {
 	tr := &a_base.MainTrace
 	blocked := tr.GetBlocked()
-	ref := tr.GetResources()
 
 	// blocked routines
 	b := make(map[int]struct{})
@@ -39,8 +37,8 @@ func Blocked() error {
 		for routB := range b {
 			for _, routL := range l {
 				found := false
-				for _, blockedB := range ref[routB] {
-					if types.Contains(ref[routL], blockedB) {
+				for _, blockedB := range tr.GetResourcesPerRout(routB) {
+					if types.Contains(tr.GetResourcesPerRout(routL), blockedB) {
 						r = append(r, routB)
 						found = true
 						break
@@ -62,7 +60,7 @@ func Blocked() error {
 		}
 	}
 
-	cyclic := checkCyclic(b, ref)
+	cyclic := checkCyclic(b, tr.GetResourcesRout())
 
 	for rout := range cyclic {
 		delete(b, rout)
@@ -76,7 +74,7 @@ func Blocked() error {
 }
 
 // check for cyclic dependencies
-func checkCyclic(b map[int]struct{}, res map[int][]trace.Resource) map[int]struct{} {
+func checkCyclic(b map[int]struct{}, res map[int][]*trace.Resource) map[int]struct{} {
 	graph := map[int][]int{}
 	selfLoop := map[int]bool{}
 

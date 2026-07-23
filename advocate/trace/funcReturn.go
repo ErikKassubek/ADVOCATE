@@ -4,7 +4,6 @@
 // Brief: Records the call of a function
 //
 // Author: Erik Kassubek
-// Created: 2026-07-13
 //
 // License: BSD-3-Clause
 

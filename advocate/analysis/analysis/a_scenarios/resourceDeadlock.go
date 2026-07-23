@@ -6,7 +6,6 @@
 // Brief: Alternative analysis for cyclic mutex deadlocks.
 //
 // Author: Sebastian Pohsner
-// Created: 2025-01-01
 //
 // License: BSD-3-Clause
 

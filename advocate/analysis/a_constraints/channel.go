@@ -4,7 +4,6 @@
 // Brief: Constraints for channels
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 

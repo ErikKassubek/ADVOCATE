@@ -4,7 +4,6 @@
 // Brief: Check exit codes
 //
 // Author: Erik Kassubek
-// Created: 2025-07-21
 //
 // License: BSD-3-Clause
 

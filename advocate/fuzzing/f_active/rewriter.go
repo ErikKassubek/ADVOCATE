@@ -4,7 +4,6 @@
 // Brief: Main functions to rewrite the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-11-30
 //
 // License: BSD-3-Clause
 

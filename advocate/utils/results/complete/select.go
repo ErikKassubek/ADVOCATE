@@ -4,7 +4,6 @@
 // Brief: Read all select cases in the program
 //
 // Author: Erik Kassubek
-// Created: 2024-06-30
 //
 // License: BSD-3-Clause
 

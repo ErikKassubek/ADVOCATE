@@ -4,7 +4,6 @@
 // Brief: Struct and functions for once operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-09-25
 //
 // License: BSD-3-Clause
 

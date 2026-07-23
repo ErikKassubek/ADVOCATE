@@ -4,7 +4,6 @@
 // Brief: Analysis for unlock of not locked mutex
 //
 // Author: Erik Kassubek
-// Created: 2024-09-23
 //
 // License: BSD-3-Clause
 

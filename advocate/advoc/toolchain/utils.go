@@ -5,7 +5,6 @@
 //    unit tests
 //
 // Author: Erik Kassubek
-// Created: 2024-10-29
 //
 // License: BSD-3-Clause
 

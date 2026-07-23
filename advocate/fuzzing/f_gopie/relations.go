@@ -4,7 +4,6 @@
 // Brief: Calculate the relation for goPie
 //
 // Author: Erik Kassubek
-// Created: 2025-03-24
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief: Read the ssa and pass into a format that is simpler to work with
 //
 // Author: Erik Kassubek
-// Created: 2026-05-07
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package s_ssa
 
 import (
 	"advocate/static/static/s_base"
+	"advocate/utils/log"
 	"fmt"
 	"go/token"
 	"go/types"
@@ -114,66 +114,64 @@ func (this *Data) analysisBlock(bl *ssa.BasicBlock) block {
 // MARK: Instruction
 // ================================================================
 
-type instClass string
+type InstClass string
 
 const (
-	ic_unknown             instClass = "unknown"
-	ic_alloc               instClass = "alloc"
-	ic_binOp               instClass = "binOp"
-	ic_builtin             instClass = "builtin"
-	ic_call                instClass = "call"
-	ic_changeInterface     instClass = "changeInterface"
-	ic_changeType          instClass = "changeType"
-	ic_const               instClass = "const"
-	ic_convert             instClass = "convert"
-	ic_debugRef            instClass = "debugRef"
-	ic_defer               instClass = "defer"
-	ic_extract             instClass = "extract"
-	ic_field               instClass = "field"
-	ic_fieldAddr           instClass = "fieldAddr"
-	ic_freeVar             instClass = "freeVar"
-	ic_function            instClass = "function"
-	ic_global              instClass = "global"
-	ic_go                  instClass = "go"
-	ic_if                  instClass = "if"
-	ic_index               instClass = "index"
-	ic_indexAddr           instClass = "indexAddr"
-	ic_jump                instClass = "jump"
-	ic_lookup              instClass = "lookup"
-	ic_makeChan            instClass = "makeChan"
-	ic_makeClosure         instClass = "makeClosure"
-	ic_makeInterface       instClass = "makeInterface"
-	ic_makeMap             instClass = "makeMap"
-	ic_makeSlice           instClass = "makeSlice"
-	ic_mapUpdate           instClass = "mapUpdate"
-	ic_multiConvert        instClass = "multiConvert"
-	ic_namedConst          instClass = "namedConst"
-	ic_next                instClass = "next"
-	ic_panic               instClass = "panic"
-	ic_parameter           instClass = "parameter"
-	ic_phi                 instClass = "phi"
-	ic_range               instClass = "range"
-	ic_return              instClass = "return"
-	ic_runDefers           instClass = "runDefers"
-	ic_select              instClass = "select"
-	ic_send                instClass = "send"
-	ic_slice               instClass = "slice"
-	ic_sliceToArrayPointer instClass = "sliceToArrayPointer"
-	ic_store               instClass = "store"
-	ic_type                instClass = "type"
-	ic_typeAssert          instClass = "typeAssert"
-	ic_unOp                instClass = "unOp"
+	Ic_unknown             InstClass = "unknown"
+	Ic_alloc               InstClass = "alloc"
+	Ic_binOp               InstClass = "binOp"
+	Ic_call                InstClass = "call"
+	Ic_changeInterface     InstClass = "changeInterface"
+	Ic_changeType          InstClass = "changeType"
+	Ic_const               InstClass = "const"
+	Ic_convert             InstClass = "convert"
+	Ic_debugRef            InstClass = "debugRef"
+	Ic_defer               InstClass = "defer"
+	Ic_extract             InstClass = "extract"
+	Ic_field               InstClass = "field"
+	Ic_fieldAddr           InstClass = "fieldAddr"
+	Ic_freeVar             InstClass = "freeVar"
+	Ic_function            InstClass = "function"
+	Ic_go                  InstClass = "go"
+	Ic_if                  InstClass = "if"
+	Ic_index               InstClass = "index"
+	Ic_indexAddr           InstClass = "indexAddr"
+	Ic_jump                InstClass = "jump"
+	Ic_lookup              InstClass = "lookup"
+	Ic_makeChan            InstClass = "makeChan"
+	Ic_makeClosure         InstClass = "makeClosure"
+	Ic_makeInterface       InstClass = "makeInterface"
+	Ic_makeMap             InstClass = "makeMap"
+	Ic_makeSlice           InstClass = "makeSlice"
+	Ic_mapUpdate           InstClass = "mapUpdate"
+	Ic_multiConvert        InstClass = "multiConvert"
+	Ic_next                InstClass = "next"
+	Ic_panic               InstClass = "panic"
+	Ic_parameter           InstClass = "parameter"
+	Ic_phi                 InstClass = "phi"
+	Ic_range               InstClass = "range"
+	Ic_return              InstClass = "return"
+	Ic_runDefers           InstClass = "runDefers"
+	Ic_select              InstClass = "select"
+	Ic_send                InstClass = "send"
+	Ic_slice               InstClass = "slice"
+	Ic_sliceToArrayPointer InstClass = "sliceToArrayPointer"
+	Ic_store               InstClass = "store"
+	Ic_typeAssert          InstClass = "typeAssert"
+	Ic_unOp                InstClass = "unOp"
 )
 
 type Instruction struct {
 	name string
 	inst ssa.Instruction
 
-	class instClass
+	class   InstClass
+	inTrace bool
+	relvant bool
 
 	ptr bool
 
-	hasConc [4]bool
+	conc hasConcInfo
 }
 
 func (this *Instruction) String() (res string) {
@@ -187,7 +185,19 @@ func (this *Instruction) String() (res string) {
 }
 
 func (this *Instruction) StringInfo() (res string) {
-	res = fmt.Sprintf("%-40s", this.String())
+	if this.relvant {
+		res += "+"
+	} else {
+		res += "-"
+	}
+
+	if this.inTrace {
+		res += "+ "
+	} else {
+		res += "- "
+	}
+
+	res += fmt.Sprintf("%-40s", this.String())
 
 	// name
 	obj := func(i int) s_base.ObjName {
@@ -205,13 +215,13 @@ func (this *Instruction) StringInfo() (res string) {
 		}
 	}
 
-	if this.class != ic_unknown {
+	if this.class != Ic_unknown {
 		res += "\t-> " + fmt.Sprintf("%-20s", string(this.class))
 	}
 
 	found := false
 	for i := 0; i < 4; i++ {
-		if this.hasConc[i] {
+		if this.conc[i] {
 			if !found {
 				res += "  -> "
 			} else {
@@ -225,20 +235,24 @@ func (this *Instruction) StringInfo() (res string) {
 	return
 }
 
-func (this *Instruction) hasChannel() bool {
-	return this.hasConc[chanInd]
+func (this *Instruction) HasChannel() bool {
+	return this.conc[chanInd]
 }
 
-func (this *Instruction) hasMutex() bool {
-	return this.hasConc[mutexInd]
+func (this *Instruction) HasMutex() bool {
+	return this.conc[mutexInd]
 }
 
-func (this *Instruction) hasCond() bool {
-	return this.hasConc[condVarInd]
+func (this *Instruction) HasCond() bool {
+	return this.conc[condVarInd]
 }
 
-func (this *Instruction) hasWg() bool {
-	return this.hasConc[wgInd]
+func (this *Instruction) HasWg() bool {
+	return this.conc[wgInd]
+}
+
+func (this *Instruction) Class() InstClass {
+	return this.class
 }
 
 func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
@@ -256,9 +270,11 @@ func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
 		inst: instr,
 	}
 
-	inst.hasConc[0], inst.hasConc[1], inst.hasConc[2], inst.hasConc[3] = containsSyncPrimitive(instr)
+	inst.conc[0], inst.conc[1], inst.conc[2], inst.conc[3] = containsSyncPrimitive(instr)
 
 	inst.class = this.analysisClass(instr)
+
+	inst.relvant, inst.inTrace = this.isRelvant(inst)
 
 	return inst
 }
@@ -327,85 +343,127 @@ func containsSyncPrimitive(instr ssa.Instruction) (hasChan, hasMutex, hasCond, h
 	return
 }
 
-func (this *Data) analysisClass(instr ssa.Instruction) instClass {
+func (this *Data) analysisClass(instr ssa.Instruction) InstClass {
 	switch instr.(type) {
 	case *ssa.Alloc:
-		return ic_alloc
+		return Ic_alloc
 	case *ssa.BinOp:
-		return ic_binOp
+		return Ic_binOp
 	case *ssa.Call:
-		return ic_call
+		return Ic_call
 	case *ssa.ChangeInterface:
-		return ic_changeInterface
+		return Ic_changeInterface
 	case *ssa.ChangeType:
-		return ic_changeType
+		return Ic_changeType
 	case *ssa.Convert:
-		return ic_convert
+		return Ic_convert
 	case *ssa.DebugRef:
-		return ic_debugRef
+		return Ic_debugRef
 	case *ssa.Defer:
-		return ic_defer
+		return Ic_defer
 	case *ssa.Extract:
-		return ic_extract
+		return Ic_extract
 	case *ssa.Field:
-		return ic_field
+		return Ic_field
 	case *ssa.FieldAddr:
-		return ic_fieldAddr
+		return Ic_fieldAddr
 	case *ssa.Go:
-		return ic_go
+		return Ic_go
 	case *ssa.If:
-		return ic_if
+		return Ic_if
 	case *ssa.Index:
-		return ic_index
+		return Ic_index
 	case *ssa.IndexAddr:
-		return ic_indexAddr
+		return Ic_indexAddr
 	case *ssa.Jump:
-		return ic_jump
+		return Ic_jump
 	case *ssa.Lookup:
-		return ic_lookup
+		return Ic_lookup
 	case *ssa.MakeChan:
-		return ic_makeChan
+		return Ic_makeChan
 	case *ssa.MakeClosure:
-		return ic_makeClosure
+		return Ic_makeClosure
 	case *ssa.MakeInterface:
-		return ic_makeInterface
+		return Ic_makeInterface
 	case *ssa.MakeMap:
-		return ic_makeMap
+		return Ic_makeMap
 	case *ssa.MakeSlice:
-		return ic_makeSlice
+		return Ic_makeSlice
 	case *ssa.MapUpdate:
-		return ic_mapUpdate
+		return Ic_mapUpdate
 	case *ssa.MultiConvert:
-		return ic_multiConvert
+		return Ic_multiConvert
 	case *ssa.Next:
-		return ic_next
+		return Ic_next
 	case *ssa.Panic:
-		return ic_panic
+		return Ic_panic
 	case *ssa.Phi:
-		return ic_phi
+		return Ic_phi
 	case *ssa.Range:
-		return ic_range
+		return Ic_range
 	case *ssa.Return:
-		return ic_return
+		return Ic_return
 	case *ssa.RunDefers:
-		return ic_runDefers
+		return Ic_runDefers
 	case *ssa.Select:
-		return ic_select
+		return Ic_select
 	case *ssa.Send:
-		return ic_send
+		return Ic_send
 	case *ssa.Slice:
-		return ic_slice
+		return Ic_slice
 	case *ssa.SliceToArrayPointer:
-		return ic_sliceToArrayPointer
+		return Ic_sliceToArrayPointer
 	case *ssa.Store:
-		return ic_store
+		return Ic_store
 	case *ssa.TypeAssert:
-		return ic_typeAssert
+		return Ic_typeAssert
 	case *ssa.UnOp:
-		return ic_unOp
+		return Ic_unOp
 	}
 
-	return ic_unknown
+	log.Error("Unknown SSA class: ", instr.String())
+	return Ic_unknown
+}
+
+// Determine if instruction is relevant
+//
+// Parameter:
+//   - instr ssa.Instruction: the instruciton
+//
+// Returns:
+//   - bool: is relevant
+//   - bool: is in trace
+func (this *Data) isRelvant(instr Instruction) (bool, bool) {
+	resource := instr.conc.Resource()
+
+	switch instr.class {
+	case Ic_go, Ic_makeChan, Ic_return, Ic_select, Ic_send:
+		return true, true
+	case Ic_alloc, Ic_unOp:
+		return resource, resource
+	case Ic_mapUpdate, Ic_lookup, Ic_extract, Ic_store:
+		return resource, false
+	case Ic_field, Ic_fieldAddr, Ic_freeVar, Ic_index, Ic_indexAddr, Ic_jump, Ic_makeClosure, Ic_makeInterface, Ic_makeMap, Ic_makeSlice, Ic_range, Ic_next, Ic_runDefers, Ic_slice, Ic_sliceToArrayPointer:
+		return true, false
+	case Ic_call:
+		i := instr.inst.(*ssa.Call)
+		fn := i.Common().StaticCallee()
+
+		if fn == nil {
+			return resource, resource
+		}
+
+		if _, ok := this.funcs[fn.String()]; !ok {
+			return resource, resource
+		}
+
+		return true, true
+	case Ic_if: // TODO: should be recorded, change when recorded
+		return true, false
+
+	}
+
+	return false, false
 }
 
 func (this *Data) getInstructionPos(instr ssa.Instruction) (string, int) {
@@ -419,17 +477,45 @@ func (this *Data) getInstructionPos(instr ssa.Instruction) (string, int) {
 }
 
 // ================================================================
-// MARK: ConcRes
+// MARK: ConcInfo
 // ================================================================
+
+type hasConcInfo [4]bool
 
 type concRes int
 
 const (
-	chanInd    concRes = 0
-	mutexInd   concRes = 1
-	condVarInd concRes = 2
-	wgInd      concRes = 3
+	chanInd concRes = iota
+	mutexInd
+	condVarInd
+	wgInd
 )
+
+func (this *hasConcInfo) Resource() bool {
+	for i := 0; i < 4; i++ {
+		if this[i] {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (this *hasConcInfo) Channel() bool {
+	return this[chanInd]
+}
+
+func (this *hasConcInfo) Mutex() bool {
+	return this[mutexInd]
+}
+
+func (this *hasConcInfo) CondVar() bool {
+	return this[condVarInd]
+}
+
+func (this *hasConcInfo) WaitGroup() bool {
+	return this[wgInd]
+}
 
 func (this *concRes) string() string {
 	switch *this {
@@ -466,7 +552,7 @@ func (this *freeVar) string() string {
 func (this *Data) runSSAAnalysis() {
 	seen := make(map[string]bool)
 
-	this.funcs = make([]*Function, 0)
+	this.funcs = make(map[string]*Function)
 
 	for _, pkg := range this.ssaPkgs {
 		if pkg == nil {
@@ -485,7 +571,7 @@ func (this *Data) runSSAAnalysis() {
 				return
 			}
 			f := this.analysisFunction(fn)
-			this.funcs = append(this.funcs, &f)
+			this.funcs[f.Name()] = &f
 
 			if isMain(fn) {
 				this.mainFunc = &f

@@ -4,7 +4,6 @@
 // Brief: Functions to read ans write the fuzzing files
 //
 // Author: Erik Kassubek
-// Created: 2024-11-28
 //
 // License: BSD-3-Clause
 

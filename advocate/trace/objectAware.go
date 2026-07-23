@@ -4,7 +4,6 @@
 // Brief: Object awareness for blocking bug detection
 //
 // Author: Erik Kassubek
-// Created: 2026-07-06
 //
 // License: BSD-3-Clause
 
@@ -27,7 +26,7 @@ func (this *Trace) AddTraceObjectAware(routine int, objects string) error {
 			return err
 		}
 
-		this.routines[routine].addResource(Resource{n})
+		this.routines[routine].addResource(NewResource(n, nil))
 	}
 
 	return nil

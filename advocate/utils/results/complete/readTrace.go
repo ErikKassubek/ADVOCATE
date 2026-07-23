@@ -4,7 +4,6 @@
 // Brief: Read in a trace
 //
 // Author: Erik Kassubek
-// Created: 2024-06-26
 //
 // License: BSD-3-Clause
 

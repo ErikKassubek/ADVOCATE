@@ -128,6 +128,15 @@ type CmdFlags struct {
 	PgoProfile         string       "help:\"read profile or pre-process profile from `file`\""
 	ErrorURL           bool         "help:\"print explanatory URL with error message if applicable\""
 
+	// ADVOCATE-START
+	AdvocateTrace   bool   "help:\"record the program using the advocate recorder\""
+	AdvocateReplay  bool   "help:\"replay a trace using the advocate replayer\""
+	AdvocateFuzzing bool   "help:\"run fuzzing using the advocate mechanism\""
+	AdvocatePath    string "help:\"set the advocate replay path\""
+	AdvocateTimeout int    "help:\"set the advocate tinmeout in s\""
+	AdvocateAtomics bool   "help:\"set if advocate should use atomics\""
+	// ADVOCATE-END
+
 	// Configuration derived from flags; not a flag itself.
 	Cfg struct {
 		Embed struct { // set by -embedcfg

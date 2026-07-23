@@ -75,11 +75,6 @@ type symsStruct struct {
 	WasmTruncS *obj.LSym
 	// Wasm
 	WasmTruncU *obj.LSym
-
-	// ADVOCATE-START
-	AdvocateFunctionCall   *obj.LSym
-	AdvocateFunctionReturn *obj.LSym
-	// ADVOCATE-END
 }
 
 // Pkgs holds known packages.

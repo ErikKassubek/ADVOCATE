@@ -10,40 +10,13 @@
 package s_blocking
 
 import (
-	"advocate/advoc/toolchain"
 	"advocate/analysis/a_base"
-	"advocate/static/static"
-	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
 // init to static blocking analysis
 func BuildStaticBlockingAnalysis() (err error) {
 	log.Info("Build static Analysis")
-
-	il := 0
-	if flags.ModeMain {
-		il, err = toolchain.HeaderInsertDummyMain()
-		if err != nil {
-			log.Error(err.Error())
-		}
-	} else {
-		log.Error("Static not implemented for tests")
-		// TODO: implement
-	}
-
-	data, err = static.BuildStaticData(flags.RootPath)
-
-	if flags.ModeMain {
-		toolchain.HeaderRemoverDummyMain(il)
-	} else {
-		log.Error("Static not implemented for tests")
-		// TODO: implement
-	}
-
-	if err != nil {
-		return err
-	}
 
 	isBlockingBug()
 

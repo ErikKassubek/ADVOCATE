@@ -1,0 +1,12 @@
+./alg.go
+./algkind_string.go
+./fmt.go
+./goversion.go
+./identity.go
+./kind_string.go
+./pkg.go
+./size.go
+./sym.go
+./type.go
+./universe.go
+./utils.go

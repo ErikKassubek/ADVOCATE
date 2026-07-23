@@ -17,6 +17,8 @@ import (
 	"runtime"
 	"strconv"
 	"time"
+
+	_ "unsafe"
 )
 
 var traceFileCounter = 0
@@ -30,19 +32,19 @@ var duration time.Duration
 
 var startWriting = false
 
-// InitTracing initializes the tracing.
+// AdvocateInitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
-func InitTracing(timeout int) {
+//
+//go:linkname AdvocateInitTracing runtime.AdvocateInitTracing
+func AdvocateInitTracing(timeout int) {
 	startTime = time.Now()
 	timerStarted = true
 
 	// remove the trace folder if it exists
 	err := os.RemoveAll(tracePathRecorded)
-	if err != nil {
-		if !os.IsNotExist(err) {
-			println("Cannot remove: ", err.Error())
-			return
-		}
+	if err != nil && !os.IsNotExist(err) {
+		println("Cannot remove: ", err.Error())
+		return
 	}
 
 	// create the trace folder
@@ -72,6 +74,8 @@ func InitTracing(timeout int) {
 // Write the trace of the program to a file.
 // The trace is written in the file named file_name.
 // The trace is written in the format of advocate.
+//
+//go:linkname FinishTracing runtime.AdvocateFinishTracing
 func FinishTracing() {
 	if hasFinished {
 		// needed to prevent program stop while still writing

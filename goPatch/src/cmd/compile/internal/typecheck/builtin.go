@@ -249,10 +249,16 @@ var runtimeDecls = [...]struct {
 	{"AdvocateAllocMutex", funcTag, 161},
 	{"AdvocateAllocCondVar", funcTag, 161},
 	{"AdvocateAllocWG", funcTag, 161},
+	{"AdvocateInitTracing", funcTag, 78},
+	{"AdvocateFinishTracing", funcTag, 9},
+	{"AdvocateInitReplay", funcTag, 162},
+	{"AdvocateFinishReplay", funcTag, 9},
+	{"AdvocateInitFuzzing", funcTag, 163},
+	{"AdvocateFinishFuzzing", funcTag, 9},
 }
 
 func runtimeTypes() []*types.Type {
-	var typs [162]*types.Type
+	var typs [164]*types.Type
 	typs[0] = types.ByteType
 	typs[1] = types.NewPtr(typs[0])
 	typs[2] = types.Types[types.TANY]
@@ -415,6 +421,8 @@ func runtimeTypes() []*types.Type {
 	typs[159] = types.NewArray(typs[0], 16)
 	typs[160] = newSig(params(typs[7], typs[65], typs[159], typs[28], typs[15], typs[69], typs[69]), params(typs[65]))
 	typs[161] = newSig(params(typs[7]), nil)
+	typs[162] = newSig(params(typs[28], typs[15]), nil)
+	typs[163] = newSig(params(typs[28], typs[15], typs[6]), nil)
 	return typs[:]
 }
 

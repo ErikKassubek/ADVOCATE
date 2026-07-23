@@ -48,8 +48,18 @@ func advocateFunctionCall() {
 
 	timer := GetNextTimeStep()
 
-	_, fileCall, lineCall, _ := Caller(2)
 	pc, fileDef, lineDef, _ := Caller(1)
+	funcName := FuncForPC(pc).Name()
+
+	if funcName == "main.init" {
+		tracingInitStarted = true
+	}
+
+	if !tracingInitStarted {
+		return
+	}
+
+	_, fileCall, lineCall, _ := Caller(2)
 
 	if hasSuffix(fileCall, ".s") { // required for go f()
 		fileCall = fileDef
@@ -57,11 +67,8 @@ func advocateFunctionCall() {
 	}
 
 	if AdvocateIgnore(fileDef) {
-		println("SKIP: ", fileCall, fileDef)
 		return
 	}
-
-	funcName := FuncForPC(pc).Name()
 
 	elem := AdvocateTraceFunctionStart{
 		t:        timer,
@@ -75,28 +82,28 @@ func advocateFunctionCall() {
 	insertIntoTrace(elem)
 }
 
-func advocateFunctionCallMain() {
-	if AdvocateTracingDisabled {
-		return
-	}
+// func advocateFunctionCallMain() {
+// 	if AdvocateTracingDisabled {
+// 		return
+// 	}
 
-	timer := GetNextTimeStep()
+// 	timer := GetNextTimeStep()
 
-	_, file, line, _ := Caller(3)
+// 	_, file, line, _ := Caller(3)
 
-	funcName := "main.main"
+// 	funcName := "main.main"
 
-	elem := AdvocateTraceFunctionStart{
-		t:        timer,
-		name:     funcName,
-		fileCall: file,
-		lineCall: line,
-		fileDef:  file,
-		lineDef:  line - 2, // main def is two lines above header
-	}
+// 	elem := AdvocateTraceFunctionStart{
+// 		t:        timer,
+// 		name:     funcName,
+// 		fileCall: file,
+// 		lineCall: line,
+// 		fileDef:  file,
+// 		lineDef:  line - 2, // main def is two lines above header
+// 	}
 
-	insertIntoTrace(elem)
-}
+// 	insertIntoTrace(elem)
+// }
 
 // AdvocateFunctionCall adds a function stall to the trace
 //
@@ -104,6 +111,10 @@ func advocateFunctionCallMain() {
 //   - index of the operation in the trace
 func advocateFunctionReturn() {
 	if AdvocateTracingDisabled {
+		return
+	}
+
+	if !tracingInitStarted {
 		return
 	}
 

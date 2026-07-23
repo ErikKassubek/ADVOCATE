@@ -510,7 +510,7 @@ func unitTestRun(pkg, file, testName string, origStdout, origStderr *os.File) er
 	defer timer.Stop(timer.Run)
 
 	// Remove header just in case
-	if err := headerRemoverUnit(file); err != nil {
+	if err := importRemoverUnit(file); err != nil {
 		log.Error("Failed to remove header: ", err)
 	}
 
@@ -551,12 +551,13 @@ func unitTestRecord(pkg, file, testName string,
 	isFuzzing := (fuzzing > 0)
 
 	// Remove header just in case
-	if err := headerRemoverUnit(file); err != nil {
+	if err := importRemoverUnit(file); err != nil {
 		return fmt.Errorf("Failed to remove header: %v", err)
 	}
 
 	// Add header
-	if err := headerInsertUnit(file, testName, false, fuzzing, fuzzingPath, false); err != nil {
+	buildFlags, err := importInsertUnit(file, testName, false, fuzzing, fuzzingPath, false)
+	if err != nil {
 		return fmt.Errorf("Error in adding header: %v", err)
 	}
 
@@ -569,7 +570,7 @@ func unitTestRecord(pkg, file, testName string,
 	command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "version")
 
 	pkgPath := paths.MakePathLocal(pkg)
-	err := command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", buildFlags, "-v", "-count=1", "-run="+testName, pkgPath)
+	err = command.RunCommand(osOut, osErr, command.NoTimeout, paths.Go, "test", buildFlags, "-v", "-count=1", "-run="+testName, pkgPath)
 	if err != nil {
 		if isFuzzing {
 			if checkForTimeout(output) {
@@ -590,7 +591,7 @@ func unitTestRecord(pkg, file, testName string,
 	}
 
 	// Remove header after the test
-	err = headerRemoverUnit(file)
+	err = importRemoverUnit(file)
 
 	return err
 }
@@ -672,7 +673,7 @@ func unitTestReplay(dir, pkg, file,
 			continue
 		}
 
-		headerInsertUnit(file, testName, true, -1, traceNum, record)
+		buildFlags, _ := importInsertUnit(file, testName, true, -1, traceNum, record)
 
 		os.Setenv("GOROOT", paths.GoPatch)
 
@@ -690,7 +691,7 @@ func unitTestReplay(dir, pkg, file,
 		os.Unsetenv("GOROOT")
 
 		// Remove reorder header
-		headerRemoverUnit(file)
+		importRemoverUnit(file)
 	}
 
 	return len(rewrittenTraces)

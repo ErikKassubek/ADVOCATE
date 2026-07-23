@@ -17,6 +17,8 @@ var writeTraceToFileFunc func(routine int, fromRuntime bool) bool
 
 var tracingStartNano int64
 
+var tracingInitStarted bool
+
 // InitTracing enables the collection of the trace
 //
 // Parameter:
@@ -32,7 +34,7 @@ func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool
 	}
 
 	// record call of main function
-	advocateFunctionCallMain()
+	// advocateFunctionCallMain()
 }
 
 // DisableTracing disables the trace recording

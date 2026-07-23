@@ -229,11 +229,6 @@ func InitConfig() {
 	ir.Syms.WasmTruncS = typecheck.LookupRuntimeVar("wasmTruncS")
 	ir.Syms.WasmTruncU = typecheck.LookupRuntimeVar("wasmTruncU")
 	ir.Syms.SigPanic = typecheck.LookupRuntimeFunc("sigpanic")
-
-	// ADVOCATE-START
-	ir.Syms.AdvocateFunctionCall = typecheck.LookupRuntimeFunc("advocateFunctionCall")
-	ir.Syms.AdvocateFunctionReturn = typecheck.LookupRuntimeFunc("advocateFunctionReturn")
-	// ADVOCATE-END
 }
 
 func InitTables() {
@@ -600,7 +595,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	// MARK: function calls
 	if shouldAdvocate(fn) {
 		s.rtcall(
-			ir.Syms.AdvocateFunctionCall,
+			typecheck.LookupRuntimeFunc("advocateFunctionCall"),
 			true,
 			nil,
 		)
@@ -2334,7 +2329,21 @@ func shouldAdvocate(fn *ir.Func) bool {
 // MARK: exit
 func (s *state) advocateExitCall(fn *ir.Func) {
 	if shouldAdvocate(fn) {
-		s.rtcall(ir.Syms.AdvocateFunctionReturn, true, nil)
+		s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+	}
+
+	if fn != nil && fn.Sym() != nil &&
+		fn.Sym().Name == "main" &&
+		fn.Sym().Pkg != nil &&
+		fn.Sym().Pkg.Path == "main" {
+
+		if base.Flag.AdvocateTrace {
+			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishTracing"), true, nil)
+		} else if base.Flag.AdvocateReplay {
+			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishReplay"), true, nil)
+		} else if base.Flag.AdvocateFuzzing {
+			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishFuzzing"), true, nil)
+		}
 	}
 }
 

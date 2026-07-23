@@ -305,4 +305,11 @@ func AdvocateAllocMutex(unsafe.Pointer)
 func AdvocateAllocCondVar(unsafe.Pointer)
 func AdvocateAllocWG(unsafe.Pointer)
 
+func AdvocateInitTracing(int)
+func AdvocateFinishTracing()
+func AdvocateInitReplay(string, int)
+func AdvocateFinishReplay()
+func AdvocateInitFuzzing(string, int, bool)
+func AdvocateFinishFuzzing()
+
 // ADVOCATE-END

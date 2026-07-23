@@ -28,14 +28,32 @@ We record the following operations:
 
 ## Toolchain
 
-To run the recording, the following preamble needs to be added to the main function
-or the test that is analyzed:
+To record a trace, import 
+
+```
+import _ "advocatego"
+``` 
+
+and
+
+build the program with 
+
+```
+-gcflags=all="-advocatetrace"
+```
+
+e.g.
 
 ```go
-// ======= Preamble Start =======
-  advocatego.InitTracing()
-  defer advocatego.FinishTracing()
-// ======= Preamble End =======
+./go build -gcflags=all="-advocatetrace"
+```
+
+The run the compiled program.
+
+For tests, run 
+
+```
+./go test ./... -gcflags=all="-advocatetrace"
 ```
 
 When the [toolchain](../advocate/) is used, this is done automatically.

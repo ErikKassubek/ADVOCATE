@@ -1,0 +1,5 @@
+./bytealg_bootstrap.go
+./doc.go
+./isprint.go
+./number.go
+./quote.go

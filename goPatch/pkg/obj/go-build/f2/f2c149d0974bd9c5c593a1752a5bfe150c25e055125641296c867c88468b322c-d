@@ -1,0 +1,5 @@
+./alg.go
+./helpers.go
+./map_noswiss.go
+./map_swiss.go
+./reflect.go

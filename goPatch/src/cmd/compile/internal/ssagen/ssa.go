@@ -2328,15 +2328,13 @@ func shouldAdvocate(fn *ir.Func) bool {
 
 // MARK: exit
 func (s *state) advocateExitCall(fn *ir.Func) {
-	if shouldAdvocate(fn) {
-		s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+	if !shouldAdvocate(fn) {
+		return
 	}
 
-	if fn != nil && fn.Sym() != nil &&
-		fn.Sym().Name == "main" &&
-		fn.Sym().Pkg != nil &&
-		fn.Sym().Pkg.Path == "main" {
+	s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
 
+	if isUserMain(fn) {
 		if base.Flag.AdvocateTrace {
 			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishTracing"), true, nil)
 		} else if base.Flag.AdvocateReplay {
@@ -2345,6 +2343,24 @@ func (s *state) advocateExitCall(fn *ir.Func) {
 			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishFuzzing"), true, nil)
 		}
 	}
+}
+
+func isUserMain(fn *ir.Func) bool {
+	if fn == nil {
+		return false
+	}
+
+	sym := fn.Sym()
+	if sym.Name != "main" {
+		return false
+	}
+
+	pkg := sym.Pkg
+	if pkg == nil {
+		return false
+	}
+
+	return pkg.Name == "main" && pkg.Path == "main"
 }
 
 // ADVOCATE-END

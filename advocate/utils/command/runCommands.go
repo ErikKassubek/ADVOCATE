@@ -65,6 +65,8 @@ func RunCommand(osOut, osErr *os.File, timeout int, name string, args ...string)
 		cmd.Stderr = osErr
 	}
 
+	log.Debug(cmd.String())
+
 	count++
 
 	return cmd.Run()

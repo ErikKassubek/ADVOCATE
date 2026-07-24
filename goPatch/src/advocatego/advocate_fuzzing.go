@@ -35,7 +35,7 @@ func InitFuzzing(tracePath string, timeout int) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
-	AdvocateInitTracing(0) // timeout will be done in startReplay
+	InitTracing(0) // timeout will be done in startReplay
 
 	if tracePath == "" { // GoFuzz and Flow
 		fuzzingSelectPath := "fuzzingData.log"

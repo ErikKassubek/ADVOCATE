@@ -32,11 +32,11 @@ var duration time.Duration
 
 var startWriting = false
 
-// AdvocateInitTracing initializes the tracing.
+// InitTracing initializes the tracing.
 // The function creates the trace folder and starts the background memory test.
 //
-//go:linkname AdvocateInitTracing runtime.AdvocateInitTracing
-func AdvocateInitTracing(timeout int) {
+//go:linkname InitTracing runtime.AdvocateInitTracing
+func InitTracing(timeout int) {
 	startTime = time.Now()
 	timerStarted = true
 

@@ -1,7 +1,0 @@
-./advocate_atomic.go
-./advocate_atomic_type.go
-./doc.go
-./doc_64.go
-./type.go
-./value.go
-./asm.s

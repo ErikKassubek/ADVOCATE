@@ -16,7 +16,7 @@ import (
 
 // TODO: global
 
-func (this *Data) TraceToSSA(elem trace.Element) (*Function, *Instruction) {
+func (this *Data) TraceToSSA(elem trace.Element) (*Function, Instruction) {
 	// we are only interested in blocking types and alloc
 	switch elem.(type) {
 	case *trace.ElementAlloc, *trace.ElementChannel, *trace.ElementMutex, *trace.ElementCond, *trace.ElementWait, *trace.ElementSelect, *trace.ElementFunc:
@@ -35,8 +35,6 @@ func (this *Data) TraceFuncToSSAFunc(f *trace.ElementFunc) *Function {
 	if f == nil {
 		return this.mainFunc
 	}
-
-	// TODO: globals/init
 
 	name := this.elemNameToSSAName(f)
 
@@ -61,11 +59,11 @@ func (this *Data) elemNameToSSAName(elem *trace.ElementFunc) string {
 	return name
 }
 
-func (this *Data) FindSSAInstrFromSSAFunc(f *Function, elem trace.Element) *Instruction {
+func (this *Data) FindSSAInstrFromSSAFunc(f *Function, elem trace.Element) Instruction {
 	for _, b := range f.blocks {
 		for _, i := range b.insts {
-			if this.correspondsSSAInstrTraceElem(&i, elem) {
-				return &i
+			if this.correspondsSSAInstrTraceElem(i, elem) {
+				return i
 			}
 		}
 	}
@@ -73,9 +71,9 @@ func (this *Data) FindSSAInstrFromSSAFunc(f *Function, elem trace.Element) *Inst
 	return nil
 }
 
-func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Element) bool {
-	ssaClass := i.class
-	file, line := this.getInstructionPos(i.inst)
+func (this *Data) correspondsSSAInstrTraceElem(i Instruction, elem trace.Element) bool {
+	ssaClass := i.Class()
+	file, line := this.getInstructionPos(i.Inst())
 
 	if file != elem.File() || line != elem.Line() {
 		return false
@@ -88,7 +86,7 @@ func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Elemen
 				return true
 			} else if elem.Type(false) == trace.Cond && i.HasCond() {
 				return true
-			} else if elem.Type(false) == trace.Wait && i.HasWg() {
+			} else if elem.Type(false) == trace.Wait && i.HasWG() {
 				return true
 			}
 		}
@@ -108,7 +106,7 @@ func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Elemen
 			return true
 		}
 	case *trace.ElementWait:
-		if i.HasWg() && ssaClass == Ic_call {
+		if i.HasWG() && ssaClass == Ic_call {
 			return true
 		}
 	case *trace.ElementSelect:
@@ -116,7 +114,7 @@ func (this *Data) correspondsSSAInstrTraceElem(i *Instruction, elem trace.Elemen
 			return true
 		}
 	case *trace.ElementFunc:
-		if ssaClass == Ic_call && i.name == e.GetName() {
+		if ssaClass == Ic_call && i.Name() == e.GetName() {
 			return true
 		}
 	}

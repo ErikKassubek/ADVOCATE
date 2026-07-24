@@ -11,12 +11,19 @@ package s_blocking
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/static/static"
+	"advocate/utils/flags"
 	"advocate/utils/log"
 )
 
 // init to static blocking analysis
 func BuildStaticBlockingAnalysis() (err error) {
 	log.Info("Build static Analysis")
+
+	data, err = static.BuildStaticData(flags.RootPath)
+	if err != nil {
+		return err
+	}
 
 	isBlockingBug()
 
@@ -45,5 +52,5 @@ func isBlockingBug() {
 	buildFuncCallToSSAFunc()
 	log.Debug(a_base.MainTrace.CallTree().String())
 
-	// determineResouceToSSAAtTermination()
+	determineResouceToSSAAtTermination(blocked)
 }

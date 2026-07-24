@@ -24,6 +24,7 @@ type Data struct {
 
 	funcs    map[string]*Function
 	mainFunc *Function
+	initFunc *Function
 	alloc    map[*Instruction][]Instruction // instruction -> set of alloc
 }
 
@@ -41,4 +42,12 @@ func BuildSsa(ast *s_ast.Data) *Data {
 
 func (this *Data) Funcs() map[string]*Function {
 	return this.funcs
+}
+
+func (this *Data) MainFunc() *Function {
+	return this.mainFunc
+}
+
+func (this *Data) InitFunc() *Function {
+	return this.initFunc
 }

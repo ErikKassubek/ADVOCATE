@@ -111,7 +111,7 @@ func Run() error {
 	case "static": // TODO: only for testing, when working move into analysis
 		flags.DeleteTraces = false
 		err = modeToolchain(modeMainTest, record, analysis, !replay)
-		s_blocking.BuildStaticBlockingAnalysis()
+		err = s_blocking.BuildStaticBlockingAnalysis()
 	default:
 		log.Errorf("Unknown mode %s\n", os.Args[1])
 		log.Error("Select one mode from  'analysis', 'fuzzing', 'replay' or 'record'")

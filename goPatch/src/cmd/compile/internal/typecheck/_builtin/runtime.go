@@ -304,6 +304,7 @@ func advocateFunctionReturn()
 func AdvocateAllocMutex(unsafe.Pointer)
 func AdvocateAllocCondVar(unsafe.Pointer)
 func AdvocateAllocWG(unsafe.Pointer)
+func advocateControllFlow(string, int, int)
 
 func AdvocateInitTracing(int)
 func AdvocateFinishTracing()

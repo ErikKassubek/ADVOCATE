@@ -65,6 +65,9 @@ const (
 
 	OperationReplayNever Operation = "replayNever"
 	OperationReplayEnd   Operation = "replayEnd"
+
+	OperationControllIf     Operation = "controllIf"
+	OperationControllSwitch Operation = "controllSwitch"
 )
 
 const posSep = "#"
@@ -111,6 +114,8 @@ func getOperationObjectString(op Operation) string {
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
+	case OperationControllIf, OperationControllSwitch:
+		return "Controll"
 	}
 	return "Unknown"
 }

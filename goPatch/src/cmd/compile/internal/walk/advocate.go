@@ -18,79 +18,25 @@ import (
 	"cmd/compile/internal/typecheck"
 	"cmd/compile/internal/types"
 	"cmd/internal/src"
+	"fmt"
 	"strings"
 )
 
-// ADOVCATE-START
-// MARK: shouldAdvocate
-func shouldAdvocate(n ir.Node) bool {
-	if n == nil {
-		return false
-	}
-
-	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
-		return false
-	}
-
-	return !isAdvocateCall(n)
+// ==================================================
+// MARK: instrument
+// ==================================================
+func dumpFunc(fn *ir.Func) {
+	fmt.Printf("FUNC: %v\n", fn.Sym())
+	ir.DumpList("body", fn.Body)
 }
-
-func nodeSym(n ir.Node) *types.Sym {
-	switch x := ir.StaticValue(n).(type) {
-	case *ir.Name:
-		return x.Sym()
-	case *ir.SelectorExpr:
-		if x.Selection != nil {
-			return x.Selection.Sym
-		}
-		return x.Sel
-	case *ir.CallExpr:
-		return nodeSym(x.Fun)
-	}
-	if t := n.Type(); t != nil && t.Sym() != nil {
-		return t.Sym()
-	}
-	return nil
-}
-
-func isStdPkgPath(pkgPath string) bool {
-	if pkgPath == "" || pkgPath == "main" {
-		return true
-	}
-	first := pkgPath
-	if i := strings.IndexByte(pkgPath, '/'); i >= 0 {
-		first = pkgPath[:i]
-	}
-	return !strings.Contains(first, ".")
-}
-
-func isAdvocateCall(n ir.Node) bool {
-	call, ok := n.(*ir.CallExpr)
-	if !ok {
-		return false
-	}
-
-	if call.Op() != ir.OCALLFUNC {
-		return false
-	}
-
-	name, ok := call.Fun.(*ir.Name)
-	if !ok {
-		return false
-	}
-
-	return name.Sym() != nil &&
-		(name.Sym().Name == "AdvocateAllocMutex" ||
-			name.Sym().Name == "AdvocateAllocCondVar" ||
-			name.Sym().Name == "AdvocateAllocWG")
-}
-
 func instrumentBody(fn *ir.Func) {
 	if !shouldAdvocate(fn) {
 		return
 	}
 
 	fn.Body = instrumentStmtList(fn.Body)
+
+	dumpFunc(fn)
 }
 
 func instrumentStmtList(body ir.Nodes) ir.Nodes {
@@ -119,11 +65,7 @@ func instrumentStmtRecursive(n ir.Node) {
 		x.List = instrumentStmtList(x.List)
 
 	case *ir.IfStmt:
-		x.Cond = instrumentExprRecursive(x.Cond)
-		x.Body = instrumentStmtList(x.Body)
-		if x.Else != nil {
-			x.Else = instrumentStmtList(x.Else)
-		}
+		instrumentIfChain(x)
 
 	case *ir.ForStmt:
 		x.Cond = instrumentExprRecursive(x.Cond)
@@ -206,30 +148,9 @@ func instrumentExprRecursive(n ir.Node) ir.Node {
 	return n
 }
 
-func addIfSwitch(n ir.Node) ir.Node {
-	switch n := n.(type) {
-	case *ir.IfStmt:
-		walkIfChain(n)
-	}
-
-	return nil
-}
-
-func walkIfChain(n *ir.IfStmt) {
-	for n != nil {
-		// process n.Cond, n.Body here
-
-		if len(n.Else) == 1 {
-			if elseif, ok := n.Else[0].(*ir.IfStmt); ok {
-				// this is an "else if"
-				n = elseif
-				continue
-			}
-		}
-
-		break
-	}
-}
+// ==================================================
+// MARK: Alloc
+// ==================================================
 
 func addAlloc(n ir.Node) ir.Node {
 	t, obj := allocatedSync(n)
@@ -338,4 +259,135 @@ func isSyncType(t *types.Type, name string) bool {
 
 	return sym.Pkg.Path == "sync" &&
 		sym.Name == name
+}
+
+// ==================================================
+// MARK: If
+// ==================================================
+
+func addIf(body ir.Nodes, pos src.XPos, numCases, caseNum int) ir.Nodes {
+	fn := typecheck.LookupRuntime("advocateControllFlow")
+
+	call := typecheck.Call(
+		pos,
+		fn,
+		[]ir.Node{
+			ir.NewString(pos, "I"),
+			ir.NewInt(pos, int64(numCases)),
+			ir.NewInt(pos, int64(caseNum)),
+		},
+		false,
+	)
+
+	out := make(ir.Nodes, 0, len(body)+1)
+	out.Append(call)
+	out.Append(body...)
+
+	return out
+}
+
+func instrumentIfChain(n *ir.IfStmt) {
+	numCases := countIfCases(n)
+
+	caseNum := 0
+	for cur := n; cur != nil; {
+
+		cur.Body = instrumentStmtList(cur.Body)
+		cur.Body = addIf(
+			cur.Body,
+			cur.Pos(),
+			numCases,
+			caseNum,
+		)
+
+		caseNum++
+
+		// else-if
+		if len(cur.Else) == 1 {
+			if next, ok := cur.Else[0].(*ir.IfStmt); ok {
+				cur = next
+				continue
+			}
+		}
+
+		// final else
+		if cur.Else != nil {
+			cur.Else = instrumentStmtList(cur.Else)
+			cur.Else = addIf(
+				cur.Else,
+				cur.Pos(),
+				numCases,
+				caseNum,
+			)
+		}
+
+		break
+	}
+}
+
+func countIfCases(n *ir.IfStmt) int {
+	count := 1
+
+	for {
+		if len(n.Else) == 1 {
+			if next, ok := n.Else[0].(*ir.IfStmt); ok {
+				count++
+				n = next
+				continue
+			}
+		}
+
+		if n.Else != nil {
+			count++
+		}
+
+		return count
+	}
+}
+
+// ==================================================
+// MARK: shouldAdvocate
+// ==================================================
+
+func shouldAdvocate(n ir.Node) bool {
+	if n == nil {
+		return false
+	}
+
+	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
+		return false
+	}
+
+	pkgName := n.Sym().Pkg.Path
+	if pkgName == "runtime" ||
+		pkgName == "syscall" ||
+		pkgName == "os" ||
+		pkgName == "fmt" ||
+		strings.HasPrefix(pkgName, "internal") {
+
+		return false
+	}
+
+	return !isAdvocateCall(n)
+}
+
+func isAdvocateCall(n ir.Node) bool {
+	call, ok := n.(*ir.CallExpr)
+	if !ok {
+		return false
+	}
+
+	if call.Op() != ir.OCALLFUNC {
+		return false
+	}
+
+	name, ok := call.Fun.(*ir.Name)
+	if !ok {
+		return false
+	}
+
+	return name.Sym() != nil &&
+		(name.Sym().Name == "AdvocateAllocMutex" ||
+			name.Sym().Name == "AdvocateAllocCondVar" ||
+			name.Sym().Name == "AdvocateAllocWG")
 }

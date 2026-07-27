@@ -38,42 +38,51 @@ type AdvocateTraceControllFlow struct {
 //   - numCases int: number of cases
 //   - chosenCase int: number of chosen case
 func advocateControllFlow(ct string, numCases, chosenCase int) {
-	return
-	// if AdvocateTracingDisabled {
-	// 	return -1
-	// }
+	if AdvocateTracingDisabled {
+		return
+	}
 
-	// timer := GetNextTimeStep()
+	timer := GetNextTimeStep()
 
-	// _, file, line, _ := Caller(1)
+	_, file, line, _ := Caller(1)
 
-	// if AdvocateIgnore(file) {
-	// 	return -1
-	// }
+	if AdvocateIgnore(file) {
+		return
+	}
 
-	// var op Operation
-	// switch ct {
-	// case "I":
-	// 	op = OperationIf
-	// case "S":
-	// 	op = OperationSelect
-	// default:
-	// 	panic("Unknown Controll Flow type " + ct)
-	// }
+	var op Operation
+	switch ct {
+	case "I":
+		op = OperationControllIf
+	case "S":
+		op = OperationControllSwitch
+	default:
+		panic("Unknown Controll Flow type " + ct)
+	}
 
-	// elem := AdvocateTraceControllFlow{
-	// 	t:          timer,
-	// 	numCases:   numCases,
-	// 	chosenCase: chosenCase,
-	// 	ct:         op,
-	// 	file:       file,
-	// 	line:       line,
-	// }
+	elem := AdvocateTraceControllFlow{
+		t:          timer,
+		numCases:   numCases,
+		chosenCase: chosenCase,
+		ct:         op,
+		file:       file,
+		line:       line,
+	}
 
-	// return insertIntoTrace(elem)
+	insertIntoTrace(elem)
 }
 
 func (self AdvocateTraceControllFlow) toString() string {
+	ctString := ""
+	switch self.ct {
+	case OperationControllIf:
+		ctString = "I"
+	case OperationControllSwitch:
+		ctString = "S"
+	default:
+		panic("Invalid controll flow type: ", string(self.ct))
+	}
+
 	return buildTraceElemString("I", self.t, string(self.ct), self.numCases, self.chosenCase, posToString(self.file, self.line))
 }
 

@@ -1,4 +1,4 @@
-# Conditional
+# Conditional Variable
 
 The three operations on conditional variables are
 
@@ -23,9 +23,9 @@ The other fields are set as follows:
   acquiring the lock in case of a trylock.
 - [id] $\in \mathbb N$: This is the unique id identifying this mutex
 - [opN]: This field shows the operation of the element. Those can be
-  - [opM] = `W`: Wait
-  - [opM] = `S`: Signal
-  - [opM] = `B`: Broadcast
+  - [opN] = `W`: Wait
+  - [opN] = `S`: Signal
+  - [opN] = `B`: Broadcast
 - [pos]: The last field show the position in the code, where the mutex operation
   was executed. It consists of the file and line number separated by a colon (:)
 

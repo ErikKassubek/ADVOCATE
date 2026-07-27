@@ -248,29 +248,29 @@ func makeUnsafePointer(addr ir.Node, pos src.XPos) ir.Node {
 
 func allocatedSync(n ir.Node) (t *types.Type, m *ir.Name) {
 	// TODO: for now only record channels
-	return nil, nil
+	// return nil, nil
 
-	// switch n := n.(type) {
+	switch n := n.(type) {
 
-	// case *ir.AssignStmt:
-	// 	// m := sync.Mutex{}
-	// 	if n.Y != nil {
-	// 		t = n.Y.Type()
-	// 	}
-	// 	name, ok := n.X.(*ir.Name)
-	// 	if ok {
-	// 		m = name
-	// 	}
+	case *ir.AssignStmt:
+		// m := sync.Mutex{}
+		if n.Y != nil {
+			t = n.Y.Type()
+		}
+		name, ok := n.X.(*ir.Name)
+		if ok {
+			m = name
+		}
 
-	// case *ir.Decl:
-	// 	// var m sync.Mutex
-	// 	if n.X != nil {
-	// 		t = n.X.Type()
-	// 		m = n.X
-	// 	}
-	// }
+	case *ir.Decl:
+		// var m sync.Mutex
+		if n.X != nil {
+			t = n.X.Type()
+			m = n.X
+		}
+	}
 
-	// return
+	return
 }
 
 func isSyncType(t *types.Type, name string) bool {

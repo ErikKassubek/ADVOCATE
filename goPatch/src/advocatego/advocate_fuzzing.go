@@ -23,6 +23,8 @@ import (
 var isFuzzing = false
 var finishFuzzingStarted = false
 
+var initRun bool
+
 // Initialize fuzzing
 //
 // Parameter:
@@ -32,6 +34,11 @@ var finishFuzzingStarted = false
 //
 //go:linkname InitFuzzing runtime.AdvocateInitFuzzing
 func InitFuzzing(tracePath string, timeout int) {
+	if initRun { // called by main but alredy run by init
+		return
+	}
+	initRun = true
+
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 

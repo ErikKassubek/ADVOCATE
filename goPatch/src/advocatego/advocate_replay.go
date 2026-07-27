@@ -42,6 +42,11 @@ var tracePathRewritten = ""
 //
 //go:linkname InitReplay runtime.AdvocateInitReplay
 func InitReplay(tracePath string, timeout int, atomic bool) {
+	if initRun { // called by main but alredy run by init
+		return
+	}
+	initRun = true
+
 	// use first as default
 	// runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic

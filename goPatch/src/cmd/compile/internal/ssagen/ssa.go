@@ -593,6 +593,28 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 
 	// ADVOCATE-START
 	// MARK: function calls
+	if isUserMain(fn) {
+		if base.Flag.AdvocateTrace {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitTracing"),
+				true,
+				nil,
+			)
+		} else if base.Flag.AdvocateReplay {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitReplay"),
+				true,
+				nil,
+			)
+		} else if base.Flag.AdvocateFuzzing {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitFuzzing"),
+				true,
+				nil,
+			)
+		}
+	}
+
 	if shouldAdvocate(fn) {
 		s.rtcall(
 			typecheck.LookupRuntimeFunc("advocateFunctionCall"),
@@ -600,6 +622,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 			nil,
 		)
 	}
+	// ADVOCATE-END
 
 	s.stmtList(fn.Body)
 

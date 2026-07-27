@@ -37,6 +37,11 @@ var startWriting = false
 //
 //go:linkname InitTracing runtime.AdvocateInitTracing
 func InitTracing(timeout int) {
+	if initRun { // called by main but alredy run by init
+		return
+	}
+	initRun = true
+
 	startTime = time.Now()
 	timerStarted = true
 

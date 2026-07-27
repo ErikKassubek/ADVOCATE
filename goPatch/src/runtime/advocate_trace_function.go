@@ -12,6 +12,10 @@
 
 package runtime
 
+import "internal/runtime/atomic"
+
+var numberFunctions atomic.Int64
+
 // TODO: add to replay?
 
 // var atomicRecordingDisabled = false
@@ -51,6 +55,13 @@ func advocateFunctionCall() {
 	pc, fileDef, lineDef, _ := Caller(1)
 	funcName := FuncForPC(pc).Name()
 
+	// fix return of init
+	if funcName == "main.main" {
+		for numberFunctions.Load() > 0 {
+			advocateFunctionReturn()
+		}
+	}
+
 	_, fileCall, lineCall, _ := Caller(2)
 
 	if hasSuffix(fileCall, ".s") { // required for go f()
@@ -70,6 +81,8 @@ func advocateFunctionCall() {
 		fileDef:  fileDef,
 		lineDef:  lineDef,
 	}
+
+	numberFunctions.Add(1)
 
 	insertIntoTrace(elem)
 }
@@ -92,6 +105,8 @@ func advocateFunctionCallInit() {
 		lineDef:  0,
 	}
 
+	numberFunctions.Add(1)
+
 	insertIntoTrace(elem)
 }
 
@@ -104,11 +119,17 @@ func advocateFunctionReturn() {
 		return
 	}
 
+	if numberFunctions.Load() == 0 {
+		return
+	}
+
 	timer := GetNextTimeStep()
 
 	elem := AdvocateTraceFunctionReturn{
 		t: timer,
 	}
+
+	numberFunctions.Add(-1)
 
 	insertIntoTrace(elem)
 }

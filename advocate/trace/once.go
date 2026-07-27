@@ -30,7 +30,7 @@ import (
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
 //   - objId int: The id of the mutex
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - suc bool: Whether the operation was successful
 //   - function *ElementFunc: the function the operation is in
@@ -41,7 +41,7 @@ type ElementOnce struct {
 	tReq     int
 	tCom     int
 	objId    int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	suc      bool
 	function *ElementFunc

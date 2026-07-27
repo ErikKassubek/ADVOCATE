@@ -1,7 +1,7 @@
-// Copyright (c) 2024 Erik Kassubek
+// Copyright (c) 2026 Erik Kassubek
 //
-// File: /advocate/trace/atomic.go
-// Brief: Struct and functions for atomic operations in the trace
+// File: alloc.go
+// Brief: Trace element to store the creation (new) of relevant operations. For now this is only creates the new for channel. This may be expanded later.
 //
 // Author: Erik Kassubek
 //
@@ -11,7 +11,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/log"
 	"errors"
 	"fmt"
 	"strconv"
@@ -21,92 +20,82 @@ import (
 // MARK: Data
 // ========================================================
 
-// ElementAtomic is a struct to save an atomic event in the trace
+// ElementControllFlow is a trace element for if/switch
 // Fields:
-//
-//   - id: id of the element, should never be changed
-//   - objId int: The id of the atomic variable
-//   - index int: index in the routine
-//   - routine int: The routine id
-//   - op ObjectType: The operation on the atomic variable
-//   - t int: The timestamp of the event
-//   - pos position: code position
+//   - t int: The timestamp of the int
+//   - numCases int: Number Cases
+//   - chosenCase int: Chosen case index (0 based)
 //   - ci *concInfo: concurrency info
 //   - function *ElementFunc: the function the operation is in
-type ElementAtomic struct {
-	id       int
-	objId    int
-	index    int
-	routine  int
-	op       OperationType
-	t        int
-	pos      position
-	ci       *concInfo
-	function *ElementFunc
+//   - pos position: code position
+//   - function *ElementFunc: the function the element is in
+type ElementControllFlow struct {
+	id         int
+	routine    int
+	index      int
+	t          int
+	numCases   int
+	chosenCase int
+	op         OperationType
+	pos        position
+	function   *ElementFunc
 }
 
 // ========================================================
 // MARK: Constructor
 // ========================================================
 
-// AddTraceElementAtomic adds a new atomic trace element to the main trace
+// AddTraceElementAlloc adds a make trace element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
-//   - tPost string: The timestamp of the event
-//   - id string: The id of the atomic variable
-//   - operation string: The operation on the atomic variable
-//   - pos string: The position of the atomic
-func (this Trace) AddTraceElementAtomic(routine int, tPost string,
-	id string, operation string, pos string) error {
-	tPostInt, err := strconv.Atoi(tPost)
+//   - t string: The timestamp at the event
+//   - op string: I/S
+//   - numCases string: Number of cases
+//   - chosenCase string: Chosen case (0 based)
+//   - pos string: position
+func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, chosenCase, pos string) error {
+	tInt, err := strconv.Atoi(t)
 	if err != nil {
 		return errors.New("tPost is not an integer")
 	}
 
-	idInt, err := strconv.Atoi(id)
+	nc, err := strconv.Atoi(numCases)
 	if err != nil {
-		return errors.New("id is not an integer")
+		return errors.New("numCases is not an integer")
 	}
 
-	var opAInt OperationType
-	switch operation {
-	case "L":
-		opAInt = AtomicLoad
-	case "S":
-		opAInt = AtomicStore
-	case "A":
-		opAInt = AtomicAdd
-	case "W":
-		opAInt = AtomicSwap
-	case "C":
-		opAInt = AtomicCompAndSwap
-	case "N":
-		opAInt = AtomicAnd
-	case "O":
-		opAInt = AtomicOr
-	default:
-		return fmt.Errorf("Atomic operation '%s' is not a valid operation", operation)
+	cc, err := strconv.Atoi(chosenCase)
+	if err != nil {
+		return errors.New("chosenCase is not an integer")
 	}
 
 	file, line, err := PosFromPosString(pos)
 	if err != nil {
-		log.Error("Cannot read pos string ", pos)
 		return err
 	}
 
-	elem := ElementAtomic{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		t:        tPostInt,
-		objId:    idInt,
-		op:       opAInt,
-		pos:      newPosition(file, line),
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+	o := UnknownOperation
+	switch op {
+	case "I":
+		o = ControllIf
+	case "S":
+		o = ControllSwitch
+	}
+
+	elem := ElementControllFlow{
+		routine:    routine,
+		index:      this.NumberElemInRoutine(routine),
+		t:          tInt,
+		numCases:   nc,
+		chosenCase: cc,
+		op:         o,
+		pos:        newPosition(file, line),
+		function:   getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
+
 	return nil
 }
 
@@ -118,7 +107,7 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 //
 // Returns:
 //   - int: the trace id
-func (this *ElementAtomic) ID() int {
+func (this *ElementControllFlow) ID() int {
 	return this.id
 }
 
@@ -126,7 +115,7 @@ func (this *ElementAtomic) ID() int {
 //
 // Parameter:
 //   - ID int: the trace id
-func (this *ElementAtomic) setID(ID int) {
+func (this *ElementControllFlow) setID(ID int) {
 	this.id = ID
 }
 
@@ -134,8 +123,15 @@ func (this *ElementAtomic) setID(ID int) {
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementAtomic) ObjID() int {
-	return this.objId
+func (this *ElementControllFlow) ObjID() int {
+	return -1
+}
+
+// setObjId sets the object id
+//
+// Parameter:
+//   - id int: the object id
+func (this *ElementControllFlow) setObjId(id int) {
 }
 
 // ========================================================
@@ -146,7 +142,7 @@ func (this *ElementAtomic) ObjID() int {
 //
 // Returns:
 //   - int: The routine of the element
-func (this *ElementAtomic) Routine() int {
+func (this *ElementControllFlow) Routine() int {
 	return this.routine
 }
 
@@ -155,7 +151,7 @@ func (this *ElementAtomic) Routine() int {
 // Returns:
 //   - int: the routine id of the element
 //   - int: The trace local index of the element in the trace
-func (this *ElementAtomic) TraceIndex() (int, int) {
+func (this *ElementControllFlow) TraceIndex() (int, int) {
 	return this.routine, this.index
 }
 
@@ -170,9 +166,9 @@ func (this *ElementAtomic) TraceIndex() (int, int) {
 //
 // Returns:
 //   - ObjectType: the object type
-func (this *ElementAtomic) Type(operation bool) OperationType {
+func (this *ElementControllFlow) Type(operation bool) OperationType {
 	if !operation {
-		return Atomic
+		return Controll
 	}
 
 	return this.op
@@ -182,11 +178,11 @@ func (this *ElementAtomic) Type(operation bool) OperationType {
 // MARK: Timestamps
 // ========================================================
 
-// GetTPre returns the tPre of the element. For atomic elements, tPre and tPost are the same
+// T returns the timestamp of the element
 //
 // Returns:
-//   - int: The tPost of the element
-func (this *ElementAtomic) T(_ timeType) int {
+//   - int: The tPre of the element
+func (this *ElementControllFlow) T(_ timeType) int {
 	return this.t
 }
 
@@ -194,8 +190,8 @@ func (this *ElementAtomic) T(_ timeType) int {
 //
 // Parameter:
 //   - time int: The tPre and tPost of the element
-func (this *ElementAtomic) SetT(_ timeType, time int) {
-	this.t = time
+func (this *ElementControllFlow) SetT(_ timeType, tSort int) {
+	this.t = tSort
 }
 
 // SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
@@ -203,17 +199,18 @@ func (this *ElementAtomic) SetT(_ timeType, time int) {
 //
 // Parameter:
 //   - tSort int: The timer of the element
-func (this *ElementAtomic) SetTWithoutNotExecuted(tSort int) {
-	if this.t != 0 {
-		this.t = tSort
+func (this *ElementControllFlow) SetTWithoutNotExecuted(tSort int) {
+	if this.t == 0 {
+		return
 	}
+	this.t = tSort
 }
 
 // Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
 //   - bool: true if committed, false if not
-func (this *ElementAtomic) Committed() bool {
+func (this *ElementControllFlow) Committed() bool {
 	return true
 }
 
@@ -224,24 +221,32 @@ func (this *ElementAtomic) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The file of the element
-func (this *ElementAtomic) Pos() string {
+//   - string: The position of the element
+func (this *ElementControllFlow) Pos() string {
 	return this.pos.toString()
 }
 
 // File returns the file where the operation represented by the element was executed
 //
 // Returns:
-//   - The file of the element
-func (this *ElementAtomic) File() string {
+//   - int: The file of the element
+func (this *ElementControllFlow) File() string {
 	return this.pos.file
+}
+
+// GetTraceID sets the file
+//
+// Parameter:
+//   - f string: the file
+func (this *ElementControllFlow) setFile(f string) {
+	this.pos.file = f
 }
 
 // Line returns the line where the operation represented by the element was executed
 //
 // Returns:
-//   - The line of the element
-func (this *ElementAtomic) Line() int {
+//   - int: The line of the element
+func (this *ElementControllFlow) Line() int {
 	return this.pos.line
 }
 
@@ -256,8 +261,8 @@ func (this *ElementAtomic) Line() int {
 //
 // Returns:
 //   - bool: true if it is the same operation, false otherwise
-func (this *ElementAtomic) IsEqual(elem Element) bool {
-	return this.objId == elem.ObjID() && this.id == elem.ID()
+func (this *ElementControllFlow) IsEqual(elem Element) bool {
+	return this.id == elem.ID()
 }
 
 // IsSameElement returns checks if the element on which the at and elem
@@ -267,30 +272,37 @@ func (this *ElementAtomic) IsEqual(elem Element) bool {
 //   - elem Element: the element to compare against
 //
 // Returns:
-//   - bool: true if at and elem are operations on the same atomic variable
-func (this *ElementAtomic) IsSameElement(elem Element) bool {
-	return this.objId == elem.ObjID()
+//   - bool: always false
+func (this *ElementControllFlow) IsSameElement(elem Element) bool {
+	return this.IsEqual(elem)
 }
 
 // ========================================================
 // MARK: String
 // ========================================================
 
-// String returns the simple string representation of the element.
+// String returns the simple string representation of the element
 //
 // Returns:
 //   - string: The simple string representation of the element
-func (this *ElementAtomic) String() string {
-	opString := string(string(this.op)[1])
-
-	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos())
+func (this *ElementControllFlow) String() string {
+	opStr := ""
+	switch this.op {
+	case ControllIf:
+		opStr = "I"
+	case ControllSwitch:
+		opStr = "S"
+	default:
+		panic("Invalid op in Controll Flow Element")
+	}
+	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos())
 }
 
 // ========================================================
 // MARK: Function
 // ========================================================
 
-func (this *ElementAtomic) Function() *ElementFunc {
+func (this *ElementControllFlow) Function() *ElementFunc {
 	return this.function
 }
 
@@ -302,9 +314,8 @@ func (this *ElementAtomic) Function() *ElementFunc {
 //
 // Parameter:
 //   - weak bool: set the weak wv
-//   - cl *clock.VectorClock: the vector clock
-func (this *ElementAtomic) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
-	this.ci.setVC(weak, cl)
+//   - cl *clock.allocVectorClock: the vector clock
+func (this *ElementControllFlow) Vc(_ a_clock.VcType, _ *a_clock.VectorClock) {
 }
 
 // GetVC returns the vector clock of the element
@@ -314,8 +325,8 @@ func (this *ElementAtomic) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementAtomic) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
-	return this.ci.getVC(weak)
+func (this *ElementControllFlow) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	return &a_clock.VectorClock{}
 }
 
 // NumberConcurrent returns the number of elements concurrent to the element
@@ -327,8 +338,8 @@ func (this *ElementAtomic) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
 //
 // Returns:
 //   - number of concurrent element, or -1
-func (this *ElementAtomic) NumberConcurrent(weak, sameElem bool) int {
-	return this.ci.GetNumberConcurrent(weak, sameElem)
+func (this *ElementControllFlow) NumberConcurrent(_, _ bool) int {
+	return -1
 }
 
 // SetNumberConcurrent sets the number of concurrent elements
@@ -337,62 +348,45 @@ func (this *ElementAtomic) NumberConcurrent(weak, sameElem bool) int {
 //   - c int: the number of concurrent elements
 //   - weak bool: return number of weak concurrent
 //   - sameElem bool: only operation on the same variable
-func (this *ElementAtomic) SetNumberConcurrent(c int, weak, sameElem bool) {
-	this.ci.SetNumberConcurrent(c, weak, sameElem)
+func (this *ElementControllFlow) SetNumberConcurrent(_ int, _, _ bool) {
+
 }
 
 // ========================================================
 // MARK: Replay
 // ========================================================
 
-// ReplayID returns the replay id of the element
+// ReplayID returns the replay ID of the element
 //
 // Returns:
-//   - The replay id
-func (this *ElementAtomic) ReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+//   - int: The replayId of the element
+func (this *ElementControllFlow) ReplayID() string {
+	return ""
 }
 
 // ========================================================
 // MARK: Copy
 // ========================================================
 
-// Copy the atomic element
+// Copy the element
 //
 // Parameter:
-//   - mapping map[int]Element: map containing all already copied elements, if nil ignore all vc based values.
-//     since atomics do not contain reference to other elements and no other
-//     elements contain referents to atomics, this is not used
+//   - mapping map[string]Element: map containing all already copied elements.
 //   - keep bool: if true, keep vc and order information
 //
 // Returns:
 //   - TraceElement: The copy of the element
-func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
-
-	if !keep {
-		return &ElementAtomic{
-			id:       this.id,
-			index:    0,
-			routine:  this.routine,
-			t:        0,
-			objId:    this.objId,
-			op:       this.op,
-			pos:      this.pos.copy(),
-			ci:       newConcInfo(),
-			function: this.function.Copy(mapping, keep).(*ElementFunc),
-		}
-	}
-
-	return &ElementAtomic{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		t:        this.t,
-		objId:    this.objId,
-		op:       this.op,
-		pos:      this.pos.copy(),
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Element {
+	return &ElementControllFlow{
+		id:         this.id,
+		routine:    this.routine,
+		index:      this.index,
+		t:          this.t,
+		numCases:   this.numCases,
+		chosenCase: this.chosenCase,
+		op:         this.op,
+		pos:        this.pos.copy(),
+		function:   this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 
@@ -400,6 +394,6 @@ func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
 // MARK: Valid
 // ========================================================
 
-func (this *ElementAtomic) IsValid() bool {
+func (this *ElementControllFlow) IsValid() bool {
 	return this != nil
 }

@@ -138,6 +138,10 @@ const (
 	FuncCall   OperationType = "FC"
 	FuncReturn OperationType = "FR"
 
+	Controll       OperationType = "I"
+	ControllIf     OperationType = "II"
+	ControllSwitch OperationType = "IS"
+
 	UnknownOperation OperationType = "XX"
 )
 
@@ -271,16 +275,16 @@ type position struct {
 	line int
 }
 
-func newPosition(file string, line int) *position {
-	return &position{file, line}
+func newPosition(file string, line int) position {
+	return position{file, line}
 }
 
-func (this *position) copy() *position {
-	return &position{
+func (this position) copy() position {
+	return position{
 		this.file, this.line,
 	}
 }
 
-func (this *position) toString() string {
+func (this position) toString() string {
 	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }

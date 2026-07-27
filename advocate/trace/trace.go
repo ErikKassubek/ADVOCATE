@@ -110,7 +110,7 @@ func (this *Trace) AddElement(elem Element) {
 // AddElement adds a resouce if elem has a resource and if it is not created yet
 func (this *Trace) AddResource(elem Element) {
 	switch elem.(type) {
-	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay:
+	case *ElementFork, *ElementFunc, *ElementReturn, *ElementRoutineEnd, *ElementReplay, *ElementControllFlow:
 		return
 	}
 

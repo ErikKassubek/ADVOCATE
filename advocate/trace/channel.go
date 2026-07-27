@@ -33,7 +33,7 @@ import (
 //   - op ObjectType: The operation on the channel
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - oID int: The id of the other communication
 //   - cl bool: Whether the channel has closed
@@ -52,7 +52,7 @@ type ElementChannel struct {
 	op       OperationType
 	tReq     int
 	tCom     int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	oID      int
 	cl       bool

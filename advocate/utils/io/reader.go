@@ -292,6 +292,11 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
 		}
 		err = tr.AddTaceElementReturn(routine, fields[1])
+	case "I":
+		if len(fields) != 6 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
+		}
+		err = tr.AddTraceElementControllFlow(routine, fields[1], fields[2], fields[3], fields[4], fields[5])
 	case "OAT":
 		err = tr.AddTraceObjectAware(routine, fields[1])
 	default:

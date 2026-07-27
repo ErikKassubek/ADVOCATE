@@ -32,8 +32,6 @@ import (
 //   - ci *concInfo: concurrency info
 //   - num int: variable field for additional information
 //   - function *ElementFunc: the function the operation is in
-//
-// For now this is only creates the new for channel. This may be expanded later.
 type ElementAlloc struct {
 	id       int
 	objId    int
@@ -41,7 +39,7 @@ type ElementAlloc struct {
 	routine  int
 	elemType OperationType
 	t        int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	num      int
 	function *ElementFunc

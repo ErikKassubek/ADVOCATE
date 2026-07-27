@@ -47,8 +47,8 @@ func getLastCall(rout int) *ElementFunc {
 //   - routine int: The routine id
 //   - name: name of the called function
 //   - t int: The timestamp of the event
-//   - posDef *position: code position of the function declaration
-//   - posCall *position: code position of the function call
+//   - posDef position: code position of the function declaration
+//   - posCall position: code position of the function call
 //   - function *ElementFunc: the function the operation is in
 type ElementFunc struct {
 	id       int
@@ -56,8 +56,8 @@ type ElementFunc struct {
 	routine  int
 	name     string
 	t        int
-	posDef   *position
-	posCall  *position
+	posDef   position
+	posCall  position
 	function *ElementFunc
 }
 

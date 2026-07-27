@@ -80,10 +80,10 @@ func (self AdvocateTraceControllFlow) toString() string {
 	case OperationControllSwitch:
 		ctString = "S"
 	default:
-		panic("Invalid controll flow type: ", string(self.ct))
+		panic("Invalid controll flow type: " + string(self.ct))
 	}
 
-	return buildTraceElemString("I", self.t, string(self.ct), self.numCases, self.chosenCase, posToString(self.file, self.line))
+	return buildTraceElemString("I", self.t, ctString, self.numCases, self.chosenCase, posToString(self.file, self.line))
 }
 
 // getOperation is a getter for the operation

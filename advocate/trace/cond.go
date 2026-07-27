@@ -30,7 +30,7 @@ import (
 //   - tCom int: The timestamp at the end of the event
 //   - objId int: The id of the condition variable
 //   - op objectType: The operation on the condition variable
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency infocalculated
 //   - function *ElementFunc: the function the operation is in
 type ElementCond struct {
@@ -41,7 +41,7 @@ type ElementCond struct {
 	tCom     int
 	objId    int
 	op       OperationType
-	pos      *position
+	pos      position
 	ci       *concInfo
 	function *ElementFunc
 }

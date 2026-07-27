@@ -30,7 +30,7 @@ import (
 //   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - cases []*ElementChannel: The cases of the select statement, ordered by casi starting from 0
 //   - chosenCase *ElementChannel: The chosen case, nil if default case chosen
@@ -45,7 +45,7 @@ type ElementSelect struct {
 	routine             int
 	tPre                int
 	tPost               int
-	pos                 *position
+	pos                 position
 	ci                  *concInfo
 	cases               []*ElementChannel
 	chosenCase          *ElementChannel

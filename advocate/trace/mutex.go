@@ -31,7 +31,7 @@ import (
 //   - routine int: The routine id
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - rw bool: Whether the mutex is a read-write mutex
 //   - op ObjectType: The operation on the mutex
@@ -44,7 +44,7 @@ type ElementMutex struct {
 	routine  int
 	tReq     int
 	tCom     int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	rw       bool
 	op       OperationType

@@ -34,7 +34,7 @@ type OpWait int
 //   - op OperationType: The operation on the wait group
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - delta int: The delta of the wait group
 //   - val int: The value of the wait group
@@ -47,7 +47,7 @@ type ElementWait struct {
 	op       OperationType
 	tPre     int
 	tPost    int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	delta    int
 	val      int
@@ -251,9 +251,6 @@ func (this *ElementWait) Committed() bool {
 // Returns:
 //   - string: The position of the element
 func (this *ElementWait) Pos() string {
-	if this.pos == nil {
-		return ""
-	}
 	return this.pos.toString()
 }
 

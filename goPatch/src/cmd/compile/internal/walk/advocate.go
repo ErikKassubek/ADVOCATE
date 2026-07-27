@@ -25,10 +25,7 @@ import (
 // ==================================================
 // MARK: instrument
 // ==================================================
-func dumpFunc(fn *ir.Func) {
-	fmt.Printf("FUNC: %v\n", fn.Sym())
-	ir.DumpList("body", fn.Body)
-}
+
 func instrumentBody(fn *ir.Func) {
 	if !shouldAdvocate(fn) {
 		return
@@ -36,7 +33,7 @@ func instrumentBody(fn *ir.Func) {
 
 	fn.Body = instrumentStmtList(fn.Body)
 
-	dumpFunc(fn)
+	// dumpFunc(fn)
 }
 
 func instrumentStmtList(body ir.Nodes) ir.Nodes {
@@ -390,4 +387,13 @@ func isAdvocateCall(n ir.Node) bool {
 		(name.Sym().Name == "AdvocateAllocMutex" ||
 			name.Sym().Name == "AdvocateAllocCondVar" ||
 			name.Sym().Name == "AdvocateAllocWG")
+}
+
+// ==================================================
+// MARK: helper
+// ==================================================
+
+func printFunction(fn *ir.Func) {
+	fmt.Printf("FUNC: %v\n", fn.Sym())
+	ir.DumpList("body", fn.Body)
 }

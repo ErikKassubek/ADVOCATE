@@ -29,7 +29,7 @@ import (
 //   - routine int: The routine id of
 //   - t int: The timestamp at the end of the event
 //   - objId int: The id of the new go routine
-//   - pos *position: code position
+//   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - function *ElementFunc: the function the operation is in
 type ElementFork struct {
@@ -38,7 +38,7 @@ type ElementFork struct {
 	routine  int
 	t        int
 	objId    int
-	pos      *position
+	pos      position
 	ci       *concInfo
 	function *ElementFunc
 }

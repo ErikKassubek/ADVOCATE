@@ -102,7 +102,9 @@ func MakeTask() {
 			fn.Body = s.Out
 
 			// ADVOCATE-START
-			if fn.Sym().Pkg != nil && fn.Sym().Pkg.Path == "main" &&
+			isAdvocate := base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing
+
+			if isAdvocate && fn.Sym().Pkg != nil && fn.Sym().Pkg.Path == "main" &&
 				(fn.Sym().Name == "init" || strings.HasPrefix(fn.Sym().Name, "init.")) {
 				if base.Flag.AdvocateTrace {
 					call := ir.NewCallExpr(

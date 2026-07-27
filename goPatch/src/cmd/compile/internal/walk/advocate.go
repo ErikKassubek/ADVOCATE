@@ -13,6 +13,7 @@
 package walk
 
 import (
+	"cmd/compile/internal/base"
 	"cmd/compile/internal/ir"
 	"cmd/compile/internal/typecheck"
 	"cmd/compile/internal/types"
@@ -27,16 +28,7 @@ func shouldAdvocate(n ir.Node) bool {
 		return false
 	}
 
-	if sym := nodeSym(n); sym != nil && sym.Pkg != nil {
-		return !isStdPkgPath(sym.Pkg.Path)
-	}
-
-	if !n.Pos().IsKnown() {
-		return false // synthetic/unknown position — be conservative
-	}
-
-	pkgPath := types.LocalPkg.Path // package currently being compiled
-	if isStdPkgPath(pkgPath) {
+	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
 		return false
 	}
 
@@ -94,9 +86,7 @@ func isAdvocateCall(n ir.Node) bool {
 }
 
 func instrumentBody(fn *ir.Func) {
-	sh := shouldAdvocate(fn)
-
-	if !sh {
+	if !shouldAdvocate(fn) {
 		return
 	}
 
@@ -107,20 +97,11 @@ func instrumentStmtList(body ir.Nodes) ir.Nodes {
 	out := make(ir.Nodes, 0, len(body)*2)
 
 	for _, stmt := range body {
-		// First recurse into children
 		instrumentStmtRecursive(stmt)
 
 		out.Append(stmt)
 
-		if isAdvocateCall(stmt) {
-			continue
-		}
-
 		if n := addAlloc(stmt); n != nil {
-			out.Append(n)
-		}
-
-		if n := addIfSwitch(stmt); n != nil {
 			out.Append(n)
 		}
 	}
@@ -129,40 +110,100 @@ func instrumentStmtList(body ir.Nodes) ir.Nodes {
 }
 
 func instrumentStmtRecursive(n ir.Node) {
-	switch n := n.(type) {
+	if n == nil {
+		return
+	}
 
+	switch x := n.(type) {
 	case *ir.BlockStmt:
-		n.List = instrumentStmtList(n.List)
+		x.List = instrumentStmtList(x.List)
 
 	case *ir.IfStmt:
-		n.Body = instrumentStmtList(n.Body)
-
-		if n.Else != nil {
-			n.Else = instrumentStmtList(n.Else)
+		x.Cond = instrumentExprRecursive(x.Cond)
+		x.Body = instrumentStmtList(x.Body)
+		if x.Else != nil {
+			x.Else = instrumentStmtList(x.Else)
 		}
 
 	case *ir.ForStmt:
-		n.Body = instrumentStmtList(n.Body)
+		x.Cond = instrumentExprRecursive(x.Cond)
+		x.Body = instrumentStmtList(x.Body)
 
 	case *ir.RangeStmt:
-		n.Body = instrumentStmtList(n.Body)
+		x.X = instrumentExprRecursive(x.X)
+		x.Body = instrumentStmtList(x.Body)
 
 	case *ir.SwitchStmt:
-		for _, c := range n.Compiled {
-			switch c := c.(type) {
-			case *ir.CaseClause:
+		for _, c := range x.Compiled {
+			if c, ok := c.(*ir.CaseClause); ok {
 				c.Body = instrumentStmtList(c.Body)
 			}
 		}
 
 	case *ir.SelectStmt:
-		for _, c := range n.Compiled {
-			switch c := c.(type) {
-			case *ir.CommClause:
+		for _, c := range x.Compiled {
+			if c, ok := c.(*ir.CommClause); ok {
 				c.Body = instrumentStmtList(c.Body)
 			}
 		}
+
+	default:
+		// Let expression traversal handle assignments, calls, literals, etc.
+		instrumentExprRecursive(n)
 	}
+}
+
+func instrumentExprRecursive(n ir.Node) ir.Node {
+	if n == nil {
+		return nil
+	}
+
+	switch n := n.(type) {
+
+	case *ir.CallExpr:
+		n.Fun = instrumentExprRecursive(n.Fun)
+
+		for i, arg := range n.Args {
+			n.Args[i] = instrumentExprRecursive(arg)
+		}
+
+	case *ir.BinaryExpr:
+		n.X = instrumentExprRecursive(n.X)
+		n.Y = instrumentExprRecursive(n.Y)
+
+	case *ir.UnaryExpr:
+		n.X = instrumentExprRecursive(n.X)
+
+	case *ir.ConvExpr:
+		n.X = instrumentExprRecursive(n.X)
+
+	case *ir.AddrExpr:
+		n.X = instrumentExprRecursive(n.X)
+
+	case *ir.SelectorExpr:
+		n.X = instrumentExprRecursive(n.X)
+
+	case *ir.IndexExpr:
+		n.X = instrumentExprRecursive(n.X)
+		n.Index = instrumentExprRecursive(n.Index)
+
+	case *ir.SliceExpr:
+		n.X = instrumentExprRecursive(n.X)
+		n.Low = instrumentExprRecursive(n.Low)
+		n.High = instrumentExprRecursive(n.High)
+		n.Max = instrumentExprRecursive(n.Max)
+
+	case *ir.CompLitExpr:
+		for i, e := range n.List {
+			n.List[i] = instrumentExprRecursive(e)
+		}
+
+	case *ir.StructKeyExpr:
+		n.Value = instrumentExprRecursive(n.Value)
+
+	}
+
+	return n
 }
 
 func addIfSwitch(n ir.Node) ir.Node {
@@ -190,7 +231,6 @@ func walkIfChain(n *ir.IfStmt) {
 	}
 }
 
-// TODO: variables created in init
 func addAlloc(n ir.Node) ir.Node {
 	t, obj := allocatedSync(n)
 	if t == nil || obj == nil {
@@ -225,14 +265,12 @@ func addAlloc(n ir.Node) ir.Node {
 
 	unsafeAddr := makeUnsafePointer(addr, n.Pos())
 
-	call := typecheck.Call(
+	return typecheck.Call(
 		n.Pos(),
 		fn,
 		[]ir.Node{unsafeAddr},
 		false,
 	)
-
-	return call
 }
 
 func makeUnsafePointer(addr ir.Node, pos src.XPos) ir.Node {
@@ -246,32 +284,47 @@ func makeUnsafePointer(addr ir.Node, pos src.XPos) ir.Node {
 	)
 }
 
-func allocatedSync(n ir.Node) (t *types.Type, m *ir.Name) {
-	// TODO: for now only record channels
-	// return nil, nil
-
-	switch n := n.(type) {
+func allocatedSync(n ir.Node) (*types.Type, ir.Node) {
+	switch x := n.(type) {
 
 	case *ir.AssignStmt:
 		// m := sync.Mutex{}
-		if n.Y != nil {
-			t = n.Y.Type()
+		if x.X == nil {
+			return nil, nil
 		}
-		name, ok := n.X.(*ir.Name)
-		if ok {
-			m = name
-		}
+
+		return x.X.Type(), x.X
 
 	case *ir.Decl:
 		// var m sync.Mutex
-		if n.X != nil {
-			t = n.X.Type()
-			m = n.X
+		if x.X == nil {
+			return nil, nil
 		}
+
+		return x.X.Type(), x.X
 	}
 
-	return
+	return nil, nil
 }
+
+// func isSyncType(t *types.Type, name string) bool {
+// 	if t == nil {
+// 		return false
+// 	}
+
+// 	sym := t.Sym()
+// 	if sym == nil {
+// 		return false
+// 	}
+
+// 	if sym.Pkg.Path == "sync" {
+// 		fmt.Println(sym.Pkg.Path, sym.Name)
+// 	}
+
+// 	return sym.Pkg != nil &&
+// 		sym.Pkg.Path == "sync" &&
+// 		sym.Name == name
+// }
 
 func isSyncType(t *types.Type, name string) bool {
 	if t == nil {
@@ -279,11 +332,10 @@ func isSyncType(t *types.Type, name string) bool {
 	}
 
 	sym := t.Sym()
-	if sym == nil {
+	if sym == nil || sym.Pkg == nil {
 		return false
 	}
 
-	return sym.Pkg != nil &&
-		sym.Pkg.Path == "sync" &&
+	return sym.Pkg.Path == "sync" &&
 		sym.Name == name
 }

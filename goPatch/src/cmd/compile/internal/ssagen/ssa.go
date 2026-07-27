@@ -2315,6 +2315,10 @@ const shareDeferExits = false
 // ADOVCATE-START
 // MARK: shouldAdvocate
 func shouldAdvocate(fn *ir.Func) bool {
+	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
+		return false
+	}
+
 	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
 		return false
 	}

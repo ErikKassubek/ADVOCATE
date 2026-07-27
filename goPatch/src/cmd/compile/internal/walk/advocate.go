@@ -32,8 +32,6 @@ func instrumentBody(fn *ir.Func) {
 	}
 
 	fn.Body = instrumentStmtList(fn.Body)
-
-	// dumpFunc(fn)
 }
 
 func instrumentStmtList(body ir.Nodes) ir.Nodes {
@@ -73,11 +71,7 @@ func instrumentStmtRecursive(n ir.Node) {
 		x.Body = instrumentStmtList(x.Body)
 
 	case *ir.SwitchStmt:
-		for _, c := range x.Compiled {
-			if c, ok := c.(*ir.CaseClause); ok {
-				c.Body = instrumentStmtList(c.Body)
-			}
-		}
+		instrumentSwitch(x)
 
 	case *ir.SelectStmt:
 		for _, c := range x.Compiled {
@@ -262,27 +256,6 @@ func isSyncType(t *types.Type, name string) bool {
 // MARK: If
 // ==================================================
 
-func addIf(body ir.Nodes, pos src.XPos, numCases, caseNum int) ir.Nodes {
-	fn := typecheck.LookupRuntime("advocateControllFlow")
-
-	call := typecheck.Call(
-		pos,
-		fn,
-		[]ir.Node{
-			ir.NewString(pos, "I"),
-			ir.NewInt(pos, int64(numCases)),
-			ir.NewInt(pos, int64(caseNum)),
-		},
-		false,
-	)
-
-	out := make(ir.Nodes, 0, len(body)+1)
-	out.Append(call)
-	out.Append(body...)
-
-	return out
-}
-
 func instrumentIfChain(n *ir.IfStmt) {
 	numCases := countIfCases(n)
 
@@ -290,11 +263,12 @@ func instrumentIfChain(n *ir.IfStmt) {
 	for cur := n; cur != nil; {
 
 		cur.Body = instrumentStmtList(cur.Body)
-		cur.Body = addIf(
+		cur.Body = addControllRec(
 			cur.Body,
 			cur.Pos(),
 			numCases,
 			caseNum,
+			"I",
 		)
 
 		caseNum++
@@ -310,11 +284,12 @@ func instrumentIfChain(n *ir.IfStmt) {
 		// final else
 		if cur.Else != nil {
 			cur.Else = instrumentStmtList(cur.Else)
-			cur.Else = addIf(
+			cur.Else = addControllRec(
 				cur.Else,
 				cur.Pos(),
 				numCases,
 				caseNum,
+				"I",
 			)
 		}
 
@@ -386,14 +361,67 @@ func isAdvocateCall(n ir.Node) bool {
 	return name.Sym() != nil &&
 		(name.Sym().Name == "AdvocateAllocMutex" ||
 			name.Sym().Name == "AdvocateAllocCondVar" ||
-			name.Sym().Name == "AdvocateAllocWG")
+			name.Sym().Name == "AdvocateAllocWG" ||
+			name.Sym().Name == "advocateTraceControllFlow")
+}
+
+// ==================================================
+// MARK: Switch
+// ==================================================
+
+func instrumentSwitch(n *ir.SwitchStmt) {
+	numCases := len(n.Cases)
+
+	for i, c := range n.Cases {
+		c.Body = instrumentStmtList(c.Body)
+
+		c.Body = addControllRec(
+			c.Body,
+			c.Pos(),
+			numCases,
+			i,
+			"S",
+		)
+	}
+}
+func countSwitchCases(n *ir.SwitchStmt) int {
+	count := 0
+
+	for _, c := range n.Compiled {
+		if _, ok := c.(*ir.CaseClause); ok {
+			count++
+		}
+	}
+
+	return count
 }
 
 // ==================================================
 // MARK: helper
 // ==================================================
 
-func printFunction(fn *ir.Func) {
+func printFunc(fn *ir.Func) {
 	fmt.Printf("FUNC: %v\n", fn.Sym())
 	ir.DumpList("body", fn.Body)
+}
+
+func addControllRec(body ir.Nodes, pos src.XPos, numCases, caseNum int, t string) ir.Nodes {
+	fn := typecheck.LookupRuntime("advocateControllFlow")
+
+	call := typecheck.Call(
+		pos,
+		fn,
+		[]ir.Node{
+			ir.NewString(pos, t),
+			ir.NewInt(pos, int64(numCases)),
+			ir.NewInt(pos, int64(caseNum)),
+		},
+		false,
+	)
+
+	out := make(ir.Nodes, 0, len(body)+1)
+	out.Append(call)
+	out.Append(body...)
+
+	return out
 }

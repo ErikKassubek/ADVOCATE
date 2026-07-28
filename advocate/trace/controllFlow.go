@@ -389,3 +389,15 @@ func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Elemen
 func (this *ElementControllFlow) IsValid() bool {
 	return this != nil
 }
+
+// ========================================================
+// MARK: Others
+// ========================================================
+
+func (this *ElementControllFlow) ChosenCase() int {
+	return this.chosenCase
+}
+
+func (this *ElementControllFlow) NumberCases() int {
+	return this.numCases
+}

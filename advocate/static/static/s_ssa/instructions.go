@@ -206,7 +206,7 @@ func (this *InstructionBase) InTrace() bool {
 
 func (this *InstructionBase) setRelevant(rel, trace bool) {
 	this.relvant = rel
-	this.inTrace = rel
+	this.inTrace = trace
 }
 
 func (this *InstructionBase) setName(name string) {
@@ -518,7 +518,7 @@ func (this *InstructionCall) GetFunc(data *Data) *Function {
 		}
 	}
 
-	panic(fmt.Sprintf("Could not find SSA function %s", this.name))
+	return nil
 }
 
 // ================================================================

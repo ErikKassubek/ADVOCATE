@@ -69,6 +69,10 @@ func (this *Data) analysisFunction(fn *ssa.Function) Function {
 	return f
 }
 
+func (this *Data) funcFromName(name string) *Function {
+	return this.Funcs()[name]
+}
+
 func isMain(fn *ssa.Function) bool {
 	return fn.Name() == "main" &&
 		fn.Signature.Recv() == nil &&

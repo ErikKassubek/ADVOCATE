@@ -32,6 +32,12 @@ func newSsaPosFunc(f *s_ssa.Function) ssaPos {
 	return ssaPos{f: f, b: b, i: i, instID: 0}
 }
 
+func newSsaPosFuncBlock(f *s_ssa.Function, blockID int) ssaPos {
+	b := f.Blocks()[blockID]
+	i := b.Instrs()[0]
+	return ssaPos{f: f, b: b, i: i, instID: 0}
+}
+
 func (this *ssaPos) Blocks() []*s_ssa.Block {
 	return this.f.Blocks()
 }
@@ -97,6 +103,11 @@ func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
 			continue
 		}
 
+		switch elem.(type) {
+		case *trace.ElementReplay, *trace.ElementRoutineEnd:
+			continue
+		}
+
 		routine := elem.Routine()
 
 		// log.Debug(elem.StringDebug())
@@ -127,7 +138,7 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 
 	switch inst := pos.i.(type) {
 	case *s_ssa.InstructionJump:
-		pos.b = pos.Blocks()[inst.To()]
+		pos = newSsaPosFuncBlock(pos.f, inst.To())
 	case *s_ssa.InstructionCall:
 		f := inst.GetFunc(data.Ssa())
 		if f != nil {
@@ -146,7 +157,6 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 		case trace.ControllSwitch:
 			pos = followSwitchChain(pos, inst, elem.ChosenCase())
 		}
-
 	case *s_ssa.InstructionGo:
 		parseGo(elem, pos, inst)
 		jumpBackPos[elem.ObjID()] = types.NewStack[ssaPos]()
@@ -220,21 +230,20 @@ func parseGo(elem trace.Element, pos ssaPos, inst *s_ssa.InstructionGo) {
 }
 
 func skipNonRelevant(pos ssaPos, rout int) ssaPos {
-	instrs := pos.Instrs()[pos.instID:]
-	for j, inst := range instrs {
+	for p := pos; !p.Nil(); {
+		inst := p.i
 		if !inst.Relevant() {
-			log.Debug("SKIP-> ", inst.String())
+			p = p.Next()
 			continue
 		}
 
-		start := ssaPos{f: pos.f, b: pos.b, i: inst, instID: pos.instID + j}
-
 		if inst.InTrace() {
-			return start
+
+			return p
 		}
 
-		start = parseInstruction(nil, start, rout)
+		p = parseInstruction(nil, p, rout)
 	}
 
-	return pos
+	return ssaPos{nil, nil, nil, 0}
 }

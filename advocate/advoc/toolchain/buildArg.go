@@ -32,9 +32,6 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 		atomicReplayStr = "false"
 	}
 
-	fmt.Println("FileName: ", fileName)
-	fmt.Println("TestName: Main")
-
 	if replay { // replay
 		if record {
 			buildArg += fmt.Sprintf("-advocatefuzzing -advocatepath=%s -advocatetimeout=%d", tracePath, flags.TimeoutRecording)
@@ -56,7 +53,7 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 // MARK: Main
 // ============================================
 
-// Insert the header into a main function
+// Insert the header into a main function and return the build parameters
 //
 // Parameter:
 //   - fileName string: path to the main file
@@ -66,11 +63,13 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 //   - record bool: if both replay and record are set, the replay is rerecorded
 //   - fuzzing int: fuzzing run, if no fuzzing: -1, for initial run: 0
 //   - fuzzingTrace string: path to the fuzzing trace path. If not used path (GFuzz or Flow), opr not fuzzing, set to empty string
+//   - static bool: set true for static dummy
 //
 // Returns:
+//   - build parameters
 //   - error
 func importInsertMain(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string) (string, error) {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, static bool) (string, error) {
 	if fileName == "" {
 		return "", errors.New("Please provide a file  name")
 	}
@@ -107,16 +106,28 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 		lines = append(lines, line)
 
 		if strings.Contains(line, "package main") {
-			lines = append(lines, "import _ \"advocatego\"")
-			fmt.Println("Import added at line:", currentLine)
+			if static {
+				lines = append(lines, "")
+			} else {
+				lines = append(lines, "import _ \"advocatego\"")
+				fmt.Println("Import added at line:", currentLine)
+			}
 			importAdded = true
 		} else if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "import _ \"advocatego\"")
-			fmt.Println("Import added at line:", currentLine)
+			if static {
+				lines = append(lines, "")
+			} else {
+				lines = append(lines, "import _ \"advocatego\"")
+				fmt.Println("Import added at line:", currentLine)
+			}
 			importAdded = true
 		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t _ \"advocatego\"")
-			fmt.Println("Import added at line:", currentLine)
+			if static {
+				lines = append(lines, "\t _ \"advocatego\"")
+			} else {
+				lines = append(lines, "\t _ \"advocatego\"")
+				fmt.Println("Import added at line:", currentLine)
+			}
 			importAdded = true
 		}
 	}
@@ -148,12 +159,12 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 //
 // Returns:
 //   - error
-func importRemoverMain(fileName string) error {
-	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		return fmt.Errorf("file %s does not exist", fileName)
+func importRemoveMain() error {
+	if _, err := os.Stat(paths.Prog); os.IsNotExist(err) {
+		return fmt.Errorf("file %s does not exist", paths.Prog)
 	}
 
-	file, err := os.Open(fileName)
+	file, err := os.Open(paths.Prog)
 	if err != nil {
 		return err
 	}
@@ -185,7 +196,7 @@ func importRemoverMain(fileName string) error {
 		return err
 	}
 
-	return os.WriteFile(fileName, []byte(strings.Join(lines, "\n")), 0644)
+	return os.WriteFile(paths.Prog, []byte(strings.Join(lines, "\n")), 0644)
 }
 
 // Check if there is a main function in the given file
@@ -228,7 +239,7 @@ func mainMethodExists(fileName string) (bool, error) {
 // MARK: Test
 // ============================================
 
-// Add the header into a unit test
+// Add the header into a unit test and return the build parameter
 //
 // Parameter:
 //   - fileName string: path to the file containing the the test
@@ -403,110 +414,21 @@ func testExists(fileName string, testName string) (bool, error) {
 }
 
 // ============================================
-// MARK: Dummy
+// MARK: Static
 // ============================================
 
-func HeaderInsertDummyMain() (int, error) {
-
-	fileName := paths.Prog
-
-	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		return -1, fmt.Errorf("File %s does not exist", fileName)
+func ImportInsertStatic() {
+	if flags.ModeMain {
+		importInsertMain(paths.Prog, false, "1", flags.TimeoutReplay, false, 0, "", true)
+	} else {
+		panic("STATIC FOR TESTS NOT IMPLEMENTED YET")
 	}
-
-	exists, err := mainMethodExists(fileName)
-	if err != nil {
-		return -1, err
-	}
-
-	if !exists {
-		return -1, fmt.Errorf("Main Method not found in file")
-	}
-
-	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
-	if err != nil {
-		return -1, fmt.Errorf("Could not open main file to add header")
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	importAdded := false
-	importLine := -1
-	currentLine := 0
-	for scanner.Scan() {
-		currentLine++
-		line := scanner.Text()
-		lines = append(lines, line)
-
-		if strings.Contains(line, "package main") {
-			lines = append(lines, "//")
-			importAdded = true
-			importLine = currentLine + 1
-		} else if strings.Contains(line, "import \"") && !importAdded {
-			lines = append(lines, "//")
-			importAdded = true
-			importLine = currentLine + 1
-		} else if strings.Contains(line, "import (") && !importAdded {
-			lines = append(lines, "\t//")
-			importAdded = true
-			importLine = currentLine + 1
-		}
-
-	}
-
-	file.Truncate(0)
-	file.Seek(0, 0)
-	writer := bufio.NewWriter(file)
-	for _, line := range lines {
-		fmt.Fprintln(writer, line)
-	}
-	writer.Flush()
-
-	return importLine, nil
-
 }
 
-// Remove the header from a file with a header in a main function
-//
-// Parameter:
-//   - fileName string: name of the file
-//
-// Returns:
-//   - error
-func HeaderRemoverDummyMain(importLine int) error {
-	fileName := paths.Prog
-
-	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		return fmt.Errorf("file %s does not exist", fileName)
-	}
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	var lines []string
-	scanner := bufio.NewScanner(file)
-
-	currentLine := 0
-
-	for scanner.Scan() {
-		line := scanner.Text()
-
-		currentLine++
-
-		if currentLine == importLine {
-			continue
-		} else {
-			lines = append(lines, line)
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		return err
-	}
-
-	return os.WriteFile(fileName, []byte(strings.Join(lines, "\n")), 0644)
-}
+// func ImportRemoveStatic() {
+// 	if flags.ModeMain {
+// 		importRemoveMain()
+// 	} else {
+// 		panic("STATIC FOR TESTS NOT IMPLEMENTED YET")
+// 	}
+// }

@@ -31,6 +31,7 @@ import (
 // Fields:
 //   - traces map[int][]TraceElement: the trace element, routineId -> list of elems
 //   - hbWasCalc bool: set to true if the vector clock has been calculated for all elements
+//   - hasPassedMain bool: true if main func has been passed. Used to determine init
 //   - channelWithoutPartner  map[int]map[int]*TraceElementChannel: channel for witch no partner has been found yet, id -> opId -> element
 //   - channelIDs map[int]struct{}: all channel ids in the trace
 //   - objectAware map[int][]int: for not terminated routines, the blocked objects they can access
@@ -42,6 +43,7 @@ import (
 type Trace struct {
 	routines              map[int]*Routine
 	hbWasCalc             bool
+	hasPassedMain         bool
 	minTraceID            int
 	channelWithoutPartner map[int]map[int]*ElementChannel
 	channelIDs            map[int]struct{}
@@ -90,9 +92,6 @@ func (this *Trace) Clear() {
 func (this *Trace) AddElement(elem Element) {
 	routine := elem.Routine()
 
-	this.minTraceID++
-	elem.setID(this.minTraceID)
-
 	if !elem.Committed() {
 		this.blocked[routine] = elem
 	}
@@ -122,7 +121,8 @@ func (this *Trace) AddResource(elem Element) {
 
 	alloc, ok := this.allocs[id]
 	if !ok {
-		log.Error("Found Elemen on Resource Without precious alloc")
+		this.AddTraceElementAllocFromElem(elem)
+		alloc, ok = this.allocs[id]
 	}
 	this.resources[id] = NewResource(id, alloc)
 }

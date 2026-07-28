@@ -22,27 +22,25 @@ import (
 
 // ElementAlloc is a trace element for the creation of an object / new
 // Fields:
-//   - id: id of the element, should never be changed
 //   - objId int: The id of the underlying operation
-//   - index int: Index in the routine
-//   - routine int: The routine id
 //   - elemType newOpType: The type of the created object
 //   - t int: The timestamp of the new
 //   - pos *position: code position
 //   - ci *concInfo: concurrency info
 //   - num int: variable field for additional information
 //   - function *ElementFunc: the function the operation is in
+//   - init bool: true if in init
 type ElementAlloc struct {
-	id       int
+	ElementBase
+
 	objId    int
-	index    int
-	routine  int
 	elemType OperationType
 	t        int
-	pos      position
+	pos      Position
 	ci       *concInfo
 	num      int
 	function *ElementFunc
+	init     bool
 }
 
 // ========================================================
@@ -92,15 +90,14 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 	}
 
 	elem := ElementAlloc{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		t:        tInt,
-		objId:    idInt,
-		elemType: et,
-		num:      numInt,
-		pos:      newPosition(file, line),
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		t:           tInt,
+		objId:       idInt,
+		elemType:    et,
+		num:         numInt,
+		pos:         newPosition(file, line),
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	this.allocs[idInt] = &elem
@@ -110,25 +107,41 @@ func (this *Trace) AddTraceElementAlloc(routine int, t string, id string, elemTy
 	return nil
 }
 
+func (this *Trace) AddTraceElementAllocFromElem(elem Element) {
+	var et OperationType
+	switch elem.Type(false) {
+	case "C":
+		et = NewChannel
+	case "D":
+		et = NewCond
+	case "M":
+		et = NewMutex
+	case "W":
+		et = NewWait
+	}
+
+	rout := elem.Routine()
+	id := elem.ObjID()
+
+	al := ElementAlloc{
+		ElementBase: this.newElementBase(rout),
+		t:           elem.T(Request) - 1,
+		objId:       id,
+		elemType:    et,
+		num:         -1,
+		pos:         elem.Pos(),
+		ci:          newConcInfo(),
+		function:    elem.Function(),
+	}
+
+	this.allocs[id] = &al
+
+	this.AddElement(&al)
+}
+
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementAlloc) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementAlloc) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -233,9 +246,10 @@ func (this *ElementAlloc) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementAlloc) Pos() string {
-	return this.pos.toString()
+//
+//	position: the position
+func (this *ElementAlloc) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -299,6 +313,18 @@ func (this *ElementAlloc) IsSameElement(elem Element) bool {
 //   - string: The simple string representation of the element
 func (this *ElementAlloc) String() string {
 	return fmt.Sprintf("N,%d,%d,%s,%d,%s", this.t, this.objId, string(this.elemType), this.num, this.Pos())
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementAlloc) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -382,15 +408,13 @@ func (this *ElementAlloc) ReplayID() string {
 //   - TraceElement: The copy of the element
 func (this *ElementAlloc) Copy(mapping map[int]Element, keep bool) Element {
 	return &ElementAlloc{
-		id:       this.id,
-		index:    0,
-		routine:  this.routine,
-		t:        0,
-		objId:    this.objId,
-		elemType: this.elemType,
-		pos:      this.pos.copy(),
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		t:           0,
+		objId:       this.objId,
+		elemType:    this.elemType,
+		pos:         this.pos.copy(),
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

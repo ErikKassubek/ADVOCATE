@@ -26,10 +26,7 @@ import (
 // ElementChannel is a trace element for a channel
 //
 // Fields:
-//   - id: id of the element, should never be changed
 //   - objId int: The id of the channel
-//   - index int: Index in the routine
-//   - routine int: The routine id
 //   - op ObjectType: The operation on the channel
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
@@ -45,14 +42,13 @@ import (
 //   - partner *ElementChannel: The partner of the channel operation
 //   - function *ElementFunc: the function the operation is in
 type ElementChannel struct {
-	id       int
+	ElementBase
+
 	objId    int
-	index    int
-	routine  int
 	op       OperationType
 	tReq     int
 	tCom     int
-	pos      position
+	pos      Position
 	ci       *concInfo
 	oID      int
 	cl       bool
@@ -144,20 +140,19 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 	}
 
 	elem := ElementChannel{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		tReq:     tReqInt,
-		tCom:     tComInt,
-		objId:    idInt,
-		op:       opCInt,
-		cl:       clBool,
-		oID:      oIDInt,
-		qSize:    qSizeInt,
-		qCount:   qCountInt,
-		pos:      newPosition(file, line),
-		selIndex: -1,
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		tReq:        tReqInt,
+		tCom:        tComInt,
+		objId:       idInt,
+		op:          opCInt,
+		cl:          clBool,
+		oID:         oIDInt,
+		qSize:       qSizeInt,
+		qCount:      qCountInt,
+		pos:         newPosition(file, line),
+		selIndex:    -1,
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	elem.findPartner(this)
@@ -169,22 +164,6 @@ func (this *Trace) AddTraceElementChannel(routine int, tReq string,
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementChannel) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementChannel) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -349,9 +328,9 @@ func (this *ElementChannel) SetTWithoutNotExecuted2(tSort int) {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementChannel) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementChannel) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -457,10 +436,22 @@ func (this *ElementChannel) toStringSep(sep string, sel bool) string {
 	posStr := ""
 	if !sel {
 		timeString = fmt.Sprintf("%s%d%s%d", sep, this.T(Request), sep, this.T(Commit))
-		posStr = sep + this.Pos()
+		posStr = sep + this.Pos().String()
 	}
 
 	return fmt.Sprintf("C%s%s%d%s%s%s%s%s%d%s%d%s%d%s", timeString, sep, this.objId, sep, op, sep, cl, sep, this.oID, sep, this.qSize, sep, this.qCount, posStr)
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementChannel) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -550,21 +541,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		newCh := ElementChannel{
-			id:       this.id,
-			index:    0,
-			routine:  this.routine,
-			tReq:     0,
-			tCom:     0,
-			objId:    this.objId,
-			op:       this.op,
-			cl:       false,
-			oID:      0,
-			qSize:    this.qSize,
-			qCount:   0,
-			pos:      this.pos.copy(),
-			selIndex: this.selIndex,
-			ci:       newConcInfo(),
-			function: this.function.Copy(mapping, keep).(*ElementFunc),
+			ElementBase: this.ElementBase.Copy(),
+			tReq:        0,
+			tCom:        0,
+			objId:       this.objId,
+			op:          this.op,
+			cl:          false,
+			oID:         0,
+			qSize:       this.qSize,
+			qCount:      0,
+			pos:         this.pos.copy(),
+			selIndex:    this.selIndex,
+			ci:          newConcInfo(),
+			function:    this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 
 		mapping[id] = &newCh
@@ -586,21 +575,19 @@ func (this *ElementChannel) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	newCh := ElementChannel{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		tReq:     this.tReq,
-		tCom:     this.tCom,
-		objId:    this.objId,
-		op:       this.op,
-		cl:       this.cl,
-		oID:      this.oID,
-		qSize:    this.qSize,
-		qCount:   this.qCount,
-		pos:      this.pos.copy(),
-		selIndex: this.selIndex,
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		tReq:        this.tReq,
+		tCom:        this.tCom,
+		objId:       this.objId,
+		op:          this.op,
+		cl:          this.cl,
+		oID:         this.oID,
+		qSize:       this.qSize,
+		qCount:      this.qCount,
+		pos:         this.pos.copy(),
+		selIndex:    this.selIndex,
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 
 	mapping[id] = &newCh

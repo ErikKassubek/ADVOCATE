@@ -10,6 +10,7 @@
 package static
 
 import (
+	"advocate/advoc/toolchain"
 	"advocate/static/static/s_ast"
 	"advocate/static/static/s_ssa"
 )
@@ -20,6 +21,9 @@ type Data struct { // always use buildStaticData, never staticData{}
 }
 
 func BuildStaticData(dir string) (*Data, error) {
+	toolchain.ImportInsertStatic()
+	// defer toolchain.ImportRemoveStatic()
+
 	ast, err := s_ast.BuildAst(dir)
 	if err != nil {
 		return nil, err

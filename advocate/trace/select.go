@@ -24,10 +24,7 @@ import (
 
 // ElementSelect is a trace element for a select statement
 // Fields:
-//   - id: id of the element, should never be changed
 //   - objId int: The id of the select statement
-//   - index int: Index in the routine
-//   - routine int: The routine id
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
 //   - pos position: code position
@@ -39,13 +36,12 @@ import (
 //   - chosenDefault bool: if the default case was chosen
 //   - function *ElementFunc: the function the operation is in
 type ElementSelect struct {
-	id                  int
+	ElementBase
+
 	objId               int
-	index               int
-	routine             int
 	tPre                int
 	tPost               int
-	pos                 position
+	pos                 Position
 	ci                  *concInfo
 	cases               []*ElementChannel
 	chosenCase          *ElementChannel
@@ -99,8 +95,7 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 	}
 
 	elem := ElementSelect{
-		index:               this.NumberElemInRoutine(routine),
-		routine:             routine,
+		ElementBase:         this.newElementBase(routine),
 		tPre:                tReqInt,
 		tPost:               tComInt,
 		objId:               idInt,
@@ -168,18 +163,18 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 		}
 
 		elemCase := &ElementChannel{
-			routine:  routine,
-			tReq:     tReqInt,
-			tCom:     cTPost,
-			objId:    cID,
-			op:       cOpC,
-			cl:       cCl,
-			oID:      cOID,
-			qSize:    cOSize,
-			sel:      &elem,
-			selIndex: len(caseList),
-			pos:      newPosition(file, line),
-			ci:       newConcInfo(),
+			ElementBase: elem.ElementBase,
+			tReq:        tReqInt,
+			tCom:        cTPost,
+			objId:       cID,
+			op:          cOpC,
+			cl:          cCl,
+			oID:         cOID,
+			qSize:       cOSize,
+			sel:         &elem,
+			selIndex:    len(caseList),
+			pos:         newPosition(file, line),
+			ci:          newConcInfo(),
 		}
 
 		casesList = append(casesList, elemCase)
@@ -201,22 +196,6 @@ func (this *Trace) AddTraceElementSelect(routine int, tReq string,
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementSelect) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementSelect) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -358,9 +337,9 @@ func (this *ElementSelect) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementSelect) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementSelect) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -488,8 +467,20 @@ func (this *ElementSelect) String() string {
 		}
 	}
 	res += "," + strconv.Itoa(this.chosenIndex)
-	res += "," + this.Pos()
+	res += "," + this.Pos().String()
 	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementSelect) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -588,9 +579,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		elem := &ElementSelect{
-			id:              this.id,
-			index:           0,
-			routine:         this.routine,
+			ElementBase:     this.ElementBase.Copy(),
 			tPre:            0,
 			tPost:           0,
 			objId:           this.objId,
@@ -621,9 +610,7 @@ func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementSelect{
-		id:              this.id,
-		index:           this.index,
-		routine:         this.routine,
+		ElementBase:     this.ElementBase.Copy(),
 		tPre:            this.tPre,
 		tPost:           this.tPost,
 		objId:           this.objId,

@@ -39,9 +39,10 @@ var tracePathRewritten = ""
 //   - tracePath string: The path to the rewritten trace, relative the the dir where advocateResult is placed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
+//   - init bool: true if called from init, false for main
 //
 //go:linkname InitReplay runtime.AdvocateInitReplay
-func InitReplay(tracePath string, timeout int, atomic bool) {
+func InitReplay(tracePath string, timeout int, atomic bool, init bool) {
 	if initRun { // called by main but alredy run by init
 		return
 	}

@@ -42,22 +42,20 @@ func getLastCall(rout int) *ElementFunc {
 // ElementFunc is a struct to save a function call in the trace
 // Fields:
 //
-//   - id: id of the element, should never be changed
-//   - index int: index in the routine
-//   - routine int: The routine id
 //   - name: name of the called function
+//   - ssaName: ssa name of the called function
 //   - t int: The timestamp of the event
 //   - posDef position: code position of the function declaration
 //   - posCall position: code position of the function call
 //   - function *ElementFunc: the function the operation is in
 type ElementFunc struct {
-	id       int
-	index    int
-	routine  int
+	ElementBase
+
 	name     string
+	ssaName  string
 	t        int
-	posDef   position
-	posCall  position
+	posDef   Position
+	posCall  Position
 	function *ElementFunc
 }
 
@@ -81,14 +79,18 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 		return err
 	}
 
+	if name == "main.main" { // main func
+		this.hasPassedMain = true
+	}
+
 	elem := ElementFunc{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		name:     funcNameToSSANane(name),
-		t:        tInt,
-		posDef:   newPosition(fileDef, lineDef),
-		posCall:  newPosition(fileCall, lineCall),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		name:        name,
+		ssaName:     funcNameToSSANane(name),
+		t:           tInt,
+		posDef:      newPosition(fileDef, lineDef),
+		posCall:     newPosition(fileCall, lineCall),
+		function:    getLastCall(routine),
 	}
 
 	if _, ok := lastCall[routine]; !ok {
@@ -108,14 +110,6 @@ func (this *Trace) AddTaceElementFunc(routine int, t string, name string, posDef
 // ========================================================
 // MARK: ID
 // ========================================================
-
-func (this *ElementFunc) ID() int {
-	return this.id
-}
-
-func (this *ElementFunc) setID(ID int) {
-	this.id = ID
-}
 
 func (this *ElementFunc) ObjID() int {
 	return -1
@@ -149,8 +143,8 @@ func (this *ElementFunc) Committed() bool {
 // MARK: Position
 // ========================================================
 
-func (this *ElementFunc) Pos() string {
-	return this.posCall.toString()
+func (this *ElementFunc) Pos() Position {
+	return this.posCall
 }
 
 func (this *ElementFunc) File() string {
@@ -200,7 +194,7 @@ func (this *ElementFunc) IsEqual(elem Element) bool {
 func (this *ElementFunc) IsSameElement(elem Element) bool {
 	switch e := elem.(type) {
 	case *ElementFunc:
-		return this.name == e.name
+		return this.ssaName == e.ssaName
 	}
 
 	return false
@@ -211,7 +205,19 @@ func (this *ElementFunc) IsSameElement(elem Element) bool {
 // ========================================================
 
 func (this *ElementFunc) String() string {
-	return fmt.Sprint("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.Pos())
+	return fmt.Sprintf("F,%d,%s,%s,%s", this.t, this.name, this.GetPosDef(), this.Pos())
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementFunc) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -264,13 +270,12 @@ func (this *ElementFunc) Copy(mapping map[int]Element, keep bool) Element {
 	}
 
 	elem := &ElementFunc{
-		id:      this.id,
-		index:   this.index,
-		routine: this.routine,
-		t:       this.t,
-		name:    this.name,
-		posDef:  this.posDef.copy(),
-		posCall: this.posCall.copy(),
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		name:        this.name,
+		ssaName:     this.ssaName,
+		posDef:      this.posDef.copy(),
+		posCall:     this.posCall.copy(),
 	}
 
 	mapping[id] = elem
@@ -295,7 +300,7 @@ func (this *ElementFunc) GetName() string {
 }
 
 func (this *ElementFunc) GetSSAName() string {
-	return funcNameToSSANane(this.name)
+	return this.ssaName
 }
 
 func funcNameToSSANane(name string) string {

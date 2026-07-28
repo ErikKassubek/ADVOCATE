@@ -109,6 +109,9 @@ func (self *Block) string() string {
 }
 
 func (this *Block) Instrs() []Instruction {
+	if this == nil {
+		return make([]Instruction, 0)
+	}
 	return this.insts
 }
 

@@ -24,23 +24,19 @@ import (
 // ElementAtomic is a struct to save an atomic event in the trace
 // Fields:
 //
-//   - id: id of the element, should never be changed
 //   - objId int: The id of the atomic variable
-//   - index int: index in the routine
-//   - routine int: The routine id
 //   - op ObjectType: The operation on the atomic variable
 //   - t int: The timestamp of the event
 //   - pos position: code position
 //   - ci *concInfo: concurrency info
 //   - function *ElementFunc: the function the operation is in
 type ElementAtomic struct {
-	id       int
+	ElementBase
+
 	objId    int
-	index    int
-	routine  int
 	op       OperationType
 	t        int
-	pos      position
+	pos      Position
 	ci       *concInfo
 	function *ElementFunc
 }
@@ -96,14 +92,13 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 	}
 
 	elem := ElementAtomic{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		t:        tPostInt,
-		objId:    idInt,
-		op:       opAInt,
-		pos:      newPosition(file, line),
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		t:           tPostInt,
+		objId:       idInt,
+		op:          opAInt,
+		pos:         newPosition(file, line),
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -113,22 +108,6 @@ func (this Trace) AddTraceElementAtomic(routine int, tPost string,
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementAtomic) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementAtomic) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -224,9 +203,9 @@ func (this *ElementAtomic) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The file of the element
-func (this *ElementAtomic) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementAtomic) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -284,6 +263,18 @@ func (this *ElementAtomic) String() string {
 	opString := string(string(this.op)[1])
 
 	return fmt.Sprintf("A,%d,%d,%s,%s", this.t, this.objId, opString, this.Pos())
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementAtomic) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -371,28 +362,24 @@ func (this *ElementAtomic) Copy(mapping map[int]Element, keep bool) Element {
 
 	if !keep {
 		return &ElementAtomic{
-			id:       this.id,
-			index:    0,
-			routine:  this.routine,
-			t:        0,
-			objId:    this.objId,
-			op:       this.op,
-			pos:      this.pos.copy(),
-			ci:       newConcInfo(),
-			function: this.function.Copy(mapping, keep).(*ElementFunc),
+			ElementBase: this.ElementBase.Copy(),
+			t:           0,
+			objId:       this.objId,
+			op:          this.op,
+			pos:         this.pos.copy(),
+			ci:          newConcInfo(),
+			function:    this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementAtomic{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		t:        this.t,
-		objId:    this.objId,
-		op:       this.op,
-		pos:      this.pos.copy(),
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		objId:       this.objId,
+		op:          this.op,
+		pos:         this.pos.copy(),
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

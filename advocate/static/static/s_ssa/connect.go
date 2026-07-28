@@ -93,6 +93,9 @@ func (this *Data) correspondsSSAInstrTraceElem(i Instruction, elem trace.Element
 		if ssaClass == Ic_makeChan && elem.Type(true) == trace.NewChannel && i.HasChannel() {
 			return true
 		}
+		if ssaClass == Ic_call {
+			return true
+		}
 	case *trace.ElementChannel:
 		if i.HasChannel() && (ssaClass == Ic_send || ssaClass == Ic_unOp || ssaClass == Ic_call) {
 			return true

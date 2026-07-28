@@ -117,7 +117,7 @@ func parseNew(elem *trace.ElementAlloc) {
 
 	if f_base.FuzzingModeGFuzz {
 		fuzzingElem := f_gfuzz.FuzzingChannel{
-			GlobalID:  elem.Pos(),
+			GlobalID:  elem.Pos().String(),
 			LocalID:   elem.ObjID(),
 			CloseInfo: f_gfuzz.Never,
 			QSize:     elem.GetNum(),
@@ -154,8 +154,8 @@ func parseChannelOp(elem *trace.ElementChannel, selID int) {
 			chanID := elem.ObjID()
 
 			if recv != nil {
-				sendPos := elem.Pos()
-				recvPos := recv.Pos()
+				sendPos := elem.Pos().String()
+				recvPos := recv.Pos().String()
 				key := sendPos + "-" + recvPos
 
 				// if receive is a select case

@@ -12,6 +12,7 @@ package trace
 import (
 	"advocate/analysis/hb/a_clock"
 	"errors"
+	"fmt"
 	"strconv"
 )
 
@@ -21,17 +22,13 @@ import (
 
 // ElementRoutineEnd is a trace element for the termination of a routine end
 // Fields:
-//   - id: id of the element, should never be changed
-//   - index int: Index in the routine
-//   - routine int: The routine id
 //   - t int: The timestamp at the end of the event
 //   - ci *concInfo: concurrency info
 type ElementRoutineEnd struct {
-	id      int
-	index   int
-	routine int
-	t       int
-	ci      *concInfo
+	ElementBase
+
+	t  int
+	ci *concInfo
 }
 
 // ========================================================
@@ -52,10 +49,9 @@ func (this *Trace) AddTraceElementRoutineEnd(routine int, tPost string) error {
 	}
 
 	elem := ElementRoutineEnd{
-		index:   this.NumberElemInRoutine(routine),
-		routine: routine,
-		t:       tPostInt,
-		ci:      newConcInfo(),
+		ElementBase: this.newElementBase(routine),
+		t:           tPostInt,
+		ci:          newConcInfo(),
 	}
 
 	this.AddElement(&elem)
@@ -138,9 +134,9 @@ func (this *ElementRoutineEnd) Committed() bool {
 // Pos is a dummy function to implement the traceElement interface
 //
 // Returns:
-//   - string: empty string
-func (this *ElementRoutineEnd) Pos() string {
-	return ""
+//   - position: the position
+func (this *ElementRoutineEnd) Pos() Position {
+	return newPosition("", 0)
 }
 
 // File is a dummy function to implement the traceElement interface
@@ -237,6 +233,18 @@ func (this *ElementRoutineEnd) String() string {
 	return "E" + "," + strconv.Itoa(this.t)
 }
 
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementRoutineEnd) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
+}
+
 // ========================================================
 // MARK: Function
 // ========================================================
@@ -314,20 +322,16 @@ func (this *ElementRoutineEnd) ReplayID() string {
 func (this *ElementRoutineEnd) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementRoutineEnd{
-			id:      this.id,
-			index:   0,
-			routine: this.routine,
-			t:       0,
-			ci:      newConcInfo(),
+			ElementBase: this.ElementBase.Copy(),
+			t:           0,
+			ci:          newConcInfo(),
 		}
 	}
 
 	return &ElementRoutineEnd{
-		id:      this.id,
-		index:   this.index,
-		routine: this.routine,
-		t:       this.t,
-		ci:      this.ci.copy(),
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		ci:          this.ci.copy(),
 	}
 }
 

@@ -11,6 +11,7 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
+	"fmt"
 	"strconv"
 )
 
@@ -20,11 +21,11 @@ import (
 
 // ElementReplay is a struct to save an end of replay marker in the trace
 // Fields:
-//   - id: id of the element, should never be changed
 //   - t int: The timestamp of the event
 //   - exitCode int: expected exit code
 type ElementReplay struct {
-	id       int
+	ElementBase
+
 	t        int
 	exitCode int
 }
@@ -43,33 +44,14 @@ type ElementReplay struct {
 //   - error
 func (this *Trace) AddTraceElementReplay(ts int, exitCode int) error {
 	elem := ElementReplay{
-		t:        ts,
-		exitCode: exitCode,
+		ElementBase: this.newElementBase(0),
+		t:           ts,
+		exitCode:    exitCode,
 	}
 
 	this.AddElement(&elem)
 
 	return nil
-}
-
-// ========================================================
-// MARK: ID
-// ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementReplay) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementReplay) setID(ID int) {
-	this.id = ID
 }
 
 // ========================================================
@@ -117,9 +99,9 @@ func (this *ElementReplay) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The file of the element
-func (this *ElementReplay) Pos() string {
-	return ""
+//   - position: the position
+func (this *ElementReplay) Pos() Position {
+	return newPosition("", 0)
 }
 
 // File returns the file of the element
@@ -225,6 +207,18 @@ func (this *ElementReplay) String() string {
 	return res
 }
 
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementReplay) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
+}
+
 // ========================================================
 // MARK: VC
 // ========================================================
@@ -304,15 +298,15 @@ func (this *ElementReplay) ReplayID() string {
 func (this *ElementReplay) Copy(_ map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementReplay{
-			id:       this.id,
-			t:        0,
-			exitCode: this.exitCode,
+			ElementBase: this.ElementBase.Copy(),
+			t:           0,
+			exitCode:    this.exitCode,
 		}
 	}
 	return &ElementReplay{
-		id:       this.id,
-		t:        this.t,
-		exitCode: this.exitCode,
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		exitCode:    this.exitCode,
 	}
 }
 

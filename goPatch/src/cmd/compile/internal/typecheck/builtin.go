@@ -250,16 +250,16 @@ var runtimeDecls = [...]struct {
 	{"AdvocateAllocCondVar", funcTag, 161},
 	{"AdvocateAllocWG", funcTag, 161},
 	{"advocateControllFlow", funcTag, 162},
-	{"AdvocateInitTracing", funcTag, 78},
+	{"AdvocateInitTracing", funcTag, 163},
 	{"AdvocateFinishTracing", funcTag, 9},
-	{"AdvocateInitReplay", funcTag, 163},
+	{"AdvocateInitReplay", funcTag, 164},
 	{"AdvocateFinishReplay", funcTag, 9},
-	{"AdvocateInitFuzzing", funcTag, 164},
+	{"AdvocateInitFuzzing", funcTag, 165},
 	{"AdvocateFinishFuzzing", funcTag, 9},
 }
 
 func runtimeTypes() []*types.Type {
-	var typs [165]*types.Type
+	var typs [166]*types.Type
 	typs[0] = types.ByteType
 	typs[1] = types.NewPtr(typs[0])
 	typs[2] = types.Types[types.TANY]
@@ -423,8 +423,9 @@ func runtimeTypes() []*types.Type {
 	typs[160] = newSig(params(typs[7], typs[65], typs[159], typs[28], typs[15], typs[69], typs[69]), params(typs[65]))
 	typs[161] = newSig(params(typs[7]), nil)
 	typs[162] = newSig(params(typs[28], typs[15], typs[15]), nil)
-	typs[163] = newSig(params(typs[28], typs[15]), nil)
+	typs[163] = newSig(params(typs[15], typs[6]), nil)
 	typs[164] = newSig(params(typs[28], typs[15], typs[6]), nil)
+	typs[165] = newSig(params(typs[28], typs[15], typs[6], typs[6]), nil)
 	return typs[:]
 }
 

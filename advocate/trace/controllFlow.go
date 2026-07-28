@@ -30,14 +30,13 @@ import (
 //   - pos position: code position
 //   - function *ElementFunc: the function the element is in
 type ElementControllFlow struct {
-	id         int
-	routine    int
-	index      int
+	ElementBase
+
 	t          int
 	numCases   int
 	chosenCase int
 	op         OperationType
-	pos        position
+	pos        Position
 	function   *ElementFunc
 }
 
@@ -84,14 +83,13 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 	}
 
 	elem := ElementControllFlow{
-		routine:    routine,
-		index:      this.NumberElemInRoutine(routine),
-		t:          tInt,
-		numCases:   nc,
-		chosenCase: cc,
-		op:         o,
-		pos:        newPosition(file, line),
-		function:   getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		t:           tInt,
+		numCases:    nc,
+		chosenCase:  cc,
+		op:          o,
+		pos:         newPosition(file, line),
+		function:    getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -102,22 +100,6 @@ func (this *Trace) AddTraceElementControllFlow(routine int, t, op, numCases, cho
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementControllFlow) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementControllFlow) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -221,9 +203,9 @@ func (this *ElementControllFlow) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementControllFlow) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementControllFlow) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -296,6 +278,18 @@ func (this *ElementControllFlow) String() string {
 		panic("Invalid op in Controll Flow Element")
 	}
 	return fmt.Sprintf("I,%d,%s,%d,%d,%s", this.t, opStr, this.numCases, this.chosenCase, this.Pos())
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementControllFlow) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -378,15 +372,13 @@ func (this *ElementControllFlow) ReplayID() string {
 //   - TraceElement: The copy of the element
 func (this *ElementControllFlow) Copy(mapping map[int]Element, keep bool) Element {
 	return &ElementControllFlow{
-		id:         this.id,
-		routine:    this.routine,
-		index:      this.index,
-		t:          this.t,
-		numCases:   this.numCases,
-		chosenCase: this.chosenCase,
-		op:         this.op,
-		pos:        this.pos.copy(),
-		function:   this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		numCases:    this.numCases,
+		chosenCase:  this.chosenCase,
+		op:          this.op,
+		pos:         this.pos.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

@@ -23,9 +23,6 @@ import (
 
 // ElementCond is a trace element for a condition variable
 // Fields:
-//   - id: id of the element, should never be changed
-//   - index int: index in the routine
-//   - routine int: The routine id
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
 //   - objId int: The id of the condition variable
@@ -34,14 +31,13 @@ import (
 //   - ci *concInfo: concurrency infocalculated
 //   - function *ElementFunc: the function the operation is in
 type ElementCond struct {
-	id       int
-	index    int
-	routine  int
+	ElementBase
+
 	tReq     int
 	tCom     int
 	objId    int
 	op       OperationType
-	pos      position
+	pos      Position
 	ci       *concInfo
 	function *ElementFunc
 }
@@ -90,15 +86,14 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 	}
 
 	elem := ElementCond{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		tReq:     tPreInt,
-		tCom:     tPostInt,
-		objId:    idInt,
-		op:       op,
-		pos:      newPosition(file, line),
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		tReq:        tPreInt,
+		tCom:        tPostInt,
+		objId:       idInt,
+		op:          op,
+		pos:         newPosition(file, line),
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -108,22 +103,6 @@ func (this *Trace) AddTraceElementCond(routine int, tPre string, tPost string, i
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementCond) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementCond) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -221,9 +200,9 @@ func (this *ElementCond) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementCond) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementCond) Pos() Position {
+	return this.pos
 }
 
 // File returns the file of the element
@@ -333,8 +312,20 @@ func (this *ElementCond) String() string {
 	case CondBroadcast:
 		res += "B"
 	}
-	res += "," + this.Pos()
+	res += "," + this.Pos().String()
 	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementCond) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -421,30 +412,26 @@ func (this *ElementCond) ReplayID() string {
 func (this *ElementCond) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementCond{
-			id:       this.id,
-			index:    0,
-			routine:  this.routine,
-			tReq:     0,
-			tCom:     0,
-			objId:    this.objId,
-			op:       this.op,
-			pos:      this.pos.copy(),
-			ci:       newConcInfo(),
-			function: this.function.Copy(mapping, keep).(*ElementFunc),
+			ElementBase: this.ElementBase.Copy(),
+			tReq:        0,
+			tCom:        0,
+			objId:       this.objId,
+			op:          this.op,
+			pos:         this.pos.copy(),
+			ci:          newConcInfo(),
+			function:    this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementCond{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		tReq:     this.tReq,
-		tCom:     this.tCom,
-		objId:    this.objId,
-		op:       this.op,
-		pos:      this.pos.copy(),
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		tReq:        this.tReq,
+		tCom:        this.tCom,
+		objId:       this.objId,
+		op:          this.op,
+		pos:         this.pos.copy(),
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

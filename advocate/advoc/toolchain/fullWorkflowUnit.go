@@ -36,7 +36,6 @@ import (
 //
 // Parameter:
 //   - pathToAdvocate string: pathToAdvocate
-//   - dir string: path to the folder containing the unit tests
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -53,7 +52,7 @@ import (
 //   - int: TraceID
 //   - int: number results
 //   - error
-func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
+func runWorkflowUnit(runRecord, runAnalysis, runReplay bool,
 	pathToTest string, fuzzing int, fuzzingTrace string,
 	firstRun bool, fileNumber,
 	testNumber int) (int, int, error) {
@@ -61,15 +60,15 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 	if paths.Advocate == "" {
 		return 0, 0, errors.New("Path to advocate is empty")
 	}
-	if dir == "" {
+	if paths.Prog == "" {
 		return 0, 0, errors.New("Directory is empty")
 	}
 
 	isFuzzing := (fuzzing != -1)
 
 	// Change to the directory
-	if err := os.Chdir(dir); err != nil {
-		return 0, 0, fmt.Errorf("Failed to change directory: %v", dir)
+	if err := os.Chdir(paths.Prog); err != nil {
+		return 0, 0, fmt.Errorf("Failed to change directory: %v", paths.Prog)
 	}
 
 	if firstRun && !flags.Continue {
@@ -85,11 +84,11 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 
 		// Remove possibly leftover traces from unexpected aborts that could interfere with replay
 		// RemoveTraces(dir)
-		removeLogs(dir)
+		removeLogs(paths.Prog)
 	}
 
 	// Find all _test.go files in the directory
-	testFiles, _, totalFiles, err := FindTestFiles(dir, flags.Continue && flags.ExecName == "")
+	testFiles, _, totalFiles, err := FindTestFiles(paths.Prog, flags.Continue && flags.ExecName == "")
 	if err != nil {
 		return 0, 0, fmt.Errorf("Failed to find test files: %v", err)
 	}
@@ -146,7 +145,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 				log.Progressf("Running test %s in package %s in file %s", testFunc, packageName, file)
 			}
 
-			adjustedPackagePath := strings.TrimPrefix(packagePath, dir)
+			adjustedPackagePath := strings.TrimPrefix(packagePath, paths.Prog)
 			if !strings.HasSuffix(adjustedPackagePath, string(filepath.Separator)) {
 				adjustedPackagePath = adjustedPackagePath + string(filepath.Separator)
 			}
@@ -168,8 +167,8 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			}
 
 			// Execute full workflow
-			nrReplay, anaPassed, err := unitTestFullWorkflow(paths.Advocate,
-				dir, runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
+			nrReplay, anaPassed, err := unitTestFullWorkflow(
+				runRecord, runAnalysis, runReplay, testFunc, adjustedPackagePath, file, fuzzing,
 				fuzzingTrace)
 
 			timer.UpdateTimeFileDetail(testFunc, nrReplay)
@@ -181,7 +180,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 
 			// Move logs and results to the appropriate directory
 			total := fuzzing != -1
-			collect(dir, packagePath, paths.CurrentResult, total)
+			collect(paths.Prog, packagePath, paths.CurrentResult, total)
 
 			if err != nil {
 				log.Errorf(err.Error())
@@ -197,11 +196,11 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 			}
 
 			if flags.DeleteTraces && !flags.CreateStatistics {
-				RemoveTraces(dir)
+				RemoveTraces(paths.Prog)
 			}
 
 			if total {
-				removeLogs(dir)
+				removeLogs(paths.Prog)
 			}
 
 			if !isFuzzing {
@@ -224,7 +223,7 @@ func runWorkflowUnit(dir string, runRecord, runAnalysis, runReplay bool,
 
 	// Check for untriggered selects
 	if flags.NotExecuted && flags.ExecName != "" {
-		err := complete.Check(filepath.Join(dir, "advocateResult"), dir)
+		err := complete.Check(filepath.Join(paths.Prog, "advocateResult"), paths.Prog)
 		if err != nil {
 			log.Error("Could not run check for untriggered select and not executed progs: ", err.Error())
 		}
@@ -392,8 +391,6 @@ func FindTestFunctions(file string) ([]string, error) {
 // This will run, record, analyzer and, if necessary, rewrite and replay the test
 //
 // Parameter:
-//   - pathToAdvocate string: path to advocate
-//   - dir string: path to the package to test
 //   - runRecord bool: run the recording. If set to false, but runAnalysis or runReplay is
 //     set the trace at tracePath is used
 //   - runAnalysis bool: run the analysis on a path
@@ -410,7 +407,7 @@ func FindTestFunctions(file string) ([]string, error) {
 //   - int: number of run replays
 //   - bool: true if analysis passed without error
 //   - error
-func unitTestFullWorkflow(pathToAdvocate, dir string,
+func unitTestFullWorkflow(
 	runRecord, runAnalysis, runReplay bool,
 	testName, pkg, file string,
 	fuzzing int, fuzzingTrace string) (int, bool, error) {
@@ -434,10 +431,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	}()
 
 	// Validate required inputs
-	if pathToAdvocate == "" {
-		return 0, false, errors.New("Path to advocate is empty")
-	}
-	if dir == "" {
+	if paths.Prog == "" {
 		return 0, false, errors.New("Directory is empty")
 	}
 	if testName == "" {
@@ -451,11 +445,11 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	}
 
 	// Change to the directory
-	if err := os.Chdir(dir); err != nil {
+	if err := os.Chdir(paths.Prog); err != nil {
 		return 0, false, fmt.Errorf("Failed to change directory: %v", err)
 	}
 
-	pkg = strings.TrimPrefix(pkg, dir)
+	pkg = strings.TrimPrefix(pkg, paths.Prog)
 
 	if runRecord {
 		if flags.MeasureTime && fuzzing < 1 {
@@ -475,7 +469,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 	}
 
 	if runAnalysis {
-		pkgPath := filepath.Join(dir, pkg)
+		pkgPath := filepath.Join(paths.Prog, pkg)
 		err = unitTestAnalyzer(pkgPath, "advocateTrace", fuzzing, file, testName)
 		if err != nil {
 			return 0, false, err
@@ -488,7 +482,7 @@ func unitTestFullWorkflow(pathToAdvocate, dir string,
 
 	numberReplay := 0
 	if runReplay {
-		numberReplay = unitTestReplay(dir, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
+		numberReplay = unitTestReplay(paths.Prog, pkg, file, testName, paths.NameOutput, runAnalysis, origStdout, origStderr)
 	}
 
 	return numberReplay, runAnalysis, nil

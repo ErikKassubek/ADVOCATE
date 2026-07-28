@@ -80,10 +80,10 @@ func (this Bug) GetBugString() string {
 	paths := make([]string, 0)
 
 	for _, t := range this.TraceElement1 {
-		paths = append(paths, t.Pos())
+		paths = append(paths, t.Pos().String())
 	}
 	for _, t := range this.TraceElement2 {
-		paths = append(paths, t.Pos())
+		paths = append(paths, t.Pos().String())
 	}
 
 	sort.Strings(paths)

@@ -25,10 +25,7 @@ import (
 // ElementMutex is a trace element for a mutex
 //
 // Fields:
-//   - id: id of the element, should never be changed
 //   - objId int: The id of the mutex
-//   - index int: Index in the routine
-//   - routine int: The routine id
 //   - tReq int: The timestamp at the start of the event
 //   - tCom int: The timestamp at the end of the event
 //   - pos position: code position
@@ -38,13 +35,12 @@ import (
 //   - suc bool: Whether the operation was successful (only for trylock else always true)
 //   - function *ElementFunc: the function the operation is in
 type ElementMutex struct {
-	id       int
+	ElementBase
+
 	objId    int
-	index    int
-	routine  int
 	tReq     int
 	tCom     int
-	pos      position
+	pos      Position
 	ci       *concInfo
 	rw       bool
 	op       OperationType
@@ -119,17 +115,16 @@ func (this *Trace) AddTraceElementMutex(routine int, tReq string,
 	}
 
 	elem := ElementMutex{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		tReq:     tReqInt,
-		tCom:     tComInt,
-		objId:    idInt,
-		rw:       rwBool,
-		op:       opMInt,
-		suc:      sucBool,
-		pos:      newPosition(file, line),
-		ci:       newConcInfo(),
-		function: getLastCall(routine),
+		ElementBase: this.newElementBase(routine),
+		tReq:        tReqInt,
+		tCom:        tComInt,
+		objId:       idInt,
+		rw:          rwBool,
+		op:          opMInt,
+		suc:         sucBool,
+		pos:         newPosition(file, line),
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
@@ -139,22 +134,6 @@ func (this *Trace) AddTraceElementMutex(routine int, tReq string,
 // ========================================================
 // MARK: ID
 // ========================================================
-
-// ID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementMutex) ID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementMutex) setID(ID int) {
-	this.id = ID
-}
 
 // ObjID returns the ID of the primitive on which the operation was executed
 //
@@ -241,9 +220,9 @@ func (this *ElementMutex) Committed() bool {
 // Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementMutex) Pos() string {
-	return this.pos.toString()
+//   - position: the position
+func (this *ElementMutex) Pos() Position {
+	return this.pos
 }
 
 // File returns the file where the operation represented by the element was executed
@@ -359,8 +338,20 @@ func (this *ElementMutex) String() string {
 	} else {
 		res += ",f"
 	}
-	res += "," + this.Pos()
+	res += "," + this.Pos().String()
 	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementMutex) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
 }
 
 // ========================================================
@@ -445,34 +436,30 @@ func (this *ElementMutex) ReplayID() string {
 func (this *ElementMutex) Copy(mapping map[int]Element, keep bool) Element {
 	if !keep {
 		return &ElementMutex{
-			id:       this.id,
-			index:    0,
-			routine:  this.routine,
-			tReq:     0,
-			tCom:     0,
-			objId:    this.objId,
-			rw:       this.rw,
-			op:       this.op,
-			suc:      true,
-			pos:      this.pos.copy(),
-			ci:       newConcInfo(),
-			function: this.function.Copy(mapping, keep).(*ElementFunc),
+			ElementBase: this.ElementBase.Copy(),
+			tReq:        0,
+			tCom:        0,
+			objId:       this.objId,
+			rw:          this.rw,
+			op:          this.op,
+			suc:         true,
+			pos:         this.pos.copy(),
+			ci:          newConcInfo(),
+			function:    this.function.Copy(mapping, keep).(*ElementFunc),
 		}
 	}
 
 	return &ElementMutex{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		tReq:     this.tReq,
-		tCom:     this.tCom,
-		objId:    this.objId,
-		rw:       this.rw,
-		op:       this.op,
-		suc:      this.suc,
-		pos:      this.pos.copy(),
-		ci:       this.ci.copy(),
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		tReq:        this.tReq,
+		tCom:        this.tCom,
+		objId:       this.objId,
+		rw:          this.rw,
+		op:          this.op,
+		suc:         this.suc,
+		pos:         this.pos.copy(),
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

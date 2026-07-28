@@ -30,7 +30,7 @@ type Element interface {
 	SetTWithoutNotExecuted(tSort int)
 	Committed() bool
 
-	Pos() string
+	Pos() Position
 	File() string
 	Line() int
 
@@ -43,6 +43,7 @@ type Element interface {
 	IsSameElement(elem Element) bool
 
 	String() string
+	StringDebug() string
 
 	Function() *ElementFunc // TODO: GLOBAL
 
@@ -57,6 +58,8 @@ type Element interface {
 	Copy(mapping map[int]Element, keep bool) Element
 
 	IsValid() bool
+
+	InInit() bool
 }
 
 func IsOp(elem Element) bool {
@@ -66,6 +69,50 @@ func IsOp(elem Element) bool {
 	}
 
 	return true
+}
+
+// ========================================================
+// MARK: Base
+// ========================================================
+
+type ElementBase struct {
+	id      int
+	index   int
+	routine int
+
+	init bool
+}
+
+func (this *Trace) newElementBase(routine int) ElementBase {
+	return ElementBase{id: this.minTraceID, routine: routine, index: this.NumberElemInRoutine(routine), init: !this.hasPassedMain}
+}
+
+// ID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (this *ElementBase) ID() int {
+	return this.id
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementBase) setID(ID int) {
+	this.id = ID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (e ElementBase) Copy() ElementBase {
+	return e
+}
+
+func (e ElementBase) InInit() bool {
+	return e.init
 }
 
 // ========================================================
@@ -270,21 +317,21 @@ func (this *concInfo) SetNumberConcurrent(c int, weak, sameElem bool) {
 // MARK: Position
 // ========================================================
 
-type position struct {
+type Position struct {
 	file string
 	line int
 }
 
-func newPosition(file string, line int) position {
-	return position{file, line}
+func newPosition(file string, line int) Position {
+	return Position{file, line}
 }
 
-func (this position) copy() position {
-	return position{
+func (this Position) copy() Position {
+	return Position{
 		this.file, this.line,
 	}
 }
 
-func (this position) toString() string {
+func (this Position) String() string {
 	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }

@@ -408,7 +408,7 @@ func (this *Data) isRelvant(instr Instruction) {
 	resource := instr.Conc().Resource()
 
 	switch instr := instr.(type) {
-	case *InstructionGo, *InstructionMakeChan, *InstructionReturn, *InstructionSelect, *InstructionSend:
+	case *InstructionGo, *InstructionMakeChan, *InstructionReturn, *InstructionSelect, *InstructionSend, *InstructionIf:
 		instr.setRelevant(true, true)
 	case *InstructionAlloc, *InstructionUnOp:
 		instr.setRelevant(resource, resource)
@@ -445,8 +445,6 @@ func (this *Data) isRelvant(instr Instruction) {
 		}
 
 		instr.setRelevant(true, true)
-	case *InstructionIf: // TODO: should be recorded, change when recorded
-		instr.setRelevant(true, false)
 	default:
 		instr.setRelevant(false, false)
 	}

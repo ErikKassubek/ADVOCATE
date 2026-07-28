@@ -23,15 +23,11 @@ import (
 // ElementReturn is a struct to save a function return in the trace
 // Fields:
 //
-//   - id: id of the element, should never be changed
-//   - index int: index in the routine
-//   - routine int: The routine id
 //   - t int: The timestamp of the event
 //   - function *ElementFunc: corresponding function call
 type ElementReturn struct {
-	id       int
-	index    int
-	routine  int
+	ElementBase
+
 	t        int
 	function *ElementFunc
 }
@@ -52,10 +48,9 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 	}
 
 	elem := ElementReturn{
-		index:    this.NumberElemInRoutine(routine),
-		routine:  routine,
-		t:        tInt,
-		function: call,
+		ElementBase: this.newElementBase(routine),
+		t:           tInt,
+		function:    call,
 	}
 
 	this.AddElement(&elem)
@@ -65,14 +60,6 @@ func (this *Trace) AddTaceElementReturn(routine int, t string) error {
 // ========================================================
 // MARK: ID
 // ========================================================
-
-func (this *ElementReturn) ID() int {
-	return this.id
-}
-
-func (this *ElementReturn) setID(ID int) {
-	this.id = ID
-}
 
 func (this *ElementReturn) ObjID() int {
 	return -1
@@ -106,8 +93,8 @@ func (this *ElementReturn) Committed() bool {
 // MARK: Position
 // ========================================================
 
-func (this *ElementReturn) Pos() string {
-	return ""
+func (this *ElementReturn) Pos() Position {
+	return newPosition("", 0)
 }
 
 func (this *ElementReturn) File() string {
@@ -167,6 +154,18 @@ func (this *ElementReturn) String() string {
 	return fmt.Sprintf("R,%d", this.t)
 }
 
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementReturn) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
+}
+
 // ========================================================
 // MARK: VC
 // ========================================================
@@ -211,11 +210,9 @@ func (this *ElementReturn) ReplayID() string {
 
 func (this *ElementReturn) Copy(mapping map[int]Element, keep bool) Element {
 	return &ElementReturn{
-		id:       this.id,
-		index:    this.index,
-		routine:  this.routine,
-		t:        this.t,
-		function: this.function.Copy(mapping, keep).(*ElementFunc),
+		ElementBase: this.ElementBase.Copy(),
+		t:           this.t,
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
 	}
 }
 

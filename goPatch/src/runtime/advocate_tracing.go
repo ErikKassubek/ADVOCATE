@@ -21,7 +21,9 @@ var tracingStartNano int64
 //
 // Parameter:
 //   - finishFuzzing func(): function injection for the advocate.FinishFuzzing function
-func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool) {
+//   - writeToTraceFile func(r int, f bool) bool
+//   - init bool: true if called from init, false otherwise
+func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool, init bool) {
 	AdvocateTracingDisabled = false
 	finishTracingFunc = finishFuzzing
 	writeTraceToFileFunc = writeToTraceFile
@@ -30,9 +32,6 @@ func InitTracing(finishFuzzing func(), writeToTraceFile func(r int, f bool) bool
 	if tracingStartNano == 0 {
 		tracingStartNano = nanotime()
 	}
-
-	// record call of init function
-	advocateFunctionCallInit()
 }
 
 // DisableTracing disables the trace recording

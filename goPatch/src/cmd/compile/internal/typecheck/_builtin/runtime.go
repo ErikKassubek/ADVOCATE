@@ -306,11 +306,11 @@ func AdvocateAllocCondVar(unsafe.Pointer)
 func AdvocateAllocWG(unsafe.Pointer)
 func advocateControllFlow(string, int, int)
 
-func AdvocateInitTracing(int)
+func AdvocateInitTracing(int, bool)
 func AdvocateFinishTracing()
-func AdvocateInitReplay(string, int)
+func AdvocateInitReplay(string, int, bool)
 func AdvocateFinishReplay()
-func AdvocateInitFuzzing(string, int, bool)
+func AdvocateInitFuzzing(string, int, bool, bool)
 func AdvocateFinishFuzzing()
 
 // ADVOCATE-END

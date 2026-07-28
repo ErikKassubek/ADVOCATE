@@ -31,9 +31,10 @@ var initRun bool
 //   - tracePath string: For fuzzing approaches that use trace, add the path to the
 //     trace, otherwise set to ""
 //   - timeout int: Timeout in seconds
+//   - init bool: true if called from init, false otherwise
 //
 //go:linkname InitFuzzing runtime.AdvocateInitFuzzing
-func InitFuzzing(tracePath string, timeout int) {
+func InitFuzzing(tracePath string, timeout int, init bool) {
 	if initRun { // called by main but alredy run by init
 		return
 	}
@@ -42,7 +43,7 @@ func InitFuzzing(tracePath string, timeout int) {
 	prefSel := make(map[string][]int)
 	prefFlow := make(map[string][]int)
 
-	InitTracing(0) // timeout will be done in startReplay
+	InitTracing(0, init) // timeout will be done in startReplay
 
 	if tracePath == "" { // GoFuzz and Flow
 		fuzzingSelectPath := "fuzzingData.log"

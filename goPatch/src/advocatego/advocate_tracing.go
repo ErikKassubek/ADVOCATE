@@ -36,7 +36,7 @@ var startWriting = false
 // The function creates the trace folder and starts the background memory test.
 //
 //go:linkname InitTracing runtime.AdvocateInitTracing
-func InitTracing(timeout int) {
+func InitTracing(timeout int, init bool) {
 	if initRun { // called by main but alredy run by init
 		return
 	}
@@ -73,7 +73,7 @@ func InitTracing(timeout int) {
 
 	// go writeTraceIfFull()
 	// go removeAtomicsIfFull()
-	runtime.InitTracing(FinishTracing, WriteToTraceFile)
+	runtime.InitTracing(FinishTracing, WriteToTraceFile, init)
 }
 
 // Write the trace of the program to a file.

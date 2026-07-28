@@ -223,7 +223,7 @@ func GetConcurrentInfoForFuzzing() (*[]a_base.ConcurrentEntry, *[]a_base.Concurr
 //   - int: the current fuzzing counter for the element
 func getFuzzingCounter(te trace.Element) int {
 	id := te.ObjID()
-	pos := te.Pos()
+	pos := te.Pos().String()
 
 	if _, ok := a_base.FuzzingCounter[id]; !ok {
 		return 0
@@ -241,7 +241,7 @@ func getFuzzingCounter(te trace.Element) int {
 //   - te TraceElement: The element to increase the counter for
 func IncFuzzingCounter(te trace.Element) {
 	id := te.ObjID()
-	pos := te.Pos()
+	pos := te.Pos().String()
 
 	if _, ok := a_base.FuzzingCounter[id]; !ok {
 		a_base.FuzzingCounter[id] = make(map[string]int)

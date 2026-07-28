@@ -27,9 +27,9 @@ func AdvocateAllocMutex(ptr unsafe.Pointer) {
 		return
 	}
 	m := (*Mutex)(ptr)
-	if m.id != 0 {
-		return
-	}
+	// if m.id != 0 {
+	// 	return
+	// }
 	m.id = runtime.AdvocateAlloc("M", 0)
 	m.memAdr = uintptr(unsafe.Pointer(m))
 }

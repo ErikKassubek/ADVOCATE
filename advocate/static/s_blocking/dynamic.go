@@ -20,12 +20,13 @@ import (
 //
 // Returns:
 //   - []trace.Resource: slice of blocked resource.
-func getBlockedResources() map[*trace.Resource]struct{} {
-	res := make(map[*trace.Resource]struct{})
+func getBlockedResources() map[*trace.ElementAlloc]*trace.Resource {
+	res := make(map[*trace.ElementAlloc]*trace.Resource)
 
+	// TODO: r.Alloc not correct if copy of function parameter
 	for _, e := range a_base.MainTrace.GetBlocked() {
 		for _, r := range a_base.MainTrace.GetResources(e) {
-			res[r] = struct{}{}
+			res[r.Alloc()] = r
 		}
 	}
 

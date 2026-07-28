@@ -69,7 +69,7 @@ var nextPerRout = make(map[int]ssaPos)
 var jumpBackPos = make(map[int]*types.Stack[ssaPos])
 var closures = make(map[string]*s_ssa.Function)
 
-func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
+func determineResouceToSSAAtTermination() {
 	trIter := a_base.MainTrace.AsIterator()
 
 	// get the first relevant value in init
@@ -137,6 +137,13 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 	log.Debug("RUN -> ", pos.String())
 
 	switch inst := pos.i.(type) {
+	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
+		if _, ok := blocked[elem.(*trace.ElementAlloc)]; ok {
+			// TODO: store alloc
+			// TODO: alloc not correct if copied
+			log.Debug("IS BLOCKED ALLOC")
+		}
+		pos = pos.Next()
 	case *s_ssa.InstructionJump:
 		pos = newSsaPosFuncBlock(pos.f, inst.To())
 	case *s_ssa.InstructionCall:
@@ -147,6 +154,7 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 		} else {
 			pos = pos.Next()
 		}
+
 	case *s_ssa.InstructionReturn:
 		pos = jumpBackPos[rout].Pop()
 	case *s_ssa.InstructionIf:

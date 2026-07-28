@@ -31,6 +31,8 @@ func instrumentBody(fn *ir.Func) {
 		return
 	}
 
+	instrumentParameterCopy(fn)
+
 	fn.Body = instrumentStmtList(fn.Body)
 }
 
@@ -318,6 +320,90 @@ func countIfCases(n *ir.IfStmt) int {
 }
 
 // ==================================================
+// MARK: Switch
+// ==================================================
+
+func instrumentSwitch(n *ir.SwitchStmt) {
+	numCases := len(n.Cases)
+
+	for i, c := range n.Cases {
+		c.Body = instrumentStmtList(c.Body)
+
+		c.Body = addControllRec(
+			c.Body,
+			c.Pos(),
+			numCases,
+			i,
+			"S",
+		)
+	}
+}
+func countSwitchCases(n *ir.SwitchStmt) int {
+	count := 0
+
+	for _, c := range n.Compiled {
+		if _, ok := c.(*ir.CaseClause); ok {
+			count++
+		}
+	}
+
+	return count
+}
+
+// ==================================================
+// MARK: Parameter
+// ==================================================
+
+func instrumentParameterCopy(fn *ir.Func) {
+	calls := make(ir.Nodes, 0)
+	for _, n := range fn.Dcl {
+		if n.Class != ir.PPARAM {
+			continue
+		}
+
+		// Skip *sync.Mutex.
+		if n.Type().IsPtr() {
+			continue
+		}
+
+		var runtimeName string
+
+		switch {
+		case isSyncType(n.Type(), "Mutex") || isSyncType(n.Type(), "RWMutex"):
+			runtimeName = "AdvocateAllocMutex"
+
+		case isSyncType(n.Type(), "Cond"):
+			runtimeName = "AdvocateAllocCondVar"
+
+		case isSyncType(n.Type(), "WaitGroup"):
+			runtimeName = "AdvocateAllocWG"
+		default:
+			continue
+		}
+
+		f := typecheck.LookupRuntime(runtimeName)
+
+		addr := ir.NewAddrExpr(n.Pos(), n)
+		addr.SetType(types.NewPtr(n.Type()))
+		addr.SetTypecheck(1)
+
+		call := typecheck.Call(
+			n.Pos(),
+			f,
+			[]ir.Node{makeUnsafePointer(addr, n.Pos())},
+			false,
+		)
+
+		calls = append(calls, call)
+	}
+
+	if len(calls) > 0 {
+		body := append(calls, fn.Body...)
+		fn.Body = body
+	}
+}
+
+// ==================================================
 // MARK: shouldAdvocate
 // ==================================================
 
@@ -363,37 +449,6 @@ func isAdvocateCall(n ir.Node) bool {
 			name.Sym().Name == "AdvocateAllocCondVar" ||
 			name.Sym().Name == "AdvocateAllocWG" ||
 			name.Sym().Name == "advocateTraceControllFlow")
-}
-
-// ==================================================
-// MARK: Switch
-// ==================================================
-
-func instrumentSwitch(n *ir.SwitchStmt) {
-	numCases := len(n.Cases)
-
-	for i, c := range n.Cases {
-		c.Body = instrumentStmtList(c.Body)
-
-		c.Body = addControllRec(
-			c.Body,
-			c.Pos(),
-			numCases,
-			i,
-			"S",
-		)
-	}
-}
-func countSwitchCases(n *ir.SwitchStmt) int {
-	count := 0
-
-	for _, c := range n.Compiled {
-		if _, ok := c.(*ir.CaseClause); ok {
-			count++
-		}
-	}
-
-	return count
 }
 
 // ==================================================

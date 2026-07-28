@@ -14,6 +14,7 @@ import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
 	"advocate/utils/log"
+	"advocate/utils/types"
 )
 
 type ssaPos struct {
@@ -45,7 +46,14 @@ func (this *ssaPos) String() string {
 	return this.i.String()
 }
 
+func (this *ssaPos) Next() ssaPos {
+	instID := this.instID + 1
+	i := this.Instrs()[instID]
+	return ssaPos{f: this.f, b: this.b, i: i, instID: instID}
+}
+
 var nextPerRout = make(map[int]ssaPos)
+var jumpBackPos = make(map[int]*types.Stack[ssaPos])
 
 func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
 	trIter := a_base.MainTrace.AsIterator()
@@ -59,6 +67,8 @@ func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
 			break
 		}
 	}
+
+	jumpBackPos[1] = types.NewStack[ssaPos]()
 
 	for elem := trIter.Next(); elem != nil; elem = trIter.Next() {
 		// Set main as func
@@ -80,7 +90,7 @@ func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
 		routine := elem.Routine()
 
 		log.Debug(elem.StringDebug())
-		res := passFromSsaPos(nextPerRout[routine])
+		res := passFromSsaPos(nextPerRout[routine], routine)
 		if res.Nil() {
 			delete(nextPerRout, routine)
 		} else {
@@ -90,12 +100,12 @@ func determineResouceToSSAAtTermination(res map[*trace.Resource]struct{}) {
 }
 
 // Iterate over SSA starting from start and stopping before end
-func passFromSsaPos(start ssaPos) ssaPos {
+func passFromSsaPos(start ssaPos, rout int) ssaPos {
 	if start.Nil() {
 		return ssaPos{nil, nil, nil, 0}
 	}
 	log.Debug("PASS: ", start.String())
-	next := passInstruction(start)
+	next := passInstruction(start, rout)
 
 	if next.Nil() {
 		return next
@@ -125,22 +135,22 @@ func passFromSsaPos(start ssaPos) ssaPos {
 	return ssaPos{nil, nil, nil, 0}
 }
 
-func passInstruction(pos ssaPos) ssaPos {
+func passInstruction(pos ssaPos, rout int) ssaPos {
 	switch inst := pos.i.(type) {
 	case *s_ssa.InstructionJump:
 		pos.b = pos.Blocks()[inst.To()]
 	case *s_ssa.InstructionCall:
 		f := inst.GetFunc(data.Ssa())
 		s := newSsaPosFunc(f)
-		return passFromSsaPos(s)
+		jumpBackPos[rout].Push(pos.Next())
+		return passFromSsaPos(s, rout)
 	case *s_ssa.InstructionReturn:
-		pos.b = nil
+		pos = jumpBackPos[rout].Pop()
 	case *s_ssa.InstructionIf:
 		// TODO: for now we always go into if. Implement check from trace
 		pos.b = pos.Blocks()[inst.If()]
 	default:
-		pos.instID = pos.instID + 1
-		pos.i = pos.Instrs()[pos.instID]
+		pos = pos.Next()
 	}
 
 	return pos

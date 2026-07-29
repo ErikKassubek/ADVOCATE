@@ -11,6 +11,7 @@ package s_ssa
 
 import (
 	"advocate/trace"
+	"advocate/utils/log"
 	"strings"
 )
 
@@ -47,6 +48,8 @@ func (this *Data) TraceFuncToSSAFunc(f *trace.ElementFunc) *Function {
 
 func (this *Data) elemNameToSSAName(elem *trace.ElementFunc) string {
 	name := elem.GetName()
+
+	log.Debug(this.mainFunc == nil)
 
 	if strings.HasPrefix(name, "main") {
 		name = strings.TrimPrefix(name, "main")

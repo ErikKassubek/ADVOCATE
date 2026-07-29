@@ -220,10 +220,6 @@ func chansend(c *hchan, ep unsafe.Pointer, block bool, callerpc uintptr, ignored
 	}
 
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = AdvocateAlloc("C", int(c.dataqsiz))
-	}
-
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {
@@ -526,10 +522,6 @@ func closechan(c *hchan) {
 	}
 
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = AdvocateAlloc("C", int(c.dataqsiz))
-	}
-
 	// AdvocateChanClose is called when a channel is closed. It creates a close event
 	// in the trace.
 	if !c.advocateIgnore {
@@ -675,10 +667,6 @@ func chanrecv(c *hchan, ep unsafe.Pointer, block bool, ignored bool) (selected, 
 	}
 
 	// ADVOCATE-START
-	if c.id == 0 {
-		c.id = AdvocateAlloc("C", int(c.dataqsiz))
-	}
-
 	// wait until the replay has reached the current point
 	var replayElem ReplayElement
 	if !ignored && !c.advocateIgnore {

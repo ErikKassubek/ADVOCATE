@@ -52,7 +52,7 @@ func determineResouceToSSAAtTermination() {
 					nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 					break
 				}
-				log.Debug("SKIP: ", inst.String())
+				log.Debug("SKIP-> ", inst.String())
 			}
 			continue
 		}
@@ -64,6 +64,7 @@ func determineResouceToSSAAtTermination() {
 
 		routine := elem.Routine()
 
+		log.Debug("ELEM  -> ", elem.StringDebug())
 		// log.Debug(elem.StringDebug())
 		res := passSsaAtPos(elem, nextPerRout[routine], routine)
 		if !res.Nil() {
@@ -90,7 +91,7 @@ func passSsaAtPos(elem trace.Element, start s_ssa.SsaPos, rout int) s_ssa.SsaPos
 }
 
 func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	log.Debug("RUN -> ", pos.String())
+	log.Debug("RUN   -> ", pos.String())
 
 	switch inst := pos.I.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
@@ -117,7 +118,12 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 			return s_ssa.NewNilSsaPos()
 		}
 	case *s_ssa.InstructionIf:
-		elem := elem.(*trace.ElementControllFlow)
+		elem, ok := elem.(*trace.ElementControllFlow)
+		if !ok {
+			panic("A")
+			log.Debug(elem.IsValid())
+			log.Debug("INVALID: ", elem.String())
+		}
 		switch elem.Type(true) {
 		case trace.ControllIf:
 			pos = followIfChain(pos, inst, elem.ChosenCase())
@@ -185,6 +191,7 @@ func parseGo(elem trace.Element, inst *s_ssa.InstructionGo) {
 
 	f := getSSAFuncFromName(fName)
 
+	// TODO: this jumps to f, but then we need to skip the func elem in the trace
 	nextPerRout[elem.ObjID()] = s_ssa.NewSsaPosFunc(f)
 }
 
@@ -192,12 +199,12 @@ func skipNonRelevant(pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	for p := pos; !p.Nil(); {
 		inst := p.I
 		if !inst.Relevant() {
+			log.Debug("SKIPR -> ", inst.String())
 			p = p.Next()
 			continue
 		}
 
 		if inst.InTrace() {
-
 			return p
 		}
 

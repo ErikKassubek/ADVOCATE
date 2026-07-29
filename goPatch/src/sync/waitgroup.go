@@ -27,7 +27,6 @@ func AdvocateAllocWG(ptr unsafe.Pointer) {
 		return
 	}
 	w.id = runtime.AdvocateAlloc("W", 0)
-	w.memAdr = uintptr(unsafe.Pointer(w))
 }
 
 // ADVOCATE-END
@@ -77,8 +76,7 @@ type WaitGroup struct {
 	sema  uint32
 
 	// ADVOCATE-START
-	id     uint64 // id for the waitgroup
-	memAdr uintptr
+	id uint64 // id for the waitgroup
 	// ADVOCATE-END
 }
 
@@ -148,11 +146,6 @@ func (wg *WaitGroup) Add(delta int) {
 	w := uint32(state & 0x7fffffff)
 
 	// ADVOCATE-START
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
 	// Record the add or done of a wait group in the routine's trace.
 	// If delta > 0, it is an add, if it's -1, it's a done.
 	// The add or done cannot fait without crashing the program. Add and done
@@ -226,17 +219,10 @@ func (wg *WaitGroup) Wait() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
 			_ = runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
 			runtime.BlockForever()
 		}
 	}
-
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
 
 	// Record the wait of a wait group in the routine's trace.
 	// The wait will run until the waitgroup counte is zero. Therefor it

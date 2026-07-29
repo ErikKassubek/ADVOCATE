@@ -48,8 +48,7 @@ type RWMutex struct {
 	readerWait  atomic.Int32 // number of departing readers
 
 	// ADVOCATE-START
-	id     uint64 // id for the mutex
-	memAdr uintptr
+	id uint64 // id for the mutex
 	// ADVOCATE-END
 }
 
@@ -79,19 +78,12 @@ func (rw *RWMutex) RLock() {
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
-			rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 			_ = runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexRLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
-
-	// RWMutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a RWMutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
@@ -132,7 +124,6 @@ func (rw *RWMutex) TryRLock() bool {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 			_ = runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryRLock)
 			runtime.BlockForever()
 		}
@@ -140,11 +131,6 @@ func (rw *RWMutex) TryRLock() bool {
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// RWMutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a RWMutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexPost to find the pre event.
 	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryRLock)
@@ -247,7 +233,6 @@ func (rw *RWMutex) Lock() {
 	if wait {
 		replayElem := <-ch
 		if replayElem.Blocked {
-			rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 			_ = runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexLock)
 			runtime.BlockForever()
 		}
@@ -255,11 +240,6 @@ func (rw *RWMutex) Lock() {
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// RWMutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a RWMutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
@@ -304,7 +284,6 @@ func (rw *RWMutex) TryLock() bool {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 			// AdvocateMutexPre records, that a routine tries to lock a mutex.
 			// advocateIndex is used for AdvocateMutexPost to find the pre event.
 			_ = runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryLock)
@@ -314,11 +293,6 @@ func (rw *RWMutex) TryLock() bool {
 
 	runtime.FuzzingFlowWait(2)
 
-	// RWMutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a RWMutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	rw.id, rw.memAdr = runtime.NewIdIfReq(rw.id, rw.memAdr, uintptr(unsafe.Pointer(rw)))
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexPost to find the pre event.
 	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(rw), rw.id, runtime.OperationRWMutexTryLock)

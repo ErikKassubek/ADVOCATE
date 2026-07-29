@@ -64,9 +64,12 @@ func advocateFunctionCall() {
 
 	_, fileCall, lineCall, _ := Caller(2)
 
-	if hasSuffix(fileCall, ".s") { // required for go f()
-		fileCall = fileDef
-		lineCall = lineDef
+	// for go f(), call of f cannot be determined by Caller
+	// but is equal to the call of the creation of the routine
+	if hasSuffix(fileCall, ".s") {
+		gi := currentGoRoutineInfo()
+		fileCall = gi.forkFile
+		lineCall = int(gi.forkLine)
 	}
 
 	if AdvocateIgnore(fileDef) {

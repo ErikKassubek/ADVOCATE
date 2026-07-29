@@ -209,13 +209,14 @@ func allocatedSync(n ir.Node) (*types.Type, ir.Node) {
 
 		return x.X.Type(), x.X
 
+	// TODO: what if only var m sync.Mutex
 	case *ir.Decl:
 		// var m sync.Mutex
-		if x.X == nil {
-			return nil, nil
-		}
+		// if x.X == nil {
+		// 	return nil, nil
+		// }
 
-		return x.X.Type(), x.X
+		// return x.X.Type(), x.X
 	}
 
 	return nil, nil
@@ -445,10 +446,10 @@ func isAdvocateCall(n ir.Node) bool {
 	}
 
 	return name.Sym() != nil &&
-		(name.Sym().Name == "AdvocateAllocMutex" ||
-			name.Sym().Name == "AdvocateAllocCondVar" ||
-			name.Sym().Name == "AdvocateAllocWG" ||
-			name.Sym().Name == "advocateTraceControllFlow")
+		(fmt.Sprint(name.Sym()) == "AdvocateAllocMutex" ||
+			fmt.Sprint(name.Sym()) == "AdvocateAllocCondVar" ||
+			fmt.Sprint(name.Sym()) == "AdvocateAllocWG" ||
+			fmt.Sprint(name.Sym()) == "advocateTraceControllFlow")
 }
 
 // ==================================================

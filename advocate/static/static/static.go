@@ -21,11 +21,11 @@ type Data struct { // always use buildStaticData, never staticData{}
 }
 
 func BuildStaticData(dir string) (*Data, error) {
-	toolchain.ImportInsertStatic()
-	// defer toolchain.ImportRemoveStatic()
+	file, line := toolchain.ImportInsertStatic()
 
 	ast, err := s_ast.BuildAst(dir)
 	if err != nil {
+		toolchain.ImportRemoveStatic(file, line)
 		return nil, err
 	}
 
@@ -36,6 +36,7 @@ func BuildStaticData(dir string) (*Data, error) {
 		ssa: ssa,
 	}
 
+	toolchain.ImportRemoveStatic(file, line)
 	return data, nil
 }
 

@@ -12,6 +12,7 @@ package toolchain
 
 import (
 	"advocate/utils/flags"
+	"advocate/utils/log"
 	"advocate/utils/paths"
 	"bufio"
 	"errors"
@@ -66,39 +67,43 @@ func getBuildArg(fileName string, replay bool, tracePath string,
 //   - static bool: set true for static dummy
 //
 // Returns:
-//   - build parameters
+//   - string: build parameters
+//   - string: file where import was added
+//   - int: line where import was added
 //   - error
 func importInsertMain(fileName string, replay bool, replayNumber string,
-	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, static bool) (string, error) {
+	replayTimeout int, record bool, fuzzing int, fuzzingTrace string, static bool) (string, string, int, error) {
 	if fileName == "" {
-		return "", errors.New("Please provide a file  name")
+		return "", "", -1, errors.New("Please provide a file  name")
 	}
 
 	if _, err := os.Stat(fileName); os.IsNotExist(err) {
-		return "", fmt.Errorf("File %s does not exist", fileName)
+		return "", "", -1, fmt.Errorf("File %s does not exist", fileName)
 	}
 
 	exists, err := mainMethodExists(fileName)
 	if err != nil {
-		return "", err
+		return "", "", -1, err
 	}
 
 	if !exists {
-		return "", fmt.Errorf("Main Method not found in file")
+		return "", "", -1, fmt.Errorf("Main Method not found in file")
 	}
 
 	file, err := os.OpenFile(fileName, os.O_RDWR, 0644)
 	if err != nil {
-		return "", fmt.Errorf("Could not open main file to add header")
+		return "", "", -1, fmt.Errorf("Could not open main file to add header")
 	}
 	defer file.Close()
 
-	fmt.Println("FileName: ", fileName)
-	fmt.Println("TestName: Main")
+	if !static {
+		fmt.Println("FileName: ", fileName)
+		fmt.Println("TestName: Main")
+	}
 
 	var lines []string
 	scanner := bufio.NewScanner(file)
-	importAdded := false
+	importLine := -1
 	currentLine := 0
 	for scanner.Scan() {
 		currentLine++
@@ -112,23 +117,23 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 				lines = append(lines, "import _ \"advocatego\"")
 				fmt.Println("Import added at line:", currentLine)
 			}
-			importAdded = true
-		} else if strings.Contains(line, "import \"") && !importAdded {
+			importLine = currentLine
+		} else if strings.Contains(line, "import \"") && importLine == -1 {
 			if static {
 				lines = append(lines, "")
 			} else {
 				lines = append(lines, "import _ \"advocatego\"")
 				fmt.Println("Import added at line:", currentLine)
 			}
-			importAdded = true
-		} else if strings.Contains(line, "import (") && !importAdded {
+			importLine = currentLine
+		} else if strings.Contains(line, "import (") && importLine == -1 {
 			if static {
-				lines = append(lines, "\t _ \"advocatego\"")
+				lines = append(lines, "")
 			} else {
 				lines = append(lines, "\t _ \"advocatego\"")
 				fmt.Println("Import added at line:", currentLine)
 			}
-			importAdded = true
+			importLine = currentLine
 		}
 	}
 
@@ -149,7 +154,7 @@ func importInsertMain(fileName string, replay bool, replayNumber string,
 		replayPath = "advocateTrace"
 	}
 
-	return getBuildArg(fileName, replay, replayPath, flags.TimeoutReplay, record, fuzzing, fuzzingTrace), nil
+	return getBuildArg(fileName, replay, replayPath, flags.TimeoutReplay, record, fuzzing, fuzzingTrace), fileName, importLine, nil
 }
 
 // Remove the header from a file with a header in a main function
@@ -417,18 +422,46 @@ func testExists(fileName string, testName string) (bool, error) {
 // MARK: Static
 // ============================================
 
-func ImportInsertStatic() {
+func ImportInsertStatic() (file string, line int) {
 	if flags.ModeMain {
-		importInsertMain(paths.Prog, false, "1", flags.TimeoutReplay, false, 0, "", true)
+		var err error
+		_, file, line, err = importInsertMain(paths.Prog, false, "1", flags.TimeoutReplay, false, 0, "", true)
+		if err != nil {
+			log.Error(err.Error())
+		}
 	} else {
 		panic("STATIC FOR TESTS NOT IMPLEMENTED YET")
 	}
+
+	return
 }
 
-// func ImportRemoveStatic() {
-// 	if flags.ModeMain {
-// 		importRemoveMain()
-// 	} else {
-// 		panic("STATIC FOR TESTS NOT IMPLEMENTED YET")
-// 	}
-// }
+func ImportRemoveStatic(file string, line int) {
+	if line < 1 {
+		log.Errorf("ImportRemoveStatic failed: line number must be >= 1")
+		return
+	}
+
+	data, err := os.ReadFile(file)
+	if err != nil {
+		log.Error("ImportRemoveStatic failed: ", err.Error())
+		return
+	}
+
+	lines := strings.Split(string(data), "\n")
+
+	if line > len(lines) {
+		log.Errorf("ImportRemoveStatic failed: line %d out of range (file has %d lines)", line, len(lines))
+		return
+	}
+
+	// Remove the requested line (1-based index)
+	lines = append(lines[:line], lines[line+1:]...)
+
+	output := strings.Join(lines, "\n")
+	err = os.WriteFile(file, []byte(output), 0644)
+
+	if err != nil {
+		log.Error("ImportRemoveStatic failed: ", err.Error())
+	}
+}

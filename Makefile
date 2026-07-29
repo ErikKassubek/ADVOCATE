@@ -5,6 +5,8 @@ all: patch advocate
 advocate: 
 	cd advocate && go build
 
+new: patch adv
+
 patch: clean-dir build-patch clean-cache
 
 build-patch:

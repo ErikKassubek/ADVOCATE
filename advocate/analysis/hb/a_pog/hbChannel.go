@@ -232,7 +232,6 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Close(graph *PoGraph, ch *trace.ElementChannel) {
-	// TODO: should there be an edge to all send/recv that where executed before the close?
 	if graph != nil {
 		graph.closeData[ch.ObjID()] = ch
 	} else {

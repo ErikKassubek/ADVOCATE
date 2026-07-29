@@ -496,7 +496,6 @@ type InstructionCall struct {
 }
 
 func NewInstructionCall(inst *ssa.Call) *InstructionCall {
-	// TODO: handle dynamic calls
 	name := ""
 	if callee := inst.Common().StaticCallee(); callee != nil {
 		name = callee.String()

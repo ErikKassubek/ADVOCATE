@@ -18,7 +18,6 @@ import "advocate/trace"
 //   - elem *trace.ElementChannel: the element
 func AddChannel(elem *trace.ElementChannel) {
 	// For now, only create constraints for unbuffered channels
-	// TODO: check out buffered channels
 	if elem.IsBuffered() {
 		return
 	}

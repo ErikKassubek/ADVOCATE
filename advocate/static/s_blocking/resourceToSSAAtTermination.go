@@ -19,54 +19,8 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
-type ssaPos struct {
-	f      *s_ssa.Function
-	b      *s_ssa.Block
-	i      s_ssa.Instruction
-	instID int
-}
-
-func newSsaPosFunc(f *s_ssa.Function) ssaPos {
-	b := f.Blocks()[0]
-	i := b.Instrs()[0]
-	return ssaPos{f: f, b: b, i: i, instID: 0}
-}
-
-func newSsaPosFuncBlock(f *s_ssa.Function, blockID int) ssaPos {
-	b := f.Blocks()[blockID]
-	i := b.Instrs()[0]
-	return ssaPos{f: f, b: b, i: i, instID: 0}
-}
-
-func (this *ssaPos) Blocks() []*s_ssa.Block {
-	return this.f.Blocks()
-}
-
-func (this *ssaPos) Instrs() []s_ssa.Instruction {
-	return this.b.Instrs()
-}
-
-func (this *ssaPos) Nil() bool {
-	return this.f == nil
-}
-
-func (this *ssaPos) String() string {
-	f := this.f.Name()
-	if f == "" {
-		f = "init"
-	}
-	return f + " : " + this.i.String()
-}
-
-func (this *ssaPos) Next() ssaPos {
-	instID := this.instID + 1
-	i := this.b.Instrs()[instID]
-	res := ssaPos{f: this.f, b: this.b, i: i, instID: instID}
-	return res
-}
-
-var nextPerRout = make(map[int]ssaPos)
-var jumpBackPos = make(map[int]*types.Stack[ssaPos])
+var nextPerRout = make(map[int]s_ssa.SsaPos)
+var jumpBackPos = make(map[int]*types.Stack[s_ssa.SsaPos])
 var closures = make(map[string]*s_ssa.Function)
 
 func determineResouceToSSAAtTermination() {
@@ -75,15 +29,15 @@ func determineResouceToSSAAtTermination() {
 	// get the first relevant value in init
 	f := data.Ssa().InitFunc()
 	b := f.Blocks()[1]
-	for _, inst := range b.Instrs() {
+	for id, inst := range b.Instrs() {
 		if inst.InTrace() {
-			nextPerRout[1] = ssaPos{f: f, b: b, i: inst}
+			nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 			break
 		}
 		log.Debug("SKIP-> ", inst.String())
 	}
 
-	jumpBackPos[1] = types.NewStack[ssaPos]()
+	jumpBackPos[1] = types.NewStack[s_ssa.SsaPos]()
 
 	for elem := trIter.Next(); elem != nil; elem = trIter.Next() {
 		// Set main as func
@@ -93,9 +47,9 @@ func determineResouceToSSAAtTermination() {
 			b := f.Blocks()[0]
 
 			// skip non relevant instructions in main
-			for _, inst := range b.Instrs() {
+			for id, inst := range b.Instrs() {
 				if inst.InTrace() {
-					nextPerRout[1] = ssaPos{f: f, b: b, i: inst}
+					nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 					break
 				}
 				log.Debug("SKIP: ", inst.String())
@@ -114,14 +68,16 @@ func determineResouceToSSAAtTermination() {
 		res := passSsaAtPos(elem, nextPerRout[routine], routine)
 		if !res.Nil() {
 			nextPerRout[routine] = res
+		} else {
+			delete(nextPerRout, routine)
 		}
 	}
 }
 
 // Iterate over SSA starting from start and stopping before end
-func passSsaAtPos(elem trace.Element, start ssaPos, rout int) ssaPos {
+func passSsaAtPos(elem trace.Element, start s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	if start.Nil() {
-		return ssaPos{nil, nil, nil, 0}
+		return s_ssa.NewNilSsaPos()
 	}
 
 	next := parseInstruction(elem, start, rout)
@@ -133,10 +89,10 @@ func passSsaAtPos(elem trace.Element, start ssaPos, rout int) ssaPos {
 	return skipNonRelevant(next, rout)
 }
 
-func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
+func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	log.Debug("RUN -> ", pos.String())
 
-	switch inst := pos.i.(type) {
+	switch inst := pos.I.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
 		if _, ok := blocked[elem.(*trace.ElementAlloc)]; ok {
 			// TODO: store alloc
@@ -145,18 +101,21 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 		}
 		pos = pos.Next()
 	case *s_ssa.InstructionJump:
-		pos = newSsaPosFuncBlock(pos.f, inst.To())
+		pos = s_ssa.NewSsaPosFuncBlock(pos.F, inst.To())
 	case *s_ssa.InstructionCall:
 		f := inst.GetFunc(data.Ssa())
 		if f != nil {
-			pos = newSsaPosFunc(f)
 			jumpBackPos[rout].Push(pos.Next())
+			pos = s_ssa.NewSsaPosFunc(f)
 		} else {
 			pos = pos.Next()
 		}
 
 	case *s_ssa.InstructionReturn:
 		pos = jumpBackPos[rout].Pop()
+		if pos.Nil() {
+			return s_ssa.NewNilSsaPos()
+		}
 	case *s_ssa.InstructionIf:
 		elem := elem.(*trace.ElementControllFlow)
 		switch elem.Type(true) {
@@ -166,8 +125,8 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 			pos = followSwitchChain(pos, inst, elem.ChosenCase())
 		}
 	case *s_ssa.InstructionGo:
-		parseGo(elem, pos, inst)
-		jumpBackPos[elem.ObjID()] = types.NewStack[ssaPos]()
+		parseGo(elem, inst)
+		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.SsaPos]()
 		pos = pos.Next()
 	default:
 		pos = pos.Next()
@@ -176,29 +135,25 @@ func parseInstruction(elem trace.Element, pos ssaPos, rout int) ssaPos {
 	return pos
 }
 
-func followIfChain(pos ssaPos, inst s_ssa.Instruction, chosen int) ssaPos {
+func followIfChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
 	instrIf, ok := inst.(*s_ssa.InstructionIf)
 	if !ok {
 		return pos
 	}
 
 	if chosen == 0 {
-		pos.b = pos.Blocks()[instrIf.If()]
-		pos.instID = 0
-		pos.i = pos.b.Instrs()[0]
+		pos.NewBlock(pos.Blocks()[instrIf.If()])
 		return pos
 	}
 
-	pos.b = pos.Blocks()[instrIf.Else()]
-	pos.instID = 0
-	pos.i = pos.b.Instrs()[0]
-	return followIfChain(pos, pos.i, chosen-1)
+	pos.NewBlock(pos.Blocks()[instrIf.Else()])
+	return followIfChain(pos, pos.I, chosen-1)
 }
 
-func followSwitchChain(pos ssaPos, inst s_ssa.Instruction, chosen int) ssaPos {
+func followSwitchChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
 	if _, ok := inst.(*s_ssa.InstructionBinOp); ok {
 		next := pos.Next()
-		return followSwitchChain(next, next.i, chosen)
+		return followSwitchChain(next, next.I, chosen)
 	}
 
 	instrIf, ok := inst.(*s_ssa.InstructionIf)
@@ -207,19 +162,15 @@ func followSwitchChain(pos ssaPos, inst s_ssa.Instruction, chosen int) ssaPos {
 	}
 
 	if chosen == 0 {
-		pos.b = pos.Blocks()[instrIf.If()]
-		pos.instID = 0
-		pos.i = pos.b.Instrs()[0]
+		pos.NewBlock(pos.Blocks()[instrIf.If()])
 		return pos
 	}
 
-	pos.b = pos.Blocks()[instrIf.Else()]
-	pos.instID = 0
-	pos.i = pos.b.Instrs()[0]
-	return followSwitchChain(pos, pos.i, chosen-1)
+	pos.NewBlock(pos.Blocks()[instrIf.Else()])
+	return followSwitchChain(pos, pos.I, chosen-1)
 }
 
-func parseGo(elem trace.Element, pos ssaPos, inst *s_ssa.InstructionGo) {
+func parseGo(elem trace.Element, inst *s_ssa.InstructionGo) {
 	v := inst.Inst().(*ssa.Go)
 
 	var fName string
@@ -234,12 +185,12 @@ func parseGo(elem trace.Element, pos ssaPos, inst *s_ssa.InstructionGo) {
 
 	f := getSSAFuncFromName(fName)
 
-	nextPerRout[elem.ObjID()] = newSsaPosFunc(f)
+	nextPerRout[elem.ObjID()] = s_ssa.NewSsaPosFunc(f)
 }
 
-func skipNonRelevant(pos ssaPos, rout int) ssaPos {
+func skipNonRelevant(pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	for p := pos; !p.Nil(); {
-		inst := p.i
+		inst := p.I
 		if !inst.Relevant() {
 			p = p.Next()
 			continue
@@ -253,5 +204,5 @@ func skipNonRelevant(pos ssaPos, rout int) ssaPos {
 		p = parseInstruction(nil, p, rout)
 	}
 
-	return ssaPos{nil, nil, nil, 0}
+	return s_ssa.NewNilSsaPos()
 }

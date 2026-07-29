@@ -22,8 +22,6 @@ import (
 	"advocate/utils/timer"
 )
 
-// TODO: fix comments
-
 // Computation of "abstract" lock dependencies
 // Lock dependencies are 3-tuples of the following form:
 //    (ThreadID, Lock, LockSet)

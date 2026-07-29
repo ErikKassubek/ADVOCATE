@@ -65,48 +65,6 @@ func CheckForCommunicationOnClosedChannel(ch *trace.ElementChannel) {
 		}
 	}
 
-	// if baseA.AnalysisCasesMap[flags.ReceiveOnClosed] && baseA.HasReceived[id] {
-	// 	for routine, mrr := range baseA.MostRecentReceive {
-	// 		happensBefore := clock.GetHappensBefore(baseA.CloseData[id].GetVC(a_clock.Strong), mrr[id].Vc)
-	// 		if mrr[id].Elem != nil && mrr[id].Elem.GetTID() != "" && (happensBefore == hb.Concurrent || happensBefore == hb.Before) {
-
-	// 			file1, line1, tPre1, err := trace.InfoFromTID(mrr[id].Elem.GetTID()) // recv
-	// 			if err != nil {
-	// 				log.Error(err.Error())
-	// 				return
-	// 			}
-
-	// 			file2, line2, tPre2, err := trace.InfoFromTID(ch.GetTID()) // close
-	// 			if err != nil {
-	// 				log.Error(err.Error())
-	// 				return
-	// 			}
-
-	// 			arg1 := results.TraceElementResult{ // recv
-	// 				RoutineID: routine,
-	// 				ObjID:     id,
-	// 				TPre:      tPre1,
-	// 				ObjType:   "CR",
-	// 				File:      file1,
-	// 				Line:      line1,
-	// 			}
-
-	// 			arg2 := results.TraceElementResult{ // close
-	// 				RoutineID: baseA.CloseData[id].GetRoutine(),
-	// 				ObjID:     id,
-	// 				TPre:      tPre2,
-	// 				ObjType:   "CC",
-	// 				File:      file2,
-	// 				Line:      line2,
-	// 			}
-
-	// 			results.Result(results.WARNING, helper.PRecvOnClosed,
-	// 				"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
-	// 		}
-	// 	}
-
-	// }
-
 }
 
 // FoundSendOnClosedChannel is called, id an actual send on closed was found.
@@ -159,64 +117,6 @@ func FoundSendOnClosedChannel(elem trace.Element, actual bool) {
 	}
 
 }
-
-// FoundReceiveOnClosedChannel log the detection of an actual receive on a closed channel
-//
-// Parameter:
-//   - ch *TraceElementChannel: The trace element
-// func FoundReceiveOnClosedChannel(ch *trace.ElementChannel, actual bool) {
-// 	timer.Start(timer.AnaClose)
-// 	defer timer.Stop(timer.AnaClose)
-
-// 	id := ch.GetObjId()
-
-// 	if _, ok := baseA.CloseData[id]; !ok {
-// 		return
-// 	}
-
-// 	posClose := baseA.CloseData[id].GetTID()
-// 	if posClose == "" || ch.GetTID() == "" || posClose == "\n" || ch.GetTID() == "\n" {
-// 		return
-// 	}
-
-// 	file1, line1, tPre1, err := trace.InfoFromTID(ch.GetTID())
-// 	if err != nil {
-// 		log.Error(err.Error())
-// 		return
-// 	}
-
-// 	file2, line2, tPre2, err := trace.InfoFromTID(posClose)
-// 	if err != nil {
-// 		log.Error(err.Error())
-// 		return
-// 	}
-
-// 	arg1 := results.TraceElementResult{ // recv
-// 		RoutineID: ch.GetRoutine(),
-// 		ObjID:     id,
-// 		TPre:      tPre1,
-// 		ObjType:   "CR",
-// 		File:      file1,
-// 		Line:      line1,
-// 	}
-
-// 	arg2 := results.TraceElementResult{ // close
-// 		RoutineID: baseA.CloseData[id].GetRoutine(),
-// 		ObjID:     id,
-// 		TPre:      tPre2,
-// 		ObjType:   "CC",
-// 		File:      file2,
-// 		Line:      line2,
-// 	}
-
-// 	if actual {
-// 		results.Result(results.WARNING, helper.ARecvOnClosed,
-// 			"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
-// 	} else {
-// 		results.Result(results.WARNING, helper.PRecvOnClosed,
-// 			"recv", []results.ResultElem{arg1}, "close", []results.ResultElem{arg2})
-// 	}
-// }
 
 // CheckForClosedOnClosed checks for a close on a closed channel.
 // Must be called, before the current close operation is added to closePos

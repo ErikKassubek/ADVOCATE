@@ -21,9 +21,6 @@ import (
 	"advocate/utils/types"
 )
 
-// TODO: for non-rw locks, it should be enough to search for a concurrent
-// lock/unlock
-
 // CheckForUnlockBeforeLockLock collects all locks for the analysis
 //
 // Parameter:

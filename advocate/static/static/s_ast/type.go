@@ -183,7 +183,6 @@ func (self *Data) isWaitGroup(id *ast.CallExpr) bool {
 	return self.isConcObj(id, s_base.Wg)
 }
 
-// TODO: channel
 func (self *Data) isConcObj(call *ast.CallExpr, on s_base.ObjName) bool {
 	sel, ok := call.Fun.(*ast.SelectorExpr)
 
@@ -256,7 +255,6 @@ func (self *Data) isChannel(expr ast.Expr) bool {
 	return ok
 }
 
-// TODO: channel send
 func (self *Data) getConcFuncName(id ast.Expr) s_base.FuncName {
 	// if x, ok := id.(*ast.SelectorExpr); ok { // X.Sel is func name
 	// 	// fmt.Println(self.isMutex(x.Fun))

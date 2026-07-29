@@ -21,8 +21,6 @@ import (
 	"strings"
 )
 
-// TODO: for each test get the number of unique bugs
-
 // CreateStatsFuzzing creates statistics about fuzzing runs
 //
 // Parameter:

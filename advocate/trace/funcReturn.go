@@ -133,7 +133,7 @@ func (this *ElementReturn) Type(operation bool) OperationType {
 // MARK: Equal
 // ========================================================
 
-func (this *ElementReturn) IsEqual(elem Element) bool { // TODO: fix
+func (this *ElementReturn) IsEqual(elem Element) bool {
 	return this.id == elem.ID()
 }
 

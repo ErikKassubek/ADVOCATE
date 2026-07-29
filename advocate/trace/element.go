@@ -45,7 +45,7 @@ type Element interface {
 	String() string
 	StringDebug() string
 
-	Function() *ElementFunc // TODO: GLOBAL
+	Function() *ElementFunc
 
 	Vc(weak a_clock.VcType, vc *a_clock.VectorClock)
 	GetVC(weak a_clock.VcType) *a_clock.VectorClock

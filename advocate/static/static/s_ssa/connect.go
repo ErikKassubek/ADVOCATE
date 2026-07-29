@@ -14,8 +14,6 @@ import (
 	"strings"
 )
 
-// TODO: global
-
 func (this *Data) TraceToSSA(elem trace.Element) (*Function, Instruction) {
 	// we are only interested in blocking types and alloc
 	switch elem.(type) {

@@ -77,19 +77,6 @@ func (self *Data) getObject(id *ast.Ident) (types.Object, *packages.Package) {
 	return pkg.TypesInfo.ObjectOf(id), pkg
 }
 
-// TODO: does not seem to work
-func (self *Data) getNamed(id *ast.Ident) (*types.Named, bool) {
-	t := self.getType(id)
-
-	if ptr, ok := t.(*types.Pointer); ok {
-		t = ptr.Elem()
-	}
-
-	res, ok := t.(*types.Named)
-
-	return res, ok
-}
-
 func (self *Data) isNilNode(node ast.Node) bool {
 	if node == nil {
 		return true

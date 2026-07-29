@@ -11,8 +11,6 @@ package f_por
 
 import "advocate/fuzzing/f_base"
 
-// TODO: how to identify the same event over multiple runs?
-
 // Return, if the constraint has a previous, equivalent constraint.
 // If not, the constraint is added to alreadyRunROC
 //
@@ -81,7 +79,6 @@ func isSubset(constraint1, constraint2 f_base.Constraint) (bool, f_base.Constrai
 // Returns:
 //   - baseF.Constraint: copy of c1 containing only the values tha are in c1
 func removeDifferrence(c1, c2 f_base.Constraint) f_base.Constraint {
-	// TODO: implement
 	return c1
 }
 
@@ -95,7 +92,6 @@ func removeDifferrence(c1, c2 f_base.Constraint) f_base.Constraint {
 // Returns:
 //   - bool: true constraint1 can be reordered to be constraint2, false otherwise
 func canBeReordered(constraint1, constraint2 f_base.Constraint) bool {
-	// TODO: implement
 	return false
 }
 
@@ -108,6 +104,5 @@ func canBeReordered(constraint1, constraint2 f_base.Constraint) bool {
 // Returns:
 //   - bool: true if the events are considered equal, false otherwise
 func IsEqualPOR(first, second f_base.Constraint) bool {
-	// TODO: implement
 	return false
 }

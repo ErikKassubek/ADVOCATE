@@ -27,7 +27,7 @@ type objId int
 type FuncCall struct {
 	Call     *ast.CallExpr
 	Decl     *ast.FuncDecl
-	Name     string // TODO: multi package
+	Name     string
 	CallType s_base.FuncName
 }
 

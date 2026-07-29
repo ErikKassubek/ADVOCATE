@@ -10,13 +10,9 @@
 package s_ast
 
 import (
-	"advocate/static/static/s_base"
-	"advocate/utils/log"
 	"fmt"
 	"go/ast"
 )
-
-// TODO: remove since no longer needed
 
 // FuncFromFunc determines if the target function is reachable from the start function
 // It is implemented as a BFS
@@ -130,35 +126,6 @@ func (self *Data) FuncFromFunc(start, target *ast.FuncDecl, calcPath bool) (bool
 	return true, res, nil
 }
 
-// func (self *staticData) isReachableRoutFromFunc(start *ast.FuncDecl, target *ast.GoStmt, calcPath bool) (bool, string, error) {
-// 	targetFunc := self.routFunc[target]
-// 	if targetFunc == nil { // TODO: make work with funcLit
-// 		return false, "", fmt.Errorf("tartge func is nil")
-// 	}
-// 	res, path, err := self.isReachableFuncFromFunc(start, targetFunc, calcPath)
-
-// 	if err != nil || !res || !calcPath {
-// 		return res, "", err
-// 	}
-
-// 	return res, fmt.Sprintf("%s -> Go", path), nil
-// }
-
-// func (self *staticData) isReachableFuncFromRout(start *ast.GoStmt, target *ast.FuncDecl, calcPath bool) (bool, string, error) {
-// 	startFunc := self.routFunc[start]
-// 	if startFunc == nil { // TODO: make work with funcLit
-// 		return false, "", fmt.Errorf("Start func is nil")
-// 	}
-
-// 	res, path, err := self.isReachableFuncFromFunc(startFunc, target, calcPath)
-
-// 	if err != nil || !res || !calcPath {
-// 		return res, "", err
-// 	}
-
-// 	return res, fmt.Sprintf("Go -> %s", path), nil
-// }
-
 func (self *Data) OpFromFunc(start *ast.FuncDecl, targetOp Operation, calcPath bool) (bool, string, error) {
 	if start == nil {
 		fmt.Println()
@@ -265,42 +232,4 @@ func (self *Data) OpFromFunc(start *ast.FuncDecl, targetOp Operation, calcPath b
 	res += " -> " + string(targetOp.Op)
 
 	return true, res, nil
-}
-
-// TODO: only for debug. Remove
-func (self *Data) TestReachable() {
-	var fFunc *ast.FuncDecl
-	var mainFunc *ast.FuncDecl
-
-	for p, funcDecl := range self.FuncDeclMap {
-		if self.GetPosFromPos(p) == "[/main.go:7]" {
-			fFunc = funcDecl
-		} else if self.GetPosFromPos(p) == "[/main.go:51]" {
-			mainFunc = funcDecl
-		}
-	}
-
-	res, path, err := self.FuncFromFunc(mainFunc, fFunc, true)
-	if err != nil {
-		log.Error("Error in isReachableFuncFromFunc: ", err)
-		return
-	}
-
-	if res {
-		fmt.Println("Func: ", path)
-	} else {
-		fmt.Println("No Path Found")
-	}
-
-	res, path, err = self.OpFromFunc(mainFunc, Operation{1, s_base.MutexTryLock}, true)
-	if err != nil {
-		log.Error("Error in isReachableFuncFromFunc: ", err)
-		return
-	}
-
-	if res {
-		fmt.Println("Op: ", path)
-	} else {
-		fmt.Println("No Path Found")
-	}
 }

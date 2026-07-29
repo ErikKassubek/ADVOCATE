@@ -99,7 +99,6 @@ type ResultElem interface {
 
 // TraceElementResult is a type to represent an element that is
 // part of a found bug
-// TODO: replace by pointer to actual element
 type TraceElementResult struct {
 	RoutineID int
 	ObjID     int

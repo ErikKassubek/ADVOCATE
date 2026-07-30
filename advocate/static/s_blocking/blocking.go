@@ -44,7 +44,6 @@ func isBlockingBug() {
 	blocked = getBlockedResources()
 
 	for alloc, r := range blocked {
-
 		f, s := data.Ssa().TraceToSSA(alloc)
 
 		if f == nil || s == nil {

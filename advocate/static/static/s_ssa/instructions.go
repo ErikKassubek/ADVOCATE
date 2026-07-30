@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"go/token"
 	"go/types"
+	"strings"
 
 	"golang.org/x/tools/go/ssa"
 )
@@ -66,7 +67,8 @@ const (
 )
 
 type Instruction interface {
-	Name() string
+	Variable() string
+	Term() string
 	String() string
 	StringInfo() string
 	Inst() ssa.Instruction
@@ -81,7 +83,8 @@ type Instruction interface {
 
 	Class() InstClass
 
-	setName(name string)
+	setVariable(name string)
+	setTerm(term string)
 	setRelevant(rel, trace bool)
 	setInst(inst ssa.Instruction)
 	setConc(conc hasConcInfo)
@@ -92,8 +95,11 @@ type Instruction interface {
 // ================================================================
 
 type InstructionBase struct {
-	name string
-	inst ssa.Instruction
+	variable string
+	term     string
+	inst     ssa.Instruction
+
+	varPtr bool
 
 	inTrace bool
 	relvant bool
@@ -104,10 +110,14 @@ type InstructionBase struct {
 }
 
 func (this *InstructionBase) String() (res string) {
-	if this.name == "" {
+	if this.variable == "" {
 		res = this.inst.String()
 	} else {
-		res = fmt.Sprintf("%s = %s", this.name, this.inst.String())
+		if this.varPtr {
+			res = fmt.Sprintf("*%s = %s", this.variable, this.term)
+		} else {
+			res = fmt.Sprintf("%s = %s", this.variable, this.term)
+		}
 	}
 
 	return
@@ -164,8 +174,12 @@ func (this *InstructionBase) StringInfo() (res string) {
 	return
 }
 
-func (this *InstructionBase) Name() string {
-	return this.name
+func (this *InstructionBase) Variable() string {
+	return this.variable
+}
+
+func (this *InstructionBase) Term() string {
+	return this.variable
 }
 
 func (this *InstructionBase) Class() InstClass {
@@ -209,8 +223,18 @@ func (this *InstructionBase) setRelevant(rel, trace bool) {
 	this.inTrace = trace
 }
 
-func (this *InstructionBase) setName(name string) {
-	this.name = name
+func (this *InstructionBase) setVariabe(name string) {
+	variable := strings.TrimPrefix(name, "*")
+	this.variable = variable
+	this.varPtr = (name != variable)
+}
+
+func (this *InstructionBase) setTerm(term string) {
+	this.term = term
+}
+
+func (this *InstructionBase) setVariable(name string) {
+	this.variable = name
 }
 
 func (this *InstructionBase) setInst(inst ssa.Instruction) {
@@ -314,7 +338,8 @@ func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
 		// Be robust against bad transforms.
 		name = "<deleted>"
 	}
-	inst.setName(name)
+	inst.setVariable(name)
+	inst.setTerm(instr.String())
 
 	inst.setInst(instr)
 
@@ -410,8 +435,10 @@ func (this *Data) isRelvant(instr Instruction) {
 	switch instr := instr.(type) {
 	case *InstructionGo, *InstructionMakeChan, *InstructionReturn, *InstructionSelect, *InstructionSend, *InstructionIf:
 		instr.setRelevant(true, true)
-	case *InstructionAlloc, *InstructionUnOp:
+	case *InstructionAlloc:
 		instr.setRelevant(resource, resource)
+	case *InstructionUnOp:
+		instr.setRelevant(resource, instr.Inst().(*ssa.UnOp).Op == token.ARROW) // receive
 	case *InstructionMapUpdate, *InstructionLookup, *InstructionExtract, *InstructionStore:
 		instr.setRelevant(resource, false)
 	case *InstructionField,

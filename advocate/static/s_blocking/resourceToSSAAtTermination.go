@@ -15,6 +15,7 @@ import (
 	"advocate/trace"
 	"advocate/utils/log"
 	"advocate/utils/types"
+	"fmt"
 
 	"golang.org/x/tools/go/ssa"
 )
@@ -22,6 +23,7 @@ import (
 var nextPerRout = make(map[int]s_ssa.SsaPos)
 var jumpBackPos = make(map[int]*types.Stack[s_ssa.SsaPos])
 var closures = make(map[string]*s_ssa.Function)
+var lastClosure = make(map[int][]*instructionWithInfo)
 
 func determineResouceToSSAAtTermination() {
 	trIter := a_base.MainTrace.AsIterator()
@@ -34,15 +36,17 @@ func determineResouceToSSAAtTermination() {
 			nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 			break
 		}
-		log.Debug("SKIP-> ", inst.String())
+		// log.Debug("SKIP-> ", inst.String())
 	}
 
 	jumpBackPos[1] = types.NewStack[s_ssa.SsaPos]()
 
+	lastWasFork := make(map[int]bool)
+
 	for elem := trIter.Next(); elem != nil; elem = trIter.Next() {
 		// Set main as func
 		elemF, ok := elem.(*trace.ElementFunc)
-		if ok && elemF.GetName() == "main.main" {
+		if ok && elemF.Name() == "main.main" {
 			f := data.Ssa().MainFunc()
 			b := f.Blocks()[0]
 
@@ -52,23 +56,29 @@ func determineResouceToSSAAtTermination() {
 					nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 					break
 				}
-				log.Debug("SKIP-> ", inst.String())
+				// log.Debug("SKIP-> ", inst.String())
 			}
+			continue
+		}
+
+		routine := elem.Routine()
+		if _, ok := elem.(*trace.ElementFunc); ok && lastWasFork[routine] {
+			lastWasFork[routine] = false
 			continue
 		}
 
 		switch elem.(type) {
 		case *trace.ElementReplay, *trace.ElementRoutineEnd:
 			continue
+		case *trace.ElementFork:
+			lastWasFork[elem.ObjID()] = true
+		default:
+			lastWasFork[routine] = false
 		}
 
-		routine := elem.Routine()
-
-		log.Debug("ELEM  -> ", elem.StringDebug())
-		// log.Debug(elem.StringDebug())
-		res := passSsaAtPos(elem, nextPerRout[routine], routine)
-		if !res.Nil() {
-			nextPerRout[routine] = res
+		next := passSsaAtPos(elem, nextPerRout[routine], routine)
+		if !next.Nil() {
+			nextPerRout[routine] = next
 		} else {
 			delete(nextPerRout, routine)
 		}
@@ -76,12 +86,12 @@ func determineResouceToSSAAtTermination() {
 }
 
 // Iterate over SSA starting from start and stopping before end
-func passSsaAtPos(elem trace.Element, start s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	if start.Nil() {
+func passSsaAtPos(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
+	if pos.Nil() {
 		return s_ssa.NewNilSsaPos()
 	}
 
-	next := parseInstruction(elem, start, rout)
+	next := parseInstruction(elem, pos, rout)
 
 	if next.Nil() {
 		return next
@@ -91,15 +101,19 @@ func passSsaAtPos(elem trace.Element, start s_ssa.SsaPos, rout int) s_ssa.SsaPos
 }
 
 func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	log.Debug("RUN   -> ", pos.String())
+	info := addInstructionWithInfo(rout, pos.I, elem)
+
+	infoStr := "<NIL>"
+	if info != nil {
+		infoStr = ""
+		for r := range info.resource {
+			infoStr += fmt.Sprint(r.Alloc().ObjID())
+		}
+	}
+	log.Debug("ELEM  -> ", elem.StringDebug(), " -> ", pos.I.String(), " -> ", infoStr)
 
 	switch inst := pos.I.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
-		if _, ok := blocked[elem.(*trace.ElementAlloc)]; ok {
-			// TODO: store alloc
-			// TODO: alloc not correct if copied
-			log.Debug("IS BLOCKED ALLOC")
-		}
 		pos = pos.Next()
 	case *s_ssa.InstructionJump:
 		pos = s_ssa.NewSsaPosFuncBlock(pos.F, inst.To())
@@ -130,9 +144,19 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 		case trace.ControllSwitch:
 			pos = followSwitchChain(pos, inst, elem.ChosenCase())
 		}
+	case *s_ssa.InstructionMakeClosure:
+		bindings := inst.Inst().(*ssa.MakeClosure).Bindings
+		lastClosure[rout] = make([]*instructionWithInfo, len(bindings))
+		for i, b := range bindings {
+			lastClosure[rout][i] = findDefOfSSAVar(rout, b.Name())
+		}
 	case *s_ssa.InstructionGo:
-		parseGo(elem, inst)
+		f := parseGo(rout, elem, inst)
 		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.SsaPos]()
+
+		// we skip the func call in this case. For this case, perform it here
+		parseNewFunc(rout, f)
+
 		pos = pos.Next()
 	default:
 		pos = pos.Next()
@@ -141,65 +165,11 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 	return pos
 }
 
-func followIfChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
-	instrIf, ok := inst.(*s_ssa.InstructionIf)
-	if !ok {
-		return pos
-	}
-
-	if chosen == 0 {
-		pos.NewBlock(pos.Blocks()[instrIf.If()])
-		return pos
-	}
-
-	pos.NewBlock(pos.Blocks()[instrIf.Else()])
-	return followIfChain(pos, pos.I, chosen-1)
-}
-
-func followSwitchChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
-	if _, ok := inst.(*s_ssa.InstructionBinOp); ok {
-		next := pos.Next()
-		return followSwitchChain(next, next.I, chosen)
-	}
-
-	instrIf, ok := inst.(*s_ssa.InstructionIf)
-	if !ok {
-		return pos
-	}
-
-	if chosen == 0 {
-		pos.NewBlock(pos.Blocks()[instrIf.If()])
-		return pos
-	}
-
-	pos.NewBlock(pos.Blocks()[instrIf.Else()])
-	return followSwitchChain(pos, pos.I, chosen-1)
-}
-
-func parseGo(elem trace.Element, inst *s_ssa.InstructionGo) {
-	v := inst.Inst().(*ssa.Go)
-
-	var fName string
-
-	switch v := v.Call.Value.(type) {
-	case *ssa.MakeClosure:
-		fName = v.Fn.(*ssa.Function).String()
-
-	case *ssa.Function:
-		fName = v.String()
-	}
-
-	f := getSSAFuncFromName(fName)
-
-	// TODO: this jumps to f, but then we need to skip the func elem in the trace
-	nextPerRout[elem.ObjID()] = s_ssa.NewSsaPosFunc(f)
-}
-
 func skipNonRelevant(pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	for p := pos; !p.Nil(); {
 		inst := p.I
 		if !inst.Relevant() {
-			log.Debug("SKIPR -> ", inst.String())
+			// log.Debug("SKIPR -> ", inst.String())
 			p = p.Next()
 			continue
 		}

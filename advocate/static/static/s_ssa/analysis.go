@@ -44,7 +44,7 @@ func (this *Function) string() string {
 	res += "Func:\n"
 
 	for _, block := range this.blocks {
-		res += "\t" + block.string()
+		res += "\t" + block.String()
 	}
 
 	res += "\n --------------------------------------------------\n"
@@ -104,7 +104,7 @@ type Block struct {
 	insts []Instruction
 }
 
-func (self *Block) string() string {
+func (self *Block) String() string {
 	res := fmt.Sprintf("%d:\n", self.id)
 	for _, inst := range self.insts {
 		res += "\t\t" + inst.StringInfo() + "\n"

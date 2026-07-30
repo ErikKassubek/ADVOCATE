@@ -11,7 +11,6 @@ package s_ssa
 
 import (
 	"advocate/trace"
-	"advocate/utils/log"
 	"strings"
 )
 
@@ -47,9 +46,7 @@ func (this *Data) TraceFuncToSSAFunc(f *trace.ElementFunc) *Function {
 }
 
 func (this *Data) elemNameToSSAName(elem *trace.ElementFunc) string {
-	name := elem.GetName()
-
-	log.Debug(this.mainFunc == nil)
+	name := elem.Name()
 
 	if strings.HasPrefix(name, "main") {
 		name = strings.TrimPrefix(name, "main")
@@ -83,11 +80,11 @@ func (this *Data) correspondsSSAInstrTraceElem(i Instruction, elem trace.Element
 	switch e := elem.(type) {
 	case *trace.ElementAlloc:
 		if ssaClass == Ic_alloc {
-			if elem.Type(false) == trace.Mutex && i.HasMutex() {
+			if elem.Type(true) == trace.NewMutex && i.HasMutex() {
 				return true
-			} else if elem.Type(false) == trace.Cond && i.HasCond() {
+			} else if elem.Type(true) == trace.NewCond && i.HasCond() {
 				return true
-			} else if elem.Type(false) == trace.Wait && i.HasWG() {
+			} else if elem.Type(true) == trace.NewWait && i.HasWG() {
 				return true
 			}
 		}
@@ -118,7 +115,11 @@ func (this *Data) correspondsSSAInstrTraceElem(i Instruction, elem trace.Element
 			return true
 		}
 	case *trace.ElementFunc:
-		if ssaClass == Ic_call && i.Name() == e.GetName() {
+		if ssaClass == Ic_call && i.Variable() == e.Name() {
+			return true
+		}
+	case *trace.ElementFork:
+		if ssaClass == Ic_go {
 			return true
 		}
 	}

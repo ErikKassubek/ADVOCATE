@@ -295,7 +295,7 @@ func (this *ElementFunc) IsValid() bool {
 // MARK: Others
 // ========================================================
 
-func (this *ElementFunc) GetName() string {
+func (this *ElementFunc) Name() string {
 	return this.name
 }
 

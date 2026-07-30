@@ -29,3 +29,15 @@ func getSSAFuncFromName(name string) *s_ssa.Function {
 
 	return nil
 }
+
+func findDefOfSSAVar(rout int, v string) *instructionWithInfo {
+	ppr := pathPerRoutine[rout]
+
+	for i := len(ppr) - 1; i >= 0; i-- {
+		if ppr[i].variable == v {
+			return ppr[i]
+		}
+	}
+
+	return nil
+}

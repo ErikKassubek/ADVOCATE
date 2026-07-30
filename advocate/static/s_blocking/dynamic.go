@@ -25,7 +25,8 @@ func getBlockedResources() map[*trace.ElementAlloc]*trace.Resource {
 
 	// TODO: r.Alloc not correct if copy of function parameter
 	for _, e := range a_base.MainTrace.GetBlocked() {
-		for _, r := range a_base.MainTrace.GetResources(e) {
+		resources := a_base.MainTrace.GetResources(e)
+		for _, r := range resources {
 			res[r.Alloc()] = r
 		}
 	}

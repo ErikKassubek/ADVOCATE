@@ -29,19 +29,22 @@ func newPathPerRoutine(rout int) {
 }
 
 func addInstructionWithInfo(rout int, instr s_ssa.Instruction, elem trace.Element) *instructionWithInfo {
+	if elem == nil {
+		return addPathInstr(rout, instr, make(map[*trace.Resource]struct{}))
+	}
+
+	log.Debug("ADD RES: ", elem, instr)
+
 	switch instr := instr.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
 		elem := elem.(*trace.ElementAlloc)
 		resources := make(map[*trace.Resource]struct{})
-		if r, ok := blocked[elem]; ok {
+		if r, ok := blocked[elem.ObjID()]; ok {
 			resources[r] = struct{}{}
 		}
 		return addPathInstr(rout, instr, resources)
 	case *s_ssa.InstructionStore:
 		ssaVar := findDefOfSSAVar(rout, instr.Term())
-		if ssaVar == nil {
-			log.Debug("NIL: ", instr.String())
-		}
 		return addPathInstr(rout, instr, ssaVar.resource)
 	case *s_ssa.InstructionUnOp:
 		re := regexp.MustCompile(`^\*f\d+$`) // *f...

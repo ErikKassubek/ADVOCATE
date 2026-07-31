@@ -19,15 +19,16 @@ import (
 // getBlockedResources returns the resources of which at least one routine is blocking
 //
 // Returns:
-//   - []trace.Resource: slice of blocked resource.
-func getBlockedResources() map[*trace.ElementAlloc]*trace.Resource {
-	res := make(map[*trace.ElementAlloc]*trace.Resource)
+//   - map[int]trace.Resource: blocked object id to blocked resource.
+func getBlockedResources() map[int]*trace.Resource {
+	res := make(map[int]*trace.Resource)
 
 	// TODO: r.Alloc not correct if copy of function parameter
 	for _, e := range a_base.MainTrace.GetBlocked() {
+		log.Debug("Blocked: ", e)
 		resources := a_base.MainTrace.GetResources(e)
 		for _, r := range resources {
-			res[r.Alloc()] = r
+			res[r.Alloc().ObjID()] = r
 		}
 	}
 

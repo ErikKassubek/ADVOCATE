@@ -18,7 +18,7 @@ import (
 var data *static.Data
 var funcCallToSSAFunc map[*trace.ElementFunc]*s_ssa.Function
 
-var blocked map[*trace.ElementAlloc]*trace.Resource
+var blocked map[int]*trace.Resource
 
 func getSSAFuncFromName(name string) *s_ssa.Function {
 	for _, f := range data.Ssa().Funcs() {

@@ -40,8 +40,13 @@ func parseGo(rout int, elem trace.Element, inst *s_ssa.InstructionGo) *s_ssa.Fun
 func parseNewFunc(rout int, f *s_ssa.Function) {
 	info := lastClosure[rout]
 	fv := f.FreeVar()
+
+	if len(fv) == 0 {
+		return
+	}
+
 	if len(info) != len(fv) {
-		panic(fmt.Sprintf("Invalid length of free var: %d != %d", len(info), len(fv)))
+		panic(fmt.Sprintf("Invalid length of free var at %s: %d != %d", f.Name(), len(info), len(fv)))
 	}
 
 	for i := 0; i < len(info); i++ {

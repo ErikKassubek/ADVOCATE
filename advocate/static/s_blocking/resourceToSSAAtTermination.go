@@ -36,7 +36,6 @@ func determineResouceToSSAAtTermination() {
 			nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 			break
 		}
-		// log.Debug("SKIP-> ", inst.String())
 	}
 
 	jumpBackPos[1] = types.NewStack[s_ssa.SsaPos]()
@@ -45,8 +44,7 @@ func determineResouceToSSAAtTermination() {
 
 	for elem := trIter.Next(); elem != nil; elem = trIter.Next() {
 		// Set main as func
-		elemF, ok := elem.(*trace.ElementFunc)
-		if ok && elemF.Name() == "main.main" {
+		if elemF, ok := elem.(*trace.ElementFunc); ok && elemF.Name() == "main.main" {
 			f := data.Ssa().MainFunc()
 			b := f.Blocks()[0]
 
@@ -56,7 +54,6 @@ func determineResouceToSSAAtTermination() {
 					nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
 					break
 				}
-				// log.Debug("SKIP-> ", inst.String())
 			}
 			continue
 		}
@@ -104,13 +101,16 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 	info := addInstructionWithInfo(rout, pos.I, elem)
 
 	infoStr := "<NIL>"
-	if info != nil {
+	if info != nil && len(info.resource) != 0 {
 		infoStr = ""
 		for r := range info.resource {
 			infoStr += fmt.Sprint(r.Alloc().ObjID())
 		}
 	}
-	log.Debug("ELEM  -> ", elem.StringDebug(), " -> ", pos.I.String(), " -> ", infoStr)
+
+	if elem != nil {
+		log.Debug("ELEM  -> ", pos.I.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
+	}
 
 	switch inst := pos.I.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
@@ -132,12 +132,7 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 			return s_ssa.NewNilSsaPos()
 		}
 	case *s_ssa.InstructionIf:
-		elem, ok := elem.(*trace.ElementControllFlow)
-		if !ok {
-			panic("A")
-			log.Debug(elem.IsValid())
-			log.Debug("INVALID: ", elem.String())
-		}
+		elem := elem.(*trace.ElementControllFlow)
 		switch elem.Type(true) {
 		case trace.ControllIf:
 			pos = followIfChain(pos, inst, elem.ChosenCase())
@@ -150,6 +145,7 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 		for i, b := range bindings {
 			lastClosure[rout][i] = findDefOfSSAVar(rout, b.Name())
 		}
+		pos = pos.Next()
 	case *s_ssa.InstructionGo:
 		f := parseGo(rout, elem, inst)
 		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.SsaPos]()
@@ -169,7 +165,6 @@ func skipNonRelevant(pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
 	for p := pos; !p.Nil(); {
 		inst := p.I
 		if !inst.Relevant() {
-			// log.Debug("SKIPR -> ", inst.String())
 			p = p.Next()
 			continue
 		}

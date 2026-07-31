@@ -69,6 +69,8 @@ const (
 type Instruction interface {
 	Variable() string
 	Term() string
+	VariableGlobal() bool
+	TermGlobal() bool
 	String() string
 	StringInfo() string
 	Inst() ssa.Instruction
@@ -83,8 +85,8 @@ type Instruction interface {
 
 	Class() InstClass
 
-	setVariable(name string)
-	setTerm(term string)
+	setVariable(name string, global bool)
+	setTerm(term string, global bool)
 	setRelevant(rel, trace bool)
 	setInst(inst ssa.Instruction)
 	setConc(conc hasConcInfo)
@@ -98,6 +100,9 @@ type InstructionBase struct {
 	variable string
 	term     string
 	inst     ssa.Instruction
+
+	variableGlobal bool
+	termGlobal     bool
 
 	varPtr bool
 
@@ -119,6 +124,28 @@ func newInstructionBase(c InstClass, inst ssa.Instruction) InstructionBase {
 		name = "<deleted>"
 	}
 
+	globalName := false
+	globalTerm := false
+
+	if i, ok := inst.(*ssa.Store); ok {
+		switch i.Addr.(type) {
+		case *ssa.Global:
+			globalName = true
+		}
+
+		switch i.Val.(type) {
+		case *ssa.Global:
+			globalTerm = true
+		}
+	}
+
+	if i, ok := inst.(*ssa.UnOp); ok {
+		switch i.X.(type) {
+		case *ssa.Global:
+			globalTerm = true
+		}
+	}
+
 	// global var assign
 	term := inst.String()
 	if name == "" && strings.Contains(term, " = ") {
@@ -129,8 +156,8 @@ func newInstructionBase(c InstClass, inst ssa.Instruction) InstructionBase {
 
 	b := InstructionBase{class: c}
 
-	b.setVariable(name)
-	b.setTerm(term)
+	b.setVariable(name, globalName)
+	b.setTerm(term, globalTerm)
 	b.setInst(inst)
 
 	return b
@@ -209,6 +236,14 @@ func (this *InstructionBase) Term() string {
 	return this.term
 }
 
+func (this *InstructionBase) VariableGlobal() bool {
+	return this.variableGlobal
+}
+
+func (this *InstructionBase) TermGlobal() bool {
+	return this.termGlobal
+}
+
 func (this *InstructionBase) Class() InstClass {
 	return this.class
 }
@@ -250,14 +285,16 @@ func (this *InstructionBase) setRelevant(rel, trace bool) {
 	this.inTrace = trace
 }
 
-func (this *InstructionBase) setVariable(name string) {
+func (this *InstructionBase) setVariable(name string, global bool) {
 	variable := strings.TrimPrefix(name, "*")
 	this.variable = variable
 	this.varPtr = (name != variable)
+	this.variableGlobal = global
 }
 
-func (this *InstructionBase) setTerm(term string) {
+func (this *InstructionBase) setTerm(term string, global bool) {
 	this.term = term
+	this.termGlobal = global
 }
 
 func (this *InstructionBase) setInst(inst ssa.Instruction) {

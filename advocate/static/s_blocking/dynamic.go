@@ -23,7 +23,6 @@ import (
 func getBlockedResources() map[int]*trace.Resource {
 	res := make(map[int]*trace.Resource)
 
-	// TODO: r.Alloc not correct if copy of function parameter
 	for _, e := range a_base.MainTrace.GetBlocked() {
 		log.Debug("Blocked: ", e)
 		resources := a_base.MainTrace.GetResources(e)

@@ -24,6 +24,7 @@ var nextPerRout = make(map[int]s_ssa.SsaPos)
 var jumpBackPos = make(map[int]*types.Stack[s_ssa.SsaPos])
 var closures = make(map[string]*s_ssa.Function)
 var lastClosure = make(map[int][]*instructionWithInfo)
+var globalVars = make(map[string]*instructionWithInfo)
 
 func determineResouceToSSAAtTermination() {
 	trIter := a_base.MainTrace.AsIterator()
@@ -109,7 +110,9 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 	}
 
 	if elem != nil {
-		log.Debug("ELEM  -> ", pos.I.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
+		log.Debug("ELEM1 -> ", pos.I.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
+	} else {
+		log.Debug("ELEM2 -> ", pos.I.String(), " -> ", infoStr)
 	}
 
 	switch inst := pos.I.(type) {
@@ -143,7 +146,7 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 		bindings := inst.Inst().(*ssa.MakeClosure).Bindings
 		lastClosure[rout] = make([]*instructionWithInfo, len(bindings))
 		for i, b := range bindings {
-			lastClosure[rout][i] = findDefOfSSAVar(rout, b.Name())
+			lastClosure[rout][i] = findDefOfSSAVar(rout, b.Name(), false)
 		}
 		pos = pos.Next()
 	case *s_ssa.InstructionGo:
@@ -151,7 +154,7 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.SsaPos]()
 
 		// we skip the func call in this case. For this case, perform it here
-		parseNewFunc(rout, f)
+		parseNewFunc(rout, elem.ObjID(), f)
 
 		pos = pos.Next()
 	default:

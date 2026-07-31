@@ -37,7 +37,7 @@ func parseGo(rout int, elem trace.Element, inst *s_ssa.InstructionGo) *s_ssa.Fun
 	return f
 }
 
-func parseNewFunc(rout int, f *s_ssa.Function) {
+func parseNewFunc(rout, newRout int, f *s_ssa.Function) {
 	info := lastClosure[rout]
 	fv := f.FreeVar()
 
@@ -50,6 +50,6 @@ func parseNewFunc(rout int, f *s_ssa.Function) {
 	}
 
 	for i := 0; i < len(info); i++ {
-		addPathParam(rout, fv[i].Name(), info[i].resource)
+		addPathParam(newRout, fv[i].Name(), info[i].resource)
 	}
 }

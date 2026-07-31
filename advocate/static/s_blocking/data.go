@@ -13,6 +13,7 @@ import (
 	"advocate/static/static"
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"strings"
 )
 
 var data *static.Data
@@ -30,8 +31,14 @@ func getSSAFuncFromName(name string) *s_ssa.Function {
 	return nil
 }
 
-func findDefOfSSAVar(rout int, v string) *instructionWithInfo {
+func findDefOfSSAVar(rout int, v string, global bool) *instructionWithInfo {
 	ppr := pathPerRoutine[rout]
+
+	v = strings.TrimPrefix(v, "*")
+
+	if global {
+		return globalVars[v]
+	}
 
 	for i := len(ppr) - 1; i >= 0; i-- {
 		if ppr[i].variable == v {

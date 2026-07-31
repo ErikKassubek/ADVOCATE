@@ -34,14 +34,14 @@ func (this *Block) Instrs() []Instruction {
 	return this.insts
 }
 
-func (this *Data) analysisBlock(bl *ssa.BasicBlock) *Block {
+func (this *Data) analysisBlock(f *Function, bl *ssa.BasicBlock) *Block {
 	b := Block{
 		id:    bl.Index,
 		insts: make([]Instruction, len(bl.Instrs)),
 	}
 
-	for i, instr := range bl.Instrs {
-		b.insts[i] = this.analysisInstruction(instr)
+	for i, inst := range bl.Instrs {
+		b.insts[i] = this.analysisInstruction(f, inst, i)
 	}
 
 	return &b

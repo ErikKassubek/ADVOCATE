@@ -20,8 +20,8 @@ import (
 	"golang.org/x/tools/go/ssa"
 )
 
-var nextPerRout = make(map[int]s_ssa.SsaPos)
-var jumpBackPos = make(map[int]*types.Stack[s_ssa.SsaPos])
+var nextPerRout = make(map[int]s_ssa.Instruction)
+var jumpBackPos = make(map[int]*types.Stack[s_ssa.Instruction])
 var closures = make(map[string]*s_ssa.Function)
 var lastClosure = make(map[int][]*instructionWithInfo)
 var globalVars = make(map[string]*instructionWithInfo)
@@ -32,14 +32,14 @@ func determineResouceToSSAAtTermination() {
 	// get the first relevant value in init
 	f := data.Ssa().InitFunc()
 	b := f.Blocks()[1]
-	for id, inst := range b.Instrs() {
+	for _, inst := range b.Instrs() {
 		if inst.InTrace() {
-			nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
+			nextPerRout[1] = inst
 			break
 		}
 	}
 
-	jumpBackPos[1] = types.NewStack[s_ssa.SsaPos]()
+	jumpBackPos[1] = types.NewStack[s_ssa.Instruction]()
 
 	lastWasFork := make(map[int]bool)
 
@@ -50,9 +50,9 @@ func determineResouceToSSAAtTermination() {
 			b := f.Blocks()[0]
 
 			// skip non relevant instructions in main
-			for id, inst := range b.Instrs() {
+			for _, inst := range b.Instrs() {
 				if inst.InTrace() {
-					nextPerRout[1] = s_ssa.NewSsaPos(f, b, inst, id)
+					nextPerRout[1] = inst
 					break
 				}
 			}
@@ -74,8 +74,8 @@ func determineResouceToSSAAtTermination() {
 			lastWasFork[routine] = false
 		}
 
-		next := passSsaAtPos(elem, nextPerRout[routine], routine)
-		if !next.Nil() {
+		next := parseInstructions(elem, nextPerRout[routine], routine)
+		if next != nil {
 			nextPerRout[routine] = next
 		} else {
 			delete(nextPerRout, routine)
@@ -84,22 +84,22 @@ func determineResouceToSSAAtTermination() {
 }
 
 // Iterate over SSA starting from start and stopping before end
-func passSsaAtPos(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	if pos.Nil() {
-		return s_ssa.NewNilSsaPos()
+func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_ssa.Instruction {
+	if inst == nil {
+		return nil
 	}
 
-	next := parseInstruction(elem, pos, rout)
+	next := parseInstruction(elem, inst, rout)
 
-	if next.Nil() {
+	if next == nil {
 		return next
 	}
 
 	return skipNonRelevant(next, rout)
 }
 
-func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	info := addInstructionWithInfo(rout, pos.I, elem)
+func parseInstruction(elem trace.Element, inst s_ssa.Instruction, rout int) s_ssa.Instruction {
+	info := addInstructionWithInfo(rout, inst, elem)
 
 	infoStr := "<NIL>"
 	if info != nil && len(info.resource) != 0 {
@@ -110,37 +110,37 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 	}
 
 	if elem != nil {
-		log.Debug("ELEM1 -> ", pos.I.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
+		log.Debug("ELEM1 -> ", inst.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
 	} else {
-		log.Debug("ELEM2 -> ", pos.I.String(), " -> ", infoStr)
+		log.Debug("ELEM2 -> ", inst.String(), " -> ", infoStr)
 	}
 
-	switch inst := pos.I.(type) {
+	switch i := inst.(type) {
 	case *s_ssa.InstructionAlloc, *s_ssa.InstructionMakeChan:
-		pos = pos.Next()
+		inst = inst.Next()
 	case *s_ssa.InstructionJump:
-		pos = s_ssa.NewSsaPosFuncBlock(pos.F, inst.To())
+		inst = s_ssa.NewSsaPosFuncBlock(inst.Function(), i.To())
 	case *s_ssa.InstructionCall:
-		f := inst.GetFunc(data.Ssa())
+		f := i.GetFunc(data.Ssa())
 		if f != nil {
-			jumpBackPos[rout].Push(pos.Next())
-			pos = s_ssa.NewSsaPosFunc(f)
+			jumpBackPos[rout].Push(inst.Next())
+			inst = s_ssa.NewSsaPosFunc(f)
 		} else {
-			pos = pos.Next()
+			inst = inst.Next()
 		}
 
 	case *s_ssa.InstructionReturn:
-		pos = jumpBackPos[rout].Pop()
-		if pos.Nil() {
-			return s_ssa.NewNilSsaPos()
+		inst = jumpBackPos[rout].Pop()
+		if inst == nil {
+			return nil
 		}
 	case *s_ssa.InstructionIf:
 		elem := elem.(*trace.ElementControllFlow)
 		switch elem.Type(true) {
 		case trace.ControllIf:
-			pos = followIfChain(pos, inst, elem.ChosenCase())
+			inst = followIfChain(inst, elem.ChosenCase())
 		case trace.ControllSwitch:
-			pos = followSwitchChain(pos, inst, elem.ChosenCase())
+			inst = followSwitchChain(inst, elem.ChosenCase())
 		}
 	case *s_ssa.InstructionMakeClosure:
 		bindings := inst.Inst().(*ssa.MakeClosure).Bindings
@@ -148,36 +148,35 @@ func parseInstruction(elem trace.Element, pos s_ssa.SsaPos, rout int) s_ssa.SsaP
 		for i, b := range bindings {
 			lastClosure[rout][i] = findDefOfSSAVar(rout, b.Name(), false)
 		}
-		pos = pos.Next()
+		inst = inst.Next()
 	case *s_ssa.InstructionGo:
-		f := parseGo(rout, elem, inst)
-		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.SsaPos]()
+		f := parseGo(rout, elem, i)
+		jumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
 
 		// we skip the func call in this case. For this case, perform it here
 		parseNewFunc(rout, elem.ObjID(), f)
 
-		pos = pos.Next()
+		inst = inst.Next()
 	default:
-		pos = pos.Next()
+		inst = inst.Next()
 	}
 
-	return pos
+	return inst
 }
 
-func skipNonRelevant(pos s_ssa.SsaPos, rout int) s_ssa.SsaPos {
-	for p := pos; !p.Nil(); {
-		inst := p.I
-		if !inst.Relevant() {
+func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
+	for p := inst; p != nil; {
+		if !p.Relevant() {
 			p = p.Next()
 			continue
 		}
 
-		if inst.InTrace() {
+		if p.InTrace() {
 			return p
 		}
 
 		p = parseInstruction(nil, p, rout)
 	}
 
-	return s_ssa.NewNilSsaPos()
+	return nil
 }

@@ -11,37 +11,37 @@ package s_blocking
 
 import "advocate/static/static/s_ssa"
 
-func followIfChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
+func followIfChain(inst s_ssa.Instruction, chosen int) s_ssa.Instruction {
 	instrIf, ok := inst.(*s_ssa.InstructionIf)
 	if !ok {
-		return pos
+		return inst
 	}
 
 	if chosen == 0 {
-		pos.NewBlock(pos.Blocks()[instrIf.If()])
-		return pos
+		inst = inst.FirstInBlock(instrIf.If())
+		return inst
 	}
 
-	pos.NewBlock(pos.Blocks()[instrIf.Else()])
-	return followIfChain(pos, pos.I, chosen-1)
+	inst = inst.FirstInBlock(instrIf.Else())
+	return followIfChain(inst, chosen-1)
 }
 
-func followSwitchChain(pos s_ssa.SsaPos, inst s_ssa.Instruction, chosen int) s_ssa.SsaPos {
+func followSwitchChain(inst s_ssa.Instruction, chosen int) s_ssa.Instruction {
 	if _, ok := inst.(*s_ssa.InstructionBinOp); ok {
-		next := pos.Next()
-		return followSwitchChain(next, next.I, chosen)
+		next := inst.Next()
+		return followSwitchChain(next, chosen)
 	}
 
 	instrIf, ok := inst.(*s_ssa.InstructionIf)
 	if !ok {
-		return pos
+		return inst
 	}
 
 	if chosen == 0 {
-		pos.NewBlock(pos.Blocks()[instrIf.If()])
-		return pos
+		inst = inst.FirstInBlock(instrIf.If())
+		return inst
 	}
 
-	pos.NewBlock(pos.Blocks()[instrIf.Else()])
-	return followSwitchChain(pos, pos.I, chosen-1)
+	inst = inst.FirstInBlock(instrIf.Else())
+	return followSwitchChain(inst, chosen-1)
 }

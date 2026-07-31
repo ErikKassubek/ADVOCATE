@@ -56,7 +56,7 @@ func (this *Data) analysisFunction(fn *ssa.Function) Function {
 	}
 
 	for i, block := range fn.Blocks {
-		f.blocks[i] = this.analysisBlock(block)
+		f.blocks[i] = this.analysisBlock(&f, block)
 	}
 
 	f.fv = fn.FreeVars

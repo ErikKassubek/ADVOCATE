@@ -90,6 +90,11 @@ type Instruction interface {
 	setRelevant(rel, trace bool)
 	setInst(inst ssa.Instruction)
 	setConc(conc hasConcInfo)
+
+	Function() *Function
+	Block() *Block
+	Next() Instruction
+	FirstInBlock(b_id int) Instruction
 }
 
 // ================================================================
@@ -112,9 +117,13 @@ type InstructionBase struct {
 	class InstClass
 
 	conc hasConcInfo
+
+	f    *Function
+	b_id int
+	i_id int
 }
 
-func newInstructionBase(c InstClass, inst ssa.Instruction) InstructionBase {
+func newInstructionBase(f *Function, c InstClass, inst ssa.Instruction, index int) InstructionBase {
 	name := ""
 	switch v := inst.(type) {
 	case ssa.Value:
@@ -154,7 +163,7 @@ func newInstructionBase(c InstClass, inst ssa.Instruction) InstructionBase {
 		term = fields[1]
 	}
 
-	b := InstructionBase{class: c}
+	b := InstructionBase{class: c, f: f, b_id: inst.Block().Index, i_id: index}
 
 	b.setVariable(name, globalName)
 	b.setTerm(term, globalTerm)
@@ -305,95 +314,103 @@ func (this *InstructionBase) setConc(conc hasConcInfo) {
 	this.conc = conc
 }
 
-func (this *Data) analysisInstruction(instr ssa.Instruction) Instruction {
+func (this *InstructionBase) Function() *Function {
+	return this.f
+}
 
-	var inst Instruction
+func (this *InstructionBase) Block() *Block {
+	return this.f.blocks[this.b_id]
+}
 
-	switch instr := instr.(type) {
+func (this *Data) analysisInstruction(f *Function, inst ssa.Instruction, i int) Instruction {
+
+	var instru Instruction
+
+	switch inst := inst.(type) {
 	case *ssa.Alloc:
-		inst = &InstructionAlloc{InstructionBase: newInstructionBase(Ic_alloc, instr)}
+		instru = &InstructionAlloc{InstructionBase: newInstructionBase(f, Ic_alloc, inst, i)}
 	case *ssa.BinOp:
-		inst = &InstructionBinOp{InstructionBase: newInstructionBase(Ic_binOp, instr)}
+		instru = &InstructionBinOp{InstructionBase: newInstructionBase(f, Ic_binOp, inst, i)}
 	case *ssa.Call:
-		inst = NewInstructionCall(instr)
+		instru = NewInstructionCall(f, inst, i)
 	case *ssa.ChangeInterface:
-		inst = &InstructionChangeInterface{InstructionBase: newInstructionBase(Ic_changeInterface, instr)}
+		instru = &InstructionChangeInterface{InstructionBase: newInstructionBase(f, Ic_changeInterface, inst, i)}
 	case *ssa.ChangeType:
-		inst = &InstructionChangeType{InstructionBase: newInstructionBase(Ic_changeType, instr)}
+		instru = &InstructionChangeType{InstructionBase: newInstructionBase(f, Ic_changeType, inst, i)}
 	case *ssa.Convert:
-		inst = &InstructionConvert{InstructionBase: newInstructionBase(Ic_convert, instr)}
+		instru = &InstructionConvert{InstructionBase: newInstructionBase(f, Ic_convert, inst, i)}
 	case *ssa.DebugRef:
-		inst = &InstructionDebugRef{InstructionBase: newInstructionBase(Ic_debugRef, instr)}
+		instru = &InstructionDebugRef{InstructionBase: newInstructionBase(f, Ic_debugRef, inst, i)}
 	case *ssa.Defer:
-		inst = &InstructionDefer{InstructionBase: newInstructionBase(Ic_defer, instr)}
+		instru = &InstructionDefer{InstructionBase: newInstructionBase(f, Ic_defer, inst, i)}
 	case *ssa.Extract:
-		inst = &InstructionExtract{InstructionBase: newInstructionBase(Ic_extract, instr)}
+		instru = &InstructionExtract{InstructionBase: newInstructionBase(f, Ic_extract, inst, i)}
 	case *ssa.Field:
-		inst = &InstructionField{InstructionBase: newInstructionBase(Ic_field, instr)}
+		instru = &InstructionField{InstructionBase: newInstructionBase(f, Ic_field, inst, i)}
 	case *ssa.FieldAddr:
-		inst = &InstructionFieldAddr{InstructionBase: newInstructionBase(Ic_fieldAddr, instr)}
+		instru = &InstructionFieldAddr{InstructionBase: newInstructionBase(f, Ic_fieldAddr, inst, i)}
 	case *ssa.Go:
-		inst = &InstructionGo{InstructionBase: newInstructionBase(Ic_go, instr)}
+		instru = &InstructionGo{InstructionBase: newInstructionBase(f, Ic_go, inst, i)}
 	case *ssa.If:
-		inst = newInstructionIf(instr)
+		instru = newInstructionIf(f, inst, i)
 	case *ssa.Index:
-		inst = &InstructionIndex{InstructionBase: newInstructionBase(Ic_index, instr)}
+		instru = &InstructionIndex{InstructionBase: newInstructionBase(f, Ic_index, inst, i)}
 	case *ssa.IndexAddr:
-		inst = &InstructionIndexAddr{InstructionBase: newInstructionBase(Ic_indexAddr, instr)}
+		instru = &InstructionIndexAddr{InstructionBase: newInstructionBase(f, Ic_indexAddr, inst, i)}
 	case *ssa.Jump:
-		inst = newInstructionJump(instr)
+		instru = newInstructionJump(f, inst, i)
 	case *ssa.Lookup:
-		inst = &InstructionLookup{InstructionBase: newInstructionBase(Ic_lookup, instr)}
+		instru = &InstructionLookup{InstructionBase: newInstructionBase(f, Ic_lookup, inst, i)}
 	case *ssa.MakeChan:
-		inst = &InstructionMakeChan{InstructionBase: newInstructionBase(Ic_makeChan, instr)}
+		instru = &InstructionMakeChan{InstructionBase: newInstructionBase(f, Ic_makeChan, inst, i)}
 	case *ssa.MakeClosure:
-		inst = &InstructionMakeClosure{InstructionBase: newInstructionBase(Ic_makeClosure, instr)}
+		instru = &InstructionMakeClosure{InstructionBase: newInstructionBase(f, Ic_makeClosure, inst, i)}
 	case *ssa.MakeInterface:
-		inst = &InstructionMakeInterface{InstructionBase: newInstructionBase(Ic_makeInterface, instr)}
+		instru = &InstructionMakeInterface{InstructionBase: newInstructionBase(f, Ic_makeInterface, inst, i)}
 	case *ssa.MakeMap:
-		inst = &InstructionMakeMap{InstructionBase: newInstructionBase(Ic_makeMap, instr)}
+		instru = &InstructionMakeMap{InstructionBase: newInstructionBase(f, Ic_makeMap, inst, i)}
 	case *ssa.MakeSlice:
-		inst = &InstructionMakeSlice{InstructionBase: newInstructionBase(Ic_makeSlice, instr)}
+		instru = &InstructionMakeSlice{InstructionBase: newInstructionBase(f, Ic_makeSlice, inst, i)}
 	case *ssa.MapUpdate:
-		inst = &InstructionMapUpdate{InstructionBase: newInstructionBase(Ic_mapUpdate, instr)}
+		instru = &InstructionMapUpdate{InstructionBase: newInstructionBase(f, Ic_mapUpdate, inst, i)}
 	case *ssa.MultiConvert:
-		inst = &InstructionMultiConvert{InstructionBase: newInstructionBase(Ic_multiConvert, instr)}
+		instru = &InstructionMultiConvert{InstructionBase: newInstructionBase(f, Ic_multiConvert, inst, i)}
 	case *ssa.Next:
-		inst = &InstructionNext{InstructionBase: newInstructionBase(Ic_next, instr)}
+		instru = &InstructionNext{InstructionBase: newInstructionBase(f, Ic_next, inst, i)}
 	case *ssa.Panic:
-		inst = &InstructionPanic{InstructionBase: newInstructionBase(Ic_panic, instr)}
+		instru = &InstructionPanic{InstructionBase: newInstructionBase(f, Ic_panic, inst, i)}
 	case *ssa.Phi:
-		inst = &InstructionPhi{InstructionBase: newInstructionBase(Ic_phi, instr)}
+		instru = &InstructionPhi{InstructionBase: newInstructionBase(f, Ic_phi, inst, i)}
 	case *ssa.Range:
-		inst = &InstructionRange{InstructionBase: newInstructionBase(Ic_range, instr)}
+		instru = &InstructionRange{InstructionBase: newInstructionBase(f, Ic_range, inst, i)}
 	case *ssa.Return:
-		inst = &InstructionReturn{InstructionBase: newInstructionBase(Ic_return, instr)}
+		instru = &InstructionReturn{InstructionBase: newInstructionBase(f, Ic_return, inst, i)}
 	case *ssa.RunDefers:
-		inst = &InstructionRunDefers{InstructionBase: newInstructionBase(Ic_runDefers, instr)}
+		instru = &InstructionRunDefers{InstructionBase: newInstructionBase(f, Ic_runDefers, inst, i)}
 	case *ssa.Select:
-		inst = &InstructionSelect{InstructionBase: newInstructionBase(Ic_select, instr)}
+		instru = &InstructionSelect{InstructionBase: newInstructionBase(f, Ic_select, inst, i)}
 	case *ssa.Send:
-		inst = &InstructionSend{InstructionBase: newInstructionBase(Ic_send, instr)}
+		instru = &InstructionSend{InstructionBase: newInstructionBase(f, Ic_send, inst, i)}
 	case *ssa.Slice:
-		inst = &InstructionSlice{InstructionBase: newInstructionBase(Ic_slice, instr)}
+		instru = &InstructionSlice{InstructionBase: newInstructionBase(f, Ic_slice, inst, i)}
 	case *ssa.SliceToArrayPointer:
-		inst = &InstructionSliceToArrayPointer{InstructionBase: newInstructionBase(Ic_sliceToArrayPointer, instr)}
+		instru = &InstructionSliceToArrayPointer{InstructionBase: newInstructionBase(f, Ic_sliceToArrayPointer, inst, i)}
 	case *ssa.Store:
-		inst = &InstructionStore{InstructionBase: newInstructionBase(Ic_store, instr)}
+		instru = &InstructionStore{InstructionBase: newInstructionBase(f, Ic_store, inst, i)}
 	case *ssa.TypeAssert:
-		inst = &InstructionTypeAssert{InstructionBase: newInstructionBase(Ic_typeAssert, instr)}
+		instru = &InstructionTypeAssert{InstructionBase: newInstructionBase(f, Ic_typeAssert, inst, i)}
 	case *ssa.UnOp:
-		inst = &InstructionUnOp{InstructionBase: newInstructionBase(Ic_unOp, instr)}
+		instru = &InstructionUnOp{InstructionBase: newInstructionBase(f, Ic_unOp, inst, i)}
 	default:
-		log.Error("Found unknown instruction: ", instr.String())
-		inst = &InstructionUnknown{InstructionBase: newInstructionBase(Ic_unknown, instr)}
+		log.Error("Found unknown instruction: ", inst.String())
+		instru = &InstructionUnknown{InstructionBase: newInstructionBase(f, Ic_unknown, inst, i)}
 	}
 
-	setContainsPrimitive(inst)
+	setContainsPrimitive(instru)
 
-	this.isRelvant(inst)
+	this.isRelvant(instru)
 
-	return inst
+	return instru
 }
 
 func setContainsPrimitive(inst Instruction) {
@@ -535,6 +552,30 @@ func (this *Data) getInstructionPos(instr ssa.Instruction) (string, int) {
 	return position.Filename, position.Line
 }
 
+func (this *InstructionBase) FirstInBlock(b_id int) Instruction {
+	return this.Function().Blocks()[b_id].Instrs()[0]
+}
+
+func (this *InstructionBase) Next() Instruction {
+	instID := this.i_id + 1
+
+	res := this.Block().Instrs()[instID]
+
+	log.Debug("NEXT: ", this.String(), " -> ", res.String())
+
+	return res
+}
+
+func NewSsaPosFunc(f *Function) Instruction {
+	b := f.Blocks()[0]
+	return b.Instrs()[0]
+}
+
+func NewSsaPosFuncBlock(f *Function, blockID int) Instruction {
+	b := f.Blocks()[blockID]
+	return b.Instrs()[0]
+}
+
 // ================================================================
 // MARK: InstructionUnknown
 // ================================================================
@@ -570,13 +611,13 @@ type InstructionCall struct {
 	f        *Function
 }
 
-func NewInstructionCall(inst *ssa.Call) *InstructionCall {
+func NewInstructionCall(f *Function, inst *ssa.Call, i int) *InstructionCall {
 	name := ""
 	if callee := inst.Common().StaticCallee(); callee != nil {
 		name = callee.String()
 	}
 
-	return &InstructionCall{InstructionBase: newInstructionBase(Ic_call, inst),
+	return &InstructionCall{InstructionBase: newInstructionBase(f, Ic_call, inst, i),
 		funcName: name}
 }
 
@@ -702,10 +743,10 @@ type InstructionIf struct {
 	case_else int
 }
 
-func newInstructionIf(inst *ssa.If) *InstructionIf {
-	i := inst.Block().Succs[0].Index
+func newInstructionIf(f *Function, inst *ssa.If, i int) *InstructionIf {
+	ind := inst.Block().Succs[0].Index
 	e := inst.Block().Succs[1].Index
-	return &InstructionIf{InstructionBase: newInstructionBase(Ic_jump, inst), case_if: i, case_else: e}
+	return &InstructionIf{InstructionBase: newInstructionBase(f, Ic_jump, inst, i), case_if: ind, case_else: e}
 }
 
 func (this *InstructionIf) If() int {
@@ -742,8 +783,8 @@ type InstructionJump struct {
 	to int
 }
 
-func newInstructionJump(inst *ssa.Jump) *InstructionJump {
-	return &InstructionJump{InstructionBase: newInstructionBase(Ic_jump, inst), to: inst.Block().Succs[0].Index}
+func newInstructionJump(f *Function, inst *ssa.Jump, i int) *InstructionJump {
+	return &InstructionJump{InstructionBase: newInstructionBase(f, Ic_jump, inst, i), to: inst.Block().Succs[0].Index}
 }
 
 func (this *InstructionJump) To() int {

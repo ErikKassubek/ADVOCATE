@@ -14,22 +14,23 @@ import (
 	"advocate/trace"
 )
 
-func ParseIf(inst *s_ssa.InstructionIf, _ int, elem trace.Element) (i s_ssa.Instruction, info *instructionWithInfo) {
+func ParseIf(inst *s_ssa.InstructionIf, rout int, elem trace.Element) (i s_ssa.Instruction, info *instructionWithInfo) {
 	e := elem.(*trace.ElementControllFlow)
 
 	switch elem.Type(true) {
 	case trace.ControllIf:
-		i = followIfChain(inst, e.ChosenCase())
+		i = followIfChain(inst, rout, e.ChosenCase())
 	case trace.ControllSwitch:
-		i = followSwitchChain(inst, e.ChosenCase())
+		i = followSwitchChain(inst, rout, e.ChosenCase())
 	}
 	return i, nil
 }
 
-func followIfChain(inst *s_ssa.InstructionIf, chosen int) s_ssa.Instruction {
-	if chosen == 0 {
+func followIfChain(inst *s_ssa.InstructionIf, rout, chosen int) s_ssa.Instruction {
+	switch chosen {
+	case 0:
 		return inst.FirstInBlock(inst.If())
-	} else if chosen == 1 {
+	case 1:
 		return inst.FirstInBlock(inst.Else())
 	}
 
@@ -37,29 +38,29 @@ func followIfChain(inst *s_ssa.InstructionIf, chosen int) s_ssa.Instruction {
 	if !ok {
 		return inst
 	}
-	return followIfChain(inst, chosen-1)
+	return followIfChain(inst, rout, chosen-1)
 }
 
-func followSwitchChain(inst *s_ssa.InstructionIf, chosen int) s_ssa.Instruction {
-	return followSwitchRec(inst, chosen)
+func followSwitchChain(inst *s_ssa.InstructionIf, rout, chosen int) s_ssa.Instruction {
+	return followSwitchRec(inst, rout, chosen)
 }
 
-func followSwitchRec(inst s_ssa.Instruction, chosen int) s_ssa.Instruction {
+func followSwitchRec(inst s_ssa.Instruction, rout, chosen int) s_ssa.Instruction {
 	if _, ok := inst.(*s_ssa.InstructionBinOp); ok {
 		next := inst.Next()
-		return followSwitchRec(next, chosen)
+		return followSwitchRec(next, rout, chosen)
 	}
 
-	instrIf, ok := inst.(*s_ssa.InstructionIf)
-	if !ok {
-		return inst
-	}
+	instrIf := inst.(*s_ssa.InstructionIf)
 
-	if chosen == 0 {
-		inst = inst.FirstInBlock(instrIf.If())
-		return inst
+	switch chosen {
+	case 0:
+		return inst.FirstInBlock(instrIf.If())
+	case 1:
+		return inst.FirstInBlock(instrIf.Else())
 	}
 
 	inst = inst.FirstInBlock(instrIf.Else())
-	return followSwitchRec(inst, chosen-1)
+
+	return followSwitchRec(inst, rout, chosen-1)
 }

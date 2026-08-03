@@ -29,3 +29,15 @@ func (this *InstructionPhi) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = false
 }
+func (this *InstructionPhi) GetPred() map[int]string {
+	res := make(map[int]string)
+
+	edges := this.Instruction().Edges
+	preds := this.Instruction().Block().Preds
+
+	for i := 0; i < len(this.Instruction().Edges); i++ {
+		res[preds[i].Index] = edges[i].Name()
+	}
+
+	return res
+}

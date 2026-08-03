@@ -19,6 +19,7 @@ type Function struct {
 	pkg    string
 	loc    string
 	blocks []*Block
+	para   []*ssa.Parameter
 	fv     []*ssa.FreeVar
 }
 
@@ -29,11 +30,22 @@ func (this *Function) Name() string {
 func (this *Function) string() string {
 	res := fmt.Sprintf("Name: %s\n", this.name)
 
+	res += "Parameters:\n"
+	if this.para != nil {
+		for i, fv := range this.para {
+			res += fmt.Sprintf("\t%d:\t%s\n", i, fv.Name())
+		}
+	} else {
+		res += "\t-\n"
+	}
+
+	res += "Free variables:\n"
 	if this.fv != nil {
-		res += "Free variables:\n"
 		for i, fv := range this.fv {
 			res += fmt.Sprintf("\t%d:\t%s\n", i, fv.Name())
 		}
+	} else {
+		res += "\t-\n"
 	}
 
 	res += "Func:\n"
@@ -59,6 +71,7 @@ func (this *Data) analysisFunction(fn *ssa.Function) Function {
 		f.blocks[i] = this.analysisBlock(&f, block)
 	}
 
+	f.para = fn.Params
 	f.fv = fn.FreeVars
 
 	return f
@@ -84,6 +97,10 @@ func isInit(fn *ssa.Function) bool {
 
 func (this *Function) Blocks() []*Block {
 	return this.blocks
+}
+
+func (this *Function) Params() []*ssa.Parameter {
+	return this.para
 }
 
 func (this *Function) FreeVar() []*ssa.FreeVar {

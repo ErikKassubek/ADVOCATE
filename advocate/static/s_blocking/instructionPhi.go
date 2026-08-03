@@ -12,12 +12,16 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
-	"advocate/utils/log"
 )
 
 func instInfoPhi(inst *s_ssa.InstructionPhi, rout int, _ trace.Element) *instructionWithInfo {
-	log.Todo("InstructionPhi NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+	lastBlock := blocking.LastBlockIdPerRoutine[rout]
+
+	pred := inst.GetPred()[lastBlock]
+
+	ssaVar := findDefOfSSAVar(rout, pred, false)
+
+	return addPathInstr(rout, inst, ssaVar.Resource)
 }
 
 func ParsePhi(inst *s_ssa.InstructionPhi, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

@@ -122,6 +122,9 @@ func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 		}
 
 		p = parseInstruction(p, rout, nil)
+
+		blocking.LastBlockIdPerRoutine[rout] = inst.Inst().Block().Index
+
 	}
 
 	return nil

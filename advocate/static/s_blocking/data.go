@@ -13,6 +13,7 @@ import (
 	"advocate/static/static"
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 	"advocate/utils/types"
 	"strings"
 )
@@ -21,12 +22,13 @@ var data *static.Data
 var blocking = newBlockData()
 
 type BlockingData struct {
-	NextPerRout    map[int]s_ssa.Instruction
-	JumpBackPos    map[int]*types.Stack[s_ssa.Instruction]
-	Closures       map[string]*s_ssa.Function
-	LastClosure    map[int][]*instructionWithInfo
-	GlobalVars     map[string]*instructionWithInfo
-	PathPerRoutine map[int][]*instructionWithInfo
+	NextPerRout           map[int]s_ssa.Instruction
+	JumpBackPos           map[int]*types.Stack[s_ssa.Instruction]
+	Closures              map[string]*s_ssa.Function
+	LastClosure           map[int][]*instructionWithInfo
+	GlobalVars            map[string]*instructionWithInfo
+	PathPerRoutine        map[int][]*instructionWithInfo
+	LastBlockIdPerRoutine map[int]int
 
 	FuncCallToSSAFunc map[*trace.ElementFunc]*s_ssa.Function
 	Blocked           map[int]*trace.Resource
@@ -34,14 +36,15 @@ type BlockingData struct {
 
 func newBlockData() *BlockingData {
 	return &BlockingData{
-		NextPerRout:       make(map[int]s_ssa.Instruction),
-		JumpBackPos:       make(map[int]*types.Stack[s_ssa.Instruction]),
-		Closures:          make(map[string]*s_ssa.Function),
-		LastClosure:       make(map[int][]*instructionWithInfo),
-		GlobalVars:        make(map[string]*instructionWithInfo),
-		PathPerRoutine:    make(map[int][]*instructionWithInfo),
-		FuncCallToSSAFunc: make(map[*trace.ElementFunc]*s_ssa.Function),
-		Blocked:           make(map[int]*trace.Resource),
+		NextPerRout:           make(map[int]s_ssa.Instruction),
+		JumpBackPos:           make(map[int]*types.Stack[s_ssa.Instruction]),
+		Closures:              make(map[string]*s_ssa.Function),
+		LastClosure:           make(map[int][]*instructionWithInfo),
+		GlobalVars:            make(map[string]*instructionWithInfo),
+		PathPerRoutine:        make(map[int][]*instructionWithInfo),
+		FuncCallToSSAFunc:     make(map[*trace.ElementFunc]*s_ssa.Function),
+		Blocked:               make(map[int]*trace.Resource),
+		LastBlockIdPerRoutine: make(map[int]int),
 	}
 }
 
@@ -69,6 +72,18 @@ func addPathInstr(rout int, inst s_ssa.Instruction, resources map[*trace.Resourc
 	return &newElem
 }
 
+func addPathParam(rout int, v string, resources map[*trace.Resource]struct{}) *instructionWithInfo {
+	if _, ok := blocking.PathPerRoutine[rout]; !ok {
+		blocking.NewPathPerRoutine(rout)
+	}
+
+	newElem := instructionWithInfo{nil, resources, v}
+
+	blocking.PathPerRoutine[rout] = append(blocking.PathPerRoutine[rout], &newElem)
+
+	return &newElem
+}
+
 func findDefOfSSAVar(rout int, v string, global bool) *instructionWithInfo {
 	ppr := blocking.PathPerRoutine[rout]
 
@@ -83,6 +98,8 @@ func findDefOfSSAVar(rout int, v string, global bool) *instructionWithInfo {
 			return ppr[i]
 		}
 	}
+
+	log.Errorf("Unable to find definition of %s", v)
 
 	return nil
 }

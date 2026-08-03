@@ -13,12 +13,18 @@ import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
 	"advocate/utils/log"
+	"fmt"
+	"go/types"
+
+	"golang.org/x/tools/go/ssa"
 )
 
 func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
-	info := instInfoCall(inst, rout, nil)
-
 	f := inst.GetFunc(data.Ssa())
+
+	parseCallParameter(inst.Instruction(), rout, rout, f)
+
+	info := instInfoCall(inst, rout, nil)
 	if f != nil {
 		blocking.JumpBackPos[rout].Push(inst.Next())
 		return s_ssa.NewSsaPosFunc(f), info
@@ -28,7 +34,91 @@ func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.In
 
 }
 
+func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f *s_ssa.Function) {
+	if f == nil {
+		return
+	}
+
+	if inst != nil {
+		for i, param := range f.Params() {
+			if !sharesUnderlyingResource(param.Type()) {
+				addPathParam(routFunc, param.Name(), nil)
+			} else {
+				arg := inst.Common().Args[i].String()
+				d := findDefOfSSAVar(routCall, arg, false)
+				addPathParam(routFunc, arg, d.Resource)
+			}
+		}
+	}
+
+	if routCall != routFunc { // fork
+		info := blocking.LastClosure[routCall]
+
+		fv := f.FreeVar()
+
+		if len(fv) == 0 {
+			return
+		}
+
+		if len(info) != len(fv) {
+			panic(fmt.Sprintf("Invalid length of free var at %s: %d != %d", f.Name(), len(info), len(fv)))
+		}
+
+		for i := 0; i < len(info); i++ {
+			addPathParam(routFunc, fv[i].Name(), info[i].Resource)
+		}
+	}
+}
+
 func instInfoCall(inst *s_ssa.InstructionCall, rout int, elem trace.Element) *instructionWithInfo {
 	log.Todo("InstructionCall NOT IMPLEMENTED YET")
 	return addPathInstr(rout, inst, nil)
+}
+
+func sharesUnderlyingResource(t types.Type) bool {
+	switch t := t.Underlying().(type) {
+	case *types.Pointer:
+		return true
+
+	case *types.Slice:
+		return true
+
+	case *types.Map:
+		return true
+
+	case *types.Chan:
+		return true
+
+	case *types.Signature:
+		// Function values are descriptors to code/closure.
+		return true
+
+	case *types.Interface:
+		// An interface copy shares the underlying dynamic value.
+		return true
+
+	case *types.Basic:
+		return false
+
+	case *types.Array:
+		return false
+
+	case *types.Struct:
+		// A struct copy duplicates all of its fields.
+		// Whether the copied struct still aliases depends on its fields.
+		for i := 0; i < t.NumFields(); i++ {
+			if sharesUnderlyingResource(t.Field(i).Type()) {
+				return true
+			}
+		}
+		return false
+
+	case *types.Named:
+		// Normally unreachable because of Underlying(),
+		// but included for completeness.
+		return sharesUnderlyingResource(t.Underlying())
+
+	default:
+		return false
+	}
 }

@@ -11,7 +11,6 @@ package s_ssa
 
 import (
 	"advocate/static/static/s_base"
-	"advocate/trace"
 	"fmt"
 	"strings"
 
@@ -244,10 +243,6 @@ func (this *InstructionBase) Next() Instruction {
 	res := this.Block().Instrs()[instID]
 
 	return res
-}
-
-func (this *InstructionBase) Parse(_ *Data, _ int, _ trace.Element) (Instruction, *InstructionWithInfo) {
-	return this.Next(), nil
 }
 
 func NewSsaPosFunc(f *Function) Instruction {

@@ -1,8 +1,6 @@
 package s_ssa
 
 import (
-	"advocate/trace"
-
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -35,6 +33,4 @@ type Instruction interface {
 	Block() *Block
 	Next() Instruction
 	FirstInBlock(b_id int) Instruction
-
-	Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo)
 }

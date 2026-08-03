@@ -1,0 +1,79 @@
+// Copyright (c) 2026 Erik Kassubek
+//
+// File: InstructionGo.go
+// Brief: Go Instruction
+//
+// Author: Erik Kassubek
+//
+// License: BSD-3-Clause
+
+package s_blocking
+
+import (
+	"advocate/static/static/s_ssa"
+	"advocate/trace"
+	"advocate/utils/types"
+	"fmt"
+
+	"golang.org/x/tools/go/ssa"
+)
+
+func instInfoGo(inst *s_ssa.InstructionGo, rout int, _ trace.Element) *instructionWithInfo {
+	return addPathInstr(rout, inst, nil)
+}
+
+func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
+	info := instInfoGo(inst, rout, elem)
+
+	v := inst.Inst().(*ssa.Go)
+
+	var fName string
+
+	switch v := v.Call.Value.(type) {
+	case *ssa.MakeClosure:
+		fName = v.Fn.(*ssa.Function).String()
+
+	case *ssa.Function:
+		fName = v.String()
+	}
+
+	f := s_ssa.GetSSAFuncFromName(data.Ssa(), fName)
+
+	blocking.NextPerRout[elem.ObjID()] = s_ssa.NewSsaPosFunc(f)
+
+	blocking.JumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
+
+	// we skip the func call in this case. For this case, perform it here
+	parseNewFunc(rout, elem.ObjID(), f)
+
+	return inst.Next(), info
+}
+
+func parseNewFunc(rout, newRout int, f *s_ssa.Function) {
+	info := blocking.LastClosure[rout]
+	fv := f.FreeVar()
+
+	if len(fv) == 0 {
+		return
+	}
+
+	if len(info) != len(fv) {
+		panic(fmt.Sprintf("Invalid length of free var at %s: %d != %d", f.Name(), len(info), len(fv)))
+	}
+
+	for i := 0; i < len(info); i++ {
+		addPathParam(newRout, fv[i].Name(), info[i].Resource)
+	}
+}
+
+func addPathParam(rout int, v string, resources map[*trace.Resource]struct{}) *instructionWithInfo {
+	if _, ok := blocking.PathPerRoutine[rout]; !ok {
+		blocking.NewPathPerRoutine(rout)
+	}
+
+	newElem := instructionWithInfo{nil, resources, v}
+
+	blocking.PathPerRoutine[rout] = append(blocking.PathPerRoutine[rout], &newElem)
+
+	return &newElem
+}

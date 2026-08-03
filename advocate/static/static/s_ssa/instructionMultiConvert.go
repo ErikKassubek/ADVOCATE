@@ -10,8 +10,6 @@
 package s_ssa
 
 import (
-	"advocate/trace"
-
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -30,8 +28,4 @@ func (this *InstructionMultiConvert) Instruction() *ssa.MultiConvert {
 func (this *InstructionMultiConvert) setRelevant(_ *Data) {
 	this.relevant = false
 	this.inTrace = false
-}
-
-func (this *InstructionMultiConvert) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
-	return this.Next(), nil
 }

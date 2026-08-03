@@ -10,9 +10,7 @@
 package s_ssa
 
 import (
-	"advocate/trace"
 	"go/token"
-	"strings"
 
 	"golang.org/x/tools/go/ssa"
 )
@@ -32,20 +30,4 @@ func (this *InstructionUnOp) Instruction() *ssa.UnOp {
 func (this *InstructionUnOp) setRelevant(_ *Data) {
 	this.relevant = this.Conc().Resource()
 	this.inTrace = this.Inst().(*ssa.UnOp).Op == token.ARROW // receive
-}
-
-func (this *InstructionUnOp) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
-	term := this.Term()
-	if strings.HasPrefix(term, "*") && !strings.Contains(term, " ") {
-		ssaVar := findDefOfSSAVar(data, rout, term, this.TermGlobal())
-		return addPathInstr(data, rout, this, ssaVar.Resource)
-	}
-
-	return nil
-}
-
-func (this *InstructionUnOp) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
-	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
-
-	return this.Next(), info
 }

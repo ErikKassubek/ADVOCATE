@@ -47,7 +47,3 @@ func (self *Data) Ast() *s_ast.Data {
 func (self *Data) Ssa() *s_ssa.Data {
 	return self.ssa
 }
-
-func (self *Data) Blocking() *s_ssa.BlockingData {
-	return self.Ssa().Blocking
-}

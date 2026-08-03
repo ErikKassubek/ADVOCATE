@@ -10,9 +10,6 @@
 package s_ssa
 
 import (
-	"advocate/trace"
-	"advocate/utils/log"
-
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -72,23 +69,4 @@ func (this *InstructionCall) setRelevant(data *Data) {
 
 	this.relevant = true
 	this.inTrace = true
-}
-
-func (this *InstructionCall) Parse(data *Data, rout int, _ trace.Element) (Instruction, *InstructionWithInfo) {
-	info := this.addInstructionWithInfo(data.Blocking, rout, nil)
-
-	f := this.GetFunc(data)
-	if f != nil {
-		data.Blocking.JumpBackPos[rout].Push(this.Next())
-		return NewSsaPosFunc(f), info
-	}
-
-	return this.Next(), info
-
-}
-
-func (this *InstructionCall) addInstructionWithInfo(blocking *BlockingData, rout int, elem trace.Element) *InstructionWithInfo {
-	// TODO: implement
-	log.Error("InstructionCall IMPLEMENTED YET")
-	return addPathInstr(blocking, rout, this, nil)
 }

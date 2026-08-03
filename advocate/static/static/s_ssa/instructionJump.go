@@ -10,8 +10,6 @@
 package s_ssa
 
 import (
-	"advocate/trace"
-
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -36,8 +34,4 @@ func (this *InstructionJump) setRelevant(_ *Data) {
 
 func (this *InstructionJump) To() int {
 	return this.to
-}
-
-func (this *InstructionJump) Parse(_ *Data, _ int, _ trace.Element) (Instruction, *InstructionWithInfo) {
-	return NewSsaPosFuncBlock(this.Function(), this.To()), nil
 }

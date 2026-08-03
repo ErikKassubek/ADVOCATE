@@ -26,8 +26,6 @@ type Data struct {
 	mainFunc *Function
 	initFunc *Function
 	alloc    map[*Instruction][]Instruction // instruction -> set of alloc
-
-	Blocking *BlockingData
 }
 
 func BuildSsa(ast *s_ast.Data) *Data {

@@ -35,8 +35,6 @@ func getBlockedResources() map[int]*trace.Resource {
 }
 
 func buildFuncCallToSSAFunc() {
-	blocking := data.Blocking()
-
 	blocking.FuncCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
 
 	for f := range a_base.MainTrace.CallTree().GetTree() {

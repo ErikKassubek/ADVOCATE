@@ -430,7 +430,7 @@ func ImportInsertStatic() (file string, line int) {
 			log.Error(err.Error())
 		}
 	} else {
-		panic("STATIC FOR TESTS NOT IMPLEMENTED YET")
+		panic("STATIC FOR TESTS NOT NOT IMPLEMENTED YET")
 	}
 
 	return

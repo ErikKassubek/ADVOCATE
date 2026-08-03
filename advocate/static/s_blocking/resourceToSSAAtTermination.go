@@ -19,8 +19,6 @@ import (
 )
 
 func determineResouceToSSAAtTermination() {
-	blocking := data.Blocking()
-
 	trIter := a_base.MainTrace.AsIterator()
 
 	// get the first relevant value in init
@@ -83,7 +81,7 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 		return nil
 	}
 
-	next := parseInstruction(elem, inst, rout)
+	next := parseInstruction(inst, rout, elem)
 
 	if next == nil {
 		return next
@@ -92,8 +90,8 @@ func parseInstructions(elem trace.Element, inst s_ssa.Instruction, rout int) s_s
 	return skipNonRelevant(next, rout)
 }
 
-func parseInstruction(elem trace.Element, inst s_ssa.Instruction, rout int) s_ssa.Instruction {
-	next, info := inst.Parse(data.Ssa(), rout, elem)
+func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ssa.Instruction {
+	next, info := parse(inst, rout, elem)
 
 	infoStr := "<NIL>"
 	if info != nil && len(info.Resource) != 0 {
@@ -123,8 +121,73 @@ func skipNonRelevant(inst s_ssa.Instruction, rout int) s_ssa.Instruction {
 			return p
 		}
 
-		p = parseInstruction(nil, p, rout)
+		p = parseInstruction(p, rout, nil)
 	}
 
 	return nil
+}
+
+func parse(inst s_ssa.Instruction, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
+	if inst == nil {
+		return nil, nil
+	}
+
+	switch inst := inst.(type) {
+	case *s_ssa.InstructionAlloc:
+		return ParseAlloc(inst, rout, elem)
+	case *s_ssa.InstructionCall:
+		return ParseCall(inst, rout, elem)
+	case *s_ssa.InstructionExtract:
+		return ParseExtract(inst, rout, elem)
+	case *s_ssa.InstructionField:
+		return ParseField(inst, rout, elem)
+	case *s_ssa.InstructionFieldAddr:
+		return ParseFieldAddr(inst, rout, elem)
+	case *s_ssa.InstructionGo:
+		return ParseGo(inst, rout, elem)
+	case *s_ssa.InstructionIf:
+		return ParseIf(inst, rout, elem)
+	case *s_ssa.InstructionIndex:
+		return ParseIndex(inst, rout, elem)
+	case *s_ssa.InstructionIndexAddr:
+		return ParseIndexAddr(inst, rout, elem)
+	case *s_ssa.InstructionJump:
+		return ParseJump(inst, rout, elem)
+	case *s_ssa.InstructionLookup:
+		return ParseLookup(inst, rout, elem)
+	case *s_ssa.InstructionMakeChan:
+		return ParseMakeChan(inst, rout, elem)
+	case *s_ssa.InstructionMakeClosure:
+		return ParseMakeClosure(inst, rout, elem)
+	case *s_ssa.InstructionMakeInterface:
+		return ParseMakeInterface(inst, rout, elem)
+	case *s_ssa.InstructionMakeMap:
+		return ParseMakeMap(inst, rout, elem)
+	case *s_ssa.InstructionMakeSlice:
+		return ParseMakeSlice(inst, rout, elem)
+	case *s_ssa.InstructionMapUpdate:
+		return ParseMapUpdate(inst, rout, elem)
+	case *s_ssa.InstructionNext:
+		return ParseNext(inst, rout, elem)
+	case *s_ssa.InstructionPhi:
+		return ParsePhi(inst, rout, elem)
+	case *s_ssa.InstructionRange:
+		return ParseRange(inst, rout, elem)
+	case *s_ssa.InstructionReturn:
+		return ParseReturn(inst, rout, elem)
+	case *s_ssa.InstructionRunDefers:
+		return ParseRunDefer(inst, rout, elem)
+	case *s_ssa.InstructionSelect:
+		return ParseSelect(inst, rout, elem)
+	case *s_ssa.InstructionSend:
+		return ParseSend(inst, rout, elem)
+	case *s_ssa.InstructionSlice:
+		return ParseSlice(inst, rout, elem)
+	case *s_ssa.InstructionStore:
+		return ParseStore(inst, rout, elem)
+	case *s_ssa.InstructionUnOp:
+		return ParseUnOp(inst, rout, elem)
+	default:
+		return inst.Next(), nil
+	}
 }

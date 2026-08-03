@@ -10,9 +10,6 @@
 package s_ssa
 
 import (
-	"advocate/trace"
-	"advocate/utils/log"
-
 	"golang.org/x/tools/go/ssa"
 )
 
@@ -31,18 +28,4 @@ func (this *InstructionReturn) Instruction() *ssa.Return {
 func (this *InstructionReturn) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = true
-}
-
-func (this *InstructionReturn) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
-	// TODO: implement
-	log.Error("InstructionReturn IMPLEMENTED YET")
-	return addPathInstr(data, rout, this, nil)
-}
-
-func (this *InstructionReturn) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
-	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
-
-	inst := data.Blocking.JumpBackPos[rout].Pop()
-
-	return inst, info
 }

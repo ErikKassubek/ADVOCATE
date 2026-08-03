@@ -9,7 +9,9 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionSliceToArrayPointer struct {
 	InstructionBase
@@ -24,6 +26,6 @@ func (this *InstructionSliceToArrayPointer) Instruction() *ssa.SliceToArrayPoint
 }
 
 func (this *InstructionSliceToArrayPointer) setRelevant(_ *Data) {
-	this.relevant = true
+	this.relevant = false
 	this.inTrace = false
 }

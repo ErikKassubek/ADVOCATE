@@ -9,7 +9,9 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionChangeInterface struct {
 	InstructionBase

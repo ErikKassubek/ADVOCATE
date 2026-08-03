@@ -9,7 +9,12 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+	"advocate/utils/log"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionStore struct {
 	InstructionBase
@@ -28,4 +33,23 @@ func (this *InstructionStore) setRelevant(_ *Data) {
 
 	this.relevant = resource
 	this.inTrace = false
+}
+
+func (this *InstructionStore) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
+	ssaVar := findDefOfSSAVar(data, rout, this.Term(), this.TermGlobal())
+	if ssaVar == nil {
+		log.Errorf("Could not find ssa var %s for %s", this.Term(), this)
+	}
+	res := addPathInstr(data, rout, this, ssaVar.Resource)
+	switch this.Inst().(*ssa.Store).Addr.(type) {
+	case *ssa.Global:
+		data.GlobalVars[this.Variable()] = res
+	}
+	return res
+}
+
+func (this *InstructionStore) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
+
+	return this.Next(), info
 }

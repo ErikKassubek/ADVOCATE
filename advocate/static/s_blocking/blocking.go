@@ -15,6 +15,8 @@ import (
 	"advocate/utils/log"
 )
 
+var data *static.Data
+
 // init to static blocking analysis
 func BuildStaticBlockingAnalysis() (err error) {
 	log.Info("Build static Analysis")
@@ -41,9 +43,9 @@ func BuildStaticBlockingAnalysis() (err error) {
 }
 
 func isBlockingBug() {
-	blocked = getBlockedResources()
+	data.Blocking().Blocked = getBlockedResources()
 
-	for _, r := range blocked {
+	for _, r := range data.Blocking().Blocked {
 		f, s := data.Ssa().TraceToSSA(r.Alloc())
 
 		if f == nil || s == nil {

@@ -9,7 +9,12 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+	"advocate/utils/log"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionExtract struct {
 	InstructionBase
@@ -26,4 +31,15 @@ func (this *InstructionExtract) Instruction() *ssa.Extract {
 func (this *InstructionExtract) setRelevant(_ *Data) {
 	this.relevant = this.Conc().Resource()
 	this.inTrace = false
+}
+
+func (this *InstructionExtract) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
+	// TODO: implement
+	log.Error("INInstructionExtractOT IMPLEMENTED YET")
+	return addPathInstr(data, rout, this, nil)
+}
+
+func (this *InstructionExtract) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
+	return this.Next(), info
 }

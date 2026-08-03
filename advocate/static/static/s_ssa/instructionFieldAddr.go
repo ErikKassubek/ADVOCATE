@@ -9,7 +9,12 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+	"advocate/utils/log"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionFieldAddr struct {
 	InstructionBase
@@ -26,4 +31,15 @@ func (this *InstructionFieldAddr) Instruction() *ssa.FieldAddr {
 func (this *InstructionFieldAddr) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = false
+}
+
+func (this *InstructionFieldAddr) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
+	// TODO: implement
+	log.Error("InstructionFieldAddr IMPLEMENTED YET")
+	return addPathInstr(data, rout, this, nil)
+}
+
+func (this *InstructionFieldAddr) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
+	return this.Next(), info
 }

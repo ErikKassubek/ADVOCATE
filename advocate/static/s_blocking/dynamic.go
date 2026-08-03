@@ -35,14 +35,16 @@ func getBlockedResources() map[int]*trace.Resource {
 }
 
 func buildFuncCallToSSAFunc() {
-	funcCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
+	blocking := data.Blocking()
+
+	blocking.FuncCallToSSAFunc = make(map[*trace.ElementFunc]*s_ssa.Function)
 
 	for f := range a_base.MainTrace.CallTree().GetTree() {
-		fn := getSSAFuncFromName(f.GetSSAName())
+		fn := s_ssa.GetSSAFuncFromName(data.Ssa(), f.GetSSAName())
 		if fn == nil {
 			log.Errorf("Could not find ssa function for %s", f.GetSSAName())
 			continue
 		}
-		funcCallToSSAFunc[f] = fn
+		blocking.FuncCallToSSAFunc[f] = fn
 	}
 }

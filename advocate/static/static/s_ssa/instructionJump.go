@@ -9,7 +9,11 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionJump struct {
 	InstructionBase
@@ -32,4 +36,8 @@ func (this *InstructionJump) setRelevant(_ *Data) {
 
 func (this *InstructionJump) To() int {
 	return this.to
+}
+
+func (this *InstructionJump) Parse(_ *Data, _ int, _ trace.Element) (Instruction, *InstructionWithInfo) {
+	return NewSsaPosFuncBlock(this.Function(), this.To()), nil
 }

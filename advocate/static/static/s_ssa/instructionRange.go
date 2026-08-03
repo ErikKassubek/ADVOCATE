@@ -9,7 +9,12 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+	"advocate/utils/log"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionRange struct {
 	InstructionBase
@@ -26,4 +31,15 @@ func (this *InstructionRange) Instruction() *ssa.Range {
 func (this *InstructionRange) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = false
+}
+
+func (this *InstructionRange) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
+	// TODO: implement
+	log.Error("InstructionRange IMPLEMENTED YET")
+	return addPathInstr(data, rout, this, nil)
+}
+
+func (this *InstructionRange) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
+	return this.Next(), info
 }

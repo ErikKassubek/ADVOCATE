@@ -9,7 +9,11 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionIf struct {
 	InstructionBase
@@ -39,4 +43,54 @@ func (this *InstructionIf) If() int {
 
 func (this *InstructionIf) Else() int {
 	return this.case_else
+}
+
+func (this *InstructionIf) Parse(_ *Data, _ int, elem trace.Element) (inst Instruction, info *InstructionWithInfo) {
+	e := elem.(*trace.ElementControllFlow)
+
+	switch elem.Type(true) {
+	case trace.ControllIf:
+		inst = this.FollowIfChain(e.ChosenCase())
+	case trace.ControllSwitch:
+		inst = this.FollowSwitchChain(e.ChosenCase())
+	}
+	return inst, nil
+}
+
+func (this *InstructionIf) FollowIfChain(chosen int) Instruction {
+	if chosen == 0 {
+		return this.FirstInBlock(this.If())
+	} else if chosen == 1 {
+		return this.FirstInBlock(this.Else())
+	}
+
+	inst, ok := this.FirstInBlock(this.Else()).(*InstructionIf)
+	if !ok {
+		return inst
+	}
+	return inst.FollowIfChain(chosen - 1)
+}
+
+func (this *InstructionIf) FollowSwitchChain(chosen int) Instruction {
+	return followSwitchRec(this, chosen)
+}
+
+func followSwitchRec(inst Instruction, chosen int) Instruction {
+	if _, ok := inst.(*InstructionBinOp); ok {
+		next := inst.Next()
+		return followSwitchRec(next, chosen)
+	}
+
+	instrIf, ok := inst.(*InstructionIf)
+	if !ok {
+		return inst
+	}
+
+	if chosen == 0 {
+		inst = inst.FirstInBlock(instrIf.If())
+		return inst
+	}
+
+	inst = inst.FirstInBlock(instrIf.Else())
+	return followSwitchRec(inst, chosen-1)
 }

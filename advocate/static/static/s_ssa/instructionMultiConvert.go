@@ -9,7 +9,11 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionMultiConvert struct {
 	InstructionBase
@@ -26,4 +30,8 @@ func (this *InstructionMultiConvert) Instruction() *ssa.MultiConvert {
 func (this *InstructionMultiConvert) setRelevant(_ *Data) {
 	this.relevant = false
 	this.inTrace = false
+}
+
+func (this *InstructionMultiConvert) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	return this.Next(), nil
 }

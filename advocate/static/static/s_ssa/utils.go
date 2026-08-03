@@ -9,6 +9,10 @@
 
 package s_ssa
 
+import (
+	"strings"
+)
+
 type InstClass string
 
 const (
@@ -105,4 +109,32 @@ func (this *concRes) string() string {
 		return "wg"
 	}
 	return ""
+}
+
+func GetSSAFuncFromName(data *Data, name string) *Function {
+	for _, f := range data.Funcs() {
+		if name == f.Name() {
+			return f
+		}
+	}
+
+	return nil
+}
+
+func findDefOfSSAVar(data *BlockingData, rout int, v string, global bool) *InstructionWithInfo {
+	ppr := data.PathPerRoutine[rout]
+
+	v = strings.TrimPrefix(v, "*")
+
+	if global {
+		return data.GlobalVars[v]
+	}
+
+	for i := len(ppr) - 1; i >= 0; i-- {
+		if ppr[i].Variable == v {
+			return ppr[i]
+		}
+	}
+
+	return nil
 }

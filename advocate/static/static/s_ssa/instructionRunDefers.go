@@ -9,7 +9,12 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+	"advocate/utils/log"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionRunDefers struct {
 	InstructionBase
@@ -26,4 +31,18 @@ func (this *InstructionRunDefers) Instruction() *ssa.RunDefers {
 func (this *InstructionRunDefers) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = false
+}
+
+func (this *InstructionRunDefers) addInstructionWithInfo(data *BlockingData, rout int, _ trace.Element) *InstructionWithInfo {
+	// TODO: implement
+	log.Error("InstructionRunDefers IMPLEMENTED YET")
+	return addPathInstr(data, rout, this, nil)
+}
+
+func (this *InstructionRunDefers) Parse(data *Data, rout int, elem trace.Element) (Instruction, *InstructionWithInfo) {
+	info := this.addInstructionWithInfo(data.Blocking, rout, elem)
+
+	log.Error("InstructionRunDefers IMPLEMENTED YET")
+
+	return this.Next(), info // TODO: jump in the defer?
 }

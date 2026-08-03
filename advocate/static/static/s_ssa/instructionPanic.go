@@ -9,7 +9,11 @@
 
 package s_ssa
 
-import "golang.org/x/tools/go/ssa"
+import (
+	"advocate/trace"
+
+	"golang.org/x/tools/go/ssa"
+)
 
 type InstructionPanic struct {
 	InstructionBase
@@ -26,4 +30,8 @@ func (this *InstructionPanic) Instruction() *ssa.Panic {
 func (this *InstructionPanic) setRelevant(_ *Data) {
 	this.relevant = true
 	this.inTrace = false
+}
+
+func (this *InstructionPanic) Parse(_ *Data, _ int, _ trace.Element) (Instruction, *InstructionWithInfo) {
+	return this.Next(), nil
 }

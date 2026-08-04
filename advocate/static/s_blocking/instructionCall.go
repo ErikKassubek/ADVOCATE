@@ -22,7 +22,7 @@ import (
 func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.Instruction, *instructionWithInfo) {
 	f := inst.GetFunc(data.Ssa())
 
-	parseCallParameter(inst.Instruction(), rout, rout, f)
+	parseCallParameter(inst.Instruction(), rout, rout, f, inst.Variable())
 
 	info := instInfoCall(inst, rout, nil)
 	if f != nil {
@@ -34,10 +34,12 @@ func ParseCall(inst *s_ssa.InstructionCall, rout int, _ trace.Element) (s_ssa.In
 
 }
 
-func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f *s_ssa.Function) {
+func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f *s_ssa.Function, retVarName string) {
 	if f == nil {
 		return
 	}
+
+	blocking.NewFuncStack(routFunc, retVarName)
 
 	if inst != nil {
 		for i, param := range f.Params() {

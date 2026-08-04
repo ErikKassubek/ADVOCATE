@@ -27,8 +27,9 @@ type BlockingData struct {
 	Closures              map[string]*s_ssa.Function
 	LastClosure           map[int][]*instructionWithInfo
 	GlobalVars            map[string]*instructionWithInfo
-	PathPerRoutine        map[int][]*instructionWithInfo
+	PathPerRoutine        map[int]*types.Stack[[]*instructionWithInfo]
 	LastBlockIdPerRoutine map[int]int
+	LastReturn            map[int]*instructionWithInfo
 
 	FuncCallToSSAFunc map[*trace.ElementFunc]*s_ssa.Function
 	Blocked           map[int]*trace.Resource
@@ -41,8 +42,9 @@ func newBlockData() *BlockingData {
 		Closures:              make(map[string]*s_ssa.Function),
 		LastClosure:           make(map[int][]*instructionWithInfo),
 		GlobalVars:            make(map[string]*instructionWithInfo),
-		PathPerRoutine:        make(map[int][]*instructionWithInfo),
+		PathPerRoutine:        make(map[int]*types.Stack[[]*instructionWithInfo]),
 		FuncCallToSSAFunc:     make(map[*trace.ElementFunc]*s_ssa.Function),
+		LastReturn:            make(map[int]*instructionWithInfo),
 		Blocked:               make(map[int]*trace.Resource),
 		LastBlockIdPerRoutine: make(map[int]int),
 	}
@@ -54,8 +56,23 @@ type instructionWithInfo struct {
 	Variable string
 }
 
+func (self *BlockingData) NewFuncStack(rout int, inst string) {
+	res := make([]*instructionWithInfo, 1)
+	if inst != "" {
+		res[0] = &instructionWithInfo{Variable: inst}
+	}
+
+	self.PathPerRoutine[rout].Push(res)
+}
+
+func (self *BlockingData) ReturnStack(rout int, ret []*instructionWithInfo) {
+	// insts := self.PathPerRoutine[rout].Pop()
+
+	// addPathParam(rout, insts[0].Variable, ret[i].Resource)
+}
+
 func (self *BlockingData) NewPathPerRoutine(rout int) {
-	self.PathPerRoutine[rout] = make([]*instructionWithInfo, 0)
+	self.PathPerRoutine[rout] = types.NewStack[[]*instructionWithInfo]()
 }
 
 func addPathInstr(rout int, inst s_ssa.Instruction, resources map[*trace.Resource]struct{}) *instructionWithInfo {
@@ -67,7 +84,9 @@ func addPathInstr(rout int, inst s_ssa.Instruction, resources map[*trace.Resourc
 
 	newElem := instructionWithInfo{inst, resources, v}
 
-	blocking.PathPerRoutine[rout] = append(blocking.PathPerRoutine[rout], &newElem)
+	top := blocking.PathPerRoutine[rout].Pop()
+	top = append(top, &newElem)
+	blocking.PathPerRoutine[rout].Push(top)
 
 	return &newElem
 }
@@ -79,13 +98,19 @@ func addPathParam(rout int, v string, resources map[*trace.Resource]struct{}) *i
 
 	newElem := instructionWithInfo{nil, resources, v}
 
-	blocking.PathPerRoutine[rout] = append(blocking.PathPerRoutine[rout], &newElem)
+	top := blocking.PathPerRoutine[rout].Pop()
+	top = append(top, &newElem)
+	blocking.PathPerRoutine[rout].Push(top)
 
 	return &newElem
 }
 
 func findDefOfSSAVar(rout int, v string, global bool) *instructionWithInfo {
-	ppr := blocking.PathPerRoutine[rout]
+	if strings.Contains(v, ":") {
+		return &instructionWithInfo{}
+	}
+
+	ppr := blocking.PathPerRoutine[rout].Peek()
 
 	v = strings.TrimPrefix(v, "*")
 

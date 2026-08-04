@@ -17,7 +17,20 @@ import (
 
 func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *instructionWithInfo {
 	log.Todo("InstructionReturn NOT IMPLEMENTED YET")
-	return addPathInstr(rout, inst, nil)
+
+	retSSAVar := inst.Instruction().Results
+
+	retInfo := make([]*instructionWithInfo, len(retSSAVar))
+	for i, v := range retSSAVar {
+		retInfo[i] = findDefOfSSAVar(rout, v.Name(), false)
+	}
+
+	blocking.ReturnStack(rout, retInfo)
+
+	res := addPathInstr(rout, inst, nil)
+	blocking.LastReturn[rout] = res
+
+	return res
 }
 
 func ParseReturn(inst *s_ssa.InstructionReturn, rout int, elem trace.Element) (s_ssa.Instruction, *instructionWithInfo) {

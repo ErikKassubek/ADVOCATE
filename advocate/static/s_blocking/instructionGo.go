@@ -42,8 +42,10 @@ func ParseGo(inst *s_ssa.InstructionGo, rout int, elem trace.Element) (s_ssa.Ins
 
 	blocking.JumpBackPos[elem.ObjID()] = types.NewStack[s_ssa.Instruction]()
 
+	blocking.NewPathPerRoutine(elem.ObjID())
+
 	// we skip the func call in this case. For this case, perform it here
-	parseCallParameter(inst.Instruction(), rout, elem.ObjID(), f)
+	parseCallParameter(inst.Instruction(), rout, elem.ObjID(), f, "")
 
 	return inst.Next(), info
 }

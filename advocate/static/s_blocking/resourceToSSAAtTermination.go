@@ -32,6 +32,7 @@ func determineResouceToSSAAtTermination() {
 	}
 
 	blocking.JumpBackPos[1] = types.NewStack[s_ssa.Instruction]()
+	blocking.NewPathPerRoutine(1)
 
 	lastWasFork := make(map[int]bool)
 

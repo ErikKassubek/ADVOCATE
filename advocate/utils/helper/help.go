@@ -156,8 +156,8 @@ func PrintHelp() {
 //   - mode string: the mode
 func PrintHelpMode(mode string) {
 	switch mode {
-	case "run":
-		printHelpRun()
+	// case "run":
+	// 	printHelpRun()
 	case "analysis":
 		printHelpAnalysis()
 	case "fuzzing":
@@ -178,13 +178,11 @@ func printHeader() {
 	fmt.Println("Usage: ./advocate [mode] [args]")
 	fmt.Println("")
 	fmt.Println("Advocate contains four different mode. These are:")
-	fmt.Println("\trun")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
 	fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
 	fmt.Println("")
-	fmt.Println("With 'run', the program or test is run without any recording or replay")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
 	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
 	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")

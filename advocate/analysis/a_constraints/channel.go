@@ -4,7 +4,6 @@
 // Brief: Constraints for channels
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
@@ -19,12 +18,11 @@ import "advocate/trace"
 //   - elem *trace.ElementChannel: the element
 func AddChannel(elem *trace.ElementChannel) {
 	// For now, only create constraints for unbuffered channels
-	// TODO: check out buffered channels
 	if elem.IsBuffered() {
 		return
 	}
 
-	if elem.GetType(true) == trace.ChannelRecv {
+	if elem.Type(true) == trace.ChannelRecv {
 		p := elem.GetPartner()
 		AddConstraint(true, p, elem)
 	}

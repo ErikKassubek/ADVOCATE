@@ -30,8 +30,8 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 		return errors.New("rewriteMixedDeadlock: incorrect element types in cycle")
 	}
 
-	holderRout := cdHolder.GetRoutine()
-	waiterRout := lockWaiter.GetRoutine()
+	holderRout := cdHolder.Routine()
+	waiterRout := lockWaiter.Routine()
 
 	mainRout := 0
 	for rid := range tr.GetTraces() {
@@ -46,33 +46,33 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	}
 
 	//fmt.Printf("rewriteMixedDeadlock: main=R%d, holder=R%d (lock=%d, chan=%d), waiter=R%d (lock=%d)\n",
-	//	mainRout, holderRout, lockHolder.GetTPre(), cdHolder.GetTPre(), waiterRout, lockWaiter.GetTPre())
+	//	mainRout, holderRout, lockHolder.GetT(tPre, ), cdHolder.GetT(tPre, ), waiterRout, lockWaiter.GetT(tPre, ))
 
-	lastTime := max(lockHolder.GetTPost(), lockWaiter.GetTPost())
-	if mainTrace := tr.GetRoutineTrace(mainRout); len(mainTrace) > 0 {
-		if lastElem := mainTrace[len(mainTrace)-1]; lastElem.GetTPost() > lastTime {
-			lastTime = lastElem.GetTPost()
+	lastTime := max(lockHolder.T(trace.Commit), lockWaiter.T(trace.Commit))
+	if mainTrace := tr.GetRoutineTrace(mainRout); mainTrace.Len() > 0 {
+		if lastElem := mainTrace.Last(); lastElem.T(trace.Commit) > lastTime {
+			lastTime = lastElem.T(trace.Commit)
 		}
 	}
 	tr.ShortenTrace(lastTime, true)
 
-	tr.ShortenRoutine(holderRout, cdHolder.GetTPost()+1)
-	tr.ShortenRoutine(waiterRout, lockWaiter.GetTPost()+1)
+	tr.ShortenRoutine(holderRout, cdHolder.T(trace.Commit)+1)
+	tr.ShortenRoutine(waiterRout, lockWaiter.T(trace.Commit)+1)
 
 	//fmt.Printf("rewriteMixedDeadlock: holder R%d kept to t=%d, waiter R%d kept to t=%d\n",
-	//	holderRout, cdHolder.GetTPost(), waiterRout, lockWaiter.GetTPost())
+	//	holderRout, cdHolder.GetT(tPost, ), waiterRout, lockWaiter.GetT(tPost, ))
 
 	// Reorder
-	if lockWaiter.GetTPre() < lockHolder.GetTPre() {
-		targetTPre := lockHolder.GetTPost() + 1
-		shift := targetTPre - lockWaiter.GetTPre()
+	if lockWaiter.T(trace.Request) < lockHolder.T(trace.Request) {
+		targetTPre := lockHolder.T(trace.Request) + 1
+		shift := targetTPre - lockWaiter.T(trace.Request)
 		if shift > 0 {
 			waiterTrace := tr.GetRoutineTrace(waiterRout)
-			if len(waiterTrace) == 0 {
+			if waiterTrace.Empty() {
 				return fmt.Errorf("rewriteMixedDeadlock: waiter R%d has no trace", waiterRout)
 			}
-			startElem := waiterTrace[0]
-			startTPre := startElem.GetTPre()
+			startElem := waiterTrace.First()
+			startTPre := startElem.T(trace.Request)
 			//fmt.Printf("rewriteMixedDeadlock: shifting waiter R%d by %d\n", waiterRout, shift)
 			tr.ShiftRoutine(waiterRout, startTPre, shift)
 			tr.ShiftConcurrentOrAfterToAfter(lockWaiter)
@@ -80,10 +80,10 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 	}
 
 	// Ensure holder's channel op is after lock acquire
-	if cdHolder.GetTPre() <= lockHolder.GetTPre() {
-		newTPre := lockHolder.GetTPost() + 1
-		cdHolder.SetTPre(newTPre)
-		cdHolder.SetTPost(newTPre)
+	if cdHolder.T(trace.Request) <= lockHolder.T(trace.Request) {
+		newTPre := lockHolder.T(trace.Commit) + 1
+		cdHolder.SetT(trace.Request, newTPre)
+		cdHolder.SetT(trace.Commit, newTPre)
 	}
 
 	// Clear channel state
@@ -91,9 +91,9 @@ func rewriteMixedDeadlock(tr *trace.Trace, bug bugs.Bug, code int) error {
 
 	// Calculate final time
 	newLastTime := 0
-	for _, traceSlice := range tr.GetTraces() {
-		for _, elem := range traceSlice {
-			t := elem.GetTSort()
+	for _, routSlice := range tr.GetTraces() {
+		for _, elem := range routSlice.Elems() {
+			t := elem.T(trace.Sorting)
 			if t > newLastTime && t != math.MaxInt {
 				newLastTime = t
 			}
@@ -121,11 +121,11 @@ func max(a, b int) int {
 
 // blockElement to force an element to block (tPost=0) while preserving tPre
 func blockElement(elem trace.Element) {
-	savedTPre := elem.GetTPre()
+	savedTPre := elem.T(trace.Request)
 	// SetTWithoutNotExecuted sets tPost=0 ONLY if the original tPost was non-zero
 	// element will be marked as "never completed"
 	elem.SetTWithoutNotExecuted(0)
-	elem.SetTPre(savedTPre)
+	elem.SetT(trace.Request, savedTPre)
 	//fmt.Printf("rewriteMixedDeadlock: blocked element %T (tPre=%d, tPost=0)\n", elem, savedTPre)
 }
 

@@ -4,7 +4,6 @@
 // Brief: functions to use the csst
 //
 // Author: Erik Kassubek
-// Created: 2025-07-03
 //
 // License: BSD-3-Clause
 
@@ -49,6 +48,6 @@ func InitCSSTs(lengths []int) {
 // Returns:
 //   - types.Pair[int, int]: routine id of elem, routine local index of elem
 func getIndicesFromTraceElem(elem trace.Element) types.Pair[int, int] {
-	rout, index := elem.GetTraceIndex()
+	rout, index := elem.TraceIndex()
 	return types.NewPair(rout, index)
 }

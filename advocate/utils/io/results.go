@@ -4,7 +4,6 @@
 // Brief: Read the analysis result file and analyze its content
 //
 // Author: Erik Kassubek
-// Created: 2023-11-30
 //
 // License: BSD-3-Clause
 

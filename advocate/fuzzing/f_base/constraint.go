@@ -4,7 +4,6 @@
 // Brief: scheduling Chains for GoPie
 //
 // Author: Erik Kassubek
-// Created: 2025-03-21
 //
 // License: BSD-3-Clause
 
@@ -114,7 +113,7 @@ func (this *Constraint) ElemWithSmallestTPost() trace.Element {
 	var min trace.Element
 
 	for _, c := range this.Elems {
-		if min == nil || c.GetTSort() < min.GetTSort() {
+		if min == nil || c.T(trace.Sorting) < min.T(trace.Sorting) {
 			min = c
 		}
 	}
@@ -182,7 +181,7 @@ func (this *Constraint) Len() int {
 func (this *Constraint) ToString() string {
 	res := ""
 	for _, e := range this.Elems {
-		res += fmt.Sprintf("%d:%s", e.GetRoutine(), e.GetPos())
+		res += fmt.Sprintf("%d:%s", e.Routine(), e.Pos())
 		switch f := e.(type) {
 		case *trace.ElementSelect:
 			res += fmt.Sprintf("%d", f.GetChosenIndex())

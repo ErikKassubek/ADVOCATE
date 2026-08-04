@@ -4,7 +4,6 @@
 // Brief: Update the cssts for wait group
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -20,13 +19,13 @@ import (
 // Parameter:
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
-	switch wa.GetType(true) {
+	switch wa.Type(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
 	case trace.WaitWait:
 		Wait(wa)
 	default:
-		err := "Unknown operation on wait group: " + wa.ToString()
+		err := "Unknown operation on wait group: " + wa.String()
 		log.Error(err)
 	}
 }
@@ -36,7 +35,7 @@ func UpdateHBWait(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Change(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	lw := a_base.LastChangeWG[id]
 	if lw != nil {
@@ -50,9 +49,9 @@ func Change(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Wait(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
-	if wa.GetTPost() != 0 {
+	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]
 		if lc != nil {
 			AddEdge(lc, wa, false)

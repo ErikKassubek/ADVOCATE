@@ -4,7 +4,6 @@
 // Brief: Check exit codes
 //
 // Author: Erik Kassubek
-// Created: 2025-07-21
 //
 // License: BSD-3-Clause
 
@@ -37,7 +36,7 @@ func RunAnalysisOnExitCodes(all bool) {
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
-			TPre:      0,
+			TRequest:  0,
 			ObjType:   "CC",
 			File:      file,
 			Line:      line,
@@ -53,7 +52,7 @@ func RunAnalysisOnExitCodes(all bool) {
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
-			TPre:      0,
+			TRequest:  0,
 			ObjType:   "CC",
 			File:      file,
 			Line:      line,
@@ -69,7 +68,7 @@ func RunAnalysisOnExitCodes(all bool) {
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
-			TPre:      0,
+			TRequest:  0,
 			ObjType:   "WD",
 			File:      file,
 			Line:      line,
@@ -85,7 +84,7 @@ func RunAnalysisOnExitCodes(all bool) {
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
-			TPre:      0,
+			TRequest:  0,
 			ObjType:   "ML",
 			File:      file,
 			Line:      line,
@@ -101,7 +100,7 @@ func RunAnalysisOnExitCodes(all bool) {
 		arg1 := results.TraceElementResult{
 			RoutineID: 0,
 			ObjID:     0,
-			TPre:      0,
+			TRequest:  0,
 			ObjType:   "XX",
 			File:      file,
 			Line:      line,
@@ -122,7 +121,7 @@ func RunAnalysisOnExitCodes(all bool) {
 			arg1 := results.TraceElementResult{ // send
 				RoutineID: 0,
 				ObjID:     0,
-				TPre:      0,
+				TRequest:  0,
 				ObjType:   "CS",
 				File:      file,
 				Line:      line,

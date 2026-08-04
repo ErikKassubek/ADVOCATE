@@ -4,7 +4,6 @@
 // Brief: run some checks
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -55,6 +54,10 @@ func CheckProg() string {
 	if err != nil {
 		log.Errorf("Could not find %s", flags.ProgName)
 		return ""
+	}
+
+	if flags.RootPath == "" {
+		flags.RootPath = paths.GetDirectory(flags.ProgPath)
 	}
 
 	// Search for go.mod

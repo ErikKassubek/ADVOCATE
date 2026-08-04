@@ -4,7 +4,6 @@
 // Brief: Data required for calculating the vector clocks
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 
@@ -68,22 +67,22 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 	}
 
 	res := make([]trace.Element, 0)
-	for rout, tr := range a_base.MainTrace.GetTraces() {
-		if rout == elem.GetRoutine() {
+	for rout, routine := range a_base.MainTrace.GetTraces() {
+		if rout == elem.Routine() {
 			continue
 		}
 
-		for _, tElem := range tr {
-			if tElem.GetTPost() == 0 {
+		for _, tElem := range routine.Elems() {
+			if !tElem.Committed() {
 				continue
 			}
 
-			if sameElem && elem.GetObjId() != tElem.GetObjId() {
+			if sameElem && elem.ObjID() != tElem.ObjID() {
 				continue
 			}
 
-			elemType := elem.GetType(false)
-			tElemType := tElem.GetType(false)
+			elemType := elem.Type(false)
+			tElemType := tElem.Type(false)
 
 			if sameType && elemType != tElemType &&
 				!((elemType == trace.Select && tElemType == trace.Channel) ||
@@ -96,14 +95,14 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 			}
 
 			if weak {
-				if a_clock.IsConcurrent(elem.GetWVC(), tElem.GetWVC()) {
+				if a_clock.IsConcurrent(elem.GetVC(a_clock.Weak), tElem.GetVC(a_clock.Weak)) {
 					res = append(res, tElem)
 					if !all {
 						return res
 					}
 				}
 			} else {
-				if a_clock.IsConcurrent(elem.GetVC(), tElem.GetVC()) {
+				if a_clock.IsConcurrent(elem.GetVC(a_clock.Strong), tElem.GetVC(a_clock.Strong)) {
 					res = append(res, tElem)
 					if !all {
 						return res

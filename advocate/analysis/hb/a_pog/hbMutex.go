@@ -4,7 +4,6 @@
 // Brief: Update the pog for mutex operations
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -23,14 +22,14 @@ import (
 //   - mu *trace.TraceElementMutex: the mutex trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	objId := mu.GetObjId()
+	objId := mu.ObjID()
 
 	gr := graph
 	if graph == nil {
 		gr = &po
 	}
 
-	switch mu.GetType(true) {
+	switch mu.Type(true) {
 	case trace.MutexLock:
 		Lock(graph, mu)
 	case trace.MutexRLock:
@@ -56,7 +55,7 @@ func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 			Elem: mu,
 		}
 	default:
-		err := "Unknown mutex operation: " + mu.ToString()
+		err := "Unknown mutex operation: " + mu.String()
 		log.Error(err)
 	}
 }
@@ -67,9 +66,9 @@ func UpdateHBMutex(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - mu *TraceElementMutex: The trace element
 func Lock(graph *PoGraph, mu *trace.ElementMutex) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
-	if mu.GetTPost() == 0 {
+	if !mu.Committed() {
 		return
 	}
 
@@ -101,9 +100,9 @@ func Lock(graph *PoGraph, mu *trace.ElementMutex) {
 //   - mu *TraceElementMutex: The trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
-	if recorded && mu.GetTPost() == 0 {
+	if recorded && !mu.Committed() {
 		return
 	}
 
@@ -128,9 +127,9 @@ func RLock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
 //   - mu *TraceElementMutex: The trace element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func RUnlock(graph *PoGraph, mu *trace.ElementMutex, recorded bool) {
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
-	if recorded && mu.GetTPost() == 0 {
+	if recorded && !mu.Committed() {
 		return
 	}
 

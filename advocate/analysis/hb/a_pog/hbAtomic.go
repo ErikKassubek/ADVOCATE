@@ -4,7 +4,6 @@
 // Brief: Update the pog for atomics
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -21,7 +20,7 @@ import (
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - at *trace.TraceElementAtomic: the atomic operation
 func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
-	switch at.GetType(true) {
+	switch at.Type(true) {
 	case trace.AtomicLoad:
 		Read(graph, at)
 	case trace.AtomicSwap, trace.AtomicCompAndSwap:
@@ -30,7 +29,7 @@ func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
 	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
 		Write(graph, at)
 	default:
-		err := "Unknown operation: " + at.ToString()
+		err := "Unknown operation: " + at.String()
 		log.Error(err)
 	}
 
@@ -43,7 +42,7 @@ func UpdateHBAtomic(graph *PoGraph, at *trace.ElementAtomic) {
 //   - at *TraceElementAtomic: The trace element
 //   - numberOfRoutines int: The number of routines in the trace
 func Read(graph *PoGraph, at *trace.ElementAtomic) {
-	id := at.GetObjId()
+	id := at.ObjID()
 
 	if graph != nil {
 		if graph.lastAtomicWriter[id] != nil {
@@ -57,7 +56,7 @@ func Read(graph *PoGraph, at *trace.ElementAtomic) {
 }
 
 func Write(graph *PoGraph, at *trace.ElementAtomic) {
-	id := at.GetObjId()
+	id := at.ObjID()
 
 	gr := graph
 	if graph == nil {

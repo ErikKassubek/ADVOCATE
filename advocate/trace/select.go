@@ -4,7 +4,6 @@
 // Brief: Struct and functions for select operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -12,7 +11,6 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 	"errors"
 	"fmt"
 	"math"
@@ -20,73 +18,65 @@ import (
 	"strings"
 )
 
+// ========================================================
+// MARK: Data
+// ========================================================
+
 // ElementSelect is a trace element for a select statement
 // Fields:
-//   - id: id of the element, should never be changed
-//   - index int: Index in the routine
-//   - routine int: The routine id
+//   - objId int: The id of the select statement
 //   - tPre int: The timestamp at the start of the event
 //   - tPost int: The timestamp at the end of the event
-//   - objId int: The id of the select statement
-//   - cases []traceElementSelectCase: The cases of the select statement, ordered by casi starting from 0
+//   - pos position: code position
+//   - ci *concInfo: concurrency info
+//   - cases []*ElementChannel: The cases of the select statement, ordered by casi starting from 0
+//   - chosenCase *ElementChannel: The chosen case, nil if default case chosen
 //   - chosenIndex int: The internal index of chosen case
 //   - containsDefault bool: Whether the select statement contains a default case
-//   - chosenCase traceElementSelectCase: The chosen case, nil if default case chosen
 //   - chosenDefault bool: if the default case was chosen
-//   - file string: The file of the select statement in the code
-//   - line int: The line of the select statement in the code
-//   - posPartner []bool: For each case state, wether a possible partner exists
-//   - vc *clock.VectorClock: the vector clock of the element
-//   - wVc *clock.VectorClock: the weak vector clock of the element
-//   - casesWithPosPartner []int: casi of cases with possible partner based on HB
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - function *ElementFunc: the function the operation is in
 type ElementSelect struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPre                     int
-	tPost                    int
-	objId                    int
-	cases                    []ElementChannel
-	chosenCase               ElementChannel
-	chosenIndex              int
-	containsDefault          bool
-	chosenDefault            bool
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	casesWithPosPartner      []int
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
+	ElementBase
+
+	objId               int
+	tPre                int
+	tPost               int
+	pos                 Position
+	ci                  *concInfo
+	cases               []*ElementChannel
+	chosenCase          *ElementChannel
+	chosenIndex         int
+	containsDefault     bool
+	chosenDefault       bool
+	casesWithPosPartner []int
+	function            *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementSelect adds a new select statement element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
-//   - tPre string: The timestamp at the start of the event
-//   - tPost string: The timestamp at the end of the event
+//   - tReq string: The timestamp at the start of the event
+//   - tCom string: The timestamp at the end of the event
 //   - id string: The id of the select statement
 //   - cases string: The cases of the select statement
 //   - chosenIndex string: The internal index of chosen case
 //   - pos string: The position of the select statement in the code
-func (this *Trace) AddTraceElementSelect(routine int, tPre string,
-	tPost string, id string, cases string, chosenIndex string, pos string) error {
+func (this *Trace) AddTraceElementSelect(routine int, tReq string,
+	tCom string, id string, cases string, chosenIndex string, pos string) error {
 
-	tPreInt, err := strconv.Atoi(tPre)
+	tReqInt, err := strconv.Atoi(tReq)
 	if err != nil {
-		return errors.New("tPre is not an integer")
+		return errors.New("tReq is not an integer")
 	}
 
-	tPostInt, err := strconv.Atoi(tPost)
+	tComInt, err := strconv.Atoi(tCom)
 	if err != nil {
-		return errors.New("tPost is not an integer")
+		return errors.New("tCom is not an integer")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -105,25 +95,19 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 	}
 
 	elem := ElementSelect{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPre:                     tPreInt,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		chosenIndex:              chosenIndexInt,
-		file:                     file,
-		line:                     line,
-		casesWithPosPartner:      make([]int, 0),
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
+		ElementBase:         this.newElementBase(routine),
+		tPre:                tReqInt,
+		tPost:               tComInt,
+		objId:               idInt,
+		chosenIndex:         chosenIndexInt,
+		pos:                 newPosition(file, line),
+		ci:                  newConcInfo(),
+		casesWithPosPartner: make([]int, 0),
+		function:            getLastCall(routine),
 	}
 
 	cs := strings.Split(cases, "~")
-	casesList := make([]ElementChannel, 0)
+	casesList := make([]*ElementChannel, 0)
 	containsDefault := false
 	chosenDefault := false
 	for i, c := range cs {
@@ -175,26 +159,26 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 
 		cTPost := 0
 		if i == chosenIndexInt {
-			cTPost = tPostInt
+			cTPost = tComInt
 		}
 
-		elemCase := ElementChannel{
-			routine:  routine,
-			tPre:     tPreInt,
-			tPost:    cTPost,
-			objId:    cID,
-			op:       cOpC,
-			cl:       cCl,
-			oID:      cOID,
-			qSize:    cOSize,
-			sel:      &elem,
-			selIndex: len(caseList),
-			file:     file,
-			line:     line,
+		elemCase := &ElementChannel{
+			ElementBase: elem.ElementBase,
+			tReq:        tReqInt,
+			tCom:        cTPost,
+			objId:       cID,
+			op:          cOpC,
+			cl:          cCl,
+			oID:         cOID,
+			qSize:       cOSize,
+			sel:         &elem,
+			selIndex:    len(caseList),
+			pos:         newPosition(file, line),
+			ci:          newConcInfo(),
 		}
 
 		casesList = append(casesList, elemCase)
-		if elemCase.tPost != 0 {
+		if elemCase.tCom != 0 {
 			elem.chosenCase = elemCase
 			elemCase.findPartner(this)
 		}
@@ -209,130 +193,464 @@ func (this *Trace) AddTraceElementSelect(routine int, tPre string,
 	return nil
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ========================================================
+// MARK: ID
+// ========================================================
+
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementSelect) GetObjId() int {
+func (this *ElementSelect) ObjID() int {
 	return this.objId
 }
+
+// ========================================================
+// MARK: Timestamps
+// ========================================================
+
+// T returns the t of the element
+//
+// Parameter:
+//   - t timeType: timer type
+//
+// Returns:
+//   - int: The tPre of the element
+func (this *ElementSelect) T(t timeType) int {
+	switch t {
+	case Request:
+		return this.tPre
+	case Commit:
+		return this.tPost
+	case Sorting:
+		if this.tPost == 0 {
+			return math.MaxInt
+		}
+		return this.tPost
+	}
+
+	return this.tPost
+}
+
+// SetT sets the tPre and tPost of the element
+//
+// Parameter:
+//   - time int: The tPre and tPost of the element
+func (this *ElementSelect) SetT(t timeType, time int) {
+	switch t {
+	case Request:
+		this.tPre = time
+		if this.tPost != 0 && this.tPost < time {
+			this.tPost = time
+		}
+
+		for _, c := range this.cases {
+			c.SetTPre2(time)
+		}
+	case Commit:
+		this.tPost = time
+		this.chosenCase.SetTPost2(time)
+	case Sorting:
+		this.SetT(Request, Sorting)
+		this.tPost = Sorting
+	case Both:
+		this.tPre = time
+		this.tPost = time
+
+		this.chosenCase.tCom = time
+
+		for i := range this.cases {
+			this.cases[i].tReq = time
+		}
+	}
+
+}
+
+// SetTPre2 sets the tPre of the element. It does not update the chosen case
+//
+// Parameter:
+//   - tPre int: The tPre of the element
+func (this *ElementSelect) SetTPre2(tPre int) {
+	this.tPre = tPre
+	if this.tPost != 0 && this.tPost < tPre {
+		this.tPost = tPre
+	}
+
+	for _, c := range this.cases {
+		c.SetTPre2(tPre)
+	}
+}
+
+// SetTPost2 sets the tPost. It does not update the chosen case
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (this *ElementSelect) SetTPost2(tPost int) {
+	this.tPost = tPost
+}
+
+// SetTSort2 set the timer, that is used for the sorting of the trace.
+// It does not update the chosen case
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (this *ElementSelect) SetTSort2(tSort int) {
+	this.SetTPre2(tSort)
+	this.tPost = tSort
+}
+
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter: tSort int: The timer of the element
+func (this *ElementSelect) SetTWithoutNotExecuted(tSort int) {
+	this.SetT(Request, tSort)
+	if this.tPost != 0 {
+		this.tPost = tSort
+	}
+	this.chosenCase.SetTWithoutNotExecuted2(tSort)
+}
+
+// SetTWithoutNotExecuted2 sets the timer, that is used for the sorting of the trace, only if the original
+// value was not 0. Do not update the chosen case
+//
+// Parameter: tSort int: The timer of the element
+func (this *ElementSelect) SetTWithoutNotExecuted2(tSort int) {
+	this.SetTPre2(tSort)
+	if this.tPost != 0 {
+		this.tPost = tSort
+	}
+}
+
+// Committed returns if the operation was committed (tPost != 0)
+//
+// Returns:
+//   - bool: true if committed, false if not
+func (this *ElementSelect) Committed() bool {
+	return this.tPost != 0
+}
+
+// ========================================================
+// MARK: Position
+// ========================================================
+
+// Pos returns the position of the operation in the form [file]:[line].
+//
+// Returns:
+//   - position: the position
+func (this *ElementSelect) Pos() Position {
+	return this.pos
+}
+
+// File returns the file where the operation represented by the element was executed
+//
+// Returns:
+//   - string: The file of the element
+func (this *ElementSelect) File() string {
+	return this.pos.file
+}
+
+// Line returns the line where the operation represented by the element was executed
+//
+// Returns:
+//   - string: The line of the element
+func (this *ElementSelect) Line() int {
+	return this.pos.line
+}
+
+// ========================================================
+// MARK: Index
+// ========================================================
+
+// Routine returns the routine ID of the element.
+//
+// Returns:
+//   - int: The routine of the element
+func (this *ElementSelect) Routine() int {
+	return this.routine
+}
+
+// TraceIndex returns the index of the element in the routine
+// Returns
+//
+//   - int: routine index
+//   - int: routine local index of the element
+func (this *ElementSelect) TraceIndex() (int, int) {
+	return this.routine, this.index
+}
+
+// ========================================================
+// MARK: Operation
+// ========================================================
 
 // GetCases returns the cases of the select statement
 //
 // Returns:
 //   - []traceElementChannel: The cases of the select statement
-func (this *ElementSelect) GetCases() []ElementChannel {
+func (this *ElementSelect) GetCases() []*ElementChannel {
 	return this.cases
 }
 
-// GetRoutine returns the routine ID of the element.
+// Type returns he object type
+//
+// Parameter:
+//   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
 //
 // Returns:
-//   - int: The routine of the element
-func (this *ElementSelect) GetRoutine() int {
-	return this.routine
-}
-
-// GetTPre returns the timestamp at the start of the event
-//
-// Returns:
-//   - int: The timestamp at the start of the event
-func (this *ElementSelect) GetTPre() int {
-	return this.tPre
-}
-
-// GetTPost returns the timestamp at the start of the event
-//
-// Returns:
-//   - int: The timestamp at the end of the event
-func (this *ElementSelect) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementSelect) GetTSort() int {
-	if this.tPost == 0 {
-		// add at the end of the trace
-		return math.MaxInt
+//   - the object type
+func (this *ElementSelect) Type(operation bool) OperationType {
+	if !operation {
+		return Select
 	}
-	return this.tPost
+
+	return SelectOp
 }
 
-// GetPos returns the position of the operation in the form [file]:[line].
-//
-// Returns:
-//   - string: The position of the element
-func (this *ElementSelect) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
-}
+// ========================================================
+// MARK: Equal
+// ========================================================
 
-// GetReplayID returns the replay id of the operations
-//
-// Returns:
-//   - string: The replay id of the element
-func (this *ElementSelect) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
-}
-
-// GetFile returns the file where the operation represented by the element was executed
-//
-// Returns:
-//   - string: The file of the element
-func (this *ElementSelect) GetFile() string {
-	return this.file
-}
-
-// GetLine returns the line where the operation represented by the element was executed
-//
-// Returns:
-//   - string: The line of the element
-func (this *ElementSelect) GetLine() int {
-	return this.line
-}
-
-// GetTID returns the tID of the element.
-// The tID is a string of form [file]:[line]@[tPre]
-//
-// Returns:
-//   - string: The tID of the element
-func (this *ElementSelect) GetTID() string {
-	return "S@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
-}
-
-// SetVc sets the vector clock
+// IsEqual checks if the given element is equal to the select
 //
 // Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetVc(vc *a_clock.VectorClock) {
-	this.vc = vc.Copy()
+//   - elem TraceElement: The element
+//
+// Returns:
+//   - bool: true if they are equal, false otherwise
+func (this *ElementSelect) IsEqual(elem Element) bool {
+	return this.objId == elem.ObjID() && this.id == elem.ID()
 }
 
-// SetWVc sets the weak vector clock
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
 //
 // Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: always false
+func (this *ElementSelect) IsSameElement(elem Element) bool {
+	return false
+}
+
+// ========================================================
+// MARK: String
+// ========================================================
+
+// String returns the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementSelect) String() string {
+	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
+		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
+
+	notNil := 0
+	for _, ca := range this.cases { // cases
+		if ca.tReq != 0 { // ignore nil cases
+			if notNil != 0 {
+				res += "~"
+			}
+			res += ca.toStringSep(".", true)
+			notNil++
+		}
+	}
+
+	if this.containsDefault {
+		if notNil != 0 {
+			res += "~"
+		}
+		if this.chosenDefault {
+			res += "D"
+		} else {
+			res += "d"
+		}
+	}
+	res += "," + strconv.Itoa(this.chosenIndex)
+	res += "," + this.Pos().String()
+	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementSelect) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
+}
+
+// ========================================================
+// MARK: Function
+// ========================================================
+
+func (this *ElementSelect) Function() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
+// ========================================================
+
+// Vc sets the vector clock
+//
+// Parameter:
+//   - weak bool
 //   - vc *clock.VectorClock: the vector clock
-func (this *ElementSelect) SetWVc(vc *a_clock.VectorClock) {
-	this.wVc = vc.Copy()
+func (this *ElementSelect) Vc(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	this.ci.setVC(weak, vc)
+	if this.chosenCase != nil {
+		this.chosenCase.Vc(weak, vc)
+	}
 }
 
 // GetVC returns the vector clock of the element
 //
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetVC() *a_clock.VectorClock {
-	return this.vc
-}
-
-// GetWVC returns the weak vector clock of the element
+// Parameter:
+//   - weak bool
 //
 // Returns:
 //   - VectorClock: The vector clock of the element
-func (this *ElementSelect) GetWVC() *a_clock.VectorClock {
-	return this.wVc
+func (this *ElementSelect) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	return this.ci.getVC(weak)
 }
+
+// NumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (this *ElementSelect) NumberConcurrent(weak, sameElem bool) int {
+	return this.ci.GetNumberConcurrent(weak, sameElem)
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
+
+	if this.GetChosenCase() != nil {
+		this.GetChosenCase().SetNumberConcurrent(c, weak, sameElem)
+	}
+}
+
+// ========================================================
+// MARK: Replay
+// ========================================================
+
+// ReplayID returns the replay id of the operations
+//
+// Returns:
+//   - string: The replay id of the element
+func (this *ElementSelect) ReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+}
+
+// ========================================================
+// MARK: Copy
+// ========================================================
+
+// Copy the element
+//
+// Parameter:
+//   - mapping map[string]Element: map containing all already copied elements.
+//     This avoids double copy of referenced elements
+//   - keep bool: if true, keep vc and order information
+//
+// Returns:
+//   - TraceElement: The copy of the element
+func (this *ElementSelect) Copy(mapping map[int]Element, keep bool) Element {
+	id := this.ID()
+
+	if existing, ok := mapping[id]; ok {
+		return existing
+	}
+
+	if !keep {
+		elem := &ElementSelect{
+			ElementBase:     this.ElementBase.Copy(),
+			tPre:            0,
+			tPost:           0,
+			objId:           this.objId,
+			chosenIndex:     this.chosenIndex,
+			containsDefault: this.containsDefault,
+			chosenDefault:   this.chosenDefault,
+			pos:             this.pos.copy(),
+			ci:              newConcInfo(),
+			function:        this.function.Copy(mapping, keep).(*ElementFunc),
+		}
+
+		mapping[id] = elem
+
+		elem.cases = make([]*ElementChannel, 0)
+		for _, c := range this.cases {
+			cp := c.Copy(mapping, keep).(*ElementChannel)
+			elem.cases = append(elem.cases, cp)
+			if cp.Committed() {
+				elem.chosenCase = cp
+			}
+		}
+
+		for _, c := range elem.cases {
+			c.sel = elem
+		}
+
+		return elem
+	}
+
+	elem := &ElementSelect{
+		ElementBase:     this.ElementBase.Copy(),
+		tPre:            this.tPre,
+		tPost:           this.tPost,
+		objId:           this.objId,
+		chosenIndex:     this.chosenIndex,
+		containsDefault: this.containsDefault,
+		chosenDefault:   this.chosenDefault,
+		pos:             this.pos.copy(),
+		ci:              this.ci.copy(),
+		function:        this.function.Copy(mapping, keep).(*ElementFunc),
+	}
+
+	mapping[id] = elem
+
+	elem.cases = make([]*ElementChannel, 0)
+	for _, c := range this.cases {
+		cp := c.Copy(mapping, keep).(*ElementChannel)
+		elem.cases = append(elem.cases, cp)
+		if cp.Committed() {
+			elem.chosenCase = cp
+		}
+	}
+
+	for _, c := range elem.cases {
+		c.sel = elem
+	}
+
+	return elem
+}
+
+// ========================================================
+// MARK: Valid
+// ========================================================
+
+func (this *ElementSelect) IsValid() bool {
+	return this != nil
+}
+
+// ========================================================
+// MARK: Others
+// ========================================================
 
 // GetChosenCase returns the chosen case
 //
@@ -342,7 +660,7 @@ func (this *ElementSelect) GetChosenCase() *ElementChannel {
 	if this.chosenDefault || this.tPost == 0 {
 		return nil
 	}
-	return &this.chosenCase
+	return this.chosenCase
 }
 
 // GetChosenIndex returns the index of the chosen case in se.cases
@@ -367,25 +685,10 @@ func (this *ElementSelect) GetContainsDefault() bool {
 // Returns:
 //   - *TraceElementChannel: The communication partner of the select or nil
 func (this *ElementSelect) GetPartner() *ElementChannel {
-	if this.chosenCase.tPost != 0 && !this.chosenDefault {
+	if this.chosenCase.tCom != 0 && !this.chosenDefault {
 		return this.chosenCase.partner
 	}
 	return nil
-}
-
-// GetType returns he object type
-//
-// Parameter:
-//   - operations bool: if true, the operation id contains the operations, otherwise just that it is select
-//
-// Returns:
-//   - the object type
-func (this *ElementSelect) GetType(operation bool) OperationType {
-	if !operation {
-		return Select
-	}
-
-	return SelectOp
 }
 
 // GetCasiWithPosPartner returns a list of all internal indices, where the
@@ -395,83 +698,6 @@ func (this *ElementSelect) GetType(operation bool) OperationType {
 //   - []int: list of indices
 func (this *ElementSelect) GetCasiWithPosPartner() []int {
 	return this.casesWithPosPartner
-}
-
-// IsEqual checks if the given element is equal to the select
-//
-// Parameter:
-//   - elem TraceElement: The element
-//
-// Returns:
-//   - bool: true if they are equal, false otherwise
-func (this *ElementSelect) IsEqual(elem Element) bool {
-	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: always false
-func (this *ElementSelect) IsSameElement(elem Element) bool {
-	return false
-}
-
-// GetTraceIndex returns the index of the element in the routine
-// Returns
-//
-//   - int: routine index
-//   - int: routine local index of the element
-func (this *ElementSelect) GetTraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// SetT sets the tPre and tPost of the element
-//
-// Parameter:
-//   - time int: The tPre and tPost of the element
-func (this *ElementSelect) SetT(time int) {
-	this.tPre = time
-	this.tPost = time
-
-	this.chosenCase.tPost = time
-
-	for i := range this.cases {
-		this.cases[i].tPre = time
-	}
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementSelect) SetTPre(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
-	}
-
-	for _, c := range this.cases {
-		c.SetTPre2(tPre)
-	}
-}
-
-// SetTPre2 sets the tPre of the element. It does not update the chosen case
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementSelect) SetTPre2(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
-	}
-
-	for _, c := range this.cases {
-		c.SetTPre2(tPre)
-	}
 }
 
 // AddCasesWithPosPartner adds an casi to casesWithPosPartner
@@ -501,70 +727,11 @@ func (this *ElementSelect) SetChosenCase(index int) error {
 	if index >= len(this.cases) {
 		return fmt.Errorf("Invalid index %d for size %d", index, len(this.cases))
 	}
-	this.cases[this.chosenIndex].tPost = 0
+	this.cases[this.chosenIndex].tCom = 0
 	this.chosenIndex = index
-	this.cases[index].tPost = this.tPost
+	this.cases[index].tCom = this.tPost
 
 	return nil
-}
-
-// SetTPost sets the tPost
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTPost(tPost int) {
-	this.tPost = tPost
-	this.chosenCase.SetTPost2(tPost)
-}
-
-// SetTPost2 sets the tPost. It does not update the chosen case
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTPost2(tPost int) {
-	this.tPost = tPost
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTSort(tSort int) {
-	this.SetTPre(tSort)
-	this.tPost = tSort
-}
-
-// SetTSort2 set the timer, that is used for the sorting of the trace.
-// It does not update the chosen case
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementSelect) SetTSort2(tSort int) {
-	this.SetTPre2(tSort)
-	this.tPost = tSort
-}
-
-// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
-// value was not 0
-//
-// Parameter: tSort int: The timer of the element
-func (this *ElementSelect) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
-	if this.tPost != 0 {
-		this.tPost = tSort
-	}
-	this.chosenCase.SetTWithoutNotExecuted2(tSort)
-}
-
-// SetTWithoutNotExecuted2 sets the timer, that is used for the sorting of the trace, only if the original
-// value was not 0. Do not update the chosen case
-//
-// Parameter: tSort int: The timer of the element
-func (this *ElementSelect) SetTWithoutNotExecuted2(tSort int) {
-	this.SetTPre2(tSort)
-	if this.tPost != 0 {
-		this.tPost = tSort
-	}
 }
 
 // GetChosenDefault if the default case is the executed case
@@ -587,7 +754,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 	}
 
 	for i := range this.cases {
-		this.cases[i].SetTPost(0)
+		this.cases[i].SetT(Commit, 0)
 	}
 
 	if index < 0 {
@@ -596,7 +763,7 @@ func (this *ElementSelect) SetCaseByIndex(index int) error {
 		return nil
 	}
 
-	this.cases[index].SetTPost(this.GetTPost())
+	this.cases[index].SetT(Commit, this.T(Commit))
 	this.chosenIndex = index
 	this.chosenDefault = false
 	return nil
@@ -616,7 +783,7 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 			this.chosenDefault = true
 			this.chosenIndex = -1
 			for i := range this.cases {
-				this.cases[i].SetTPost(0)
+				this.cases[i].SetT(Commit, 0)
 			}
 			return nil
 		}
@@ -627,13 +794,13 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	found := false
 	for i, c := range this.cases {
 		if c.objId == chanID && c.op == op {
-			tPost := this.GetTPost()
+			tPost := this.T(Commit)
 			if !this.chosenDefault {
-				this.cases[this.chosenIndex].SetTPost(0)
+				this.cases[this.chosenIndex].SetT(Commit, 0)
 			} else {
 				this.chosenDefault = false
 			}
-			this.cases[i].SetTPost(tPost)
+			this.cases[i].SetT(Commit, tPost)
 			this.chosenIndex = i
 			this.chosenDefault = false
 			found = true
@@ -646,197 +813,6 @@ func (this *ElementSelect) SetCase(chanID int, op OperationType) error {
 	}
 
 	return nil
-}
-
-// ToString returns the simple string representation of the element
-//
-// Returns:
-//   - string: The simple string representation of the element
-func (this *ElementSelect) ToString() string {
-	res := "S" + "," + strconv.Itoa(this.tPre) + "," +
-		strconv.Itoa(this.tPost) + "," + strconv.Itoa(this.objId) + ","
-
-	notNil := 0
-	for _, ca := range this.cases { // cases
-		if ca.tPre != 0 { // ignore nil cases
-			if notNil != 0 {
-				res += "~"
-			}
-			res += ca.toStringSep(".", true)
-			notNil++
-		}
-	}
-
-	if this.containsDefault {
-		if notNil != 0 {
-			res += "~"
-		}
-		if this.chosenDefault {
-			res += "D"
-		} else {
-			res += "d"
-		}
-	}
-	res += "," + strconv.Itoa(this.chosenIndex)
-	res += "," + this.GetPos()
-	return res
-}
-
-// GetID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementSelect) GetID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementSelect) setID(ID int) {
-	this.id = ID
-}
-
-// Copy the element
-//
-// Parameter:
-//   - mapping map[string]Element: map containing all already copied elements.
-//     This avoids double copy of referenced elements
-//   - keep bool: if true, keep vc and order information
-//
-// Returns:
-//   - TraceElement: The copy of the element
-func (this *ElementSelect) Copy(mapping map[string]Element, keep bool) Element {
-	tID := this.GetTID()
-
-	if existing, ok := mapping[tID]; ok {
-		return existing
-	}
-
-	if !keep {
-		elem := &ElementSelect{
-			id:                       this.id,
-			index:                    0,
-			routine:                  this.routine,
-			tPre:                     0,
-			tPost:                    0,
-			objId:                    this.objId,
-			chosenIndex:              this.chosenIndex,
-			containsDefault:          this.containsDefault,
-			chosenDefault:            this.chosenDefault,
-			file:                     this.file,
-			line:                     this.line,
-			vc:                       nil,
-			wVc:                      nil,
-			numberConcurrent:         0,
-			numberConcurrentWeak:     0,
-			numberConcurrentSame:     0,
-			numberConcurrentWeakSame: 0,
-		}
-
-		mapping[tID] = elem
-
-		elem.cases = make([]ElementChannel, 0)
-		for _, c := range this.cases {
-			elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
-		}
-
-		elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
-
-		for _, c := range elem.cases {
-			c.sel = elem
-		}
-
-		return elem
-	}
-
-	elem := &ElementSelect{
-		id:                       this.id,
-		index:                    this.index,
-		routine:                  this.routine,
-		tPre:                     this.tPre,
-		tPost:                    this.tPost,
-		objId:                    this.objId,
-		chosenIndex:              this.chosenIndex,
-		containsDefault:          this.containsDefault,
-		chosenDefault:            this.chosenDefault,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
-	}
-
-	mapping[tID] = elem
-
-	elem.cases = make([]ElementChannel, 0)
-	for _, c := range this.cases {
-		elem.cases = append(elem.cases, *c.Copy(mapping, keep).(*ElementChannel))
-	}
-
-	elem.chosenCase = *this.chosenCase.Copy(mapping, keep).(*ElementChannel)
-
-	for _, c := range elem.cases {
-		c.sel = elem
-	}
-
-	return elem
-}
-
-func (this *ElementSelect) IsValid() bool {
-	return this != nil
-}
-
-// GetNumberConcurrent returns the number of elements concurrent to the element
-// If not set, it returns -1
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - number of concurrent element, or -1
-func (this *ElementSelect) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
-}
-
-// SetNumberConcurrent sets the number of concurrent elements
-//
-// Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (this *ElementSelect) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
-
-	if this.GetChosenCase() != nil {
-		this.GetChosenCase().SetNumberConcurrent(c, weak, sameElem)
-	}
 }
 
 // HasCommonChannels returns if the set of cases that are in both the receiver

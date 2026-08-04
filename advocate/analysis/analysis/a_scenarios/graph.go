@@ -5,7 +5,6 @@
 //   counter and unlock before lock
 //
 // Author: Erik Kassubek
-// Created: 2024-09-23
 //
 // License: BSD-3-Clause
 
@@ -45,20 +44,19 @@ func buildResidualGraph(increases []trace.Element, decreases []trace.Element) ma
 
 	// add edges from s to all done operations
 	for _, elem := range decreases {
-		graph[elem] = []trace.Element{}
+		// graph[elem] = []trace.Element{}
 		graph[&source] = append(graph[&source], elem)
 	}
 
 	// add edges from all add operations to t
 	for _, elem := range increases {
 		graph[elem] = []trace.Element{&drain}
-
 	}
 
 	// add edge from done to add if the add happens before the done
 	for _, elemDecrease := range decreases {
 		for _, elemIncrease := range increases {
-			if a_clock.GetHappensBefore(elemIncrease.GetVC(), elemDecrease.GetVC()) == a_hb.Before {
+			if a_clock.GetHappensBefore(elemIncrease.GetVC(a_clock.Strong), elemDecrease.GetVC(a_clock.Strong)) == a_hb.Before {
 				graph[elemDecrease] = append(graph[elemDecrease], elemIncrease)
 			}
 		}
@@ -97,7 +95,7 @@ func calculateMaxFlow(graph map[trace.Element][]trace.Element) (int, map[trace.E
 		}
 	}
 
-	return maxFlow, graph, fmt.Errorf("To many rounds")
+	return maxFlow, graph, fmt.Errorf("Too many rounds")
 }
 
 // Find a path in a graph using a breadth-fifoirst search
@@ -138,7 +136,6 @@ func findPath(graph map[trace.Element][]trace.Element) ([]trace.Element, int) {
 			}
 		}
 	}
-
 	return []trace.Element{}, 0
 }
 

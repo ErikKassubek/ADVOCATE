@@ -6,7 +6,6 @@
 // Brief: Clear trace and data
 //
 // Author: Erik Kassubek
-// Created: 2025-03-03
 //
 // License: BSD-3-Clause
 

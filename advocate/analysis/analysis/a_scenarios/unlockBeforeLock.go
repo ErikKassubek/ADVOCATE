@@ -4,7 +4,6 @@
 // Brief: Analysis for unlock of not locked mutex
 //
 // Author: Erik Kassubek
-// Created: 2024-09-23
 //
 // License: BSD-3-Clause
 
@@ -22,9 +21,6 @@ import (
 	"advocate/utils/types"
 )
 
-// TODO: for non-rw locks, it should be enough to search for a concurrent
-// lock/unlock
-
 // CheckForUnlockBeforeLockLock collects all locks for the analysis
 //
 // Parameter:
@@ -33,7 +29,7 @@ func CheckForUnlockBeforeLockLock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if _, ok := a_base.AllLocks[id]; !ok {
 		a_base.AllLocks[id] = make([]trace.Element, 0)
@@ -50,7 +46,7 @@ func CheckForUnlockBeforeLockUnlock(mu *trace.ElementMutex) {
 	timer.Start(timer.AnaUnlock)
 	defer timer.Stop(timer.AnaUnlock)
 
-	id := mu.GetObjId()
+	id := mu.ObjID()
 
 	if _, ok := a_base.AllLocks[id]; !ok {
 		a_base.AllUnlocks[id] = make([]trace.Element, 0)
@@ -102,7 +98,7 @@ func CheckForUnlockBeforeLock() {
 			for i := 0; i < len(locks); {
 				removed := false
 				for j := 0; j < len(unlocks); {
-					if a_clock.GetHappensBefore(locks[i].GetVC(), unlocks[j].GetVC()) == a_hb.Concurrent {
+					if a_clock.GetHappensBefore(locks[i].GetVC(a_clock.Strong), unlocks[j].GetVC(a_clock.Strong)) == a_hb.Concurrent {
 						locksSorted = append(locksSorted, locks[i])
 						unlockSorted = append(unlockSorted, unlocks[i])
 						locks = append(locks[:i], locks[i+1:]...)
@@ -122,42 +118,32 @@ func CheckForUnlockBeforeLock() {
 			args2 := []results.ResultElem{} // locks
 
 			for _, u := range unlockSorted {
-				if u.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(u.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if u.ID() == 0 {
 					continue
 				}
 
 				args1 = append(args1, results.TraceElementResult{
-					RoutineID: u.GetRoutine(),
+					RoutineID: u.Routine(),
 					ObjID:     id,
-					TPre:      tPre,
-					ObjType:   u.GetType(true),
-					File:      file,
-					Line:      line,
+					TRequest:  u.T(trace.Request),
+					ObjType:   u.Type(true),
+					File:      u.File(),
+					Line:      u.Line(),
 				})
 			}
 
 			for _, l := range locksSorted {
-				if l.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(l.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if l.ID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
-					RoutineID: l.GetRoutine(),
+					RoutineID: l.Routine(),
 					ObjID:     id,
-					TPre:      tPre,
-					ObjType:   l.GetType(true),
-					File:      file,
-					Line:      line,
+					TRequest:  l.T(trace.Request),
+					ObjType:   l.Type(true),
+					File:      l.File(),
+					Line:      l.Line(),
 				})
 			}
 

@@ -4,7 +4,6 @@
 // Brief: File for the selects for fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2024-12-04
 //
 // License: BSD-3-Clause
 
@@ -22,8 +21,8 @@ import (
 //   - e *trace.TraceElementSelect: the select trace element to add
 func AddFuzzingSelect(e *trace.ElementSelect) {
 	fs := f_base.FuzzingSelect{
-		ID:              e.GetReplayID(),
-		T:               e.GetTPost(),
+		ID:              e.ReplayID(),
+		T:               e.T(trace.Commit),
 		ChosenCase:      e.GetChosenIndex(),
 		NumberCases:     len(e.GetCases()),
 		ContainsDefault: e.GetContainsDefault(),

@@ -4,7 +4,6 @@
 // Brief: Collection of utility functiond for trace analysis
 //
 // Author: Erik Kassubek
-// Created: 2024-05-29
 //
 // License: BSD-3-Clause
 
@@ -12,52 +11,10 @@ package trace
 
 import (
 	"advocate/utils/consts"
-	"errors"
 	"fmt"
 	"strconv"
 	"strings"
 )
-
-// TODO: remove tID as much as possible
-
-// InfoFromTID returns the info from a TID
-//
-// Parameter:
-//   - tID string: The TID
-//
-// Returns:
-//   - string: the file
-//   - int: the line
-//   - int: the tPre
-//   - error: the error
-func InfoFromTID(tID string) (string, int, int, error) {
-	spilt1 := strings.Split(tID, "@")
-
-	if len(spilt1) < 3 {
-		return "", 0, 0, errors.New(fmt.Sprint("TID not correct: no @: ", tID))
-	}
-
-	tPre, err := strconv.Atoi(spilt1[2])
-	if err != nil {
-		return "", 0, 0, err
-	}
-
-	sp := spilt1[1]
-
-	split2 := strings.Split(sp, consts.PosSep)
-	if len(split2) < 2 {
-		return "", 0, 0, (fmt.Errorf("TID not correct: no '%s': %s", consts.PosSep, tID))
-	}
-
-	file := split2[0]
-
-	line, err := strconv.Atoi(split2[1])
-	if err != nil {
-		return "", 0, 0, err
-	}
-
-	return file, line, tPre, nil
-}
 
 // SameRoutine determines if for aal trace elements in the list, if they are
 // operations on the same primitive, they have the same routine
@@ -72,8 +29,8 @@ func SameRoutine(elems ...[]Element) bool {
 	for _, elem := range elems {
 		for i, e := range elem {
 			if _, ok := ids[i]; !ok {
-				ids[i] = e.GetRoutine()
-			} else if ids[i] != e.GetRoutine() {
+				ids[i] = e.Routine()
+			} else if ids[i] != e.Routine() {
 				return false
 			}
 		}

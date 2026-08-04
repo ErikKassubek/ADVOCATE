@@ -56,6 +56,7 @@ All modifications have been annotated with ADVOCATE-START and ADVOCATE-END.
 - [src/runtime/advocate_tracing.go](../goPatch/src/runtime/advocate_tracing.go)
 - [src/runtime/advocate_util.go](../goPatch/src/runtime/advocate_util.go)
 - [src/runtime/advocate_wait.go](../goPatch/src/runtime/advocate_wait.go)
+- [src/cmd/compile/internal/walk/advocate.go](../goPatch/src/cmd/compile/internal/ssawalken/advocate.go)
 
 ### Modified files
 
@@ -83,4 +84,9 @@ Modifications in files are marked with
 - [src/sync/atomic/doc.go](../goPatch/src/sync/atomic/doc.go)
 - [src/sync/atomic/type.go](../goPatch/src/sync/atomic/type.go)
 - [src/cmd/compile/internal/ssagen/intrinsics.go](../goPatch/src/cmd/compile/internal/ssagen/intrinsics.go)
-- [src/cmd/link/internal/loader/loader.go](../goPatch/src/cmd/link/internal/loader/loader.go)
+- [src/cmd/compile/internal/ssagen/ssa.go](../goPatch/src/cmd/compile/internal/ssagen/ssa.go)
+- [src/cmd/compile/internal/walk/walk.go](../goPatch/src/cmd/compile/internal/walk/walk.go)
+- [src/cmd/compile/internal/typecheck/_builtin/runtime.go](./goPatch/src/cmd/compile/internal/typecheck/_builtin/runtime.go)
+- [src/cmd/compile/internal/typecheck/builtin.go](../goPatch/src/cmd/compile/internal/typecheck/builtin.go) (indirect via running `go run mkbuiltin.go` in src/cmd/compile/internal/typecheck)
+- [src/cmd/compile/internal/base/flag.go](../goPatch/src/cmd/compile/internal/base/flag.go)
+- [src/cmd/compile/internal/pkginit/init.go](../goPatch/src/cmd/compile/internal/pkginit/init.go)

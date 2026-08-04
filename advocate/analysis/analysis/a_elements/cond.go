@@ -4,7 +4,6 @@
 // Brief: Update functions for happens before info for conditional variables operations
 //
 // Author: Erik Kassubek
-// Created: 2024-01-09
 //
 // License: BSD-3-Clause
 
@@ -25,9 +24,9 @@ func AnalyzeCond(co *trace.ElementCond) {
 	a_hbcalc.UpdateHBCond(co)
 
 	// update currently waiting elements
-	id := co.GetObjId()
-	if co.GetTPost() != 0 { // not leak
-		switch co.GetType(true) {
+	id := co.ObjID()
+	if co.Committed() { // not leak
+		switch co.Type(true) {
 		case trace.CondWait:
 			if _, ok := a_base.CurrentlyWaiting[id]; !ok {
 				a_base.CurrentlyWaiting[id] = make([]*trace.ElementCond, 0)

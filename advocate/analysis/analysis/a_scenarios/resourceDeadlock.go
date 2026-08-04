@@ -6,7 +6,6 @@
 // Brief: Alternative analysis for cyclic mutex deadlocks.
 //
 // Author: Sebastian Pohsner
-// Created: 2025-01-01
 //
 // License: BSD-3-Clause
 
@@ -22,8 +21,6 @@ import (
 	"advocate/utils/results/results"
 	"advocate/utils/timer"
 )
-
-// TODO: fix comments
 
 // Computation of "abstract" lock dependencies
 // Lock dependencies are 3-tuples of the following form:
@@ -47,9 +44,9 @@ import (
 
 // We show the event processing functions for acquire and release.
 
-func acquire(s *a_base.State, readLock bool, event a_base.LockEvent) {
-	if _, exists := s.Threads[event.ThreadID]; !exists {
-		s.Threads[event.ThreadID] = a_base.Thread{
+func acquire(s *a_base.State, readLock bool, event trace.Element) {
+	if _, exists := s.Routines[event.Routine()]; !exists {
+		s.Routines[event.Routine()] = a_base.Thread{
 			CurrentLockset:   make(a_base.Lockset),
 			LockDependencies: make(map[a_base.LockID][]a_base.Dependency),
 			ReaderCounter:    make(map[a_base.LockID]int),
@@ -57,39 +54,39 @@ func acquire(s *a_base.State, readLock bool, event a_base.LockEvent) {
 	}
 
 	lockID := a_base.LockID{
-		ID:       event.LockID,
+		ID:       event.ObjID(),
 		ReadLock: readLock,
 	}
 
-	ls := s.Threads[event.ThreadID].CurrentLockset
+	ls := s.Routines[event.Routine()].CurrentLockset
 	if !ls.Empty() {
-		deps := s.Threads[event.ThreadID].LockDependencies
-		deps[lockID] = insert(deps[lockID], ls, event.Clone())
+		deps := s.Routines[event.Routine()].LockDependencies
+		deps[lockID] = insert(deps[lockID], ls, event)
 	}
 
 	if lockID.IsRead() {
-		lockID.AddReader(s.Threads[event.ThreadID])
+		lockID.AddReader(s.Routines[event.Routine()])
 	}
-	s.Threads[event.ThreadID].CurrentLockset.Add(lockID)
+	s.Routines[event.Routine()].CurrentLockset.Add(lockID)
 }
 
-func release(s *a_base.State, readLock bool, event a_base.LockEvent) {
+func release(s *a_base.State, readLock bool, event trace.Element) {
 	lockID := a_base.LockID{
-		ID:       event.LockID,
+		ID:       event.ObjID(),
 		ReadLock: readLock,
 	}
 
 	if lockID.IsRead() {
-		lockID.RemoveReader(s.Threads[event.ThreadID])
-		for _, thread := range s.Threads {
+		lockID.RemoveReader(s.Routines[event.Routine()])
+		for _, thread := range s.Routines {
 			if lockID.HasReaders(thread) {
 				continue
 			}
 			thread.CurrentLockset.Remove(lockID)
 		}
-		s.Threads[event.ThreadID].CurrentLockset.Remove(lockID)
+		s.Routines[event.Routine()].CurrentLockset.Remove(lockID)
 	} else {
-		if !s.Threads[event.ThreadID].CurrentLockset.Remove(lockID) {
+		if !s.Routines[event.Routine()].CurrentLockset.Remove(lockID) {
 			// "Lock not found in lockset! Has probably been released in another thread, this is an unsupported case."
 			s.Failed = true
 		}
@@ -99,7 +96,7 @@ func release(s *a_base.State, readLock bool, event a_base.LockEvent) {
 // Insert a new lock dependency for a given thread and lock x.
 // We assume that event e acquired lock x.
 // We might have already an entry that shares the same lock and lockset!
-func insert(dependencies []a_base.Dependency, ls a_base.Lockset, event a_base.LockEvent) []a_base.Dependency {
+func insert(dependencies []a_base.Dependency, ls a_base.Lockset, event trace.Element) []a_base.Dependency {
 	for i, v := range dependencies {
 		if v.Lockset.Equal(ls) {
 			dependencies[i].Requests = append(dependencies[i].Requests, event)
@@ -108,7 +105,7 @@ func insert(dependencies []a_base.Dependency, ls a_base.Lockset, event a_base.Lo
 	}
 	return append(dependencies, a_base.Dependency{
 		Lockset:  ls.Clone(),
-		Requests: []a_base.LockEvent{event}},
+		Requests: []trace.Element{event}},
 	)
 }
 
@@ -131,15 +128,15 @@ func getCycles(s *a_base.State) []a_base.Cycle {
 	}
 	s.Cycles = []a_base.Cycle{}
 
-	traversedThread := make(map[a_base.ThreadID]bool)
-	for tid := range s.Threads {
+	traversedThread := make(map[int]bool)
+	for tid := range s.Routines {
 		traversedThread[tid] = false
 	}
 
 	var chainStack []a_base.LockDependency
 	for threadID := range traversedThread {
 		traversedThread[threadID] = true
-		for lock, dependencies := range s.Threads[threadID].LockDependencies {
+		for lock, dependencies := range s.Routines[threadID].LockDependencies {
 			for _, dependency := range dependencies {
 				chainStack = append(chainStack, a_base.LockDependency{
 					Thread:   threadID,
@@ -156,13 +153,13 @@ func getCycles(s *a_base.State) []a_base.Cycle {
 	return s.Cycles
 }
 
-func dfs(s *a_base.State, chainStack *[]a_base.LockDependency, traversedThread map[a_base.ThreadID]bool) {
+func dfs(s *a_base.State, chainStack *[]a_base.LockDependency, traversedThread map[int]bool) {
 	for tid, isTraversed := range traversedThread {
 		if isTraversed {
 			continue
 		}
 
-		for l, lD := range s.Threads[tid].LockDependencies {
+		for l, lD := range s.Routines[tid].LockDependencies {
 			for _, lLsD := range lD {
 				ld := a_base.LockDependency{
 					Thread:   tid,
@@ -249,20 +246,20 @@ func checkAndFilterConcurrentRequests(cycle *a_base.Cycle) bool {
 	for i := range *cycle {
 		// Check if each request has a concurrent request in the element before and after
 		// All requests that have a previous request
-		requestsWithPrev := []a_base.LockEvent{}
+		requestsWithPrev := []trace.Element{}
 		for _, req := range (*cycle)[i].Requests {
 			for _, prevReq := range (*cycle)[(len(*cycle)+i-1)%len(*cycle)].Requests {
-				if a_clock.GetHappensBefore(req.VectorClock, prevReq.VectorClock) == a_hb.Concurrent {
+				if a_clock.GetHappensBefore(req.GetVC(a_clock.Strong), prevReq.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 					requestsWithPrev = append(requestsWithPrev, req)
 					break
 				}
 			}
 		}
 		// All requests that have a next request
-		requestsWithBoth := []a_base.LockEvent{}
+		requestsWithBoth := []trace.Element{}
 		for _, req := range requestsWithPrev {
 			for _, nextReq := range (*cycle)[(i+1)%len(*cycle)].Requests {
-				if a_clock.GetHappensBefore(req.VectorClock, nextReq.VectorClock) == a_hb.Concurrent {
+				if a_clock.GetHappensBefore(req.GetVC(a_clock.Strong), nextReq.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 					requestsWithBoth = append(requestsWithBoth, req)
 					break
 				}
@@ -287,9 +284,9 @@ func ResetState() {
 	defer timer.Stop(timer.AnaResource)
 
 	a_base.CurrentState = a_base.State{
-		Threads: make(map[a_base.ThreadID]a_base.Thread),
-		Cycles:  nil,
-		Failed:  false,
+		Routines: make(map[int]a_base.Thread),
+		Cycles:   nil,
+		Failed:   false,
 	}
 }
 
@@ -306,23 +303,16 @@ func HandleMutexEventForRessourceDeadlock(element trace.ElementMutex) {
 		return
 	}
 
-	event := a_base.LockEvent{
-		ThreadID:    a_base.ThreadID(element.GetRoutine()),
-		TraceID:     element.GetTID(),
-		LockID:      element.GetObjId(),
-		VectorClock: element.GetWVC().Copy(),
-	}
-
-	switch element.GetType(true) {
+	switch element.Type(true) {
 	case trace.MutexLock, trace.MutexTryLock:
-		acquire(&a_base.CurrentState, false, event)
+		acquire(&a_base.CurrentState, false, &element)
 		// We do not check event.suc because that could led to false negatives
 	case trace.MutexRLock:
-		acquire(&a_base.CurrentState, true, event)
+		acquire(&a_base.CurrentState, true, &element)
 	case trace.MutexUnlock:
-		release(&a_base.CurrentState, false, event)
+		release(&a_base.CurrentState, false, &element)
 	case trace.MutexRUnlock:
-		release(&a_base.CurrentState, true, event)
+		release(&a_base.CurrentState, true, &element)
 	}
 }
 
@@ -357,30 +347,24 @@ func CheckForResourceDeadlock() {
 			// 	}
 
 			for _, r := range cycle[i].Requests {
-				if a_clock.GetHappensBefore(request.VectorClock, r.VectorClock) == a_hb.Concurrent {
+				if a_clock.GetHappensBefore(request.GetVC(a_clock.Strong), r.GetVC(a_clock.Strong)) == a_hb.Concurrent {
 					request = r
 					break
 				}
 			}
 
-			if request.ThreadID != cycle[i].Thread {
-				log.Error("Request thread id ", request.ThreadID, "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
-				break
-			}
-
-			file, line, tPre, err := trace.InfoFromTID(request.TraceID)
-			if err != nil {
-				log.Error(err.Error())
+			if request.Routine() != cycle[i].Thread {
+				log.Error("Request thread id ", request.Routine(), "does not match entry thread id", cycle[i].Thread, ". Ignoring circle!")
 				break
 			}
 
 			cycleElements = append(cycleElements, results.TraceElementResult{
-				RoutineID: int(request.ThreadID),
-				ObjID:     request.LockID,
-				TPre:      tPre,
+				RoutineID: request.Routine(),
+				ObjID:     request.ObjID(),
+				TRequest:  request.T(trace.Request),
 				ObjType:   "DC",
-				File:      file,
-				Line:      line,
+				File:      request.File(),
+				Line:      request.Line(),
 			})
 		}
 
@@ -395,20 +379,13 @@ func CheckForResourceDeadlock() {
 // Auxiliary functions.
 
 // Finds the earliest request in a cycle.
-func findEarliestRequest(cycle []a_base.LockDependency) a_base.LockEvent {
+func findEarliestRequest(cycle []a_base.LockDependency) trace.Element {
 	earliest := cycle[0].Requests[0]
-	_, _, earliestTime, err := trace.InfoFromTID(earliest.TraceID)
-	if err != nil {
-		log.Error(err.Error())
-		return earliest
-	}
+	earliestTime := earliest.T(trace.Request)
 	for _, c := range cycle {
 		for _, r := range c.Requests {
-			_, _, requestTime, err := trace.InfoFromTID(r.TraceID)
-			if err != nil {
-				log.Error(err.Error())
-				return earliest
-			}
+			requestTime := r.T(trace.Request)
+
 			if requestTime < earliestTime {
 				earliest = r
 				earliestTime = requestTime

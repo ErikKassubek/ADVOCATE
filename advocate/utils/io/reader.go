@@ -4,7 +4,6 @@
 // Brief: Read trace files and create the internal trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -49,6 +48,10 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 
 	tr := trace.NewTrace()
 
+	if err != nil {
+		log.Error(err)
+	}
+
 	elemCounter := 0
 	for _, file := range files {
 		if file.IsDir() {
@@ -78,7 +81,7 @@ func CreateTraceFromFiles(folderPath string) (int, int, error) {
 		numberRoutines++
 
 		if elemCounter > flags.MaxNumberElements {
-			return numberRoutines, elemCounter, fmt.Errorf("To many elements")
+			return numberRoutines, elemCounter, fmt.Errorf("Too many elements")
 		}
 
 		if control.WasCanceled() {
@@ -194,7 +197,7 @@ func createTraceFromFile(tr *trace.Trace, filePath string, routine int) (int, er
 		line := scanner.Text()
 		err := processElement(tr, line, routine)
 		if err != nil {
-			log.Error("Error in processing trace element: ", err)
+			log.Error("Error in processing trace element %s: ", line, err)
 		}
 		counter++
 
@@ -272,7 +275,7 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		if len(fields) != 6 {
 			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
 		}
-		err = tr.AddTraceElementNew(routine, fields[1], fields[2], fields[3],
+		err = tr.AddTraceElementAlloc(routine, fields[1], fields[2], fields[3],
 			fields[4], fields[5])
 	case "E":
 		if len(fields) != 2 {
@@ -280,9 +283,20 @@ func processElement(tr *trace.Trace, element string, routine int) error {
 		}
 		err = tr.AddTraceElementRoutineEnd(routine, fields[1])
 	case "F":
-		// TODO: process function call
+		if len(fields) != 5 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
+		}
+		err = tr.AddTaceElementFunc(routine, fields[1], fields[2], fields[3], fields[4])
 	case "R":
-		// TODO: process function return
+		if len(fields) != 2 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 4", element, len(fields))
+		}
+		err = tr.AddTaceElementReturn(routine, fields[1])
+	case "I":
+		if len(fields) != 6 {
+			return fmt.Errorf("Invalid element: %s. Len: %d. Expected len: 6", element, len(fields))
+		}
+		err = tr.AddTraceElementControllFlow(routine, fields[1], fields[2], fields[3], fields[4], fields[5])
 	case "OAT":
 		err = tr.AddTraceObjectAware(routine, fields[1])
 	default:

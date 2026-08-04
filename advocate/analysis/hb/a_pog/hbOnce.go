@@ -4,7 +4,6 @@
 // Brief: Update the pog for once
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -24,7 +23,7 @@ func UpdateHBOnce(graph *PoGraph, on *trace.ElementOnce) {
 		gr = &po
 	}
 
-	objId := on.GetObjId()
+	objId := on.ObjID()
 
 	// suc once does not create edge -> only not suc
 	if on.GetSuc() {

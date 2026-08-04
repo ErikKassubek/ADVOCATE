@@ -6,7 +6,6 @@
 // Brief: Types used in analysis data
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 
@@ -27,11 +26,10 @@ type ElemWithVc struct {
 
 // VectorClockTID2 is a helper to store the relevant elements of a
 // trace element without needing to store the element itself
-type VectorClockTID2 struct {
+type VectorClockTID2 struct { // TODO: replace
 	Routine  int
 	ID       int
 	Vc       *a_clock.VectorClock
-	TID      string
 	TypeVal  trace.OperationType
 	Val      int
 	Buffered bool
@@ -97,17 +95,17 @@ type HoldObj struct {
 
 // State for resource deadlock detection
 type State struct {
-	Threads map[ThreadID]Thread // Recording lock dependencies in phase 1
-	Cycles  []Cycle             // Computing cycles in phase 2
-	Failed  bool                // Analysis failed (encountered unsupported lock action)
+	Routines map[int]Thread // Recording lock dependencies in phase 1
+	Cycles   []Cycle        // Computing cycles in phase 2
+	Failed   bool           // Analysis failed (encountered unsupported lock action)
 }
 
 // LockDependency represents a Lock dependencies for resource deadlock detection
 type LockDependency struct {
-	Thread   ThreadID
+	Thread   int
 	Lock     LockID
 	Lockset  Lockset
-	Requests []LockEvent
+	Requests []trace.Element
 }
 
 // Cycle is a set of mutex operations, that could constitute a resource deadlock
@@ -127,21 +125,18 @@ type Thread struct {
 // Hence, we introduce some intermediate structure.
 type Dependency struct {
 	Lockset  Lockset
-	Requests []LockEvent
+	Requests []trace.Element
 }
 
 // Representation of vector clocks, events, threads, lock and lockset.
 
 // LockEvent represents a lock operations
-type LockEvent struct {
-	ThreadID    ThreadID
-	TraceID     string
-	LockID      int
-	VectorClock *a_clock.VectorClock
-}
-
-// ThreadID implements the id of a routine
-type ThreadID int
+// type LockEvent struct {
+// 	ThreadID    ThreadID
+// 	TraceID     int
+// 	LockID      int
+// 	VectorClock *a_clock.VectorClock
+// }
 
 // LockID represents a lock operation
 type LockID struct {
@@ -159,30 +154,13 @@ type Lockset map[LockID]struct{}
 // Returns:
 //   - LockDependency: The copy
 func (this LockDependency) Clone() LockDependency {
-	reqs := make([]LockEvent, len(this.Requests))
-	for i, r := range this.Requests {
-		reqs[i] = r.Clone()
-	}
+	reqs := make([]trace.Element, len(this.Requests))
+	copy(reqs, this.Requests)
 	return LockDependency{
 		Thread:   this.Thread,
 		Lock:     this.Lock,
 		Lockset:  this.Lockset.Clone(),
 		Requests: reqs,
-	}
-}
-
-// Event methods.
-
-// Clone creates a copy of a lock event
-//
-// Returns:
-//   - LockEvent: The copy
-func (this LockEvent) Clone() LockEvent {
-	return LockEvent{
-		ThreadID:    this.ThreadID,
-		TraceID:     this.TraceID,
-		LockID:      this.LockID,
-		VectorClock: this.VectorClock.Copy(),
 	}
 }
 

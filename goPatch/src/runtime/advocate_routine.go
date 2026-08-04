@@ -12,18 +12,10 @@
 
 package runtime
 
-import "unsafe"
-
 var AdvocateRoutines map[uint64]*AdvocateRoutine
 var AdvocateRoutinesLock = mutex{}
 
 var projectPath string
-
-type park struct {
-	addr unsafe.Pointer
-	id   uint64
-	op   Operation
-}
 
 // var atomicRecordingDisabled = false
 
@@ -51,8 +43,6 @@ type AdvocateRoutine struct {
 	replayID             int
 	forkFile             string
 	forkLine             int32
-	parkObj              []park
-	parkPos              string
 	parkForeverReplay    bool
 	hasReturned          bool
 	wokenButTimeout      bool
@@ -70,7 +60,7 @@ type AdvocateRoutine struct {
 //   - the new advocate routine
 func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *AdvocateRoutine {
 	// ignore the internal routines that are run before the main/test function starts
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return &AdvocateRoutine{
 			id:          0,
 			maxObjectId: 0,
@@ -79,8 +69,6 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 			forkFile:    file,
 			forkLine:    line,
 			replayID:    replayRoutine,
-
-			parkObj: make([]park, 0),
 		}
 	}
 
@@ -90,7 +78,6 @@ func newAdvocateRoutine(g *g, replayRoutine int, file string, line int32) *Advoc
 		G:           g,
 		Trace:       make([]traceElem, 0),
 		replayID:    replayRoutine,
-		parkObj:     make([]park, 0),
 		forkFile:    file,
 		forkLine:    line,
 	}
@@ -167,7 +154,7 @@ func (gi *AdvocateRoutine) GetForkPos() string {
 //   - index: the index of the element to update
 //   - elem: the new element
 func (gi *AdvocateRoutine) updateElement(index int, elem traceElem) {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

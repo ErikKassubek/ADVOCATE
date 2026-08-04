@@ -4,7 +4,6 @@
 // Brief: Function on data
 //
 // Author: Erik Kassubek
-// Created: 2025-07-03
 //
 // License: BSD-3-Clause
 
@@ -47,6 +46,6 @@ func AddMutToQueue(mut Mutation, front, force bool) bool {
 // Returns:
 //   - True if the element is of one of those types, false otherwise
 func IgnoreFuzzing(elem trace.Element, ignoreNew bool) bool {
-	t := elem.GetType(false)
+	t := elem.Type(false)
 	return (ignoreNew && t == trace.New) || t == trace.Replay || t == trace.End
 }

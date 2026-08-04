@@ -5,7 +5,6 @@
 //   elements that do not change, but only store the vc
 //
 // Author: Erik Kassubek
-// Created: 2025-04-26
 //
 // License: BSD-3-Clause
 
@@ -19,11 +18,11 @@ import (
 
 // AnalyzeNew store the vector clock of the element
 // Parameter:
-//   - n *trace.TraceElementNew: the new trace element
-func AnalyzeNew(n *trace.ElementNew) {
+//   - n *trace.TraceElementAlloc: the new trace element
+func AnalyzeNew(n *trace.ElementAlloc) {
 	a_hbcalc.UpdateHBNew(n)
 
-	a_base.NewChan[n.GetObjId()] = n.GetFile()
+	a_base.NewChan[n.ObjID()] = n.File()
 }
 
 // AnalyzeRoutineEnd store the vector clock of the element

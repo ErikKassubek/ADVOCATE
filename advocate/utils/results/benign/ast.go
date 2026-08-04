@@ -4,7 +4,6 @@
 // Brief: Functions to work with the as
 //
 // Author: Erik Kassubek
-// Created: 2025-11-17
 //
 // License: BSD-3-Clause
 

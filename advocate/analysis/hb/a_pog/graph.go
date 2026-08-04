@@ -4,7 +4,6 @@
 // Brief: Store the partial order graph
 //
 // Author: Erik Kassubek
-// Created: 2025-07-08
 //
 // License: BSD-3-Clause
 
@@ -78,11 +77,11 @@ func (this *PoGraph) AddEdge(from, to trace.Element) {
 	if _, ok := this.data[from]; !ok {
 		this.data[from] = make(map[trace.Element]struct{})
 	}
-	if _, ok := this.DataSimple[from.GetID()]; !ok {
-		this.DataSimple[from.GetID()] = make(map[int]struct{})
+	if _, ok := this.DataSimple[from.ID()]; !ok {
+		this.DataSimple[from.ID()] = make(map[int]struct{})
 	}
 	this.data[from][to] = struct{}{}
-	this.DataSimple[from.GetID()][to.GetID()] = struct{}{}
+	this.DataSimple[from.ID()][to.ID()] = struct{}{}
 }
 
 func (this *PoGraph) GetChildren(from trace.Element) map[trace.Element]struct{} {
@@ -112,9 +111,9 @@ func Print(weak bool) {
 func (this *PoGraph) toString() string {
 	res := ""
 	for start, end := range this.data {
-		res += fmt.Sprintf("%s -> ", start.GetPos())
+		res += fmt.Sprintf("%s -> ", start.Pos())
 		for e := range end {
-			res += fmt.Sprintf("%s, ", e.GetPos())
+			res += fmt.Sprintf("%s, ", e.Pos())
 		}
 	}
 	return res

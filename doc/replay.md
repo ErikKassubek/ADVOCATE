@@ -44,20 +44,23 @@ flow fuzzing, see [here](./fuzzing/Flow.md#implementations).
 
 ## Toolchain
 
-The replay is run, if the test of main function starts with the following header:
+To replay a trace, import 
 
-```go
-advocatego.InitReplay(index, timeout, atomic)
-defer advocatego.FinishReplay()
+```
+import _ "advocatego"
+``` 
+
+and
+
+build the program with 
+
+```
+./go build -gcflags=all="-advocatereplay -advocatepath=[path]"
 ```
 
-The parameters are as follows:
+where [path] is the relative path to the trace.
 
-- `index` $\in \mathbb{N}$: The replay expects the name of the folder containing the trace to be called `advocateTrace`, in this case set `index = 0` or `rewritten_trace_[index]`, meaning if the trace folder is called `rewritten_trace_2`, set `index = 2`
-- `timeout` $\in \mathbb{N}$: If you want to cancel the replay with a timeout after a given time, set this value to the timeout in seconds. Otherwise set to `0`.
-- `atomic`: If set to `true`, the replay will force the correct order of atomic events. If atomic operations should be ignored for the replay, set this to `false`.
-
-When using the toolchain to run replays, this header is automatically added.
+When using the toolchain to run replays, this is automatically added.
 
 ## Complete replay
 

@@ -4,7 +4,6 @@
 // Brief: Read the info about the rewrite and replay of the bug
 //
 // Author: Erik Kassubek
-// Created: 2024-06-18
 //
 // License: BSD-3-Clause
 
@@ -42,18 +41,19 @@ func getRewriteInfo(bugType helper.ResultType, codes map[string]string, index st
 
 	var err error
 
-	if rewType == consts.Actual {
+	switch rewType {
+	case consts.Actual:
 		res[desc] += "The bug is an actual bug. Therefore no rewrite is possible."
 		codes[fmt.Sprint(index)] = "fail"
-	} else if rewType == consts.Possible {
+	case consts.Possible:
 		res[desc] += "The bug is a potential bug.\n"
 		res[desc] += consts.TheAnalyzerHasTriedToRewriteTheTraceInSuchAWay + " "
 		res[desc] += "that the bug will be triggered when replaying the trace."
-	} else if rewType == "LeakPos" {
+	case "LeakPos":
 		res[desc] += "The analyzer found a leak in the recorded trace.\n"
 		res[desc] += "The analyzer found a way to resolve the leak, meaning the "
 		res[desc] += "leak should not reappear in the rewritten trace."
-	} else if rewType == consts.Leak {
+	case consts.Leak:
 		res[desc] += "The analyzer found a leak in the recorded trace.\n"
 		res[desc] += "The analyzer could not find a way to resolve the leak. "
 		res[desc] += "No rewritten trace was created. This does not need to mean, "

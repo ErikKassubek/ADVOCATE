@@ -4,7 +4,6 @@
 // Brief: Trace analysis for possible negative wait group counter
 //
 // Author: Erik Kassubek
-// Created: 2023-11-24
 //
 // License: BSD-3-Clause
 
@@ -46,7 +45,7 @@ func CheckForDoneBeforeAddChange(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace wait element
 func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WGAddData[id]; !ok {
@@ -62,7 +61,7 @@ func CheckForDoneBeforeAddAdd(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: the trace done element
 func CheckForDoneBeforeAddDone(wa *trace.ElementWait) {
-	id := wa.GetObjId()
+	id := wa.ObjID()
 
 	// if necessary, create maps and lists
 	if _, ok := a_base.WgDoneData[id]; !ok {
@@ -115,7 +114,7 @@ func CheckForDoneBeforeAdd() {
 			for i := 0; i < len(addsNegWg); {
 				removed := false
 				for j := 0; j < len(donesNegWg); {
-					if a_clock.GetHappensBefore(addsNegWg[i].GetVC(), donesNegWg[j].GetVC()) == a_hb.Concurrent {
+					if a_clock.GetHappensBefore(addsNegWg[i].GetVC(a_clock.Strong), donesNegWg[j].GetVC(a_clock.Strong)) == a_hb.Concurrent {
 						addsNegWgSorted = append(addsNegWgSorted, addsNegWg[i])
 						donesNEgWgSorted = append(donesNEgWgSorted, donesNegWg[j])
 						// remove the element from the list
@@ -141,42 +140,32 @@ func CheckForDoneBeforeAdd() {
 			args2 := []results.ResultElem{} // adds
 
 			for _, done := range donesNEgWgSorted {
-				if done.GetTID() == "\n" {
+				if done.ID() == 0 {
 					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(done.GetTID())
-				if err != nil {
-					log.Error(err.Error())
-					return
 				}
 
 				args1 = append(args1, results.TraceElementResult{
-					RoutineID: done.GetRoutine(),
+					RoutineID: done.Routine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  done.T(trace.Request),
 					ObjType:   "WD",
-					File:      file,
-					Line:      line,
+					File:      done.File(),
+					Line:      done.Line(),
 				})
 			}
 
 			for _, add := range addsNegWgSorted {
-				if add.GetTID() == "\n" {
-					continue
-				}
-				file, line, tPre, err := trace.InfoFromTID(add.GetTID())
-				if err != nil {
-					log.Error(err.Error())
+				if add.ID() == 0 {
 					continue
 				}
 
 				args2 = append(args2, results.TraceElementResult{
-					RoutineID: add.GetRoutine(),
+					RoutineID: add.Routine(),
 					ObjID:     id,
-					TPre:      tPre,
+					TRequest:  add.T(trace.Request),
 					ObjType:   "WA",
-					File:      file,
-					Line:      line,
+					File:      add.File(),
+					Line:      add.Line(),
 				})
 
 			}

@@ -129,10 +129,6 @@ func selectgo(cas0 *scase, order0 *uint16, pc0 *uintptr, nsends, nrecvs int, blo
 
 	ai := -1
 
-	if block {
-		StoreParkSelect(cas0, nsends, nsends+nrecvs, CallerSkipSelect)
-	}
-
 	if wait {
 		replayElem = <-ch
 		// if replayElem.Index == -1 {

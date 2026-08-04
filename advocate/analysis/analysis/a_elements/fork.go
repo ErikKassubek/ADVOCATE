@@ -4,7 +4,6 @@
 // Brief: Update function for happens before info for forks (creation of new routine)
 //
 // Author: Erik Kassubek
-// Created: 2023-07-26
 //
 // License: BSD-3-Clause
 
@@ -30,5 +29,5 @@ func AnalyzeFork(fo *trace.ElementFork) {
 	a_hbcalc.UpdateHBFork(fo)
 
 	// store fork operations for each routine
-	a_base.ForkOperations[fo.GetObjId()] = fo
+	a_base.ForkOperations[fo.ObjID()] = fo
 }

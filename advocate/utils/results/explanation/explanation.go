@@ -4,7 +4,6 @@
 // Brief: Create an explanation file for a found bug
 //
 // Author: Erik Kassubek
-// Created: 2024-06-14
 //
 // License: BSD-3-Clause
 
@@ -39,7 +38,6 @@ const (
 	explanation
 	file
 	importLine
-	headerLine
 	trace
 	replaySuc
 	exitCodeDesc
@@ -123,11 +121,6 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 	}
 	progInfo[trace] = fmt.Sprintf("advocateTrace_%d", traceID)
 
-	hl, err := strconv.Atoi(progInfo[headerLine])
-	if err != nil {
-		log.Error("Could not read header line: ", err)
-	}
-
 	resultsMachine, err := filepath.Glob(filepath.Join(paths.ResultTraces, "results_machine_*.log"))
 	if err != nil {
 		log.Error(err.Error())
@@ -155,7 +148,7 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 				id += elem[len(elem)-1] + "_" + strconv.Itoa(index)
 			}
 
-			bugType, bugPos, bugElemType, falsePositive, err := readAnalysisResults(result, index, progInfo[file], hl)
+			bugType, bugPos, bugElemType, falsePositive, err := readAnalysisResults(result, index, progInfo[file])
 			if err != nil {
 				log.Error("Could not read analysis result: ", err.Error())
 				continue
@@ -208,7 +201,7 @@ func CreateOverview(ignoreDouble bool, traceID, fuzzing int) (int, error) {
 //   - map[int]string: bug element types
 //   - bool: true if false positive
 //   - error
-func readAnalysisResults(path string, index int, fileWithHeader string, headerLine int) (helper.ResultType, map[int][]string, map[int]string, bool, error) {
+func readAnalysisResults(path string, index int, fileWithHeader string) (helper.ResultType, map[int][]string, map[int]string, bool, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return "", nil, nil, false, err
@@ -262,11 +255,8 @@ func readAnalysisResults(path string, index int, fileWithHeader string, headerLi
 					log.Error(err.Error())
 				}
 
-				if lineInt >= headerLine {
-					line = fmt.Sprint(lineInt - 5) // import + header
-				} else {
-					line = fmt.Sprint(lineInt - 1) // only import
-				}
+				line = fmt.Sprint(lineInt - 1) // only import
+
 			}
 
 			pos := file + consts.PosSep + line

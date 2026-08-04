@@ -5,7 +5,6 @@
 //    unit tests
 //
 // Author: Erik Kassubek
-// Created: 2024-09-18
 //
 // License: BSD-3-Clause
 
@@ -70,7 +69,7 @@ func Run(mode, pathToTest string,
 		if (flags.CreateStatistics || flags.MeasureTime) && flags.ProgName == "" {
 			flags.ProgName = paths.GetProgName(flags.ProgPath)
 		}
-		return runWorkflowUnit(paths.Prog, runRecord, runAnalysis, runReplay,
+		return runWorkflowUnit(runRecord, runAnalysis, runReplay,
 			pathToTest, fuzzing, fuzzingTrace,
 			firstRun, fileNumber, testNumber)
 	default:

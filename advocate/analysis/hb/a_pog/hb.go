@@ -4,7 +4,6 @@
 // Brief: Function to find concurrent operations by building direct order graph
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 
@@ -38,13 +37,13 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range a_base.MainTrace.GetTraces() {
-		if rout == elem.GetRoutine() {
+	for rout, routine := range a_base.MainTrace.GetTraces() {
+		if rout == elem.Routine() {
 			continue
 		}
 
-		for _, tElem := range trace {
-			if sameElem && elem.GetObjId() != tElem.GetObjId() {
+		for _, tElem := range routine.Elems() {
+			if sameElem && elem.ObjID() != tElem.ObjID() {
 				continue
 			}
 
@@ -52,7 +51,7 @@ func GetConcurrent(elem trace.Element, all bool, sameElem bool, weak bool) []tra
 				continue
 			}
 
-			if !reachableFromN[tElem.GetID()] && !reachableToN[tElem.GetID()] {
+			if !reachableFromN[tElem.ID()] && !reachableToN[tElem.ID()] {
 				res = append(res, tElem)
 				if !all {
 					return res
@@ -99,7 +98,7 @@ func GetHappensBefore(t1, t2 trace.Element, weak bool) a_hb.HappensBefore {
 //   - bool: if end is nil, return if end has been reached, otherwise return true
 func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 	inverted, weak bool) bool {
-	if end != nil && start.GetID() == end.GetID() {
+	if end != nil && start.ID() == end.ID() {
 		return true
 	}
 
@@ -127,13 +126,13 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 	for len(stack) > 0 {
 		curr := stack[len(stack)-1]
 		stack = stack[:len(stack)-1]
-		if reachable[curr.GetID()] {
+		if reachable[curr.ID()] {
 			continue
 		}
 
-		reachable[curr.GetID()] = true
+		reachable[curr.ID()] = true
 
-		if end != nil && start.GetID() == end.GetID() {
+		if end != nil && start.ID() == end.ID() {
 			return true
 		}
 
@@ -141,7 +140,7 @@ func dfsPartialOrderGraph(start, end trace.Element, reachable map[int]bool,
 			if child == nil || reflect.ValueOf(child).IsNil() {
 				continue
 			}
-			if !reachable[child.GetID()] {
+			if !reachable[child.ID()] {
 				stack = append(stack, child)
 			}
 		}

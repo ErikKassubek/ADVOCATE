@@ -4,7 +4,6 @@
 // Brief: Operations for handling found bugs
 //
 // Author: Erik Kassubek
-// Created: 2023-11-30
 //
 // License: BSD-3-Clause
 
@@ -81,10 +80,10 @@ func (this Bug) GetBugString() string {
 	paths := make([]string, 0)
 
 	for _, t := range this.TraceElement1 {
-		paths = append(paths, t.GetPos())
+		paths = append(paths, t.Pos().String())
 	}
 	for _, t := range this.TraceElement2 {
-		paths = append(paths, t.GetPos())
+		paths = append(paths, t.Pos().String())
 	}
 
 	sort.Strings(paths)
@@ -167,44 +166,27 @@ func (this Bug) ToString() string {
 		arg1Str = "send/close: "
 		arg2Str = "recv: "
 	case helper.LUnknown:
-		typeStr = "Block on routine"
+		typeStr = "Leak on routine"
 		arg1Str = "elem: "
-	case helper.LUnbufferedWith:
-		typeStr = "Block on unbuffered channel with possible partner:"
-		arg1Str = "channel: "
-		arg2Str = "partner: "
-	case helper.LUnbufferedWithout:
-		typeStr = "Block on unbuffered channel without possible partner:"
-		arg1Str = "channel: "
-	case helper.LBufferedWith:
-		typeStr = "Block on buffered channel with possible partner:"
-		arg1Str = "channel: "
-		arg2Str = "partner: "
-	case helper.LBufferedWithout:
-		typeStr = "Block on buffered channel without possible partner:"
-		arg1Str = "channel: "
+	case helper.LChan:
+		typeStr = "Leak on a channel:"
+		arg1Str = "elem: "
 	case helper.LNilChan:
-		typeStr = "Block on nil channel:"
-		arg1Str = "channel: "
-	case helper.LSelectWith:
-		typeStr = "Block on select with possible partner:"
-		arg1Str = "select: "
-		arg2Str = "partner: "
-	case helper.LSelectWithout:
-		typeStr = "Block on select without partner:"
-		arg1Str = "select: "
+		typeStr = "Leak on nil channel:"
+		arg1Str = "elem: "
+	case helper.LSelect:
+		typeStr = "Leak on select:"
+		arg1Str = "elem: "
 	case helper.LMutex:
-		typeStr = "Block on mutex:"
-		arg1Str = "mutex: "
+		typeStr = "Leak on mutex:"
+		arg1Str = "elem: "
 		arg2Str = "last: "
 	case helper.LWaitGroup:
-		typeStr = "Block on wait group:"
-		arg1Str = "waitgroup: "
+		typeStr = "Leak on wait group:"
+		arg1Str = "elem: "
 	case helper.LCond:
-		typeStr = "Block on conditional variable:"
-		arg1Str = "cond: "
-	case helper.LContext:
-		typeStr = "Block on channel or select on context"
+		typeStr = "Leak on conditional variable:"
+		arg1Str = "elem: "
 	// case helper.SNotExecutedWithPartner:
 	// 	typeStr = "Not executed select with potential partner"
 	// 	arg1Str = "select: "
@@ -220,7 +202,7 @@ func (this Bug) ToString() string {
 		if i != 0 {
 			res += ";"
 		}
-		res += elem.GetTID()
+		res += elem.String()
 	}
 
 	if arg2Str != "" {
@@ -234,7 +216,7 @@ func (this Bug) ToString() string {
 			if i != 0 {
 				res += ";"
 			}
-			res += elem.GetTID()
+			res += elem.String()
 		}
 	}
 
@@ -319,34 +301,20 @@ func ProcessBug(bugStr string) (bool, Bug, error) {
 		containsArg1 = false
 		bug.Type = helper.LUnknown
 	case "L01":
-		bug.Type = helper.LUnbufferedWith
+		bug.Type = helper.LChan
 	case "L02":
-		bug.Type = helper.LUnbufferedWithout
-		containsArg2 = false
-	case "L03":
-		bug.Type = helper.LBufferedWith
-	case "L04":
-		bug.Type = helper.LBufferedWithout
-		containsArg2 = false
-	case "L05":
 		bug.Type = helper.LNilChan
 		containsArg2 = false
-	case "L06":
-		bug.Type = helper.LSelectWith
-	case "L07":
-		bug.Type = helper.LSelectWithout
-		containsArg2 = false
-	case "L08":
+	case "L03":
+		bug.Type = helper.LSelect
+	case "L04":
 		bug.Type = helper.LMutex
-	case "L09":
+		containsArg2 = false
+	case "L05":
 		bug.Type = helper.LWaitGroup
 		containsArg2 = false
-	case "L10":
-		bug.Type = helper.LCond
-		containsArg2 = false
-	case "L11":
-		bug.Type = helper.LContext
-		containsArg2 = false
+	case "L06":
+		bug.Type = helper.LChan
 	// case "S00":
 	// 	bug.Type = SNotExecutedWithPartner
 	// 	containsArg2 = true

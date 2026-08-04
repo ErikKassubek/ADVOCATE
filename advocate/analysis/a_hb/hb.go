@@ -4,7 +4,6 @@
 // Brief: Happens before enum
 //
 // Author: Erik Kassubek
-// Created: 2025-07-08
 //
 // License: BSD-3-Clause
 

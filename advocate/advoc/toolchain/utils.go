@@ -5,7 +5,6 @@
 //    unit tests
 //
 // Author: Erik Kassubek
-// Created: 2024-10-29
 //
 // License: BSD-3-Clause
 
@@ -22,7 +21,7 @@ import (
 	"strings"
 )
 
-const buildFlags = "-gcflags=-N -l"
+const buildFlagsDefault = "-gcflags=all=-N -l"
 
 // extractTraceNumber extracts the numeric part from a trace directory name
 //

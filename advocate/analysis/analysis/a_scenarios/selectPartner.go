@@ -4,7 +4,6 @@
 // Brief: Trace analysis for detection of select cases without any possible partners
 //
 // Author: Erik Kassubek
-// Created: 2024-03-04
 //
 // License: BSD-3-Clause
 
@@ -33,7 +32,7 @@ func CheckForSelectCaseWithPartner() {
 			// 	continue
 			// }
 
-			if c1.ChanID != c2.ChanID || c1.Elem.Elem.GetTID() == c2.Elem.Elem.GetTID() || c1.Send == c2.Send {
+			if c1.ChanID != c2.ChanID || c1.Elem.Elem.ID() == c2.Elem.Elem.ID() || c1.Send == c2.Send {
 				continue
 			}
 
@@ -54,12 +53,12 @@ func CheckForSelectCaseWithPartner() {
 				a_base.SelectCases[j].PartnerFound = true
 				a_base.SelectCases[i].Partner = append(a_base.SelectCases[i].Partner, a_base.ElemWithVcVal{
 					Elem: a_base.SelectCases[j].Sel,
-					Vc:   a_base.SelectCases[j].Sel.GetVC(),
+					Vc:   a_base.SelectCases[j].Sel.GetVC(a_clock.Strong),
 					Val:  0,
 				})
 				a_base.SelectCases[j].Partner = append(a_base.SelectCases[j].Partner, a_base.ElemWithVcVal{
 					Elem: a_base.SelectCases[i].Sel,
-					Vc:   a_base.SelectCases[i].Sel.GetVC(),
+					Vc:   a_base.SelectCases[i].Sel.GetVC(a_clock.Strong),
 					Val:  0,
 				})
 			}
@@ -99,16 +98,16 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *a_clock.Ve
 
 	for casi, c := range se.GetCases() {
 
-		id := c.GetObjId()
+		id := c.ObjID()
 
 		buffered := (c.GetQSize() > 0)
-		send := (c.GetType(true) == trace.ChannelSend)
+		send := (c.Type(true) == trace.ChannelSend)
 
 		found := false
 		executed := false
 		var partner = make([]a_base.ElemWithVcVal, 0)
 
-		if casi == se.GetChosenIndex() && se.GetTPost() != 0 {
+		if casi == se.GetChosenIndex() && se.Committed() {
 			// no need to check if the channel is the chosen case
 			executed = true
 			p := se.GetPartner()
@@ -116,7 +115,7 @@ func CheckForSelectCaseWithPartnerSelect(se *trace.ElementSelect, vc *a_clock.Ve
 				found = true
 				vcTID := a_base.ElemWithVcVal{
 					Elem: p,
-					Vc:   p.GetVC().Copy(),
+					Vc:   p.GetVC(a_clock.Strong).Copy(),
 					Val:  0,
 				}
 				partner = append(partner, vcTID)
@@ -184,7 +183,7 @@ func CheckForSelectCaseWithPartnerChannel(ch trace.Element, vc *a_clock.VectorCl
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	for i, c := range a_base.SelectCases {
-		if c.PartnerFound || c.ChanID != ch.GetObjId() || c.Send == send || c.Elem.Elem.GetTID() == ch.GetTID() {
+		if c.PartnerFound || c.ChanID != ch.ObjID() || c.Send == send || c.Elem.Elem.ID() == ch.ID() {
 			continue
 		}
 
@@ -226,7 +225,7 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *a_clock.Ve
 	defer timer.Stop(timer.AnaSelWithoutPartner)
 
 	for i, c := range a_base.SelectCases {
-		if c.PartnerFound || c.ChanID != cl.GetObjId() || c.Send {
+		if c.PartnerFound || c.ChanID != cl.ObjID() || c.Send {
 			continue
 		}
 
@@ -254,11 +253,11 @@ func CheckForSelectCaseWithPartnerClose(cl *trace.ElementChannel, vc *a_clock.Ve
 // is needed to find potential communication partners for not executed
 // select cases, if the select was executed after the channel
 func RerunCheckForSelectCaseWithPartnerChannel() {
-	for _, tr := range a_base.MainTrace.GetTraces() {
-		for _, elem := range tr {
+	for _, routine := range a_base.MainTrace.GetTraces() {
+		for _, elem := range routine.Elems() {
 			if e, ok := elem.(*trace.ElementChannel); ok {
-				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(),
-					e.GetType(true) == trace.ChannelSend, e.IsBuffered())
+				CheckForSelectCaseWithPartnerChannel(e, e.GetVC(a_clock.Strong),
+					e.Type(true) == trace.ChannelSend, e.IsBuffered())
 			}
 		}
 	}

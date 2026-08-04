@@ -7,7 +7,6 @@
 //        Some of the functions start analysis functions
 //
 // Author: Erik Kassubek
-// Created: 2023-07-25
 //
 // License: BSD-3-Clause
 
@@ -31,17 +30,13 @@ import (
 func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	a_hbcalc.UpdateHBMutex(mu, alt)
 
-	routine := mu.GetRoutine()
-	id := mu.GetObjId()
+	routine := mu.Routine()
+	id := mu.ObjID()
 
-	switch mu.GetType(true) {
+	switch mu.Type(true) {
 
 	// --------- WRITE LOCK ---------
 	case trace.MutexLock:
-		if a_base.AnalysisCasesMap[flags.Leak] {
-			a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-		}
-
 		a_base.CurrentlyHoldLock[id] = mu
 		a_scenarios.IncFuzzingCounter(mu)
 
@@ -51,10 +46,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 
 	// --------- READ LOCK (RWMutex RLock) ---------
 	case trace.MutexRLock:
-		if a_base.AnalysisCasesMap[flags.Leak] {
-			a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-		}
-
 		a_base.CurrentlyHoldLock[id] = mu
 		a_scenarios.IncFuzzingCounter(mu)
 
@@ -65,10 +56,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	// --------- TRY LOCK (write) ---------
 	case trace.MutexTryLock:
 		if mu.IsSuc() {
-			if a_base.AnalysisCasesMap[flags.Leak] {
-				a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-			}
-
 			a_base.CurrentlyHoldLock[id] = mu
 			a_scenarios.IncFuzzingCounter(mu)
 
@@ -80,10 +67,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 	// --------- TRY RLOCK (read) ---------
 	case trace.MutexTryRLock:
 		if mu.IsSuc() {
-			if a_base.AnalysisCasesMap[flags.Leak] {
-				a_scenarios.AddMostRecentAcquireTotal(mu, a_vc.CurrentVC[routine])
-			}
-
 			a_base.CurrentlyHoldLock[id] = mu
 			a_scenarios.IncFuzzingCounter(mu)
 
@@ -124,6 +107,6 @@ func UpdateMutex(mu *trace.ElementMutex, alt bool) {
 		}
 
 	default:
-		log.Error("Unknown mutex operation: " + mu.ToString())
+		log.Error("Unknown mutex operation: " + mu.String())
 	}
 }

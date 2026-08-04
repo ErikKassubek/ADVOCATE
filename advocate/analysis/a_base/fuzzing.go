@@ -6,7 +6,6 @@
 // Brief: Data collected during analysis for use in fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 

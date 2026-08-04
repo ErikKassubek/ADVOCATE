@@ -4,7 +4,6 @@
 // Brief: Important paths
 //
 // Author: Erik Kassubek
-// Created: 2025-09-25
 //
 // License: BSD-3-Clause
 

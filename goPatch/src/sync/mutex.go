@@ -19,6 +19,22 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocMutex runtime.AdvocateAllocMutex
+func AdvocateAllocMutex(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	m := (*Mutex)(ptr)
+	// if m.id != 0 {
+	// 	return
+	// }
+	m.id = runtime.AdvocateAlloc("M", 0)
+}
+
+// ADVOCATE-END
+
 // A Mutex is a mutual exclusion lock.
 // The zero value for a Mutex is an unlocked mutex.
 //
@@ -38,8 +54,7 @@ type Mutex struct {
 	mu isync.Mutex
 
 	// ADVOCATE-START
-	id     uint64 // id for the mutex
-	memAdr uintptr
+	id uint64 // id for the mutex
 	// ADVOCATE-END
 }
 
@@ -58,32 +73,20 @@ func (m *Mutex) Lock() {
 	if wait {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
-		m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
 		if replayElem.Blocked {
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// Mutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a mutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id.
-	m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// AdvocatePost is called, if the mutex was locked successfully.
 	// In this case, the Lock event in the trace is updated to include
 	// this information. advocateIndex is used for AdvocatePost to find the
 	// pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexLock)
-	// ADVOCATE-END
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, false, runtime.OperationMutexLock, m.id)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexLock)
 	// ADVOCATE-END
 
 	m.mu.Lock()
@@ -105,24 +108,16 @@ func (m *Mutex) TryLock() bool {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 			runtime.BlockForever()
 		}
 	}
 
 	runtime.FuzzingFlowWait(runtime.CallerSkipMutex)
 
-	// Mutexe don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a mutex
-	// is directly in the lock function. If the id of the channel is the default
-	// value, it is set to a new, unique object id
-	m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-
 	// AdvocateMutexPre records, that a routine tries to lock a mutex.
 	// advocateIndex is used for AdvocateMutexPost to find the pre event.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexTryLock)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexTryLock)
 	// ADVOCATE-END
 
 	res := m.mu.TryLock()
@@ -146,9 +141,7 @@ func (m *Mutex) Unlock() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			m.id, m.memAdr = runtime.NewIdIfReq(m.id, m.memAdr, uintptr(unsafe.Pointer(m)))
-			_ = runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
-			runtime.StorePark(unsafe.Pointer(m), runtime.CallerSkipMutex, true, runtime.OperationReplayNever, m.id)
+			_ = runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 			runtime.BlockForever()
 		}
 	}
@@ -161,7 +154,7 @@ func (m *Mutex) Unlock() {
 	// rw mutex.
 	// Here the post is seperatly recorded to easy the implementation for
 	// the rw mutexes.
-	advocateIndex := runtime.AdvocateMutexPre(m.id, runtime.OperationMutexUnlock)
+	advocateIndex := runtime.AdvocateMutexPre(unsafe.Pointer(m), m.id, runtime.OperationMutexUnlock)
 	// ADVOCATE-END
 
 	m.mu.Unlock()

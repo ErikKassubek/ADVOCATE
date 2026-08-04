@@ -4,7 +4,6 @@
 // Brief: Implementation of Block.java from CSST paper (sea csst.go)
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 

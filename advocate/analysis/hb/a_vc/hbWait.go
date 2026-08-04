@@ -4,7 +4,6 @@
 // Brief: Update the vc for wait group
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package a_vc
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -20,17 +20,17 @@ import (
 // Parameter:
 //   - wa *trace.TraceElementWait: the wait group operation
 func UpdateHBWait(wa *trace.ElementWait) {
-	routine := wa.GetRoutine()
-	wa.SetVc(CurrentVC[routine])
-	wa.SetWVc(CurrentWVC[routine])
+	routine := wa.Routine()
+	wa.Vc(a_clock.Strong, CurrentVC[routine])
+	wa.Vc(a_clock.Weak, CurrentWVC[routine])
 
-	switch wa.GetType(true) {
+	switch wa.Type(true) {
 	case trace.WaitAdd, trace.WaitDone:
 		Change(wa)
 	case trace.WaitWait:
 		Wait(wa)
 	default:
-		err := "Unknown operation on wait group: " + wa.ToString()
+		err := "Unknown operation on wait group: " + wa.String()
 		log.Error(err)
 	}
 }
@@ -40,12 +40,12 @@ func UpdateHBWait(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Change(wa *trace.ElementWait) {
-	id := wa.GetObjId()
-	routine := wa.GetRoutine()
+	id := wa.ObjID()
+	routine := wa.Routine()
 
 	lw := a_base.LastChangeWG[id]
 	if lw != nil {
-		wa.GetVC().Sync(lw.GetVC())
+		wa.GetVC(a_clock.Strong).Sync(lw.GetVC(a_clock.Strong))
 	}
 	a_base.LastChangeWG[id] = wa
 
@@ -58,13 +58,13 @@ func Change(wa *trace.ElementWait) {
 // Parameter:
 //   - wa *TraceElementWait: The trace element
 func Wait(wa *trace.ElementWait) {
-	id := wa.GetObjId()
-	routine := wa.GetRoutine()
+	id := wa.ObjID()
+	routine := wa.Routine()
 
-	if wa.GetTPost() != 0 {
+	if wa.Committed() {
 		lc := a_base.LastChangeWG[id]
 		if lc != nil {
-			CurrentVC[routine].Sync(lc.GetVC())
+			CurrentVC[routine].Sync(lc.GetVC(a_clock.Strong))
 		}
 	}
 

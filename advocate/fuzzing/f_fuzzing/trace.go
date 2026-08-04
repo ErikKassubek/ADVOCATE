@@ -4,7 +4,6 @@
 // Brief: Function to parse the trace and get all relevant information
 //
 // Author: Erik Kassubek
-// Created: 2024-11-29
 //
 // License: BSD-3-Clause
 
@@ -47,7 +46,7 @@ func ParseTrace(tr *trace.Trace) {
 			f_gopie.CalculateRelRule1(routine)
 		}
 
-		for _, elem := range routine {
+		for _, elem := range routine.Elems() {
 
 			if control.WasCanceled() {
 				return
@@ -61,12 +60,12 @@ func ParseTrace(tr *trace.Trace) {
 				f_gopie.CalculateRelRule2AddElem(elem)
 			}
 
-			if elem.GetTPost() == 0 {
+			if !elem.Committed() {
 				continue
 			}
 
 			switch e := elem.(type) {
-			case *trace.ElementNew:
+			case *trace.ElementAlloc:
 				if f_base.FuzzingModeGFuzz {
 					parseNew(e)
 				}
@@ -109,17 +108,17 @@ func ParseTrace(tr *trace.Trace) {
 // Parse a new elem element.
 // For now only channels are considered
 // Add the corresponding info into FuzzingChannel
-func parseNew(elem *trace.ElementNew) {
+func parseNew(elem *trace.ElementAlloc) {
 	// only process channels
-	if elem.GetType(true) != trace.NewChannel {
-		log.Important("Unexpected new on: ", elem.GetType(true))
+	if elem.Type(true) != trace.NewChannel {
+		log.Important("Unexpected new on: ", elem.Type(true))
 		return
 	}
 
 	if f_base.FuzzingModeGFuzz {
 		fuzzingElem := f_gfuzz.FuzzingChannel{
-			GlobalID:  elem.GetPos(),
-			LocalID:   elem.GetObjId(),
+			GlobalID:  elem.Pos().String(),
+			LocalID:   elem.ObjID(),
 			CloseInfo: f_gfuzz.Never,
 			QSize:     elem.GetNum(),
 			MaxQCount: 0,
@@ -137,26 +136,26 @@ func parseNew(elem *trace.ElementNew) {
 func parseChannelOp(elem *trace.ElementChannel, selID int) {
 
 	if f_base.FuzzingModeGFuzz {
-		op := elem.GetType(true)
+		op := elem.Type(true)
 
 		// close -> update channelInfoTrace
 		switch op {
 		case trace.ChannelClose:
-			e := f_gfuzz.ChannelInfoTrace[elem.GetObjId()]
+			e := f_gfuzz.ChannelInfoTrace[elem.ObjID()]
 			e.CloseInfo = f_gfuzz.Always // before is always unknown
-			f_gfuzz.ChannelInfoTrace[elem.GetObjId()] = e
+			f_gfuzz.ChannelInfoTrace[elem.ObjID()] = e
 			f_gfuzz.NumberClose++
 		case trace.ChannelSend:
-			if elem.GetTPost() == 0 {
+			if !elem.Committed() {
 				return
 			}
 
 			recv := elem.GetPartner()
-			chanID := elem.GetObjId()
+			chanID := elem.ObjID()
 
 			if recv != nil {
-				sendPos := elem.GetPos()
-				recvPos := recv.GetPos()
+				sendPos := elem.Pos().String()
+				recvPos := recv.Pos().String()
 				key := sendPos + "-" + recvPos
 
 				// if receive is a select case

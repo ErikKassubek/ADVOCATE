@@ -6,7 +6,6 @@
 // Brief: analysis of traces if performed from here
 //
 // Author: Erik Kassubek, Sebastian Pohsner
-// Created: 2025-01-01
 //
 // License: BSD-3-Clause
 
@@ -51,14 +50,6 @@ func RunAnalysis(fuzzing bool) {
 	defer timer.Stop(timer.Analysis)
 
 	a_scenarios.RunAnalysisOnExitCodes(true)
-
-	if flags.OnlyAPanicAndLeak {
-		a_scenarios.CheckForStuckRoutine(true)
-
-		if !fuzzing {
-			return
-		}
-	}
 
 	if !fuzzing || f_base.UseHBInfoFuzzing {
 		RunHBAnalysis(fuzzing)
@@ -136,9 +127,9 @@ func RunHBAnalysis(fuzzing bool) {
 		// count how many operations where executed on the underlying structure
 		// do not count for operations that do not have an underlying structure
 		switch e := elem.(type) {
-		case *trace.ElementFork, *trace.ElementNew, *trace.ElementReplay, *trace.ElementRoutineEnd:
+		case *trace.ElementFork, *trace.ElementAlloc, *trace.ElementReplay, *trace.ElementRoutineEnd:
 		default:
-			a_base.AddOpsPerID(e.GetObjId())
+			a_base.AddOpsPerID(e.ObjID())
 		}
 
 		switch e := elem.(type) {
@@ -162,12 +153,12 @@ func RunHBAnalysis(fuzzing bool) {
 			ids := make([]int, 0)
 			opTypes := make([]int, 0)
 			for _, c := range cases {
-				switch c.GetType(true) {
+				switch c.Type(true) {
 				case trace.ChannelSend:
-					ids = append(ids, c.GetObjId())
+					ids = append(ids, c.ObjID())
 					opTypes = append(opTypes, 0)
 				case trace.ChannelRecv:
-					ids = append(ids, c.GetObjId())
+					ids = append(ids, c.ObjID())
 					opTypes = append(opTypes, 1)
 				}
 			}
@@ -183,7 +174,7 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		case *trace.ElementRoutineEnd:
 			a_elements.AnalyzeRoutineEnd(e)
-		case *trace.ElementNew:
+		case *trace.ElementAlloc:
 			a_elements.AnalyzeNew(e)
 		}
 
@@ -203,11 +194,6 @@ func RunHBAnalysis(fuzzing bool) {
 			}
 		}
 
-		// check for leak
-		if a_base.AnalysisCasesMap[flags.Leak] && elem.GetTPost() == 0 {
-			checkLeak(elem)
-		}
-
 		if control.WasCanceled() {
 			return
 		}
@@ -217,18 +203,9 @@ func RunHBAnalysis(fuzzing bool) {
 
 	log.Info("Finished HB analysis")
 
-	if f_base.FuzzingModeGFuzz || a_base.AnalysisCasesMap[flags.Leak] {
+	if f_base.FuzzingModeGFuzz {
 		a_scenarios.RerunCheckForSelectCaseWithPartnerChannel()
 		a_scenarios.CheckForSelectCaseWithPartner()
-	}
-
-	if control.WasCanceled() {
-		return
-	}
-
-	if a_base.AnalysisCasesMap[flags.Leak] {
-		a_scenarios.CheckForLeak()
-		a_scenarios.CheckForStuckRoutine(false)
 	}
 
 	if control.WasCanceled() {
@@ -261,37 +238,5 @@ func RunHBAnalysis(fuzzing bool) {
 
 	if a_base.AnalysisCasesMap[flags.UnlockBeforeLock] {
 		a_scenarios.CheckForUnlockBeforeLock()
-	}
-}
-
-// checkLeak checks for a given element if it leaked (has no tPost). If so,
-// it will look for a possible way to resolve the leak
-//
-// Parameter:
-//   - elem TraceElement: Element to check
-func checkLeak(elem trace.Element) {
-	switch e := elem.(type) {
-	case *trace.ElementChannel:
-		a_scenarios.CheckForLeakChannelStuck(e, a_vc.CurrentVC[e.GetRoutine()])
-	case *trace.ElementMutex:
-		a_scenarios.CheckForLeakMutex(e)
-	case *trace.ElementWait:
-		a_scenarios.CheckForLeakWait(e)
-	case *trace.ElementSelect:
-		timer.Start(timer.AnaLeak)
-		cases := e.GetCases()
-		ids := make([]int, 0)
-		buffered := make([]bool, 0)
-		opTypes := make([]trace.OperationType, 0)
-		for _, c := range cases {
-			ids = append(ids, c.GetObjId())
-			opTypes = append(opTypes, c.GetType(true))
-			buffered = append(buffered, c.IsBuffered())
-
-		}
-		timer.Stop(timer.AnaLeak)
-		a_scenarios.CheckForLeakSelectStuck(e, ids, buffered, a_vc.CurrentVC[e.GetRoutine()], opTypes)
-	case *trace.ElementCond:
-		a_scenarios.CheckForLeakCond(e)
 	}
 }

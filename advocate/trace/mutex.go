@@ -4,7 +4,6 @@
 // Brief: Struct and functions for mutex operations in the trace
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -17,71 +16,64 @@ import (
 	"strconv"
 
 	"advocate/analysis/hb/a_clock"
-	"advocate/utils/consts"
 )
+
+// ========================================================
+// MARK: Data
+// ========================================================
 
 // ElementMutex is a trace element for a mutex
 //
 // Fields:
-//   - id: id of the element, should never be changed
-//   - index int: Index in the routine
-//   - routine int: The routine id
-//   - tPre int: The timestamp at the start of the event
-//   - tPost int: The timestamp at the end of the event
 //   - objId int: The id of the mutex
+//   - tReq int: The timestamp at the start of the event
+//   - tCom int: The timestamp at the end of the event
+//   - pos position: code position
+//   - ci *concInfo: concurrency info
 //   - rw bool: Whether the mutex is a read-write mutex
 //   - op ObjectType: The operation on the mutex
 //   - suc bool: Whether the operation was successful (only for trylock else always true)
-//   - file string: The file of the mutex operation in the code
-//   - line int: The line of the mutex operation in the code
-//   - vc *clock.VectorClock: The vector clock of the operation
-//   - wVc *clock.VectorClock: The weak vector clock of the operation
-//   - numberConcurrent: number of concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentWeak: number of weak concurrent elements in the trace, -1 if not calculated
-//   - numberConcurrentSame int: number of concurrent elements in the trace on the same element, -1 if not calculated
-//   - numberConcurrentWeakSame int: number of weak concurrent elements in the trace on the same element, -1 if not calculated
+//   - function *ElementFunc: the function the operation is in
 type ElementMutex struct {
-	id                       int
-	index                    int
-	routine                  int
-	tPre                     int
-	tPost                    int
-	objId                    int
-	rw                       bool
-	op                       OperationType
-	suc                      bool
-	file                     string
-	line                     int
-	vc                       *a_clock.VectorClock
-	wVc                      *a_clock.VectorClock
-	numberConcurrent         int
-	numberConcurrentWeak     int
-	numberConcurrentSame     int
-	numberConcurrentWeakSame int
+	ElementBase
+
+	objId    int
+	tReq     int
+	tCom     int
+	pos      Position
+	ci       *concInfo
+	rw       bool
+	op       OperationType
+	suc      bool
+	function *ElementFunc
 }
+
+// ========================================================
+// MARK: Constructor
+// ========================================================
 
 // AddTraceElementMutex adds a new mutex element to the main trace
 //
 // Parameter:
 //   - routine int: The routine id
-//   - tPre string: The timestamp at the start of the event
-//   - tPost string: The timestamp at the end of the event
+//   - tReq string: The timestamp at the start of the event
+//   - tCom string: The timestamp at the end of the event
 //   - id string: The id of the mutex
 //   - rw string: Whether the mutex is a read-write mutex
 //   - opM string: The operation on the mutex
 //   - suc string: Whether the operation was successful (only for trylock else always true)
 //   - pos string: The position of the mutex operation in the code
-func (this *Trace) AddTraceElementMutex(routine int, tPre string,
-	tPost string, id string, rw string, opM string, suc string,
+func (this *Trace) AddTraceElementMutex(routine int, tReq string,
+	tCom string, id string, rw string, opM string, suc string,
 	pos string) error {
-	tPreInt, err := strconv.Atoi(tPre)
+	tReqInt, err := strconv.Atoi(tReq)
 	if err != nil {
-		return errors.New("tPre is not an integer")
+		return errors.New("tReq is not an integer")
 	}
 
-	tPostInt, err := strconv.Atoi(tPost)
+	tComInt, err := strconv.Atoi(tCom)
 	if err != nil {
-		return errors.New("tPost is not an integer")
+		return errors.New("tCom is not an integer")
 	}
 
 	idInt, err := strconv.Atoi(id)
@@ -123,112 +115,365 @@ func (this *Trace) AddTraceElementMutex(routine int, tPre string,
 	}
 
 	elem := ElementMutex{
-		index:                    this.NumberElemInRoutine(routine),
-		routine:                  routine,
-		tPre:                     tPreInt,
-		tPost:                    tPostInt,
-		objId:                    idInt,
-		rw:                       rwBool,
-		op:                       opMInt,
-		suc:                      sucBool,
-		file:                     file,
-		line:                     line,
-		vc:                       nil,
-		wVc:                      nil,
-		numberConcurrent:         -1,
-		numberConcurrentWeak:     -1,
-		numberConcurrentSame:     -1,
-		numberConcurrentWeakSame: -1,
+		ElementBase: this.newElementBase(routine),
+		tReq:        tReqInt,
+		tCom:        tComInt,
+		objId:       idInt,
+		rw:          rwBool,
+		op:          opMInt,
+		suc:         sucBool,
+		pos:         newPosition(file, line),
+		ci:          newConcInfo(),
+		function:    getLastCall(routine),
 	}
 
 	this.AddElement(&elem)
 	return nil
 }
 
-// GetObjId returns the ID of the primitive on which the operation was executed
+// ========================================================
+// MARK: ID
+// ========================================================
+
+// ObjID returns the ID of the primitive on which the operation was executed
 //
 // Returns:
 //   - int: The id of the element
-func (this *ElementMutex) GetObjId() int {
+func (this *ElementMutex) ObjID() int {
 	return this.objId
 }
 
-// GetRoutine returns the routine ID of the element.
-//
-// Returns:
-//   - int: The routine of the element
-func (this *ElementMutex) GetRoutine() int {
-	return this.routine
-}
+// ========================================================
+// MARK: Timestamps
+// ========================================================
 
-// GetTPre returns the tPre of the element.
+// T returns the t of the element
+//
+// Parameter:
+//   - t timeType: timer type
 //
 // Returns:
 //   - int: The tPre of the element
-func (this *ElementMutex) GetTPre() int {
-	return this.tPre
-}
-
-// GetTPost returns the tPost of the element.
-//
-// Returns:
-//   - int: The tPost of the element
-func (this *ElementMutex) GetTPost() int {
-	return this.tPost
-}
-
-// GetTSort returns the timer value, that is used for the sorting of the trace
-//
-// Returns:
-//   - int: The timer of the element
-func (this *ElementMutex) GetTSort() int {
-	if this.tPost == 0 {
-		// add at the end of the trace
-		return math.MaxInt
+func (this *ElementMutex) T(t timeType) int {
+	switch t {
+	case Request:
+		return this.tReq
+	case Commit:
+		return this.tCom
+	case Sorting:
+		if this.tCom == 0 {
+			return math.MaxInt
+		}
+		return this.tCom
 	}
-	return this.tPost
+
+	return this.tCom
 }
 
-// GetPos returns the position of the operation in the form [file]:[line].
+// SetT sets the tPre and tPost of the element
+//
+// Parameter:
+//   - t timeType: type of time to set
+//   - time int: The tPre and tPost of the element
+func (this *ElementMutex) SetT(t timeType, time int) {
+	switch t {
+	case Request:
+		this.tReq = time
+		if this.tCom != 0 && this.tCom < time {
+			this.tCom = time
+		}
+	case Commit:
+		this.tCom = time
+		if time != 0 && this.tReq > time {
+			this.tReq = time
+		}
+	case Sorting, Both:
+		this.SetT(Request, time)
+		this.SetT(Commit, time)
+	}
+}
+
+// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
+// value was not 0
+//
+// Parameter:
+//   - tSort int: The timer of the element
+func (this *ElementMutex) SetTWithoutNotExecuted(tSort int) {
+	this.SetT(Request, tSort)
+	if this.tCom != 0 {
+		this.tCom = tSort
+	}
+}
+
+// Committed returns if the operation was committed (tPost != 0)
 //
 // Returns:
-//   - string: The position of the element
-func (this *ElementMutex) GetPos() string {
-	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
+//   - bool: true if committed, false if not
+func (this *ElementMutex) Committed() bool {
+	return this.tCom != 0
 }
 
-// GetReplayID returns the replay id of the element
+// ========================================================
+// MARK: Position
+// ========================================================
+
+// Pos returns the position of the operation in the form [file]:[line].
 //
 // Returns:
-//   - The replay id
-func (this *ElementMutex) GetReplayID() string {
-	return fmt.Sprintf("%d:%s:%d", this.routine, this.file, this.line)
+//   - position: the position
+func (this *ElementMutex) Pos() Position {
+	return this.pos
 }
 
-// GetFile returns the file where the operation represented by the element was executed
+// File returns the file where the operation represented by the element was executed
 //
 // Returns:
 //   - The file of the element
-func (this *ElementMutex) GetFile() string {
-	return this.file
+func (this *ElementMutex) File() string {
+	return this.pos.file
 }
 
-// GetLine returns the line where the operation represented by the element was executed
+// Line returns the line where the operation represented by the element was executed
 //
 // Returns:
 //   - The line of the element
-func (this *ElementMutex) GetLine() int {
-	return this.line
+func (this *ElementMutex) Line() int {
+	return this.pos.line
 }
 
-// GetTID returns the tID of the element.
-// The tID is a string of form "M@[file]:[line]@[tPre]
+// ========================================================
+// MARK: Index
+// ========================================================
+
+// Routine returns the routine ID of the element.
 //
 // Returns:
-//   - string: The tID of the element
-func (this *ElementMutex) GetTID() string {
-	return "M@" + this.GetPos() + "@" + strconv.Itoa(this.tPre)
+//   - int: The routine of the element
+func (this *ElementMutex) Routine() int {
+	return this.routine
 }
+
+// TraceIndex returns trace local index of the element in the trace
+//
+// Returns:
+//   - int: the routine id of the element
+//   - int: The trace local index of the element in the trace
+func (this *ElementMutex) TraceIndex() (int, int) {
+	return this.routine, this.index
+}
+
+// ========================================================
+// MARK: Operation
+// ========================================================
+
+// Type returns the object type
+//
+// Parameter:
+//   - operation bool: if true get the operation code, otherwise only the primitive code
+//
+// Returns:
+//   - ObjectType: the object type
+func (this *ElementMutex) Type(operation bool) OperationType {
+	if !operation {
+		return Mutex
+	}
+
+	return this.op
+}
+
+// ========================================================
+// MARK: Equal
+// ========================================================
+
+// IsEqual checks if an trace element is equal to this element
+//
+// Parameter:
+//   - elem TraceElement: The element to check against
+//
+// Returns:
+//   - bool: true if it is the same operation, false otherwise
+func (this *ElementMutex) IsEqual(elem Element) bool {
+	return this.objId == elem.ObjID() && this.id == elem.ID()
+}
+
+// IsSameElement returns checks if the element on which the at and elem
+// where performed are the same
+//
+// Parameter:
+//   - elem Element: the element to compare against
+//
+// Returns:
+//   - bool: true if at and elem are operations on the same mutex
+func (this *ElementMutex) IsSameElement(elem Element) bool {
+	if elem.Type(false) != Mutex {
+		return false
+	}
+
+	return this.objId == elem.ObjID()
+}
+
+// ========================================================
+// MARK: String
+// ========================================================
+
+// String returns the simple string representation of the element
+//
+// Returns:
+//   - string: The simple string representation of the element
+func (this *ElementMutex) String() string {
+	res := "M,"
+	res += strconv.Itoa(this.tReq) + "," + strconv.Itoa(this.tCom) + ","
+	res += strconv.Itoa(this.objId) + ","
+
+	if this.rw {
+		res += "R,"
+	} else {
+		res += "-,"
+	}
+
+	res += string(string(this.op)[1])
+
+	if this.suc {
+		res += ",t"
+	} else {
+		res += ",f"
+	}
+	res += "," + this.Pos().String()
+	return res
+}
+
+// String returns the simple string representation of the element with leading routine
+//
+// Returns:
+//   - string: The simple string representation of the element with leading routine
+func (this *ElementMutex) StringDebug() string {
+	routine := fmt.Sprintf("%4d", this.Routine())
+	if this.ElementBase.init {
+		routine = "   *"
+	}
+	return fmt.Sprintf("%s -> %s", routine, this.String())
+}
+
+// ========================================================
+// MARK: Function
+// ========================================================
+
+func (this *ElementMutex) Function() *ElementFunc {
+	return this.function
+}
+
+// ========================================================
+// MARK: Concurrent
+// ========================================================
+
+// Vc sets the vector clock
+//
+// Parameter:
+//   - weak bool: set the weak wv
+//   - cl *clock.VectorClock: the vector clock
+func (this *ElementMutex) Vc(weak a_clock.VcType, cl *a_clock.VectorClock) {
+	this.ci.setVC(weak, cl)
+}
+
+// GetVC returns the vector clock of the element
+//
+// Parameter:
+//   - weak bool: get the weak
+//
+// Returns:
+//   - VectorClock: The vector clock of the element
+func (this *ElementMutex) GetVC(weak a_clock.VcType) *a_clock.VectorClock {
+	return this.ci.getVC(weak)
+}
+
+// NumberConcurrent returns the number of elements concurrent to the element
+// If not set, it returns -1
+//
+// Parameter:
+//   - weak bool: get number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+//
+// Returns:
+//   - number of concurrent element, or -1
+func (this *ElementMutex) NumberConcurrent(weak, sameElem bool) int {
+	return this.ci.GetNumberConcurrent(weak, sameElem)
+}
+
+// SetNumberConcurrent sets the number of concurrent elements
+//
+// Parameter:
+//   - c int: the number of concurrent elements
+//   - weak bool: return number of weak concurrent
+//   - sameElem bool: only operation on the same variable
+func (this *ElementMutex) SetNumberConcurrent(c int, weak, sameElem bool) {
+	this.ci.SetNumberConcurrent(c, weak, sameElem)
+}
+
+// ========================================================
+// MARK: Replay
+// ========================================================
+
+// ReplayID returns the replay id of the element
+//
+// Returns:
+//   - The replay id
+func (this *ElementMutex) ReplayID() string {
+	return fmt.Sprintf("%d:%s:%d", this.routine, this.pos.file, this.pos.line)
+}
+
+// ========================================================
+// MARK: Copy
+// ========================================================
+
+// Copy the element
+//
+// Parameter:
+//   - mapping map[string]Element: map containing all already copied elements.
+//   - keep bool: if true, keep vc and order information
+//
+// Returns:
+//   - TraceElement: The copy of the element
+func (this *ElementMutex) Copy(mapping map[int]Element, keep bool) Element {
+	if !keep {
+		return &ElementMutex{
+			ElementBase: this.ElementBase.Copy(),
+			tReq:        0,
+			tCom:        0,
+			objId:       this.objId,
+			rw:          this.rw,
+			op:          this.op,
+			suc:         true,
+			pos:         this.pos.copy(),
+			ci:          newConcInfo(),
+			function:    this.function.Copy(mapping, keep).(*ElementFunc),
+		}
+	}
+
+	return &ElementMutex{
+		ElementBase: this.ElementBase.Copy(),
+		tReq:        this.tReq,
+		tCom:        this.tCom,
+		objId:       this.objId,
+		rw:          this.rw,
+		op:          this.op,
+		suc:         this.suc,
+		pos:         this.pos.copy(),
+		ci:          this.ci.copy(),
+		function:    this.function.Copy(mapping, keep).(*ElementFunc),
+	}
+}
+
+// ========================================================
+// MARK: Valid
+// ========================================================
+
+func (this *ElementMutex) IsValid() bool {
+	return this != nil
+}
+
+// ========================================================
+// MARK: Others
+// ========================================================
 
 // IsLock returns if the element is a lock operation
 //
@@ -236,53 +481,6 @@ func (this *ElementMutex) GetTID() string {
 //   - bool: If the element is a lock operation
 func (this *ElementMutex) IsLock() bool {
 	return this.op == MutexLock || this.op == MutexRLock || this.op == MutexTryLock || this.op == MutexTryRLock
-}
-
-// SetVc sets the vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementMutex) SetVc(vc *a_clock.VectorClock) {
-	this.vc = vc.Copy()
-}
-
-// SetWVc sets the weak vector clock
-//
-// Parameter:
-//   - vc *clock.VectorClock: the vector clock
-func (this *ElementMutex) SetWVc(vc *a_clock.VectorClock) {
-	this.wVc = vc.Copy()
-}
-
-// GetVC returns the vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementMutex) GetVC() *a_clock.VectorClock {
-	return this.vc
-}
-
-// GetWVC returns the weak vector clock of the element
-//
-// Returns:
-//   - VectorClock: The vector clock of the element
-func (this *ElementMutex) GetWVC() *a_clock.VectorClock {
-	return this.wVc
-}
-
-// GetType returns the object type
-//
-// Parameter:
-//   - operation bool: if true get the operation code, otherwise only the primitive code
-//
-// Returns:
-//   - ObjectType: the object type
-func (this *ElementMutex) GetType(operation bool) OperationType {
-	if !operation {
-		return Mutex
-	}
-
-	return this.op
 }
 
 // IsSuc returns whether the locking was successful of the element
@@ -299,223 +497,4 @@ func (this *ElementMutex) IsSuc() bool {
 //   - s bool: For trylock wether it was successful, otherwise always true
 func (this *ElementMutex) SetSuc(s bool) {
 	this.suc = s
-}
-
-// IsEqual checks if an trace element is equal to this element
-//
-// Parameter:
-//   - elem TraceElement: The element to check against
-//
-// Returns:
-//   - bool: true if it is the same operation, false otherwise
-func (this *ElementMutex) IsEqual(elem Element) bool {
-	return this.routine == elem.GetRoutine() && this.ToString() == elem.ToString()
-}
-
-// IsSameElement returns checks if the element on which the at and elem
-// where performed are the same
-//
-// Parameter:
-//   - elem Element: the element to compare against
-//
-// Returns:
-//   - bool: true if at and elem are operations on the same mutex
-func (this *ElementMutex) IsSameElement(elem Element) bool {
-	if elem.GetType(false) != Mutex {
-		return false
-	}
-
-	return this.objId == elem.GetObjId()
-}
-
-// GetTraceIndex returns trace local index of the element in the trace
-//
-// Returns:
-//   - int: the routine id of the element
-//   - int: The trace local index of the element in the trace
-func (this *ElementMutex) GetTraceIndex() (int, int) {
-	return this.routine, this.index
-}
-
-// SetT sets the tPre and tPost of the element
-//
-// Parameter:
-//   - time int: The tPre and tPost of the element
-func (this *ElementMutex) SetT(time int) {
-	this.tPre = time
-	this.tPost = time
-}
-
-// SetTPre sets the tPre of the element.
-//
-// Parameter:
-//   - tPre int: The tPre of the element
-func (this *ElementMutex) SetTPre(tPre int) {
-	this.tPre = tPre
-	if this.tPost != 0 && this.tPost < tPre {
-		this.tPost = tPre
-	}
-}
-
-// SetTSort sets the timer, that is used for the sorting of the trace
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementMutex) SetTSort(tSort int) {
-	this.SetTPre(tSort)
-	this.tPost = tSort
-}
-
-// SetTWithoutNotExecuted set the timer, that is used for the sorting of the trace, only if the original
-// value was not 0
-//
-// Parameter:
-//   - tSort int: The timer of the element
-func (this *ElementMutex) SetTWithoutNotExecuted(tSort int) {
-	this.SetTPre(tSort)
-	if this.tPost != 0 {
-		this.tPost = tSort
-	}
-}
-
-// ToString returns the simple string representation of the element
-//
-// Returns:
-//   - string: The simple string representation of the element
-func (this *ElementMutex) ToString() string {
-	res := "M,"
-	res += strconv.Itoa(this.tPre) + "," + strconv.Itoa(this.tPost) + ","
-	res += strconv.Itoa(this.objId) + ","
-
-	if this.rw {
-		res += "R,"
-	} else {
-		res += "-,"
-	}
-
-	res += string(string(this.op)[1])
-
-	if this.suc {
-		res += ",t"
-	} else {
-		res += ",f"
-	}
-	res += "," + this.GetPos()
-	return res
-}
-
-// GetID returns the trace id
-//
-// Returns:
-//   - int: the trace id
-func (this *ElementMutex) GetID() int {
-	return this.id
-}
-
-// GetTraceID sets the trace id
-//
-// Parameter:
-//   - ID int: the trace id
-func (this *ElementMutex) setID(ID int) {
-	this.id = ID
-}
-
-// Copy the element
-//
-// Parameter:
-//   - mapping map[string]Element: map containing all already copied elements.
-//   - keep bool: if true, keep vc and order information
-//
-// Returns:
-//   - TraceElement: The copy of the element
-func (this *ElementMutex) Copy(mapping map[string]Element, keep bool) Element {
-	if !keep {
-		return &ElementMutex{
-			id:                       this.id,
-			index:                    0,
-			routine:                  this.routine,
-			tPre:                     0,
-			tPost:                    0,
-			objId:                    this.objId,
-			rw:                       this.rw,
-			op:                       this.op,
-			suc:                      true,
-			file:                     this.file,
-			line:                     this.line,
-			vc:                       nil,
-			wVc:                      nil,
-			numberConcurrent:         0,
-			numberConcurrentWeak:     0,
-			numberConcurrentSame:     0,
-			numberConcurrentWeakSame: 0,
-		}
-	}
-
-	return &ElementMutex{
-		id:                       this.id,
-		index:                    this.index,
-		routine:                  this.routine,
-		tPre:                     this.tPre,
-		tPost:                    this.tPost,
-		objId:                    this.objId,
-		rw:                       this.rw,
-		op:                       this.op,
-		suc:                      this.suc,
-		file:                     this.file,
-		line:                     this.line,
-		vc:                       this.vc.Copy(),
-		wVc:                      this.wVc.Copy(),
-		numberConcurrent:         this.numberConcurrent,
-		numberConcurrentWeak:     this.numberConcurrentWeak,
-		numberConcurrentSame:     this.numberConcurrentSame,
-		numberConcurrentWeakSame: this.numberConcurrentWeakSame,
-	}
-}
-
-func (this *ElementMutex) IsValid() bool {
-	return this != nil
-}
-
-// GetNumberConcurrent returns the number of elements concurrent to the element
-// If not set, it returns -1
-//
-// Parameter:
-//   - weak bool: get number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-//
-// Returns:
-//   - number of concurrent element, or -1
-func (this *ElementMutex) GetNumberConcurrent(weak, sameElem bool) int {
-	if weak {
-		if sameElem {
-			return this.numberConcurrentWeakSame
-		}
-		return this.numberConcurrentWeak
-	}
-	if sameElem {
-		return this.numberConcurrentSame
-	}
-	return this.numberConcurrent
-}
-
-// SetNumberConcurrent sets the number of concurrent elements
-//
-// Parameter:
-//   - c int: the number of concurrent elements
-//   - weak bool: return number of weak concurrent
-//   - sameElem bool: only operation on the same variable
-func (this *ElementMutex) SetNumberConcurrent(c int, weak, sameElem bool) {
-	if weak {
-		if sameElem {
-			this.numberConcurrentWeakSame = c
-		} else {
-			this.numberConcurrentWeak = c
-		}
-	} else {
-		if sameElem {
-			this.numberConcurrentSame = c
-		} else {
-			this.numberConcurrent = c
-		}
-	}
 }

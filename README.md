@@ -22,19 +22,14 @@ AdvocateGo tries to detect the following situations:
 - P03: "Possible Negative WaitGroup cCounter",
 - P04: "Possible unlock of not locked mutex",
 - P05: "Possible Cyclic Deadlock with Mutex",
-- P06: "Possible Cyclic Deadlock with Mutex and Channel", 
-- L00: "Leak",
-- L01: "Leak on unbuffered channel with possible partner",
-- L02: "Leak on unbuffered channel without possible partner",
-- L03: "Leak on buffered Channel with possible partner",
-- L04: "Leak on buffered Channel without possible partner",
-- L05: "Leak on nil channel",
-- L06: "Leak on select with possible partner",
-- L07: "Leak on select without possible partner",
-- L08: "Leak on sync.Mutex",
-- L09: "Leak on sync.WaitGroup",
-- L10: "Leak on sync.Cond",
-- L11: "Leak on channel or select on context",
+- P06: "Possible Cyclic Deadlock with Mutex and Channel",
+- L00: "Leak with unknown cause",
+- L01: "Leak on a channel",
+- L02: "Leak on nil channel",
+- L03: "Leak on select",
+- L04: "Leak on sync.Mutex",
+- L05: "Leak on sync.WaitGroup",
+- L16: "Leak on sync.Cond",
 
 Additionally it is able to record and deterministically replay
 executions of concurrent GO programs.
@@ -52,13 +47,11 @@ Advocate provides 4 different modes:
 
 For an explanation on how to use advocate, see [here](./doc/usage.md).
 
-
 > [!IMPORTANT]
 > advocate is implemented for go version 1.25.
 > Make sure, that the program does not choose another version/toolchain and is compatible with go 1.25.
-> The output `package advocate is not in std ` or similar indicates a problem with the used version.
+> The output `package advocate is not in std` or similar indicates a problem with the used version.
 > It can help to shorten the go version number in the go.mod file of the analyzed program from go 1.25.x to go 1.25.
-
 
 ## Documentation
 

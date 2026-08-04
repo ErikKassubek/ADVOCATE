@@ -4,7 +4,6 @@
 // Brief: Functions to read in a program an extract all relevant operations
 //
 // Author: Erik Kassubek
-// Created: 2024-06-26
 //
 // License: BSD-3-Clause
 

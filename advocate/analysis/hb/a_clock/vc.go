@@ -4,7 +4,6 @@
 // Brief: Struct and functions of vector clocks vc
 //
 // Author: Erik Kassubek
-// Created: 2023-07-25
 //
 // License: BSD-3-Clause
 
@@ -16,6 +15,13 @@ import (
 	"fmt"
 	"runtime"
 	"strconv"
+)
+
+type VcType int
+
+const (
+	Weak VcType = iota
+	Strong
 )
 
 // VectorClock is a vector clock

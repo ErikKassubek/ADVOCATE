@@ -4,7 +4,6 @@
 // Brief: Command line flags
 //
 // Author: Erik Kassubek
-// Created: 2025-08-26
 //
 // License: BSD-3-Clause
 
@@ -13,6 +12,7 @@ package flags
 // Paths and names
 var (
 	ProgPath  string
+	RootPath  string
 	TracePath string
 
 	ProgName string
@@ -49,6 +49,7 @@ var (
 	MeasureTime      bool
 	CreateStatistics bool
 	NotExecuted      bool
+	CheckBenign      bool
 )
 
 // memory and panic

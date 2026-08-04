@@ -4,7 +4,6 @@
 // Brief: Functions to check if all program elements have been executed at least once
 //
 // Author: Erik Kassubek
-// Created: 2024-06-26
 //
 // License: BSD-3-Clause
 

@@ -4,7 +4,6 @@
 // Brief: The actual timer
 //
 // Author: Erik Kassubek
-// Created: 2025-02-25
 //
 // License: BSD-3-Clause
 

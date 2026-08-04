@@ -10,7 +10,9 @@
 
 package runtime
 
-import "internal/runtime/atomic"
+import (
+	"internal/runtime/atomic"
+)
 
 var advocateCurrentRoutineID atomic.Uint64
 
@@ -62,5 +64,6 @@ func GetAdvocateObjectID() uint64 {
 		panic("Overflow Error: Tow many objects in one routine. Max: 999999999")
 	}
 	id := routine.id*1000000000 + routine.maxObjectId
+
 	return id
 }

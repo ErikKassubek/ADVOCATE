@@ -4,7 +4,6 @@
 // Brief: Cleanup traces and files
 //
 // Author: Erik Kassubek
-// Created: 2025-02-28
 //
 // License: BSD-3-Clause
 

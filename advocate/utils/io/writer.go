@@ -4,7 +4,6 @@
 // Brief: Write the internal trace into files
 //
 // Author: Erik Kassubek
-// Created: 2023-12-01
 //
 // License: BSD-3-Clause
 
@@ -63,26 +62,26 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 			}
 			defer file.Close()
 
-			// write trace
-			trace := traceToWrite.GetRoutineTrace(i)
+			// write rout
+			rout := traceToWrite.GetRoutineTrace(i)
 
 			// sort trace by tPre
-			sort.Slice(trace, func(i, j int) bool {
-				return trace[i].GetTPre() < trace[j].GetTPre()
+			sort.Slice(rout, func(i, j int) bool {
+				return rout.At(i).T(trace.Request) < rout.At(j).T(trace.Request)
 			})
 
-			for index, element := range trace {
+			for index, element := range rout.Elems() {
 				if !replay || !isReplay(element) {
 					continue
 				}
-				if element.GetTPost() == 0 {
-					element.SetTSort(math.MaxInt)
+				if !element.Committed() {
+					element.SetT(trace.Sorting, math.MaxInt)
 				}
-				elementString := element.ToString()
+				elementString := element.String()
 				if _, err := file.WriteString(elementString); err != nil {
 					log.Error("Error in writing trace to file. Could not write string: ", err.Error())
 				}
-				if index < len(trace)-1 {
+				if index < rout.Len()-1 {
 					if _, err := file.WriteString("\n"); err != nil {
 						log.Error("Error in writing trace to file. Could not wrote string: ", err.Error())
 					}
@@ -111,7 +110,7 @@ func WriteTrace(traceToWrite *trace.Trace, path string, replay, control bool) er
 // Returns:
 //   - true if relevant for replay, false if ignored in replay
 func isReplay(element trace.Element) bool {
-	t := element.GetType(false)
+	t := element.Type(false)
 	return !(t == trace.New || t == trace.End)
 }
 

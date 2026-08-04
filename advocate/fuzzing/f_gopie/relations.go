@@ -4,7 +4,6 @@
 // Brief: Calculate the relation for goPie
 //
 // Author: Erik Kassubek
-// Created: 2025-03-24
 //
 // License: BSD-3-Clause
 
@@ -31,18 +30,18 @@ import (
 // CalculateRelRule1 store the rule 1 information for each element in a routine trace
 //
 // Parameter:
-//   - routineTrace []analysis.TraceElement: the list of elems in the same trace
-func CalculateRelRule1(routineTrace []trace.Element) {
-	if len(routineTrace) < 2 {
+//   - routineTrace trace.Routine: the list of elems in the same trace
+func CalculateRelRule1(routineTrace *trace.Routine) {
+	if routineTrace.Len() < 2 {
 		return
 	}
 
-	for i := 0; i < len(routineTrace)-1; i++ {
-		elem1 := routineTrace[i]
+	for i := 0; i < routineTrace.Len()-1; i++ {
+		elem1 := routineTrace.At(i)
 		if !isGoPieElem(elem1) {
 			continue
 		}
-		elem2 := routineTrace[i+1]
+		elem2 := routineTrace.At(i + 1)
 		if !isGoPieElem(elem2) {
 			continue
 		}
@@ -70,7 +69,7 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 		return
 	}
 
-	id := elem.GetObjId()
+	id := elem.ObjID()
 	if _, ok := ElemsByID[id]; !ok {
 		ElemsByID[id] = make([]trace.Element, 0)
 	}
@@ -84,14 +83,14 @@ func CalculateRelRule2AddElem(elem trace.Element) {
 func CalculateRelRule2And4() {
 	for _, elems := range ElemsByID {
 		sort.Slice(elems, func(i, j int) bool {
-			return elems[i].GetTSort() < elems[j].GetTSort()
+			return elems[i].T(trace.Sorting) < elems[j].T(trace.Sorting)
 		})
 
 		for i := 0; i < len(elems)-1; i++ {
 			elem1 := elems[i]
 			for j := i + 1; j < len(elems)-1; j++ {
 				elem2 := elems[j]
-				if elem1.GetRoutine() != elem2.GetRoutine() {
+				if elem1.Routine() != elem2.Routine() {
 					if _, ok := rel2[elem1]; !ok {
 						rel2[elem1] = make(map[trace.Element]struct{})
 					}
@@ -165,7 +164,7 @@ func CalculateRelRule3() {
 // Returns:
 //   - bool: true if elem should be used in chains, false if not
 func isGoPieElem(elem trace.Element) bool {
-	elemTypeShort := elem.GetType(false)
+	elemTypeShort := elem.Type(false)
 
 	if flags.FuzzingMode == f_base.GoPie {
 		validTypes := []trace.OperationType{

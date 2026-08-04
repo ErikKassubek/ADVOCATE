@@ -4,7 +4,6 @@
 // Brief: Trace analysis for routine blocks
 //
 // Author: Erik Kassubek
-// Created: 2024-01-28
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package a_scenarios
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/trace"
 	"advocate/utils/helper"
 	"advocate/utils/results/results"
 	"advocate/utils/types"
@@ -20,7 +20,6 @@ import (
 func Blocked() error {
 	tr := &a_base.MainTrace
 	blocked := tr.GetBlocked()
-	ref := tr.GetObjAware()
 
 	// blocked routines
 	b := make(map[int]struct{})
@@ -37,8 +36,15 @@ func Blocked() error {
 
 		for routB := range b {
 			for _, routL := range l {
-				if types.Contains(ref[routL], routB) {
-					r = append(r, routB)
+				found := false
+				for _, blockedB := range tr.GetResourcesPerRout(routB) {
+					if types.Contains(tr.GetResourcesPerRout(routL), blockedB) {
+						r = append(r, routB)
+						found = true
+						break
+					}
+				}
+				if found {
 					break
 				}
 			}
@@ -54,7 +60,7 @@ func Blocked() error {
 		}
 	}
 
-	cyclic := checkCyclic(b, ref)
+	cyclic := checkCyclic(b, tr.GetResourcesRout())
 
 	for rout := range cyclic {
 		delete(b, rout)
@@ -62,20 +68,24 @@ func Blocked() error {
 
 	reportBlocking(cyclic, helper.ADeadlock)
 	reportBlocking(b, helper.ABlocking)
+	reportLeak(l)
 
 	return nil
 }
 
 // check for cyclic dependencies
-func checkCyclic(b map[int]struct{}, ref map[int][]int) map[int]struct{} {
+func checkCyclic(b map[int]struct{}, res map[int][]*trace.Resource) map[int]struct{} {
 	graph := map[int][]int{}
 	selfLoop := map[int]bool{}
 
 	for rID := range b {
-		for _, rID2 := range ref[rID] {
-			graph[rID] = append(graph[rID], rID2)
-			if rID == rID2 {
-				selfLoop[rID] = true
+		for rID2 := range b {
+			if types.HasCommonElement(res[rID], res[rID2]) {
+
+				graph[rID] = append(graph[rID], rID2)
+				if rID == rID2 {
+					selfLoop[rID] = true
+				}
 			}
 		}
 	}
@@ -126,8 +136,9 @@ func checkCyclic(b map[int]struct{}, ref map[int][]int) map[int]struct{} {
 
 			// must be closed
 			for r := range scc {
-				for _, r2 := range ref[r] {
-					if _, ok := scc[r2]; !ok {
+				neigh := graph[r]
+				for _, n := range neigh {
+					if _, ok := scc[n]; !ok {
 						return
 					}
 				}
@@ -158,10 +169,10 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 		objRes := results.TraceElementResult{
 			RoutineID: r,
 			ObjID:     -1,
-			TPre:      -1,
-			ObjType:   elem.GetType(true),
-			File:      elem.GetFile(),
-			Line:      elem.GetLine(),
+			TRequest:  -1,
+			ObjType:   elem.Type(true),
+			File:      elem.File(),
+			Line:      elem.Line(),
 		}
 
 		obj = append(obj, objRes)
@@ -173,97 +184,49 @@ func reportBlocking(routs map[int]struct{}, rt helper.ResultType) {
 	}
 }
 
-// func Blocked() error {
-// 	output := filepath.Join(paths.ProgDir, paths.NameOutput)
+func reportLeak(l []int) {
+	tr := &a_base.MainTrace
+	for _, routID := range l {
+		rout := tr.GetRoutineTrace(routID)
 
-// 	file, err := os.Open(output)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	defer file.Close()
+		if rout.IsTerminated() {
+			continue
+		}
 
-// 	scanner := bufio.NewScanner(file)
+		last := rout.Last()
 
-// 	buf := make([]byte, 0, 1024*1024) // 1 MB initial buffer
-// 	scanner.Buffer(buf, 10*1024*1024)
-// 	for scanner.Scan() {
-// 		line := scanner.Text()
-// 		if strings.HasPrefix(line, "LEAK_GC@") {
-// 			err = readGCBlocked(line, false)
-// 		} else if strings.HasPrefix(line, "DEADLOCK_GC@") {
-// 			err = readGCBlocked(line, true)
-// 		}
-// 		if err != nil {
-// 			log.Errorf(err.Error())
-// 		}
-// 	}
+		objRes := results.TraceElementResult{
+			RoutineID: routID,
+			ObjID:     last.ObjID(),
+			TRequest:  last.T(trace.Request),
+			ObjType:   last.Type(true),
+			File:      last.File(),
+			Line:      last.Line(),
+		}
 
-// 	// if err := scanner.Err(); err != nil {
-// 	// 	return err
-// 	// }
+		leakType := helper.LUnknown
 
-// 	reportGCBlocked()
-// 	reportNonDeadlockLeaks()
+		if last != nil && last.Committed() {
+			switch last.(type) {
+			case *trace.ElementChannel:
+				if last.ObjID() == 0 {
+					leakType = helper.LNilChan
+				} else {
+					leakType = helper.LChan
+				}
+			case *trace.ElementSelect:
+				leakType = helper.LSelect
+			case *trace.ElementMutex:
+				leakType = helper.LMutex
+			case *trace.ElementWait:
+				leakType = helper.LWaitGroup
+			case *trace.ElementCond:
+				leakType = helper.LCond
+			}
+		}
 
-// 	return nil
-// }
+		results.Result(results.CRITICAL, leakType, "", []results.ResultElem{
+			objRes}, "", []results.ResultElem{})
 
-// func readGCBlocked(line string, deadlock bool) error {
-// 	fields := strings.Split(line, "@")
-
-// 	if len(fields) != 4 {
-// 		return fmt.Errorf("Could not process deadlock %s", line)
-// 	}
-
-// 	routineID, err := strconv.Atoi(fields[1])
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	// only count deadlocks that are also in the trace
-// 	if obj, ok := leaks[routineID]; ok {
-// 		var objRes results.ResultElem
-// 		objRes = obj.arg1[0]
-// 		delete(leaks, routineID)
-// 		if deadlock {
-// 			GCDeadlock = append(GCDeadlock, objRes)
-// 		} else {
-// 			GCLeak = append(GCLeak, objRes)
-// 		}
-// 	}
-
-// 	// if !objResSet {
-// 	// 	objRes = results.TraceElementResult{
-// 	// 		RoutineID: routineID,
-// 	// 		ObjID:     -1,
-// 	// 		TPre:      -1,
-// 	// 		ObjType:   getObjectType(fields[3]),
-// 	// 		File:      file,
-// 	// 		Line:      line,
-// 	// 	}
-// 	// }
-
-// 	return nil
-// }
-
-// reportGCBlocked creates a result for all elements that are in a deadlock
-// func reportGCBlocked() {
-// 	if len(GCLeak) > 0 {
-// 		results.Result(results.CRITICAL, helper.ALeak,
-// 			"Blocked", GCLeak, "", []results.ResultElem{})
-// 	}
-
-// 	if len(GCDeadlock) > 0 {
-// 		results.Result(results.CRITICAL, helper.ADeadlock,
-// 			"Blocked", GCDeadlock, "", []results.ResultElem{})
-// 	}
-// }
-
-// // reportNonDeadlockLeaks creates results for all elements that have a leek
-// // without being in a deadlock
-// func reportNonDeadlockLeaks() {
-// 	for _, leak := range leaks {
-// 		results.Result(results.CRITICAL, leak.resultType,
-// 			leak.argType1, leak.arg1, leak.argType1, leak.arg2)
-// 	}
-// }
+	}
+}

@@ -42,18 +42,13 @@ The typeIDs have the following meaning:
 - P03: "Possible Negative WaitGroup cCounter",
 - P04: "Possible unlock of not locked mutex",
 - P05: "Possible cyclic deadlock",
-- L00: "Leak",
-- L01: "Leak on unbuffered channel with possible partner",
-- L02: "Leak on unbuffered channel without possible partner",
-- L03: "Leak on buffered Channel with possible partner",
-- L04: "Leak on buffered Channel without possible partner",
-- L05: "Leak on nil channel",
-- L06: "Leak on select with possible partner",
-- L07: "Leak on select without possible partner",
-- L08: "Leak on sync.Mutex",
-- L09: "Leak on sync.WaitGroup",
-- L10: "Leak on sync.Cond",
-- L11: "Leak on channel or select on context",
+- L00: "Leak without blocked",
+- L01: "Leak on a channel",
+- L02: "Leak on nil channel",
+- L03: "Leak on select",
+- L04: "Leak on sync.Mutex",
+- L05: "Leak on sync.WaitGroup",
+- L06: "Leak on sync.Cond",
 
 <!--P06: Possible mixed deadlock, disabled-->
 `[args]` shows the elements involved in the problem. There are either
@@ -447,27 +442,26 @@ An example for a possible negative waitgroup counter is:
 ```
 
 The machine readable format of the possible negative waitgroup counter has the following form:
+
 ```
 P03,T:2:2:10:WA:example.go:5;T:3:2:20:WA:example.go:8,T:4:2:30:WD:example.go:9;T:1:2:40:WD:example.go:12
 ```
 
 The human readable format of the possible negative waitgroup counter has the following form:
+
 ```
 Possible negative waitgroup counter:
 	add: example.go:5@10;example.go:8@20
 	done: example.go:9@30;example.go:12@40
 ```
 
-### Leak on unbuffered channel
-#### With possible partner
-A leak on an unbuffered channel with a possible partner is a unbuffered channel is leaking,
-but has a possible partner.
-The two arg of this case is:
+### Leak on channel
+
+The arg of this case is:
 
 - the channel that is leaking
-- the possible partner of the channel
 
-An example for a leak on an unbuffered channel with a possible partner is:
+An example for a leak on a channel:
 ```golang
 1 func main() {          // routine = 1
 2   c := make(chan int)  // objId = 2
@@ -487,123 +481,19 @@ An example for a leak on an unbuffered channel with a possible partner is:
 ```
 We assume that line 5 send to line 9 and line 13 is leaking.
 
-The machine readable format of the leak on an unbuffered channel with a possible partner has the following form:
+The machine readable format of the leak on a channel :
+
 ```
 L01,T:4:2:30:CS:example.go:13,T:3:2:20:CR:example.go:9
 ```
 
-The human readable format of the leak on an unbuffered channel with a possible partner has the following form:
-```
-Leak on unbuffered channel with possible partner:
-	channel: example.go:13@30
-	partner: example.go:9@20
-```
-
-
-#### Without possible partner
-A leak on an unbuffered channel without a possible partner is a unbuffered channel that is leaking,
-but has no possible partner.
-
-The one arg of this case is:
-
-- the channel that is leaking
-
-An example for a leak on an unbuffered channel without a possible partner is:
-```golang
-1 func main() {          // routine = 1
-2   c := make(chan int)  // objId = 2
-3
-4   go func() {          // routine = 2
-5     <-c                // tPre = 10
-6   }()
-7 }
-```
-
-The machine readable format of the leak on an unbuffered channel without a possible partner has the following form:
-```
-L02,T:2:2:10:CR:example.go:5
-```
-
-The human readable format of the leak on an unbuffered channel without a possible partner has the following form:
-```
-Leak on unbuffered channel without possible partner:
-	channel: example.go:5@10
+The human readable format of the leak on a channel has the following form:
 
 ```
-
-### Leak on buffered channel
-#### With possible partner
-A leak on an buffered channel with a possible partner is a buffered channel is leaking,
-but has a possible partner.
-The two arg of this case are:
-
-- the channel that is leaking
-- the possible partner of the channel
-
-An example for a leak on an buffered channel with a possible partner is:
-```golang
-1 func main() {             // routine = 1
-2   c := make(chan int, 1)  // objId = 2
-3
-4   go func() {             // routine = 2
-5     c <- 1                // tPre = 10
-6   }()
-7
-8   go func() {             // routine = 3
-9     <- c                  // tPre = 20
-10  }()
-11
-12  go func() {             // routine = 4
-13    c <- 1                // tPre = 30
-14  }()
-15 }
-```
-We assume that line 5 send to line 9 and line 13 is leaking.
-
-The machine readable format of the leak on an buffered channel with a possible partner has the following form:
-```
-L03,T:4:2:30:CS:example.go:13,T:3:2:20:CR:example.go:9
+Leak on a channel:
+	element: example.go:13@30
 ```
 
-The human readable format of the leak on an buffered channel with a possible partner has the following form:
-```
-Leak on buffered channel with possible partner:
-	channel: example.go:13@30
-	partner: example.go:9@20
-```
-
-
-#### Without possible partner
-
-A leak on an buffered channel without a possible partner is a buffered channel that is leaking,
-but has no possible partner.
-
-The one arg of this case is:
-
-- the channel that is leaking
-
-An example for a leak on an unbuffered channel without a possible partner is:
-```golang
-1 func main() {              // routine = 1
-2   c := make(chan int, 1)   // objId = 2
-3
-4   go func() {              // routine = 2
-5     <-c                    // tPre = 10
-6   }()
-7 }
-```
-
-The machine readable format of the leak on an unbuffered channel without a possible partner has the following form:
-```
-L04,T:2:2:10:CR:example.go:5
-```
-
-The human readable format of the leak on an unbuffered channel without a possible partner has the following form:
-```
-Leak on buffered channel without possible partner:
-	channel: example.go:5@10
-
-```
 
 ### Leak on nil channel
 
@@ -624,11 +514,13 @@ func main() {
 ```
 
 The machine readable format of the leak on a nil channel has the following form:
+
 ```
-L05,T:2:-1:10:CS:example.go:6
+L02,T:2:-1:10:CS:example.go:6
 ```
 
 The human readable format of the leak on a nil channel has the following form:
+
 ```
 Leak on nil channel:
 	channel: example.go:6@10
@@ -636,15 +528,13 @@ Leak on nil channel:
 ```
 
 ### Leak on select
-#### With possible partner
-A leak on an select with a possible partner is a select is leaking,
-but has a possible partner.
-The two arg of this case is:
+
+The arg of this case is:
 
 - the select that is leaking
-- the possible partner of the channel or select
 
-An example for a leak on an select with a possible partner is:
+An example for a leak on an select:
+
 ```golang
  1 func main() {             // routine = 1
  2   c := make(chan int)     // objId = 2
@@ -664,50 +554,23 @@ An example for a leak on an select with a possible partner is:
 14   }()
 15 }
 ```
+
 We assume that line 5 send to line 9 and that the select is leaking.
 
-The machine readable format of the leak on an select with a possible partner has the following form:
+The machine readable format of the leak on an select has the following form:
+
 ```
-L06,T:4:3:30:SS:example.go:13,T:3:2:20:CR:example.go:9
+L03,T:4:3:30:SS:example.go:13,T:3:2:20:CR:example.go:9
 ```
 
-The human readable format of the leak on an select with a possible partner has the following form:
+The human readable format of the leak on an select has the following form:
+
 ```
-Leak on select with possible partner:
+Leak on select:
 	select: example.go:13@30
 	partner: example.go:9@20
 ```
 
-#### Without possible partner
-A leak on an select without a possible partner is a select that is leaking,
-but has no  partner.
-The one arg of this case is:
-
-- the select that is leaking
-
-```golang
-1 func main() {             // routine = 1
-2   c := make(chan int)     // objId = 2
-3
-4   go func() {             // routine = 2
-5     select {              // objId = 3, tPre = 10
-6     case c <- 1:
-7     }
-8   }()
-9  }
-```
-
-The machine readable format of the leak on an select without a possible partner has the following form:
-```
-L07,T:2:3:10:SS:example.go:5
-```
-
-The human readable format of the leak on an select without a possible partner has the following form:
-```
-Leak on select without possible partner:
-	select: example.go:5@10
-
-```
 
 ### Leak on mutex
 
@@ -734,7 +597,7 @@ The Lock operation in line 5 is leaking.
 
 The machine readable format of the leak on a mutex has the following form:
 ```
-L08,T:2:2:20:ML:example.go:5,T:1:2:10:ML:example.go:8
+L04,T:2:2:20:ML:example.go:5,T:1:2:10:ML:example.go:8
 ```
 
 The human readable format of the leak on a mutex has the following form:
@@ -764,7 +627,7 @@ An example for a leak on a waitgroup is:
 
 The machine readable format of the leak on a waitgroup has the following form:
 ```
-L09,T:1:2:10:WW:example.go:6
+L05,T:1:2:10:WW:example.go:6
 ```
 
 The human readable format of the leak on a waitgroup has the following form:
@@ -792,7 +655,7 @@ An example for a leak on a cond is:
 
 The machine readable format of the leak on a cond has the following form:
 ```
-L10,T:1:2:20:NW:example.go:4
+L6,T:1:2:20:NW:example.go:4
 ```
 
 The human readable format of the leak on a cond has the following form:

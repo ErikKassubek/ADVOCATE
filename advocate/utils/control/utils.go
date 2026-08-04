@@ -4,7 +4,6 @@
 // Brief: Utils for memory
 //
 // Author: Erik Kassubek
-// Created: 2025-03-11
 //
 // License: BSD-3-Clause
 

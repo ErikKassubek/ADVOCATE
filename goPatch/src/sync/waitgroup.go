@@ -15,6 +15,22 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocWG runtime.AdvocateAllocWG
+func AdvocateAllocWG(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	w := (*WaitGroup)(ptr)
+	if w.id != 0 {
+		return
+	}
+	w.id = runtime.AdvocateAlloc("W", 0)
+}
+
+// ADVOCATE-END
+
 // A WaitGroup is a counting semaphore typically used to wait
 // for a group of goroutines or tasks to finish.
 //
@@ -60,8 +76,7 @@ type WaitGroup struct {
 	sema  uint32
 
 	// ADVOCATE-START
-	id     uint64 // id for the waitgroup
-	memAdr uintptr
+	id uint64 // id for the waitgroup
 	// ADVOCATE-END
 }
 
@@ -131,18 +146,13 @@ func (wg *WaitGroup) Add(delta int) {
 	w := uint32(state & 0x7fffffff)
 
 	// ADVOCATE-START
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
 	// Record the add or done of a wait group in the routine's trace.
 	// If delta > 0, it is an add, if it's -1, it's a done.
 	// The add or done cannot fait without crashing the program. Add and done
 	// do not block the program. Therefore it is not possible, that it is
 	// called but not finished (except if it panics). Therefore it is not
 	// necessary to record a post event.
-	index := runtime.AdvocateWaitGroupAdd(wg.id, delta, v)
+	index := runtime.AdvocateWaitGroupAdd(unsafe.Pointer(wg), wg.id, delta, v)
 	// ADVOCATE-END
 
 	if race.Enabled && delta > 0 && v == int32(delta) {
@@ -209,33 +219,21 @@ func (wg *WaitGroup) Wait() {
 		defer func() { chAck <- struct{}{} }()
 		replayElem := <-ch
 		if replayElem.Blocked {
-			wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
-			_ = runtime.AdvocateWaitGroupWait(wg.id)
-			runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, true, runtime.OperationReplayNever, wg.id)
+			_ = runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
 			runtime.BlockForever()
 		}
 	}
-
-	// Waitgroups don't need to be initialized in default go code. Because
-	// go does not have constructors, the only way to initialize a wg
-	// is directly in it's functions. If the id of the wg is the default
-	// value, it is set to a new, unique object id
-	wg.id, wg.memAdr = runtime.NewIdIfReq(wg.id, wg.memAdr, uintptr(unsafe.Pointer(wg)))
 
 	// Record the wait of a wait group in the routine's trace.
 	// The wait will run until the waitgroup counte is zero. Therefor it
 	// blocks the routine and it is nessesary to record the successful
 	// finish of the wait with a post.
-	advocateIndex := runtime.AdvocateWaitGroupWait(wg.id)
+	advocateIndex := runtime.AdvocateWaitGroupWait(unsafe.Pointer(wg), wg.id)
 	// ADVOCATE-END
 
 	if race.Enabled {
 		race.Disable()
 	}
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(wg), runtime.CallerSkipWaitGroupAddWait, false, runtime.OperationWaitgroupWait, wg.id)
-	// ADVOCATE-END
 
 	for {
 		state := wg.state.Load()

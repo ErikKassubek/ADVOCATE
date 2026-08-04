@@ -4,7 +4,6 @@
 // Brief: Constraints for guided fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2025-10-21
 //
 // License: BSD-3-Clause
 
@@ -31,9 +30,9 @@ import (
 func startConstraint(num, length int) []f_base.Constraint {
 	res := make([]f_base.Constraint, 0)
 
-	traces := a_base.MainTrace.GetTraces()
+	routines := a_base.MainTrace.GetTraces()
 
-	if len(traces) == 0 {
+	if len(routines) == 0 {
 		return res
 	}
 
@@ -42,19 +41,19 @@ func startConstraint(num, length int) []f_base.Constraint {
 	alreadyAdded := make(map[int]struct{})
 
 	for i := 0; i < 1000; i++ {
-		key := rand.Intn(len(traces)) + 1
-		trace := traces[key]
-		if len(trace) == 0 {
+		key := rand.Intn(len(routines)) + 1
+		rout := routines[key]
+		if rout.Empty() {
 			continue
 		}
 
-		ind := rand.Intn(len(trace))
-		elem := trace[ind]
+		ind := rand.Intn(rout.Len())
+		elem := rout.At(ind)
 
-		if _, ok := alreadyAdded[elem.GetTPost()]; ok {
+		if _, ok := alreadyAdded[elem.T(trace.Commit)]; ok {
 			continue
 		}
-		alreadyAdded[elem.GetTPost()] = struct{}{}
+		alreadyAdded[elem.T(trace.Commit)] = struct{}{}
 
 		if !f_base.CanBeAddedToConstraint(elem) {
 			continue

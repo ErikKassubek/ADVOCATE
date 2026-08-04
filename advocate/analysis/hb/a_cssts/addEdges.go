@@ -4,7 +4,6 @@
 // Brief: Functions to add the required edges
 //
 // Author: Erik Kassubek
-// Created: 2025-07-07
 //
 // License: BSD-3-Clause
 
@@ -59,8 +58,8 @@ func addEdgeIndex(from, to types.Pair[int, int], weak bool) {
 // Parameter:
 //   - elem *trace.ElementFork: the fork element
 func AddEdgeFork(elem *trace.ElementFork) {
-	routine, index := elem.GetTraceIndex()
-	newRout := elem.GetObjId()
+	routine, index := elem.TraceIndex()
+	newRout := elem.ObjID()
 	if a_base.GetTraceLength(newRout) > 0 {
 		addEdgeIndex(
 			types.Pair[int, int]{X: routine, Y: index},

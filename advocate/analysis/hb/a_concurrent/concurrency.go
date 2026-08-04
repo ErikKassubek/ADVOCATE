@@ -4,7 +4,6 @@
 // Brief: Functions to find concurrent elements
 //
 // Author: Erik Kassubek
-// Created: 2025-07-03
 //
 // License: BSD-3-Clause
 
@@ -54,12 +53,12 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 			switch a := e.(type) {
 			case *trace.ElementSelect:
 				for _, c := range a.GetCases() {
-					if elem.GetObjId() == c.GetObjId() {
+					if elem.ObjID() == c.ObjID() {
 						res = append(res, e)
 					}
 				}
 			default:
-				if e.GetObjId() == elem.GetObjId() {
+				if e.ObjID() == elem.ObjID() {
 					res = append(res, e)
 				}
 			}
@@ -82,7 +81,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, sameType, weak bool) []tra
 // Returns:
 //   - int: number of elements that are concurrent to the element
 func GetNumberConcurrent(elem trace.Element, sameElem, sameType, weak bool) int {
-	m := elem.GetNumberConcurrent(weak, sameElem)
+	m := elem.NumberConcurrent(weak, sameElem)
 	if m != -1 {
 		return m
 	}
@@ -106,7 +105,7 @@ func IsConcurrent(elem1, elem2 trace.Element) bool {
 		return false
 	}
 
-	return a_clock.IsConcurrent(elem1.GetVC(), elem2.GetVC())
+	return a_clock.IsConcurrent(elem1.GetVC(a_clock.Strong), elem2.GetVC(a_clock.Strong))
 }
 
 // IsConcurrent returns if two elements are concurrent.
@@ -124,5 +123,5 @@ func IsConcurrentWeak(elem1, elem2 trace.Element) bool {
 		return false
 	}
 
-	return a_clock.IsConcurrent(elem1.GetWVC(), elem2.GetWVC())
+	return a_clock.IsConcurrent(elem1.GetVC(a_clock.Weak), elem2.GetVC(a_clock.Weak))
 }

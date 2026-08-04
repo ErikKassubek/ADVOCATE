@@ -4,7 +4,6 @@
 // Brief: Update the vc for channels
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package a_pog
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -23,11 +23,11 @@ import (
 //   - ch *trace.TraceElementChannel: the channel element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
-	if recorded && ch.GetTPost() == 0 {
+	if recorded && !ch.Committed() {
 		return
 	}
 
-	opC := ch.GetType(true)
+	opC := ch.Type(true)
 	cl := ch.GetClosed()
 
 	if ch.IsBuffered() {
@@ -43,7 +43,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 		case trace.ChannelClose:
 			Close(graph, ch)
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	} else { // unbuffered channel
@@ -68,7 +68,7 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 		case trace.ChannelClose:
 			Close(graph, ch)
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	}
@@ -81,11 +81,11 @@ func UpdateHBChannel(graph *PoGraph, ch *trace.ElementChannel, recorded bool) {
 //   - se *trace.TraceElementSelect: the select element
 //   - recorded bool: true if it is a recorded trace, false if it is rewritten/mutated
 func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
+	noChannel := se.GetChosenDefault() || !se.Committed()
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(se.GetVC())
+		chosenCase.Vc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(graph, chosenCase, recorded)
 	}
@@ -99,7 +99,7 @@ func UpdateHBSelect(graph *PoGraph, se *trace.ElementSelect, recorded bool) {
 //   - sender trace.Element: sender node
 //   - recv trace.Element: receiver node
 func Unbuffered(graph *PoGraph, sender trace.Element, recv trace.Element) {
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.Committed() && recv.Committed() {
 		if graph != nil {
 			graph.AddEdge(sender, recv)
 		} else {
@@ -114,7 +114,7 @@ func Unbuffered(graph *PoGraph, sender trace.Element, recv trace.Element) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Send(graph *PoGraph, ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -123,7 +123,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -170,7 +170,7 @@ func Send(graph *PoGraph, ch *trace.ElementChannel) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Recv(graph *PoGraph, ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
@@ -179,7 +179,7 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 		gr = &po
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 	qSize := ch.GetQSize()
 
 	newBuffer(gr, id, qSize)
@@ -207,11 +207,11 @@ func Recv(graph *PoGraph, ch *trace.ElementChannel) {
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
 func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	if graph != nil {
 		if _, ok := graph.closeData[id]; ok {
@@ -232,11 +232,10 @@ func RecvC(graph *PoGraph, ch *trace.ElementChannel, buffered bool) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - ch *TraceElementChannel: The trace element
 func Close(graph *PoGraph, ch *trace.ElementChannel) {
-	// TODO: should there be an edge to all send/recv that where executed before the close?
 	if graph != nil {
-		graph.closeData[ch.GetObjId()] = ch
+		graph.closeData[ch.ObjID()] = ch
 	} else {
-		po.closeData[ch.GetObjId()] = ch
+		po.closeData[ch.ObjID()] = ch
 	}
 }
 

@@ -4,7 +4,6 @@
 // Brief: Update the cssts for channels
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package a_cssts
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 	"advocate/utils/log"
 )
@@ -26,11 +26,11 @@ var (
 // Parameter:
 //   - ch *trace.TraceElementChannel: the channel element
 func UpdateHBChannel(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
-	opC := ch.GetType(true)
+	opC := ch.Type(true)
 	cl := ch.GetClosed()
 
 	if ch.IsBuffered() {
@@ -45,7 +45,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 			}
 		case trace.ChannelClose:
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	} else { // unbuffered channel
@@ -69,7 +69,7 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 			}
 		case trace.ChannelClose:
 		default:
-			err := "Unknown operation: " + ch.ToString()
+			err := "Unknown operation: " + ch.String()
 			log.Error(err)
 		}
 	}
@@ -80,11 +80,11 @@ func UpdateHBChannel(ch *trace.ElementChannel) {
 // Parameter:
 //   - se *trace.TraceElementSelect: the select element
 func UpdateHBSelect(se *trace.ElementSelect) {
-	noChannel := se.GetChosenDefault() || se.GetTPost() == 0
+	noChannel := se.GetChosenDefault() || !se.Committed()
 
 	if !noChannel {
 		chosenCase := se.GetChosenCase()
-		chosenCase.SetVc(se.GetVC())
+		chosenCase.Vc(a_clock.Strong, se.GetVC(a_clock.Strong))
 
 		UpdateHBChannel(chosenCase)
 	}
@@ -100,7 +100,7 @@ func UpdateHBSelect(se *trace.ElementSelect) {
 //   - tID_send string: the position of the send in the program
 //   - tID_recv string: the position of the receive in the program
 func Unbuffered(sender trace.Element, recv trace.Element) {
-	if sender.GetTPost() != 0 && recv.GetTPost() != 0 {
+	if sender.Committed() && recv.Committed() {
 		AddEdge(sender, recv, false)
 	}
 }
@@ -110,12 +110,12 @@ func Unbuffered(sender trace.Element, recv trace.Element) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Send(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
-	id := ch.GetObjId()
-	routine := ch.GetRoutine()
+	id := ch.ObjID()
+	routine := ch.Routine()
 	qSize := ch.GetQSize()
 	qCount := ch.GetQCount()
 
@@ -167,12 +167,12 @@ func Send(ch *trace.ElementChannel) {
 // Parameter:
 //   - ch *TraceElementChannel: The trace element
 func Recv(ch *trace.ElementChannel) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
-	id := ch.GetObjId()
-	routine := ch.GetRoutine()
+	id := ch.ObjID()
+	routine := ch.Routine()
 	qSize := ch.GetQSize()
 
 	newBuffer(id, qSize)
@@ -200,11 +200,11 @@ func Recv(ch *trace.ElementChannel) {
 //   - ch *TraceElementChannel: The trace element
 //   - buffered bool: true if the channel is buffered
 func RecvC(ch *trace.ElementChannel, buffered bool) {
-	if ch.GetTPost() == 0 {
+	if !ch.Committed() {
 		return
 	}
 
-	id := ch.GetObjId()
+	id := ch.ObjID()
 
 	if _, ok := a_base.CloseData[id]; ok {
 		c := a_base.CloseData[id]

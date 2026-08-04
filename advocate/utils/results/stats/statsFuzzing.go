@@ -4,7 +4,6 @@
 // Brief: Create stats about fuzzing
 //
 // Author: Erik Kassubek
-// Created: 2025-02-17
 //
 // License: BSD-3-Clause
 
@@ -21,8 +20,6 @@ import (
 	"strconv"
 	"strings"
 )
-
-// TODO: for each test get the number of unique bugs
 
 // CreateStatsFuzzing creates statistics about fuzzing runs
 //

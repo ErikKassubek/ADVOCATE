@@ -13,6 +13,22 @@ import (
 	// ADVOCATE-END
 )
 
+// ADVOCATE-START
+//
+//go:linkname AdvocateAllocCondVar runtime.AdvocateAllocCondVar
+func AdvocateAllocCondVar(ptr unsafe.Pointer) {
+	if runtime.AdvocateTracingDisabled {
+		return
+	}
+	c := (*Cond)(ptr)
+	if c.id != 0 {
+		return
+	}
+	c.id = runtime.AdvocateAlloc("D", 0)
+}
+
+// ADVOCATE-END
+
 // Cond implements a condition variable, a rendezvous point
 // for goroutines waiting for or announcing the occurrence
 // of an event.
@@ -48,8 +64,7 @@ type Cond struct {
 	checker copyChecker
 
 	// ADVOCATE-START
-	id     uint64
-	memAdr uintptr
+	id uint64
 	// ADVOCATE-END
 }
 
@@ -75,7 +90,6 @@ func NewCond(l Locker) *Cond {
 //	c.L.Unlock()
 func (c *Cond) Wait() {
 	// ADVOCATE-START
-	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, _, _ := runtime.WaitForReplay(runtime.OperationCondWait, runtime.CallerSkipCond, false)
@@ -84,12 +98,8 @@ func (c *Cond) Wait() {
 	}
 
 	//record
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondWait)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondWait)
 	defer runtime.AdvocateCondPost(advocateIndex)
-	// ADVOCATE-END
-
-	// ADVOCATE-START
-	runtime.StorePark(unsafe.Pointer(c), runtime.CallerSkipCond, false, runtime.OperationCondWait, c.id)
 	// ADVOCATE-END
 
 	c.checker.check()
@@ -108,7 +118,6 @@ func (c *Cond) Wait() {
 // are attempting to lock c.L, they may be awoken before a "waiting" goroutine.
 func (c *Cond) Signal() {
 	// ADVOCATE-START
-	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondSignal, runtime.CallerSkipCond, true)
@@ -118,7 +127,7 @@ func (c *Cond) Signal() {
 	}
 
 	// recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondSignal)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondSignal)
 	defer runtime.AdvocateCondPost(advocateIndex)
 	// ADVOCATE-END
 
@@ -132,7 +141,6 @@ func (c *Cond) Signal() {
 // during the call.
 func (c *Cond) Broadcast() {
 	// ADVOCATE-START
-	c.id, c.memAdr = runtime.NewIdIfReq(c.id, c.memAdr, uintptr(unsafe.Pointer(c)))
 
 	// replay
 	wait, ch, chAck, _ := runtime.WaitForReplay(runtime.OperationCondBroadcast, runtime.CallerSkipCond, true)
@@ -142,7 +150,7 @@ func (c *Cond) Broadcast() {
 	}
 
 	//recording
-	advocateIndex := runtime.AdvocateCondPre(c.id, runtime.OperationCondBroadcast)
+	advocateIndex := runtime.AdvocateCondPre(unsafe.Pointer(c), c.id, runtime.OperationCondBroadcast)
 	defer runtime.AdvocateCondPost(advocateIndex)
 	// ADVOCATE-END
 

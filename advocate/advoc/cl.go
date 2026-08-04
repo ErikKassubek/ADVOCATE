@@ -4,7 +4,6 @@
 // Brief: command line entries
 //
 // Author: Erik Kassubek
-// Created: 2026-05-29
 //
 // License: BSD-3-Clause
 
@@ -32,6 +31,7 @@ func CommandLine() bool {
 	flag.BoolVar(&help, "help", false, "Print help")
 
 	flag.StringVar(&flags.ProgPath, "path", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+	flag.StringVar(&flags.RootPath, "root", "", "Path to the root of the program folder. Must only be set if different from path")
 
 	flag.StringVar(&flags.ProgName, "prog", "", "Name of the program")
 	flag.StringVar(&flags.ExecName, "exec", "", "Name of the executable or test")
@@ -88,10 +88,11 @@ func CommandLine() bool {
 
 	flag.StringVar(&flags.Settings, "settings", "", "Set some internal settings. For more info, see ../doc/usage.md")
 
-	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
+	flag.BoolVar(&flags.CheckBenign, "benign", false, "Check if blocking bug is benign")
 
 	// for experiments
 	flag.BoolVar(&f_base.FinishIfBugFound, "finishIfBugFound", false, "Finish fuzzing as soon as a bug was found")
+	flag.BoolVar(&flags.CancelTestIfBugFound, "cancelTestIfBugFound", false, "Skip further fuzzing runs of a test if one bug has been found")
 
 	flag.Parse()
 

@@ -4,7 +4,6 @@
 // Brief: Interface for all trace element types
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -12,7 +11,113 @@ package trace
 
 import (
 	"advocate/analysis/hb/a_clock"
+	"advocate/utils/consts"
+	"fmt"
 )
+
+// ========================================================
+// MARK: Element
+// ========================================================
+
+// Element is an interface for the elements in a trace
+type Element interface {
+	ID() int
+	setID(ID int)
+	ObjID() int
+
+	T(t timeType) int
+	SetT(t timeType, time int)
+	SetTWithoutNotExecuted(tSort int)
+	Committed() bool
+
+	Pos() Position
+	File() string
+	Line() int
+
+	Routine() int
+	TraceIndex() (int, int)
+
+	Type(operation bool) OperationType
+
+	IsEqual(elem Element) bool
+	IsSameElement(elem Element) bool
+
+	String() string
+	StringDebug() string
+
+	Function() *ElementFunc
+
+	Vc(weak a_clock.VcType, vc *a_clock.VectorClock)
+	GetVC(weak a_clock.VcType) *a_clock.VectorClock
+
+	NumberConcurrent(weak, sameElem bool) int
+	SetNumberConcurrent(c int, weak, sameElem bool)
+
+	ReplayID() string
+
+	Copy(mapping map[int]Element, keep bool) Element
+
+	IsValid() bool
+
+	InInit() bool
+}
+
+func IsOp(elem Element) bool {
+	switch elem.(type) {
+	case *ElementAlloc, *ElementReplay, *ElementRoutineEnd:
+		return false
+	}
+
+	return true
+}
+
+// ========================================================
+// MARK: Base
+// ========================================================
+
+type ElementBase struct {
+	id      int
+	index   int
+	routine int
+
+	init bool
+}
+
+func (this *Trace) newElementBase(routine int) ElementBase {
+	return ElementBase{id: this.minTraceID, routine: routine, index: this.NumberElemInRoutine(routine), init: !this.hasPassedMain}
+}
+
+// ID returns the trace id
+//
+// Returns:
+//   - int: the trace id
+func (this *ElementBase) ID() int {
+	return this.id
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (this *ElementBase) setID(ID int) {
+	this.id = ID
+}
+
+// GetTraceID sets the trace id
+//
+// Parameter:
+//   - ID int: the trace id
+func (e ElementBase) Copy() ElementBase {
+	return e
+}
+
+func (e ElementBase) InInit() bool {
+	return e.init
+}
+
+// ========================================================
+// MARK: Operation
+// ========================================================
 
 // Values for possible primitive types and functions
 type OperationType string
@@ -76,6 +181,14 @@ const (
 	WaitDone OperationType = "WD"
 	WaitWait OperationType = "WW"
 
+	Func       OperationType = "F"
+	FuncCall   OperationType = "FC"
+	FuncReturn OperationType = "FR"
+
+	Controll       OperationType = "I"
+	ControllIf     OperationType = "II"
+	ControllSwitch OperationType = "IS"
+
 	UnknownOperation OperationType = "XX"
 )
 
@@ -108,49 +221,117 @@ func GetElemTypeFromObjectType(ob OperationType) OperationType {
 		return Select
 	case Wait, WaitAdd, WaitDone, WaitWait:
 		return Wait
+	case Func, FuncCall, FuncReturn:
+		return Func
 	default:
 		return None
 	}
 }
 
-// Element is an interface for the elements in a trace
-type Element interface {
-	setID(ID int)
-	GetID() int
-	GetObjId() int
-	GetTPre() int
-	GetTSort() int
-	GetTPost() int
-	GetPos() string
-	GetFile() string
-	GetLine() int
-	GetReplayID() string
-	GetType(operation bool) OperationType
-	GetTID() string
-	GetRoutine() int
-	IsEqual(elem Element) bool
-	IsSameElement(elem Element) bool
-	GetTraceIndex() (int, int)
-	SetTPre(tPre int)
-	SetTSort(tSort int)
-	SetTWithoutNotExecuted(tSort int)
-	SetT(time int)
-	ToString() string
-	SetVc(vc *a_clock.VectorClock)
-	SetWVc(vc *a_clock.VectorClock)
-	GetVC() *a_clock.VectorClock
-	GetWVC() *a_clock.VectorClock
-	Copy(mapping map[string]Element, keep bool) Element
-	GetNumberConcurrent(weak, sameElem bool) int
-	SetNumberConcurrent(c int, weak, sameElem bool)
-	IsValid() bool
+// ========================================================
+// MARK: Time
+// ========================================================
+
+type timeType int
+
+const (
+	Request timeType = iota
+	Commit
+	Both = iota
+	Sorting
+)
+
+// ========================================================
+// MARK: Concurrent
+// ========================================================
+
+type concInfo struct {
+	vc                       *a_clock.VectorClock
+	wVc                      *a_clock.VectorClock
+	numberConcurrent         int
+	numberConcurrentWeak     int
+	numberConcurrentSame     int
+	numberConcurrentWeakSame int
 }
 
-func IsOp(elem Element) bool {
-	switch elem.(type) {
-	case *ElementNew, *ElementReplay, *ElementRoutineEnd:
-		return false
-	}
+func newConcInfo() *concInfo {
+	return &concInfo{nil, nil, -1, -1, -1, -1}
+}
 
-	return true
+func (this *concInfo) copy() *concInfo {
+	return &concInfo{
+		this.vc.Copy(),
+		this.wVc.Copy(),
+		this.numberConcurrent,
+		this.numberConcurrentWeak,
+		this.numberConcurrentSame,
+		this.numberConcurrentWeakSame,
+	}
+}
+
+func (this *concInfo) getVC(weak a_clock.VcType) *a_clock.VectorClock {
+	if weak == a_clock.Weak {
+		return this.wVc
+	}
+	return this.vc
+}
+
+func (this *concInfo) setVC(weak a_clock.VcType, vc *a_clock.VectorClock) {
+	if weak == a_clock.Weak {
+		this.wVc = vc
+		return
+	}
+	this.vc = vc
+}
+
+func (this *concInfo) GetNumberConcurrent(weak, sameElem bool) int {
+	if weak {
+		if sameElem {
+			return this.numberConcurrentWeakSame
+		}
+		return this.numberConcurrentWeak
+	}
+	if sameElem {
+		return this.numberConcurrentSame
+	}
+	return this.numberConcurrent
+}
+
+func (this *concInfo) SetNumberConcurrent(c int, weak, sameElem bool) {
+	if weak {
+		if sameElem {
+			this.numberConcurrentWeakSame = c
+		} else {
+			this.numberConcurrentWeak = c
+		}
+	} else {
+		if sameElem {
+			this.numberConcurrentSame = c
+		} else {
+			this.numberConcurrent = c
+		}
+	}
+}
+
+// ========================================================
+// MARK: Position
+// ========================================================
+
+type Position struct {
+	file string
+	line int
+}
+
+func newPosition(file string, line int) Position {
+	return Position{file, line}
+}
+
+func (this Position) copy() Position {
+	return Position{
+		this.file, this.line,
+	}
+}
+
+func (this Position) String() string {
+	return fmt.Sprintf("%s%s%d", this.file, consts.PosSep, this.line)
 }

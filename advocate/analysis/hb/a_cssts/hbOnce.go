@@ -4,7 +4,6 @@
 // Brief: Update the once for fork
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -21,7 +20,7 @@ import (
 func UpdateHBOnce(on *trace.ElementOnce) {
 	// suc once does not create edge -> only not suc
 	if !on.GetSuc() {
-		suc := a_base.OSuc[on.GetObjId()]
+		suc := a_base.OSuc[on.ObjID()]
 		AddEdge(suc, on, false)
 	}
 }

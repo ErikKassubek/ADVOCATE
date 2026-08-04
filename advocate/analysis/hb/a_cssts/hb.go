@@ -4,7 +4,6 @@
 // Brief: Get concurrency information
 //
 // Author: Erik Kassubek
-// Created: 2025-07-07
 //
 // License: BSD-3-Clause
 
@@ -30,18 +29,18 @@ import (
 //   - []trace.TraceElement: the concurrent element(s)
 func GetConcurrentAllPairs(elem trace.Element, all, sameElem, weak bool) []trace.Element {
 	res := make([]trace.Element, 0)
-	id := elem.GetObjId()
-	routine := elem.GetRoutine()
+	id := elem.ObjID()
+	routId := elem.Routine()
 
-	for r, trace := range a_base.MainTrace.GetTraces() {
+	for r, routine := range a_base.MainTrace.GetTraces() {
 		// same routine
-		if routine == r {
+		if routId == r {
 			continue
 		}
 
 		// different routine
-		for _, e := range trace {
-			if sameElem && e.GetObjId() != id {
+		for _, e := range routine.Elems() {
+			if sameElem && e.ObjID() != id {
 				continue
 			}
 
@@ -90,7 +89,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 	reachableFromN := types.NewSet[types.Pair[int, int]]()
 	reachableToN := types.NewSet[types.Pair[int, int]]()
 
-	rout, ind := elem.GetTraceIndex()
+	rout, ind := elem.TraceIndex()
 	elemInd := types.NewPair(rout, ind)
 
 	dfsCSST(elemInd, reachableFromN, weak, false)
@@ -98,13 +97,13 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 
 	res := make([]trace.Element, 0)
 
-	for rout, trace := range a_base.MainTrace.GetTraces() {
-		if rout == elem.GetRoutine() {
+	for routID, routine := range a_base.MainTrace.GetTraces() {
+		if routID == elem.Routine() {
 			continue
 		}
 
-		for _, tElem := range trace {
-			if sameElem && elem.GetObjId() != tElem.GetObjId() {
+		for _, tElem := range routine.Elems() {
+			if sameElem && elem.ObjID() != tElem.ObjID() {
 				continue
 			}
 
@@ -112,7 +111,7 @@ func GetConcurrent(elem trace.Element, all, sameElem, weak bool) []trace.Element
 				continue
 			}
 
-			r, i := tElem.GetTraceIndex()
+			r, i := tElem.TraceIndex()
 			tElemInd := types.NewPair(r, i)
 
 			if !reachableFromN.Contains(tElemInd) && !reachableToN.Contains(tElemInd) {

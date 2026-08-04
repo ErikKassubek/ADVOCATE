@@ -4,7 +4,6 @@
 // Brief: Function for debug results and for results found bugs
 //
 // Author: Erik Kassubek
-// Created: 2023-08-30
 //
 // License: BSD-3-Clause
 
@@ -55,18 +54,13 @@ var resultTypeMap = map[helper.ResultType]string{
 	helper.PCyclicDeadlock:   "Possible cyclic deadlock",
 	helper.PMixedDeadlock:    "Possible Mixed Deadlock",
 
-	helper.LUnknown:           "Block on routine or unknown element",
-	helper.LUnbufferedWith:    "Block on unbuffered channel with possible partner",
-	helper.LUnbufferedWithout: "Block on unbuffered channel without possible partner",
-	helper.LBufferedWith:      "Block on buffered channel with possible partner",
-	helper.LBufferedWithout:   "Block on unbuffered channel without possible partner",
-	helper.LNilChan:           "Block on nil channel",
-	helper.LSelectWith:        "Block on select with possible partner",
-	helper.LSelectWithout:     "Block on select without partner or nil case",
-	helper.LMutex:             "Block on mutex",
-	helper.LWaitGroup:         "Block on wait group",
-	helper.LCond:              "Block on conditional variable",
-	helper.LContext:           "Block on a channel or select on context",
+	helper.LUnknown:   "Leak on routine or unknown element",
+	helper.LChan:      "Leak on channel",
+	helper.LNilChan:   "Leak on nil channel",
+	helper.LSelect:    "Leak on select w",
+	helper.LMutex:     "Leak on mutex",
+	helper.LWaitGroup: "Leak on wait group",
+	helper.LCond:      "Leak on conditional variable",
 
 	helper.RUnknownPanic: "Unknown Panic",
 	helper.RTimeout:      "Timeout",
@@ -105,11 +99,10 @@ type ResultElem interface {
 
 // TraceElementResult is a type to represent an element that is
 // part of a found bug
-// TODO: replace by pointer to actual element
 type TraceElementResult struct {
 	RoutineID int
 	ObjID     int
-	TPre      int
+	TRequest  int
 	ObjType   trace.OperationType
 	File      string
 	Line      int
@@ -149,7 +142,7 @@ func (this TraceElementResult) stringMachineShort() string {
 //   - string: the string representation
 func (this TraceElementResult) stringMachine() string {
 	return fmt.Sprintf("T%s%d%s%d%s%d%s%s%s%s%s%d", consts.PosSep, this.RoutineID, consts.PosSep, this.ObjID,
-		consts.PosSep, this.TPre, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
+		consts.PosSep, this.TRequest, consts.PosSep, this.ObjType, consts.PosSep, this.File, consts.PosSep, this.Line)
 }
 
 // stringReadable returns a human readable string representation
@@ -158,7 +151,7 @@ func (this TraceElementResult) stringMachine() string {
 // Returns:
 //   - string: the string representation
 func (this TraceElementResult) stringReadable() string {
-	return fmt.Sprintf("%s:%d@%d", this.File, this.Line, this.TPre)
+	return fmt.Sprintf("%s:%d@%d", this.File, this.Line, this.TRequest)
 }
 
 // isInvalid checks if the result element is not corrupted/empty
@@ -201,10 +194,10 @@ func Result(level resultLevel, resType helper.ResultType, argType1 string, arg1 
 
 	falsePos := "tp"
 
-	if resType.IsLeak() {
+	if flags.CheckBenign && (resType.IsLeak() || resType.IsBlocking()) {
 		falsePositive, err := benign.IsBenign(resType, arg1[0].getFile(), arg1[0].getLine(), blockedGC, contextCancel, contextDone)
 		if err != nil {
-			log.Errorf("Could not determine if bug is false positive: %s", err.Error())
+			log.Errorf("Could not determine if bug is benign: %s", err.Error())
 		}
 		if falsePositive {
 			falsePos = "fp"

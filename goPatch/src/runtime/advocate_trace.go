@@ -55,13 +55,19 @@ const (
 	OperationAtomicAnd            Operation = "atomicAnd"
 	OperationAtomicOr             Operation = "atomicOr"
 
-	OperationNewChan Operation = "newChan"
+	OperationAllocChan  Operation = "allocChan"
+	OperationAllocMutex Operation = "allocMutex"
+	OperationAllocCond  Operation = "allocCond"
+	OperationAllocWg    Operation = "allocWg"
 
 	OperationFunctionCall   Operation = "funcCall"
 	OperationFunctionReturn Operation = "funcReturn"
 
 	OperationReplayNever Operation = "replayNever"
 	OperationReplayEnd   Operation = "replayEnd"
+
+	OperationControllIf     Operation = "controllIf"
+	OperationControllSwitch Operation = "controllSwitch"
 )
 
 const posSep = "#"
@@ -73,7 +79,7 @@ const (
 	none
 )
 
-var advocateTracingDisabled = true
+var AdvocateTracingDisabled = true
 
 // var advocateTraceWritingDisabled = false
 
@@ -108,6 +114,8 @@ func getOperationObjectString(op Operation) string {
 		return "Atomic"
 	case OperationReplayEnd:
 		return "Replay"
+	case OperationControllIf, OperationControllSwitch:
+		return "Controll"
 	}
 	return "Unknown"
 }
@@ -116,6 +124,8 @@ func getOperationObjectString(op Operation) string {
 type traceElem interface {
 	toString() string
 	getOperation() Operation
+	hasCommit() bool
+	resource() []AdvocateTraceResource
 }
 
 // Return a string representation of the trace of the current go routine
@@ -325,7 +335,7 @@ func IsActive(id int) (bool, bool) {
 // Returns:
 //   - bool: true if not started or written to file
 func AdvocateWriteTraceToFile() {
-	if advocateTracingDisabled {
+	if AdvocateTracingDisabled {
 		return
 	}
 

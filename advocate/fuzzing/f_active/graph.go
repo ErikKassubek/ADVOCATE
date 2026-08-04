@@ -4,7 +4,6 @@
 // Brief: Rewrite for negative wait group counter
 //
 // Author: Erik Kassubek
-// Created: 2024-04-05
 //
 // License: BSD-3-Clause
 
@@ -39,11 +38,11 @@ func rewriteGraph(tr *trace.Trace, bug bugs.Bug, expectedErrorCode int) error {
 
 		tr.ShiftConcurrentOrAfterToAfter(elem1)
 
-		if minTime == -1 || elem1.GetTPre() < minTime {
-			minTime = elem1.GetTPre()
+		if minTime == -1 || elem1.T(trace.Request) < minTime {
+			minTime = elem1.T(trace.Request)
 		}
-		if maxTime == -1 || elem1.GetTPre() > maxTime {
-			maxTime = elem1.GetTPre()
+		if maxTime == -1 || elem1.T(trace.Request) > maxTime {
+			maxTime = elem1.T(trace.Request)
 		}
 
 	}

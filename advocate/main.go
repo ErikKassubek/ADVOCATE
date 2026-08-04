@@ -4,7 +4,6 @@
 // Brief: Main file and starting point for the toolchain
 //
 // Author: Erik Kassubek
-// Created: 2023-08-08
 //
 // License: BSD-3-Clause
 
@@ -26,11 +25,6 @@ func main() {
 
 	cont := advoc.CommandLine()
 	if !cont {
-		return
-	}
-
-	if flags.Mode == "static" {
-		s_blocking.Test() // TODO: remove this
 		return
 	}
 

@@ -4,7 +4,6 @@
 // Brief: Function to print help/how to use
 //
 // Author: Erik Kassubek
-// Created: 2025-05-19
 //
 // License: BSD-3-Clause
 
@@ -25,6 +24,7 @@ var (
 
 	// paths
 	path  = newFlagVal("path", "", "", "Path to the program folder, for main: path to main file, for test: path to test folder")
+	root  = newFlagVal("root", "", "if different from path", "Path to the root of the program folder. Must only be set if different from path")
 	prog  = newFlagVal("prog", "", "-stat/-time/-notExec", "Name of the program")
 	prog2 = newFlagVal("prog", "", "", "Name of the program")
 	exec1 = newFlagVal("exec", "", "-main", "Name of the executable or test. If set for test, only this test will be executed, otherwise all tests will be run")
@@ -156,8 +156,8 @@ func PrintHelp() {
 //   - mode string: the mode
 func PrintHelpMode(mode string) {
 	switch mode {
-	case "run":
-		printHelpRun()
+	// case "run":
+	// 	printHelpRun()
 	case "analysis":
 		printHelpAnalysis()
 	case "fuzzing":
@@ -178,13 +178,11 @@ func printHeader() {
 	fmt.Println("Usage: ./advocate [mode] [args]")
 	fmt.Println("")
 	fmt.Println("Advocate contains four different mode. These are:")
-	fmt.Println("\trun")
 	fmt.Println("\trecord")
 	fmt.Println("\treplay")
 	fmt.Println("\tanalysis")
 	fmt.Println("\tfuzzing")
 	fmt.Println("")
-	fmt.Println("With 'run', the program or test is run without any recording or replay")
 	fmt.Println("With 'record', the execution of a program or test can be recorded into a trace.")
 	fmt.Println("With 'replay', a program or test can be forced to follow the execution schedule specified in a trace.")
 	fmt.Println("With 'analyzer', a program or test can be recorded and then analyzed to find potential bugs. For some bugs, a rewrite and replay mechanism has been implemented to confirm the potential bugs.")
@@ -336,6 +334,7 @@ func printHelpAnalysis() {
 
 	// paths
 	fmt.Println(path.toString(true))
+	fmt.Println(root.toString(true))
 	fmt.Println(prog.toString(false))
 	fmt.Println(exec1.toString(false))
 

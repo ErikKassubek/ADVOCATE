@@ -297,3 +297,20 @@ var loong64HasLSX bool
 var riscv64HasZbb bool
 
 func asanregisterglobals(unsafe.Pointer, uintptr)
+
+// ADVOCATE-START
+func advocateFunctionCall()
+func advocateFunctionReturn()
+func AdvocateAllocMutex(unsafe.Pointer)
+func AdvocateAllocCondVar(unsafe.Pointer)
+func AdvocateAllocWG(unsafe.Pointer)
+func advocateControllFlow(string, int, int)
+
+func AdvocateInitTracing(int, bool)
+func AdvocateFinishTracing()
+func AdvocateInitReplay(string, int, bool)
+func AdvocateFinishReplay()
+func AdvocateInitFuzzing(string, int, bool, bool)
+func AdvocateFinishFuzzing()
+
+// ADVOCATE-END

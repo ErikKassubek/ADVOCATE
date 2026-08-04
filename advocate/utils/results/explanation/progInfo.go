@@ -4,7 +4,6 @@
 // Brief: Read the info required for running the program
 //
 // Author: Erik Kassubek
-// Created: 2024-06-18
 //
 // License: BSD-3-Clause
 
@@ -47,15 +46,12 @@ func readProgInfo() (map[bugKeys]string, error) {
 			res[name] = strings.TrimPrefix(lines[i], "TestName: ")
 		} else if strings.Contains(lines[i], "Import added at line: ") {
 			res[importLine] = strings.TrimPrefix(lines[i], "Import added at line: ")
-		} else if strings.Contains(lines[i], "Header added at line: ") {
-			res[headerLine] = strings.TrimPrefix(lines[i], "Header added at line: ")
 		}
 	}
 
 	res[file] = paths.ToUnix(strings.TrimSpace(res[file]))
 	res[name] = strings.TrimSpace(res[name])
 	res[importLine] = strings.TrimSpace(res[importLine])
-	res[headerLine] = strings.TrimSpace(res[headerLine])
 
 	return res, nil
 }

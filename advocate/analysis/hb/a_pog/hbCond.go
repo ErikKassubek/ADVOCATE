@@ -4,7 +4,6 @@
 // Brief: Update the cssts for conds
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -26,9 +25,9 @@ func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
 		gr = &po
 	}
 
-	objId := co.GetObjId()
+	objId := co.ObjID()
 
-	switch co.GetType(true) {
+	switch co.Type(true) {
 	case trace.CondWait:
 		if _, ok := gr.curWaitingCond[objId]; !ok {
 			gr.curWaitingCond[objId] = types.NewQueue[*trace.ElementCond]()
@@ -47,7 +46,7 @@ func UpdateHBCond(graph *PoGraph, co *trace.ElementCond) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - co *TraceElementCond: The trace element
 func CondSignal(graph *PoGraph, co *trace.ElementCond) {
-	id := co.GetObjId()
+	id := co.ObjID()
 
 	gr := graph
 	if graph == nil {
@@ -70,7 +69,7 @@ func CondSignal(graph *PoGraph, co *trace.ElementCond) {
 //   - graph *PoGraph: if nil, use the standard po/poivert, otherwise add to given
 //   - co *TraceElementCond: The trace element
 func CondBroadcast(graph *PoGraph, co *trace.ElementCond) {
-	id := co.GetObjId()
+	id := co.ObjID()
 
 	gr := graph
 	if graph == nil {

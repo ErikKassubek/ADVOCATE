@@ -4,7 +4,6 @@
 // Brief: Timer to measure the times
 //
 // Author: Erik Kassubek
-// Created: 2024-10-02
 //
 // License: BSD-3-Clause
 

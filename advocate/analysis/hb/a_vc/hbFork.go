@@ -4,13 +4,13 @@
 // Brief: Update the vc for fork
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
 package a_vc
 
 import (
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 )
 
@@ -21,13 +21,13 @@ import (
 // Parameter:
 //   - fo *TraceElementFork: the fork element
 func UpdateHBFork(fo *trace.ElementFork) {
-	routine := fo.GetRoutine()
+	routine := fo.Routine()
 
-	fo.SetVc(CurrentVC[routine])
-	fo.SetWVc(CurrentWVC[routine])
+	fo.Vc(a_clock.Strong, CurrentVC[routine])
+	fo.Vc(a_clock.Weak, CurrentWVC[routine])
 
-	oldRout := fo.GetRoutine()
-	newRout := fo.GetObjId()
+	oldRout := fo.Routine()
+	newRout := fo.ObjID()
 
 	CurrentVC[newRout] = CurrentVC[oldRout].Copy()
 	CurrentVC[oldRout].Inc(oldRout)

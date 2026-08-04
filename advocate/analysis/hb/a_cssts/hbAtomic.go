@@ -4,7 +4,6 @@
 // Brief: Update the cssts for atomics
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -21,13 +20,13 @@ import (
 // Parameter:
 //   - at *trace.TraceElementAtomic: the atomic operation
 func UpdateHBAtomic(at *trace.ElementAtomic) {
-	switch at.GetType(true) {
+	switch at.Type(true) {
 	case trace.AtomicLoad, trace.AtomicSwap, trace.AtomicCompAndSwap:
 		Read(at, true)
 	case trace.AtomicStore, trace.AtomicAdd, trace.AtomicAnd, trace.AtomicOr:
 		// csst does not add an edge for write
 	default:
-		err := "Unknown operation: " + at.ToString()
+		err := "Unknown operation: " + at.String()
 		log.Error(err)
 	}
 }
@@ -39,7 +38,7 @@ func UpdateHBAtomic(at *trace.ElementAtomic) {
 //   - numberOfRoutines int: The number of routines in the trace
 //   - sync bool: sync reader with last writer
 func Read(at *trace.ElementAtomic, sync bool) {
-	id := at.GetObjId()
+	id := at.ObjID()
 
 	if sync && a_base.LastAtomicWriter[id] != nil {
 		AddEdge(at, a_base.LastAtomicWriter[id], false)

@@ -4,7 +4,6 @@
 // Brief: Constants for stats types
 //
 // Author: Erik Kassubek
-// Created: 2025-11-18
 //
 // License: BSD-3-Clause
 

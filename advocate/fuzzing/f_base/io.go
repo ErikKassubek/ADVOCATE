@@ -4,7 +4,6 @@
 // Brief: Functions to read ans write the fuzzing files
 //
 // Author: Erik Kassubek
-// Created: 2024-11-28
 //
 // License: BSD-3-Clause
 
@@ -46,7 +45,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 
 	t1 := -1
 	for _, elem := range mut.Elems {
-		tPost := elem.GetTPost()
+		tPost := elem.T(trace.Commit)
 		if t1 == -1 || tPost < t1 {
 			t1 = tPost
 		}
@@ -56,10 +55,10 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	traceCopy.ShortenTrace(t1, false)
 
 	// add in all the elements in the chain
-	mapping := make(map[string]trace.Element)
+	mapping := make(map[int]trace.Element)
 	for i, elem := range mut.Elems {
 		c := elem.Copy(mapping, true)
-		c.SetTSort(t1 + i*2)
+		c.SetT(trace.Sorting, t1+i*2)
 		traceCopy.AddElement(c)
 	}
 
@@ -79,7 +78,7 @@ func WriteMutConstraint(mut Constraint, first bool) (bool, error) {
 	if flags.FuzzingMode == GoPie || settings.WithoutReplay {
 		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, 0)
 	} else {
-		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().GetTPost())
+		WriteMutActive(fuzzingTracePath, &traceCopy, &mut, mut.ElemWithSmallestTPost().T(trace.Commit))
 	}
 
 	traceCopy.Clear()
@@ -219,18 +218,18 @@ func WriteMutActive(fuzzingTracePath string, tr *trace.Trace, mut *Constraint, p
 		posCounter[routPos]++
 		if _, ok := mutCounter[routPos]; ok { // is in chain
 			mutCounter[routPos] = posCounter[routPos]
-			mutTime[routPos] = elem.GetTSort()
+			mutTime[routPos] = elem.T(trace.Sorting)
 		}
 	}
 
 	for _, elem := range mut.Elems {
 		routPos := getRoutPos(elem)
 		// key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTPre[traceID], mutCounter[traceID])
-		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.GetRoutine(), elem.GetPos(), mutTime[routPos], mutCounter[routPos])
+		key := fmt.Sprintf("%d:%s,%d,%d\n", elem.Routine(), elem.Pos(), mutTime[routPos], mutCounter[routPos])
 		f.WriteString(key)
 	}
 }
 
 func getRoutPos(elem trace.Element) string {
-	return fmt.Sprintf("%d:%s", elem.GetRoutine(), elem.GetPos())
+	return fmt.Sprintf("%d:%s", elem.Routine(), elem.Pos())
 }

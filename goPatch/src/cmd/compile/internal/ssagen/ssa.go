@@ -454,6 +454,7 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 
 	s.startBlock(s.f.Entry)
 	s.vars[memVar] = s.startmem
+
 	if s.hasOpenDefers {
 		// Create the deferBits variable and stack slot.  deferBits is a
 		// bitmask showing which of the open-coded defers in this function
@@ -586,8 +587,43 @@ func buildssa(fn *ir.Func, worker int, isPgoHot bool) *ssa.Func {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncenter, true, nil, s.newValue0(ssa.OpGetCallerPC, types.Types[types.TUINTPTR]))
 	}
+
 	s.zeroResults()
 	s.paramsToHeap()
+
+	// ADVOCATE-START
+	// MARK: function calls
+	if isUserMain(fn) {
+		if base.Flag.AdvocateTrace {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitTracing"),
+				true,
+				nil,
+			)
+		} else if base.Flag.AdvocateReplay {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitReplay"),
+				true,
+				nil,
+			)
+		} else if base.Flag.AdvocateFuzzing {
+			s.rtcall(
+				typecheck.LookupRuntimeFunc("AdvocateInitFuzzing"),
+				true,
+				nil,
+			)
+		}
+	}
+
+	if shouldAdvocate(fn) {
+		s.rtcall(
+			typecheck.LookupRuntimeFunc("advocateFunctionCall"),
+			true,
+			nil,
+		)
+	}
+	// ADVOCATE-END
+
 	s.stmtList(fn.Body)
 
 	// fallthrough to exit
@@ -2276,6 +2312,86 @@ func (s *state) stmt(n ir.Node) {
 // worse line-number information)
 const shareDeferExits = false
 
+// ADOVCATE-START
+// MARK: shouldAdvocate
+func shouldAdvocate(fn *ir.Func) bool {
+	if !(base.Flag.AdvocateTrace || base.Flag.AdvocateReplay || base.Flag.AdvocateFuzzing) {
+		return false
+	}
+
+	if fn == nil || fn.Sym() == nil || fn.Sym().Pkg == nil {
+		return false
+	}
+
+	pkg := fn.Sym().Pkg.Path
+
+	if fn.Pos().IsKnown() {
+		file := base.Ctxt.PosTable.Pos(fn.Pos()).Filename()
+		if strings.Contains(file, "/goPatch/") {
+			return false
+		}
+	}
+
+	if pkg == "runtime" ||
+		pkg == "syscall" ||
+		pkg == "os" ||
+		pkg == "internal/syscall" {
+
+		return false
+	}
+
+	if fn.Pragma&ir.Nosplit != 0 || fn.Wrapper() {
+		return false
+	}
+
+	name := fn.Sym().Name
+
+	if name == "advocateFunctionCall" || name == "advocateFunctionReturn" {
+		return false
+	}
+
+	return true
+}
+
+// MARK: exit
+func (s *state) advocateExitCall(fn *ir.Func) {
+	if !shouldAdvocate(fn) {
+		return
+	}
+
+	s.rtcall(typecheck.LookupRuntimeFunc("advocateFunctionReturn"), true, nil)
+
+	if isUserMain(fn) {
+		if base.Flag.AdvocateTrace {
+			s.rtcall(typecheck.LookupRuntimeFunc("AdvocateFinishTracing"), true, nil)
+		} else if base.Flag.AdvocateReplay {
+			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishReplay"), true, nil)
+		} else if base.Flag.AdvocateFuzzing {
+			s.rtcall(typecheck.LookupRuntimeFunc("advocateFinishFuzzing"), true, nil)
+		}
+	}
+}
+
+func isUserMain(fn *ir.Func) bool {
+	if fn == nil {
+		return false
+	}
+
+	sym := fn.Sym()
+	if sym.Name != "main" {
+		return false
+	}
+
+	pkg := sym.Pkg
+	if pkg == nil {
+		return false
+	}
+
+	return pkg.Name == "main" && pkg.Path == "main"
+}
+
+// ADVOCATE-END
+
 // exit processes any code that needs to be generated just before returning.
 // It returns a BlockRet block that ends the control flow. Its control value
 // will be set to the final memory state.
@@ -2286,6 +2402,9 @@ func (s *state) exit() *ssa.Block {
 				if s.curBlock.Kind != ssa.BlockPlain {
 					panic("Block for an exit should be BlockPlain")
 				}
+				// ADVOCATE-START
+				s.advocateExitCall(s.curfn)
+				// ADVOCATE-END
 				s.curBlock.AddEdgeTo(s.lastDeferExit)
 				s.endBlock()
 				return s.lastDeferFinalBlock
@@ -2341,6 +2460,10 @@ func (s *state) exit() *ssa.Block {
 	if s.instrumentEnterExit {
 		s.rtcall(ir.Syms.Racefuncexit, true, nil)
 	}
+
+	// ADVOCATE-START
+	s.advocateExitCall(s.curfn)
+	// ADVOCATE-END
 
 	results[len(results)-1] = s.mem()
 	m := s.newValue0(ssa.OpMakeResult, s.f.OwnAux.LateExpansionResultType())
@@ -7626,7 +7749,7 @@ func (e *ssafn) SplitSlot(parent *ssa.LocalSlot, suffix string, offset int64, t 
 // Logf logs a message from the compiler.
 func (e *ssafn) Logf(msg string, args ...interface{}) {
 	if e.log {
-		fmt.Printf(msg, args...)
+		// fmt.Printf(msg, args...)
 	}
 }
 

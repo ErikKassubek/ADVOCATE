@@ -6,7 +6,6 @@
 // Brief: Data required for the trace
 //
 // Author: Erik Kassubek
-// Created: 2025-07-01
 //
 // License: BSD-3-Clause
 
@@ -139,9 +138,9 @@ func ShortenTrace(time int, incl bool) {
 // RemoveElementFromTrace removes the element with the given tID from the trace
 //
 // Parameter:
-//   - tID string: The tID of the element to remove
-func RemoveElementFromTrace(tID string) {
-	MainTrace.RemoveElementFromTrace(tID)
+//   - elem trace.Element: element to remove
+func RemoveElementFromTrace(elem trace.Element) {
+	MainTrace.RemoveElementFromTrace(elem)
 }
 
 // ShortenRoutine shortens the trace of the given routine by removing all
@@ -160,8 +159,8 @@ func ShortenRoutine(routine int, time int) {
 //   - id int: The id of the routine
 //
 // Returns:
-//   - []traceElement: The trace of the routine
-func GetRoutineTrace(id int) []trace.Element {
+//   - *trace.Routine: The routine
+func GetRoutineTrace(id int) *trace.Routine {
 	return MainTrace.GetRoutineTrace(id)
 }
 
@@ -203,14 +202,6 @@ func GetTraceLengths() []int {
 	return MainTrace.GetTraceLengths()
 }
 
-// GetLastElemPerRout returns the last elements in each routine
-// Returns
-//
-//   - []TraceElements: List of elements that are the last element in a routine
-func GetLastElemPerRout() []trace.Element {
-	return MainTrace.GetLastElemPerRout()
-}
-
 // GetNrAddDoneBeforeTime returns the number of add and done operations that were
 // executed before a given time for a given wait group id,
 //
@@ -233,19 +224,6 @@ func GetNrAddDoneBeforeTime(wgID int, waitTime int) (int, int) {
 //   - shift int: The shift
 func ShiftTrace(startTPre int, shift int) bool {
 	return MainTrace.ShiftTrace(startTPre, shift)
-}
-
-// GetTraceElementFromTID returns the routine and index of the element
-// in trace, given the tID
-//
-// Parameter:
-//   - tID string: The tID of the element
-//
-// Returns:
-//   - TraceElement: The element
-//   - error: An error if the element does not exist
-func GetTraceElementFromTID(tID string) (trace.Element, error) {
-	return MainTrace.GetTraceElementFromTID(tID)
 }
 
 // GetTraceElementFromBugArg return the element in the trace, that correspond

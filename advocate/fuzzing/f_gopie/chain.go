@@ -4,7 +4,6 @@
 // Brief: scheduling Chains for GoPie
 //
 // Author: Erik Kassubek
-// Created: 2025-03-21
 //
 // License: BSD-3-Clause
 
@@ -30,24 +29,24 @@ func startChains(num int) []f_base.Constraint {
 	res := make([]f_base.Constraint, 0)
 
 	if f_base.UseHBInfoFuzzing {
-		traces := a_base.MainTrace.GetTraces()
+		routines := a_base.MainTrace.GetTraces()
 
-		if len(traces) == 0 {
+		if len(routines) == 0 {
 			return res
 		}
 
 		top := []f_base.ElemWithQual{}
 
 		for i := 0; i < 1000; i++ {
-			key := rand.Intn(len(traces)) + 1
+			key := rand.Intn(len(routines)) + 1
 
-			trace := traces[key]
-			if len(trace) == 0 {
+			routine := routines[key]
+			if routine.Empty() {
 				continue
 			}
 
-			ind := rand.Intn(len(trace))
-			elem := trace[ind]
+			ind := rand.Intn(routine.Len())
+			elem := routine.At(ind)
 
 			if !f_base.CanBeAddedToConstraint(elem) {
 				continue

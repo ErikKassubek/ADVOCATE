@@ -4,7 +4,6 @@
 // Brief: Collect miscellaneous statistics about the advocate run
 //
 // Author: Erik Kassubek
-// Created: 2025-02-25
 //
 // License: BSD-3-Clause
 

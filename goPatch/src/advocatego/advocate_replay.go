@@ -20,6 +20,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	_ "unsafe"
 )
 
 const (
@@ -38,7 +39,15 @@ var tracePathRewritten = ""
 //   - tracePath string: The path to the rewritten trace, relative the the dir where advocateResult is placed
 //   - timeout int: Timeout in seconds, 0: no timeout
 //   - atomic bool: if true, replay includes atomic
-func InitReplay(tracePath string, timeout int, atomic bool) {
+//   - init bool: true if called from init, false for main
+//
+//go:linkname InitReplay runtime.AdvocateInitReplay
+func InitReplay(tracePath string, timeout int, atomic bool, init bool) {
+	if initRun { // called by main but alredy run by init
+		return
+	}
+	initRun = true
+
 	// use first as default
 	// runtime.SetForceExit(false)
 	runtime.SetReplayAtomic(atomic) // set to true to include replay atomic
@@ -456,6 +465,8 @@ func readTraceFile(fileName string,
 }
 
 // FinishReplay waits for the replay to finish.
+//
+//go:linkname FinishReplay runtime.AdvocateFinishReplay
 func FinishReplay() {
 	if r := recover(); r != nil {
 		println("Replay failed.")

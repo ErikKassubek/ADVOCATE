@@ -4,7 +4,6 @@
 // Brief: Update the vc for once
 //
 // Author: Erik Kassubek
-// Created: 2025-07-20
 //
 // License: BSD-3-Clause
 
@@ -12,6 +11,7 @@ package a_vc
 
 import (
 	"advocate/analysis/a_base"
+	"advocate/analysis/hb/a_clock"
 	"advocate/trace"
 )
 
@@ -19,10 +19,10 @@ import (
 // Parameter:
 //   - on *trace.TraceElementOnce: the once trace element
 func UpdateHBOnce(on *trace.ElementOnce) {
-	routine := on.GetRoutine()
+	routine := on.Routine()
 
-	on.SetVc(CurrentVC[routine])
-	on.SetWVc(CurrentVC[routine])
+	on.Vc(a_clock.Strong, CurrentVC[routine])
+	on.Vc(a_clock.Weak, CurrentVC[routine])
 
 	if on.GetSuc() {
 		DoSuc(on)
@@ -36,7 +36,7 @@ func UpdateHBOnce(on *trace.ElementOnce) {
 // Parameter:
 //   - on *TraceElementOnce: The trace element
 func DoSuc(on *trace.ElementOnce) {
-	routine := on.GetRoutine()
+	routine := on.Routine()
 
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)
@@ -47,13 +47,13 @@ func DoSuc(on *trace.ElementOnce) {
 // Parameter:
 //   - on *TraceElementOnce: The trace element
 func DoFail(on *trace.ElementOnce) {
-	id := on.GetObjId()
-	routine := on.GetRoutine()
+	id := on.ObjID()
+	routine := on.Routine()
 
 	suc := a_base.OSuc[id]
 
 	if suc != nil {
-		CurrentVC[routine].Sync(suc.GetVC())
+		CurrentVC[routine].Sync(suc.GetVC(a_clock.Strong))
 	}
 	CurrentVC[routine].Inc(routine)
 	CurrentWVC[routine].Inc(routine)

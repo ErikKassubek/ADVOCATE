@@ -4,7 +4,6 @@
 // Brief: Data required for por
 //
 // Author: Erik Kassubek
-// Created: 2026-03-16
 //
 // License: BSD-3-Clause
 

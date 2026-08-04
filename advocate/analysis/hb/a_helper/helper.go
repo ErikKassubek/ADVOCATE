@@ -4,7 +4,6 @@
 // Brief: Helper functions for concurrency used by multiple methods
 //
 // Author: Erik Kassubek
-// Created: 2025-07-08
 //
 // License: BSD-3-Clause
 
@@ -21,6 +20,6 @@ import "advocate/trace"
 // Returns:
 //   - bool: true if the element is valid, false otherwise
 func Valid(elem trace.Element) bool {
-	t := elem.GetType(false)
+	t := elem.Type(false)
 	return !(t == trace.Replay || t == trace.New || t == trace.End)
 }

@@ -4,7 +4,6 @@
 // Brief: Main file for fuzzing using constraints
 //
 // Author: Erik Kassubek
-// Created: 2025-07-14
 //
 // License: BSD-3-Clause
 
@@ -81,11 +80,11 @@ func (this *constraint) toString() string {
 		res += "-;"
 	}
 
-	res += fmt.Sprintf("%s;", this.first.GetType(false))
+	res += fmt.Sprintf("%s;", this.first.Type(false))
 
-	res += fmt.Sprintf("%d,%s;", this.first.GetRoutine(), this.first.GetPos())
+	res += fmt.Sprintf("%d,%s;", this.first.Routine(), this.first.Pos())
 	if this.twoElem {
-		res += fmt.Sprintf("%d,%s", this.second.GetRoutine(), this.second.GetPos())
+		res += fmt.Sprintf("%d,%s", this.second.Routine(), this.second.Pos())
 	}
 
 	return res

@@ -4,7 +4,6 @@
 // Brief: Logging function
 //
 // Author: Erik Kassubek
-// Created: 2025-02-18
 //
 // License: BSD-3-Clause
 
@@ -24,6 +23,7 @@ const (
 	Yellow = "\033[33m"
 	Blue   = "\033[34m"
 	Purple = "\033[35m"
+	Grey   = "\033[90m"
 )
 
 var numberErr = 0
@@ -99,6 +99,25 @@ func Debug(v ...any) {
 //   - v ...any: the content of the log
 func Debugf(format string, v ...any) {
 	log.Printf(Yellow+format+Reset, v...)
+}
+
+// `Todo logs an todo information to the terminal
+// Printed in grey
+//
+// Parameter:
+//   - v ...any: the content of the log
+func Todo(v ...any) {
+	log.Print(Grey, "TODO: ", fmt.Sprint(v...), Reset, "\n")
+}
+
+// `Todof logs a todo information to the terminal
+// Printed in grey
+//
+// Parameter:
+//   - format string: the format (e.g. "%s")
+//   - v ...any: the content of the log
+func Todof(format string, v ...any) {
+	log.Printf(Grey+"TODO: "+format+Reset, v...)
 }
 
 // Result logs a result to the terminal

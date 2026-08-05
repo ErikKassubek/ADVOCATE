@@ -22,13 +22,12 @@ func instInfoReturn(inst *s_ssa.InstructionReturn, rout int, _ trace.Element) *i
 
 	retInfo := make([]*instructionWithInfo, len(retSSAVar))
 	for i, v := range retSSAVar {
-		retInfo[i] = findDefOfSSAVar(rout, v.Name(), false)
+		retInfo[i] = findDecOfSSAVar(rout, v.Name())
 	}
 
 	blocking.ReturnStack(rout, retInfo)
 
 	res := addPathInstr(rout, inst, nil)
-	blocking.LastReturn[rout] = res
 
 	return res
 }

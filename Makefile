@@ -19,7 +19,8 @@ clean-cache:
 	./goPatch/bin/go clean -cache
 
 adv: advocate
-	cd advocate && ./advocate analysis -path /home/erik/Arbeit/examples/blocking/main.go -main -output -panic
+	cd advocate && ./advocate static -path /home/erik/Arbeit/examples/blocking/main.go -main -output -panic
 
 mkbuiltin:
 	cd ./goPatch/src/cmd/compile/internal/typecheck && go run mkbuiltin.go
+ 

@@ -19,7 +19,7 @@ func instInfoPhi(inst *s_ssa.InstructionPhi, rout int, _ trace.Element) *instruc
 
 	pred := inst.GetPred()[lastBlock]
 
-	ssaVar := findDefOfSSAVar(rout, pred, false)
+	ssaVar := findDecOfSSAVar(rout, pred)
 
 	return addPathInstr(rout, inst, ssaVar.Resource)
 }

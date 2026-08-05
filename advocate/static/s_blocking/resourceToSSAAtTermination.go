@@ -102,10 +102,12 @@ func parseInstruction(inst s_ssa.Instruction, rout int, elem trace.Element) s_ss
 		}
 	}
 
-	if elem != nil {
-		log.Debug("ELEM1 -> ", inst.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
-	} else {
-		log.Debug("ELEM2 -> ", inst.String(), " -> ", infoStr)
+	if rout == 3 {
+		if elem != nil {
+			log.Debug("ELEM1 -> ", inst.String(), " -> ", elem.StringDebug(), " -> ", infoStr)
+		} else {
+			log.Debug("ELEM2 -> ", inst.String(), " -> ", infoStr)
+		}
 	}
 
 	return next

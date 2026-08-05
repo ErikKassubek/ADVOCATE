@@ -39,7 +39,10 @@ func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f 
 		return
 	}
 
+	// if routCall != routFunc {
+	log.Debug(routCall, routFunc)
 	blocking.NewFuncStack(routFunc, retVarName)
+	// }
 
 	if inst != nil {
 		for i, param := range f.Params() {
@@ -47,7 +50,7 @@ func parseCallParameter(inst ssa.CallInstruction, routCall int, routFunc int, f 
 				addPathParam(routFunc, param.Name(), nil)
 			} else {
 				arg := inst.Common().Args[i].String()
-				d := findDefOfSSAVar(routCall, arg, false)
+				d := findDecOfSSAVar(routCall, arg)
 				addPathParam(routFunc, arg, d.Resource)
 			}
 		}

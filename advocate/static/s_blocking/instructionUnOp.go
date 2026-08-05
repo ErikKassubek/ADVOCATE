@@ -12,13 +12,17 @@ package s_blocking
 import (
 	"advocate/static/static/s_ssa"
 	"advocate/trace"
+	"advocate/utils/log"
 	"strings"
 )
 
 func instInfoUnOp(inst *s_ssa.InstructionUnOp, rout int, _ trace.Element) *instructionWithInfo {
 	term := inst.Term()
 	if strings.HasPrefix(term, "*") && !strings.Contains(term, " ") {
-		ssaVar := findDefOfSSAVar(rout, term, inst.TermGlobal())
+		if rout == 3 {
+			log.Debug(inst.StringInfo())
+		}
+		ssaVar := findDecOfSSAVar(rout, term)
 		return addPathInstr(rout, inst, ssaVar.Resource)
 	}
 

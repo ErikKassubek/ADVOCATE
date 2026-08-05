@@ -18,7 +18,7 @@ import (
 )
 
 func instInfoStore(inst *s_ssa.InstructionStore, rout int, _ trace.Element) *instructionWithInfo {
-	ssaVar := findDefOfSSAVar(rout, inst.Term(), inst.TermGlobal())
+	ssaVar := findDecOfSSAVar(rout, inst.Term())
 	if ssaVar == nil {
 		log.Errorf("Could not find ssa var %s for %s", inst.Term(), inst)
 	}
